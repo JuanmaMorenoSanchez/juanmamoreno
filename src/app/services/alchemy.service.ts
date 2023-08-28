@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ALCHEMYSETTINGS, JUANMAADRESS, JUANMAWALLETID } from '@constants/alchemy.constants';
+import { ALCHEMYSETTINGS, JUANMAADRESS } from '@constants/alchemy.constants';
 import { Alchemy, OwnedNftsResponse, TokenBalancesResponseErc20 } from 'alchemy-sdk';
 import { Observable, from } from 'rxjs';
 
@@ -12,6 +12,18 @@ export class AlchemyService {
 
   constructor() {
     this.alchemy = new Alchemy(ALCHEMYSETTINGS);
+
+
+    
+    this.getUserBalance().subscribe(data => {
+      console.log("getUserBalance ", data)
+    })
+    this.getJuanmaNFTs().subscribe(data => {
+      console.log("getJuanmaNFTs ", data)
+    })
+
+
+
   }
 
   public getUserBalance(): Observable<TokenBalancesResponseErc20> {
@@ -19,6 +31,6 @@ export class AlchemyService {
   }
 
   public getJuanmaNFTs(): Observable<OwnedNftsResponse> {
-    return from(this.alchemy.nft.getNftsForOwner(JUANMAWALLETID));
+    return from(this.alchemy.nft.getNftsForOwner(JUANMAADRESS));
   }
 }

@@ -16,14 +16,7 @@ export class TopMenuComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.alchemyService.getUserBalance().subscribe(data => {
-      console.log("getUserBalance ", data)
-    })
-
-
-    this.alchemyService.getJuanmaNFTs().subscribe(data => {
-      console.log("getJuanmaNFTs ", data)
-    })
+   
   }
 
 }
