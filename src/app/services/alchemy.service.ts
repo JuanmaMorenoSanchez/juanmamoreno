@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ALCHEMYSETTINGS, JUANMAADRESS } from '@constants/alchemy.constants';
-import { Alchemy, OwnedNftsResponse, TokenBalancesResponseErc20 } from 'alchemy-sdk';
+import { Alchemy, NftFilters, OwnedNftsResponse, TokenBalancesResponseErc20 } from 'alchemy-sdk';
 import { Observable, from } from 'rxjs';
 
 @Injectable({
@@ -31,6 +31,6 @@ export class AlchemyService {
   }
 
   public getJuanmaNFTs(): Observable<OwnedNftsResponse> {
-    return from(this.alchemy.nft.getNftsForOwner(JUANMAADRESS));
+    return from(this.alchemy.nft.getNftsForOwner(JUANMAADRESS, { excludeFilters: [NftFilters.SPAM] }));
   }
 }
