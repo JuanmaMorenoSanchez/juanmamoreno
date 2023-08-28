@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AlchemyService } from '@services/alchemy.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -7,9 +8,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TopMenuComponent implements OnInit {
 
-  constructor() { }
+  public userBalance = 0
+
+  constructor(
+    private alchemyService: AlchemyService
+  ) { }
 
   ngOnInit(): void {
+
+    this.alchemyService.getUserBalance().subscribe(data => {
+      console.log("getUserBalance ", data)
+    })
+
+
+    this.alchemyService.getJuanmaNFTs().subscribe(data => {
+      console.log("getJuanmaNFTs ", data)
+    })
   }
 
 }
