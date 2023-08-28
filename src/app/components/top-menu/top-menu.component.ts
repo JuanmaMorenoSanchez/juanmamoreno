@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlchemyService } from '@services/alchemy.service';
+import { SessionQuery } from '@store/session.query';
 
 @Component({
   selector: 'app-top-menu',
@@ -8,15 +8,17 @@ import { AlchemyService } from '@services/alchemy.service';
 })
 export class TopMenuComponent implements OnInit {
 
-  public userBalance = 0
+  userBalances;
+  // public userMaticBalance = 0
 
-  constructor(
-    private alchemyService: AlchemyService
-  ) { }
+  constructor(    
+    private sessionQuery: SessionQuery,
+  ) { 
+    this.userBalances = this.sessionQuery.selectBalances
+  }
 
   ngOnInit(): void {
 
    
   }
-
 }

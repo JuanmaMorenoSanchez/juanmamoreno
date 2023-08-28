@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AlchemyService } from '@services/alchemy.service';
 
 @Component({
   selector: 'app-login-button',
@@ -9,8 +8,9 @@ import { AlchemyService } from '@services/alchemy.service';
 export class LoginButtonComponent implements OnInit {
 
   constructor(
-    private alchemyService: AlchemyService
-  ) { }
+  ) {
+    // TODO LATER
+  }
 
   ngOnInit(): void {
   }

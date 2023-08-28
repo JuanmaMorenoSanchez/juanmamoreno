@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { ALCHEMYSETTINGS, JUANMAADRESS } from '@constants/alchemy.constants';
-import { Alchemy, NftFilters, OwnedNftsResponse, TokenBalancesResponseErc20 } from 'alchemy-sdk';
-import { Observable, from } from 'rxjs';
+import { PersistState } from '@datorama/akita';
+import { SessionQuery } from '@store/session.query';
+import { SessionStore } from '@store/session.store';
+import { Alchemy, TokenBalancesResponseErc20, TransferredNft, TransfersNftResponse } from 'alchemy-sdk';
+import { Observable, from, map, merge, zip } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,27 +13,37 @@ export class AlchemyService {
 
   private alchemy: Alchemy;
 
-  constructor() {
+  constructor(
+    @Inject('persistStorage') persistStorage: PersistState,
+    private sessionStore: SessionStore,
+    private sessionQuery: SessionQuery,
+  ) {
     this.alchemy = new Alchemy(ALCHEMYSETTINGS);
-
-
-    
-    this.getUserBalance().subscribe(data => {
-      console.log("getUserBalance ", data)
-    })
-    this.getJuanmaNFTs().subscribe(data => {
-      console.log("getJuanmaNFTs ", data)
-    })
-
-
-
   }
 
-  public getUserBalance(): Observable<TokenBalancesResponseErc20> {
-    return from(this.alchemy.core.getTokenBalances(JUANMAADRESS));
+  
+  public fetchUserBalance(): void {
+    this.alchemy.core.getTokenBalances(JUANMAADRESS).then(balances => 
+      this.updateUserBalances(balances)
+    )
   }
 
-  public getJuanmaNFTs(): Observable<OwnedNftsResponse> {
-    return from(this.alchemy.nft.getNftsForOwner(JUANMAADRESS, { excludeFilters: [NftFilters.SPAM] }));
+  private updateUserBalances(balances: TokenBalancesResponseErc20): Observable<TokenBalancesResponseErc20 | undefined> {
+    console.log("Storing balances locally ", balances);
+    this.sessionStore.update({ balances });
+    return this.sessionQuery.selectBalancesObservable;
+  }
+
+  public fetchJuanmaNFTs(): void {
+    this.alchemy.nft.getMintedNfts(JUANMAADRESS).then(nftResponse => {
+      this.updateJuanmaNFTs(nftResponse);
+    });
+  }
+
+  private updateJuanmaNFTs(transfersNftResponse: TransfersNftResponse): Observable<TransferredNft[] | undefined> {
+    // TODO: handle pagination
+    console.log("Storing nfts locally ", transfersNftResponse);
+    this.sessionStore.update({ artPieces: transfersNftResponse.nfts });
+    return this.sessionQuery.selectArtPiecesObservable;
   }
 }
