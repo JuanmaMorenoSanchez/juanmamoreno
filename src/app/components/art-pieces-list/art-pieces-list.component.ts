@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SessionQuery } from '@store/session.query';
 import { TransferredNft } from 'alchemy-sdk';
+import { distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
   templateUrl: './art-pieces-list.component.html',
-  styleUrls: ['./art-pieces-list.component.scss']
+  styleUrls: ['./art-pieces-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArtPiecesListComponent implements OnInit {
 
-  public artPieces$; //: TransferredNft[];
+  public artPieces: TransferredNft[] | undefined;
 
   //where do i put filters? here or in queryservice? 
   // inputs??
@@ -22,7 +24,11 @@ export class ArtPiecesListComponent implements OnInit {
   constructor(
     private sessionQuery: SessionQuery
   ) {
-    this.artPieces$ = this.sessionQuery.selectArtPiecesObservable;
+    // this.artPieces$ = this.sessionQuery.selectArtPiecesObservable.pipe(distinctUntilChanged());
+    this.sessionQuery.selectArtPiecesObservable.pipe(distinctUntilChanged()).subscribe(artPieces => {
+      this.artPieces = artPieces
+    })
+
   }
 
   ngOnInit(): void {
