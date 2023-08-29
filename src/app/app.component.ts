@@ -8,12 +8,10 @@ import { SessionQuery } from '@store/session.query';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  userNfts = this.sessionQuery.selectArtPiecesObservable;
   // public userMaticBalance = 0
 
   constructor(
     private alchemyService: AlchemyService,
-    private sessionQuery: SessionQuery,
   ) {
 
     // I have to call this functions somewhere

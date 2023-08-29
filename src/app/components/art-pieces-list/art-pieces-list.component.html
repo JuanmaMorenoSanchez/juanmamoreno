@@ -1,0 +1,13 @@
+<p>Art pieces</p>
+<!-- <pre>{{ ( artPieces$ | async ) | json}}</pre> -->
+
+<mat-list>
+    <mat-list-item *ngFor="let artPiece of artPieces$ | async">
+      <img matListAvatar [src]="artPiece.media[0].thumbnail" [alt]="artPiece.description">
+      <h3 matLine> {{artPiece.title}} </h3>
+      <p matLine>
+        <span> {{artPiece.description}} </span>
+        <!-- <span class="demo-2"> -- {{message.content}} </span> -->
+      </p>
+    </mat-list-item>
+</mat-list>
