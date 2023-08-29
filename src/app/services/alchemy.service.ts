@@ -3,17 +3,18 @@ import { ALCHEMYSETTINGS, JUANMAADRESS } from '@constants/alchemy.constants';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
-import { Alchemy, GetMintedNftsOptions, TokenBalancesResponseErc20, TransferredNft, TransfersNftResponse } from 'alchemy-sdk';
-import { Observable, from, map, merge, zip } from 'rxjs';
+import { Alchemy, GetMintedNftsOptions, TokenBalancesResponseErc20, TransferredNft } from 'alchemy-sdk';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlchemyService {
 
+  readonly alchemyPaginationSize = 100;
+
   private alchemy: Alchemy;
-  
-  private nftPaginationSize = 100;
+  private nftListCache: TransferredNft[] = [];
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -36,30 +37,24 @@ export class AlchemyService {
     return this.sessionQuery.selectBalancesObservable;
   }
 
-  public fetchJuanmaNFTs(page?: number): void {
-    const options: GetMintedNftsOptions = {
-      //contractAddresses: ?
-      //tokenType: ?
-      pageKey: String(page)
+  public fetchJuanmaNFTs(pageKey?: string): void {
+    let options: GetMintedNftsOptions = {};
+    if (pageKey) {
+      options = { ...options, ...{ pageKey }}
     }
-    this.alchemy.nft.getMintedNfts(JUANMAADRESS, options).then(nftResponse => {
-      if (!nftResponse.pageKey) {
-        this.updateJuanmaNFTs(nftResponse.nfts);
-      } else {
-        const nftsListLength = nftResponse.nfts.length;
-        if (nftResponse.pageKey === "1") {
-          this.nftPaginationSize = nftsListLength;
+    this.alchemy.nft.getMintedNfts(
+      JUANMAADRESS, 
+      options
+    ).then(nftResponse => {
+        if (nftResponse.pageKey) {
+          this.fetchJuanmaNFTs(nftResponse.pageKey)
         }
 
-        if (nftsListLength === this.nftPaginationSize) {
-          const nextPageIndex = Number(nftResponse.pageKey)+1;
-          this.fetchJuanmaNFTs(nextPageIndex)
-        } 
+        this.nftListCache = this.nftListCache.concat(nftResponse.nfts)
 
-        const oldListOfNfts: TransferredNft[] = this.sessionQuery.selectArtPieces || []
-        const concatenatedListOfNfts: TransferredNft[] = oldListOfNfts.concat(nftResponse.nfts);
-        this.updateJuanmaNFTs(concatenatedListOfNfts);
-      }
+        if (nftResponse.nfts.length !== this.alchemyPaginationSize) {
+          this.updateJuanmaNFTs(this.nftListCache);
+        }
     });
   }
 

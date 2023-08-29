@@ -8,7 +8,7 @@ import { SessionQuery } from '@store/session.query';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  userNfts;
+  userNfts = this.sessionQuery.selectArtPiecesObservable;
   // public userMaticBalance = 0
 
   constructor(
@@ -20,6 +20,5 @@ export class AppComponent {
     // this.alchemyService.fetchUserBalance();
     this.alchemyService.fetchJuanmaNFTs() // i dont like it here. move
 
-    this.userNfts = this.sessionQuery.selectArtPieces
   } 
 }
