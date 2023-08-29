@@ -8,13 +8,10 @@ import { SessionQuery } from '@store/session.query';
 })
 export class TopMenuComponent implements OnInit {
 
-  userBalances;
   // public userMaticBalance = 0
 
-  constructor(    
-    private sessionQuery: SessionQuery,
+  constructor(  
   ) { 
-    this.userBalances = this.sessionQuery.selectBalances
   }
 
   ngOnInit(): void {

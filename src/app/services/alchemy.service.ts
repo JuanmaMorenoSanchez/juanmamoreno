@@ -3,7 +3,7 @@ import { ALCHEMYSETTINGS, JUANMAADRESS } from '@constants/alchemy.constants';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
-import { Alchemy, TokenBalancesResponseErc20, TransferredNft, TransfersNftResponse } from 'alchemy-sdk';
+import { Alchemy, GetMintedNftsOptions, TokenBalancesResponseErc20, TransferredNft, TransfersNftResponse } from 'alchemy-sdk';
 import { Observable, from, map, merge, zip } from 'rxjs';
 
 @Injectable({
@@ -12,6 +12,8 @@ import { Observable, from, map, merge, zip } from 'rxjs';
 export class AlchemyService {
 
   private alchemy: Alchemy;
+  
+  private nftPaginationSize = 100;
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -34,16 +36,36 @@ export class AlchemyService {
     return this.sessionQuery.selectBalancesObservable;
   }
 
-  public fetchJuanmaNFTs(): void {
-    this.alchemy.nft.getMintedNfts(JUANMAADRESS).then(nftResponse => {
-      this.updateJuanmaNFTs(nftResponse);
+  public fetchJuanmaNFTs(page?: number): void {
+    const options: GetMintedNftsOptions = {
+      //contractAddresses: ?
+      //tokenType: ?
+      pageKey: String(page)
+    }
+    this.alchemy.nft.getMintedNfts(JUANMAADRESS, options).then(nftResponse => {
+      if (!nftResponse.pageKey) {
+        this.updateJuanmaNFTs(nftResponse.nfts);
+      } else {
+        const nftsListLength = nftResponse.nfts.length;
+        if (nftResponse.pageKey === "1") {
+          this.nftPaginationSize = nftsListLength;
+        }
+
+        if (nftsListLength === this.nftPaginationSize) {
+          const nextPageIndex = Number(nftResponse.pageKey)+1;
+          this.fetchJuanmaNFTs(nextPageIndex)
+        } 
+
+        const oldListOfNfts: TransferredNft[] = this.sessionQuery.selectArtPieces || []
+        const concatenatedListOfNfts: TransferredNft[] = oldListOfNfts.concat(nftResponse.nfts);
+        this.updateJuanmaNFTs(concatenatedListOfNfts);
+      }
     });
   }
 
-  private updateJuanmaNFTs(transfersNftResponse: TransfersNftResponse): Observable<TransferredNft[] | undefined> {
-    // TODO: handle pagination
-    console.log("Storing nfts locally ", transfersNftResponse);
-    this.sessionStore.update({ artPieces: transfersNftResponse.nfts });
+  private updateJuanmaNFTs(nfts: TransferredNft[]): Observable<TransferredNft[] | undefined> {
+    console.log("Storing nfts locally ", nfts);
+    this.sessionStore.update({ artPieces: nfts });
     return this.sessionQuery.selectArtPiecesObservable;
   }
 }
