@@ -9,7 +9,9 @@
       "@environments/*": ["src/environments/*"],
       "@models/*": ["src/app/models/*"],
       "@pipes/*": ["src/app/pipes/*"],
-      "@services/*": ["src/app/services/*"]
+      "@services/*": ["src/app/services/*"],
+      "@store/*": ["src/app/store/*"],
+      "@mocks/*": ["src/app/mocks/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
