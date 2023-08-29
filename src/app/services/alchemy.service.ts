@@ -37,6 +37,10 @@ export class AlchemyService {
     return this.sessionQuery.selectBalancesObservable;
   }
 
+  public getNftById(tokenId:string): TransferredNft | undefined {
+    return this.sessionQuery.selectArtPieces!.find(artPiece => artPiece.tokenId === tokenId)
+  }
+
   public fetchJuanmaNFTs(pageKey?: string): void {
     let options: GetMintedNftsOptions = {};
     if (pageKey) {

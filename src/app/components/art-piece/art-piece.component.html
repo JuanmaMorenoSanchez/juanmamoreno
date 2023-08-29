@@ -1,0 +1,5 @@
+<ng-container *ngIf="nft, else notFound" >
+    <img [src]="nft.media[0].raw" />
+    {{nft.title}}
+</ng-container>
+<ng-template #notFound>NFT not provided!</ng-template>

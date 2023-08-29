@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
 import { TransferredNft } from 'alchemy-sdk';
 import { distinctUntilChanged } from 'rxjs';
@@ -22,9 +23,9 @@ export class ArtPiecesListComponent implements OnInit {
   // tengo que mintear 1, añadir toda la info posible, y guardar el tipo, que sirva de "molde"
 
   constructor(
-    private sessionQuery: SessionQuery
+    private sessionQuery: SessionQuery,
+    private router: Router
   ) {
-    // this.artPieces$ = this.sessionQuery.selectArtPiecesObservable.pipe(distinctUntilChanged());
     this.sessionQuery.selectArtPiecesObservable.pipe(distinctUntilChanged()).subscribe(artPieces => {
       this.artPieces = artPieces
     })
@@ -32,6 +33,10 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  handleArtPieceClick(tokenId: string) {
+    this.router.navigate(['/artwork', tokenId ]);
   }
 
 }

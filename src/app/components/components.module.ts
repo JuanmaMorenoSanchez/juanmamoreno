@@ -7,13 +7,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
+import { ArtPieceComponent } from './art-piece/art-piece.component';
 
 
 @NgModule({
   declarations: [
     LoginButtonComponent,
     TopMenuComponent,
-    ArtPiecesListComponent
+    ArtPiecesListComponent,
+    ArtPieceComponent
   ],
   imports: [
     CommonModule,
