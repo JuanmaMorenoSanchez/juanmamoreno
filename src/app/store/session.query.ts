@@ -5,8 +5,8 @@ import { SessionStore } from '@store/session.store';
 
 @Injectable({ providedIn: 'root' })
 export class SessionQuery extends Query<SessionState> {  
-    selectBalancesObservable = this.select(state => state?.balances);
-    selectArtPiecesObservable = this.select(state => state?.artPieces);
+    selectBalancesObservable = this.select(state => state.balances);
+    selectArtPiecesObservable = this.select(state => state.artPieces);
 
     get selectBalances() {
         return this.getValue().balances
