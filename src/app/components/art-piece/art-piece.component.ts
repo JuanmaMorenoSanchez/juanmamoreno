@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AlchemyService } from '@services/alchemy.service';
+import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
 import { TransferredNft } from 'alchemy-sdk';
 
@@ -15,11 +15,11 @@ export class ArtPieceComponent implements OnInit {
   public nft?: TransferredNft;
 
   constructor(
-    private alchemyService: AlchemyService,
+    private nftsService: NftsService,
     private route: ActivatedRoute,
   ) {
     this.tokenId = this.route.snapshot.params['id'];
-    this.nft = this.alchemyService.getNftById(this.tokenId!)
+    this.nft = this.nftsService.getArtById(this.tokenId!)
   }
 
   ngOnInit(): void {

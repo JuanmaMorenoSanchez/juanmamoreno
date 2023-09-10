@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlchemyService } from '@services/alchemy.service';
+import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
 
 @Component({
@@ -11,12 +11,12 @@ export class AppComponent {
   // public userMaticBalance = 0
 
   constructor(
-    private alchemyService: AlchemyService,
+    private nftsService: NftsService,
   ) {
 
     // I have to call this functions somewhere
-    // this.alchemyService.fetchUserBalance();
-    this.alchemyService.fetchJuanmaNFTs() // i dont like it here. move
+    // this.nftsService.fetchUserBalance();
+    this.nftsService.fetchArt() // i dont like it here. move
 
   } 
 }
