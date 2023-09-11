@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ConnectService } from '@services/connect.service';
 
 @Component({
   selector: 'app-login-button',
@@ -8,14 +9,19 @@ import { Component, OnInit } from '@angular/core';
 export class LoginButtonComponent implements OnInit {
 
   constructor(
+    private connectService: ConnectService
   ) {
-    // TODO LATER
   }
 
   ngOnInit(): void {
   }
 
-  handleLoginClick() {
+  handleConnectClick() {
+    this.openConnectModal();
+  }
+
+  openConnectModal() {
+    this.connectService.connectModal.openModal()
   }
 
 }

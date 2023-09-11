@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { ALCHEMYSETTINGS } from '@constants/alchemy.constants';
-import { Alchemy } from 'alchemy-sdk';
+import { Alchemy, Network } from 'alchemy-sdk';
 
 @Injectable({
   providedIn: 'root'
@@ -14,4 +14,9 @@ export class AlchemyService {
   ) {
     this.alchemy = new Alchemy(ALCHEMYSETTINGS);
   }
+
+  public getAlchemyNetwork(): Network {
+    return this.alchemy.config.network
+  }
+  
 }

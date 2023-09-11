@@ -20,10 +20,14 @@ export class BalanceService {
   ) {;
   }
 
-  public fetchUserBalance(): void {
-    this.alchemyService.alchemy.core.getTokenBalances(JUANMAADRESS).then(balances => 
-      this.updateUserBalances(balances)
-    )
+  public fetchUserBalance(userHash: string): void {
+
+    // this.alchemyService.alchemy.config.network eth_getBalance(JUANMAADRESS)
+// 
+
+    // this.alchemyService.alchemy.core.getTokenBalances(JUANMAADRESS).then(balances => 
+    //   this.updateUserBalances(balances)
+    // )
   }
 
   private updateUserBalances(balances: TokenBalancesResponseErc20): Observable<TokenBalancesResponseErc20 | undefined> {
