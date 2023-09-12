@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
-import { TransferredNft } from 'alchemy-sdk';
 import { Observable, distinctUntilChanged } from 'rxjs';
 
 @Component({
@@ -12,7 +11,7 @@ import { Observable, distinctUntilChanged } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit {
 
-  public artPieces$: Observable<TransferredNft[]> = this.sessionQuery.selectArtPiecesObservable;
+  public artPieces$: Observable<any[]> = this.sessionQuery.selectArtPiecesObservable;
 
   //where do i put filters? here or in queryservice? 
   // inputs??
@@ -31,7 +30,7 @@ export class ArtPiecesListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  listTracking(index: number, value: TransferredNft) {
+  listTracking(index: number, value: any) {
     return value
   } 
 

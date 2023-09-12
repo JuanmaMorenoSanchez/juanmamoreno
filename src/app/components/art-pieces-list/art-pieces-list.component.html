@@ -3,11 +3,10 @@
   <mat-card-content>
     <mat-list>
         <mat-list-item *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking" (click)="handleArtPieceClick(artPiece.tokenId)">
-          <img matListAvatar [src]="artPiece.media[0].thumbnail" [alt]="artPiece.description">
-          <h3 matLine> {{artPiece.title}} </h3>
+          <img matListAvatar [src]="artPiece.metadata!.image" [alt]="artPiece.metadata!.description">
+          <h3 matLine> {{artPiece.metadata!.name}} </h3>
           <p matLine>
-            <span> {{artPiece.description}} </span>
-            <!-- <span class="demo-2"> -- {{message.content}} </span> -->
+            <span> {{artPiece.metadata!.description}} </span>
           </p>
         </mat-list-item>
     </mat-list>

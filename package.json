@@ -22,13 +22,13 @@
     "@angular/platform-browser-dynamic": "^16.0.0",
     "@angular/router": "^16.0.0",
     "@datorama/akita": "^8.0.1",
-    "@wagmi/core": "^1.4.1",
-    "@web3modal/ethereum": "^2.7.1",
-    "@web3modal/html": "^2.7.1",
-    "alchemy-sdk": "^2.10.0",
+    "@mindsorg/web3modal-angular": "^1.7.2-beta.1",
+    "@moralisweb3/common-evm-utils": "^2.23.0",
+    "axios": "^1.5.0",
+    "moralis": "^2.23.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "viem": "^1.10.8",
+    "web3": "^4.1.1",
     "zone.js": "^0.13.1"
   },
   "devDependencies": {

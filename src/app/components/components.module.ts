@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
 import { ArtPieceComponent } from './art-piece/art-piece.component';
+import { Web3ModalModule, Web3ModalService } from '@mindsorg/web3modal-angular';
 
 
 @NgModule({
@@ -24,7 +25,19 @@ import { ArtPieceComponent } from './art-piece/art-piece.component';
     MatListModule,
     MatMenuModule,
     MatToolbarModule,
-    MatCardModule
+    MatCardModule,
+    Web3ModalModule
+  ],
+  providers: [
+    {
+      provide: Web3ModalService,
+      useFactory: () => new Web3ModalService({
+        disableInjectedProvider: false,
+        cacheProvider: true,
+        providerOptions: {},
+        network: "polygon"
+      }),
+    },
   ],
   exports: [
     LoginButtonComponent,

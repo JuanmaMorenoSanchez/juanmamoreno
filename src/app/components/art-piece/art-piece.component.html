@@ -1,8 +1,9 @@
+<!-- <pre>{{ ( nft ) | json}}</pre> -->
 <mat-card>
     <mat-card-content>
         <ng-container *ngIf="nft, else notFound" >
-            <img mat-card-image [src]="nft.media[0].gateway" />
-            <h2>{{nft.title}}</h2>
+            <img mat-card-image [src]="nft.metadata!.image" />
+            <h2>{{nft.metadata!.namr}}</h2>
             <p>other properties</p>
         </ng-container>
         <ng-template #notFound>NFT not provided!</ng-template>

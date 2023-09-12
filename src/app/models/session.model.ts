@@ -1,6 +1,6 @@
-import { TokenBalancesResponseErc20, TransferredNft } from "alchemy-sdk";
+import { EvmNft } from "@moralisweb3/common-evm-utils";
 
 export interface SessionState {
-    balances?: TokenBalancesResponseErc20;
-    artPieces: TransferredNft[]; // this class is extended by alchemy to add pagination if needed
+    balances?: any;
+    artPieces: EvmNft[]; // this class is extended by alchemy to add pagination if needed
 }
