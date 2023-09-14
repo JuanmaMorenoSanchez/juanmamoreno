@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
-import { TransferredNft } from 'alchemy-sdk';
-import { Observable, distinctUntilChanged } from 'rxjs';
+import { OwnedNft } from 'alchemy-sdk';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -12,15 +12,11 @@ import { Observable, distinctUntilChanged } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit {
 
-  public artPieces$: Observable<TransferredNft[]> = this.sessionQuery.selectArtPiecesObservable;
-
-  //where do i put filters? here or in queryservice? 
-  // inputs??
+  public artPieces$: Observable<OwnedNft[]> = this.sessionQuery.selectArtPiecesObservable;
 
   //knoworigin case: rawMetadata.attributes.production_production_year
   // rarible: otro formato de rawMetadata
 
-  // tengo que mintear 1, añadir toda la info posible, y guardar el tipo, que sirva de "molde"
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -31,7 +27,7 @@ export class ArtPiecesListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  listTracking(index: number, value: TransferredNft) {
+  listTracking(index: number, value: OwnedNft) {
     return value
   } 
 

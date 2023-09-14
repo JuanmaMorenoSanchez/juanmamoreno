@@ -1,6 +1,7 @@
-import { TokenBalancesResponseErc20, TransferredNft } from "alchemy-sdk";
+import { OwnedNft, TokenBalancesResponseErc20 } from "alchemy-sdk";
 
 export interface SessionState {
     balances?: TokenBalancesResponseErc20;
-    artPieces: TransferredNft[]; // this class is extended by alchemy to add pagination if needed
+    artPieces: OwnedNft[]; // this class is extended by alchemy to add pagination if needed
+    lastArtPiecesUpdate?: Date;
 }

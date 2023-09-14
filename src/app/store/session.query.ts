@@ -16,6 +16,10 @@ export class SessionQuery extends Query<SessionState> {
         return this.getValue().artPieces
     }
 
+    get selectLastArtPiecesUpdate() {
+        return this.getValue().lastArtPiecesUpdate
+    }
+
     constructor(protected override store: SessionStore) {
         super(store);
     }

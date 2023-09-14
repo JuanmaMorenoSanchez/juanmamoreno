@@ -11,6 +11,7 @@
       "@pipes/*": ["src/app/pipes/*"],
       "@services/*": ["src/app/services/*"],
       "@store/*": ["src/app/store/*"],
+      "@utils/*": ["src/app/utils/*"],
       "@mocks/*": ["src/app/mocks/*"]
     },
     "outDir": "./dist/out-tsc",
