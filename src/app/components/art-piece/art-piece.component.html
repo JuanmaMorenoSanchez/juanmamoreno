@@ -1,9 +1,9 @@
 <mat-card>
     <mat-card-content>
         <ng-container *ngIf="nft, else notFound" >
-            <img mat-card-image [src]="nft.media[0].gateway" />
-            <h2>{{nft.title}}</h2>
-            <p>other properties</p>
+            <img mat-card-image [src]="nft.media[0].gateway" [alt]="nft.description"/>
+            <h2>{{nft.title}} <small>{{nft.description}}</small></h2>
+            <h3>{{ year }}, {{ medium }}, {{ size }}</h3>
         </ng-container>
         <ng-template #notFound>NFT not provided!</ng-template>
         <!-- put the card element in a wrapper, so we dont have to repeat  -->

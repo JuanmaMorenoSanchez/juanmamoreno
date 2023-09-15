@@ -13,4 +13,8 @@ export default class NftUtils {
         return !!attributes.some(attribute => attribute['trait_type'] in Object.values(VALIDTRAITS))
     }
 
+    static getAttrValue(key: string, nft: OwnedNft): string | null {
+        return nft.rawMetadata?.attributes?.find(attr => attr['trait_type'] === key)!['value'] || null
+    }
+
 }

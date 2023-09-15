@@ -1,10 +1,8 @@
 <mat-toolbar color="primary">
     <button mat-button [matMenuTriggerFor]="menu">Menu</button>
     <!-- <app-login-button></app-login-button> -->
-    
 </mat-toolbar>
 
 <mat-menu #menu="matMenu">
-  <button mat-menu-item>Item 1</button>
-  <button mat-menu-item>Item 2</button>
+  <button mat-menu-item *ngFor="let year of years">{{year}}</button>
 </mat-menu>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SessionQuery } from '@store/session.query';
+import { NftsService } from '@services/nfts.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -8,14 +8,15 @@ import { SessionQuery } from '@store/session.query';
 })
 export class TopMenuComponent implements OnInit {
 
-  // public userMaticBalance = 0
+  public years: Set<string>;
 
   constructor(  
+    private nftService: NftsService
   ) { 
+    this.years = this.nftService.years();
   }
 
   ngOnInit(): void {
 
-   
   }
 }

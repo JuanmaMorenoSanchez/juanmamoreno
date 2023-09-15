@@ -15,7 +15,6 @@ import NftUtils from '@utils/nft.utils';
 })
 export class NftsService {
 
-
   private nftListCache: OwnedNft[] = [];
 
   constructor(
@@ -30,9 +29,22 @@ export class NftsService {
     return this.sessionQuery.selectArtPieces!.find(artPiece => artPiece.tokenId === tokenId)
   }
 
+  public years(): Set<string> {
+    const yearsList = this.sessionQuery.getValue().artPieces.map(artPiece => {
+      return NftUtils.getAttrValue('year', artPiece)
+    }).filter(year => year) as Array<string>;
+    return new Set(yearsList)
+  }
+
+  public getArtByYear(year:string): OwnedNft[] | undefined {
+    return this.sessionQuery.selectArtPieces!.filter(artPiece => 
+      year === NftUtils.getAttrValue('year', artPiece)
+    )
+  }
+
   public fetchArt(pageKey?: string): void {
-    if (!this.sessionQuery.selectLastArtPiecesUpdate || DateUtils.dataIsOld(this.sessionQuery.selectLastArtPiecesUpdate)) {
-      let options: GetNftsForOwnerOptions  = { excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS]}
+    if (this.isNeccesaryFetch()) {
+      let options: GetNftsForOwnerOptions = { excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS]}
       if (pageKey) {
         options = { ...options, ...{ pageKey }}
       }
@@ -59,4 +71,13 @@ export class NftsService {
     this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
     return this.sessionQuery.selectArtPiecesObservable;
   }
+
+  private isNeccesaryFetch(): boolean {
+    return (
+      !this.sessionQuery.selectArtPieces.length || 
+      !this.sessionQuery.selectLastArtPiecesUpdate || 
+      DateUtils.dataIsOld(this.sessionQuery.selectLastArtPiecesUpdate)
+    )
+  }
+
 }
