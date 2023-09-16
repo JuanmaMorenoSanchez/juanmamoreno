@@ -5,6 +5,7 @@ import { TopMenuComponent } from './top-menu/top-menu.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import {MatGridListModule} from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
@@ -21,6 +22,7 @@ import { Web3ModalModule, Web3ModalService } from '@mindsorg/web3modal-angular';
   imports: [
     CommonModule,
     MatButtonModule,
+    MatGridListModule,
     MatListModule,
     MatMenuModule,
     MatToolbarModule,
