@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
+import { NftFilters } from '@models/nfts.models';
 import { SessionQuery } from '@store/session.query';
 import { OwnedNft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
@@ -12,11 +13,9 @@ import { Observable } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit {
 
+  @Input() filters: NftFilters | null = null;
+
   public artPieces$: Observable<OwnedNft[]> = this.sessionQuery.selectArtPiecesObservable;
-
-  //knoworigin case: rawMetadata.attributes.production_production_year
-  // rarible: otro formato de rawMetadata
-
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -25,6 +24,10 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log("TODO: implement changes ", changes);
   }
 
   listTracking(index: number, value: OwnedNft) {

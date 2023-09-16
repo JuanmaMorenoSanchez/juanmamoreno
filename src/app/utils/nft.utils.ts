@@ -15,7 +15,12 @@ export default class NftUtils {
     }
 
     static getAttrValue(key: string, nft: OwnedNft): string | null {
-        return nft?.rawMetadata?.attributes?.find(attr => attr['trait_type'] === key)!['value'] || null
+        const attrList: Record<string, any>[] | undefined = nft?.rawMetadata?.attributes;
+        if (attrList && attrList.length) {
+            const value: string | undefined = attrList.find((attr: Record<string, any>) => attr['trait_type'] === key)!['value'];
+            return value || null
+        } else {
+            return null
+        }
     }
-
 }
