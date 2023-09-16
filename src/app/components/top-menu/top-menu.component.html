@@ -1,6 +1,11 @@
 <mat-toolbar color="primary">
-    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
-    <!-- <app-login-button></app-login-button> -->
+  <mat-toolbar-row>
+    Juanma Moreno Sánchez
+    <button mat-button [matMenuTriggerFor]="menu">Art</button>
+    <button mat-button [routerLink]="['/about']">About</button>
+    <button mat-button [routerLink]="['/cv']">CV</button>
+    <button mat-button [routerLink]="['/contact']">Contact</button>
+  </mat-toolbar-row>
 </mat-toolbar>
 
 <mat-menu #menu="matMenu">

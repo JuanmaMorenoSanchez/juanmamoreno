@@ -1,19 +1,16 @@
 <!-- <pre>{{ ( artPieces$ | async ) | json}}</pre> -->
-<mat-card>
-  <mat-card-content>
-    <mat-grid-list cols="3" rowHeight="1:1">
-      <mat-grid-tile *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking" (click)="handleArtPieceClick(artPiece.tokenId)">
 
-        <mat-card>
-          <mat-card-content>
-            <img class="front-image" mat-card-image [src]="artPiece.media[0].gateway" [alt]="artPiece.description"/>
-            <p>{{artPiece.title}}</p>
-          </mat-card-content>
-        </mat-card>
+<mat-grid-list cols="3" rowHeight="1:1">
+  <mat-grid-tile *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking" (click)="handleArtPieceClick(artPiece.tokenId)">
 
+    <mat-card>
+      <mat-card-content>
+        <img class="front-image" mat-card-image [src]="artPiece.media[0].gateway" [alt]="artPiece.description"/>
+        <p>{{artPiece.title}}</p>
+      </mat-card-content>
+    </mat-card>
 
 
-      </mat-grid-tile>
-    </mat-grid-list>
-  </mat-card-content>
-</mat-card>
+
+  </mat-grid-tile>
+</mat-grid-list>

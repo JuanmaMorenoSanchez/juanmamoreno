@@ -11,13 +11,20 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
 import { ArtPieceComponent } from './art-piece/art-piece.component';
 import { Web3ModalModule, Web3ModalService } from '@mindsorg/web3modal-angular';
+import { CvComponent } from './cv/cv.component';
+import { ContactComponent } from './contact/contact.component';
+import { AboutComponent } from './about/about.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     LoginButtonComponent,
     TopMenuComponent,
     ArtPiecesListComponent,
-    ArtPieceComponent
+    ArtPieceComponent,
+    CvComponent,
+    ContactComponent,
+    AboutComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +34,8 @@ import { Web3ModalModule, Web3ModalService } from '@mindsorg/web3modal-angular';
     MatMenuModule,
     MatToolbarModule,
     MatCardModule,
-    Web3ModalModule
+    Web3ModalModule,
+    RouterModule
   ],
   providers: [
     {

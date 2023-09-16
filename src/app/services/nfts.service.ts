@@ -3,10 +3,9 @@ import { JUANMAADRESS } from '@constants/alchemy.constants';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
-import { GetNftsForOwnerOptions, NftFilters, OwnedNft, TransferredNft } from 'alchemy-sdk';
+import { GetNftsForOwnerOptions, OwnedNft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
 import { AlchemyService } from './alchemy.service';
-import { VALIDTRAITS } from '@constants/nft.constants';
 import DateUtils from '@utils/date.utils';
 import NftUtils from '@utils/nft.utils';
 
@@ -44,7 +43,7 @@ export class NftsService {
 
   public fetchArt(pageKey?: string): void {
     if (this.isNeccesaryFetch()) {
-      let options: GetNftsForOwnerOptions = { excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS]}
+      let options: GetNftsForOwnerOptions = {};//{ excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS]}
       if (pageKey) {
         options = { ...options, ...{ pageKey }}
       }
