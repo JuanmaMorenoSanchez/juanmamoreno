@@ -1,20 +1,18 @@
 import { Inject, Injectable } from '@angular/core';
-import { JUANMAADRESS } from '@constants/alchemy.constants';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
-import { GetNftsForOwnerOptions, OwnedNft } from 'alchemy-sdk';
+import { Nft, NftMetadataBatchToken, NftTokenType } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
 import { AlchemyService } from './alchemy.service';
 import DateUtils from '@utils/date.utils';
 import NftUtils from '@utils/nft.utils';
+import { LISTOFTOKENIDS, OPENSEACONTRACTID } from '@constants/nft.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NftsService {
-
-  private nftListCache: OwnedNft[] = [];
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -24,7 +22,7 @@ export class NftsService {
   ) {
   }
 
-  public getArtById(tokenId:string): OwnedNft | undefined {
+  public getArtById(tokenId:string): Nft | undefined {
     return this.sessionQuery.selectArtPieces!.find(artPiece => artPiece.tokenId === tokenId)
   }
 
@@ -35,7 +33,7 @@ export class NftsService {
     return new Set(yearsList)
   }
 
-  public getArtByYear(year:string): OwnedNft[] | undefined {
+  public getArtByYear(year:string): Nft[] | undefined {
     return this.sessionQuery.selectArtPieces!.filter(artPiece => 
       year === NftUtils.getAttrValue('year', artPiece)
     )
@@ -43,29 +41,21 @@ export class NftsService {
 
   public fetchArt(pageKey?: string): void {
     if (this.isNeccesaryFetch()) {
-      let options: GetNftsForOwnerOptions = {};//{ excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS]}
-      if (pageKey) {
-        options = { ...options, ...{ pageKey }}
-      }
-      this.alchemyService.alchemy.nft.getNftsForOwner(
-        JUANMAADRESS, 
-        options
-      ).then(nftResponse => {
-        console.log("nftResponse ", nftResponse);
-        if (nftResponse.pageKey) {
-          this.fetchArt(nftResponse.pageKey)
+      this.alchemyService.alchemy.nft.getNftMetadataBatch(
+        this.formMetadataBatchTokenList(LISTOFTOKENIDS),
+        {
+          tokenUriTimeoutInMs: 10000,
+          refreshCache: true
         }
-        this.nftListCache = this.nftListCache.concat(nftResponse.ownedNfts.filter(nft => NftUtils.checkValidty(nft)))
-        if (nftResponse.ownedNfts.length !== this.alchemyService.alchemyPaginationSize) {
-          this.updateArt(this.nftListCache);
-        }
-      });
+      ).then((nfts: Nft[]) => {
+        this.updateArt(nfts);
+      })
     } else {
       console.log("Wont fetch new date since it was fetched on", this.sessionQuery.selectLastArtPiecesUpdate)
     }
   }
 
-  private updateArt(nfts: OwnedNft[]): Observable<OwnedNft[] | undefined> {
+  private updateArt(nfts: Nft[]): Observable<Nft[] | undefined> {
     console.log("Storing nfts locally ", nfts);
     this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
     return this.sessionQuery.selectArtPiecesObservable;
@@ -77,6 +67,16 @@ export class NftsService {
       !this.sessionQuery.selectLastArtPiecesUpdate || 
       DateUtils.dataIsOld(this.sessionQuery.selectLastArtPiecesUpdate)
     )
+  }
+
+  private formMetadataBatchTokenList(tokenIds: Array<String>): Array<NftMetadataBatchToken>{
+    return tokenIds.map((tokenId: String) => {
+      return {
+        contractAddress: OPENSEACONTRACTID,
+        tokenId,
+        tokenType: NftTokenType.ERC1155
+      } as NftMetadataBatchToken
+    })
   }
 
 }

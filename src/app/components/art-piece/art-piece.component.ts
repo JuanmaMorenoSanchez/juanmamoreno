@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NftsService } from '@services/nfts.service';
 import NftUtils from '@utils/nft.utils';
-import { OwnedNft } from 'alchemy-sdk';
+import { Nft } from 'alchemy-sdk';
 
 @Component({
   selector: 'app-art-piece',
@@ -12,7 +12,7 @@ import { OwnedNft } from 'alchemy-sdk';
 export class ArtPieceComponent implements OnInit {
 
   @Input() tokenId: string | null;
-  public nft?: OwnedNft;
+  public nft?: Nft;
   public year: string | null;
   public medium: string | null;
   public size: string | null;

@@ -1,9 +1,9 @@
 import { VALIDTRAITS } from "@constants/nft.constants";
-import { OwnedNft } from "alchemy-sdk";
+import { Nft } from "alchemy-sdk";
 
 export default class NftUtils {
 
-    static checkValidty(nft: OwnedNft): boolean {
+    static checkValidty(nft: Nft): boolean {
         return (!!!nft.spamInfo?.isSpam && 
           !!nft.rawMetadata?.attributes &&
           this.hasRequiredTraits(nft.rawMetadata.attributes))
@@ -14,7 +14,7 @@ export default class NftUtils {
             !!attributes.some(attribute => attribute['trait_type'] in Object.values(VALIDTRAITS)))
     }
 
-    static getAttrValue(key: string, nft: OwnedNft): string | null {
+    static getAttrValue(key: string, nft: Nft): string | null {
         const attrList: Record<string, any>[] | undefined = nft?.rawMetadata?.attributes;
         if (attrList && attrList.length) {
             const value: string | undefined = attrList.find((attr: Record<string, any>) => attr['trait_type'] === key)!['value'];
