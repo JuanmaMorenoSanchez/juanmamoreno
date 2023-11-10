@@ -15,9 +15,9 @@ export default class NftUtils {
     }
 
     static getAttrValue(key: string, nft: Nft): string | null {
-        const attrList: Record<string, any>[] | undefined = nft?.rawMetadata?.attributes;
-        if (attrList && attrList.length) {
-            const value: string | undefined = attrList.find((attr: Record<string, any>) => attr['trait_type'] === key)!['value'];
+        const traits: Record<string, any>[] | undefined = nft.rawMetadata!['traits'];
+        if (traits && traits.length) {
+            const value: string | undefined = traits.find((attr: Record<string, any>) => attr['trait_type'] === key)!['value'];
             return value || null
         } else {
             return null

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { AlchemyService } from './alchemy.service';
 import DateUtils from '@utils/date.utils';
 import NftUtils from '@utils/nft.utils';
-import { LISTOFTOKENIDS, OPENSEACONTRACTID } from '@constants/nft.constants';
+import { GETNFTSDEFAULTOPTIONS, LISTOFTOKENIDS, OPENSEACONTRACTID } from '@constants/nft.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class NftsService {
     return this.sessionQuery.selectArtPieces!.find(artPiece => artPiece.tokenId === tokenId)
   }
 
-  public years(): Set<string> {
+  public getYears(): Set<string> {
     const yearsList = this.sessionQuery.getValue().artPieces.map(artPiece => {
       return NftUtils.getAttrValue('year', artPiece)
     }).filter(year => year) as Array<string>;
@@ -43,10 +43,7 @@ export class NftsService {
     if (this.isNeccesaryFetch()) {
       this.alchemyService.alchemy.nft.getNftMetadataBatch(
         this.formMetadataBatchTokenList(LISTOFTOKENIDS),
-        {
-          tokenUriTimeoutInMs: 10000,
-          refreshCache: true
-        }
+        GETNFTSDEFAULTOPTIONS
       ).then((nfts: Nft[]) => {
         this.updateArt(nfts);
       })
