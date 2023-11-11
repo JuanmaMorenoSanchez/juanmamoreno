@@ -39,7 +39,7 @@ export class NftsService {
     )
   }
 
-  public fetchArt(pageKey?: string): void {
+  public fetchArt(): void {
     if (this.isNeccesaryFetch()) {
       this.alchemyService.alchemy.nft.getNftMetadataBatch(
         this.formMetadataBatchTokenList(LISTOFTOKENIDS),

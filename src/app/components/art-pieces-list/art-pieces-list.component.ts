@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
-import { NftFilters } from '@models/nfts.models';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
+import NftUtils from '@utils/nft.utils';
 import { Nft} from 'alchemy-sdk';
-import { Observable } from 'rxjs';
+import { Observable, Subject, Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -13,21 +13,31 @@ import { Observable } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit {
 
-  @Input() filters: NftFilters | null = null;
-
   public artPieces$: Observable<Nft[]> = this.sessionQuery.selectArtPiecesObservable;
+  public yearFilter: String | null = null;
+  private subscriptions = new Subscription();
 
   constructor(
     private sessionQuery: SessionQuery,
-    private router: Router
+    private activatedroute: ActivatedRoute,
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
   }
 
   ngOnInit(): void {
+    this.subscriptions.add(this.yearSubscription())
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log("TODO: implement changes ", changes);
+  yearSubscription(): Subscription {
+    return this.activatedroute.paramMap.subscribe(paramMap => {
+      this.yearFilter = paramMap.get('year');
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
+  public displayPiece(nft: Nft): boolean {
+    return !this.yearFilter ? true : NftUtils.getAttrValue('year', nft) === this.yearFilter;
   }
 
   listTracking(index: number, value: Nft) {
@@ -36,6 +46,10 @@ export class ArtPiecesListComponent implements OnInit {
 
   handleArtPieceClick(tokenId: string) {
     this.router.navigate(['/artwork', tokenId ]);
+  }
+ 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

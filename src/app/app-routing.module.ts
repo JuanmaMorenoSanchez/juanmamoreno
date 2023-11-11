@@ -5,11 +5,12 @@ import { ArtPieceComponent } from '@components/art-piece/art-piece.component';
 import { ArtPiecesListComponent } from '@components/art-pieces-list/art-pieces-list.component';
 import { ContactComponent } from '@components/contact/contact.component';
 import { CvComponent } from '@components/cv/cv.component';
-import { environment } from '@environments/environment';
+import { LISTOFTOKENIDS } from '@constants/nft.constants';
 
 const routes: Routes = [
-  { path: '', redirectTo: `artwork/${environment.homeTokenId}`, pathMatch: "full"},
-  { path: 'artworks', component: ArtPiecesListComponent },
+  { path: '', redirectTo: `artwork/${LISTOFTOKENIDS[0]}`, pathMatch: "full"},
+  { path: 'artworks/:year', component: ArtPiecesListComponent},
+  { path: 'artworks', component: ArtPiecesListComponent},
   { path: 'artwork/:id', component: ArtPieceComponent },
   { path: 'cv', component: CvComponent },
   { path: 'about', component: AboutComponent },

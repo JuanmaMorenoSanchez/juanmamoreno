@@ -6,4 +6,5 @@ export const environment = {
   polygonNetwork: Network.MATIC_MAINNET,
   homeTokenId: "0",
   adminAdress: "0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9",
+  backendUrl: "http://localhost:3000/"
 };
