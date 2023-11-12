@@ -18,10 +18,14 @@ export class ArtPieceComponent implements OnInit {
   public size: string | null;
   public artist: string | null;
 
+  private screenWidth: number;
+
   constructor(
     private nftsService: NftsService,
     private route: ActivatedRoute,
   ) {
+    this.screenWidth = (window.screen.width);
+
     this.tokenId = this.route.snapshot.params['id'];
     this.nft = this.nftsService.getArtById(this.tokenId!)
     this.year = NftUtils.getAttrValue('year', this.nft!)
@@ -34,4 +38,7 @@ export class ArtPieceComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public getBigImgUrl(mediaUrl: string): string {
+    return mediaUrl.replace("w=500", `w=${this.screenWidth}`)
+  }
 }

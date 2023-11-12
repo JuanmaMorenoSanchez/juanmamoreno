@@ -1,6 +1,6 @@
 
 <ng-container *ngIf="nft, else notFound" >
-    <img class="front-image" mat-card-image [src]="nft.media[0].gateway" [alt]="nft.description"/>
+    <img class="front-image" mat-card-image [src]="getBigImgUrl(nft.media[0].raw)" [alt]="nft.description"/>
     <h2>{{nft.title}}</h2>
     <p>{{nft.description}}</p>
     <h3>{{ year }}, {{ medium }}, {{ size }}</h3>

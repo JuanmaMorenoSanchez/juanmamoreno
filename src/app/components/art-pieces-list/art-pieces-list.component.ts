@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
 import NftUtils from '@utils/nft.utils';
-import { Nft} from 'alchemy-sdk';
-import { Observable, Subject, Subscription, filter } from 'rxjs';
+import { Nft } from 'alchemy-sdk';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -15,7 +15,10 @@ export class ArtPiecesListComponent implements OnInit {
 
   public artPieces$: Observable<Nft[]> = this.sessionQuery.selectArtPiecesObservable;
   public yearFilter: String | null = null;
+  public numberOfCols = 3;
+
   private subscriptions = new Subscription();
+  private screenWidth: number;
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -23,6 +26,7 @@ export class ArtPiecesListComponent implements OnInit {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
   ) {
+    this.screenWidth = (window.screen.width);
   }
 
   ngOnInit(): void {
@@ -38,6 +42,10 @@ export class ArtPiecesListComponent implements OnInit {
 
   public displayPiece(nft: Nft): boolean {
     return !this.yearFilter ? true : NftUtils.getAttrValue('year', nft) === this.yearFilter;
+  }
+
+  public getThumbImgUrl(mediaUrl: string): string {
+    return mediaUrl.replace("w=500", `w=${Math.floor(this.screenWidth/this.numberOfCols)}`)
   }
 
   listTracking(index: number, value: Nft) {

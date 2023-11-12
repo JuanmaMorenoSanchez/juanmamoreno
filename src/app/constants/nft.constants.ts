@@ -13,7 +13,7 @@ export  enum VALIDTRAITS {
 export const OPENSEACONTRACTID: string = "0x2953399124f0cbb46d2cbacd8a89cf0599974963";
 
 export const GETNFTSDEFAULTOPTIONS: NftMetadataBatchOptions = {
-  tokenUriTimeoutInMs: 5000,
+  tokenUriTimeoutInMs: 0,
   refreshCache: true
 }
 

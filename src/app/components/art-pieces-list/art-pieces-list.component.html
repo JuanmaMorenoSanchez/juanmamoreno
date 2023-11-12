@@ -1,12 +1,8 @@
-<!-- <pre>{{ ( artPieces$ | async ) | json}}</pre> -->
-<mat-grid-list cols="3" rowHeight="1:1">
+<mat-grid-list [cols]="3" gutterSize="10" rowHeight="1:1">
   <div *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking" (click)="handleArtPieceClick(artPiece.tokenId)">
     <mat-grid-tile *ngIf="displayPiece(artPiece)">
       <mat-card>
-        <mat-card-content>
-          <img class="front-image" mat-card-image [src]="artPiece.media[0].gateway" [alt]="artPiece.description"/>
-          <p>{{artPiece.title}}</p>
-        </mat-card-content>
+        <img class="front-image" mat-card-image [src]="getThumbImgUrl(artPiece.media[0].raw)" [alt]="artPiece.description"/>
       </mat-card>
     </mat-grid-tile>
   </div>
