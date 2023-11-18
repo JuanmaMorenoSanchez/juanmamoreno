@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionQuery } from '@store/session.query';
 import NftUtils from '@utils/nft.utils';
@@ -13,9 +13,12 @@ import { Observable, Subscription } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit {
 
+  @Input() numberOfCols = 3;
+  @Input() yearFilter?: string;
+
+  @Output() selectedTokenId = new EventEmitter<string>();
+
   public artPieces$: Observable<Nft[]> = this.sessionQuery.selectArtPiecesObservable;
-  public yearFilter: String | null = null;
-  public numberOfCols = 3;
 
   private subscriptions = new Subscription();
   private screenWidth: number;
@@ -30,12 +33,15 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.add(this.yearSubscription())
+    !this.yearFilter && this.subscriptions.add(this.yearSubscription()); // if yearfilter from outside, do not subscribe to this
   }
 
   yearSubscription(): Subscription {
     return this.activatedroute.paramMap.subscribe(paramMap => {
-      this.yearFilter = paramMap.get('year');
+      const year = paramMap.get('year');
+      if (year) {
+        this.yearFilter = year;
+      }
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -53,6 +59,7 @@ export class ArtPiecesListComponent implements OnInit {
   } 
 
   handleArtPieceClick(tokenId: string) {
+    this.selectedTokenId.emit(tokenId);
     this.router.navigate(['/artwork', tokenId ]);
   }
  

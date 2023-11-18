@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NftsService } from '@services/nfts.service';
+import CommonUtils from '@utils/common.utils';
 import NftUtils from '@utils/nft.utils';
 import { Nft } from 'alchemy-sdk';
 
@@ -9,36 +10,46 @@ import { Nft } from 'alchemy-sdk';
   templateUrl: './art-piece.component.html',
   styleUrls: ['./art-piece.component.scss']
 })
-export class ArtPieceComponent implements OnInit {
+export class ArtPieceComponent implements OnInit  {
 
-  @Input() tokenId: string | null;
+  @Input() tokenId: string | null = null;
+  public numberOfViewMoreColumns = 6;
   public nft?: Nft;
-  public year: string | null;
-  public medium: string | null;
-  public size: string | null;
-  public artist: string | null;
-
-  private screenWidth: number;
+  public year?: string;
+  public medium?: string;
+  public size?: string;
+  public artist?: string;
 
   constructor(
     private nftsService: NftsService,
-    private route: ActivatedRoute,
+    private activatedroute: ActivatedRoute,
   ) {
-    this.screenWidth = (window.screen.width);
-
-    this.tokenId = this.route.snapshot.params['id'];
-    this.nft = this.nftsService.getArtById(this.tokenId!)
-    this.year = NftUtils.getAttrValue('year', this.nft!)
-    this.medium = NftUtils.getAttrValue('medium', this.nft!)
-    this.size = NftUtils.getAttrValue('size', this.nft!)
-    this.artist = NftUtils.getAttrValue('artist', this.nft!)
-
+    this.tokenId = this.activatedroute.snapshot.params['id'];
+    this.loadArtData();
   }
 
   ngOnInit(): void {
   }
 
+  loadArtData(): void {
+    this.nft = this.nftsService.getArtById(this.tokenId!);
+    const year = NftUtils.getAttrValue('year', this.nft!);
+    const medium = NftUtils.getAttrValue('medium', this.nft!);
+    const size = NftUtils.getAttrValue('size', this.nft!);
+    const artist = NftUtils.getAttrValue('artist', this.nft!)
+    this.year = year ? year : undefined;
+    this.medium = medium ? medium : undefined;
+    this.size = size ? size : undefined;
+    this.artist = artist ? artist : undefined;
+  }
+
+  handleSelectedItem(tokenId: string): void {
+    this.tokenId = tokenId;
+    this.loadArtData();
+    CommonUtils.scrollToTop();
+  }
+
   public getBigImgUrl(mediaUrl: string): string {
-    return mediaUrl.replace("w=500", `w=${this.screenWidth}`)
+    return mediaUrl.replace("w=500", `w=${window.screen.width}`)
   }
 }
