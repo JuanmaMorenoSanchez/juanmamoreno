@@ -1,1 +1,33 @@
-<p>cv works!</p>
+
+<img class="front-image" mat-card-image src="assets/images/juanma_estudio.jpg" alt="Juanma Moreno Sánchez art studio"/>
+<!-- <h1>Juanma Moreno Sánchez CV</h1> -->
+<p>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</p>
+<p>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a></p>
+
+
+<div *ngFor="let cvSection of cvTimeline">
+    <mat-divider></mat-divider>
+    <mat-grid-list [cols]="totalCols" rowHeight="4rem">
+        <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
+        <mat-grid-tile [colspan]="descColSpan">
+            <h2>{{cvSection.title}}</h2>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list [cols]="totalCols" rowHeight="2.8rem">
+        <div *ngFor="let cvItem of cvSection.items">
+            <mat-grid-tile *ngIf="displayYearLabel(cvSection.items, cvItem)" [colspan]="yearColSpan" [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)">
+                <h3>{{cvItem.year}}</h3>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="descColSpan">
+                <p>
+                    <i><strong><span [innerHTML]="cvItem.title"></span></strong></i>, 
+                    <small>
+                        <span *ngIf="cvItem.venue" [innerHTML]="cvItem.venue"></span>,
+                        <span *ngIf="cvItem.city"> {{cvItem.city}}, </span> 
+                        <span *ngIf="cvItem.country">({{cvItem.country}})</span>
+                    </small>
+                </p>
+            </mat-grid-tile>
+        </div>
+    </mat-grid-list>
+</div>

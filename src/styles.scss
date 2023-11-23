@@ -4,3 +4,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .front-image {
     max-width: 100%;
 }
+
+.mat-grid-tile .mat-grid-tile-content {
+    justify-content: flex-start;
+    align-items: start;
+}

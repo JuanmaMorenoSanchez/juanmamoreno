@@ -3,7 +3,7 @@
     <img class="front-image" mat-card-image [src]="getBigImgUrl(nft.media[0].raw)" [alt]="nft.description"/>
     <h1>{{nft.title}} <small><i>{{ year }}, {{ medium }}, {{ size }}</i></small></h1>
     <p>{{nft.description}}</p>
-    <hr/>
+    <mat-divider></mat-divider>
     <h3>All art pieces made on {{year}}</h3>
     <app-art-pieces-list [numberOfCols]="numberOfViewMoreColumns" [yearFilter]="year" (selectedTokenId)="handleSelectedItem($event)"></app-art-pieces-list>
 </ng-container>
