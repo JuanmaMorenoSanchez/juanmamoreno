@@ -1,28 +1,30 @@
 
-<form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
-    <div>
-        <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput [formControl]="name" required>
-            <mat-error *ngIf="name.invalid">{{getNameError()}}</mat-error>
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput [formControl]="email" placeholder="email@example.com" required>
-            <mat-error *ngIf="email.invalid">{{getEmailError()}}</mat-error>
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <mat-label>Message</mat-label>
-            <textarea matInput [formControl]="message" maxlength="256" placeholder="I'm interested in..." required></textarea>
-            <mat-hint>{{message.value.length}}/256</mat-hint>
-            <mat-error *ngIf="message.invalid">{{getMessageError()}}</mat-error>
-        </mat-form-field>
-    </div>
-    <hr/>
-    <button  mat-button [disabled]="isLoading" type="submit">Submit</button>
-    <input [formControl]="honeypot" class="hidden" type="text" />
-</form>
+<div class="container">
+    <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
+        <div>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput [formControl]="name" required>
+                <mat-error *ngIf="name.invalid">{{getNameError()}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput [formControl]="email" placeholder="email@example.com" required>
+                <mat-error *ngIf="email.invalid">{{getEmailError()}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Message</mat-label>
+                <textarea matInput [formControl]="message" maxlength="256" placeholder="I'm interested in..." required></textarea>
+                <mat-hint>{{message.value.length}}/256</mat-hint>
+                <mat-error *ngIf="message.invalid">{{getMessageError()}}</mat-error>
+            </mat-form-field>
+        </div>
+        <hr/>
+        <button  mat-button [disabled]="isLoading" type="submit">Submit</button>
+        <input [formControl]="honeypot" class="hidden" type="text" />
+    </form>
+</div>
