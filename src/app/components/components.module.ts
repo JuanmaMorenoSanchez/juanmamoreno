@@ -5,7 +5,9 @@ import { TopMenuComponent } from './top-menu/top-menu.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import {MatGridListModule} from '@angular/material/grid-list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
@@ -15,6 +17,9 @@ import { CvComponent } from './cv/cv.component';
 import { ContactComponent } from './contact/contact.component';
 import { AboutComponent } from './about/about.component';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -28,13 +33,19 @@ import { RouterModule } from '@angular/router';
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    HttpClientModule,
     MatButtonModule,
+    MatDividerModule,
+    MatFormFieldModule,
     MatGridListModule,
-    MatListModule,
+    MatInputModule,
     MatMenuModule,
+    MatListModule,
     MatToolbarModule,
     MatCardModule,
     Web3ModalModule,
+    ReactiveFormsModule,
     RouterModule
   ],
   providers: [
