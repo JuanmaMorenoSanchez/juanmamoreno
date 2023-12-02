@@ -283,7 +283,7 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2014
             },
             {
-                title: "<a href='http://www.fundacionantoniogala.org/' target='blank'>Antonio Gala Foundation Residence Program </a>",
+                title: "<a href='http://www.fundacionantoniogala.org/' target='blank'>Antonio Gala Foundation Residence Program</a>",
                 city: "Córdoba",
                 country: COUNTRIES.SPAIN,
                 year: 2012
@@ -293,12 +293,6 @@ export const CV_OBJECT: Array<Timeline> = [
                 city: "Berlín",
                 country: COUNTRIES.GERMANY,
                 year: 2010
-            },
-            {
-                title: "LLP Erasmus Scholarship. <a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design",
-                city: "Halle Saale",
-                country: COUNTRIES.GERMANY,
-                year: 2008
             },
             {
                 title: "Lefranc&amp;Bourgueois art award",
@@ -316,6 +310,13 @@ export const CV_OBJECT: Array<Timeline> = [
                 city: "Granada",
                 country: COUNTRIES.SPAIN,
                 year: 2009
+            },
+            {
+                title: "LLP Erasmus Scholarship",
+                venue: "<a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design</a>",
+                city: "Halle Saale",
+                country: COUNTRIES.GERMANY,
+                year: 2008
             }
         ]
     }
