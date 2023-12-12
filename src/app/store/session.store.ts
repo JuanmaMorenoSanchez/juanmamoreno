@@ -4,8 +4,9 @@ import { SessionState } from '@models/session.model';
 
 export function createInitialState(): SessionState {
     return {
-        balances: undefined,
+        // balances: undefined,
         artPieces: [],
+        artPiecesMetadata: [],
         lastArtPiecesUpdate: undefined,
     };
 }

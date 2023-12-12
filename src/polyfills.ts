@@ -1,5 +1,5 @@
 declare global {
-    interface Window { global: any; }
+    interface Window { global: unknown; }
 }
 window.global = window;
 

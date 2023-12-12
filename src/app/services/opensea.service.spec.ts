@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AlchemyService } from './alchemy.service';
+import { OpenseaService } from './opensea.service';
 
-describe('AlchemyService', () => {
-  let service: AlchemyService;
+describe('OpenseaService', () => {
+  let service: OpenseaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AlchemyService);
+    service = TestBed.inject(OpenseaService);
   });
 
   it('should be created', () => {

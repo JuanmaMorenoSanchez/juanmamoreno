@@ -38,9 +38,9 @@ export class ContactComponent {
     if (this.checkFormValidity()) {
       this.form.disable();
       const formData = {
-        name: this.form.get("name")!.value,
-        email: this.form.get("email")!.value,
-        message: this.form.get("message")!.value
+        name: this.form.get("name")?.value,
+        email: this.form.get("email")?.value,
+        message: this.form.get("message")?.value
       }
 
       this.isLoading = true;

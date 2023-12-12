@@ -5,10 +5,9 @@ import { ArtPieceComponent } from '@components/art-piece/art-piece.component';
 import { ArtPiecesListComponent } from '@components/art-pieces-list/art-pieces-list.component';
 // import { ContactComponent } from '@components/contact/contact.component';
 import { CvComponent } from '@components/cv/cv.component';
-import { LISTOFTOKENIDS } from '@constants/nft.constants';
 
 const routes: Routes = [
-  { path: '', redirectTo: `artwork/${LISTOFTOKENIDS[0]}`, pathMatch: "full"},
+  { path: '', redirectTo: `artworks`, pathMatch: "full"},
   { path: 'artworks/:year', component: ArtPiecesListComponent},
   { path: 'artworks', component: ArtPiecesListComponent},
   { path: 'artwork/:id', component: ArtPieceComponent },

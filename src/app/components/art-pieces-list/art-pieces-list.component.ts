@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { VALIDTRAITS } from '@constants/nft.constants';
+import { NFTMetadata } from '@models/nfts.models';
 import { SessionQuery } from '@store/session.query';
-import NftUtils from '@utils/nft.utils';
-import { Nft } from 'alchemy-sdk';
+import { NFT } from 'opensea-js';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -11,14 +12,14 @@ import { Observable, Subscription } from 'rxjs';
   styleUrls: ['./art-pieces-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArtPiecesListComponent implements OnInit {
+export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   @Input() numberOfCols = 3;
   @Input() yearFilter?: string;
 
   @Output() selectedTokenId = new EventEmitter<string>();
 
-  public artPieces$: Observable<Nft[]> = this.sessionQuery.selectArtPiecesObservable;
+  public artPieces$: Observable<NFT[]> = this.sessionQuery.selectArtPiecesObservable;
 
   private subscriptions = new Subscription();
   private screenWidth: number;
@@ -33,7 +34,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    !this.yearFilter && this.subscriptions.add(this.yearSubscription()); // if yearfilter from outside, do not subscribe to this
+    !this.yearFilter && this.subscriptions.add(this.yearSubscription());
   }
 
   yearSubscription(): Subscription {
@@ -46,19 +47,20 @@ export class ArtPiecesListComponent implements OnInit {
     });
   }
 
-  public displayPiece(nft: Nft): boolean {
-    return !this.yearFilter ? true : NftUtils.getAttrValue('year', nft) === this.yearFilter;
+  public displayPiece(nft: NFT): boolean {
+    const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPiecesMetadata.find(nftMetadata => nftMetadata.identifier === nft.identifier);
+    return !this.yearFilter ? true : foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
   }
 
   public getThumbImgUrl(mediaUrl: string): string {
     return mediaUrl.replace("w=500", `w=${Math.floor(this.screenWidth/this.numberOfCols)}`)
   }
 
-  listTracking(index: number, value: Nft) {
+  listTracking(index: number, value: NFT) {
     return value
   } 
 
-  handleArtPieceClick(tokenId: string) {
+  public handleArtPieceClick(tokenId: string) {
     this.selectedTokenId.emit(tokenId);
     this.router.navigate(['/artwork', tokenId ]);
   }
