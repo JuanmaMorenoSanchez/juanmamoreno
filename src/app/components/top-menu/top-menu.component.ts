@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { VALIDTRAITS } from '@constants/nft.constants';
 import { SessionQuery } from '@store/session.query';
 @Component({
   selector: 'app-top-menu',
@@ -8,13 +8,13 @@ import { SessionQuery } from '@store/session.query';
 })
 export class TopMenuComponent {
 
-  public years: Set<string>;
-
   constructor(
-    public router: Router,
     private sessionQuery: SessionQuery
   ) { 
-    this.years = this.sessionQuery.getYears;
+  }
+
+  get years(): Set<string> {
+    return this.sessionQuery.years;
   }
 
 }

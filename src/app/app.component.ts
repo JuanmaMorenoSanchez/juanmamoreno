@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
+import { NFT } from 'opensea-js';
 
 @Component({
   selector: 'app-root',
@@ -7,15 +8,16 @@ import { NftsService } from '@services/nfts.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  // public userMaticBalance = 0
 
   constructor(
     private nftsService: NftsService,
   ) {
 
-    // I have to call this functions somewhere
-    // this.nftsService.fetchUserBalance();
-    this.nftsService.getArt() // i dont like it here. move
-    // console.log("this.moralisService.getAlchemyNetwork() ", this.moralisService.getAlchemyNetwork());
+    // This logic is to make sure that all data is fetched on startup
+    this.nftsService.getArt().subscribe((nfts: Array<NFT>) => {
+      nfts.forEach(nft => {
+        this.nftsService.getArtById(nft.identifier);
+      })
+    })
   } 
 }

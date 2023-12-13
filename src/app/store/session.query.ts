@@ -26,10 +26,10 @@ export class SessionQuery extends Query<SessionState> {
         return this.getValue().lastArtPiecesUpdate
     }
 
-    get getYears(): Set<string> {
+    get years(): Set<string> {
         return new Set(
             this.getValue().artPiecesMetadata.map((artPiece) => {
-                return artPiece.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value
+              return artPiece.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value
             }).filter(year => year) as Array<string>
         );
     }

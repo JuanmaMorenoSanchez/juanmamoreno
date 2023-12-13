@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
-import { Observable } from 'rxjs';
+import { Observable, from, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
-import { CERTIFICATESCOLLECTIONADRESS, VALIDTRAITS } from '@constants/nft.constants';
+import { CERTIFICATEIDSTOHIDE, CERTIFICATESCOLLECTIONADRESS, VALIDTRAITS } from '@constants/nft.constants';
 import { OpenseaService } from './opensea.service';
 import { ListNFTsResponse, NFT } from 'opensea-js';
 import { NFTMetadata } from '@models/nfts.models';
@@ -24,10 +24,8 @@ export class NftsService {
   ) {
   }
 
-  public getArt(): void {
-    if (this.isNeccesaryFetchArt()) {
-      this.fetchNFT();
-    }
+  public getArt(): Observable<Array<NFT>> {
+    return this.isNeccesaryFetchArt() ?  from(this.fetchNFT()).pipe(map(res => res.nfts)) : this.sessionQuery.selectArtPiecesObservable
   }
 
   private fetchNFT(next?: string): Promise<ListNFTsResponse> {
@@ -36,7 +34,7 @@ export class NftsService {
       50,
       next
     ).then((response: ListNFTsResponse) => {
-      this.tempNFTList.push(...response.nfts)
+      this.tempNFTList.push(...response.nfts.filter(nft => !CERTIFICATEIDSTOHIDE.includes(nft.identifier)))
       if (response.next) {
         this.fetchNFT(response.next);
       } else {
