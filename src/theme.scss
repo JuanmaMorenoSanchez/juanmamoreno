@@ -1,0 +1,15 @@
+@import "@angular/material/theming";
+@include mat-core();
+
+$jm-primary: mat-palette($mat-blue-grey, 900);
+$jm-accent: mat-palette($mat-green, 'A400');
+$jm-warn: mat-palette($mat-pink, 500);
+
+$jm-typo: mat-typography-config(
+    $font-family: 'Roboto, "Helvetica Neue", sans-serif',
+);
+
+$jm-theme: mat-light-theme($jm-primary, $jm-accent, $jm-warn);
+
+@include angular-material-theme($jm-theme);
+@include angular-material-typography($jm-typo);
