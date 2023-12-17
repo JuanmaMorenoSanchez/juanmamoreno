@@ -34,7 +34,7 @@ export class TopMenuComponent implements OnInit {
     });
   }
 
-  get years(): Set<string> {
+  get years(): Set<number> {
     return this.sessionQuery.years;
   }
 

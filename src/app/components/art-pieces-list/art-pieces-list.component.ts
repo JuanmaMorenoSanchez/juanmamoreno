@@ -22,7 +22,6 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   public artPieces$: Observable<NFT[]> = this.sessionQuery.selectArtPiecesObservable;
 
   private subscriptions = new Subscription();
-  private screenWidth: number;
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -30,7 +29,6 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
   ) {
-    this.screenWidth = (window.screen.width);
   }
 
   ngOnInit(): void {
@@ -50,10 +48,6 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   public displayPiece(nft: NFT): boolean {
     const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPiecesMetadata.find(nftMetadata => nftMetadata.identifier === nft.identifier);
     return !this.yearFilter ? true : foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
-  }
-
-  public getThumbImgUrl(mediaUrl: string): string {
-    return mediaUrl.replace("w=500", `w=${Math.floor(this.screenWidth/this.numberOfCols)}`)
   }
 
   listTracking(index: number, value: NFT) {
