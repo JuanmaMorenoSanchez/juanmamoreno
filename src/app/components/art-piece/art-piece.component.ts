@@ -48,8 +48,4 @@ export class ArtPieceComponent {
     this.loadArtData();
     CommonUtils.scrollToTop();
   }
-
-  public getBigImgUrl(mediaUrl: string): string {
-    return mediaUrl.replace("w=500", `w=${window.screen.width}`)
-  }
 }

@@ -1,12 +1,28 @@
 <mat-toolbar color="primary">
-  <mat-toolbar-row>
+  <mat-toolbar-row >
     <button mat-button [routerLink]="['/artworks']">Juanma Moreno Sánchez</button>
-    <button mat-button [matMenuTriggerFor]="menu">Painting</button>
-    <button mat-button [routerLink]="['/about']">About</button>
-    <button mat-button [routerLink]="['/cv']">CV</button>
-    <button mat-button [routerLink]="['/contact']">Contact</button>
+    <span class="spacer"></span>
+    <button *ngIf="!mobileMenu; else menuButtons;" mat-icon-button aria-label="menu" (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
   </mat-toolbar-row>
 </mat-toolbar>
+
+<mat-drawer-container>
+  <mat-drawer #drawer mode="over" color="primary">
+    <ng-template *ngTemplateOutlet="menuButtons"></ng-template>
+  </mat-drawer>
+  <mat-drawer-content>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<ng-template #menuButtons>
+  <button mat-button [matMenuTriggerFor]="menu" class="menu-button">Painting</button>
+  <button mat-button [routerLink]="['/about']" class="menu-button">About</button>
+  <button mat-button [routerLink]="['/cv']" class="menu-button">CV</button>
+  <button mat-button [routerLink]="['/contact']" class="menu-button">Contact</button>
+</ng-template>
 
 <mat-menu #menu="matMenu">
   <button mat-menu-item [routerLink]="['/artworks', year]" *ngFor="let year of years">{{year}}</button>

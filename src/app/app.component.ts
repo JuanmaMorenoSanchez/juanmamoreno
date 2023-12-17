@@ -12,12 +12,14 @@ export class AppComponent {
   constructor(
     private nftsService: NftsService,
   ) {
+    this.getAppData();
+  }
 
-    // This logic is to make sure that all data is fetched on startup
-    this.nftsService.getArt().subscribe((nfts: Array<NFT>) => {
-      nfts.forEach(nft => {
+  getAppData() {
+    return this.nftsService.getArt().subscribe((nfts: Array<NFT>) => {
+      return nfts.forEach(nft => {
         this.nftsService.getArtById(nft.identifier);
-      })
-    })
-  } 
+      });
+    }); 
+  }
 }
