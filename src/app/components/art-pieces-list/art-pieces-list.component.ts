@@ -16,6 +16,7 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   @Input() numberOfCols = 3;
   @Input() yearFilter?: string;
+  @Input() featuredFilter?: Array<string>;
 
   @Output() selectedTokenId = new EventEmitter<string>();
 
@@ -46,8 +47,14 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   public displayPiece(nft: NFT): boolean {
-    const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPiecesMetadata.find(nftMetadata => nftMetadata.identifier === nft.identifier);
-    return !this.yearFilter ? true : foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
+    if (this.featuredFilter?.length) {
+      return this.featuredFilter.includes(nft.identifier);
+    } 
+    if (this.yearFilter) {
+      const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPiecesMetadata.find(nftMetadata => nftMetadata.identifier === nft.identifier);
+      return foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
+    }
+    return true;
   }
 
   listTracking(index: number, value: NFT) {

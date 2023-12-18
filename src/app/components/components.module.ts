@@ -24,6 +24,7 @@ import { AboutComponent } from './about/about.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { HttpClientModule } from '@angular/common/http';
     ArtPieceComponent,
     CvComponent,
     ContactComponent,
-    AboutComponent
+    AboutComponent,
+    HomeComponent
   ],
   imports: [
     CommonModule,

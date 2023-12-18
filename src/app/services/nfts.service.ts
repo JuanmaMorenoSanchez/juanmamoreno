@@ -4,7 +4,7 @@ import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
 import { Observable, from, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
-import { CERTIFICATEIDSTOHIDE, CERTIFICATESCOLLECTIONADRESS, VALIDTRAITS } from '@constants/nft.constants';
+import { HIDDENCERTIFICATES, CERTIFICATESCOLLECTIONADRESS, VALIDTRAITS } from '@constants/nft.constants';
 import { OpenseaService } from './opensea.service';
 import { ListNFTsResponse, NFT } from 'opensea-js';
 import { NFTMetadata } from '@models/nfts.models';
@@ -34,7 +34,7 @@ export class NftsService {
       50,
       next
     ).then((response: ListNFTsResponse) => {
-      this.tempNFTList.push(...response.nfts.filter(nft => !CERTIFICATEIDSTOHIDE.includes(nft.identifier)))
+      this.tempNFTList.push(...response.nfts.filter(nft => !HIDDENCERTIFICATES.includes(nft.identifier)))
       if (response.next) {
         this.fetchNFT(response.next);
       } else {
