@@ -17,6 +17,7 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   @Input() numberOfCols = 3;
   @Input() yearFilter?: string;
   @Input() featuredFilter?: Array<string>;
+  @Input() viewAsWidget = false;
 
   @Output() selectedTokenId = new EventEmitter<string>();
 

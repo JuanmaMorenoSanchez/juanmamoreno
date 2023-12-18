@@ -6,7 +6,7 @@
         <p>{{nft.description}}</p>
         <mat-divider></mat-divider>
         <h3>All art pieces made on {{year}}</h3>
-        <app-art-pieces-list [numberOfCols]="numberOfViewMoreColumns" [yearFilter]="year" (selectedTokenId)="handleSelectedItem($event)"></app-art-pieces-list>
+        <app-art-pieces-list [viewAsWidget]="true" [numberOfCols]="numberOfViewMoreColumns" [yearFilter]="year" (selectedTokenId)="handleSelectedItem($event)"></app-art-pieces-list>
     </ng-container>
     <ng-template #notFound>NFT not provided!</ng-template>
 </div>

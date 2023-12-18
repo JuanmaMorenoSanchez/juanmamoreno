@@ -1,4 +1,4 @@
-<div class="container">
+<div [ngClass]="{'container' : !viewAsWidget}">
   <mat-grid-list [cols]="numberOfCols" gutterSize="10" rowHeight="1:1">
     <ng-container *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking">
       <mat-grid-tile *ngIf="displayPiece(artPiece)" (click)="handleArtPieceClick(artPiece.identifier)">
