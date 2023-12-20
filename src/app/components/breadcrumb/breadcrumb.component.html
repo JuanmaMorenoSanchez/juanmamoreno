@@ -1,0 +1,9 @@
+<div class="container">
+  <mat-chip-listbox>
+    <mat-chip color="primary" *ngFor="let breadcrumb of breadcrumbs">
+      <span [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
+        {{ breadcrumb.label }}
+      </span>
+    </mat-chip>
+  </mat-chip-listbox>
+</div>

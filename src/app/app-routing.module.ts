@@ -8,13 +8,46 @@ import { CvComponent } from '@components/cv/cv.component';
 import { HomeComponent } from '@components/home/home.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: "full", component: HomeComponent},
-  { path: 'artworks/:year', component: ArtPiecesListComponent},
-  { path: 'artworks', component: ArtPiecesListComponent},
-  { path: 'artwork/:id', component: ArtPieceComponent },
-  { path: 'cv', component: CvComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'contact', component: ContactComponent },
+  { 
+    path: '', 
+    pathMatch: "full", 
+    component: HomeComponent
+  },
+  { 
+    path: 'artworks', 
+    component: ArtPiecesListComponent,
+    data: {
+      breadcrumb: 'Artworks',
+    },
+    children: [
+      { 
+        path: ':year', 
+        component: ArtPiecesListComponent,
+        data: {
+          breadcrumb: '',
+        },
+      },
+    ] 
+  },
+  { 
+    path: 'artwork/:id',
+    component: ArtPieceComponent,
+    data: {
+      breadcrumb: '',
+    },
+  },
+  { 
+    path: 'cv', 
+    component: CvComponent
+  },
+  { 
+    path: 'about', 
+    component: AboutComponent
+  },
+  { 
+    path: 'contact', 
+    component: ContactComponent
+  },
 ];
 
 @NgModule({

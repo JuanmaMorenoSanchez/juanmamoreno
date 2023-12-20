@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LoginButtonComponent } from './login-button/login-button.component';
 import { TopMenuComponent } from './top-menu/top-menu.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -25,6 +26,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { HomeComponent } from './home/home.component';
     CvComponent,
     ContactComponent,
     AboutComponent,
-    HomeComponent
+    HomeComponent,
+    BreadcrumbComponent
   ],
   imports: [
     CommonModule,
@@ -43,6 +46,7 @@ import { HomeComponent } from './home/home.component';
     HttpClientModule,
     MatButtonModule,
     MatCardModule,
+    MatChipsModule,
     MatDividerModule,
     MatFormFieldModule,
     MatGridListModule,

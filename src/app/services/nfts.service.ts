@@ -44,8 +44,13 @@ export class NftsService {
     })
   }
 
-  public getArtById(id:string): Promise<NFTMetadata> {
+  public getArtByIdFromLocal(id: string): NFTMetadata | null {
     const foundArt = this.sessionQuery.selectArtPiecesMetadata.find(({ identifier }) => id === identifier);
+    return foundArt || null;
+  }
+
+  public getArtById(id:string): Promise<NFTMetadata> {
+    const foundArt = this.getArtByIdFromLocal(id);
     return foundArt ? Promise.resolve(foundArt) : this.fetchNFTById(id);
   }
 

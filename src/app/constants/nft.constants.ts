@@ -16,11 +16,12 @@ export const HIDDENCERTIFICATES = [
 ]
 
 export const FEATUREDCERTIFICATES = [
+  "28",
   "2",
   "4",
   "5",
   "10",
   "11",
   "17",
-  "22",
+  "22"
 ]
