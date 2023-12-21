@@ -27,7 +27,7 @@ export class BreadcrumbComponent {
         filter((event: unknown) => event instanceof NavigationEnd),
         distinctUntilChanged(),
     ).subscribe(() => {
-        this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
+      this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
     })
   }
 
@@ -41,7 +41,6 @@ export class BreadcrumbComponent {
       const paramName = lastRoutePart!.split(':')[1];
       const paramValue = route.snapshot.params[paramName];
       path = path!.replace(lastRoutePart!, paramValue);
-      
       if (paramName === "id") {
         const name = this.extractNameFromId(paramValue);
         label = name || paramValue;
@@ -49,13 +48,11 @@ export class BreadcrumbComponent {
         label = paramValue;
       }
     }
-
     const nextUrl = path ? `${url}/${path}` : url;
     const breadcrumb: BreadCrumb = {
         label: label,
         url: nextUrl,
     };
-    
     const newBreadcrumbs = breadcrumb.label ? [ ...breadcrumbs, breadcrumb ] : [ ...breadcrumbs];
     if (route.firstChild) {
         return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);

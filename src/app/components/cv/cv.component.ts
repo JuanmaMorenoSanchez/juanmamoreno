@@ -28,7 +28,6 @@ export class CvComponent {
   }
 
   public numberOfItemsInYear(cvSection: Array<TimelineItem>, cvItem: TimelineItem): number {
-    console.log("elements in year "+cvItem.year, cvSection.filter((item) => item.year === cvItem.year).length)
     return cvSection.filter((item) => item.year === cvItem.year).length
   }
 

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { VALIDTRAITS } from '@constants/nft.constants';
 import { NFTMetadata } from '@models/nfts.models';
 import { SessionQuery } from '@store/session.query';
 import { NFT } from 'opensea-js';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -34,18 +34,22 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    !this.yearFilter && this.subscriptions.add(this.yearSubscription());
+    if (this.yearSubscription()) {
+      this.subscriptions.add(this.yearSubscription());
+    }
   }
 
-  yearSubscription(): Subscription {
-    return this.activatedroute.paramMap.subscribe(paramMap => {
-      const year = paramMap.get('year');
-      if (year) {
-        this.yearFilter = year;
-      }
-      this.changeDetectorRef.detectChanges();
-    });
-  }
+    yearSubscription(): Subscription {
+      return this.router.events.pipe(
+        filter((e: unknown) => e instanceof NavigationEnd),
+        distinctUntilChanged()
+      ).subscribe((ev) => {
+        const paramMap = 
+          this.activatedroute.firstChild ? this.activatedroute.firstChild.snapshot.paramMap : this.activatedroute.snapshot.paramMap;
+        this.yearFilter = paramMap.get('year')!
+        this.changeDetectorRef.detectChanges();
+      })
+    }
 
   public displayPiece(nft: NFT): boolean {
     if (this.featuredFilter?.length) {
