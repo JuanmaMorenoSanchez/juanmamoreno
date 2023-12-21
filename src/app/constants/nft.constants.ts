@@ -25,3 +25,13 @@ export const FEATUREDCERTIFICATES = [
   "17",
   "22"
 ]
+
+export const SOLDCERTIFICATES = [
+  "37",
+  "23",
+  "24",
+  "25",
+  "26",
+  "30",
+  "34"
+]

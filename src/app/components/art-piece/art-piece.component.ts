@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { VALIDTRAITS } from '@constants/nft.constants';
+import { SOLDCERTIFICATES, VALIDTRAITS } from '@constants/nft.constants';
 import { NFTMetadata, Trait } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import CommonUtils from '@utils/common.utils';
@@ -28,6 +28,11 @@ export class ArtPieceComponent {
   ) {
     this.tokenId = this.activatedroute.snapshot.params['id'];
     this.loadArtData();
+  }
+
+  get sold(): boolean {
+    console.log("this.tokenId ", this.tokenId)
+    return SOLDCERTIFICATES.includes(this.tokenId);
   }
 
   loadArtData(): void {

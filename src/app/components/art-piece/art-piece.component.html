@@ -2,7 +2,11 @@
 <div class="container">
     <ng-container *ngIf="nft, else notFound" >
         <img class="front-image" mat-card-image [src]="nft.image_url" [alt]="nft.description"/>
-        <h1>{{nft.name}} <small><i>{{ year }}, {{ medium }}, {{ height }} x {{ width }} {{ unit }}</i></small></h1>
+        <h1><i>{{nft.name}}. </i>
+        <small>
+            {{ year }}, {{ medium }}, {{ height }} x {{ width }} {{ unit }} 
+            <span class="dot" *ngIf="sold"></span>
+        </small></h1>
         <p>{{nft.description}}</p>
         <mat-divider></mat-divider>
         <h3>All art pieces made on {{year}}</h3>
