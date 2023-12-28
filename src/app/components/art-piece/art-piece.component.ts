@@ -31,7 +31,6 @@ export class ArtPieceComponent {
   }
 
   get sold(): boolean {
-    console.log("this.tokenId ", this.tokenId)
     return SOLDCERTIFICATES.includes(this.tokenId);
   }
 
