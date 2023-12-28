@@ -34,6 +34,9 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.yearFilter) {
+      this.yearFilter = this.activatedroute.firstChild?.snapshot.paramMap.get('year')!
+    }
     if (this.yearSubscription()) {
       this.subscriptions.add(this.yearSubscription());
     }
@@ -44,9 +47,14 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
         filter((e: unknown) => e instanceof NavigationEnd),
         distinctUntilChanged()
       ).subscribe((ev) => {
-        const paramMap = 
-          this.activatedroute.firstChild ? this.activatedroute.firstChild.snapshot.paramMap : this.activatedroute.snapshot.paramMap;
-        this.yearFilter = paramMap.get('year')!
+        // TODO: DO BETTER. NEED TO REFACTOR FILTERS AND PARAMS
+        if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
+          this.yearFilter = this.activatedroute.firstChild.snapshot.paramMap.get('year')!;
+        } else {
+          if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
+            this.yearFilter = this.activatedroute.snapshot.paramMap.get('year')!
+          }
+        }
         this.changeDetectorRef.detectChanges();
       })
     }
