@@ -26,6 +26,31 @@ export const FEATUREDCERTIFICATES = [
   "22"
 ]
 
+export const HOMEGREENBACKGROUND = [
+  "46",
+  "27",
+  "29",
+  "28",
+]
+
+export const HOMEIA = [
+  "11",
+  "10",
+  "22",
+  "18",
+  "6",
+  "17",
+]
+
+export const HOMEWATERCOLOR = [
+  "44",
+  "45",
+  "47",
+  "",
+  "",
+
+]
+
 export const SOLDCERTIFICATES = [
   "37",
   "23",

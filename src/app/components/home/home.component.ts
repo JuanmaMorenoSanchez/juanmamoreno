@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FEATUREDCERTIFICATES } from '@constants/nft.constants';
+import { FEATUREDCERTIFICATES, HOMEGREENBACKGROUND, HOMEIA } from '@constants/nft.constants';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +8,10 @@ import { FEATUREDCERTIFICATES } from '@constants/nft.constants';
 })
 export class HomeComponent {
 
-  readonly featuredFilters = FEATUREDCERTIFICATES;
-  readonly featuredColumns = 2;
+  readonly greenBackGroundFilter = HOMEGREENBACKGROUND;
+  readonly greenBackGroundColumns = 2;
+
+  readonly IAFilter = HOMEIA;
+  readonly IAColumns = 3;
 
 }
