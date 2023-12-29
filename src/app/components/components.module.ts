@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LoginButtonComponent } from './login-button/login-button.component';
-import { TopMenuComponent } from './top-menu/top-menu.component';
+import { ScrollingModule, CdkScrollableModule} from '@angular/cdk/scrolling';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,6 +15,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoginButtonComponent } from './login-button/login-button.component';
+import { TopMenuComponent } from './top-menu/top-menu.component';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
 import { ArtPieceComponent } from './art-piece/art-piece.component';
 import { Web3ModalModule, Web3ModalService } from '@mindsorg/web3modal-angular';
@@ -60,7 +61,9 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
     MatTooltipModule,
     Web3ModalModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    ScrollingModule,
+    CdkScrollableModule
   ],
   providers: [
     {
@@ -74,9 +77,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
     },
   ],
   exports: [
-    LoginButtonComponent,
     TopMenuComponent,
-    ArtPiecesListComponent
   ]
 })
 export class ComponentsModule { }
