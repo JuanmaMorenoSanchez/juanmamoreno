@@ -31,10 +31,7 @@ const routes: Routes = [
   },
   { 
     path: 'artwork/:id',
-    component: ArtPieceComponent,
-    data: {
-      breadcrumb: '',
-    },
+    component: ArtPieceComponent
   },
   { 
     path: 'cv', 

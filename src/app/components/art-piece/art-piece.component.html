@@ -4,7 +4,8 @@
         <img class="front-image" mat-card-image [src]="nft.image_url" [alt]="nft.description"/>
         <h1><i>{{nft.name}}. </i>
         <small>
-            {{ year }}, {{ medium }}, {{ height }} x {{ width }} {{ unit }} 
+            <a [routerLink]="'/artworks/'+year">{{ year }}</a>, 
+            {{ medium }}, {{ height }} x {{ width }} {{ unit }}.
             <span class="dot" *ngIf="sold"></span>
         </small></h1>
         <p>{{nft.description}}</p>
