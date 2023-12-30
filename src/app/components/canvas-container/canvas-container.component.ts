@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import * as p5 from 'p5';
+import p5 from 'p5';
 
 @Component({
   selector: 'app-canvas-container',
@@ -24,8 +24,6 @@ export class CanvasContainerComponent {
   }
 
   private onWindowResize = (e: any) => {
-    const nativeElement = this.div!.nativeElement;
-    console.log("nativeElement ", nativeElement)
     this.p5?.resizeCanvas(this.div!.nativeElement.offsetWidth, this.div!.nativeElement.offsetHeight);
   }
 
@@ -33,7 +31,7 @@ export class CanvasContainerComponent {
     this.p5 = new p5(this.logic);
   }
 
-    private destroyCanvas = () => {
+  private destroyCanvas = () => {
     this.p5.noCanvas();
   }
 
