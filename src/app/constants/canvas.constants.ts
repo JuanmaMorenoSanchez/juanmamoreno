@@ -1,0 +1,1 @@
+export const WELCOME_ID = 'welcome-canvas-container'
