@@ -26,7 +26,7 @@ export class CanvasContainerComponent {
   private onWindowResize = (e: any) => {
     const nativeElement = this.div!.nativeElement;
     console.log("nativeElement ", nativeElement)
-    this.p5.resizeCanvas(this.div!.nativeElement.offsetWidth, this.div!.nativeElement.offsetHeight);
+    this.p5?.resizeCanvas(this.div!.nativeElement.offsetWidth, this.div!.nativeElement.offsetHeight);
   }
 
   private createCanvas = () => {
