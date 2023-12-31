@@ -42,22 +42,22 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     }
   }
 
-    yearSubscription(): Subscription {
-      return this.router.events.pipe(
-        filter((e: unknown) => e instanceof NavigationEnd),
-        distinctUntilChanged()
-      ).subscribe((ev) => {
-        // TODO: DO BETTER. NEED TO REFACTOR FILTERS AND PARAMS
-        if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
-          this.yearFilter = this.activatedroute.firstChild.snapshot.paramMap.get('year')!;
-        } else {
-          if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
-            this.yearFilter = this.activatedroute.snapshot.paramMap.get('year')!
-          }
+  yearSubscription(): Subscription {
+    return this.router.events.pipe(
+      filter((e: unknown) => e instanceof NavigationEnd),
+      distinctUntilChanged()
+    ).subscribe((ev) => {
+      // TODO: DO BETTER. NEED TO REFACTOR FILTERS AND PARAMS
+      if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
+        this.yearFilter = this.activatedroute.firstChild.snapshot.paramMap.get('year')!;
+      } else {
+        if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
+          this.yearFilter = this.activatedroute.snapshot.paramMap.get('year')!
         }
-        this.changeDetectorRef.detectChanges();
-      })
-    }
+      }
+      this.changeDetectorRef.detectChanges();
+    })
+  }
 
   public displayPiece(nft: NFT): boolean {
     if (this.featuredFilter?.length) {

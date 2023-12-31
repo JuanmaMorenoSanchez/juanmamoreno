@@ -12,7 +12,9 @@ export  enum VALIDTRAITS {
 export const CERTIFICATESCOLLECTIONADRESS = "0x2059eA8350FA506df249327510e592140905e026";
 
 export const HIDDENCERTIFICATES = [
-  "1", "3"
+  "1", 
+  "3",
+  "55"
 ]
 
 export const FEATUREDCERTIFICATES = [
@@ -58,5 +60,13 @@ export const SOLDCERTIFICATES = [
   "25",
   "26",
   "30",
-  "34"
+  "34",
+  "58",
+  "59",
+  "66",
+  "64",
+  "61",
+  "72",
+  "71",
+  "70"
 ]
