@@ -23,7 +23,8 @@ export class TopMenuComponent implements OnInit {
     this.responsive.observe([
       Breakpoints.Small,
       Breakpoints.Medium,
-      Breakpoints.Large
+      Breakpoints.Large,
+      Breakpoints.XLarge
     ]).pipe(distinctUntilChanged())
     .subscribe(result => {
       this.mobileMenu = false;
