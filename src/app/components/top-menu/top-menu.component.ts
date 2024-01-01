@@ -10,8 +10,8 @@ import { distinctUntilChanged } from 'rxjs';
 })
 export class TopMenuComponent implements OnInit {
 
-  public mobileMenu = false;
-  public mobileMenuOpen = false;
+  public mobileMenu = true;
+  public mobileMenuOpen = true;
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -21,16 +21,13 @@ export class TopMenuComponent implements OnInit {
 
   ngOnInit() {
     this.responsive.observe([
-      Breakpoints.Small,
-      Breakpoints.Medium,
-      Breakpoints.Large,
-      Breakpoints.XLarge
+      Breakpoints.XSmall
     ]).pipe(distinctUntilChanged())
     .subscribe(result => {
-      this.mobileMenu = false;
-      this.mobileMenuOpen = false;
+      this.mobileMenu = true;
+      this.mobileMenuOpen = true;
       if (result.matches) {
-        this.mobileMenu = true;
+        this.mobileMenu = false;
       }
     });
   }
