@@ -6,7 +6,7 @@ import { Observable, from, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { HIDDENCERTIFICATES, CERTIFICATESCOLLECTIONADRESS, VALIDTRAITS } from '@constants/nft.constants';
 import { OpenseaService } from './opensea.service';
-import { ListNFTsResponse, NFT } from 'opensea-js';
+import { ListNFTsResponse } from 'opensea-js';
 import { NFTMetadata } from '@models/nfts.models';
 
 @Injectable({
@@ -14,7 +14,7 @@ import { NFTMetadata } from '@models/nfts.models';
 })
 export class NftsService {
 
-  private tempNFTList: Array<NFT> = [];
+  private tempNFTList: Array<NFTMetadata> = [];
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -24,8 +24,8 @@ export class NftsService {
   ) {
   }
 
-  public getArt(): Observable<Array<NFT>> {
-    return this.isNeccesaryFetchArt() ?  from(this.fetchNFT()).pipe(map(res => res.nfts)) : this.sessionQuery.selectArtPiecesObservable
+  public getArt(): Observable<Array<NFTMetadata>> {
+    return this.isNeccesaryFetchArt() ?  from(this.fetchNFT()).pipe(map(res => res.nfts as Array<NFTMetadata>)) : this.sessionQuery.selectArtPiecesObservable
   }
 
   private fetchNFT(next?: string): Promise<ListNFTsResponse> {
@@ -34,7 +34,8 @@ export class NftsService {
       50,
       next
     ).then((response: ListNFTsResponse) => {
-      this.tempNFTList.push(...response.nfts.filter(nft => !HIDDENCERTIFICATES.includes(nft.identifier)))
+      const nfts = response.nfts as Array<NFTMetadata>;
+      this.tempNFTList.push(...nfts.filter(nft => !HIDDENCERTIFICATES.includes(nft.identifier)))
       if (response.next) {
         this.fetchNFT(response.next);
       } else {
@@ -44,45 +45,35 @@ export class NftsService {
     })
   }
 
-  public getArtByIdFromLocal(id: string): NFTMetadata | null {
-    const foundArt = this.sessionQuery.selectArtPiecesMetadata.find(({ identifier }) => id === identifier);
+  public getArtById(id: string): NFTMetadata | null {
+    const foundArt = this.sessionQuery.selectArtPieces.find(({ identifier }) => id === identifier);
     return foundArt || null;
   }
 
-  public getArtById(id:string): Promise<NFTMetadata> {
-    const foundArt = this.getArtByIdFromLocal(id);
-    return foundArt ? Promise.resolve(foundArt) : this.fetchNFTById(id);
-  }
-
-  private fetchNFTById(identifier: string): Promise<NFTMetadata> {
-    return this.openSeaService.openSea.api.getNFT(
-      CERTIFICATESCOLLECTIONADRESS,
-      identifier
-    ).then(
-      ({ nft }) => {
-        this.updateArtMetadata(nft as NFTMetadata);
-        return nft;
-      },
-      err => err)
-  }
+  // private fetchNFTById(identifier: string): Promise<NFTMetadata> {
+  //   return this.openSeaService.openSea.api.getNFT(
+  //     CERTIFICATESCOLLECTIONADRESS,
+  //     identifier
+  //   ).then(
+  //     ({ nft }) => {
+  //       console.log("nft fetched individually ", nft)
+  //       this.updateArtMetadata(nft as NFTMetadata);
+  //       return nft;
+  //     },
+  //     err => err)
+  // }
 
   public getArtByYear(year:string): NFTMetadata[] | undefined {
-    return this.sessionQuery.selectArtPiecesMetadata?.filter(artPiece =>
+    return this.sessionQuery.selectArtPieces?.filter(artPiece =>
       year === artPiece.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value
     )
   }
 
-  private updateArt(nfts: NFT[]): Observable<NFT[] | undefined> {
+  private updateArt(nfts: NFTMetadata[]): Observable<NFTMetadata[] | undefined> {
     this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
     return this.sessionQuery.selectArtPiecesObservable;
   }
 
-  private updateArtMetadata(nft: NFTMetadata): Observable<NFTMetadata[] | undefined> {
-    if (!this.sessionQuery.selectArtPiecesMetadata.some(savedArt => savedArt.identifier === nft.identifier)){
-      this.sessionStore.update({ artPiecesMetadata: this.sessionQuery.selectArtPiecesMetadata.concat(nft)} )
-    }
-    return this.sessionQuery.selectArtPiecesMetadataObservable;
-  }
 
   private isNeccesaryFetchArt(): boolean {
     return (

@@ -6,7 +6,6 @@ export function createInitialState(): SessionState {
     return {
         // balances: undefined,
         artPieces: [],
-        artPiecesMetadata: [],
         lastArtPiecesUpdate: undefined,
     };
 }

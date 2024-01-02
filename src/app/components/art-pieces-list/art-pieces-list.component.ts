@@ -3,7 +3,6 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { VALIDTRAITS } from '@constants/nft.constants';
 import { NFTMetadata } from '@models/nfts.models';
 import { SessionQuery } from '@store/session.query';
-import { NFT } from 'opensea-js';
 import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
@@ -21,7 +20,7 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   @Output() selectedTokenId = new EventEmitter<string>();
 
-  public artPieces$: Observable<NFT[]> = this.sessionQuery.selectArtPiecesObservable;
+  public artPieces$: Observable<NFTMetadata[]> = this.sessionQuery.selectArtPiecesObservable;
 
   private subscriptions = new Subscription();
 
@@ -59,18 +58,18 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     })
   }
 
-  public displayPiece(nft: NFT): boolean {
+  public displayPiece(nft: NFTMetadata): boolean {
     if (this.featuredFilter?.length) {
       return this.featuredFilter.includes(nft.identifier);
     } 
     if (this.yearFilter) {
-      const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPiecesMetadata.find(nftMetadata => nftMetadata.identifier === nft.identifier);
+      const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPieces.find(nftMetadata => nftMetadata.identifier === nft.identifier);
       return foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
     }
     return true;
   }
 
-  listTracking(index: number, value: NFT) {
+  listTracking(index: number, value: NFTMetadata) {
     return value
   } 
 

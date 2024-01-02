@@ -3,7 +3,6 @@ import { NFTMetadata } from "./nfts.models";
 
 export interface SessionState {
     // balances?: TokenBalancesResponseErc20;
-    artPieces: NFT[];
-    artPiecesMetadata: NFTMetadata[];
+    artPieces: NFTMetadata[];
     lastArtPiecesUpdate?: Date;
 }
