@@ -46,16 +46,16 @@ export const WELCOME_CANVAS = (p: p5) => {
         p.rotate(angle);	
 
       
-        for (var i=0; i<prayerAmmount; i++) {
+        for (let i=0; i<prayerAmmount; i++) {
             p.push();
             p.rotate(i*TWO_PI/prayerAmmount);
             p.translate(0, mapped1*1.5);
-            for (var j=0; j<prayerAmmount; j++) {
+            for (let j=0; j<prayerAmmount; j++) {
                 p.push();
                 p.rotate(j*TWO_PI/prayerAmmount);
                 p.translate(0, mapped2);
                 p.image(getPrayer(), 0, 0, 60, 90);
-                    for (var k=0; k<prayerAmmount; k++) {
+                    for (let k=0; k<prayerAmmount; k++) {
                         p.push();
                         p.rotate(k*TWO_PI/prayerAmmount);
                         p.translate(0, mapped2);

@@ -7,7 +7,7 @@ import { SessionStore } from '@store/session.store';
 @Injectable({ providedIn: 'root' })
 export class SessionQuery extends Query<SessionState> {  
     // selectBalancesObservable = this.select(state => state.balances);
-    selectArtPiecesObservable = this.select(({ artPieces }) => artPieces);
+    selectArtPiecesObservable = this.select(({ artPieces }) => [...artPieces].sort(() => Math.round(Math.random() -1))); 
     selectArtPiecesMetadataObservable = this.select(({ artPiecesMetadata }) => artPiecesMetadata);
     
     // get selectBalances() {
