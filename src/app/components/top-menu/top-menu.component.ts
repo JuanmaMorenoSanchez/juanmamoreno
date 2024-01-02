@@ -1,5 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
+import { CANVASES } from '@constants/canvas.constants';
+import { Canvas } from '@models/canvas.models';
 import { SessionQuery } from '@store/session.query';
 import { distinctUntilChanged } from 'rxjs';
 
@@ -30,6 +32,10 @@ export class TopMenuComponent implements OnInit {
         this.mobileMenu = false;
       }
     });
+  }
+
+  get generativePieces(): Array<Canvas> {
+    return CANVASES
   }
 
   get years(): Set<number> {

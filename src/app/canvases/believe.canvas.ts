@@ -1,7 +1,7 @@
-import { WELCOME_ID } from "@constants/canvas.constants";
+import { BELIEVE_ID } from "@constants/canvas.constants";
 import * as p5 from "p5";
 
-export const WELCOME_CANVAS = (p: p5) => {
+export const BELIEVE_CANVAS = (p: p5) => {
     const TWO_PI = Math.PI*2;
     const speed = 0.005;
     let angle = 0.0;
@@ -25,11 +25,11 @@ export const WELCOME_CANVAS = (p: p5) => {
     }
 
     p.setup = () => {
-        const canvasDiv = document.getElementById(WELCOME_ID)!;
+        const canvasDiv = document.getElementById(BELIEVE_ID)!;
         width = canvasDiv.offsetWidth;
         height = (p.windowHeight/10)*9.1;
 
-        p.createCanvas(width, height).parent(WELCOME_ID); // IMPORTANT! HAS TO MATCH ID
+        p.createCanvas(width, height).parent(BELIEVE_ID); // IMPORTANT! HAS TO MATCH ID
 
         p.background(255);
         setRandomValues();

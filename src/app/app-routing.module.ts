@@ -5,6 +5,7 @@ import { ArtPieceComponent } from '@components/art-piece/art-piece.component';
 import { ArtPiecesListComponent } from '@components/art-pieces-list/art-pieces-list.component';
 import { ContactComponent } from '@components/contact/contact.component';
 import { CvComponent } from '@components/cv/cv.component';
+import { GenerativePieceComponent } from '@components/generative-piece/generative-piece.component';
 import { HomeComponent } from '@components/home/home.component';
 
 const routes: Routes = [
@@ -32,6 +33,10 @@ const routes: Routes = [
   { 
     path: 'artwork/:id',
     component: ArtPieceComponent
+  },
+  { 
+    path: 'generative/:id',
+    component: GenerativePieceComponent
   },
   { 
     path: 'cv', 

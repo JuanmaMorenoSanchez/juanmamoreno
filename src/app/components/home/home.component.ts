@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { WELCOME_ID } from '@constants/canvas.constants';
+import { BELIEVE_ID } from '@constants/canvas.constants';
 import { HOMEGREENBACKGROUND, HOMEIA } from '@constants/nft.constants';
-import { WELCOME_CANVAS } from 'src/app/canvases/welcome.canvas';
+import { BELIEVE_CANVAS } from 'src/app/canvases/believe.canvas';
 
 @Component({
   selector: 'app-home',
@@ -10,8 +10,8 @@ import { WELCOME_CANVAS } from 'src/app/canvases/welcome.canvas';
 })
 export class HomeComponent {
 
-  readonly welcomeCanvasId = WELCOME_ID;
-  readonly welcomeScript = WELCOME_CANVAS;
+  readonly believeCanvasId = BELIEVE_ID;
+  readonly believeScript = BELIEVE_CANVAS;
 
   readonly greenBackGroundFilter = HOMEGREENBACKGROUND;
   readonly greenBackGroundColumns = 2;

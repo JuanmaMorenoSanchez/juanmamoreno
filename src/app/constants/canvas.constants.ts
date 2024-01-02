@@ -1,11 +1,12 @@
 import { Canvas } from "@models/canvas.models"
-import { WELCOME_CANVAS } from "../canvases/welcome.canvas"
+import { BELIEVE_CANVAS } from "../canvases/believe.canvas"
 
-export const WELCOME_ID = 'welcome'
+export const BELIEVE_ID = 'believe'
 
 export const CANVASES: Array<Canvas> = [
     {
-        id: WELCOME_ID,
-        script: WELCOME_CANVAS
+        id: BELIEVE_ID,
+        label: "Believe",
+        script: BELIEVE_CANVAS
     }
-]
+];

@@ -29,6 +29,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { CanvasContainerComponent } from './canvas-container/canvas-container.component';
+import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { CanvasContainerComponent } from './canvas-container/canvas-container.co
     AboutComponent,
     HomeComponent,
     BreadcrumbComponent,
-    CanvasContainerComponent
+    CanvasContainerComponent,
+    GenerativePieceComponent
   ],
   imports: [
     CommonModule,
