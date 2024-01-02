@@ -22,7 +22,6 @@ export const WELCOME_CANVAS = (p: p5) => {
         prayer3 = p.loadImage(`${imgsRoute}pryer3.png`);
         prayer4 = p.loadImage(`${imgsRoute}pryer4.png`);
         cabeza = p.loadImage(`${imgsRoute}cabeza.png`);
-        p.noFill();
     }
 
     p.setup = () => {
@@ -44,7 +43,6 @@ export const WELCOME_CANVAS = (p: p5) => {
         p.push();	
         p.translate(width/2, height/2);
         p.rotate(angle);	
-
       
         for (let i=0; i<prayerAmmount; i++) {
             p.push();

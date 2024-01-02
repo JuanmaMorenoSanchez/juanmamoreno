@@ -13,7 +13,7 @@ export class CanvasContainerComponent {
 
   @ViewChild("container") div?: ElementRef;
 
-  private p5: any;
+  private p5: p5 | undefined;
   
   constructor() {
     window.onresize = this.onWindowResize;
@@ -32,7 +32,7 @@ export class CanvasContainerComponent {
   }
 
   private destroyCanvas = () => {
-    this.p5.noCanvas();
+    this.p5?.noCanvas();
   }
 
   ngOnDestroy(): void {
