@@ -1,6 +1,1 @@
-<ng-container *ngIf="foundCanvas else noCanvas">
-    <app-canvas-container [identifier]="id" [logic]="logic"></app-canvas-container>
-</ng-container>
-<ng-container #noCanvas>
-    <div class="container">Canvas not found</div>
-</ng-container>
+<app-canvas-container [identifier]="id" [logic]="logic"></app-canvas-container>
