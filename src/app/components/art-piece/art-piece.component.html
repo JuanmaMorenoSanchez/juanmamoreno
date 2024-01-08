@@ -1,14 +1,16 @@
 
 <div class="container margin-top">
     <ng-container *ngIf="nft, else notFound" >
-        <img class="front-image" mat-card-image [src]="nft.image_url" [alt]="nft.description"/>
-        <h1><i>{{nft.name}}. </i>
-        <small>
-            <a [routerLink]="'/artworks/'+year">{{ year }}</a>, 
-            {{ medium }}, {{ height }} x {{ width }} {{ unit }}.
-            <span class="dot" *ngIf="sold"></span>
-        </small></h1>
-        <p>{{nft.description}}</p>
+        <img class="front-image" mat-card-image [src]="getQualityImg(nft.media[0])" [alt]="nft.description"/>
+        <h1>
+            <i>{{nft.rawMetadata?.name}}. </i>
+            <small>
+                <a [routerLink]="'/artworks/'+year">{{ year }}</a>, 
+                {{ medium }}, {{ height }} x {{ width }} {{ unit }}.
+                <span class="dot" *ngIf="sold"></span>
+            </small>
+        </h1>
+        <p>{{nft.rawMetadata?.description}}</p>
         <mat-divider></mat-divider>
         <h3>Made on {{year}}</h3>
         <app-art-pieces-list [viewAsWidget]="true" [numberOfCols]="numberOfViewMoreColumns" [yearFilter]="year" (selectedTokenId)="handleSelectedItem($event)"></app-art-pieces-list>

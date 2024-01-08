@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { NFTMetadata } from '@models/nfts.models';
+import { CERTIFICATESCOLLECTIONADRESS } from '@constants/nft.constants';
 import { NftsService } from '@services/nfts.service';
+import { Nft } from 'alchemy-sdk';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent {
   }
 
   getAppData() {
-    this.nftsService.getArt().subscribe((nfts: Array<NFTMetadata>) => {
+    this.nftsService.getNfts(CERTIFICATESCOLLECTIONADRESS).subscribe((nfts: Array<Nft>) => {
       console.log("paintings: ", nfts)
     }); 
   }

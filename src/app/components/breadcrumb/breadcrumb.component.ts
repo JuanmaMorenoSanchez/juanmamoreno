@@ -61,7 +61,7 @@ export class BreadcrumbComponent {
   }
 
   private extractNameFromId(id: string): string | null {
-    const name = this.nftsService.getArtById(id)!.name;
-    return name || null;
+    const title = this.nftsService.getNftById(id)!.title;
+    return title || null;
   }
 }

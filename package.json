@@ -26,6 +26,7 @@
     "@datorama/akita": "^8.0.1",
     "@mindsorg/web3modal-angular": "^1.7.2-beta.1",
     "@types/p5": "^1.7.6",
+    "alchemy-sdk": "^2.10.0",
     "opensea-js": "^7.0.0",
     "p5": "^1.9.0",
     "rxjs": "~7.5.0",

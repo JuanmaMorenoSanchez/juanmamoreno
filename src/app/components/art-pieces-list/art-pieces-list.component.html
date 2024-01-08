@@ -3,9 +3,9 @@
   <div [ngClass]="{'container' : !viewAsWidget}">
     <mat-grid-list [cols]="numberOfCols" gutterSize="10" rowHeight="1:1">
       <ng-container *cdkVirtualFor="let artPiece of artPieces$ | async; trackBy: listTracking">
-        <mat-grid-tile *ngIf="displayPiece(artPiece)" (click)="handleArtPieceClick(artPiece.identifier)">
+        <mat-grid-tile *ngIf="displayPiece(artPiece)" (click)="handleArtPieceClick(artPiece.tokenId)">
           <mat-card>
-            <img class="front-image" mat-card-image [src]="artPiece.image_url" [alt]="artPiece.name"/>
+            <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.media[0])" [alt]="artPiece.name"/>
           </mat-card>
         </mat-grid-tile>
       </ng-container>

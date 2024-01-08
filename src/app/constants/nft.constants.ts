@@ -1,4 +1,3 @@
-
 export  enum VALIDTRAITS {
   MEDIUM = "Medium",
   HEIGHT = "Height",

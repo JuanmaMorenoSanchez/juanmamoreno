@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { VALIDTRAITS } from '@constants/nft.constants';
-import { NFTMetadata } from '@models/nfts.models';
+import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
+import { Media, Nft } from 'alchemy-sdk';
 import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
@@ -20,7 +21,7 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   @Output() selectedTokenId = new EventEmitter<string>();
 
-  public artPieces$: Observable<NFTMetadata[]> = this.sessionQuery.selectArtPiecesObservable;
+  public artPieces$: Observable<Nft[]>;
 
   private subscriptions = new Subscription();
 
@@ -29,7 +30,9 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     private activatedroute: ActivatedRoute,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
+    private nftService: NftsService,
   ) {
+    this.artPieces$ = this.sessionQuery.selectArtPiecesObservable;
   }
 
   ngOnInit(): void {
@@ -58,25 +61,29 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     })
   }
 
-  public displayPiece(nft: NFTMetadata): boolean {
+  public displayPiece(nft: Nft): boolean {
     if (this.featuredFilter?.length) {
-      return this.featuredFilter.includes(nft.identifier);
+      return this.featuredFilter.includes(nft.tokenId);
     } 
     if (this.yearFilter) {
-      const foundMetadata: NFTMetadata | undefined = this.sessionQuery.selectArtPieces.find(nftMetadata => nftMetadata.identifier === nft.identifier);
-      return foundMetadata?.traits.find((trait)  => trait.trait_type === VALIDTRAITS.YEAR)?.value === this.yearFilter;
+      const foundMetadata: Nft | undefined = this.sessionQuery.selectArtPieces.find(nftMetadata => nftMetadata.tokenId === nft.tokenId);
+      return foundMetadata?.rawMetadata?.attributes?.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] === this.yearFilter;
     }
     return true;
   }
 
-  listTracking(index: number, value: NFTMetadata) {
-    return value
-  } 
+  public getImgThumbUrl(media: Media): string {
+    return this.nftService.getOptimalUrl(media);
+  }
 
   public handleArtPieceClick(tokenId: string) {
     this.selectedTokenId.emit(tokenId);
     this.router.navigate(['/artwork', tokenId ]);
   }
+
+  listTracking(index: number, value: Nft) {
+    return value
+  } 
  
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

@@ -1,8 +1,7 @@
-import { NFT } from "opensea-js";
-import { NFTMetadata } from "./nfts.models";
+import { Nft } from "alchemy-sdk";
 
 export interface SessionState {
     // balances?: TokenBalancesResponseErc20;
-    artPieces: NFTMetadata[];
+    artPieces: Nft[];
     lastArtPiecesUpdate?: Date;
 }
