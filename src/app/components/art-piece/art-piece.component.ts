@@ -15,7 +15,7 @@ export class ArtPieceComponent {
 
   @Input() tokenId: string;
   public numberOfViewMoreColumns = 6;
-  public nft: Nft;
+  public nft?: Nft;
   public year?: string;
   public medium?: string;
   public height?: string;
@@ -28,8 +28,7 @@ export class ArtPieceComponent {
     private activatedroute: ActivatedRoute,
   ) {
     this.tokenId = this.activatedroute.snapshot.params['id'];
-    this.nft = this.nftsService.getNftById(this.tokenId)!;
-    this.loadArtData();
+    this.setArtData();
   }
 
   get sold(): boolean {
@@ -40,7 +39,8 @@ export class ArtPieceComponent {
     return this.nftsService.getQualityUrl(media);
   }
 
-  loadArtData(): void {
+  setArtData(): void {
+    this.nft = this.nftsService.getNftById(this.tokenId)!;
     const traits = this.nft.rawMetadata!.attributes;
     this.year = traits!.find(trait => trait['trait_type'] === VALIDTRAITS.YEAR)!['value']
     this.medium = traits!.find(trait => trait['trait_type'] === VALIDTRAITS.MEDIUM)!['value']
@@ -52,7 +52,7 @@ export class ArtPieceComponent {
 
   handleSelectedItem(tokenId: string): void {
     this.tokenId = tokenId;
-    this.loadArtData();
+    this.setArtData();
     CommonUtils.scrollToTop();
   }
 }
