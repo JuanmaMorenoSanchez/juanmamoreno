@@ -28,7 +28,7 @@ export class AlchemyService {
 
   public fetchNFTsByContract(contractAddress: string, next?: string): Observable<Nft[]> {
     let options: GetNftsForContractOptions  = {
-      pageSize: 10,
+      pageSize: this.alchemyPaginationSize,
       pageKey: next
     }
     return from(this.alchemy.nft.getNftsForContract(
