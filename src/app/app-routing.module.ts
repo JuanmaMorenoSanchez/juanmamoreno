@@ -18,7 +18,7 @@ const routes: Routes = [
     path: 'artworks', 
     component: ArtPiecesListComponent,
     data: {
-      breadcrumb: 'Artworks',
+      breadcrumb: 'Paintings',
     },
     children: [
       { 

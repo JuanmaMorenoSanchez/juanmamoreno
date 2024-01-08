@@ -1,6 +1,6 @@
 
 <div class="container margin-top">
-    <ng-container *ngIf="nft, else notFound" >
+    <ng-container *ngIf="nft, else notFound">
         <img class="front-image" mat-card-image [src]="getQualityImg(nft.media[0])" [alt]="nft.description"/>
         <h1>
             <i>{{nft.rawMetadata?.name}}. </i>

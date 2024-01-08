@@ -14,7 +14,7 @@ import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
-  @Input() numberOfCols = 3;
+  @Input() numberOfCols = 4;
   @Input() yearFilter?: string;
   @Input() featuredFilter?: Array<string>;
   @Input() viewAsWidget = false;
