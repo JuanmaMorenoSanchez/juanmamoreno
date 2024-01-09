@@ -70,11 +70,13 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   private isExcludedByFeature(nft: Nft): boolean {
-    return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId)
+    return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId);
   }
 
   private isFrontalView(nft: Nft): boolean {
-    return nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE)!['value'] === VIEW_TYPES.FRONTAL
+    const imagetype = nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
+    const imagetypeIsSet = !!imagetype;
+    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);
   }
 
   public getImgThumbUrl(media: Media): string {
