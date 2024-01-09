@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { VALIDTRAITS } from '@constants/nft.constants';
+import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
 import { Media, Nft } from 'alchemy-sdk';
@@ -62,14 +62,19 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   public displayPiece(nft: Nft): boolean {
-    if (this.featuredFilter?.length) {
-      return this.featuredFilter.includes(nft.tokenId);
-    } 
-    if (this.yearFilter) {
-      const foundMetadata: Nft | undefined = this.sessionQuery.selectArtPieces.find(nftMetadata => nftMetadata.tokenId === nft.tokenId);
-      return foundMetadata?.rawMetadata?.attributes?.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] === this.yearFilter;
-    }
-    return true;
+    return !this.isExcludedByYear(nft) && !this.isExcludedByFeature(nft) && this.isFrontalView(nft);
+  }
+
+  private isExcludedByYear(nft: Nft): boolean {
+    return !!this.yearFilter && nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== this.yearFilter
+  }
+
+  private isExcludedByFeature(nft: Nft): boolean {
+    return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId)
+  }
+
+  private isFrontalView(nft: Nft): boolean {
+    return nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE)!['value'] === VIEW_TYPES.FRONTAL
   }
 
   public getImgThumbUrl(media: Media): string {

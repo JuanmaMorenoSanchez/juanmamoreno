@@ -8,48 +8,17 @@ export  enum VALIDTRAITS {
   ARTIST = "Artist",
 }
 
+export enum VIEW_TYPES {
+  FRONTAL = "Frontal view",
+  PROGRESS = "Work in progress"
+}
+
 export const CERTIFICATESCOLLECTIONADRESS = "0x2059eA8350FA506df249327510e592140905e026";
 
 export const HIDDENCERTIFICATES = [
   "1", 
   "3",
-  "55"
-]
-
-export const FEATUREDCERTIFICATES = [
-  "28",
-  "2",
-  "4",
-  "5",
-  "10",
-  "11",
-  "17",
-  "22"
-]
-
-export const HOMEGREENBACKGROUND = [
-  "46",
-  "27",
-  "29",
-  "28",
-]
-
-export const HOMEIA = [
-  "11",
-  "10",
-  "22",
-  "18",
-  "6",
-  "17",
-]
-
-export const HOMEWATERCOLOR = [
-  "44",
-  "45",
-  "47",
-  "",
-  "",
-
+  "55",
 ]
 
 export const SOLDCERTIFICATES = [
@@ -72,3 +41,41 @@ export const SOLDCERTIFICATES = [
   "75",
   "77",
 ]
+
+// export const FEATUREDCERTIFICATES = [
+//   "28",
+//   "2",
+//   "4",
+//   "5",
+//   "10",
+//   "11",
+//   "17",
+//   "22"
+// ]
+
+// export const HOMEGREENBACKGROUND = [
+//   "46",
+//   "27",
+//   "29",
+//   "28",
+// ]
+
+// export const HOMEIA = [
+//   "11",
+//   "10",
+//   "22",
+//   "18",
+//   "6",
+//   "17",
+// ]
+
+// export const HOMEWATERCOLOR = [
+//   "44",
+//   "45",
+//   "47",
+//   "",
+//   "",
+
+// ]
+
+
