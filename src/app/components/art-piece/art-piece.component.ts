@@ -55,7 +55,6 @@ export class ArtPieceComponent {
 
   handleSelectedItem(tokenId: string): void {
     this.tokenId = tokenId;
-    this.setArtData(tokenId);
-    CommonUtils.scrollToTop();
+    this.nfts$ = this.setArtData(tokenId);
   }
 }
