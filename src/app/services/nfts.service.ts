@@ -39,6 +39,12 @@ export class NftsService {
     return ipfs.replace("ipfs://", "https://ipfs.io/ipfs/")
   }
 
+  public getNftByIdObservable(id: string): Observable<Nft | undefined> {
+    return this.sessionQuery.selectArtPiecesObservable.pipe(
+      map(nfts => nfts.find(({ tokenId }) => id === tokenId))
+    );
+  }
+
   public getNftById(id: string): Nft | null {
     const foundArt = this.sessionQuery.selectArtPieces.find(({ tokenId }) => id === tokenId);
     return foundArt || null;

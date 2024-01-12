@@ -1,19 +1,25 @@
 
 <div class="container margin-top">
-    <ng-container *ngIf="nft, else notFound">
+    <ng-container *ngFor="let nft of nfts$ | async; let last = last;">
         <img class="front-image" mat-card-image [src]="getQualityImg(nft.media[0])" [alt]="nft.description"/>
-        <h1>
-            <i>{{nft.rawMetadata?.name}}. </i>
-            <small>
-                <a [routerLink]="'/artworks/'+year">{{ year }}</a>, 
-                {{ medium }}, {{ height }} x {{ width }} {{ unit }}.
-                <span class="dot" *ngIf="sold"></span>
-            </small>
-        </h1>
-        <p>{{nft.rawMetadata?.description}}</p>
-        <mat-divider></mat-divider>
-        <h3>Made on {{year}}</h3>
-        <app-art-pieces-list [viewAsWidget]="true" [numberOfCols]="numberOfViewMoreColumns" [yearFilter]="year" (selectedTokenId)="handleSelectedItem($event)"></app-art-pieces-list>
+        <div *ngIf="last">
+            <h1>
+                <i>{{nft.rawMetadata?.name}}. </i>
+                <small>
+                    <a [routerLink]="'/artworks/'+getTraitValue(nft, validTraits.YEAR)">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>, 
+                    {{ getTraitValue(nft, validTraits.MEDIUM ) }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
+                    <span class="dot" *ngIf="sold(nft.tokenId)"></span>
+                </small>
+            </h1>
+            <p>{{nft.rawMetadata?.description}}</p>
+            <mat-divider></mat-divider>
+            <h3>More on {{getTraitValue(nft, validTraits.YEAR)}}</h3>
+            <app-art-pieces-list 
+                [viewAsWidget]="true" 
+                [numberOfCols]="numberOfViewMoreColumns" 
+                [yearFilter]="getTraitValue(nft, validTraits.YEAR)" 
+                (selectedTokenId)="handleSelectedItem($event)">
+            </app-art-pieces-list>
+        </div>
     </ng-container>
-    <ng-template #notFound>NFT not provided!</ng-template>
 </div>
