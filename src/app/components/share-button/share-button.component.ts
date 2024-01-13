@@ -7,9 +7,11 @@ import { Component } from '@angular/core';
 })
 export class ShareButtonComponent {
 
-  public canShare = navigator.canShare();
+  public canShare;
 
-  constructor() {}
+  constructor() {
+    this.canShare = navigator?.canShare() || false;
+  }
 
   public handleClick() {
     if (this.canShare) {
@@ -19,7 +21,7 @@ export class ShareButtonComponent {
         text: 'Contemporary Art',
         url,
       };
-      navigator.share(shareData)
+      navigator?.share(shareData)
     }
   }
 }
