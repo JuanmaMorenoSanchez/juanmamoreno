@@ -6,10 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ComponentsModule } from '@components/components.module';
 import { MatCardModule } from '@angular/material/card';
+import { ShareButtonComponent } from '@components/share-button/share-button.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ShareButtonComponent
   ],
   imports: [
     AppRoutingModule,
@@ -17,6 +21,8 @@ import { MatCardModule } from '@angular/material/card';
     BrowserAnimationsModule,
     ComponentsModule,
     MatCardModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
