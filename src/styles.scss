@@ -11,18 +11,28 @@ body {
     align-items: start;
 }
 
-.container {
-    margin-top: 2vh;
-    margin-left: auto;
-    margin-right: auto;
+.mat-drawer-content {
+    height: 90vh !important;
 }
 
 .margin-top {
     margin-top: 5dvh;
 }
 
+.container {
+    margin-top: 2vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 @media (min-width: 992px) {
     .container {
         width: 970px;
+     }
+}
+@media (max-width: 991px) {
+    .container {
+        margin-left: 2vw;
+        margin-right: 2vw;
      }
 }
