@@ -7,10 +7,12 @@ import { Component } from '@angular/core';
 })
 export class ShareButtonComponent {
 
+  private regex_mobile = new RegExp('/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/', 'i');
+
   public canShare;
 
   constructor() {
-    this.canShare = navigator?.canShare() || false;
+    this.canShare = this.regex_mobile.test(window.navigator.userAgent) || navigator?.canShare() || false;
   }
 
   public handleClick() {
