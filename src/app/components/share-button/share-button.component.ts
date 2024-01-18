@@ -12,7 +12,7 @@ export class ShareButtonComponent {
   public canShare;
 
   constructor() {
-    this.canShare = this.regex_mobile.test(window.navigator.userAgent) || navigator?.canShare() || false;
+    this.canShare = this.regex_mobile.test(window.navigator.userAgent) || false;
   }
 
   public handleClick() {
