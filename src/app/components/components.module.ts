@@ -30,6 +30,8 @@ import { HomeComponent } from './home/home.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { CanvasContainerComponent } from './canvas-container/canvas-container.component';
 import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
+import { ImageViewerComponent } from './image-viewer/image-viewer.component';
+import { GalleryModule } from 'ng-gallery';
 
 @NgModule({
   declarations: [
@@ -43,11 +45,13 @@ import { GenerativePieceComponent } from './generative-piece/generative-piece.co
     HomeComponent,
     BreadcrumbComponent,
     CanvasContainerComponent,
-    GenerativePieceComponent
+    GenerativePieceComponent,
+    ImageViewerComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
+    GalleryModule,
     HttpClientModule,
     MatButtonModule,
     MatCardModule,

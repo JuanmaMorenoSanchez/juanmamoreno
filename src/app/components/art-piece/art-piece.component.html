@@ -1,7 +1,7 @@
 
 <div class="container margin-top">
+    <app-image-viewer [nfts]="(nfts$ | async)"></app-image-viewer>
     <ng-container *ngFor="let nft of nfts$ | async; let last = last; let first = first">
-        <img *ngIf="first"class="front-image" mat-card-image [src]="getQualityImg(nft.media[0])" [alt]="nft.description"/>
         <div *ngIf="last">
             <h1>
                 <i>{{nft.rawMetadata?.name}}. </i>
