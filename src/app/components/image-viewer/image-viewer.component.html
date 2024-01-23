@@ -1,6 +1,8 @@
 <gallery 
+    [id]="galleryId"
     [counter]="false" 
     [autoHeight]="true" 
     [loadingStrategy]="loadingStrategy"
-    [thumb]="displayThumbs">
+    [thumb]="displayThumbs"
+    (itemClick)="onImageClick($event)">
 </gallery>

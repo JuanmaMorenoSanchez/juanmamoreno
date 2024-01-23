@@ -32,6 +32,7 @@ import { CanvasContainerComponent } from './canvas-container/canvas-container.co
 import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
 import { ImageViewerComponent } from './image-viewer/image-viewer.component';
 import { GalleryModule } from 'ng-gallery';
+import { LightboxModule } from 'ng-gallery/lightbox';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { GalleryModule } from 'ng-gallery';
     FormsModule,
     GalleryModule,
     HttpClientModule,
+    LightboxModule,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
