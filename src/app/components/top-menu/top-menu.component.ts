@@ -1,37 +1,24 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CANVASES } from '@constants/canvas.constants';
 import { Canvas } from '@models/canvas.models';
+import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
-import { distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-top-menu',
   templateUrl: './top-menu.component.html',
   styleUrls: ['./top-menu.component.scss']
 })
-export class TopMenuComponent implements OnInit {
+export class TopMenuComponent {
 
   public mobileMenu = true;
   public mobileMenuOpen = true;
 
   constructor(
     private sessionQuery: SessionQuery,
-    private responsive: BreakpointObserver
+    private responsiveService: ResponsiveService
   ) { 
-  }
-
-  ngOnInit() {
-    this.responsive.observe([
-      Breakpoints.XSmall
-    ]).pipe(distinctUntilChanged())
-    .subscribe(result => {
-      this.mobileMenu = true;
-      this.mobileMenuOpen = true;
-      if (result.matches) {
-        this.mobileMenu = false;
-      }
-    });
+    this.responsiveService.displayMobileLayout.subscribe(display => this.mobileMenu = display)
   }
 
   get generativePieces(): Array<Canvas> {
