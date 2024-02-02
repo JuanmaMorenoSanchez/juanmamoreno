@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Nft } from 'alchemy-sdk';
 import { GalleryComponent } from 'ng-gallery';
 import { Lightbox } from 'ng-gallery/lightbox';
@@ -30,25 +30,10 @@ export class ImageViewerComponent implements OnChanges {
     this.nfts && this.addNftsToGallery(this.nfts);
   }
 
-  get displayThumbs(): boolean {
-    return this.nfts!.length > 1
-  }
-
-  // public handleImgClick() {
-  //   const currentIndex = this.gallery.galleryRef.stateSnapshot.currIndex;
-  //   // this.lightbox.open(currentIndex || 0, this.galleryId);
-  // }
 
   private addNftsToGallery(nfts: Array<Nft>): void {
     nfts.forEach(nft => {
       this.gallery?.addImage({ src: nft.media[0].gateway, thumb: nft.media[0].thumbnail || nft.media[0].gateway });
     })
   }
-
-  ngOnDestroy() {
-    // if (this.lightbox.opened) {
-    //   this.lightbox.close();
-    // }
-  } 
-
 }

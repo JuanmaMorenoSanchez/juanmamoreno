@@ -6,6 +6,10 @@ body {
     max-width: 100%;
 }
 
+.fit-width {
+    width: 100%;
+}
+
 .mat-grid-tile .mat-grid-tile-content {
     justify-content: flex-start;
     align-items: start;
@@ -16,7 +20,7 @@ body {
 }
 
 .margin-top {
-    margin-top: 5dvh;
+    margin-top: 5vh;
 }
 
 .container {
