@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { environment } from '@environments/environment';
+import { ResponsiveService } from '@services/responsive.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-contact',
@@ -21,10 +23,13 @@ export class ContactComponent {
 
   public submitted = false;
   public isLoading = false;
+  public horizontalView = true;
 
   constructor(
     private httpClient: HttpClient,    
     private formBuilder: FormBuilder,
+    private responsiveService: ResponsiveService,
+    public snackBar: MatSnackBar
   ) {
     this.form = this.formBuilder.group({
       name: this.name,
@@ -32,6 +37,7 @@ export class ContactComponent {
       message: this.message,
       honeypot: this.honeypot
     })
+    this.responsiveService.displayMobileLayout.subscribe(display => this.horizontalView = display)
   }
 
   onSubmit() {
@@ -48,15 +54,24 @@ export class ContactComponent {
       this.httpClient.post(environment.backendUrl+'contact', formData).subscribe((res: any) => {
         console.log("res ", res);
         this.form.enable();
+        this.form.reset();
+        this.openSnackBar(res.message)
         this.submitted = true;
         this.isLoading = false;
       }, error => {
         console.error("error ", error);
         this.form.enable();
+        this.openSnackBar(error.message)
         this.submitted = true;
         this.isLoading = false;
       })
     }
+  }
+
+  private openSnackBar(message: string): void {
+    this.snackBar.open(message, "", {
+      duration: 3000,
+    });
   }
 
   private checkFormValidity() {

@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoginButtonComponent } from './login-button/login-button.component';
@@ -69,6 +70,7 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     MatSidenavModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatSnackBarModule,
     // Web3ModalModule,
     ReactiveFormsModule,
     RouterModule,
