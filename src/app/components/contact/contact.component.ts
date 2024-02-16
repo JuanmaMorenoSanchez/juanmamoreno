@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { environment } from '@environments/environment';
 import { ResponsiveService } from '@services/responsive.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-contact',
@@ -69,9 +69,10 @@ export class ContactComponent {
   }
 
   private openSnackBar(message: string): void {
-    this.snackBar.open(message, "", {
+    const snackBarConfig: MatSnackBarConfig = {
       duration: 3000,
-    });
+    };
+    this.snackBar.open(message, "Ok!", snackBarConfig);
   }
 
   private checkFormValidity() {
