@@ -5,6 +5,13 @@ export const CV_OBJECT: Array<Timeline> = [
         title: "Solo shows",
         items: [
             {
+                title: "El valle inquietante",
+                venue: "<a href='https://galeriazunino.com/exposiciones/el-valle-inquietante/' target='_blank'>Zunino gallery</a>",
+                city: "Sevilla",
+                country: COUNTRIES.SPAIN,
+                year: 2024
+            },
+            {
                 title: "El sueño de los robots",
                 venue: "<a href='https://www.galeriazunino.com/index.php/2021/02/25/el-sueno-de-los-robots/' target='_blank'>Zunino gallery &amp; Red Collectors</a>",
                 city: "Sevilla",
@@ -73,6 +80,20 @@ export const CV_OBJECT: Array<Timeline> = [
         title: "Collective exhibitions (selection)",
         items: [
             {
+                title: "Outsiders. Vol. 1",
+                venue: "<a href='https://www.galeriazunino.com/' target='_blank'>Zunino gallery</a>",
+                city: "Sevilla",
+                country: COUNTRIES.SPAIN,
+                year: 2024
+            },
+            {
+                title: "Realidad y artificio, Anna Jonsson & Juanma Moreno",
+                venue: "El estudio de Ignacio Castro",
+                city: "Villanueva del Rosario",
+                country: COUNTRIES.SPAIN,
+                year: 2024
+            },
+            {
                 title: "Pintores pensando la pintura",
                 venue: "<a href='https://www.espacio75.com/' target='_blank'>Espacio 75 Art Gallery</a>",
                 city: "Madrid",
@@ -81,8 +102,8 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "Nocturnos",
-                venue: "Sala Pescadería Vieja",
-                city: "Jerez de la Frontera",
+                venue: "Sala Pescadería Vieja / CAC Vélez-Málaga",
+                city: "Jerez de la Frontera / Vélez-Málaga",
                 country: COUNTRIES.SPAIN,
                 year: 2023
             },
