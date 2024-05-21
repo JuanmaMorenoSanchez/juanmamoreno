@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftsService } from '@services/nfts.service';
+import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
 import { Media, Nft } from 'alchemy-sdk';
 import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
@@ -14,7 +15,7 @@ import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 })
 export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
-  @Input() numberOfCols = 4;
+  @Input() numberOfCols: number | null = null;
   @Input() yearFilter?: string;
   @Input() featuredFilter?: Array<string>;
   @Input() viewAsWidget = false;
@@ -31,8 +32,10 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private nftService: NftsService,
+    private responsiveService: ResponsiveService
   ) {
     this.artPieces$ = this.sessionQuery.selectArtPiecesObservable;
+    this.setLayout();
   }
 
   ngOnInit(): void {
@@ -63,6 +66,12 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   public displayPiece(nft: Nft): boolean {
     return !this.isExcludedByYear(nft) && !this.isExcludedByFeature(nft) && this.isFrontalView(nft);
+  }
+
+  private setLayout(): void {
+    if (!this.numberOfCols) {
+      this.numberOfCols = !this.responsiveService.displayMobileLayout.value ? 2 : 5
+    }
   }
 
   private isExcludedByYear(nft: Nft): boolean {
