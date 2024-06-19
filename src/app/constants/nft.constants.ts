@@ -6,6 +6,9 @@ export  enum VALIDTRAITS {
   YEAR = "Year",
   IMAGETYPE = "Image Type",
   ARTIST = "Artist",
+  PROJECT = "Project",
+  DESC_AUTHOR = "Description Author",
+  DESC_LANG = "Description language"
 }
 
 export enum VIEW_TYPES {

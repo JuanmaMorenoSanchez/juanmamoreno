@@ -44,7 +44,11 @@ export class ArtPieceComponent {
   }
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
-    return nft.rawMetadata!.attributes!.find(trait => trait['trait_type'] === validTrait)!['value']
+    try {
+      return nft.rawMetadata!.attributes!.find(trait => trait['trait_type'] === validTrait)!['value']
+    } catch {
+      return "Error getting data"
+    }
   }
 
   public sold(tokenId: string): boolean {

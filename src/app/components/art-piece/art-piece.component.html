@@ -18,10 +18,14 @@
                                     <span class="dot" *ngIf="sold(nft.tokenId)"></span>
                                 </small>
                             </h3>
-                            <!-- <p *ngIf="nft.rawMetadata?.description">{{nft.rawMetadata?.description}}</p> -->
                         </div>
                 </mat-grid-tile>
             </mat-grid-list>
+            <div class="art-piece-desc" *ngIf="nft.rawMetadata?.description">
+                <h3>{{ getTraitValue(nft, validTraits.PROJECT)}}</h3>
+                <p>{{nft.rawMetadata?.description}}</p>
+                <h3>{{ getTraitValue(nft, validTraits.DESC_AUTHOR)}}</h3>
+            </div>
             <div class="margin-top">
                 <mat-divider></mat-divider>
                 <h3>More on {{getTraitValue(nft, validTraits.YEAR)}}</h3>
