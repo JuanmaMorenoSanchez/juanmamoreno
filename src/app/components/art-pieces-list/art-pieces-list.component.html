@@ -1,15 +1,13 @@
 
-<cdk-virtual-scroll-viewport itemSize="3" [ngClass]="{'viewport' : (!viewAsWidget),'viewport-widget' : (viewAsWidget)}">
-  <div [ngClass]="{'container' : !viewAsWidget}">
-    <mat-grid-list [cols]="numberOfCols" gutterSize="10" rowHeight="1:1">
-      <ng-container *cdkVirtualFor="let artPiece of artPieces$ | async; trackBy: listTracking">
-        <mat-grid-tile *ngIf="displayPiece(artPiece)" (click)="handleArtPieceClick(artPiece.tokenId)">
-          <mat-card>
-            <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.media[0])" [alt]="artPiece.name"/>
-          </mat-card>
-        </mat-grid-tile>
-      </ng-container>
-    </mat-grid-list>
-  </div>
-</cdk-virtual-scroll-viewport>
+<div [ngClass]="{'container' : !viewAsWidget}">
+  <mat-grid-list [cols]="numberOfCols" gutterSize="10" rowHeight="1:1">
+    <ng-container *ngFor="let artPiece of artPieces$ | async; trackBy: listTracking"> 
+      <mat-grid-tile *ngIf="displayPiece(artPiece)" (click)="handleArtPieceClick(artPiece.tokenId)">
+        <mat-card>
+          <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.media[0])" [alt]="artPiece.title"/>
+        </mat-card>
+      </mat-grid-tile>
+    </ng-container>
+  </mat-grid-list>
+</div>
 
