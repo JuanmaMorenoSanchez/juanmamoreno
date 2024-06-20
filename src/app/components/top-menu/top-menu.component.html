@@ -28,6 +28,10 @@
 
 <mat-menu #paintingMenu="matMenu">
   <button mat-menu-item routerLink="/artworks">All paintings</button>
+  <button mat-menu-item [matMenuTriggerFor]="yearsMenu">By Year</button>
+</mat-menu>
+
+<mat-menu #yearsMenu="matMenu">
   <button mat-menu-item [routerLink]="['/artworks', year]" *ngFor="let year of years">{{year}}</button>
 </mat-menu>
 
