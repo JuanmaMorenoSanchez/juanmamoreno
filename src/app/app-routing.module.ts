@@ -12,7 +12,11 @@ const routes: Routes = [
   { 
     path: '', 
     pathMatch: "full", 
-    component: HomeComponent
+    // component: HomeComponent
+    component: ArtPiecesListComponent,
+    data: {
+      breadcrumb: 'Paintings',
+    },
   },
   { 
     path: 'artworks', 

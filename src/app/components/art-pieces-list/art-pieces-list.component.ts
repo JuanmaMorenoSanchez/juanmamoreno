@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
+import { NftFilters } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
@@ -16,8 +17,8 @@ import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
 export class ArtPiecesListComponent implements OnInit, OnDestroy {
 
   @Input() numberOfCols: number | null = null;
-  @Input() yearFilter?: string;
-  @Input() featuredFilter?: Array<string>;
+  @Input() nftFilters?: NftFilters = {};
+  // @Input() featuredFilter?: Array<string>;
   @Input() viewAsWidget = false;
 
   @Output() selectedTokenId = new EventEmitter<string>();
@@ -39,8 +40,9 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.yearFilter) {
-      this.yearFilter = this.activatedroute.firstChild?.snapshot.paramMap.get('year')!
+    if (!this.nftFilters?.years?.length) {
+      const routeYear = this.activatedroute.firstChild?.snapshot.paramMap.get('year')!;
+      this.nftFilters = { years: routeYear ? [routeYear] : []}
     }
     if (this.yearSubscription()) {
       this.subscriptions.add(this.yearSubscription());
@@ -54,18 +56,29 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     ).subscribe((ev) => {
       // TODO: DO BETTER. NEED TO REFACTOR FILTERS AND PARAMS
       if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
-        this.yearFilter = this.activatedroute.firstChild.snapshot.paramMap.get('year')!;
+        const yearValue = this.activatedroute.firstChild.snapshot.paramMap.get('year');
+        if (yearValue) {
+          this.nftFilters!.years = [yearValue];
+        } else {
+          this.nftFilters!.years = [];
+        }
       } else {
         if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
-          this.yearFilter = this.activatedroute.snapshot.paramMap.get('year')!
+          const yearValue = this.activatedroute.snapshot.paramMap.get('year')!
+          if (yearValue) {
+            this.nftFilters!.years = [yearValue]
+          } else {
+            this.nftFilters!.years = [];
+          }
         }
       }
+      console.log("11 ", this.nftFilters)
       this.changeDetectorRef.detectChanges();
     })
   }
 
   public displayPiece(nft: Nft): boolean {
-    return !this.isExcludedByYear(nft) && !this.isExcludedByFeature(nft) && this.isFrontalView(nft);
+    return !this.isExcludedByYear(nft) && this.isFrontalView(nft) /*&& !this.isExcludedByFeature(nft)*/;
   }
 
   private setLayout(): void {
@@ -75,12 +88,16 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   }
 
   private isExcludedByYear(nft: Nft): boolean {
-    return !!this.yearFilter && nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== this.yearFilter
+    if (this.nftFilters?.years && this.nftFilters?.years?.length) {
+      return this.nftFilters.years.some(year => nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
+    } else {
+      return false
+    }
   }
 
-  private isExcludedByFeature(nft: Nft): boolean {
-    return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId);
-  }
+  // private isExcludedByFeature(nft: Nft): boolean {
+  //   return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId);
+  // }
 
   private isFrontalView(nft: Nft): boolean {
     const imagetype = nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);

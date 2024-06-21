@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SOLDCERTIFICATES, VALIDTRAITS } from '@constants/nft.constants';
+import { NftFilters } from '@models/nfts.models';
 
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
@@ -34,13 +35,17 @@ export class ArtPieceComponent {
     this.nfts$ = this.setArtData(this.tokenId);
   }
 
-  public generateRadio(nft: Nft): number {
+  public generateRatio(nft: Nft): number {
     // TODO: resolve when there are multiple images in same art
     const height = parseFloat(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
     const width = parseFloat(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
     const mobileAdjustement = !this.horizontalView ? Math.ceil((height/width)) : 0;
     const ratio = Math.ceil((height/width)*2)+mobileAdjustement;
     return ratio
+  }
+
+  public getYearFilter(year: string): NftFilters {
+    return {years: [year]}
   }
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {

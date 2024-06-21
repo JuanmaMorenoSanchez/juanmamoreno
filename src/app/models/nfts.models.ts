@@ -1,7 +1,7 @@
 import { NFT } from "opensea-js";
 
 export interface NftFilters {
-    year?: string;
+    years?: Array<string>;
 }
 
 export interface NFTMetadata extends NFT {
