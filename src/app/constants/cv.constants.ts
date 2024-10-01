@@ -88,7 +88,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "Realidad y artificio, Anna Jonsson & Juanma Moreno",
-                venue: "El estudio de Ignacio Castro",
+                venue: "El Estudio de Ignacio del Río",
                 city: "Villanueva del Rosario",
                 country: COUNTRIES.SPAIN,
                 year: 2024
