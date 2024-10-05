@@ -26,7 +26,7 @@ import { ContactComponent } from './contact/contact.component';
 import { AboutComponent } from './about/about.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { CanvasContainerComponent } from './canvas-container/canvas-container.component';
@@ -35,61 +35,48 @@ import { ImageViewerComponent } from './image-viewer/image-viewer.component';
 import { GalleryModule } from 'ng-gallery';
 import { LightboxModule } from 'ng-gallery/lightbox';
 
-@NgModule({
-  declarations: [
-    LoginButtonComponent,
-    TopMenuComponent,
-    ArtPiecesListComponent,
-    ArtPieceComponent,
-    CvComponent,
-    ContactComponent,
-    AboutComponent,
-    HomeComponent,
-    BreadcrumbComponent,
-    CanvasContainerComponent,
-    GenerativePieceComponent,
-    ImageViewerComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    GalleryModule,
-    HttpClientModule,
-    LightboxModule,
-    MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatGridListModule,
-    MatIconModule,
-    MatInputModule,
-    MatMenuModule,
-    MatListModule,
-    MatProgressSpinnerModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatSnackBarModule,
-    // Web3ModalModule,
-    ReactiveFormsModule,
-    RouterModule,
-    ScrollingModule,
-    CdkScrollableModule
-  ],
-  providers: [
-    // {
-    //   provide: Web3ModalService,
-    //   useFactory: () => new Web3ModalService({
-    //     disableInjectedProvider: false,
-    //     cacheProvider: true,
-    //     providerOptions: {},
-    //     network: "polygon"
-    //   }),
-    // },
-  ],
-  exports: [
-    TopMenuComponent,
-  ]
-})
+@NgModule({ declarations: [
+        LoginButtonComponent,
+        TopMenuComponent,
+        ArtPiecesListComponent,
+        ArtPieceComponent,
+        CvComponent,
+        ContactComponent,
+        AboutComponent,
+        HomeComponent,
+        BreadcrumbComponent,
+        CanvasContainerComponent,
+        GenerativePieceComponent,
+        ImageViewerComponent
+    ],
+    exports: [
+        TopMenuComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        GalleryModule,
+        LightboxModule,
+        MatButtonModule,
+        MatCardModule,
+        MatChipsModule,
+        MatDividerModule,
+        MatFormFieldModule,
+        MatGridListModule,
+        MatIconModule,
+        MatInputModule,
+        MatMenuModule,
+        MatListModule,
+        MatProgressSpinnerModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        MatSnackBarModule,
+        // Web3ModalModule,
+        ReactiveFormsModule,
+        RouterModule,
+        ScrollingModule,
+        CdkScrollableModule], providers: [
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class ComponentsModule { }
