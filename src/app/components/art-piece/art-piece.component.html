@@ -1,41 +1,45 @@
 
 <div class="container margin-top">
-    <ng-container *ngFor="let nft of nfts$ | async; let last = last; let first = first">
-        <ng-container *ngIf="last">
-            <mat-grid-list cols="3">
-                <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft)">
-                    <app-image-viewer class="fit-width" [nfts]="(nfts$ | async)"></app-image-viewer>
-                </mat-grid-tile>
-                <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
-                        <div class="art-piece-labels">
-                            <h3>
-                                <i>{{nft.rawMetadata?.name}}. </i>
-                            </h3>
-                            <h3>
-                                <small>
-                                    <a [routerLink]="'/artworks/'+getTraitValue(nft, validTraits.YEAR)">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>, 
-                                    {{ getTraitValue(nft, validTraits.MEDIUM ) }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
-                                    <span class="dot" *ngIf="sold(nft.tokenId)"></span>
-                                </small>
-                            </h3>
-                        </div>
-                </mat-grid-tile>
-            </mat-grid-list>
-            <div class="art-piece-desc" *ngIf="nft.rawMetadata?.description">
-                <h3>{{ getTraitValue(nft, validTraits.PROJECT)}}</h3>
-                <p>{{nft.rawMetadata?.description}}</p>
-                <h3>{{ getTraitValue(nft, validTraits.DESC_AUTHOR)}}</h3>
-            </div>
-            <div class="margin-top">
-                <mat-divider></mat-divider>
-                <h3>More on {{getTraitValue(nft, validTraits.YEAR)}}</h3>
-                <app-art-pieces-list 
-                    [viewAsWidget]="true" 
-                    [numberOfCols]="numberOfViewMoreColumns" 
-                    [nftFilters]="getYearFilter(getTraitValue(nft, validTraits.YEAR))"
-                    (selectedTokenId)="handleSelectedItem($event)">
-                </app-art-pieces-list>
-            </div>
-        </ng-container>
-    </ng-container>
+  @for (nft of nfts$ | async; track nft; let last = $last; let first = $first) {
+    @if (last) {
+      <mat-grid-list cols="3">
+        <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft)">
+          <app-image-viewer class="fit-width" [nfts]="(nfts$ | async)"></app-image-viewer>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
+          <div class="art-piece-labels">
+            <h3>
+              <i>{{nft.rawMetadata?.name}}. </i>
+            </h3>
+            <h3>
+              <small>
+                <a [routerLink]="'/artworks/'+getTraitValue(nft, validTraits.YEAR)">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>,
+                {{ getTraitValue(nft, validTraits.MEDIUM ) }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
+                @if (sold(nft.tokenId)) {
+                  <span class="dot"></span>
+                }
+              </small>
+            </h3>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+      @if (nft.rawMetadata?.description) {
+        <div class="art-piece-desc">
+          <h3>{{ getTraitValue(nft, validTraits.PROJECT)}}</h3>
+          <p>{{nft.rawMetadata?.description}}</p>
+          <h3>{{ getTraitValue(nft, validTraits.DESC_AUTHOR)}}</h3>
+        </div>
+      }
+      <div class="margin-top">
+        <mat-divider></mat-divider>
+        <h3>More on {{getTraitValue(nft, validTraits.YEAR)}}</h3>
+        <app-art-pieces-list
+          [viewAsWidget]="true"
+          [numberOfCols]="numberOfViewMoreColumns"
+          [nftFilters]="getYearFilter(getTraitValue(nft, validTraits.YEAR))"
+          (selectedTokenId)="handleSelectedItem($event)">
+        </app-art-pieces-list>
+      </div>
+    }
+  }
 </div>

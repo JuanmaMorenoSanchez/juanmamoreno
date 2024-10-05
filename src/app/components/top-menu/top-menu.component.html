@@ -2,9 +2,17 @@
   <mat-toolbar-row >
     <button mat-button [routerLink]="['/']">Juanma Moreno Sánchez</button>
     <span class="spacer"></span>
-    <button *ngIf="!mobileMenu; else menuButtons;" mat-icon-button aria-label="menu" (click)="drawer.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button>
+    @if (!mobileMenu) {
+      <button mat-icon-button aria-label="menu" (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    } @else {
+      <button mat-button [matMenuTriggerFor]="paintingMenu" class="menu-button">Painting</button>
+      <button mat-button [matMenuTriggerFor]="generativeMenu" class="menu-button">Generative</button>
+      <button mat-button [routerLink]="['/about']" class="menu-button">About</button>
+      <button mat-button [routerLink]="['/cv']" class="menu-button">CV</button>
+      <button mat-button [routerLink]="['/contact']" class="menu-button">Contact</button>
+    }
   </mat-toolbar-row>
 </mat-toolbar>
 
@@ -32,9 +40,13 @@
 </mat-menu>
 
 <mat-menu #yearsMenu="matMenu">
-  <button mat-menu-item [routerLink]="['/artworks', year]" *ngFor="let year of years">{{year}}</button>
+  @for (year of years; track year) {
+    <button mat-menu-item [routerLink]="['/artworks', year]">{{year}}</button>
+  }
 </mat-menu>
 
 <mat-menu #generativeMenu="matMenu">
-  <button mat-menu-item [routerLink]="['/generative', generativePiece.id]" *ngFor="let generativePiece of generativePieces">{{generativePiece.label}}</button>
+  @for (generativePiece of generativePieces; track generativePiece) {
+    <button mat-menu-item [routerLink]="['/generative', generativePiece.id]">{{generativePiece.label}}</button>
+  }
 </mat-menu>

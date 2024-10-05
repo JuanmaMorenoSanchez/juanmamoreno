@@ -1,46 +1,52 @@
 
 <div class="container margin-top">
 
-    <div class="padding-sides">
-        <h2>Contact</h2> 
-        <h3>Please contact me using the form bellow. I will get back to you soon. You can also follow me on 
-            <a href="https://www.instagram.com/juanmamorenosanchez/" target="_blank">Instagram</a> 
-            to stay on the loop.</h3>
-    </div>
+  <div class="padding-sides">
+    <h2>Contact</h2>
+    <h3>Please contact me using the form bellow. I will get back to you soon. You can also follow me on
+      <a href="https://www.instagram.com/juanmamorenosanchez/" target="_blank">Instagram</a>
+    to stay on the loop.</h3>
+  </div>
 
-    <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
-        <mat-grid-list cols="2" rowHeight="10vh">
-            <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
-                <mat-form-field class="fit-width padding-sides">
-                    <mat-label>Name</mat-label>
-                    <input matInput [formControl]="name" required>
-                    <mat-error *ngIf="name.invalid">{{getNameError()}}</mat-error>
-                </mat-form-field>
-            </mat-grid-tile>
+  <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
+    <mat-grid-list cols="2" rowHeight="10vh">
+      <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
+        <mat-form-field class="fit-width padding-sides">
+          <mat-label>Name</mat-label>
+          <input matInput [formControl]="name" required>
+          @if (name.invalid) {
+            <mat-error>{{getNameError()}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
 
-            <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
-                <mat-form-field class="fit-width padding-sides">
-                    <mat-label>Email</mat-label>
-                    <input matInput [formControl]="email" placeholder="email@example.com" required>
-                    <mat-error *ngIf="email.invalid">{{getEmailError()}}</mat-error>
-                </mat-form-field>
-            </mat-grid-tile>
+      <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
+        <mat-form-field class="fit-width padding-sides">
+          <mat-label>Email</mat-label>
+          <input matInput [formControl]="email" placeholder="email@example.com" required>
+          @if (email.invalid) {
+            <mat-error>{{getEmailError()}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
 
-            <mat-grid-tile colspan="2">
-                <mat-form-field class="fit-width padding-sides">
-                    <mat-label>Message</mat-label>
-                    <textarea matInput [formControl]="message" maxlength="256" placeholder="I'm interested in..." required></textarea>
-                    <mat-hint>{{message.value.length}}/256</mat-hint>
-                    <mat-error *ngIf="message.invalid">{{getMessageError()}}</mat-error>
-                </mat-form-field>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="2">
-                <div class="padding-sides">
-                    <button  mat-raised-button color="primary" [disabled]="isLoading" type="submit" class="margin-top">Submit</button>
-                </div>
-            </mat-grid-tile>
-        </mat-grid-list>
+      <mat-grid-tile colspan="2">
+        <mat-form-field class="fit-width padding-sides">
+          <mat-label>Message</mat-label>
+          <textarea matInput [formControl]="message" maxlength="256" placeholder="I'm interested in..." required></textarea>
+          <mat-hint>{{message.value.length}}/256</mat-hint>
+          @if (message.invalid) {
+            <mat-error>{{getMessageError()}}</mat-error>
+          }
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2">
+        <div class="padding-sides">
+          <button  mat-raised-button color="primary" [disabled]="isLoading" type="submit" class="margin-top">Submit</button>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
 
-        <input [formControl]="honeypot" class="hidden" type="text" />
-    </form>
+    <input [formControl]="honeypot" class="hidden" type="text" />
+  </form>
 </div>

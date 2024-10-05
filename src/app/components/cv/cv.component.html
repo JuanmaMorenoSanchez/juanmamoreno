@@ -1,43 +1,53 @@
 
 <!-- <img class="front-image" mat-card-image src="assets/images/juanma_estudio.jpg" alt="Juanma Moreno Sánchez art studio"/> -->
 <div class="container margin-top">
-    <mat-grid-list [cols]="totalCols" rowHeight="2.8rem">
-        <mat-grid-tile [colspan]="yearColSpan" rowspan="3"></mat-grid-tile>
-        <mat-grid-tile [colspan]="descColSpan">
-            <h2>Juanma Moreno Sánchez</h2> 
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="descColSpan">
-            <h3>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</h3>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="descColSpan">
-            <h4>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a></h4>
-        </mat-grid-tile>
-    </mat-grid-list>
+  <mat-grid-list [cols]="totalCols" rowHeight="2.8rem">
+    <mat-grid-tile [colspan]="yearColSpan" rowspan="3"></mat-grid-tile>
+    <mat-grid-tile [colspan]="descColSpan">
+      <h2>Juanma Moreno Sánchez</h2>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="descColSpan">
+      <h3>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</h3>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="descColSpan">
+      <h4>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a></h4>
+    </mat-grid-tile>
+  </mat-grid-list>
 
-    <ng-container *ngFor="let cvSection of cvTimeline">
-        <mat-divider></mat-divider>
-        <mat-grid-list [cols]="totalCols" rowHeight="4rem" role="list">
-            <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
-            <mat-grid-tile [colspan]="descColSpan" role="listitem">
-                <h2>{{cvSection.title}}</h2>
+  @for (cvSection of cvTimeline; track cvSection) {
+    <mat-divider></mat-divider>
+    <mat-grid-list [cols]="totalCols" rowHeight="4rem" role="list">
+      <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
+      <mat-grid-tile [colspan]="descColSpan" role="listitem">
+        <h2>{{cvSection.title}}</h2>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list [cols]="totalCols" rowHeight="2.8rem" role="list">
+      @for (cvItem of cvSection.items; track cvItem) {
+        <div>
+          @if (displayYearLabel(cvSection.items, cvItem)) {
+            <mat-grid-tile [colspan]="yearColSpan" [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)">
+              <h3>{{cvItem.year}}</h3>
             </mat-grid-tile>
-        </mat-grid-list>
-        <mat-grid-list [cols]="totalCols" rowHeight="2.8rem" role="list">
-            <div *ngFor="let cvItem of cvSection.items">
-                <mat-grid-tile *ngIf="displayYearLabel(cvSection.items, cvItem)" [colspan]="yearColSpan" [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)">
-                    <h3>{{cvItem.year}}</h3>
-                </mat-grid-tile>
-                <mat-grid-tile [colspan]="descColSpan" role="listitem">
-                    <p>
-                        <i><strong><span [innerHTML]="cvItem.title"></span></strong></i>, 
-                        <small>
-                            <span *ngIf="cvItem.venue" [innerHTML]="cvItem.venue+','"></span>
-                            <span *ngIf="cvItem.city"> {{cvItem.city}}, </span> 
-                            <span *ngIf="cvItem.country">({{cvItem.country}})</span>
-                        </small>
-                    </p>
-                </mat-grid-tile>
-            </div>
-        </mat-grid-list>
-    </ng-container>
+          }
+          <mat-grid-tile [colspan]="descColSpan" role="listitem">
+            <p>
+              <i><strong><span [innerHTML]="cvItem.title"></span></strong></i>,
+              <small>
+                @if (cvItem.venue) {
+                  <span [innerHTML]="cvItem.venue+','"></span>
+                }
+                @if (cvItem.city) {
+                  <span> {{cvItem.city}}, </span>
+                }
+                @if (cvItem.country) {
+                  <span>({{cvItem.country}})</span>
+                }
+              </small>
+            </p>
+          </mat-grid-tile>
+        </div>
+      }
+    </mat-grid-list>
+  }
 </div>
