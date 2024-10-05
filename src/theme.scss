@@ -1,15 +1,23 @@
-@import "@angular/material/theming";
-@include mat-core();
+@use '@angular/material' as mat;
+@include mat.core();
 
-$jm-primary: mat-palette($mat-blue-grey, 900);
-$jm-accent: mat-palette($mat-green, 'A400');
-$jm-warn: mat-palette($mat-pink, 500);
+$jm-primary: mat.define-palette(mat.$blue-grey-palette, 900);
+$jm-accent: mat.define-palette(mat.$green-palette, 'A400');
+$jm-warn: mat.define-palette(mat.$pink-palette, 500);
 
-$jm-typo: mat-typography-config(
+$jm-typo: mat.define-typography-config(
     $font-family: 'Roboto, "Helvetica Neue", sans-serif',
 );
 
-$jm-theme: mat-light-theme($jm-primary, $jm-accent, $jm-warn);
 
-@include angular-material-theme($jm-theme);
-@include angular-material-typography($jm-typo);
+$jm-theme: mat.define-light-theme((
+  color: (
+    primary: $jm-primary,
+    accent: $jm-accent,
+    warn: $jm-warn,
+  ),
+  // typography: $jm-typo,
+));
+
+@include mat.all-component-themes($jm-theme);
+@include mat.all-component-typographies($jm-typo);
