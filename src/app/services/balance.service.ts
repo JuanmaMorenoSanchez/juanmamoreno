@@ -26,7 +26,6 @@ export class BalanceService {
   // }
 
   // private updateUserBalances(balances: TokenBalancesResponseErc20): Observable<TokenBalancesResponseErc20 | undefined> {
-  //   console.log("Storing balances locally ", balances);
   //   this.sessionStore.update({ balances });
   //   return this.sessionQuery.selectBalancesObservable;
   // }

@@ -24,9 +24,7 @@ export class LoginButtonComponent implements OnInit {
   handleConnection() {
     // TODO: Try to makes sense to the response and handle status connection and persist in akita
     // this.web3modalService.open().then((res: any) => {
-    //   console.log("RES ", res);
     //   const provider = new Web3Provider(res);
-    //   console.log("provider ", provider)
     //   // undefined si no hace connect
     // }).catch(err => console.log("RES ", err));
 

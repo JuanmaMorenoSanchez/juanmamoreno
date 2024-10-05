@@ -52,7 +52,6 @@ export class ContactComponent {
       this.isLoading = true;
 
       this.httpClient.post(environment.backendUrl+'contact', formData).subscribe((res: any) => {
-        console.log("res ", res);
         this.form.enable();
         this.form.reset();
         this.openSnackBar(res.message)

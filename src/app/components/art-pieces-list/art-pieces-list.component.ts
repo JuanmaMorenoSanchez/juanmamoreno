@@ -72,7 +72,6 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log("11 ", this.nftFilters)
       this.changeDetectorRef.detectChanges();
     })
   }
