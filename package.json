@@ -24,7 +24,6 @@
     "@angular/platform-browser-dynamic": "^16.0.0",
     "@angular/router": "^16.0.0",
     "@datorama/akita": "^8.0.1",
-    "@mindsorg/web3modal-angular": "^1.7.2-beta.1",
     "@types/p5": "^1.7.6",
     "alchemy-sdk": "^2.10.0",
     "ng-gallery": "^11.0.0",
