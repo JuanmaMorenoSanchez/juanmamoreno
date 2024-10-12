@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit, output, Signal } from '@angular/core';
+import { Component, input, OnInit, output, Signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
@@ -13,8 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-art-pieces-list',
   templateUrl: './art-pieces-list.component.html',
-  styleUrls: ['./art-pieces-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./art-pieces-list.component.scss']
 })
 export class ArtPiecesListComponent implements OnInit {
 
@@ -29,7 +28,6 @@ export class ArtPiecesListComponent implements OnInit {
     private sessionQuery: SessionQuery,
     private activatedroute: ActivatedRoute,
     private router: Router,
-    private changeDetectorRef: ChangeDetectorRef,
     private nftService: NftsService,
     private responsiveService: ResponsiveService
   ) {
@@ -51,7 +49,6 @@ export class ArtPiecesListComponent implements OnInit {
         const yearValue = this.activatedroute.snapshot.paramMap.get('year')!
         this.nftFilters().years = yearValue ? [yearValue] : [];
       }
-      this.changeDetectorRef.detectChanges();
     })
   }
 
