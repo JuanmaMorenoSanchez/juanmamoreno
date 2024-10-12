@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit, output, Signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
 import { Media, Nft } from 'alchemy-sdk';
-import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -14,18 +16,14 @@ import { Observable, Subscription, distinctUntilChanged, filter } from 'rxjs';
   styleUrls: ['./art-pieces-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArtPiecesListComponent implements OnInit, OnDestroy {
+export class ArtPiecesListComponent implements OnInit {
 
-  @Input() numberOfCols: number | null = null;
-  @Input() nftFilters?: NftFilters = {};
-  // @Input() featuredFilter?: Array<string>;
-  @Input() viewAsWidget = false;
+  numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 5);
+  viewAsWidget = input<boolean>(false);
+  nftFilters = input<NftFilters>({});
+  selectedTokenId = output<string>()
 
-  @Output() selectedTokenId = new EventEmitter<string>();
-
-  public artPieces$: Observable<Nft[]>;
-
-  private subscriptions = new Subscription();
+  public artPieces: Signal<Nft[] | undefined>;
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -35,68 +33,47 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
     private nftService: NftsService,
     private responsiveService: ResponsiveService
   ) {
-    this.artPieces$ = this.sessionQuery.selectArtPiecesObservable;
-    this.setLayout();
+    this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable);
   }
 
   ngOnInit(): void {
-    if (!this.nftFilters?.years?.length) {
-      const routeYear = this.activatedroute.firstChild?.snapshot.paramMap.get('year')!;
-      this.nftFilters = { years: routeYear ? [routeYear] : []}
-    }
-    if (this.yearSubscription()) {
-      this.subscriptions.add(this.yearSubscription());
-    }
+    this.listenYearParamChange();
   }
 
-  yearSubscription(): Subscription {
-    return this.router.events.pipe(
-      filter((e: unknown) => e instanceof NavigationEnd),
+  private listenYearParamChange(): void {
+    this.router.events.pipe(
       distinctUntilChanged()
-    ).subscribe((ev) => {
-      // TODO: DO BETTER. NEED TO REFACTOR FILTERS AND PARAMS
+    ).subscribe(() => {
       if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
         const yearValue = this.activatedroute.firstChild.snapshot.paramMap.get('year');
-        if (yearValue) {
-          this.nftFilters!.years = [yearValue];
-        } else {
-          this.nftFilters!.years = [];
-        }
-      } else {
-        if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
-          const yearValue = this.activatedroute.snapshot.paramMap.get('year')!
-          if (yearValue) {
-            this.nftFilters!.years = [yearValue]
-          } else {
-            this.nftFilters!.years = [];
-          }
-        }
+        this.nftFilters().years = yearValue ? [yearValue] : [];
+      } else if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
+        const yearValue = this.activatedroute.snapshot.paramMap.get('year')!
+        this.nftFilters().years = yearValue ? [yearValue] : [];
       }
       this.changeDetectorRef.detectChanges();
     })
   }
 
   public displayPiece(nft: Nft): boolean {
-    return !this.isExcludedByYear(nft) && this.isFrontalView(nft) /*&& !this.isExcludedByFeature(nft)*/;
+    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.isFrontalView(nft);
   }
 
-  private setLayout(): void {
-    if (!this.numberOfCols) {
-      this.numberOfCols = !this.responsiveService.displayMobileLayout.value ? 2 : 5
-    }
-  }
-
-  private isExcludedByYear(nft: Nft): boolean {
-    if (this.nftFilters?.years && this.nftFilters?.years?.length) {
-      return this.nftFilters.years.some(year => nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
+  private isExcludedById(nft: Nft): boolean {
+    if (this.nftFilters()?.idsToExclude?.length) {
+      return this.nftFilters().idsToExclude!.includes(nft.tokenId)
     } else {
       return false
     }
   }
 
-  // private isExcludedByFeature(nft: Nft): boolean {
-  //   return !!this.featuredFilter?.length && !this.featuredFilter!.includes(nft.tokenId);
-  // }
+  private isExcludedByYear(nft: Nft): boolean {
+    if (this.nftFilters()?.years?.length) {
+      return this.nftFilters().years!.some(year => nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
+    } else {
+      return false
+    }
+  }
 
   private isFrontalView(nft: Nft): boolean {
     const imagetype = nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
@@ -116,9 +93,4 @@ export class ArtPiecesListComponent implements OnInit, OnDestroy {
   listTracking(index: number, value: Nft) {
     return value
   } 
- 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
 }

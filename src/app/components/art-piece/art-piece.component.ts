@@ -57,8 +57,12 @@ export class ArtPieceComponent {
     return ratio
   }
 
-  public getYearFilter(year: string): NftFilters {
-    return {years: [year]}
+  public getSameYearListFilter(nft: Nft): NftFilters {
+    const filters: NftFilters = {
+      years: [this.getTraitValue(nft, this.validTraits.YEAR)],
+      idsToExclude: [nft.tokenId]
+    }
+    return filters
   }
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {

@@ -36,7 +36,7 @@
         <app-art-pieces-list
           [viewAsWidget]="true"
           [numberOfCols]="numberOfViewMoreColumns"
-          [nftFilters]="getYearFilter(getTraitValue(nft, validTraits.YEAR))"
+          [nftFilters]="getSameYearListFilter(nft)"
           (selectedTokenId)="handleSelectedItem($event)">
         </app-art-pieces-list>
       </div>

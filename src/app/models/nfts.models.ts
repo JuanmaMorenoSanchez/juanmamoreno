@@ -2,6 +2,7 @@ import { NFT } from "opensea-js";
 
 export interface NftFilters {
     years?: Array<string>;
+    idsToExclude?: Array<string>;
 }
 
 export interface NFTMetadata extends NFT {
