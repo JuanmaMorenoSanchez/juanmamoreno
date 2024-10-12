@@ -1,10 +1,10 @@
 
 <div class="container margin-top">
-  @for (nft of nfts$ | async; track nft; let last = $last; let first = $first) {
+  @for (nft of nfts(); track nft; let last = $last; let first = $first) {
     @if (last) {
       <mat-grid-list cols="3">
         <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft)">
-          <app-image-viewer class="fit-width" [nfts]="(nfts$ | async)"></app-image-viewer>
+          <app-image-viewer class="fit-width" [nfts]="nfts()"></app-image-viewer>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
           <div class="art-piece-labels">

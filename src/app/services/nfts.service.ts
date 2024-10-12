@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
-import { Observable, map } from 'rxjs';
+import { Observable, filter, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS } from '@constants/nft.constants';
 import { AlchemyService } from './alchemy.service';
@@ -54,6 +54,17 @@ export class NftsService {
     return this.sessionQuery.selectArtPieces?.filter(artPiece =>
       year === artPiece.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value']
     )
+  }
+
+  public getSameArtThan(tokenId: string): Observable<Array<Nft>> {
+    return this.getNftByIdObservable(tokenId).pipe(
+      filter(nft => nft !== undefined),
+      map(nft => this.getArtByTitle(nft!.title))
+    );
+  }
+
+  private getArtByTitle(titleToSearch: string): Array<Nft> {
+    return this.sessionQuery.selectArtPieces?.filter(({title}) => title === titleToSearch);
   }
 
   private itIsNeccesaryToFetch(): boolean {
