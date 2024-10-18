@@ -5,7 +5,7 @@ import { NftFilters } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
-import { Media, Nft } from 'alchemy-sdk';
+import { Nft, NftImage } from 'alchemy-sdk';
 import { distinctUntilChanged } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -65,21 +65,20 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   private isExcludedByYear(nft: Nft): boolean {
-    if (this.nftFilters()?.years?.length) {
-      return this.nftFilters().years!.some(year => nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
+    if (this.nftFilters().years?.length) {
+      return this.nftFilters().years!.some(year => nft.raw.metadata!['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
     } else {
       return false
     }
   }
 
   private isFrontalView(nft: Nft): boolean {
-    const imagetype = nft.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
+    const imagetype = nft.raw.metadata['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
     const imagetypeIsSet = !!imagetype;
-    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);
-  }
+    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);  }
 
-  public getImgThumbUrl(media: Media): string {
-    return this.nftService.getOptimalUrl(media);
+  public getImgThumbUrl(image: NftImage): string {
+    return this.nftService.getOptimalUrl(image);
   }
 
   public handleArtPieceClick(tokenId: string) {

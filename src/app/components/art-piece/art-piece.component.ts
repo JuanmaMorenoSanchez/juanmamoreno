@@ -5,7 +5,7 @@ import { NftFilters } from '@models/nfts.models';
 
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
-import { Media, Nft } from 'alchemy-sdk';
+import { NftImage, Nft } from 'alchemy-sdk';
 import { map, switchMap } from 'rxjs';
 
 @Component({
@@ -67,7 +67,7 @@ export class ArtPieceComponent {
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
     try {
-      return nft.rawMetadata!.attributes!.find(trait => trait['trait_type'] === validTrait)!['value']
+      return nft.raw.metadata['attributes'].find((trait: any) => trait['trait_type'] === validTrait)!['value']
     } catch {
       return "Error getting data"
     }
@@ -77,8 +77,8 @@ export class ArtPieceComponent {
     return SOLDCERTIFICATES.includes(tokenId);
   }
 
-  public getQualityImg(media: Media): string {
-    return this.nftsService.getQualityUrl(media);
+  public getQualityImg(image: NftImage): string {
+    return this.nftsService.getQualityUrl(image);
   }
 
   handleSelectedItem(tokenId: string): void {

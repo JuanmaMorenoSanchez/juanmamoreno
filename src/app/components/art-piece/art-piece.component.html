@@ -9,7 +9,7 @@
         <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
           <div class="art-piece-labels">
             <h3>
-              <i>{{nft.rawMetadata?.name}}. </i>
+              <i>{{nft?.name}}. </i>
             </h3>
             <h3>
               <small>
@@ -23,10 +23,10 @@
           </div>
         </mat-grid-tile>
       </mat-grid-list>
-      @if (nft.rawMetadata?.description) {
+      @if (nft?.description) {
         <div class="art-piece-desc">
           <h3>{{ getTraitValue(nft, validTraits.PROJECT)}}</h3>
-          <p>{{nft.rawMetadata?.description}}</p>
+          <p>{{nft?.description}}</p>
           <h3>{{ getTraitValue(nft, validTraits.DESC_AUTHOR)}}</h3>
         </div>
       }

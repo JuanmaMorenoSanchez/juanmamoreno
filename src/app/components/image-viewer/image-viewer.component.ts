@@ -1,4 +1,5 @@
-import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import { GalleryComponent } from 'ng-gallery';
 import { Lightbox } from 'ng-gallery/lightbox';
@@ -19,6 +20,7 @@ export class ImageViewerComponent implements OnChanges {
 
   constructor(
     public lightbox: Lightbox,
+    private nftService: NftsService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -33,7 +35,7 @@ export class ImageViewerComponent implements OnChanges {
 
   private addNftsToGallery(nfts: Array<Nft>): void {
     nfts.forEach(nft => {
-      this.gallery?.addImage({ src: nft.media[0].gateway, thumb: nft.media[0].thumbnail || nft.media[0].gateway });
+      this.gallery?.addImage({ src: this.nftService.getQualityUrl(nft.image), thumb: this.nftService.getOptimalUrl(nft.image) });
     })
   }
 }

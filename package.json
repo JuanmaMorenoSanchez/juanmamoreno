@@ -25,13 +25,11 @@
     "@angular/router": "^18.2.7",
     "@datorama/akita": "^8.0.1",
     "@types/p5": "^1.7.6",
-    "alchemy-sdk": "^2.10.0",
+    "alchemy-sdk": "^3.4.3",
     "ng-gallery": "^11.0.0",
-    "opensea-js": "^7.0.0",
-    "p5": "^1.9.0",
+    "p5": "^1.11.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "web3": "^4.1.1",
     "zone.js": "^0.14.10"
   },
   "devDependencies": {

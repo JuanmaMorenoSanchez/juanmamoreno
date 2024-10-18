@@ -25,7 +25,7 @@ export class SessionQuery extends Query<SessionState> {
     get years(): Set<number> {
         return new Set(
             this.getValue().artPieces?.map((artPiece) => {
-                return Number(artPiece.rawMetadata!.attributes!.find((trait)  => trait['trait_type'] === VALIDTRAITS.YEAR)!['value'])
+                return Number(artPiece.raw.metadata!['attributes'].find((trait: any)  => trait['trait_type'] === VALIDTRAITS.YEAR)!['value'])
             }).filter(year => year).sort().reverse() as Array<number>
         );
     }

@@ -1,5 +1,5 @@
 import { BELIEVE_ID } from "@constants/canvas.constants";
-import * as p5 from "p5";
+import p5 from "p5";
 
 export const BELIEVE_CANVAS = (p: p5) => {
     const TWO_PI = Math.PI*2;

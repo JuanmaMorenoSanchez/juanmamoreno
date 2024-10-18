@@ -5,7 +5,7 @@ import { Observable, filter, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS } from '@constants/nft.constants';
 import { AlchemyService } from './alchemy.service';
-import { Media, Nft } from 'alchemy-sdk';
+import { Nft, NftImage } from 'alchemy-sdk';
 
 @Injectable({
   providedIn: 'root'
@@ -27,16 +27,12 @@ export class NftsService {
     }
   }
 
-  public getOptimalUrl(media: Media): string {
-    return media.thumbnail || media.gateway || this.formIpfsUrl(media.raw)
+  public getOptimalUrl(image: NftImage): string {
+    return image.thumbnailUrl || image.cachedUrl  || image.originalUrl!
   }
 
-  public getQualityUrl(media: Media): string {
-    return media.gateway || this.formIpfsUrl(media.raw)
-  }
-
-  private formIpfsUrl(ipfs: string): string {
-    return ipfs.replace("ipfs://", "https://ipfs.io/ipfs/")
+  public getQualityUrl(image: NftImage): string {
+    return image.originalUrl || image.cachedUrl || image.thumbnailUrl!
   }
 
   public getNftByIdObservable(id: string): Observable<Nft | undefined> {
@@ -52,19 +48,19 @@ export class NftsService {
 
   public getArtByYear(year:string): Nft[] | undefined {
     return this.sessionQuery.selectArtPieces?.filter(artPiece =>
-      year === artPiece.rawMetadata!.attributes!.find((attr)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value']
+      artPiece.raw.metadata[VALIDTRAITS.YEAR] === year
     )
   }
 
   public getSameArtThan(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
-      filter(nft => nft !== undefined),
-      map(nft => this.getArtByTitle(nft!.title))
+      filter(nft => !!nft?.name),
+      map(nft => this.getArtByTitle(nft!.name!))
     );
   }
 
-  private getArtByTitle(titleToSearch: string): Array<Nft> {
-    return this.sessionQuery.selectArtPieces?.filter(({title}) => title === titleToSearch);
+  private getArtByTitle(nameToSearch: string): Array<Nft> {
+    return this.sessionQuery.selectArtPieces?.filter(({name}) => name === nameToSearch);
   }
 
   private itIsNeccesaryToFetch(): boolean {
