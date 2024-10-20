@@ -44,6 +44,12 @@ export const SOLDCERTIFICATES = [
   "74",
   "75",
   "77",
+  "94", // ?
+  "112",
+  "114",
+  "115",
+  "118",
+  "117"
 ]
 
 // export const FEATUREDCERTIFICATES = [
