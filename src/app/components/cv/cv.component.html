@@ -7,22 +7,22 @@
       <h2>Juanma Moreno Sánchez</h2>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <h3>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</h3>
+      <p>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</p>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <h4>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a></h4>
+      <p>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a></p>
     </mat-grid-tile>
   </mat-grid-list>
 
   @for (cvSection of cvTimeline; track cvSection) {
-    <mat-divider></mat-divider>
-    <mat-grid-list [cols]="totalCols" rowHeight="4rem" role="list">
+    <mat-divider class="divider-margins"></mat-divider>
+    <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
       <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
       <mat-grid-tile [colspan]="descColSpan" role="listitem">
         <h2>{{cvSection.title}}</h2>
       </mat-grid-tile>
     </mat-grid-list>
-    <mat-grid-list [cols]="totalCols" rowHeight="2.8rem" role="list">
+    <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
       @for (cvItem of cvSection.items; track cvItem) {
         <div>
           @if (displayYearLabel(cvSection.items, cvItem)) {
