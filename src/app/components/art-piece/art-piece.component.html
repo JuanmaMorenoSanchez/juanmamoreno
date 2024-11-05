@@ -16,7 +16,7 @@
                 <a [routerLink]="'/artworks/'+getTraitValue(nft, validTraits.YEAR)">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>,
                 {{ getTraitValue(nft, validTraits.MEDIUM ) }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
                 @if (sold(nft.tokenId)) {
-                  <span class="dot"></span>
+                  <span matTooltip="Art piece sold" class="dot"></span>
                 }
               </small>
             </h3>

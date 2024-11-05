@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ShareButtonComponent } from '@components/share-button/share-button.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltip
   ],
   providers: [],
   bootstrap: [AppComponent],
