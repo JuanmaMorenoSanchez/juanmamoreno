@@ -5,7 +5,8 @@
       @if (displayPiece(artPiece)) {
         <mat-grid-tile (click)="handleArtPieceClick(artPiece.tokenId)">
           <mat-card>
-            <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.image)" [alt]="artPiece.name"/>
+            <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.image)" [alt]="artPiece.name" 
+              [matTooltip]="artPiece.name" matTooltipPosition="above"/>
           </mat-card>
         </mat-grid-tile>
       }

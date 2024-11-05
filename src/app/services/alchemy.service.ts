@@ -12,7 +12,7 @@ export class AlchemyService {
 
   public alchemy: Alchemy;
 
-  readonly alchemyPaginationSize = 100;
+  readonly alchemyPaginationSize = 200;
 
   public tempNFTList: Array<Nft> = [];
 

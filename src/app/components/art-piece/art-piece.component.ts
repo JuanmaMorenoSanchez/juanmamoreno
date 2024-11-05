@@ -66,26 +66,7 @@ export class ArtPieceComponent {
   }
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
-    try {
-      return nft.raw.metadata['attributes'].find((trait: any) => trait['trait_type'] === validTrait)!['value']
-    } catch {
-      switch (validTrait){
-        case VALIDTRAITS.MEDIUM:
-          return "Error getting medium"
-        case VALIDTRAITS.HEIGHT:
-          return "XX"
-        case VALIDTRAITS.WIDTH:
-          return "XX"
-        case VALIDTRAITS.UNIT:
-          return "cm"
-        case VALIDTRAITS.YEAR:
-          return "XXXX"
-        case VALIDTRAITS.IMAGETYPE:
-          return "Frontal view"
-        default:
-          return "Error getting data"
-      }
-    }
+    return this.nftsService.getTraitValue(nft, validTrait);
   }
 
   public sold(tokenId: string): boolean {

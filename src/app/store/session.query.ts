@@ -5,19 +5,13 @@ import { SessionState } from '@models/session.model';
 import { SessionStore } from '@store/session.store';
 
 @Injectable({ providedIn: 'root' })
-export class SessionQuery extends Query<SessionState> {  
-    // selectBalancesObservable = this.select(state => state.balances);
-    selectArtPiecesObservable = this.select(({ artPieces }) => [...artPieces].sort(() => Math.round(Math.random() -1))); 
-    
-    // get selectBalances() {
-    //     return this.getValue().balances
-    // }
+export class SessionQuery extends Query<SessionState> {
+    selectArtPiecesObservable = this.select(({ artPieces }) => [...artPieces]);
 
     get selectArtPieces() {
         return this.getValue().artPieces
     }
 
- 
     get selectLastArtPiecesUpdate() {
         return this.getValue().lastArtPiecesUpdate
     }

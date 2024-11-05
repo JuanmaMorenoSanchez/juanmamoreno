@@ -6,7 +6,7 @@ import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
 import { Nft, NftImage } from 'alchemy-sdk';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 
@@ -31,7 +31,9 @@ export class ArtPiecesListComponent implements OnInit {
     private nftService: NftsService,
     private responsiveService: ResponsiveService
   ) {
-    this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable);
+    this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable.pipe(
+      map(results => this.nftService.sortNFTsByYear(results))
+    ));
   }
 
   ngOnInit(): void {
