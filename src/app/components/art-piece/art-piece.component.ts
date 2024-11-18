@@ -58,9 +58,10 @@ export class ArtPieceComponent {
   }
 
   public getSameYearListFilter(nft: Nft): NftFilters {
+    const idsToExclude: string[] = this.nfts().map(nft => nft.tokenId);
     const filters: NftFilters = {
       years: [this.getTraitValue(nft, this.validTraits.YEAR)],
-      idsToExclude: [nft.tokenId]
+      idsToExclude
     }
     return filters
   }
