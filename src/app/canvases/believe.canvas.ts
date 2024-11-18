@@ -14,6 +14,7 @@ export const BELIEVE_CANVAS = (p: p5) => {
     let prayer3: p5.Image;
     let prayer4: p5.Image;
     let cabeza: p5.Image;
+    let frameCount = 0;
 
     p.preload = () => {
         const imgsRoute = "assets/images/canvases/"
@@ -35,6 +36,14 @@ export const BELIEVE_CANVAS = (p: p5) => {
         setRandomValues();
     };
     p.draw = () => {
+        if (frameCount > 10) {
+            p.fill(0, 255, 0, 10);
+            p.rect(0, 0, width, height);
+            frameCount = 0;
+        }
+        frameCount++;
+
+
         let mapped1=p.map(p.mouseX, 0, width, 10, 300);
         let mapped2=p.map(p.mouseY, 0, height, 10, 300);
 

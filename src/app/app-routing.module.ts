@@ -6,7 +6,7 @@ import { ArtPiecesListComponent } from '@components/art-pieces-list/art-pieces-l
 import { ContactComponent } from '@components/contact/contact.component';
 import { CvComponent } from '@components/cv/cv.component';
 import { GenerativePieceComponent } from '@components/generative-piece/generative-piece.component';
-import { HomeComponent } from '@components/home/home.component';
+import { NotFoundComponent } from '@components/not-found/not-found.component';
 
 const routes: Routes = [
   { 
@@ -54,6 +54,7 @@ const routes: Routes = [
     path: 'contact', 
     component: ContactComponent
   },
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({
