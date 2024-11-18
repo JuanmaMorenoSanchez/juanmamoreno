@@ -55,7 +55,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   public displayPiece(nft: Nft): boolean {
-    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.isFrontalView(nft);
+    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.nftService.isFrontalView(nft);
   }
 
   private isExcludedById(nft: Nft): boolean {
@@ -73,11 +73,6 @@ export class ArtPiecesListComponent implements OnInit {
       return false
     }
   }
-
-  private isFrontalView(nft: Nft): boolean {
-    const imagetype = nft.raw.metadata['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
-    const imagetypeIsSet = !!imagetype;
-    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);  }
 
   public getImgThumbUrl(image: NftImage): string {
     return this.nftService.getOptimalUrl(image);

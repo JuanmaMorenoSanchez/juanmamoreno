@@ -3,7 +3,7 @@ import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
 import { Observable, filter, map } from 'rxjs';
 import DateUtils from '@utils/date.utils';
-import { VALIDTRAITS } from '@constants/nft.constants';
+import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { AlchemyService } from './alchemy.service';
 import { Nft, NftImage } from 'alchemy-sdk';
 
@@ -28,11 +28,11 @@ export class NftsService {
   }
 
   public getOptimalUrl(image: NftImage): string {
-    return image.thumbnailUrl || image.cachedUrl  || image.originalUrl!
+    return image?.thumbnailUrl || image?.cachedUrl  || image?.originalUrl! // CREATE A FALLBACK IMG ASSET URL
   }
 
   public getQualityUrl(image: NftImage): string {
-    return image.originalUrl || image.cachedUrl || image.thumbnailUrl!
+    return image?.originalUrl || image?.cachedUrl || image?.thumbnailUrl! // CREATE A FALLBACK IMG ASSET URL
   }
 
   public getNftByIdObservable(id: string): Observable<Nft | undefined> {
@@ -84,6 +84,12 @@ export class NftsService {
 
   public sortNFTsByYear(nfts: Array<Nft>): Array<Nft> {
     return nfts.sort((a, b) => Number(this.getTraitValue(b, VALIDTRAITS.YEAR)) - Number(this.getTraitValue(a, VALIDTRAITS.YEAR)));
+  }
+
+  public isFrontalView(nft: Nft): boolean {
+    const imagetype = nft.raw.metadata['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
+    const imagetypeIsSet = !!imagetype;
+    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);  
   }
 
   private getArtByTitle(nameToSearch: string): Array<Nft> {

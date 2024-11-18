@@ -49,7 +49,8 @@ export const SOLDCERTIFICATES = [
   "114",
   "115",
   "118",
-  "117"
+  "117",
+  "126"
 ]
 
 // export const FEATUREDCERTIFICATES = [
