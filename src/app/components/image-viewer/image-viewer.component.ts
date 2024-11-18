@@ -1,13 +1,19 @@
-import { Component, HostBinding, input, Input, OnChanges, Signal, SimpleChanges, ViewChild } from '@angular/core';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, input,  SimpleChanges } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
-import { GalleryComponent } from 'ng-gallery';
-import { Lightbox } from 'ng-gallery/lightbox';
 
 @Component({
   selector: 'app-image-viewer',
   templateUrl: './image-viewer.component.html',
-  styleUrls: ['./image-viewer.component.scss']
+  styleUrls: ['./image-viewer.component.scss'],
+  animations: [
+    trigger('fadeTrigger', [
+      state('visible', style({ opacity: 1 })),
+      state('hidden', style({ opacity: 0 })),
+      transition('visible <=> hidden', animate('0.6s ease-in-out')),
+    ]),
+  ],
 })
 export class ImageViewerComponent {
 
@@ -15,15 +21,16 @@ export class ImageViewerComponent {
   displayIndex = 0;
   hovering = false;
   displayArrows = false;
+  isImgVisible = false;
 
   constructor(
-    public lightbox: Lightbox,
     private nftService: NftsService,
   ) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1;
+    this.isImgVisible = false;
   }
 
   public setHover(hovering: boolean) {
@@ -31,6 +38,8 @@ export class ImageViewerComponent {
   }
 
   public nextNft(relativeIndex: number) {
+    this.isImgVisible = false;
+
     this.displayIndex = (this.displayIndex + relativeIndex + this.nfts().length) % this.nfts().length;  
   }
 
@@ -46,8 +55,12 @@ export class ImageViewerComponent {
     return this.nftService.isFrontalView(nft);
   }
 
-  // private findFrontalView(nfts: Nft[]): Nft {
-  //   return nfts.find(nft => this.nftService.isFrontalView(nft) || this.nfts()[0])!
-  // }
+  onAnimationDone(event: any) {
+    if (event.toState === 'hidden') {
+      setTimeout(() => {
+        this.isImgVisible = true;
+      }, 0);
+    }
+  }
 
 }

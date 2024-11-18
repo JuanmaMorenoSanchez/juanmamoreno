@@ -4,8 +4,6 @@ import { persistState } from '@datorama/akita';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { GALLERY_CONFIG, GalleryConfig } from 'ng-gallery';
-// import { LIGHTBOX_CONFIG, LightboxConfig } from 'ng-gallery/lightbox';
 
 const persistStorage = persistState();
 
@@ -17,14 +15,7 @@ platformBrowserDynamic([
   { 
     provide: 'persistStorage', 
     useValue: persistStorage
-  },
-  {
-    provide: GALLERY_CONFIG,
-    useValue: {
-      autoHeight: true,
-      imageSize: 'contain'
-    } as GalleryConfig
-  },
+  }
   // {
   //   provide: LIGHTBOX_CONFIG,
   //   useValue: {

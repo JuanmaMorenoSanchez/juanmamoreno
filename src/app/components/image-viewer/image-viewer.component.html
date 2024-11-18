@@ -10,6 +10,8 @@
     }
 
     <img 
+        [@fadeTrigger]="isImgVisible ? 'visible' : 'hidden'"
+        (@fadeTrigger.done)="onAnimationDone($event)"
         [src]="getQualityImg(nfts()[displayIndex])" 
         [style.backgroundImage]="'url('+getSmallImg(nfts()[displayIndex])+')'"
         class="art-viewer"/>

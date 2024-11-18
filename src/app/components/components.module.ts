@@ -32,8 +32,6 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { CanvasContainerComponent } from './canvas-container/canvas-container.component';
 import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
 import { ImageViewerComponent } from './image-viewer/image-viewer.component';
-import { GalleryModule } from 'ng-gallery';
-import { LightboxModule } from 'ng-gallery/lightbox';
 
 @NgModule({ declarations: [
         LoginButtonComponent,
@@ -55,8 +53,6 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     imports: [
         CommonModule,
         FormsModule,
-        GalleryModule,
-        LightboxModule,
         MatButtonModule,
         MatCardModule,
         MatChipsModule,
