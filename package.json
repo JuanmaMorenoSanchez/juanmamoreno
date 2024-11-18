@@ -25,7 +25,6 @@
     "@datorama/akita": "^8.0.1",
     "@types/p5": "^1.7.6",
     "alchemy-sdk": "^3.4.3",
-    "ng-gallery": "^12.0.0",
     "p5": "^1.11.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",

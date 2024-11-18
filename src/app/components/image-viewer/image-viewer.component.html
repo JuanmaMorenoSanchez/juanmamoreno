@@ -1,7 +1,24 @@
-<gallery 
-    [id]="galleryId"
-    [counter]="false"
-    [loadingStrategy]="loadingStrategy"
-    [thumbs]="false">
-</gallery>
+<div class="image-viewer"
+    (mouseover)="setHover(true)"
+    (mouseleave)="setHover(false)">
+    @if (displayArrows && hovering) {
+        <div
+            class="overlay left"
+            (click)="nextNft(-1)">
+            <mat-icon class="arrow">arrow_back</mat-icon>
+        </div>
+    }
 
+    <img 
+        [src]="getQualityImg(nfts()[displayIndex])" 
+        [style.backgroundImage]="'url('+getSmallImg(nfts()[displayIndex])+')'"
+        class="art-viewer"/>
+
+    @if (displayArrows && hovering) {
+        <div
+            class="overlay right"
+            (click)="nextNft(1)">
+            <mat-icon class="arrow">arrow_forward</mat-icon>
+        </div>
+    }
+</div>
