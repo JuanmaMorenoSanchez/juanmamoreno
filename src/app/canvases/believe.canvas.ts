@@ -43,7 +43,6 @@ export const BELIEVE_CANVAS = (p: p5) => {
         }
         frameCount++;
 
-
         let mapped1=p.map(p.mouseX, 0, width, 10, 300);
         let mapped2=p.map(p.mouseY, 0, height, 10, 300);
 
