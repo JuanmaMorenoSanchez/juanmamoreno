@@ -41,7 +41,11 @@
 
 <mat-menu #yearsMenu="matMenu">
   @for (year of years; track year) {
-    <button mat-menu-item [routerLink]="['/artworks', year]">{{year}}</button>
+    <button mat-menu-item 
+      [routerLink]="['/artworks']" 
+      [queryParams]="{ years: year }">
+      {{year}}
+    </button>
   }
 </mat-menu>
 

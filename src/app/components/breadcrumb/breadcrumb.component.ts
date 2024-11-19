@@ -13,6 +13,7 @@ import { distinctUntilChanged, filter } from 'rxjs';
 export class BreadcrumbComponent {
 
   public breadcrumbs: Array<BreadCrumb>;
+  public selectedYears: string[] = [];
   
   constructor(
     private activatedRoute: ActivatedRoute, 
@@ -27,8 +28,14 @@ export class BreadcrumbComponent {
         filter((event: unknown) => event instanceof NavigationEnd),
         distinctUntilChanged(),
     ).subscribe(() => {
+      this.selectedYears = this.extractSelectedYears(); // Update selected years
       this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
     })
+  }
+
+  private extractSelectedYears(): string[] {
+    const queryParams = this.activatedRoute.snapshot.queryParamMap.get('years');
+    return queryParams ? queryParams.split(',') : [];
   }
 
   private buildBreadCrumb(route: ActivatedRoute, url: string = '', breadcrumbs: Array<BreadCrumb> = []): Array<BreadCrumb> {
@@ -49,13 +56,26 @@ export class BreadcrumbComponent {
       }
     }
     const nextUrl = path ? `${url}/${path}` : url;
-    const breadcrumb: BreadCrumb = {
-        label: label,
-        url: nextUrl,
+    const baseBreadcrumb: BreadCrumb = {
+      label: label,
+      url: nextUrl,
+      queryParams: {years: []},
     };
-    const newBreadcrumbs = breadcrumb.label ? [ ...breadcrumbs, breadcrumb ] : [ ...breadcrumbs];
+    const newBreadcrumbs = label ? [...breadcrumbs, baseBreadcrumb] : [...breadcrumbs];
     if (route.firstChild) {
-        return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
+      return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
+    } else {
+      const queryParams = route.snapshot.queryParamMap.get('years');
+      if (queryParams) {
+        const years = queryParams.split(',');
+        years.forEach((year) => {
+          newBreadcrumbs.push({
+            label: year,
+            url: nextUrl,
+            queryParams: { years: year },
+          });
+        });
+      }
     }
     return newBreadcrumbs;
   }

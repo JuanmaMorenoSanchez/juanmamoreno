@@ -26,7 +26,7 @@ const routes: Routes = [
     },
     children: [
       { 
-        path: ':year', 
+        path: '', 
         component: ArtPiecesListComponent,
         data: {
           breadcrumb: '',

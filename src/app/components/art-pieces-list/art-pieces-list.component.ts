@@ -45,11 +45,11 @@ export class ArtPiecesListComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(() => {
       if (this.activatedroute.firstChild) { // is on list page. Not ideal. Refactor maybe
-        const yearValue = this.activatedroute.firstChild.snapshot.paramMap.get('year');
-        this.nftFilters().years = yearValue ? [yearValue] : [];
+        const yearValues = this.activatedroute.firstChild.snapshot.queryParamMap.get('years')!;
+        this.nftFilters().years = yearValues ? yearValues.split(',') : [];
       } else if (!this.activatedroute.snapshot.paramMap.get('id')) { // not on single view
-        const yearValue = this.activatedroute.snapshot.paramMap.get('year')!
-        this.nftFilters().years = yearValue ? [yearValue] : [];
+        const yearValues = this.activatedroute.snapshot.queryParamMap.get('years')!;
+        this.nftFilters().years = yearValues ? yearValues.split(',') : [];
       }
     })
   }
@@ -62,15 +62,19 @@ export class ArtPiecesListComponent implements OnInit {
     if (this.nftFilters()?.idsToExclude?.length) {
       return this.nftFilters().idsToExclude!.includes(nft.tokenId)
     } else {
-      return false
+      return false;
     }
   }
 
   private isExcludedByYear(nft: Nft): boolean {
     if (this.nftFilters().years?.length) {
-      return this.nftFilters().years!.some(year => nft.raw.metadata!['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.YEAR)!['value'] !== year)
+      return !this.nftFilters().years!.some(year => 
+        nft.raw.metadata!['attributes'].some((attr: any) => 
+          attr['trait_type'] === VALIDTRAITS.YEAR && attr['value'] === year
+        )
+      );
     } else {
-      return false
+      return false;
     }
   }
 

@@ -2,11 +2,17 @@
   <div class="container">
     <mat-chip-listbox>
       <mat-chip color="primary">
-        <span routerLink="/" routerLinkActive="router-link-active"><mat-icon>home</mat-icon></span>
+        <span routerLink="/" routerLinkActive="router-link-active">
+          <mat-icon>home</mat-icon>
+        </span>
       </mat-chip>
       @for (breadcrumb of breadcrumbs; track breadcrumb) {
         <mat-chip color="primary">
-          <span [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
+          <span
+            [routerLink]="breadcrumb.url"
+            [queryParams]="breadcrumb.queryParams"
+            routerLinkActive="router-link-active"
+          >
             {{ breadcrumb.label }}
           </span>
         </mat-chip>
