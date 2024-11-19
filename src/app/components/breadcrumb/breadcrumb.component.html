@@ -17,6 +17,13 @@
           </span>
         </mat-chip>
       }
+      <mat-form-field class="small-input">
+        <mat-select placeholder="Select a year" [ngModel]="newYear()" (ngModelChange)="handleYearChange($event)">
+          <mat-option *ngFor="let year of validYears" [value]="year">
+            {{ year }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </mat-chip-listbox>
   </div>
 }

@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BreadCrumb } from '@models/breadcrumbs.models';
 import { NftsService } from '@services/nfts.service';
+import { SessionQuery } from '@store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
-
 
 @Component({
   selector: 'app-breadcrumb',
@@ -13,9 +13,11 @@ import { distinctUntilChanged, filter } from 'rxjs';
 export class BreadcrumbComponent {
 
   public breadcrumbs: Array<BreadCrumb>;
-  public selectedYears: string[] = [];
+  public selectedYears: number[] = [];
+  public newYear: WritableSignal<number | null> = signal(null);
   
   constructor(
+    private sessionQuery: SessionQuery,
     private activatedRoute: ActivatedRoute, 
     private router: Router,
     private nftsService: NftsService
@@ -28,14 +30,34 @@ export class BreadcrumbComponent {
         filter((event: unknown) => event instanceof NavigationEnd),
         distinctUntilChanged(),
     ).subscribe(() => {
-      this.selectedYears = this.extractSelectedYears(); // Update selected years
+      this.selectedYears = this.extractSelectedYears(); 
       this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
     })
   }
 
-  private extractSelectedYears(): string[] {
+  public handleYearChange(event: number) {
+    if (this.validYears.includes(event)) {
+      this.newYear.set(event);
+      if (!this.selectedYears.includes(event)) {
+        this.selectedYears.push(event);
+        this.updateQueryParams();
+      }
+    }
+    this.newYear.set(null);
+  }
+
+  get validYears(): number[] {
+    return [...this.sessionQuery.years].filter(year => !this.selectedYears.includes(year));
+  }
+
+  private updateQueryParams() {
+    const queryParams = { years: this.selectedYears.join(',') };
+    this.router.navigate([], { queryParams: queryParams });
+  }
+
+  private extractSelectedYears(): number[] {
     const queryParams = this.activatedRoute.snapshot.queryParamMap.get('years');
-    return queryParams ? queryParams.split(',') : [];
+    return queryParams ? queryParams.split(',').map(param => Number(param)) : [];
   }
 
   private buildBreadCrumb(route: ActivatedRoute, url: string = '', breadcrumbs: Array<BreadCrumb> = []): Array<BreadCrumb> {
