@@ -1,4 +1,9 @@
-<button mat-icon-button (click)="downloadImage()" [disabled]="isDownloading">
+<button 
+    mat-icon-button 
+    (click)="downloadImage()" 
+    [disabled]="isDownloading"
+    matTooltip="Download hight resolution image" 
+    matTooltipPosition="below">
     @if (!isDownloading) {
         <mat-icon>download</mat-icon>
     } @else {
