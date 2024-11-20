@@ -46,6 +46,10 @@ export class BreadcrumbComponent {
     this.newYear.set(null);
   }
 
+  public removeYearFilter(label: string) {
+    this.selectedYears.filter(y => y === Number(label))
+  }
+
   get validYears(): number[] {
     return [...this.sessionQuery.years].filter(year => !this.selectedYears.includes(year));
   }

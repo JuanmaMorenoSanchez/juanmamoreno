@@ -20,6 +20,12 @@
                 }
               </small>
             </h3>
+            <small>
+              <app-download-button 
+                [link]="getQualityImg(nft.image)"
+                [name]="nft.name"
+              ></app-download-button>
+            </small>
           </div>
         </mat-grid-tile>
       </mat-grid-list>

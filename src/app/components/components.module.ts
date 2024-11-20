@@ -33,6 +33,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { CanvasContainerComponent } from './canvas-container/canvas-container.component';
 import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
 import { ImageViewerComponent } from './image-viewer/image-viewer.component';
+import { DownloadButtonComponent } from './download-button/download-button.component';
 
 @NgModule({ declarations: [
         LoginButtonComponent,
@@ -46,6 +47,7 @@ import { ImageViewerComponent } from './image-viewer/image-viewer.component';
         BreadcrumbComponent,
         CanvasContainerComponent,
         GenerativePieceComponent,
+        DownloadButtonComponent,
         ImageViewerComponent
     ],
     exports: [

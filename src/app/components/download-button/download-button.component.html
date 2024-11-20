@@ -1,0 +1,7 @@
+<button mat-icon-button (click)="downloadImage()" [disabled]="isDownloading">
+    @if (!isDownloading) {
+        <mat-icon>download</mat-icon>
+    } @else {
+        <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+    }
+</button>
