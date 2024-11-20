@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, input,  SimpleChanges } from '@angular/core';
+import { Component, ElementRef, input,  SimpleChanges, ViewChild } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -21,7 +21,11 @@ export class ImageViewerComponent {
   displayIndex = 0;
   hovering = false;
   displayArrows = false;
+  displayExpand = false;
   isImgVisible = false;
+  isFullScreen  = false;
+
+  @ViewChild('imageElement') imageElement!: ElementRef;
 
   constructor(
     private nftService: NftsService,
@@ -51,16 +55,60 @@ export class ImageViewerComponent {
     return this.nftService.getOptimalUrl(nft?.image);
   }
 
+  public determineBackground(): string {
+    return this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex])})`;
+  }
+
   public isFrontalView(nft: Nft): boolean {
     return this.nftService.isFrontalView(nft);
   }
 
-  onAnimationDone(event: any) {
+  public onAnimationDone(event: any) {
     if (event.toState === 'hidden') {
       setTimeout(() => {
         this.isImgVisible = true;
       }, 0);
     }
+  }
+
+  public handleImageClick() {
+    if (!this.isFullScreen) {
+      this.displayExpand = true;
+      setTimeout(() => {
+          this.displayExpand = false;
+      }, 2000);
+    } else {
+        this.exitFullScreen();
+    }
+  }
+
+  public handleDoubleClick() {
+    if (!this.isFullScreen) {
+        this.enterFullScreen();
+    }
+  }
+
+  private enterFullScreen() {
+    this.isFullScreen = true;
+    const elem = this.imageElement.nativeElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if ((elem as any).webkitRequestFullscreen) {
+        (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
+        (elem as any).msRequestFullscreen();
+    }
+  }
+
+  private exitFullScreen() {
+      this.isFullScreen = false;
+      if (document.exitFullscreen) {
+          document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+          (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+          (document as any).msExitFullscreen();
+      }
   }
 
 }
