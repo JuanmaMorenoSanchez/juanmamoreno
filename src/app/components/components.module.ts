@@ -34,8 +34,10 @@ import { CanvasContainerComponent } from './canvas-container/canvas-container.co
 import { GenerativePieceComponent } from './generative-piece/generative-piece.component';
 import { ImageViewerComponent } from './image-viewer/image-viewer.component';
 import { DownloadButtonComponent } from './download-button/download-button.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
-@NgModule({ declarations: [
+@NgModule({ 
+    declarations: [
         LoginButtonComponent,
         TopMenuComponent,
         ArtPiecesListComponent,
@@ -44,6 +46,7 @@ import { DownloadButtonComponent } from './download-button/download-button.compo
         ContactComponent,
         AboutComponent,
         HomeComponent,
+        NotFoundComponent,
         BreadcrumbComponent,
         CanvasContainerComponent,
         GenerativePieceComponent,
@@ -76,7 +79,10 @@ import { DownloadButtonComponent } from './download-button/download-button.compo
         ReactiveFormsModule,
         RouterModule,
         ScrollingModule,
-        CdkScrollableModule], providers: [
+        CdkScrollableModule
+    ], 
+    providers: [
         provideHttpClient(withInterceptorsFromDi())
-    ] })
+    ]
+ })
 export class ComponentsModule { }

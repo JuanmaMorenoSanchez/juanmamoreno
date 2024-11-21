@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export class NotFoundComponent {
   constructor(private router: Router) {}
 
-  navigateHome(): void {
-    this.router.navigate(['/']);
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
   }
 }

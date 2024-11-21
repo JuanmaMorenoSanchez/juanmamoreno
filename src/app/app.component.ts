@@ -11,7 +11,7 @@ import { Nft } from 'alchemy-sdk';
 export class AppComponent {
 
   constructor(
-    private nftsService: NftsService,
+    private nftsService: NftsService
   ) {
     this.getAppData();
   }
