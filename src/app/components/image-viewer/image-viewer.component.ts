@@ -72,19 +72,23 @@ export class ImageViewerComponent {
   }
 
   public handleImageClick() {
-    if (!this.isFullScreen) {
-      this.displayExpand = true;
-      setTimeout(() => {
-          this.displayExpand = false;
-      }, 2000);
+    if (this.displayExpand) {
+      this.enterFullScreen();
     } else {
-        this.exitFullScreen();
+      if (!this.isFullScreen) {
+        this.displayExpand = true;
+        setTimeout(() => {
+            this.displayExpand = false;
+        }, 2000);
+      } else {
+          this.exitFullScreen();
+      }
     }
   }
 
   public handleDoubleClick() {
     if (!this.isFullScreen) {
-        this.enterFullScreen();
+      this.enterFullScreen();
     }
   }
 
