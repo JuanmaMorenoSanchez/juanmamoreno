@@ -94,7 +94,9 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/CNAME"
+              "src/CNAME",
+              "src/robots.txt",
+              "src/sitemap.xml"
             ],
             "styles": [
               "src/theme.scss",
