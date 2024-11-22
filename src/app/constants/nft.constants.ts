@@ -22,7 +22,8 @@ export const HIDDENCERTIFICATES = [
   "1", 
   "3",
   "55",
-  "33"
+  "33",
+  "103"
 ]
 
 export const SOLDCERTIFICATES = [
