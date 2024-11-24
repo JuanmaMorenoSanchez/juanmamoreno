@@ -1,7 +1,36 @@
-
 <div [ngClass]="{'container' : !viewAsWidget()}">
+  @if (!viewAsWidget()) {
+    <div class="sort-group">
+      <mat-chip-listbox>
+
+        @for (method of sortMethods; track methodTracking(method)) {
+          <mat-chip 
+            color="primary"
+            (click)="changeSortMethod(method)"
+            aria-label="Sort by {{method}}">
+            <mat-icon>
+              {{ 
+                (method === 'year') ? 'calendar_today' : 
+                (method === 'medium') ? 'palette' :
+                'crop_free'
+              }}
+            </mat-icon>
+            @if (activeSortMethod() === method) {
+              <mat-icon>
+                {{ sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+              </mat-icon>
+            }
+          </mat-chip>
+        }
+        <span class="sort-desc">
+          Sorting artpieces {{ sortOrder() === 'asc' ? 'ascending' : 'descending'}} by {{activeSortMethod()}}.
+        </span>
+      </mat-chip-listbox>
+    </div>
+  }
+
   <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
-    @for (artPiece of artPieces(); track listTracking($index, artPiece)) {
+    @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
       @if (displayPiece(artPiece)) {
         <mat-grid-tile (click)="handleArtPieceClick(artPiece.tokenId)">
           <mat-card>

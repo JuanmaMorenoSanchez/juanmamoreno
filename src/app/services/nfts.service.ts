@@ -46,7 +46,7 @@ export class NftsService {
     return foundArt || null;
   }
 
-  public getArtByYear(year:string): Nft[] | undefined {
+  public getArtByYear(year:string): Array<Nft> | undefined {
     return this.sessionQuery.selectArtPieces?.filter(artPiece =>
       artPiece.raw.metadata[VALIDTRAITS.YEAR] === year
     )
@@ -82,8 +82,51 @@ export class NftsService {
     }
   }
 
-  public sortNFTsByYear(nfts: Array<Nft>): Array<Nft> {
-    return nfts.sort((a, b) => Number(this.getTraitValue(b, VALIDTRAITS.YEAR)) - Number(this.getTraitValue(a, VALIDTRAITS.YEAR)));
+  public getSize(nft: Nft): number {
+    const height = parseInt(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
+    const width = parseInt(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
+    return height + width;
+  }
+
+  public sortByYear(nfts: Array<Nft>, order: 'asc' | 'desc' = 'asc'): Array<Nft> {
+    return nfts.sort((a, b) => {
+      const yearA = Number(this.getTraitValue(b, VALIDTRAITS.YEAR));
+      const yearB = Number(this.getTraitValue(a, VALIDTRAITS.YEAR));
+      return order === 'asc' ? (yearA - yearB) : (yearB - yearA);
+    });
+  }
+
+  public sortBySize(nfts: Array<Nft>, order: 'asc' | 'desc' = 'asc'): Array<Nft> {
+    return [...nfts].sort((a, b) => {
+      const sizeA = this.getSize(a);
+      const sizeB = this.getSize(b);
+      const result = sizeA === sizeB ? 0 : sizeA < sizeB ? -1 : 1;
+      return order === 'asc' ? result : -result;
+    });
+  }
+
+  public sortByMedium(nfts: Array<Nft>, order: 'asc' | 'desc' = 'asc'): Array<Nft> {
+    const MEDIUM_ORDER = ['oil', 'watercolor'];
+
+    return [...nfts].sort((a, b) => {
+      const mediumA = this.getTraitValue(a, VALIDTRAITS.MEDIUM).toLowerCase() || '';
+      const mediumB = this.getTraitValue(b, VALIDTRAITS.MEDIUM).toLowerCase() || '';
+      const indexA = MEDIUM_ORDER.findIndex(medium => mediumA.includes(medium));
+      const indexB = MEDIUM_ORDER.findIndex(medium => mediumB.includes(medium));
+
+      const result = (indexA !== -1 && indexB !== -1) ? (indexA - indexB) : (indexA !== -1) ? -1 : (indexB !== -1) ? 1 : 0;
+      return order === 'asc' ? result : -result;
+    });
+  }
+
+  public sortByName(nfts: Array<Nft>, order: 'asc' | 'desc' = 'asc'): Array<Nft> {
+    return [...nfts].sort((a, b) => {
+      const nameA = a.name?.toLowerCase() || '';
+      const nameB = b.name?.toLowerCase() || '';
+  
+      const result = (nameA === nameB) ? 0 : (nameA < nameB) ? -1 : 1;
+      return order === 'asc' ? result : -result;
+    });
   }
 
   public isFrontalView(nft: Nft): boolean {

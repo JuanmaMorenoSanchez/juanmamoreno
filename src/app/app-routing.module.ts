@@ -15,21 +15,21 @@ const routes: Routes = [
     // component: HomeComponent
     component: ArtPiecesListComponent,
     data: {
-      breadcrumb: 'Paintings',
-    },
+      breadcrumb: 'Paintings'
+    }
   },
   { 
     path: 'artworks', 
     component: ArtPiecesListComponent,
     data: {
-      breadcrumb: 'Paintings',
+      breadcrumb: 'Paintings'
     },
     children: [
       { 
         path: '', 
         component: ArtPiecesListComponent,
         data: {
-          breadcrumb: '',
+          breadcrumb: ''
         },
       },
     ] 

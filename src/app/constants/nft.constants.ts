@@ -16,6 +16,13 @@ export enum VIEW_TYPES {
   PROGRESS = "Work in progress"
 }
 
+export enum SortMethod {
+  YEAR = 'year',
+  SIZE = 'size',
+  MEDIUM = 'medium',
+
+}
+
 export const CERTIFICATESCOLLECTIONADRESS = "0x2059eA8350FA506df249327510e592140905e026";
 
 export const HIDDENCERTIFICATES = [
@@ -46,12 +53,14 @@ export const SOLDCERTIFICATES = [
   "75",
   "77",
   "94", // ?
+  "97",
   "112",
   "114",
   "115",
   "118",
   "117",
-  "126"
+  "126",
+  "136"
 ]
 
 // export const FEATUREDCERTIFICATES = [
@@ -64,30 +73,3 @@ export const SOLDCERTIFICATES = [
 //   "17",
 //   "22"
 // ]
-
-// export const HOMEGREENBACKGROUND = [
-//   "46",
-//   "27",
-//   "29",
-//   "28",
-// ]
-
-// export const HOMEIA = [
-//   "11",
-//   "10",
-//   "22",
-//   "18",
-//   "6",
-//   "17",
-// ]
-
-// export const HOMEWATERCOLOR = [
-//   "44",
-//   "45",
-//   "47",
-//   "",
-//   "",
-
-// ]
-
-

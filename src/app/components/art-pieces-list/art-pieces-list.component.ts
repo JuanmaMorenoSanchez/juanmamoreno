@@ -1,14 +1,15 @@
-import { Component, input, OnInit, output, Signal } from '@angular/core';
+import { Component, computed, input, OnInit, output, signal, Signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
+import { SortMethod, VALIDTRAITS } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
 import { Nft, NftImage } from 'alchemy-sdk';
-import { distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
+type SortOrder = 'asc' | 'desc';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -22,7 +23,21 @@ export class ArtPiecesListComponent implements OnInit {
   nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>()
 
+  public sortMethods = Object.values(SortMethod);
   public artPieces: Signal<Nft[] | undefined>;
+  public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
+  public sortOrder: WritableSignal<SortOrder> = signal('asc')
+
+  public sortedArtPieces = computed(() => {
+    switch (this.activeSortMethod()) {
+      case SortMethod.SIZE:
+        return this.nftService.sortBySize(this.artPieces()!, this.sortOrder())
+      case SortMethod.MEDIUM:
+        return this.nftService.sortByMedium(this.artPieces()!, this.sortOrder())
+      case SortMethod.YEAR:
+        return this.nftService.sortByYear(this.artPieces()!, this.sortOrder())
+    }
+  });
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -31,13 +46,45 @@ export class ArtPiecesListComponent implements OnInit {
     private nftService: NftsService,
     private responsiveService: ResponsiveService
   ) {
-    this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable.pipe(
-      map(results => this.nftService.sortNFTsByYear(results))
-    ));
+    this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable)
   }
 
   ngOnInit(): void {
     this.listenYearParamChange();
+  }
+
+  public toggleSortOrder(): void {
+    this.sortOrder.set(this.sortOrder() === 'asc' ? 'desc' : 'asc');
+  }
+
+  public changeSortMethod(method: string): void {
+    if (this.activeSortMethod() === method as SortMethod) {
+      this.toggleSortOrder();
+    } else {
+      this.activeSortMethod.set(method as SortMethod);
+      this.sortOrder.set('asc');
+    }
+  }
+
+  public displayPiece(nft: Nft): boolean {
+    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.nftService.isFrontalView(nft);
+  }
+
+  public getImgThumbUrl(image: NftImage): string {
+    return this.nftService.getOptimalUrl(image);
+  }
+
+  public handleArtPieceClick(tokenId: string) {
+    this.selectedTokenId.emit(tokenId);
+    this.router.navigate(['/artwork', tokenId ]);
+  }
+
+  listTracking(index: number, value: Nft) {
+    return value
+  }
+
+  methodTracking(method: SortMethod) {
+    return method
   }
 
   private listenYearParamChange(): void {
@@ -52,10 +99,6 @@ export class ArtPiecesListComponent implements OnInit {
         this.nftFilters().years = yearValues ? yearValues.split(',') : [];
       }
     })
-  }
-
-  public displayPiece(nft: Nft): boolean {
-    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.nftService.isFrontalView(nft);
   }
 
   private isExcludedById(nft: Nft): boolean {
@@ -77,17 +120,4 @@ export class ArtPiecesListComponent implements OnInit {
       return false;
     }
   }
-
-  public getImgThumbUrl(image: NftImage): string {
-    return this.nftService.getOptimalUrl(image);
-  }
-
-  public handleArtPieceClick(tokenId: string) {
-    this.selectedTokenId.emit(tokenId);
-    this.router.navigate(['/artwork', tokenId ]);
-  }
-
-  listTracking(index: number, value: Nft) {
-    return value
-  } 
 }
