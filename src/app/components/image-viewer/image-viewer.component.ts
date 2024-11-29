@@ -47,6 +47,10 @@ export class ImageViewerComponent {
     this.displayIndex = (this.displayIndex + relativeIndex + this.nfts().length) % this.nfts().length;  
   }
 
+  public imageLoad() { 
+    this.isImgVisible = true;
+  }
+
   public getQualityImg(nft: Nft): string {
     return this.nftService.getQualityUrl(nft?.image);
   }
@@ -64,11 +68,9 @@ export class ImageViewerComponent {
   }
 
   public onAnimationDone(event: any) {
-    if (event.toState === 'hidden') {
-      setTimeout(() => {
-        this.isImgVisible = true;
-      }, 0);
-    }
+    // if (event.toState === 'hidden') {
+      // neccesary?
+    // }
   }
 
   public handleImageClick() {
