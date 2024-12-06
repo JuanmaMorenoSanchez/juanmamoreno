@@ -27,7 +27,7 @@ export class ArtPieceComponent {
     private nftsService: NftsService,
     private activatedroute: ActivatedRoute,
     private router: Router,
-    private responsiveService: ResponsiveService,
+    private responsiveService: ResponsiveService
   ) {
     this.responsiveService.displayMobileLayout.subscribe(display => this.horizontalView = display);
   }

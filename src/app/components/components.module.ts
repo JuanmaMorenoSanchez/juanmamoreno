@@ -19,6 +19,7 @@ import { ImageViewerComponent } from './image-viewer/image-viewer.component';
 import { DownloadButtonComponent } from './download-button/download-button.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { MaterialModule } from '../material.module';
+import { PdfButtonComponent } from './pdf-button/pdf-button.component';
 
 @NgModule({ 
     declarations: [
@@ -35,6 +36,7 @@ import { MaterialModule } from '../material.module';
         CanvasContainerComponent,
         GenerativePieceComponent,
         DownloadButtonComponent,
+        PdfButtonComponent,
         ImageViewerComponent
     ],
     exports: [

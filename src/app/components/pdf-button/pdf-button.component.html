@@ -1,0 +1,12 @@
+<button 
+    mat-icon-button 
+    (click)="createPDF()" 
+    [disabled]="isCreating"
+    [matTooltip]="isSingleArtPage ? singleTooltip : multipleTooltip" 
+    matTooltipPosition="below">
+    @if (!isCreating) {
+        <mat-icon>assignment</mat-icon>
+    } @else {
+        <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+    }
+</button>
