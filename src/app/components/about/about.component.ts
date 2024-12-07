@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { STATEMENT_OBJECT } from '@constants/statement.constants';
 
 @Component({
   selector: 'app-about',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent {
-
+  readonly statement = STATEMENT_OBJECT;
 }

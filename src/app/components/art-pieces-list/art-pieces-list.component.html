@@ -22,9 +22,13 @@
             }
           </mat-chip>
         }
-        <span class="sort-desc">
-          Sorted {{ sortOrder() === 'asc' ? 'ascending' : 'descending'}} by {{activeSortMethod()}}.
-        </span>
+        @if (selectedNfts().length) {
+          <mat-chip>
+            <app-pdf-button
+              [nfts]="selectedNfts()"
+            ></app-pdf-button>
+          </mat-chip>
+        }
       </mat-chip-listbox>
     </div>
   }
@@ -32,9 +36,21 @@
   <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
     @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
       @if (displayPiece(artPiece)) {
-        <mat-grid-tile (click)="handleArtPieceClick(artPiece.tokenId)">
+        <mat-grid-tile 
+          (contextmenu)="toggleNftSelection($event, artPiece)"
+          (click)="handleArtPieceClick(artPiece.tokenId)">
           <mat-card>
-            <img class="front-image" mat-card-image [src]="getImgThumbUrl(artPiece.image)" [alt]="artPiece.name"/>
+            @if (isSelected(artPiece)) {
+              <div class="overlay">
+                <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
+              </div>
+            }
+            <img 
+              class="front-image" 
+              mat-card-image 
+              [src]="getImgThumbUrl(artPiece.image)" 
+              [alt]="artPiece.name" 
+            />
           </mat-card>
         </mat-grid-tile>
       }

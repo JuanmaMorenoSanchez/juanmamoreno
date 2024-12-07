@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { PdfService } from '@services/pdf.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -14,23 +14,27 @@ export class PdfButtonComponent {
   readonly singleTooltip = "Generate and download technical sheet";
   readonly multipleTooltip = "Generate and download portfolio";
   public isCreating = false;
-  public isSingleArtPage = false;
+  public isSingleArtPage = computed(() => {
+    return (this.nfts().length <= 1);
+  });
 
   constructor(
     private pdfService: PdfService
   ) {
-    this.isSingleArtPage = !(this.nfts.length > 1)
   }
 
   public createPDF() {
     this.isCreating = true;
-    if (this.isSingleArtPage) {
+    if (this.isSingleArtPage()) {
       this.pdfService.createTechnicalSheet(this.nfts()[0]).then((doc) => {
         doc.save(`${this.nfts()[0].name! || 'juanmamoreno'}.pdf`);
         this.isCreating = false;
       });
     } else {
-
+      this.pdfService.createDossier(this.nfts(), true, true).then((doc) => {
+        doc.save('dossier-juanmamoreno.pdf');
+        this.isCreating = false;
+      });
     }
   }
 

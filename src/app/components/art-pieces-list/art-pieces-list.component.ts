@@ -27,7 +27,6 @@ export class ArtPiecesListComponent implements OnInit {
   public artPieces: Signal<Nft[] | undefined>;
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
   public sortOrder: WritableSignal<SortOrder> = signal('asc')
-
   public sortedArtPieces = computed(() => {
     switch (this.activeSortMethod()) {
       case SortMethod.SIZE:
@@ -38,6 +37,7 @@ export class ArtPiecesListComponent implements OnInit {
         return this.nftService.sortByYear(this.artPieces()!, this.sortOrder())
     }
   });
+  public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
   constructor(
     private sessionQuery: SessionQuery,
@@ -51,6 +51,29 @@ export class ArtPiecesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.listenYearParamChange();
+  }
+
+  public toggleNftSelection(event: MouseEvent, nft: Nft): void {
+    event.preventDefault();
+    const currentSelection = this.selectedNfts();
+    const index = currentSelection.findIndex(selected => selected.tokenId === nft.tokenId);
+  
+    if (index === -1) {
+      this.selectedNfts.set([...currentSelection, nft]);
+    } else {
+      const updatedSelection = [...currentSelection];
+      updatedSelection.splice(index, 1);
+      this.selectedNfts.set(updatedSelection);
+    }
+  }
+
+  public isSelected(nft: Nft): boolean {
+    return this.selectedNfts().some(selected => selected.tokenId === nft.tokenId);
+  }
+  
+  public getOrderNumber(nft: Nft): number | null {
+    const index = this.selectedNfts().findIndex(selected => selected.tokenId === nft.tokenId);
+    return index !== -1 ? index + 1 : null;
   }
 
   public toggleSortOrder(): void {
