@@ -20,6 +20,7 @@ import { DownloadButtonComponent } from './download-button/download-button.compo
 import { NotFoundComponent } from './not-found/not-found.component';
 import { MaterialModule } from '../material.module';
 import { PdfButtonComponent } from './pdf-button/pdf-button.component';
+import { DossierOptionsModalComponent } from './dossier-options-modal/dossier-options-modal.component';
 
 @NgModule({ 
     declarations: [
@@ -29,6 +30,7 @@ import { PdfButtonComponent } from './pdf-button/pdf-button.component';
         ArtPieceComponent,
         CvComponent,
         ContactComponent,
+        DossierOptionsModalComponent,
         AboutComponent,
         HomeComponent,
         NotFoundComponent,

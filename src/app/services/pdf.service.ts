@@ -28,17 +28,17 @@ export class PdfService {
     customText?: string
   ) {
     const doc = new jsPDF();
-    await this.addCoverToPdf(doc, nfts[0]);
+    await this.addCoverToPdf(doc, nfts[0], customTitle);
+    if (customText) await this.addArbitraryText(doc, customText);
     if (includeStatement) await this.addStatementToPdf(doc);
     for (const nft of nfts) {
       await this.addNftToPdf(doc, nft);
-      doc.addPage();
     }
-    if (includeCv)await this.addCVToPdf(doc);
+    if (includeCv) await this.addCVToPdf(doc);
     return doc;
   }
 
-  private async addCoverToPdf(doc: jsPDF, nft: Nft): Promise<void> {
+  private async addCoverToPdf(doc: jsPDF, nft: Nft, customTitle?: string): Promise<void> {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = (pageHeight / 3) * 2;
 
@@ -46,8 +46,7 @@ export class PdfService {
     doc.setFontSize(32);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
     yPosition += 24;
-    doc.text('PORTFOLIO', this.margin, yPosition);
-
+    doc.text(`${customTitle ? customTitle : 'Dossier'}`, this.margin, yPosition);
     doc.addPage();
   }
 
@@ -55,6 +54,26 @@ export class PdfService {
     const doc = new jsPDF();
     this.addStatementToPdf(doc);
     return doc;
+  }
+
+  private addArbitraryText(doc: jsPDF, text: string): void {
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPosition = this.margin;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const introContent = this.extractWordsFromElement(text);
+    const introLines = this.splitTextToFit(introContent, pageWidth + this.margin * 2);
+    introLines.forEach((line) => {
+      if (yPosition + 12 > pageHeight - this.margin) {
+        doc.addPage();
+        yPosition = this.margin;
+      }
+      doc.text(line, this.margin, yPosition);
+      yPosition += 6;
+    });
+    doc.addPage();
   }
 
   private async addStatementToPdf(doc: jsPDF): Promise<void> {
@@ -218,6 +237,7 @@ export class PdfService {
     doc.text(nft.name!, this.margin, yPosition + resizedHeight + 10);
     doc.setFont('helvetica', 'normal');
     doc.text(this.getTraitsAsText(nft), this.margin, yPosition + resizedHeight + 20);
+    doc.addPage();
   }
 
   private getTraitsAsText(nft: Nft): string {

@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Dossier Options</h2>
+<mat-dialog-content>
+  <div class="form-group">
+    <div class="pdf-options-group">
+        <mat-slide-toggle [(ngModel)]="includeCv">Include CV</mat-slide-toggle>
+    </div>
+
+    <div class="pdf-options-group">
+        <mat-slide-toggle [(ngModel)]="includeStatement">Include Statement</mat-slide-toggle>
+    </div>
+
+    <div class="pdf-options-group">
+      <mat-form-field appearance="outline">
+        <mat-label>Custom Title</mat-label>
+        <input matInput [(ngModel)]="customTitle" placeholder="Enter a title">
+      </mat-form-field>
+    </div>
+
+    <div class="pdf-options-group">
+      <mat-form-field appearance="outline">
+        <mat-label>Custom Text</mat-label>
+        <textarea matInput rows="4" [(ngModel)]="customText" placeholder="Add custom text"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="isSubmitting" (click)="submit()">Generate PDF</button>
+</mat-dialog-actions>
