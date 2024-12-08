@@ -12,7 +12,9 @@ import { STATEMENT_OBJECT } from '@constants/statement.constants';
 export class PdfService {
   private margin = 20;
 
-  constructor(private nftsService: NftsService) {}
+  constructor(
+    private nftsService: NftsService
+  ) {}
 
   public async createTechnicalSheet(nft: Nft): Promise<jsPDF> {
     const doc = new jsPDF();
@@ -43,13 +45,24 @@ export class PdfService {
 
   private async addCoverToPdf(doc: jsPDF, nft: Nft, customTitle?: string): Promise<void> {
     const pageHeight = doc.internal.pageSize.getHeight();
-    let yPosition = (pageHeight / 3) * 2;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let yPosition = (pageHeight / 5);
 
+    const coverImgUrl = this.nftsService.getQualityUrl(this.nftsService.getNftById("68")!.image)
+    const originalImg = await this.loadImage(coverImgUrl);
+    const { width: originalWidth, height: originalHeight } = doc.getImageProperties(originalImg);
+    const aspectRatio = originalWidth / originalHeight;
+    const imgCompressed = await this.loadCompressedImage(coverImgUrl, pageWidth * aspectRatio, pageHeight);
+    doc.addImage(imgCompressed, 'JPEG', 0, 0, pageWidth * aspectRatio, pageHeight);
+
+    doc.setTextColor(255,255,255);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(32);
+    doc.setFontSize(16);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
-    yPosition += 24;
-    doc.text(`${customTitle ? customTitle : 'Dossier'}`, this.margin, yPosition);
+    yPosition += 16;
+    doc.setFontSize(24);
+    doc.text(`${customTitle ? customTitle : 'Portfolio'}`, this.margin, yPosition);
+    doc.setTextColor(0,0,0)
     doc.addPage();
   }
 
