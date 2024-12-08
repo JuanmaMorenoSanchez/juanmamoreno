@@ -31,8 +31,11 @@ export class PdfService {
     await this.addCoverToPdf(doc, nfts[0], customTitle);
     if (customText) await this.addArbitraryText(doc, customText);
     if (includeStatement) await this.addStatementToPdf(doc);
+    let index = 0
     for (const nft of nfts) {
       await this.addNftToPdf(doc, nft);
+      index++;
+      if (index !== nfts.length || includeCv) doc.addPage();
     }
     if (includeCv) await this.addCVToPdf(doc);
     return doc;
@@ -237,7 +240,6 @@ export class PdfService {
     doc.text(nft.name!, this.margin, yPosition + resizedHeight + 10);
     doc.setFont('helvetica', 'normal');
     doc.text(this.getTraitsAsText(nft), this.margin, yPosition + resizedHeight + 20);
-    doc.addPage();
   }
 
   private getTraitsAsText(nft: Nft): string {
