@@ -5,6 +5,12 @@
 />
 
 <div class="container margin-top">
+  <h1>
+    Statement
+    <app-pdf-button
+      [downloadFileType]="downloadType"
+    ></app-pdf-button>
+  </h1>
   <p>{{ statement.introduction.content }}</p>
 
   <div *ngFor="let section of statement.sections">

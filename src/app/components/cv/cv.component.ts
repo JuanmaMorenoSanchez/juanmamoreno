@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import { Timeline, TimelineItem } from '@models/cv.models';
+import { DOWNLOADTYPES, Timeline, TimelineItem } from '@models/cv.models';
 import { CV_OBJECT } from '@constants/cv.constants';
 
 @Component({
@@ -14,7 +14,7 @@ export class CvComponent {
   readonly smallScreenYearColSpan = 2;
   readonly bigScreenYearColSpan = 1;
   readonly cvTimeline: Array<Timeline> = CV_OBJECT;
-
+  readonly downloadType: DOWNLOADTYPES = DOWNLOADTYPES.CV;
 
   public yearColSpan = this.bigScreenYearColSpan;
   public descColSpan = this.totalCols - this.yearColSpan;

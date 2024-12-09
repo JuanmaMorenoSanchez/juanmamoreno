@@ -19,3 +19,9 @@ export  enum COUNTRIES {
     MEXICO = "Mexico",
     ITALY = "Italy"
 }
+
+export  enum DOWNLOADTYPES {
+    CV = "cv",
+    STATEMENT = "statement",
+    IMAGE = "image"
+}

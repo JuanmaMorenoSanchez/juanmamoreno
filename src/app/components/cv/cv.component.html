@@ -3,8 +3,14 @@
 <div class="container margin-top">
   <mat-grid-list [cols]="totalCols" rowHeight="2.8rem">
     <mat-grid-tile [colspan]="yearColSpan" rowspan="3"></mat-grid-tile>
+
     <mat-grid-tile [colspan]="descColSpan">
-      <h2>Juanma Moreno Sánchez</h2>
+      <h1>
+        CV Juanma Moreno Sánchez
+        <app-pdf-button
+          [downloadFileType]="downloadType"
+        ></app-pdf-button>
+      </h1>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
       <p>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</p>

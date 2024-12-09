@@ -1,6 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DossierOptionsModalComponent } from '@components/dossier-options-modal/dossier-options-modal.component';
+import { DOWNLOADTYPES } from '@models/cv.models';
 import { PdfService } from '@services/pdf.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -12,9 +13,8 @@ import { Nft } from 'alchemy-sdk';
 export class PdfButtonComponent {
 
   nfts = input<Nft[]>([]);
+  downloadFileType = input<DOWNLOADTYPES>(DOWNLOADTYPES.IMAGE);
 
-  readonly singleTooltip = "Generate and download technical sheet";
-  readonly multipleTooltip = "Generate and download portfolio";
   public isCreating = false;
   public isSingleArtPage = computed(() => (this.nfts().length <= 1));
 
@@ -24,29 +24,62 @@ export class PdfButtonComponent {
   ) {
   }
 
+  public getTooltip(): string {
+    switch(this.downloadFileType())  {
+      case DOWNLOADTYPES.CV:
+        return "Generate and download CV"
+      case DOWNLOADTYPES.STATEMENT:
+        return "Generate and download Statement"
+      case DOWNLOADTYPES.IMAGE:
+      default:
+        if (this.isSingleArtPage()) {
+          return "Generate and download technical sheet"
+        } else {
+          return "Generate and download portfolio"
+        }
+    }
+  }
+
   public createPDF() {
     this.isCreating = true;
-    if (this.isSingleArtPage()) {
-      this.pdfService.createTechnicalSheet(this.nfts()[0]).then((doc) => {
-        doc.save(`${this.nfts()[0].name! || 'juanmamoreno'}.pdf`);
-        this.isCreating = false;
-      });
-    } else {
-      const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
-        data: { includeContact: true, includeCv: true, includeStatement: true, customTitle: '', customText: '' }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
-          this.pdfService.createDossier(this.nfts(), includeContact, includeCv, includeStatement, customTitle, customText).then(doc => {
-            doc.save('dossier-juanmamoreno.pdf');
+    switch(this.downloadFileType())  {
+      case DOWNLOADTYPES.CV:
+        this.pdfService.createCV().then((doc) => {
+          doc.save('cv-juanmamoreno.pdf');
+          this.isCreating = false;
+        });
+        break;
+      case DOWNLOADTYPES.STATEMENT:
+        this.pdfService.createStatement().then((doc) => {
+          doc.save('statement-juanmamoreno.pdf');
+          this.isCreating = false;
+        });
+        break;
+      case DOWNLOADTYPES.IMAGE:
+      default:
+        if (this.isSingleArtPage()) {
+          this.pdfService.createTechnicalSheet(this.nfts()[0]).then((doc) => {
+            doc.save(`${this.nfts()[0].name! || 'juanmamoreno'}.pdf`);
             this.isCreating = false;
           });
         } else {
-          this.isCreating = false;
+          const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
+            data: { includeContact: true, includeCv: true, includeStatement: true, customTitle: '', customText: '' }
+          });
+    
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
+              this.pdfService.createDossier(this.nfts(), includeContact, includeCv, includeStatement, customTitle, customText).then(doc => {
+                doc.save('dossier-juanmamoreno.pdf');
+                this.isCreating = false;
+              });
+            } else {
+              this.isCreating = false;
+            }
+          });
         }
-      });
+        break;
     }
   }
 

@@ -2,7 +2,7 @@
     mat-icon-button 
     (click)="createPDF()" 
     [disabled]="isCreating"
-    [matTooltip]="isSingleArtPage() ? singleTooltip : multipleTooltip" 
+    [matTooltip]="getTooltip()" 
     matTooltipPosition="below">
     @if (!isCreating) {
         <mat-icon>assignment</mat-icon>
