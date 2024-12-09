@@ -2,6 +2,10 @@
 <mat-dialog-content>
   <div class="form-group">
     <div class="pdf-options-group">
+      <mat-slide-toggle [(ngModel)]="includeContact">Include contact info</mat-slide-toggle>
+    </div>
+
+    <div class="pdf-options-group">
         <mat-slide-toggle [(ngModel)]="includeCv">Include CV</mat-slide-toggle>
     </div>
 

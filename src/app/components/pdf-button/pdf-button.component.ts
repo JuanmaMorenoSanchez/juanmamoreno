@@ -33,13 +33,13 @@ export class PdfButtonComponent {
       });
     } else {
       const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
-        data: { includeCv: true, includeStatement: true, customTitle: '', customText: '' }
+        data: { includeContact: true, includeCv: true, includeStatement: true, customTitle: '', customText: '' }
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          const { includeCv, includeStatement, customTitle, customText } = result;
-          this.pdfService.createDossier(this.nfts(), includeCv, includeStatement, customTitle, customText).then(doc => {
+          const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
+          this.pdfService.createDossier(this.nfts(), includeContact, includeCv, includeStatement, customTitle, customText).then(doc => {
             doc.save('dossier-juanmamoreno.pdf');
             this.isCreating = false;
           });

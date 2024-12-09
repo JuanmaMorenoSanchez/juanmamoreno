@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({
@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class DossierOptionsModalComponent {
   customTitle: string = '';
   customText: string = '';
+  includeContact: boolean = false;
   includeCv: boolean = false;
   includeStatement: boolean = false;
   isSubmitting: boolean = false;
@@ -21,6 +22,7 @@ export class DossierOptionsModalComponent {
     const options = {
       customTitle: this.customTitle,
       customText: this.customText,
+      includeContact: this.includeContact,
       includeCv: this.includeCv,
       includeStatement: this.includeStatement
     };

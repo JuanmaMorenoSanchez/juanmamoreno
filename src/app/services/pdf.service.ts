@@ -24,6 +24,7 @@ export class PdfService {
 
   public async createDossier(
     nfts: Array<Nft>,
+    includeContact?: boolean,
     includeCv?: boolean,
     includeStatement?: boolean,
     customTitle?: string,
@@ -40,10 +41,14 @@ export class PdfService {
       if (index !== nfts.length || includeCv) doc.addPage();
     }
     if (includeCv) await this.addCVToPdf(doc);
+    if (includeContact) await this.addContactInfo(doc);
     return doc;
   }
 
   private async addCoverToPdf(doc: jsPDF, nft: Nft, customTitle?: string): Promise<void> {
+    // TODO: add select in FE to decide if you want cover being figurative oil, ia oil, or watercolor
+    // Depending of this, load one image or other.
+
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = (pageHeight / 5);
@@ -178,46 +183,69 @@ export class PdfService {
     return doc;
   }
 
-  private async addCVToPdf(doc: jsPDF): Promise<void> {
-    const pageHeight = doc.internal.pageSize.getHeight();
+  private async addContactInfo(doc: jsPDF): Promise<void> {
+    doc.addPage();
     let yPosition = this.margin;
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(16);
+    doc.text('Contact', this.margin, yPosition);
+    yPosition += 6;
     doc.setFontSize(10);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
     yPosition += 5;
-    doc.text('Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)', this.margin, yPosition);
+    doc.text('(+34) 635820462', this.margin, yPosition);
     yPosition += 5;
-    doc.text('Currently represented by Zunino Gallery (Seville, Spain)', this.margin, yPosition);
+    doc.text('morenosanchezjuanma@gmail.com', this.margin, yPosition);
+    yPosition += 5;
+    doc.text('www.juanmamoreno.com', this.margin, yPosition);
     yPosition += 15;
+    doc.text('Currently represented by Zunino Gallery (Seville, Spain)', this.margin, yPosition);
+    yPosition += 5;
+    doc.text('(+34) 606780084', this.margin, yPosition);
+    yPosition += 5;
+    doc.text('galeriazunino@gmail.com', this.margin, yPosition);
+    yPosition += 5;
+    doc.text('www.galeriazunino.com', this.margin, yPosition);
+    yPosition += 15;
+  }
 
+  private async addCVToPdf(doc: jsPDF): Promise<void> {
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPosition = this.margin;
+  
     CV_OBJECT.forEach((section) => {
-      if (yPosition + 10 > pageHeight - this.margin) {
+      if (yPosition + 8 > pageHeight - this.margin) {
         doc.addPage();
+        yPosition = this.margin;
       }
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(24);
+      doc.setFontSize(16);
       doc.text(section.title, this.margin, yPosition);
-      yPosition += 10;
-
+      yPosition += 6;
+  
       section.items.forEach((item) => {
-        if (yPosition + 13 > pageHeight - this.margin) {
+        if (yPosition + 8 > pageHeight - this.margin) {
           doc.addPage();
           yPosition = this.margin;
         }
+  
+        const title = this.extractWordsFromElement(item.title);
+        const venue = item.venue ? `${this.extractWordsFromElement(item.venue!)}, ` : '';
+        const details = `${venue}${item.city || ""}, ${item.country}, ${item.year}`;
 
+        let xPosition = this.margin;
         doc.setFont('helvetica', 'italic');
         doc.setFontSize(10);
-        doc.text(this.extractWordsFromElement(item.title), this.margin, yPosition);
-        yPosition += 5;
 
+        doc.text(title, xPosition, yPosition);
+        xPosition += doc.getTextWidth(title) + 2;
         doc.setFont('helvetica', 'normal');
-        const venue = item.venue ? `${this.extractWordsFromElement(item.venue!)}, ` : '';
-        doc.text(`${venue}${item.city}, ${item.country}, ${item.year}`, this.margin, yPosition);
-        yPosition += 8;
+        doc.text(details, xPosition, yPosition);
+        yPosition += 4.7;
       });
-      yPosition += 10;
+      yPosition += 6;
     });
-  }
+  }  
 
   private extractWordsFromElement(stringifiedHTML: string): string {
     return stringifiedHTML.replace(/<\/?[^>]+(>|$)/g, '').trim();

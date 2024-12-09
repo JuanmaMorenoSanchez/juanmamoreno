@@ -13,7 +13,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "El sueño de los robots",
-                venue: "<a href='https://www.galeriazunino.com/index.php/2021/02/25/el-sueno-de-los-robots/' target='_blank'>Zunino gallery &amp; Red Collectors</a>",
+                venue: "<a href='https://www.galeriazunino.com/index.php/2021/02/25/el-sueno-de-los-robots/' target='_blank'>Zunino gallery & Red Collectors</a>",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2021
@@ -87,7 +87,7 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2024
             },
             {
-                title: "Realidad y artificio, Anna Jonsson & Juanma Moreno",
+                title: "Anna Jonsson & Juanma Moreno",
                 venue: "El Estudio de Ignacio del Río",
                 city: "Villanueva del Rosario",
                 country: COUNTRIES.SPAIN,
@@ -115,13 +115,13 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2023
             },
             {
-                title: "Zunino Gallery at <a href='https://discoveryartfair.com/fairs/koeln/' target='_blank'> Discovery Art Fair Cologne</a>",
+                title: "<a href='https://discoveryartfair.com/fairs/koeln/' target='_blank'> Discovery Art Fair Cologne</a>",
                 city: "Cologne",
                 country: COUNTRIES.GERMANY,
                 year: 2022
             },
             {
-                title: "Zunino Gallery at <a href='https://www.luccaartfair.com/' target='_blank'> Lucca Art Fair</a>",
+                title: "<a href='https://www.luccaartfair.com/' target='_blank'> Lucca Art Fair</a>",
                 country: COUNTRIES.ONLINE,
                 year: 2021
             },
@@ -134,7 +134,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "Interpaisajes",
-                venue: "<a href='https://www.eldevenirartgallery.com/'>Eldevenir</a> &amp; <a href='https://www.galeriazunino.com'>Zunino Gallery</a>",
+                venue: "<a href='https://www.eldevenirartgallery.com/'>Eldevenir</a> & <a href='https://www.galeriazunino.com'>Zunino Gallery</a>",
                 country: COUNTRIES.ONLINE,
                 year: 2020
             },
@@ -237,13 +237,6 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2013
             },
             {
-                title: "Carmen del Campo Gallery at Room Art Fair #2",
-                venue: "Praktik Metropol",
-                city: "Madrid",
-                country: COUNTRIES.SPAIN,
-                year: 2012
-            },
-            {
                 title: "Weisser TV",
                 venue: "<a href='https://www.129gallery.com/' target='blank'>129 Gallery</a>",
                 city: "Berlin",
@@ -284,13 +277,6 @@ export const CV_OBJECT: Array<Timeline> = [
                 city: "Granada",
                 country: COUNTRIES.SPAIN,
                 year: 2009
-            },
-            {
-                title: "Becas Lefranc&amp;Bourgueois de creación artística",
-                venue: "Corrala de Santiago",
-                city: "Granada",
-                country: COUNTRIES.SPAIN,
-                year: 2006
             }
         ]
     },
@@ -316,7 +302,8 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2010
             },
             {
-                title: "Lefranc&amp;Bourgueois art award",
+                title: "Lefranc&Bourgueois art award",
+                city: "Granada",
                 country: COUNTRIES.SPAIN,
                 year: 2006
             }
