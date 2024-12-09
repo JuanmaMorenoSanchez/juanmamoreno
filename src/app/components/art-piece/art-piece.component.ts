@@ -66,6 +66,10 @@ export class ArtPieceComponent {
     return filters
   }
 
+  public getFrontalViewNft(): Nft {
+    return this.nfts().find(nft => this.nftsService.isFrontalView(nft))!;
+  }
+
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
     return this.nftsService.getTraitValue(nft, validTrait);
   }
