@@ -1,6 +1,6 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SOLDCERTIFICATES, VALIDTRAITS } from '@constants/nft.constants';
+import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
 
 import { NftsService } from '@services/nfts.service';
@@ -18,7 +18,7 @@ export class ArtPieceComponent {
   readonly validTraits = VALIDTRAITS;
 
   public tokenId: WritableSignal<string> = signal("");
-  public nfts: WritableSignal<Array<Nft>> = signal([]); 
+  public nfts: WritableSignal<Array<Nft>> = signal([]);
   
   public numberOfViewMoreColumns = 6;
   public horizontalView = false;
@@ -46,6 +46,17 @@ export class ArtPieceComponent {
     ).subscribe(nfts => {
       this.nfts.set(nfts);
     });
+  }
+
+  public getViewLabel(nft: Nft): string {
+    switch (this.getTraitValue(nft, this.validTraits.IMAGETYPE)) {
+      case VIEW_TYPES.PROGRESS:
+        return "(Work in progress)"
+      case VIEW_TYPES.DETAIL:
+        return "(Detail view)"
+      default:
+        return ""
+    }
   }
 
   public generateRatio(nft: Nft): number {

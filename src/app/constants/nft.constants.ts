@@ -13,7 +13,8 @@ export  enum VALIDTRAITS {
 
 export enum VIEW_TYPES {
   FRONTAL = "Frontal view",
-  PROGRESS = "Work in progress"
+  PROGRESS = "Work in progress",
+  DETAIL = "Detail view"
 }
 
 export enum SortMethod {
@@ -31,6 +32,7 @@ export const HIDDENCERTIFICATES = [
   "55",
   "33",
   "103",
+  "116",
   "121"
 ]
 
