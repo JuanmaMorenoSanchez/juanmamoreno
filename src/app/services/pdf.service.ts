@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Nft } from 'alchemy-sdk';
 import jsPDF from 'jspdf';
 import { NftsService } from './nfts.service';
-import { VALIDTRAITS } from '@constants/nft.constants';
+import { SOLDCERTIFICATES, VALIDTRAITS } from '@constants/nft.constants';
 import { CV_OBJECT } from '@constants/cv.constants';
 import { STATEMENT_OBJECT } from '@constants/statement.constants';
 
@@ -278,9 +278,17 @@ export class PdfService {
 
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(12);
-    doc.text(nft.name!, this.margin, yPosition + resizedHeight + 10);
+    doc.text(nft.name!+",", this.margin, yPosition + resizedHeight + 10);
     doc.setFont('helvetica', 'normal');
-    doc.text(this.getTraitsAsText(nft), this.margin, yPosition + resizedHeight + 20);
+    const technicalData = this.getTraitsAsText(nft);
+    doc.text(technicalData, this.margin + doc.getTextWidth(nft.name!) + 2, yPosition + resizedHeight + 10);
+    console.log("nft.tokenId ", nft.tokenId)
+    if (SOLDCERTIFICATES.includes(nft.tokenId)) {
+      const dotSize = 2;
+      const dotX = this.margin + doc.getTextWidth(technicalData) + doc.getTextWidth(nft.name!) + 7;
+      doc.setFillColor("red");
+      doc.circle(dotX, yPosition + resizedHeight + 9, dotSize, "F");
+    }
   }
 
   private getTraitsAsText(nft: Nft): string {
