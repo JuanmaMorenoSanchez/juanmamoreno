@@ -25,6 +25,7 @@ export class ArtPiecesListComponent implements OnInit {
 
   public sortMethods = Object.values(SortMethod);
   public artPieces: Signal<Nft[] | undefined>;
+  public dataReady = computed(() => this.artPieces()?.length ? true : false);
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
   public sortOrder: WritableSignal<SortOrder> = signal('asc')
   public sortedArtPieces = computed(() => {

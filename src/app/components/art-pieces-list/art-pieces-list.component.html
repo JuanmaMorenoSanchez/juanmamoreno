@@ -33,28 +33,32 @@
     </div>
   }
 
-  <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
-    @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
-      @if (displayPiece(artPiece)) {
-        <mat-grid-tile 
-          (contextmenu)="toggleNftSelection($event, artPiece)"
-          (click)="handleArtPieceClick(artPiece.tokenId)">
-          <mat-card>
-            @if (isSelected(artPiece)) {
-              <div class="overlay">
-                <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
-              </div>
-            }
-            <img 
-              class="front-image" 
-              mat-card-image 
-              [src]="getImgThumbUrl(artPiece.image)" 
-              [alt]="artPiece.name" 
-            />
-          </mat-card>
-        </mat-grid-tile>
+  @if (dataReady()) {
+    <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
+      @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
+        @if (displayPiece(artPiece)) {
+          <mat-grid-tile 
+            (contextmenu)="toggleNftSelection($event, artPiece)"
+            (click)="handleArtPieceClick(artPiece.tokenId)">
+            <mat-card>
+              @if (isSelected(artPiece)) {
+                <div class="overlay">
+                  <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
+                </div>
+              }
+              <img 
+                class="front-image" 
+                mat-card-image 
+                [src]="getImgThumbUrl(artPiece.image)" 
+                [alt]="artPiece.name" 
+              />
+            </mat-card>
+          </mat-grid-tile>
+        }
       }
-    }
-  </mat-grid-list>
+    </mat-grid-list>
+  } @else {
+    <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+  }
 </div>
 
