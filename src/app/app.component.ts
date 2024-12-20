@@ -19,6 +19,12 @@ export class AppComponent {
   getAppData() {
     this.nftsService.getNfts(CERTIFICATESCOLLECTIONADRESS).subscribe((nfts: Array<Nft>) => {
       console.log("paintings: ", nfts)
+      nfts.forEach(nft => {
+        // if no metadata, request to alchemy for next time
+        if (!nft.image?.thumbnailUrl) {
+          this.nftsService.requestMetadataRefresh(nft)
+        }
+      })
     }); 
   }
 }

@@ -56,7 +56,7 @@ export class ImageViewerComponent {
   }
 
   public getSmallImg(nft: Nft): string {
-    return this.nftService.getOptimalUrl(nft?.image);
+    return this.nftService.getOptimalUrl(nft);
   }
 
   public determineBackground(): string {

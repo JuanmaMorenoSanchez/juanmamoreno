@@ -94,8 +94,8 @@ export class ArtPiecesListComponent implements OnInit {
     return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.nftService.isFrontalView(nft);
   }
 
-  public getImgThumbUrl(image: NftImage): string {
-    return this.nftService.getOptimalUrl(image);
+  public getImgThumbUrl(nft: Nft): string {
+    return this.nftService.getOptimalUrl(nft);
   }
 
   public handleArtPieceClick(tokenId: string) {

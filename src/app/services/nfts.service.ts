@@ -6,6 +6,8 @@ import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { AlchemyService } from './alchemy.service';
 import { Nft, NftImage } from 'alchemy-sdk';
+import { environment } from "@environments/environment";
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -16,19 +18,20 @@ export class NftsService {
     @Inject('persistStorage') persistStorage: PersistState,
     private alchemyService: AlchemyService,
     private sessionQuery: SessionQuery,
+    private httpClient: HttpClient,    
   ) {
   }
 
   public getNfts(contract: string): Observable<Array<Nft>> {
     if (this.itIsNeccesaryToFetch()) {
-      return this.alchemyService.fetchNFTsByContract(contract)
+      return this.alchemyService.fetchNFTsByContract(contract);
     } else {
-      return this.sessionQuery.selectArtPiecesObservable
+      return this.sessionQuery.selectArtPiecesObservable;
     }
   }
 
-  public getOptimalUrl(image: NftImage): string {
-    return image?.thumbnailUrl || image?.cachedUrl  || image?.originalUrl! // CREATE A FALLBACK IMG ASSET URL
+  public getOptimalUrl(nft: Nft): string {
+    return nft.image?.thumbnailUrl || nft.image?.cachedUrl  || nft.image?.originalUrl! // CREATE A FALLBACK IMG ASSET URL
   }
 
   public getQualityUrl(image: NftImage): string {
@@ -147,4 +150,12 @@ export class NftsService {
     )
   }
 
+  public requestMetadataRefresh(nft: Nft) {
+    const body = {contractAddress: environment.adminAdress, tokenId: nft.tokenId};
+    this.httpClient.post('https://eth-mainnet.g.alchemy.com/nft/v3/docs-demo/refreshNftMetadata', body).subscribe((res: any) => {
+      console.log("res ", res);
+    }, error => {
+      console.error("error ", error);
+    })
+  }
 }
