@@ -51,6 +51,7 @@ export class ContactComponent {
 
       this.isLoading = true;
 
+      // TODO: move to new contact service
       this.httpClient.post(environment.backendUrl+'contact', formData).subscribe((res: any) => {
         this.form.enable();
         this.form.reset();

@@ -6,6 +6,6 @@ export const environment = {
   polygonNetwork: Network.MATIC_MAINNET,
   homeTokenId: "2",
   adminAdress: "0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9",
-  backendUrl: "https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/", // Current maintained backend
-  backendUrlFallback: "https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/" // No db. 1th version of back.
+  backendUrl: "https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/",
+  backendUrlFallback: "https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/"
 };
