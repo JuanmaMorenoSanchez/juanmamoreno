@@ -29,7 +29,7 @@ export class AppComponent {
           tokenIds.push(nft.tokenId);
         }
       });
-      this.httpClient.post(environment.backendUrl+'refresh-metadata', tokenIds).subscribe((res: any) => {
+      if (tokenIds.length) this.httpClient.get(environment.backendUrl+'refresh-metadata').subscribe((res: any) => {
         console.log("res: ", res);
       });
       console.log("Missing metadata count: ", tokenIds.length)
