@@ -1,9 +1,12 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ALCHEMYSETTINGS } from '@constants/alchemy.constants';
 import { HIDDENCERTIFICATES } from '@constants/nft.constants';
 import { SessionStore } from '@store/session.store';
 import { Alchemy, GetNftsForContractOptions, Network, Nft, NftContractNftsResponse } from 'alchemy-sdk';
 import { Observable, from } from 'rxjs';
+import { environment } from '@environments/environment';
+import axios from 'axios';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +21,7 @@ export class AlchemyService {
 
   constructor(
     private sessionStore: SessionStore,
+    // private httpClient: HttpClient
   ) {
     this.alchemy = new Alchemy(ALCHEMYSETTINGS);
   }
@@ -39,7 +43,8 @@ export class AlchemyService {
       if (res.pageKey) {
         this.fetchNFTsByContract(contractAddress, res.pageKey);
       } else {
-        this.saveNftsLocally(this.tempNFTList)
+        this.saveNftsLocally(this.tempNFTList);
+        // this.saveNftsBackupOnServer(this.tempNFTList);
       }
       return this.tempNFTList
       

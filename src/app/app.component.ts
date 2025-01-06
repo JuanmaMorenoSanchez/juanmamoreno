@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { CERTIFICATESCOLLECTIONADRESS } from '@constants/nft.constants';
+import { environment } from '@environments/environment';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -11,7 +13,9 @@ import { Nft } from 'alchemy-sdk';
 export class AppComponent {
 
   constructor(
-    private nftsService: NftsService
+    private nftsService: NftsService,
+    private httpClient: HttpClient,    
+
   ) {
     this.getAppData();
   }
@@ -19,12 +23,16 @@ export class AppComponent {
   getAppData() {
     this.nftsService.getNfts(CERTIFICATESCOLLECTIONADRESS).subscribe((nfts: Array<Nft>) => {
       console.log("paintings: ", nfts)
+      const tokenIds: Array<string> = [];
       nfts.forEach(nft => {
-        // if no metadata, request to alchemy for next time
         if (!nft.image?.thumbnailUrl) {
-          this.nftsService.requestMetadataRefresh(nft)
+          tokenIds.push(nft.tokenId);
         }
-      })
+      });
+      this.httpClient.post(environment.backendUrl+'refresh-metadata', tokenIds).subscribe((res: any) => {
+        console.log("res: ", res);
+      });
+      console.log("Missing metadata count: ", tokenIds.length)
     }); 
   }
 }

@@ -150,12 +150,4 @@ export class NftsService {
     )
   }
 
-  public requestMetadataRefresh(nft: Nft) {
-    const body = {contractAddress: environment.adminAdress, tokenId: nft.tokenId};
-    this.httpClient.post('https://eth-mainnet.g.alchemy.com/nft/v3/docs-demo/refreshNftMetadata', body).subscribe((res: any) => {
-      console.log("res ", res);
-    }, error => {
-      console.error("error ", error);
-    })
-  }
 }
