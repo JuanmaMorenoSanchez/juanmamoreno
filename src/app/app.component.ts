@@ -29,7 +29,8 @@ export class AppComponent {
           tokenIds.push(nft.tokenId);
         }
       });
-      if (tokenIds.length) this.httpClient.get(environment.backendUrl+'refresh-metadata').subscribe((res: any) => {
+      const onlyFirst = [tokenIds[0]]; //avoid overwelming alchemy by doing it one each time
+      if (tokenIds.length) this.httpClient.post(environment.backendUrl+'refresh-metadata', onlyFirst).subscribe((res: any) => {
         console.log("res: ", res);
       });
       console.log("Missing metadata count: ", tokenIds.length)
