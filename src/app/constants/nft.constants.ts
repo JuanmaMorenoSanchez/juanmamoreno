@@ -24,17 +24,7 @@ export enum SortMethod {
 
 }
 
-export const CERTIFICATESCOLLECTIONADRESS = "0x2059eA8350FA506df249327510e592140905e026";
-
-export const HIDDENCERTIFICATES = [
-  "1", 
-  "3",
-  "55",
-  "33",
-  "103",
-  "116",
-  "121"
-]
+// HIDDENCERTIFICATES is now in backend
 
 export const SOLDCERTIFICATES = [
   "23",

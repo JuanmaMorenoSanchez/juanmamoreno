@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
-import { Observable, filter, map } from 'rxjs';
+import { Observable, filter, map, tap } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
-import { AlchemyService } from './alchemy.service';
 import { Nft, NftImage } from 'alchemy-sdk';
 import { environment } from "@environments/environment";
 import { HttpClient } from '@angular/common/http';
+import { SessionStore } from '@store/session.store';
 
 @Injectable({
   providedIn: 'root'
@@ -16,15 +16,18 @@ export class NftsService {
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
-    private alchemyService: AlchemyService,
+    private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,
-    private httpClient: HttpClient,    
+    private httpClient: HttpClient
   ) {
   }
 
-  public getNfts(contract: string): Observable<Array<Nft>> {
+  public getNfts(): Observable<Nft[]> {
+    // entre donde entre, pasa lo mismo. Ergo creo es un problema de los datos en si
     if (this.itIsNeccesaryToFetch()) {
-      return this.alchemyService.fetchNFTsByContract(contract);
+      return this.httpClient.get<Nft[]>(environment.backendUrl+'nfts-snapshot').pipe(
+        tap(nfts => this.saveNftsLocally(nfts))
+      );
     } else {
       return this.sessionQuery.selectArtPiecesObservable;
     }
@@ -150,4 +153,7 @@ export class NftsService {
     )
   }
 
+  public saveNftsLocally(nfts: Array<Nft>): void {
+    this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
+  }
 }
