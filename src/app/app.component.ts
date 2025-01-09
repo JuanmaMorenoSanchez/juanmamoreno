@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { environment } from '@environments/environment';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -11,6 +13,7 @@ export class AppComponent {
 
   constructor(
     private nftsService: NftsService,
+    private httpClient: HttpClient
   ) {
     this.getAppData();
   }
@@ -18,19 +21,16 @@ export class AppComponent {
   getAppData() {
   
     this.nftsService.getNfts().subscribe((nfts: Array<Nft>) => {
-      console.log("paintings: ", nfts)
-
-      // const tokenIds: Array<string> = [];
-      // nfts.forEach(nft => {
-      //   if (!nft.image?.thumbnailUrl) {
-      //     tokenIds.push(nft.tokenId);
-      //   }
+      const tokenIds: Array<string> = [];
+      nfts.forEach(nft => {
+        if (!nft.image?.thumbnailUrl) {
+          tokenIds.push(nft.tokenId);
+        }
+      });
+      // if (tokenIds.length) this.httpClient.post(environment.backendUrl+'refresh-metadata', tokenIds).subscribe((res: any) => {
+      //   console.log("Refresh metadata res : ", res);
       // });
-      // const onlyFirst = [tokenIds[0]]; //avoid overwelming alchemy by doing it one each time
-      // if (tokenIds.length) this.httpClient.post(environment.backendUrl+'refresh-metadata', onlyFirst).subscribe((res: any) => {
-      //   console.log("res: ", res);
-      // });
-      // console.log("Missing metadata count: ", tokenIds.length)
+      console.log("Missing metadata count: ", tokenIds.length)
     });
   }
 }
