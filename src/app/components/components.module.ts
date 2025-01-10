@@ -21,6 +21,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { MaterialModule } from '../material.module';
 import { PdfButtonComponent } from './pdf-button/pdf-button.component';
 import { DossierOptionsModalComponent } from './dossier-options-modal/dossier-options-modal.component';
+import { LazyLoadDirective } from '../directives/lazy-load.directive';
 
 @NgModule({ 
     declarations: [
@@ -39,7 +40,8 @@ import { DossierOptionsModalComponent } from './dossier-options-modal/dossier-op
         GenerativePieceComponent,
         DownloadButtonComponent,
         PdfButtonComponent,
-        ImageViewerComponent
+        ImageViewerComponent,
+        LazyLoadDirective
     ],
     exports: [
         TopMenuComponent,

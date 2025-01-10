@@ -38,6 +38,7 @@ export class ArtPiecesListComponent implements OnInit {
         return this.nftService.sortByYear(this.artPieces()!, this.sortOrder())
     }
   });
+  public visibleImages = new Set<string>();
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
   constructor(
@@ -52,6 +53,10 @@ export class ArtPiecesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.listenYearParamChange();
+  }
+
+  public onImageVisible(tokenId: string): void {
+    this.visibleImages.add(tokenId);
   }
 
   public toggleNftSelection(event: MouseEvent, nft: Nft): void {

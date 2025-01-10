@@ -37,7 +37,7 @@
     <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
       @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
         @if (displayPiece(artPiece)) {
-          <mat-grid-tile 
+          <mat-grid-tile
             (contextmenu)="toggleNftSelection($event, artPiece)"
             (click)="handleArtPieceClick(artPiece.tokenId)">
             <mat-card>
@@ -49,9 +49,11 @@
               <img 
                 class="front-image" 
                 mat-card-image
-                loading="lazy"
-                [src]="getImgThumbUrl(artPiece)" 
+                loading="lazy" 
+                [src]="visibleImages.has(artPiece.tokenId) ? getImgThumbUrl(artPiece) : null"
                 [alt]="artPiece.name" 
+                appLazyLoad 
+                (visible)="onImageVisible(artPiece.tokenId)"
               />
             </mat-card>
           </mat-grid-tile>
