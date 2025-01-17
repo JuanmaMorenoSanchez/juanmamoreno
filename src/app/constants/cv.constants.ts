@@ -1,19 +1,19 @@
-import { COUNTRIES, Timeline } from "@models/cv.models"
+import { COUNTRIES, Timeline } from "@models/cv.models";
 
 export const CV_OBJECT: Array<Timeline> = [
     {
-        title: "Solo shows",
+        title: "cv.shows.title",
         items: [
             {
                 title: "El valle inquietante",
-                venue: "<a href='https://galeriazunino.com/exposiciones/el-valle-inquietante/' target='_blank'>Zunino gallery</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2024
             },
             {
                 title: "El sueño de los robots",
-                venue: "<a href='https://www.galeriazunino.com/index.php/2021/02/25/el-sueno-de-los-robots/' target='_blank'>Zunino gallery & Red Collectors</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2021
@@ -77,11 +77,11 @@ export const CV_OBJECT: Array<Timeline> = [
         ]
     },
     {
-        title: "Collective exhibitions (selection)",
+        title: "cv.collectiveShows.title",
         items: [
             {
                 title: "Outsiders. Vol. 1",
-                venue: "<a href='https://www.galeriazunino.com/' target='_blank'>Zunino gallery</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2024
@@ -109,7 +109,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "Los únicos que saben de arte son los artistas",
-                venue: "<a href='https://www.galeriazunino.com/index.php/2021/02/25/el-sueno-de-los-robots/' target='_blank'>Zunino gallery</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2023
@@ -140,7 +140,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "72 horas",
-                venue: "<a href='https://www.galeriazunino.com'>Zunino Gallery</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2019
@@ -161,7 +161,7 @@ export const CV_OBJECT: Array<Timeline> = [
             },
             {
                 title: "Todo encaja",
-                venue: "<a href='https://www.galeriazunino.com'>Zunino Gallery</a>",
+                venue: "cv.zunino",
                 city: "Sevilla",
                 country: COUNTRIES.SPAIN,
                 year: 2018
@@ -281,7 +281,7 @@ export const CV_OBJECT: Array<Timeline> = [
         ]
     },
     {
-        title: "Artistic awards and residencies (selection)",
+        title: "cv.awards.title",
         items: [
             {
                 title: "<a href='http://www.pkf.org/' target='blank'>The Pollock-Krasner Foundation award</a>",
@@ -290,7 +290,7 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2014
             },
             {
-                title: "<a href='http://www.fundacionantoniogala.org/' target='blank'>Antonio Gala Foundation Residence Program</a>",
+                title: "cv.awards.fag",
                 city: "Córdoba",
                 country: COUNTRIES.SPAIN,
                 year: 2012
@@ -302,7 +302,7 @@ export const CV_OBJECT: Array<Timeline> = [
                 year: 2010
             },
             {
-                title: "Lefranc&Bourgueois art award",
+                title: "cv.awards.lefranc",
                 city: "Granada",
                 country: COUNTRIES.SPAIN,
                 year: 2006
@@ -310,18 +310,18 @@ export const CV_OBJECT: Array<Timeline> = [
         ]
     },
     {
-        title: "Education",
+        title: "cv.education.title",
         items: [
             {
-                title: "Bachelor on arts degree",
-                venue: "<a href='http://bellasartes.ugr.es/' target='blank'>University of Granada",
+                title: "cv.education.degree",
+                venue: "cv.education.ugr",
                 city: "Granada",
                 country: COUNTRIES.SPAIN,
                 year: 2009
             },
             {
-                title: "LLP Erasmus Scholarship",
-                venue: "<a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design</a>",
+                title: "cv.education.erasmus",
+                venue: "cv.education.burg",
                 city: "Halle Saale",
                 country: COUNTRIES.GERMANY,
                 year: 2008

@@ -5,6 +5,7 @@ import { NftsService } from './nfts.service';
 import { SOLDCERTIFICATES, VALIDTRAITS } from '@constants/nft.constants';
 import { CV_OBJECT } from '@constants/cv.constants';
 import { STATEMENT_OBJECT } from '@constants/statement.constants';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,8 @@ export class PdfService {
   private margin = 20;
 
   constructor(
-    private nftsService: NftsService
+    private nftsService: NftsService,
+    private translateService: TranslateService,
   ) {}
 
   public async createTechnicalSheet(nft: Nft): Promise<jsPDF> {
@@ -104,7 +106,7 @@ export class PdfService {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    const introContent = this.extractWordsFromElement(STATEMENT_OBJECT.introduction.content);
+    const introContent = this.extractWordsFromElement(this.translateService.instant(STATEMENT_OBJECT.introduction.content));
     const introLines = this.splitTextToFit(introContent, pageWidth + this.margin * 2);
     introLines.forEach((line) => {
       doc.text(line, this.margin, yPosition);
@@ -120,21 +122,21 @@ export class PdfService {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text(section.title, this.margin, yPosition);
+      doc.text(this.translateService.instant(section.title), this.margin, yPosition);
       yPosition += 10;
 
       if (section.content) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         section.content.forEach((paragraph) => {
-          const cleanParagraph = this.extractWordsFromElement(paragraph);
+          const cleanParagraph = this.extractWordsFromElement(this.translateService.instant(paragraph));
           const paragraphLines = this.splitTextToFit(cleanParagraph, pageWidth + this.margin * 2);
           paragraphLines.forEach((line) => {
             if (yPosition + 10 > pageHeight - this.margin) {
               doc.addPage();
               yPosition = this.margin;
             }
-            doc.text(line, this.margin, yPosition);
+            doc.text(this.translateService.instant(line), this.margin, yPosition);
             yPosition += 6;
           });
           yPosition += 6;
@@ -148,13 +150,13 @@ export class PdfService {
             yPosition = this.margin;
           }
 
-          const cleanSubtitle = this.extractWordsFromElement(item.subtitle);
+          const cleanSubtitle = this.extractWordsFromElement(this.translateService.instant(item.subtitle));
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(10);
-          doc.text(cleanSubtitle, this.margin, yPosition);
+          doc.text(this.translateService.instant(cleanSubtitle), this.margin, yPosition);
           yPosition += 6;
 
-          const cleanContent = this.extractWordsFromElement(item.content);
+          const cleanContent = this.extractWordsFromElement(this.translateService.instant(item.content));
           const itemContentLines = this.splitTextToFit(cleanContent, pageWidth + this.margin * 2);
           itemContentLines.forEach((line) => {
             if (yPosition + 6 > pageHeight - this.margin) {
@@ -162,7 +164,7 @@ export class PdfService {
               yPosition = this.margin;
             }
             doc.setFont('helvetica', 'normal');
-            doc.text(line, this.margin, yPosition);
+            doc.text(this.translateService.instant(line), this.margin, yPosition);
             yPosition += 6;
           });
           yPosition += 6;
@@ -188,7 +190,7 @@ export class PdfService {
     let yPosition = this.margin;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(16);
-    doc.text('Contact', this.margin, yPosition);
+    doc.text(this.translateService.instant('contact.title'), this.margin, yPosition);
     yPosition += 6;
     doc.setFontSize(10);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
@@ -199,7 +201,7 @@ export class PdfService {
     yPosition += 5;
     doc.text('www.juanmamoreno.com', this.margin, yPosition);
     yPosition += 15;
-    doc.text('Currently represented by Zunino Gallery (Seville, Spain)', this.margin, yPosition);
+    doc.text(this.translateService.instant('contact.representedBy'), this.margin, yPosition);
     yPosition += 5;
     doc.text('(+34) 606780084', this.margin, yPosition);
     yPosition += 5;
@@ -220,7 +222,7 @@ export class PdfService {
       }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(16);
-      doc.text(section.title, this.margin, yPosition);
+      doc.text(this.translateService.instant(section.title), this.margin, yPosition);
       yPosition += 6;
   
       section.items.forEach((item) => {
@@ -229,9 +231,9 @@ export class PdfService {
           yPosition = this.margin;
         }
   
-        const title = this.extractWordsFromElement(item.title);
-        const venue = item.venue ? `${this.extractWordsFromElement(item.venue!)}, ` : '';
-        const details = `${venue}${item.city || ""}, ${item.country}, ${item.year}`;
+        const title = this.extractWordsFromElement(this.translateService.instant(item.title));
+        const venue = item.venue ? `${this.extractWordsFromElement(this.translateService.instant(item.venue))}, ` : '';
+        const details = `${venue}${item.city || ""}, ${this.translateService.instant(item.country)}, ${item.year}`;
 
         let xPosition = this.margin;
         doc.setFont('helvetica', 'italic');

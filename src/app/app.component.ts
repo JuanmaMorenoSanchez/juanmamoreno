@@ -1,8 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { environment } from '@environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
+import translationsEN from "@translations/en.json";
+import translationsES from "@translations/es.json";
 
 @Component({
   selector: 'app-root',
@@ -13,8 +16,11 @@ export class AppComponent {
 
   constructor(
     private nftsService: NftsService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private translateService: TranslateService
   ) {
+    this.translateService.setTranslation('en-EN', translationsEN);
+    this.translateService.setTranslation('es-ES', translationsES);
     this.getAppData();
   }
 

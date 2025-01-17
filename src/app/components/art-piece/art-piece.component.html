@@ -14,9 +14,9 @@
             <h3>
               <small>
                 <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft, validTraits.YEAR) }">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>,
-                {{ getTraitValue(nft, validTraits.MEDIUM ) }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
+                {{ getTraitValue(nft, validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
                 @if (sold(nft.tokenId)) {
-                  <span matTooltip="Art piece sold" class="dot"></span>
+                  <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
                 }
               </small>
             </h3>
@@ -41,7 +41,9 @@
       }
       <div class="margin-top">
         <mat-divider></mat-divider>
-        <h3>More on {{getTraitValue(nft, validTraits.YEAR)}}</h3>
+        <h3>
+          {{ 'moreOn' | translate }} {{ getTraitValue(nft, validTraits.YEAR)}}
+        </h3>
         <app-art-pieces-list
           [viewAsWidget]="true"
           [numberOfCols]="numberOfViewMoreColumns"

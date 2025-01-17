@@ -12,8 +12,11 @@
       "@services/*": ["src/app/services/*"],
       "@store/*": ["src/app/store/*"],
       "@utils/*": ["src/app/utils/*"],
-      "@mocks/*": ["src/app/mocks/*"]
+      "@mocks/*": ["src/app/mocks/*"],
+      "@translations/*": ["src/assets/translations/*"]
     },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "outDir": "./dist/out-tsc",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

@@ -22,6 +22,7 @@ import { MaterialModule } from '../material.module';
 import { PdfButtonComponent } from './pdf-button/pdf-button.component';
 import { DossierOptionsModalComponent } from './dossier-options-modal/dossier-options-modal.component';
 import { LazyLoadDirective } from '../directives/lazy-load.directive';
+import { TranslateDirective, TranslatePipe } from '@ngx-translate/core';
 
 @NgModule({ 
     declarations: [
@@ -53,7 +54,9 @@ import { LazyLoadDirective } from '../directives/lazy-load.directive';
         ReactiveFormsModule,
         RouterModule,
         ScrollingModule,
-        CdkScrollableModule
+        CdkScrollableModule,
+        TranslatePipe,
+        TranslateDirective
     ], 
     providers: [
         provideHttpClient(withInterceptorsFromDi())

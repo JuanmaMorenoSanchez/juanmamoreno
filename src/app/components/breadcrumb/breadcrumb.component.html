@@ -18,7 +18,7 @@
         </mat-chip>
       }
       <mat-form-field class="small-input">
-        <mat-select placeholder="Select a year" [ngModel]="newYear()" (ngModelChange)="handleYearChange($event)">
+        <mat-select placeholder="{{'selectYear' | translate}}" [ngModel]="newYear()" (ngModelChange)="handleYearChange($event)">
           <mat-option *ngFor="let year of validYears" [value]="year">
             {{ year }}
           </mat-option>

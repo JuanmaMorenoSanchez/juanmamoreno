@@ -1,0 +1,129 @@
+{
+    "Oil on wood": "Óleo sobre madera",
+    "Oil on canvas": "Óleo sobre tela",
+    "Watercolor on paper": "Acuarela sobre papel",
+    "sold": "Pieza vendida",
+    "moreOn": "Más de",
+    "selectYear": "Selecciona un año",
+    "paintings": "Pinturas",
+    "submit": "Enviar",
+    "menu": {
+        "allPaintings": "Todas las pinturas",
+        "generative": "Generativo",
+        "about": "Acerca de",
+        "contact": "Contacto",
+        "byYear": "Por año"
+    },
+    "traits": {
+        "medium": "Técnica",
+        "keight": "Altura",
+        "width": "Ancho",
+        "unit": "Unidad",
+        "year": "Año",
+        "imgTypr": "Tipo de imagen",
+        "artist": "Artista",
+        "project": "Proyecto",
+        "descAuthor": "Autor de la descripción",
+        "descLang": "Lenguage de la descripción"
+    },
+    "viewTypes": {
+        "frontal": "Vista frontal",
+        "progreso": "En progreso",
+        "detail": "Vista de detalle"
+    },
+    "sortMethod": {
+        "year": "Año",
+        "size": "Tamaño",
+        "medium": "Técnica"
+    },
+    "contact": {
+        "title": "Contacto",
+        "representedBy": "Representado por la <a href='https://galeriazunino.com/' target='_blank'>Galería Zunino </a> (Sevilla)",
+        "contactText": "Si quieres contactar conmigo, usa el formulario debajo. También puedes seguirme en <a href='https://www.instagram.com/juanmamorenosanchez/' target='_blank'>Instagram</a>.",
+        "name": "Nombre",
+        "message": "Mensaje"
+    },
+    "error": {
+        "noValue": "Debes escribir algo",
+        "invalidEmail": "Email inválido"
+    },
+    "cv": {
+        "shortBio": "Alcalá la Real (Jaén), 1986. Reside en Madrid.",
+        "shows": {
+            "title": "Exposiciones individuales"
+        },
+        "collectiveShows": {
+            "title": "Exposiciones colectivas (selección)"
+        },
+        "awards": {
+            "title": "Premios y becas (selección)",
+            "lefranc": "Becas Lefranc&Bourgueois",
+            "fag": "<a href='http://www.fundacionantoniogala.org/' target='blank'>Fundación Antonio Gala para jóvenes creadores</a>"
+        },
+        "education": {
+            "title": "Educacion",
+            "degree": "Licenciado en Bellas Artes",
+            "ugr": "<a href='http://bellasartes.ugr.es/' target='blank'>Universidad de Granada",
+            "erasmus": "Beca LLP Erasmus",
+            "burg": "<a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design</a>"
+        },
+        "zunino": "<a href='https://galeriazunino.com/' target='_blank'>Galería Zunino</a>",
+        "countries": {
+            "online": "Online",
+            "spain": "España",
+            "usa": "USA",
+            "germany": "Alemania",
+            "mexico": "México",
+            "italy": "Italia"
+        }
+    },
+    "statement": {
+        "introduction": {
+            "content": "Mi trayectoria artística entrelaza elementos tradicionales y contemporáneos, navegando en la intersección de lo digital y lo analógico, de los paisajes rurales y urbanos. Mi obra abraza la tecnología tanto como tema como herramienta creativa, manteniendo un diálogo constante con el pasado mientras intenta aprovechar las oportunidades de la era digital."
+        },
+        "painting": {
+            "title": "Pintura",
+            "distance": "En la pintura es donde, a lo largo de toda mi vida, he encontrado un refugio para distanciarme de lo cotidiano. La pintura es importante. La pintura es útil.",
+            "outOfNoise": "Esta distancia implica pasar tiempo fuera del automatismo de la rutina y de las dinámicas en las que pasamos la mayor parte del tiempo, una condición necesaria para poder concebir nuevas narrativas, lugares y formas.",
+            "anacronism": "La pintura es un oficio ancestral que permite trabajar en una superficie tanto tiempo como el artista quiera, teniendo como únicos límites el espacio y el tiempo. <strong>La pintura es un anacronismo precioso.</strong> Al mismo tiempo, la pintura es siempre relevante porque es un campo infinito de conocimiento. Cada artista, a lo largo de los años, descubre pequeños hallazgos en su camino, que juntos son inevitablemente únicos. Por eso, la obra de un artista que ha trabajado durante años es casi siempre especial y valiosa."
+        },
+        "art": {
+            "title": "Arte",
+            "arts": "Mi refugio en la pintura, la escultura, el arte generativo o el arte digital ha dado frutos diferentes a lo largo del tiempo. Hay frutos que nunca han sido documentados, y también los hay que nunca han sido recogidos. En cualquier caso, hay peculiaridades en mi arte que son constantes y atraviesan la producción, y hay otras que son variables, que van y vienen con el tiempo:"
+        },
+        "constants": {
+            "title": "Constantes",
+            "items": {
+                "first": {
+                    "title": "Internet",
+                    "content": "Representar a la tecnología en la pintura y crear tecnología artesanalmente son formas de intentar reconciliar nuestras dos mitades: nuestro yo físico y nuestro avatar. Por una razón, mi generación, <a href='https://www.plataformadeartecontemporaneo.com/pac/juanma-moreno-lo-peor-y-lo-mejor-de-la-selfie-generation/' target='_blank' rel='noopener noreferrer'><em>los millennials</em></a>, es la única que ha tenido que vivir y trabajar en Internet, habiendo sido educada con lápiz y papel. Además, la mayoría de las imágenes que uso en mi proceso creativo provienen de Internet, específicamente de encuentros fortuitos con imágenes aleatorias. Estas imágenes son secuestradas por mí, y me apropio de ellas. Incluso antes de la aparición de las IA, Internet ya era virtualmente infinito, considerando la diminuta capacidad de procesamiento de información que tenemos los humanos individualmente."
+                },
+                "second": {
+                    "title": "Elemento inquietante",
+                    "content": "En una pintura hipotética, un personaje mira o interactúa con algo. Pero no sabemos quién es, qué está haciendo o por qué lo está haciendo. Incluso si es algo indeterminado, la acción introduce una narrativa e invita a pasar tiempo contemplando la imagen. La idea es que la imagen proponga una premisa abierta, algo más allá de la pose, y que el espectador la complete."
+                },
+                "third": {
+                    "title": "Tradición",
+                    "content": "El patrimonio cultural está en el ADN de cualquier identidad. Los grandes autores y los grandes temas de la historia del arte han tenido, tienen y tendrán un efecto tremendamente gravitacional. Velázquez, Goya, Menzel, Rego, Hopper, Rauch, etc., han creado grandes obras maestras en las que se han desarrollado los grandes temas de la historia del arte, ayer y hoy. Temas intrínsecamente humanos, transversales y universales: el amor, la muerte, el miedo..."
+                },
+                "fourth": {
+                    "title": "El fracaso como una de las Bellas Artes",
+                    "content": "'He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.' Esta cita del polifacético Pepín Tre ilustra perfectamente la razón de la multidisciplinariedad. El genio, la iluminación divina o la inspiración no son más que clichés mitológicos. La realidad, como siempre, es mucho más prosaica: es el fracaso (real o percibido) lo que mueve a un artista a investigar, probar nuevas técnicas, nuevas formas de llegar al público, etc. Por el contrario, estoy convencido de que el éxito (real o percibido) tiene una capacidad paralizante y termina produciendo artistas aburridos de su propio arte y de sí mismos. El fracaso frustra, pero también estimula, o eso quiero creer yo."
+                }
+            }
+        },
+        "variables": {
+            "title": "Variables",
+            "items": {
+                "first": {
+                    "title": "Inteligencia Artificial",
+                    "content": "<a href='https://www.abc.es/cultura/cultural/javier-villuendas-trienio-aberrante-arte-pocos-vieron-venir-20230915102255-nt.html' target='_blank' rel='noopener noreferrer'><em>En 2019, una mínima vanguardia de creadores, como Juanma Moreno, ya experimentaba con la vieja Inteligencia Artificial de esa época</em></a>, como dice Javier Villuendas en su columna en ABC Cultural. En 2019, pocos intuíamos el potencial creativo de la IA de entonces. Las viejas redes neuronales como StyleGan o Bigbigan estimulaban nuestra imaginación creando monstruos muy interesantes. Hoy en día, el arte generado por IA es algo común y ha alcanzado nuevos niveles de suficiencia formal. Pero en aquel entonces, el margen de error (la pérdida) era mucho mayor, y los accidentes producían monstruos inauditos y altamente interesantes. De 2019 a 2023, la principal fuente de inspiración para mi trabajo pasó de ser imágenes encontradas en Internet a imágenes que las Inteligencias Artificiales son capaces de generar."
+                },
+                "second": {
+                    "title": "Software",
+                    "content": "El software no tiene que ser una solución ultra-racional y eficiente a un problema de ingeniería. El software también puede satisfacer la curiosidad de un artista, ser flexible, orgánico, mutar, ser aleatorio, desordenado e impredecible. Una vez más, debemos valorar el error. Es en la pincelada que va ligeramente más allá del contorno, en el accidente que hace que el software distorsione una imagen hasta aberrarla, donde reside el valor y la originalidad."
+                }
+            }
+        }
+    }
+}

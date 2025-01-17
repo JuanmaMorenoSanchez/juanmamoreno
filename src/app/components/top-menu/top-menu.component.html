@@ -7,11 +7,7 @@
         <mat-icon>menu</mat-icon>
       </button>
     } @else {
-      <button mat-button [matMenuTriggerFor]="paintingMenu" class="menu-button">Painting</button>
-      <button mat-button [matMenuTriggerFor]="generativeMenu" class="menu-button">Generative</button>
-      <button mat-button [routerLink]="['/about']" class="menu-button">About</button>
-      <button mat-button [routerLink]="['/cv']" class="menu-button">CV</button>
-      <button mat-button [routerLink]="['/contact']" class="menu-button">Contact</button>
+      <ng-template *ngTemplateOutlet="menuButtons"></ng-template>
     }
   </mat-toolbar-row>
 </mat-toolbar>
@@ -27,16 +23,33 @@
 </mat-drawer-container>
 
 <ng-template #menuButtons>
-  <button mat-button [matMenuTriggerFor]="paintingMenu" class="menu-button">Painting</button>
-  <button mat-button [matMenuTriggerFor]="generativeMenu" class="menu-button">Generative</button>
-  <button mat-button [routerLink]="['/about']" class="menu-button">About</button>
-  <button mat-button [routerLink]="['/cv']" class="menu-button">CV</button>
-  <button mat-button [routerLink]="['/contact']" class="menu-button">Contact</button>
+  <button mat-button [matMenuTriggerFor]="paintingMenu" class="menu-button">
+    {{ 'paintings' | translate }}
+  </button>
+  <button mat-button [matMenuTriggerFor]="generativeMenu" class="menu-button">
+    {{ 'menu.generative' | translate }}
+  </button>
+  <button mat-button [routerLink]="['/about']" class="menu-button">
+    {{ 'menu.about' | translate }}
+  </button>
+  <button mat-button [routerLink]="['/cv']" class="menu-button">
+    CV
+  </button>
+  <button mat-button [routerLink]="['/contact']" class="menu-button">
+    {{ 'menu.contact' | translate }}
+  </button>
+  <button mat-button (click)="changeLanguage()" class="menu-button">
+    {{ currentLang }}
+  </button>
 </ng-template>
 
 <mat-menu #paintingMenu="matMenu">
-  <button mat-menu-item routerLink="/artworks">All paintings</button>
-  <button mat-menu-item [matMenuTriggerFor]="yearsMenu">By Year</button>
+  <button mat-menu-item routerLink="/artworks">
+    {{ 'menu.allPaintings' | translate }}
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="yearsMenu">
+    {{ 'menu.byYear' | translate }}
+  </button>
 </mat-menu>
 
 <mat-menu #yearsMenu="matMenu">

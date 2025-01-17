@@ -7,6 +7,7 @@ import { ShareButtonComponent } from "@components/share-button/share-button.comp
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { MaterialModule } from "./material.module";
+import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,10 @@ import { MaterialModule } from "./material.module";
     BrowserModule,
     BrowserAnimationsModule,
     ComponentsModule,
-    MaterialModule
+    MaterialModule,
+    TranslateModule.forRoot({
+      defaultLanguage: window.navigator.language || window.navigator.languages[0] || 'en-EN'
+    }),
   ],
   providers: [
     provideAnimationsAsync(),

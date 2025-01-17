@@ -11,24 +11,24 @@
       [downloadFileType]="downloadType"
     ></app-pdf-button>
   </h1>
-  <p>{{ statement.introduction.content }}</p>
+  <p>{{ statement.introduction.content | translate}}</p>
 
-  <div *ngFor="let section of statement.sections">
-    <h2>{{ section.title }}</h2>
+  @for (section of statement.sections; track section) {
+    <h2>{{ section.title | translate}}</h2>
 
-    <div *ngIf="section.content">
-      <p *ngFor="let paragraph of section.content">
-        {{ paragraph }}
-      </p>
-    </div>
-
-    <div *ngIf="section.items">
-      <div *ngFor="let item of section.items">
-        <p>
-          <strong>{{ item.subtitle }}</strong>
-          <span [innerHTML]="item.content"></span>
+    @if (section.content) {
+      @for (paragraph of section.content; track paragraph) {
+        <p innerHtml="{{ paragraph | translate}}">
         </p>
-      </div>
-    </div>
-  </div>
+      }
+    }
+    @if (section.items) {
+      @for (item of section.items; track item) {
+        <p>
+          <strong>{{ item.subtitle | translate }}</strong>
+          <span innerHTML="{{ item.content | translate}}"></span>
+        </p>
+      }
+    }
+  }
 </div>

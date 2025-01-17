@@ -1,6 +1,7 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BreadCrumb } from '@models/breadcrumbs.models';
+import { TranslateService } from '@ngx-translate/core';
 import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
@@ -20,7 +21,8 @@ export class BreadcrumbComponent {
     private sessionQuery: SessionQuery,
     private activatedRoute: ActivatedRoute, 
     private router: Router,
-    private nftsService: NftsService
+    private nftsService: NftsService,
+    private translateService: TranslateService
   ) {
     this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
   }
@@ -83,7 +85,7 @@ export class BreadcrumbComponent {
     }
     const nextUrl = path ? `${url}/${path}` : url;
     const baseBreadcrumb: BreadCrumb = {
-      label: label,
+      label: label ? this.translateService.instant(label.toLowerCase()): '',
       url: nextUrl,
       queryParams: {years: []},
     };

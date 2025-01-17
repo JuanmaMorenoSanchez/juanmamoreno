@@ -6,17 +6,17 @@
 
     <mat-grid-tile [colspan]="descColSpan">
       <h1>
-        CV Juanma Moreno Sánchez
+        CV
         <app-pdf-button
           [downloadFileType]="downloadType"
         ></app-pdf-button>
       </h1>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <p>Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)</p>
+      <p innerHtml="{{ 'cv.shortBio' | translate}}"></p>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <p>Currently represented by <a href="https://galeriazunino.com/" target="_blank">Zunino Gallery</a> (Sevilla)</p>
+      <p innerHtml="{{ 'contact.representedBy' | translate}}"></p>
     </mat-grid-tile>
   </mat-grid-list>
 
@@ -25,7 +25,7 @@
     <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
       <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
       <mat-grid-tile [colspan]="descColSpan" role="listitem">
-        <h2>{{cvSection.title}}</h2>
+        <h2>{{cvSection.title | translate}}</h2>
       </mat-grid-tile>
     </mat-grid-list>
     <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
@@ -38,16 +38,16 @@
           }
           <mat-grid-tile [colspan]="descColSpan" role="listitem">
             <p>
-              <i><strong><span [innerHTML]="cvItem.title"></span></strong></i>,
+              <i><strong><span innerHTML="{{ cvItem.title | translate}}"></span></strong></i>,
               <small>
                 @if (cvItem.venue) {
-                  <span [innerHTML]="cvItem.venue+','"></span>
+                  <span innerHTML="{{ cvItem.venue | translate}}, "></span>
                 }
                 @if (cvItem.city) {
                   <span> {{cvItem.city}}, </span>
                 }
                 @if (cvItem.country) {
-                  <span>({{cvItem.country}})</span>
+                  <span>({{cvItem.country | translate}})</span>
                 }
               </small>
             </p>

@@ -5,6 +5,7 @@ import { FormGroup } from '@angular/forms';
 import { environment } from '@environments/environment';
 import { ResponsiveService } from '@services/responsive.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-contact',
@@ -29,6 +30,7 @@ export class ContactComponent {
     private httpClient: HttpClient,    
     private formBuilder: FormBuilder,
     private responsiveService: ResponsiveService,
+    private translateService: TranslateService,
     public snackBar: MatSnackBar
   ) {
     this.form = this.formBuilder.group({
@@ -80,14 +82,14 @@ export class ContactComponent {
   }
 
   getNameError() {
-    return this.name.hasError('required') && 'You must enter a value'
+    return this.name.hasError('required') && this.translateService.instant("error.noValue")
   }
 
   getEmailError() {
-    return this.email.hasError('required') ? 'You must enter a value' : this.email.hasError('email') && 'Not a valid email'
+    return this.email.hasError('required') ? this.translateService.instant("error.noValue") : this.email.hasError('email') && this.translateService.instant("error.invalidEmail")
   }
 
   getMessageError() {
-    return this.message.hasError('required') && 'You must enter a value'
+    return this.message.hasError('required') && this.translateService.instant("error.noValue")
   }
 }

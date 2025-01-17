@@ -12,12 +12,12 @@ export interface TimelineItem {
 }
 
 export  enum COUNTRIES {
-    ONLINE = "Online",
-    SPAIN = "Spain",
-    USA = "USA",
-    GERMANY = "Germany",
-    MEXICO = "Mexico",
-    ITALY = "Italy"
+    ONLINE = "cv.countries.online",
+    SPAIN = "cv.countries.spain",
+    USA = "cv.countries.usa",
+    GERMANY = "cv.countries.germany",
+    MEXICO = "cv.countries.mexico",
+    ITALY = "cv.countries.italy"
 }
 
 export  enum DOWNLOADTYPES {
