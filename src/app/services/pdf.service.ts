@@ -295,7 +295,7 @@ export class PdfService {
 
   private getTraitsAsText(nft: Nft): string {
     const year = this.nftsService.getTraitValue(nft, VALIDTRAITS.YEAR) || 'Unknown year';
-    const medium = this.nftsService.getTraitValue(nft, VALIDTRAITS.MEDIUM) || 'Unknown medium';
+    const medium = this.translateService.instant(this.nftsService.getTraitValue(nft, VALIDTRAITS.MEDIUM)) || 'Unknown medium';
     const height = this.nftsService.getTraitValue(nft, VALIDTRAITS.HEIGHT) || 'Unknown height';
     const width = this.nftsService.getTraitValue(nft, VALIDTRAITS.WIDTH) || 'Unknown width';
     const unit = this.nftsService.getTraitValue(nft, VALIDTRAITS.UNIT) || 'Unknown unit';
