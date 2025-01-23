@@ -18,7 +18,7 @@ type SortOrder = 'asc' | 'desc';
 })
 export class ArtPiecesListComponent implements OnInit {
 
-  numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 4);
+  numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
   nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>()
