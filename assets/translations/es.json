@@ -125,5 +125,12 @@
                 }
             }
         }
+    },
+    "download": {
+        "cv": "Generar y descargar CV",
+        "statement": "Generar y descargar statement",
+        "sheet": "Generar y descargar ficha técnica",
+        "portfolio": "Generar y descargar dossier",
+        "hd": "Descargar imagen en alta resolución"
     }
 }
