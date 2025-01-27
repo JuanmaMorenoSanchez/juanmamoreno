@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DossierOptionsModalComponent } from '@components/dossier-options-modal/dossier-options-modal.component';
 import { DOWNLOADTYPES } from '@models/cv.models';
+import { TranslateService } from '@ngx-translate/core';
 import { PdfService } from '@services/pdf.service';
 import { Nft } from 'alchemy-sdk';
 
@@ -20,22 +21,23 @@ export class PdfButtonComponent {
 
   constructor(
     private pdfService: PdfService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private translateService: TranslateService
   ) {
   }
 
   public getTooltip(): string {
     switch(this.downloadFileType())  {
       case DOWNLOADTYPES.CV:
-        return "Generate and download CV"
+        return this.translateService.instant('download.cv');
       case DOWNLOADTYPES.STATEMENT:
-        return "Generate and download Statement"
+        return this.translateService.instant('download.statement');
       case DOWNLOADTYPES.IMAGE:
       default:
         if (this.isSingleArtPage()) {
-          return "Generate and download technical sheet"
+          return this.translateService.instant('download.sheet');
         } else {
-          return "Generate and download portfolio"
+          return this.translateService.instant('download.portfolio');
         }
     }
   }

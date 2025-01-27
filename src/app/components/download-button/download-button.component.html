@@ -2,7 +2,7 @@
     mat-icon-button 
     (click)="downloadImage()" 
     [disabled]="isDownloading"
-    matTooltip="Download hight resolution image" 
+    matTooltip="{{'download.hd' | translate}}" 
     matTooltipPosition="below">
     @if (!isDownloading) {
         <mat-icon>download</mat-icon>

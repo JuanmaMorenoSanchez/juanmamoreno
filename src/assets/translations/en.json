@@ -125,5 +125,12 @@
                 }
             }
         }
+    },
+    "download": {
+        "cv": "Generate and download CV",
+        "statement": "Generate and download Statement",
+        "sheet": "Generate and download technical sheet",
+        "portfolio": "Generate and download portfolio",
+        "hd": "Download high resolution image"
     }
 }
