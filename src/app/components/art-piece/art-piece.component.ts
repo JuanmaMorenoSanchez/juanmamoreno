@@ -20,7 +20,7 @@ export class ArtPieceComponent {
   public tokenId: WritableSignal<string> = signal("");
   public nfts: WritableSignal<Array<Nft>> = signal([]);
   
-  public numberOfViewMoreColumns = 6;
+  public numberOfViewMoreColumns = 3;
   public horizontalView = false;
 
   constructor(
@@ -29,7 +29,10 @@ export class ArtPieceComponent {
     private router: Router,
     private responsiveService: ResponsiveService
   ) {
-    this.responsiveService.displayMobileLayout.subscribe(display => this.horizontalView = display);
+    this.responsiveService.displayMobileLayout.subscribe(display => {
+      this.horizontalView = display;
+      this.numberOfViewMoreColumns = !display ? 3 : 6;
+    });
   }
 
   ngOnInit(): void {
