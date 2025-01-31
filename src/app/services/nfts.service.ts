@@ -33,6 +33,10 @@ export class NftsService {
     }
   }
 
+  public getLinks(tokenId: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(environment.backendUrl+'vision-search/'+tokenId);
+  }
+
   public getOptimalUrl(nft: Nft): string {
     return nft.image?.thumbnailUrl || nft.image?.cachedUrl  || nft.image?.originalUrl! // CREATE A FALLBACK IMG ASSET URL
   }

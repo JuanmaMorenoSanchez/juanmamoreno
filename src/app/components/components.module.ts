@@ -23,6 +23,8 @@ import { PdfButtonComponent } from './pdf-button/pdf-button.component';
 import { DossierOptionsModalComponent } from './dossier-options-modal/dossier-options-modal.component';
 import { LazyLoadDirective } from '../directives/lazy-load.directive';
 import { TranslateDirective, TranslatePipe } from '@ngx-translate/core';
+import { LinksButtonComponent } from './links-button/links-button.component';
+import { LinksModalComponent } from './links-modal/links-modal.component';
 
 @NgModule({ 
     declarations: [
@@ -42,7 +44,9 @@ import { TranslateDirective, TranslatePipe } from '@ngx-translate/core';
         DownloadButtonComponent,
         PdfButtonComponent,
         ImageViewerComponent,
-        LazyLoadDirective
+        LazyLoadDirective,
+        LinksButtonComponent,
+        LinksModalComponent
     ],
     exports: [
         TopMenuComponent,
