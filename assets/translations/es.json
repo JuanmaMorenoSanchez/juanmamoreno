@@ -132,5 +132,9 @@
         "sheet": "Generar y descargar ficha técnica",
         "portfolio": "Generar y descargar dossier",
         "hd": "Descargar imagen en alta resolución"
+    },
+    "links": {
+        "view": "Ver repercusión de la pieza en Internet",
+        "title": "Apariciones de la pieza en Internet"
     }
 }

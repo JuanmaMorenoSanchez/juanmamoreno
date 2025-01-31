@@ -132,5 +132,9 @@
         "sheet": "Generate and download technical sheet",
         "portfolio": "Generate and download portfolio",
         "hd": "Download high resolution image"
+    },
+    "links": {
+        "view": "View where this artwork appears on the Internet",
+        "title": "Appearances of the artwork on the Internet"
     }
 }
