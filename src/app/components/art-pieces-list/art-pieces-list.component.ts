@@ -6,7 +6,7 @@ import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
 import { Nft, NftImage } from 'alchemy-sdk';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 type SortOrder = 'asc' | 'desc';
@@ -99,7 +99,7 @@ export class ArtPiecesListComponent implements OnInit {
     return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.nftService.isFrontalView(nft);
   }
 
-  public getImgThumbUrl(nft: Nft): string {
+  public getImgThumbUrl(nft: Nft): Observable<string> {
     return this.nftService.getOptimalUrl(nft);
   }
 
@@ -108,11 +108,11 @@ export class ArtPiecesListComponent implements OnInit {
     this.router.navigate(['/artwork', tokenId ]);
   }
 
-  listTracking(index: number, value: Nft) {
+  public listTracking(index: number, value: Nft) {
     return value
   }
 
-  methodTracking(method: SortMethod) {
+  public methodTracking(method: SortMethod) {
     return method
   }
 

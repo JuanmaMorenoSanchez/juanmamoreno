@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, ElementRef, input,  SimpleChanges, ViewChild } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-image-viewer',
@@ -55,7 +56,7 @@ export class ImageViewerComponent {
     return this.nftService.getQualityUrl(nft?.image);
   }
 
-  public getSmallImg(nft: Nft): string {
+  public getSmallImg(nft: Nft): Observable<string> {
     return this.nftService.getOptimalUrl(nft);
   }
 

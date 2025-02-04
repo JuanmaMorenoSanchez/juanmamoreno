@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
-import { Observable, filter, map, tap } from 'rxjs';
+import { Observable, distinctUntilChanged, filter, map, of, shareReplay, tap } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { Nft, NftImage } from 'alchemy-sdk';
@@ -13,6 +13,8 @@ import { SessionStore } from '@store/session.store';
   providedIn: 'root'
 })
 export class NftsService {
+
+  private imageCache = new Map<string, Observable<string>>();
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -37,12 +39,27 @@ export class NftsService {
     return this.httpClient.get<string[]>(environment.backendUrl+'vision-search/'+tokenId);
   }
 
-  public getOptimalUrl(nft: Nft): string {
-    return nft.image?.thumbnailUrl || nft.image?.cachedUrl  || nft.image?.originalUrl! // CREATE A FALLBACK IMG ASSET URL
+  private getLocalCacheImg(tokenId: string): Observable<string> {
+    if (!this.imageCache.has(tokenId)) {
+      const localCacheImg = this.httpClient.get<any>(environment.backendUrl+'nft-thumbnails/'+tokenId).pipe(
+        map(response => `data:image/jpeg;base64,${response.thumbnail}`),
+        shareReplay(1)
+      );
+      this.imageCache.set(tokenId, localCacheImg);
+    }
+    return this.imageCache.get(tokenId)!;
+  }  
+
+  public getOptimalUrl(nft: Nft): Observable<string> {
+    if (nft.image?.thumbnailUrl) {
+      return of(nft.image.thumbnailUrl)
+    } else {
+      return this.getLocalCacheImg(nft.tokenId)
+    }
   }
 
   public getQualityUrl(image: NftImage): string {
-    return image?.originalUrl || image?.cachedUrl || image?.thumbnailUrl! // CREATE A FALLBACK IMG ASSET URL
+    return image?.originalUrl || image?.cachedUrl || image?.thumbnailUrl!
   }
 
   public getNftByIdObservable(id: string): Observable<Nft | undefined> {
