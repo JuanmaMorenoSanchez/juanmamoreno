@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
@@ -17,8 +17,9 @@ export class ArtPieceComponent {
 
   readonly validTraits = VALIDTRAITS;
 
-  public tokenId: WritableSignal<string> = signal("");
+  public displayingIndex: WritableSignal<number> = signal(0);
   public nfts: WritableSignal<Array<Nft>> = signal([]);
+  public nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()])
   
   public numberOfViewMoreColumns = 3;
   public horizontalView = false;
@@ -43,7 +44,7 @@ export class ArtPieceComponent {
     this.activatedroute.paramMap.pipe(
       map(paramMap => paramMap.get('id')!),
       switchMap((id: string) => {
-        this.tokenId.set(id);
+        this.displayingIndex.set(0);
         return this.nftsService.getSameArtThan(id);
       })
     ).subscribe(nfts => {
@@ -94,6 +95,10 @@ export class ArtPieceComponent {
 
   public getQualityImg(image: NftImage): string {
     return this.nftsService.getQualityUrl(image);
+  }
+
+  public indexChanged(event: number) {
+    this.displayingIndex.set(event);
   }
 
   handleSelectedItem(tokenId: string): void {

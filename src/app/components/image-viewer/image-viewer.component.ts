@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, input,  SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, input,  output,  signal,  SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
@@ -19,7 +19,10 @@ import { Observable } from 'rxjs';
 export class ImageViewerComponent {
 
   nfts = input<Nft[]>([]);
-  displayIndex = 0;
+  displayIndex: WritableSignal<number> =  signal(0);
+  displayIndexOutput = output<number>({
+    alias: "displayIndex"
+  });
   hovering = false;
   displayArrows = false;
   displayExpand = false;
@@ -36,6 +39,8 @@ export class ImageViewerComponent {
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1;
     this.isImgVisible = false;
+    this.displayIndexOutput.emit(0);
+    this.displayIndex.set(0);
   }
 
   public setHover(hovering: boolean) {
@@ -44,8 +49,10 @@ export class ImageViewerComponent {
 
   public nextNft(relativeIndex: number) {
     this.isImgVisible = false;
+    const newIndex = (this.displayIndex() + relativeIndex + this.nfts().length) % this.nfts().length;  
+    this.displayIndexOutput.emit(newIndex);
+    this.displayIndex.set(newIndex);
 
-    this.displayIndex = (this.displayIndex + relativeIndex + this.nfts().length) % this.nfts().length;  
   }
 
   public imageLoad() { 
@@ -61,7 +68,7 @@ export class ImageViewerComponent {
   }
 
   public determineBackground(): string {
-    return this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex])})`;
+    return this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex()])})`;
   }
 
   public isFrontalView(nft: Nft): boolean {

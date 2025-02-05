@@ -1,58 +1,60 @@
 
 <div class="container margin-top">
-  @for (nft of nfts(); track nft; let last = $last; let first = $first) {
-    @if (first) {
-      <mat-grid-list cols="3">
-        <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft)">
-          <app-image-viewer class="fit-width" [nfts]="nfts()"></app-image-viewer>
-        </mat-grid-tile>
-        <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
-          <div class="art-piece-labels">
-            <h3>
-              <i>{{nft?.name}}. {{ getViewLabel(nft) }}</i>
-            </h3>
-            <h3>
-              <small>
-                <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft, validTraits.YEAR) }">{{ getTraitValue(nft, validTraits.YEAR ) }}</a>,
-                {{ getTraitValue(nft, validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft, validTraits.HEIGHT) }} x {{ getTraitValue(nft, validTraits.WIDTH) }} {{ getTraitValue(nft, validTraits.UNIT) }}.
-                @if (sold(nft.tokenId)) {
-                  <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
-                }
-              </small>
-            </h3>
+  <mat-grid-list cols="3">
+    <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft())">
+      <app-image-viewer 
+        class="fit-width" 
+        [nfts]="nfts()"
+        (displayIndex)="indexChanged($event)"
+        ></app-image-viewer>
+    </mat-grid-tile>
+    @if (nft()) {
+      <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
+        <div class="art-piece-labels">
+          <h3>
+            <i>{{nft().name}}. <small>{{ getViewLabel(nft()) }}</small></i>
+          </h3>
+          <h3>
             <small>
-              <app-download-button 
-                [link]="getQualityImg(nft.image)"
-                [name]="nft.name"
-              ></app-download-button>
-              <app-pdf-button
-                [nfts]="[getFrontalViewNft()]"
-              ></app-pdf-button>
-              <app-links-button [tokenId]="nft.tokenId">
-              </app-links-button>
+              <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft(), validTraits.YEAR) }">{{ getTraitValue(nft(), validTraits.YEAR ) }}</a>,
+              {{ getTraitValue(nft(), validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft(), validTraits.HEIGHT) }} x {{ getTraitValue(nft(), validTraits.WIDTH) }} {{ getTraitValue(nft(), validTraits.UNIT) }}.
+              @if (sold(nft().tokenId)) {
+                <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
+              }
             </small>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
-      @if (nft?.description) {
-        <div class="art-piece-desc">
-          <h3>{{ getTraitValue(nft, validTraits.PROJECT)}}</h3>
-          <p>{{nft?.description}}</p>
-          <h3>{{ getTraitValue(nft, validTraits.DESC_AUTHOR)}}</h3>
+          </h3>
+          <small>
+            <app-download-button 
+              [link]="getQualityImg(nft().image)"
+              [name]="nft().name"
+            ></app-download-button>
+            <app-pdf-button
+              [nfts]="[getFrontalViewNft()]"
+            ></app-pdf-button>
+            <app-links-button [tokenId]="nft().tokenId">
+            </app-links-button>
+          </small>
         </div>
-      }
-      <div class="margin-top">
-        <mat-divider></mat-divider>
-        <h3>
-          {{ 'moreOn' | translate }} {{ getTraitValue(nft, validTraits.YEAR)}}
-        </h3>
-        <app-art-pieces-list
-          [viewAsWidget]="true"
-          [numberOfCols]="numberOfViewMoreColumns"
-          [nftFilters]="getSameYearListFilter(nft)"
-          (selectedTokenId)="handleSelectedItem($event)">
-        </app-art-pieces-list>
-      </div>
+      </mat-grid-tile>
     }
+  </mat-grid-list>
+  @if (nft().description) {
+    <div class="art-piece-desc">
+      <h3>{{ getTraitValue(nft(), validTraits.PROJECT)}}</h3>
+      <p>{{nft().description}}</p>
+      <h3>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h3>
+    </div>
   }
+  <div class="margin-top">
+    <mat-divider></mat-divider>
+    <h3>
+      {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
+    </h3>
+    <app-art-pieces-list
+      [viewAsWidget]="true"
+      [numberOfCols]="numberOfViewMoreColumns"
+      [nftFilters]="getSameYearListFilter(nft())"
+      (selectedTokenId)="handleSelectedItem($event)">
+    </app-art-pieces-list>
+  </div>
 </div>

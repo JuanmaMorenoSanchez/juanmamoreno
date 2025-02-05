@@ -14,7 +14,7 @@ export  enum VALIDTRAITS {
 export enum VIEW_TYPES {
   FRONTAL = "Frontal view",
   PROGRESS = "Work in progress",
-  DETAIL = "Detail view"
+  DETAIL = "Detail"
 }
 
 export enum SortMethod {
