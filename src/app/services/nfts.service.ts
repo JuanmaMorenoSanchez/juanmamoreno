@@ -8,13 +8,12 @@ import { Nft, NftImage } from 'alchemy-sdk';
 import { environment } from "@environments/environment";
 import { HttpClient } from '@angular/common/http';
 import { SessionStore } from '@store/session.store';
+import { NftThumbnail } from '@models/nfts.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NftsService {
-
-  private imageCache = new Map<string, Observable<string>>();
 
   constructor(
     @Inject('persistStorage') persistStorage: PersistState,
@@ -40,14 +39,20 @@ export class NftsService {
   }
 
   private getLocalCacheImg(tokenId: string): Observable<string> {
-    if (!this.imageCache.has(tokenId)) {
-      const localCacheImg = this.httpClient.get<any>(environment.backendUrl+'nft-thumbnails/'+tokenId).pipe(
-        map(response => `data:image/jpeg;base64,${response.thumbnail}`),
-        shareReplay(1)
+    const cachedThumbnail = this.sessionQuery.getThumbnailByTokenId(tokenId);
+    if (cachedThumbnail) {
+      return of(this.composeImgSrc(cachedThumbnail.thumbnail));
+    } else {
+      return this.httpClient.get<NftThumbnail>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
+        tap(thumbnail => {
+          const currentCache = this.sessionQuery.getValue().imageCache;
+          this.sessionStore.update({
+            imageCache: [...currentCache, thumbnail],
+          });
+        }),
+        map(thumbnail => this.composeImgSrc(thumbnail.thumbnail))
       );
-      this.imageCache.set(tokenId, localCacheImg);
     }
-    return this.imageCache.get(tokenId)!;
   }  
 
   public getOptimalUrl(nft: Nft): Observable<string> {
@@ -172,6 +177,10 @@ export class NftsService {
       !this.sessionQuery.selectLastArtPiecesUpdate || 
       DateUtils.dataIsOld(this.sessionQuery.selectLastArtPiecesUpdate)
     )
+  }
+
+  private composeImgSrc(base64: string): string {
+    return `data:image/jpeg;base64,${base64}`
   }
 
   public saveNftsLocally(nfts: Array<Nft>): void {

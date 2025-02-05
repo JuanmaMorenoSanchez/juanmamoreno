@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
 import { VALIDTRAITS } from '@constants/nft.constants';
 import { Query } from '@datorama/akita';
+import { NftThumbnail } from '@models/nfts.models';
 import { SessionState } from '@models/session.model';
 import { SessionStore } from '@store/session.store';
 
 @Injectable({ providedIn: 'root' })
 export class SessionQuery extends Query<SessionState> {
     selectArtPiecesObservable = this.select(({ artPieces }) => [...artPieces]);
+
+    constructor(protected override store: SessionStore) {
+        super(store);
+    }
 
     get selectArtPieces() {
         return this.getValue().artPieces
@@ -24,7 +29,7 @@ export class SessionQuery extends Query<SessionState> {
         );
     }
 
-    constructor(protected override store: SessionStore) {
-        super(store);
+    getThumbnailByTokenId(tokenId: string): NftThumbnail | undefined {
+        return this.getValue().imageCache.find(thumbnail => thumbnail.tokenId === tokenId);
     }
 }
