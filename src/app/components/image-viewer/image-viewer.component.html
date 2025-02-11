@@ -16,7 +16,7 @@
             [@fadeTrigger]="isImgVisible ? 'visible' : 'hidden'"
             (@fadeTrigger.done)="onAnimationDone($event)"
             [src]="getQualityImg(nfts()[(displayIndex())])" 
-            [style.backgroundImage]="determineBackground()"
+            [style.backgroundImage]="previewImage()"
             (load)="imageLoad()"
             class="art-viewer"/>
         @if (displayExpand) {

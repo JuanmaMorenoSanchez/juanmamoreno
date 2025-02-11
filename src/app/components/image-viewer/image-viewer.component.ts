@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, input,  output,  signal,  SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, ElementRef, input,  output,  signal,  SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
@@ -20,6 +20,9 @@ export class ImageViewerComponent {
 
   nfts = input<Nft[]>([]);
   displayIndex: WritableSignal<number> =  signal(0);
+  previewImage = computed(() => 
+    this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex()])})`
+  );
   displayIndexOutput = output<number>({
     alias: "displayIndex"
   });
@@ -65,10 +68,6 @@ export class ImageViewerComponent {
 
   public getSmallImg(nft: Nft): Observable<string> {
     return this.nftService.getOptimalUrl(nft);
-  }
-
-  public determineBackground(): string {
-    return this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex()])})`;
   }
 
   public isFrontalView(nft: Nft): boolean {
