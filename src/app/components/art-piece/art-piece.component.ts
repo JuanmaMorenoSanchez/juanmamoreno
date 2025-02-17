@@ -45,7 +45,7 @@ export class ArtPieceComponent {
       map(paramMap => paramMap.get('id')!),
       switchMap((id: string) => {
         this.displayingIndex.set(0);
-        return this.nftsService.getSameArtThan(id);
+        return this.nftsService.getSameArtThanObservable(id);
       })
     ).subscribe(nfts => {
       this.nfts.set(nfts);

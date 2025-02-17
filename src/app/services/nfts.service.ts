@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
-import { Observable, distinctUntilChanged, filter, map, of, shareReplay, tap } from 'rxjs';
+import { Observable, filter, map, of, tap } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { Nft, NftImage } from 'alchemy-sdk';
@@ -84,7 +84,7 @@ export class NftsService {
     )
   }
 
-  public getSameArtThan(tokenId: string): Observable<Array<Nft>> {
+  public getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
       filter(nft => !!nft?.name),
       map(nft => this.getArtByTitle(nft!.name!))
@@ -96,6 +96,8 @@ export class NftsService {
       return nft.raw.metadata['attributes'].find((trait: any) => trait['trait_type'] === validTrait)!['value']
     } catch {
       switch (validTrait){
+        case VALIDTRAITS.VERSION:
+          return "";
         case VALIDTRAITS.MEDIUM:
           return "Error getting medium";
         case VALIDTRAITS.HEIGHT:
@@ -161,10 +163,21 @@ export class NftsService {
     });
   }
 
+  // TODO: upload more NFTS with version to be able to test this.
   public isFrontalView(nft: Nft): boolean {
-    const imagetype = nft.raw.metadata['attributes'].find((attr: any)  => attr['trait_type'] === VALIDTRAITS.IMAGETYPE);
-    const imagetypeIsSet = !!imagetype;
-    return (imagetype!['value'] === VIEW_TYPES.FRONTAL || !imagetypeIsSet);  
+    const frontalViewNfts: Nft[] = this.getArtByTitle(nft!.name!).filter(sameArtworkNft => 
+      this.getTraitValue(sameArtworkNft, VALIDTRAITS.IMAGETYPE) === VIEW_TYPES.FRONTAL
+    );
+    if (frontalViewNfts.length > 1) {
+      const latestVersionNft = frontalViewNfts.reduce((latest, current) => {
+        const currentVersion = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION) || '0', 10);
+        const latestVersion = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION) || '0', 10);
+        return currentVersion > latestVersion ? current : latest;
+      }, frontalViewNfts[0]);
+      return latestVersionNft?.tokenId === nft?.tokenId;
+    } else {
+      return frontalViewNfts[0]?.tokenId === nft?.tokenId;
+    }
   }
 
   private getArtByTitle(nameToSearch: string): Array<Nft> {

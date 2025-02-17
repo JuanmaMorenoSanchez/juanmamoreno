@@ -8,7 +8,8 @@ export  enum VALIDTRAITS {
   ARTIST = "Artist",
   PROJECT = "Project",
   DESC_AUTHOR = "Description Author",
-  DESC_LANG = "Description language"
+  DESC_LANG = "Description language",
+  VERSION = "Version"
 }
 
 export enum VIEW_TYPES {
