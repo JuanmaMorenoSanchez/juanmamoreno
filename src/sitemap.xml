@@ -25,17 +25,4 @@
     <priority>0.6</priority>
     <changefreq>yearly</changefreq>
   </url>
-
-  <!-- Dynamic routes -->
-  <!-- Replace {id} with actual dynamic IDs -->
-  <!-- <url>
-    <loc>https://www.juanmamoreno.com/artwork/{id}</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.juanmamoreno.com/generative/{id}</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url> -->
 </urlset>

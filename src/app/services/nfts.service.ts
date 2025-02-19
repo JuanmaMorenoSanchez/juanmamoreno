@@ -93,7 +93,7 @@ export class NftsService {
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
     try {
-      return nft.raw.metadata['attributes'].find((trait: any) => trait['trait_type'] === validTrait)!['value']
+      return nft.raw.metadata['attributes']?.find((trait: any) => trait['trait_type'] === validTrait)!['value']
     } catch {
       switch (validTrait){
         case VALIDTRAITS.VERSION:
