@@ -100,7 +100,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   public getImgThumbUrl(nft: Nft): Observable<string> {
-    return this.nftService.getOptimalUrl(nft);
+    return this.nftService.getOptimalUrl(nft).pipe(distinctUntilChanged());
   }
 
   public handleArtPieceClick(tokenId: string) {

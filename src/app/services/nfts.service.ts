@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { PersistState } from '@datorama/akita';
 import { SessionQuery } from '@store/session.query';
-import { Observable, filter, map, of, tap } from 'rxjs';
+import { Observable, catchError, filter, map, of, tap } from 'rxjs';
 import DateUtils from '@utils/date.utils';
 import { VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { Nft, NftImage } from 'alchemy-sdk';
@@ -56,11 +56,11 @@ export class NftsService {
   }  
 
   public getOptimalUrl(nft: Nft): Observable<string> {
-    if (nft.image?.thumbnailUrl) {
-      return of(nft.image.thumbnailUrl)
-    } else {
-      return this.getLocalCacheImg(nft.tokenId)
-    }
+    return this.getLocalCacheImg(nft.tokenId).pipe(
+      catchError(() => {
+          return of(nft.image.thumbnailUrl || nft.image.originalUrl!);
+      })
+    );
   }
 
   public getQualityUrl(image: NftImage): string {
