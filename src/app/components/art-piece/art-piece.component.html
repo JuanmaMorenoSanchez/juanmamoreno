@@ -45,16 +45,18 @@
       <h3>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h3>
     </div>
   }
-  <div class="margin-top">
-    <mat-divider></mat-divider>
-    <h3>
-      {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
-    </h3>
-    <app-art-pieces-list
-      [viewAsWidget]="true"
-      [numberOfCols]="numberOfViewMoreColumns"
-      [nftFilters]="getSameYearListFilter(nft())"
-      (selectedTokenId)="handleSelectedItem($event)">
-    </app-art-pieces-list>
-  </div>
+  @if (nfts().length) {
+    <div class="margin-top">
+      <mat-divider></mat-divider>
+      <h3>
+        {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
+      </h3>
+      <app-art-pieces-list
+        [viewAsWidget]="true"
+        [numberOfCols]="numberOfViewMoreColumns"
+        [nftFilters]="getSameYearListFilter(nft())"
+        (selectedTokenId)="handleSelectedItem($event)">
+      </app-art-pieces-list>
+    </div>
+  }
 </div>
