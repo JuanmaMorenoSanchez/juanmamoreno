@@ -24,7 +24,7 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
     let spawnPoints: Array<{ x: number, y: number }> = [];
     
     //parametrize urls
-    const weatherUrl = 'http://api.weatherstack.com/current?access_key=1a330d041afefa98931ce41dda2c2c67&query=JERUSALEM';
+    const weatherUrl = 'https://api.weatherstack.com/current?access_key=1a330d041afefa98931ce41dda2c2c67&query=JERUSALEM';
     const wallStreetUrl = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=TSLA&apikey=ZNJXBTJOOX3LEJ5S'; //25 per day rate limit
 
     p.preload = () => {
