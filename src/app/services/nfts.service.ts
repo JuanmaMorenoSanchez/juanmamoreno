@@ -185,10 +185,11 @@ export class NftsService {
   }
 
   private itIsNeccesaryToFetch(): boolean {
+    const daysBeforeExpireData = 7;
     return (
       !this.sessionQuery.selectArtPieces.length || 
       !this.sessionQuery.selectLastArtPiecesUpdate || 
-      DateUtils.dataIsOld(this.sessionQuery.selectLastArtPiecesUpdate)
+      DateUtils.olderThanNDays(this.sessionQuery.selectLastArtPiecesUpdate, daysBeforeExpireData)
     )
   }
 

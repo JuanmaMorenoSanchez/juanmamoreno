@@ -6,7 +6,8 @@ export function createInitialState(): SessionState {
     return {
         artPieces: [],
         lastArtPiecesUpdate: undefined,
-        imageCache: []
+        imageCache: [],
+        canvasesData: undefined
     };
 }
 

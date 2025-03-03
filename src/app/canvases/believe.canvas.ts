@@ -1,7 +1,9 @@
 import { BELIEVE_ID } from "@constants/canvas.constants";
+import { SessionQuery } from "@store/session.query";
+import { SessionStore } from "@store/session.store";
 import p5 from "p5";
 
-export const BELIEVE_CANVAS = (p: p5) => {
+export const BELIEVE_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?: SessionStore) => {
     const TWO_PI = Math.PI*2;
     const speed = 0.005;
     let angle = 0.0;

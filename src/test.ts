@@ -21,6 +21,6 @@ getTestBed().initTestEnvironment(
 );
 
 // Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
+const context = (require as any).context('./path/to/files', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().forEach(context);
