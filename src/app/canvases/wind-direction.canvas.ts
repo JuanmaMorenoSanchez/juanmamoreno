@@ -146,16 +146,16 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
 
     const setWeather = (weather: any) => {
         weatherData = weather;
-        store?.update({ canvasesData: { 
+        store?.update({ canvasesData: {
+            ...sessionQuery?.getValue()?.canvasesData?.stock,
             weather: { data: weatherData, fetchTime: new Date() },
-            stock: { data: stockData, fetchTime: new Date() },
         } });
     }
 
     const setStock = (stock: any) => {
         stockData = stock;
         store?.update({ canvasesData: { 
-            weather: { data: weatherData, fetchTime: new Date() },
+            ...sessionQuery?.getValue()?.canvasesData?.weather,
             stock: { data: stockData, fetchTime: new Date() },
         } });
     }
