@@ -13,7 +13,7 @@ export class ParticleSystem {
   }
 
   addParticle(img: p5.Image, windRad: number, nasdaqPerf: number): void {
-    if (Math.floor(this.p.random(0, 17)) === 0) {
+    if (Math.floor(this.p.random(0, 10)) === 0) {
       this.particles.push(new Particle(this.p, this.origin, img, windRad, nasdaqPerf));
     }
   }

@@ -16,7 +16,7 @@ export class Particle {
     this.position = position.copy();
     this.lifespan = 600;
     this.texture = img;
-    this.size = this.p.random(30, 120);
+    this.size = this.p.random(30, 180);
   }
 
   run() {
@@ -27,7 +27,7 @@ export class Particle {
   private update() {
     this.velocity.add(this.acceleration);
     this.position.add(this.velocity);
-    this.lifespan -= 2;
+    this.lifespan -= 1;
   }
 
   private display() {
