@@ -1,6 +1,4 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { environment } from '@environments/environment';
+import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
@@ -8,17 +6,16 @@ import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
+  private translateService = inject(TranslateService);
+  private nftsService = inject(NftsService);
 
-  constructor(
-    private nftsService: NftsService,
-    private httpClient: HttpClient,
-    private translateService: TranslateService
-  ) {
+  constructor( ) {
     this.translateService.setTranslation('en-EN', translationsEN);
     this.translateService.setTranslation('es-ES', translationsES);
     this.getAppData();
@@ -33,10 +30,7 @@ export class AppComponent {
           tokenIds.push(nft.tokenId);
         }
       });
-      // if (tokenIds.length) this.httpClient.post(environment.backendUrl+'refresh-metadata', tokenIds).subscribe((res: any) => {
-      //   console.log("Refresh metadata res : ", res);
-      // });
-      console.log("Missing metadata count: ", tokenIds.length)
+      console.log("Missing metadata count: ", tokenIds.length);
     });
   }
 }

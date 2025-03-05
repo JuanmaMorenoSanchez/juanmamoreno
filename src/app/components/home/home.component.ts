@@ -3,9 +3,10 @@ import { BELIEVE_ID } from '@constants/canvas.constants';
 import { BELIEVE_CANVAS } from 'src/app/canvases/believe.canvas';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 export class HomeComponent {
 

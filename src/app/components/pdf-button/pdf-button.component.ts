@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DossierOptionsModalComponent } from '@components/dossier-options-modal/dossier-options-modal.component';
 import { DOWNLOADTYPES } from '@models/cv.models';
@@ -7,24 +7,21 @@ import { PdfService } from '@services/pdf.service';
 import { Nft } from 'alchemy-sdk';
 
 @Component({
-  selector: 'app-pdf-button',
-  templateUrl: './pdf-button.component.html',
-  styleUrl: './pdf-button.component.scss'
+    selector: 'app-pdf-button',
+    templateUrl: './pdf-button.component.html',
+    styleUrl: './pdf-button.component.scss',
+    standalone: false
 })
 export class PdfButtonComponent {
+  private translateService = inject(TranslateService);
+  private pdfService = inject(PdfService);
+  private dialog = inject(MatDialog);
 
   nfts = input<Nft[]>([]);
   downloadFileType = input<DOWNLOADTYPES>(DOWNLOADTYPES.IMAGE);
 
   public isCreating = false;
   public isSingleArtPage = computed(() => (this.nfts().length <= 1));
-
-  constructor(
-    private pdfService: PdfService,
-    private dialog: MatDialog,
-    private translateService: TranslateService
-  ) {
-  }
 
   public getTooltip(): string {
     switch(this.downloadFileType())  {

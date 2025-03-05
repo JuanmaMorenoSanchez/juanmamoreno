@@ -5,16 +5,17 @@ import { Nft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-image-viewer',
-  templateUrl: './image-viewer.component.html',
-  styleUrls: ['./image-viewer.component.scss'],
-  animations: [
-    trigger('fadeTrigger', [
-      state('visible', style({ opacity: 1 })),
-      state('hidden', style({ opacity: 0 })),
-      transition('visible <=> hidden', animate('0.6s ease-in-out')),
-    ]),
-  ],
+    selector: 'app-image-viewer',
+    templateUrl: './image-viewer.component.html',
+    styleUrls: ['./image-viewer.component.scss'],
+    animations: [
+        trigger('fadeTrigger', [
+            state('visible', style({ opacity: 1 })),
+            state('hidden', style({ opacity: 0 })),
+            transition('visible <=> hidden', animate('0.6s ease-in-out')),
+        ]),
+    ],
+    standalone: false
 })
 export class ImageViewerComponent {
 

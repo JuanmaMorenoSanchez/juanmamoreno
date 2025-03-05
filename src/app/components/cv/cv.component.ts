@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import { DOWNLOADTYPES, Timeline, TimelineItem } from '@models/cv.models';
 import { CV_OBJECT } from '@constants/cv.constants';
 
 @Component({
-  selector: 'app-cv',
-  templateUrl: './cv.component.html',
-  styleUrls: ['./cv.component.scss']
+    selector: 'app-cv',
+    templateUrl: './cv.component.html',
+    styleUrls: ['./cv.component.scss'],
+    standalone: false
 })
 export class CvComponent {
+  private breakpointObserver = inject(BreakpointObserver);
   
   readonly totalCols = 14;
   readonly smallScreenYearColSpan = 2;
@@ -21,9 +23,7 @@ export class CvComponent {
 
   private isSmallScreen = false;
 
-  constructor(
-    private breakpointObserver: BreakpointObserver,
-  ) {
+  constructor( ) {
     this.listenToScreenSize();
   }
 

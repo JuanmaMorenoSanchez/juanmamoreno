@@ -1,14 +1,17 @@
-import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, inject, Output } from '@angular/core';
 
 @Directive({
-  selector: '[appLazyLoad]'
+    selector: '[appLazyLoad]',
+    standalone: false
 })
 export class LazyLoadDirective {
+  private el = inject(ElementRef);
+  
   @Output() visible = new EventEmitter<void>();
 
   private observer: IntersectionObserver;
 
-  constructor(private el: ElementRef) {
+  constructor() {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

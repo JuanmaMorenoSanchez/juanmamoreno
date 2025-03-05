@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BreadCrumb } from '@models/breadcrumbs.models';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,23 +7,23 @@ import { SessionQuery } from '@store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
-  selector: 'app-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss']
+    selector: 'app-breadcrumb',
+    templateUrl: './breadcrumb.component.html',
+    styleUrls: ['./breadcrumb.component.scss'],
+    standalone: false
 })
 export class BreadcrumbComponent {
-
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private translateService = inject(TranslateService);
+  private sessionQuery = inject(SessionQuery);
+  private nftService = inject(NftsService);
+  
   public breadcrumbs: Array<BreadCrumb>;
   public selectedYears: number[] = [];
   public newYear: WritableSignal<number | null> = signal(null);
   
-  constructor(
-    private sessionQuery: SessionQuery,
-    private activatedRoute: ActivatedRoute, 
-    private router: Router,
-    private nftsService: NftsService,
-    private translateService: TranslateService
-  ) {
+  constructor( ) {
     this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
   }
 
@@ -109,6 +109,6 @@ export class BreadcrumbComponent {
   }
 
   private extractNameFromId(id: string): string | null {
-    return this.nftsService.getNftById(id)!.name || null;
+    return this.nftService.getNftById(id)!.name || null;
   }
 }

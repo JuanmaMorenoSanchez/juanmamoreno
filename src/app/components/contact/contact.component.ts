@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { environment } from '@environments/environment';
@@ -8,11 +8,17 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-contact',
-  templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss'],
+    selector: 'app-contact',
+    templateUrl: './contact.component.html',
+    styleUrls: ['./contact.component.scss'],
+    standalone: false
 })
 export class ContactComponent {
+  private formBuilder = inject(FormBuilder);
+  private translateService = inject(TranslateService);
+  private httpClient = inject(HttpClient);
+  private responsiveService = inject(ResponsiveService);
+  private snackBar = inject(MatSnackBar);
 
   readonly EMPTYSTRING = "";
 
@@ -26,13 +32,7 @@ export class ContactComponent {
   public isLoading = false;
   public horizontalView = true;
 
-  constructor(
-    private httpClient: HttpClient,    
-    private formBuilder: FormBuilder,
-    private responsiveService: ResponsiveService,
-    private translateService: TranslateService,
-    public snackBar: MatSnackBar
-  ) {
+  constructor( ) {
     this.form = this.formBuilder.group({
       name: this.name,
       email: this.email,

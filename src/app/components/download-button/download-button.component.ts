@@ -1,9 +1,10 @@
 import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-download-button',
-  templateUrl: './download-button.component.html',
-  styleUrl: './download-button.component.scss'
+    selector: 'app-download-button',
+    templateUrl: './download-button.component.html',
+    styleUrl: './download-button.component.scss',
+    standalone: false
 })
 export class DownloadButtonComponent {
   link = input<string>();

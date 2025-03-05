@@ -1,4 +1,4 @@
-import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
@@ -9,12 +9,17 @@ import { NftImage, Nft } from 'alchemy-sdk';
 import { map, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'app-art-piece',
-  templateUrl: './art-piece.component.html',
-  styleUrls: ['./art-piece.component.scss'],
+    selector: 'app-art-piece',
+    templateUrl: './art-piece.component.html',
+    styleUrls: ['./art-piece.component.scss'],
+    standalone: false
 })
 export class ArtPieceComponent {
-
+  private router = inject(Router);
+  private activatedroute = inject(ActivatedRoute);
+  private nftsService = inject(NftsService);
+  private responsiveService = inject(ResponsiveService);
+  
   readonly validTraits = VALIDTRAITS;
 
   public displayingIndex: WritableSignal<number> = signal(0);
@@ -24,12 +29,7 @@ export class ArtPieceComponent {
   public numberOfViewMoreColumns = 3;
   public horizontalView = false;
 
-  constructor(
-    private nftsService: NftsService,
-    private activatedroute: ActivatedRoute,
-    private router: Router,
-    private responsiveService: ResponsiveService
-  ) {
+  constructor( ) {
     this.responsiveService.displayMobileLayout.subscribe(display => {
       this.horizontalView = display;
       this.numberOfViewMoreColumns = !display ? 3 : 6;

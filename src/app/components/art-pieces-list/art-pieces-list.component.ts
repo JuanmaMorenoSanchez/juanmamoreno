@@ -1,4 +1,4 @@
-import { Component, computed, input, OnInit, output, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal, Signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SortMethod, VALIDTRAITS } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
@@ -12,12 +12,18 @@ import { toSignal } from '@angular/core/rxjs-interop';
 type SortOrder = 'asc' | 'desc';
 
 @Component({
-  selector: 'app-art-pieces-list',
-  templateUrl: './art-pieces-list.component.html',
-  styleUrls: ['./art-pieces-list.component.scss']
+    selector: 'app-art-pieces-list',
+    templateUrl: './art-pieces-list.component.html',
+    styleUrls: ['./art-pieces-list.component.scss'],
+    standalone: false
 })
 export class ArtPiecesListComponent implements OnInit {
-
+  private router = inject(Router);
+  private activatedroute = inject(ActivatedRoute);
+  private sessionQuery = inject(SessionQuery);
+  private nftService = inject(NftsService);
+  private responsiveService = inject(ResponsiveService);
+  
   numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
   nftFilters = input<NftFilters>({});
@@ -41,13 +47,7 @@ export class ArtPiecesListComponent implements OnInit {
   public visibleImages = new Set<string>();
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
-  constructor(
-    private sessionQuery: SessionQuery,
-    private activatedroute: ActivatedRoute,
-    private router: Router,
-    private nftService: NftsService,
-    private responsiveService: ResponsiveService
-  ) {
+  constructor( ) {
     this.artPieces = toSignal(this.sessionQuery.selectArtPiecesObservable)
   }
 

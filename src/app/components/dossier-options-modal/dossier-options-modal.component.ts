@@ -3,9 +3,10 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({
-  selector: 'app-dossier-options-modal',
-  templateUrl: './dossier-options-modal.component.html',
-  styleUrl: './dossier-options-modal.component.scss'
+    selector: 'app-dossier-options-modal',
+    templateUrl: './dossier-options-modal.component.html',
+    styleUrl: './dossier-options-modal.component.scss',
+    standalone: false
 })
 export class DossierOptionsModalComponent {
   customTitle: string = '';

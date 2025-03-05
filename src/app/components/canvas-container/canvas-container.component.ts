@@ -1,14 +1,18 @@
-import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { SessionQuery } from '@store/session.query';
 import { SessionStore } from '@store/session.store';
 import p5 from 'p5';
 
 @Component({
-  selector: 'app-canvas-container',
-  templateUrl: './canvas-container.component.html',
-  styleUrls: ['./canvas-container.component.scss']
+    selector: 'app-canvas-container',
+    templateUrl: './canvas-container.component.html',
+    styleUrls: ['./canvas-container.component.scss'],
+    standalone: false
 })
 export class CanvasContainerComponent {
+  private sessionQuery = inject(SessionQuery);
+  private store = inject(SessionStore);
+  
 
   @Input() identifier!: string;
   @Input() logic!: (p: any, sessionQuery?: SessionQuery, store?: SessionStore) => void;
@@ -17,10 +21,7 @@ export class CanvasContainerComponent {
 
   private p5: p5 | undefined;
   
-  constructor(
-    private sessionQuery: SessionQuery,
-    private store: SessionStore
-  ) {
+  constructor( ) {
     window.onresize = this.onWindowResize;
   }
 
