@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule, CdkScrollableModule} from '@angular/cdk/scrolling';
-import { LoginButtonComponent } from './login-button/login-button.component';
 import { TopMenuComponent } from './top-menu/top-menu.component';
 import { ArtPiecesListComponent } from './art-pieces-list/art-pieces-list.component';
 import { ArtPieceComponent } from './art-piece/art-piece.component';
@@ -28,7 +27,6 @@ import { LinksModalComponent } from './links-modal/links-modal.component';
 
 @NgModule({ 
     declarations: [
-        LoginButtonComponent,
         TopMenuComponent,
         ArtPiecesListComponent,
         ArtPieceComponent,
