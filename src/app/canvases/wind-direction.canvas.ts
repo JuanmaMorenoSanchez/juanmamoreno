@@ -7,7 +7,7 @@ import { SessionStore } from "@store/session.store";
 export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?: SessionStore)  => { 
     const moreInfo = "Press 'i' for more information";
     const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 1 day in milliseconds
-    const numSources = 8;
+    const numSources = 7;
     let weatherData: any;
     let stockData: any;
     let windRad: number;
@@ -56,12 +56,12 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
     
         systems = spawnPoints.map(point => new ParticleSystem(p, p.createVector(point.x, point.y)));
         startTime = p.millis();
-        teslaGrow = Number(getGrow(stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["1. open"], stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["4. close"]));
     }
 
     p.draw = () => {
         drawBackground();
         if (weatherData && stockData){	
+            teslaGrow = Number(getGrow(stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["1. open"], stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["4. close"]));
 
             windRad = weatherData.current.wind_degree;
             windSpeed = weatherData.current.wind_speed;
@@ -117,21 +117,23 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
 
     const loadData = () => {
         const now = new Date().getTime();
-        const weatherCache = sessionQuery?.getValue()?.canvasesData?.weather;
-        const stockCache = sessionQuery?.getValue()?.canvasesData?.stock;
-        const isWeatherFresh = weatherCache && (now - new Date(weatherCache.fetchTime).getTime() < CACHE_EXPIRATION);
+        const weatherCache = sessionQuery?.canvasWeatherData;
+        const stockCache = sessionQuery?.canvasStockData;
+        const isWeatherFresh = weatherCache && (now - new Date(weatherCache?.fetchTime).getTime() < CACHE_EXPIRATION);
         const isStockFresh = stockCache && (now - new Date(stockCache.fetchTime).getTime() < CACHE_EXPIRATION);
 
-        if (isWeatherFresh && weatherCache.data) {
+        if (isWeatherFresh) {
             console.log("cached weather")
-            setWeather(weatherCache.data);
+            setWeather(weatherCache?.data);
         } else {
+            console.log("fetching weather")
             p.loadJSON(weatherUrl, setWeather);
         }
-        if (isStockFresh && stockCache.data) {
+        if (isStockFresh) {
             console.log("cached stock")
             setStock(stockCache.data);
         } else {
+            console.log("fetching stock")
             p.loadJSON(wallStreetUrl, setStock);
         }
         p.frameCount = -1;
@@ -146,18 +148,12 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
 
     const setWeather = (weather: any) => {
         weatherData = weather;
-        store?.update({ canvasesData: {
-            ...sessionQuery?.getValue()?.canvasesData?.stock,
-            weather: { data: weatherData, fetchTime: new Date() },
-        } });
+        store?.update( { canvasDataWeather: { data: weather, fetchTime: new Date() } } );
     }
 
     const setStock = (stock: any) => {
         stockData = stock;
-        store?.update({ canvasesData: { 
-            ...sessionQuery?.getValue()?.canvasesData?.weather,
-            stock: { data: stockData, fetchTime: new Date() },
-        } });
+        store?.update( { canvasDataStock: { data: stock, fetchTime: new Date() } } );
     }
 
     const getGrow = (openValue: number, closeValue: number) => {

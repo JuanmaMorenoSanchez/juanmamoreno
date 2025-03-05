@@ -33,16 +33,16 @@ export class SessionQuery extends Query<SessionState> {
 
     get canvasWeatherData(): any | undefined {
         const daysBeforeExpireData = 1;
-        const weatherDataTime = this.getValue().canvasesData?.weather?.fetchTime;
+        const weatherDataTime = this.getValue().canvasDataWeather?.fetchTime;
         const invalidDate = weatherDataTime ? DateUtils.olderThanNDays(weatherDataTime, daysBeforeExpireData) : true;
-        return !weatherDataTime || invalidDate ? undefined : this.getValue().canvasesData?.weather?.data
+        return !weatherDataTime || invalidDate ? undefined : this.getValue().canvasDataWeather?.data
     }
 
     get canvasStockData(): any | undefined {
         const daysBeforeExpireData = 1;
-        const stockDataTime = this.getValue().canvasesData?.stock?.fetchTime;
+        const stockDataTime = this.getValue().canvasDataStock?.fetchTime;
         const invalidDate = stockDataTime ? DateUtils.olderThanNDays(stockDataTime, daysBeforeExpireData) : true;
-        return !stockDataTime || invalidDate ? undefined : this.getValue().canvasesData?.stock?.data
+        return !stockDataTime || invalidDate ? undefined : this.getValue().canvasDataStock?.data
     }
 
     getThumbnailByTokenId(tokenId: string): NftThumbnail | undefined {

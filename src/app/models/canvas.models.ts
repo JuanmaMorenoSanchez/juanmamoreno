@@ -4,10 +4,6 @@ export interface Canvas {
     script: Function
 }
 
-export interface CanvasesStates {
-    weather?: GennericCanvasData,
-    stock?: GennericCanvasData
-}
 
 export interface GennericCanvasData {
     data: any,

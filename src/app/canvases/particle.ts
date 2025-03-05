@@ -14,7 +14,7 @@ export class Particle {
     this.acceleration = p5.Vector.fromAngle(windRad).mult(1 / 50).add(0, -nasdaqPerf / 100);
     this.velocity = new p5.Vector(this.p.random(-1, 1), this.p.random(-1, 0));
     this.position = position.copy();
-    this.lifespan = 600;
+    this.lifespan = 255;
     this.texture = img;
     this.size = this.p.random(30, 180);
   }
