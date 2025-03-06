@@ -12,7 +12,6 @@ const routes: Routes = [
   { 
     path: '', 
     pathMatch: "full", 
-    // component: HomeComponent
     component: ArtPiecesListComponent,
     data: {
       breadcrumb: 'Paintings'
