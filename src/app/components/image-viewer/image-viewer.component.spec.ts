@@ -8,8 +8,8 @@ describe('ImageViewerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ImageViewerComponent]
-    });
+    imports: [ImageViewerComponent]
+});
     fixture = TestBed.createComponent(ImageViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -8,8 +8,8 @@ describe('TopMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TopMenuComponent ]
-    })
+    imports: [TopMenuComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TopMenuComponent);

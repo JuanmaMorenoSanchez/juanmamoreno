@@ -5,12 +5,16 @@ import { DOWNLOADTYPES } from '@models/cv.models';
 import { TranslateService } from '@ngx-translate/core';
 import { PdfService } from '@services/pdf.service';
 import { Nft } from 'alchemy-sdk';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-pdf-button',
     templateUrl: './pdf-button.component.html',
     styleUrl: './pdf-button.component.scss',
-    standalone: false
+    imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner]
 })
 export class PdfButtonComponent {
   private translateService = inject(TranslateService);

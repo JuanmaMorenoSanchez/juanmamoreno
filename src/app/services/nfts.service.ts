@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
-import { PersistState } from '@datorama/akita';
+import { Injectable } from '@angular/core';
 import { SessionQuery } from '@store/session.query';
 import { Observable, catchError, filter, map, of, tap } from 'rxjs';
 import DateUtils from '@utils/date.utils';
@@ -16,7 +15,6 @@ import { NftThumbnail } from '@models/nfts.models';
 export class NftsService {
 
   constructor(
-    @Inject('persistStorage') persistStorage: PersistState,
     private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,
     private httpClient: HttpClient

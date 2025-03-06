@@ -1,17 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { environment } from '@environments/environment';
 import { ResponsiveService } from '@services/responsive.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-contact',
     templateUrl: './contact.component.html',
     styleUrls: ['./contact.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, MatGridList, MatGridTile, MatFormField, MatLabel, MatInput, MatError, MatHint, MatButton, TranslatePipe]
 })
 export class ContactComponent {
   private formBuilder = inject(FormBuilder);

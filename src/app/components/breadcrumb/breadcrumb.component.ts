@@ -1,16 +1,23 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BreadCrumb } from '@models/breadcrumbs.models';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { NftsService } from '@services/nfts.service';
 import { SessionQuery } from '@store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
+import { MatChipListbox, MatChip } from '@angular/material/chips';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { NgFor } from '@angular/common';
+import { MatOption } from '@angular/material/core';
 
 @Component({
     selector: 'app-breadcrumb',
     templateUrl: './breadcrumb.component.html',
     styleUrls: ['./breadcrumb.component.scss'],
-    standalone: false
+    imports: [MatChipListbox, MatChip, RouterLink, RouterLinkActive, MatIcon, MatFormField, MatSelect, FormsModule, NgFor, MatOption, TranslatePipe]
 })
 export class BreadcrumbComponent {
   private router = inject(Router);

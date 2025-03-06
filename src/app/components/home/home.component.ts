@@ -5,8 +5,7 @@ import { BELIEVE_CANVAS } from 'src/app/canvases/believe.canvas';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
-    standalone: false
+    styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
 

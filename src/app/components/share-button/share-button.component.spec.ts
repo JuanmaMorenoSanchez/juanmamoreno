@@ -8,8 +8,8 @@ describe('ShareButtonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ShareButtonComponent]
-    });
+    imports: [ShareButtonComponent]
+});
     fixture = TestBed.createComponent(ShareButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

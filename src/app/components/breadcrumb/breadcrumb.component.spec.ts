@@ -8,8 +8,8 @@ describe('BreadcrumbComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [BreadcrumbComponent]
-    });
+    imports: [BreadcrumbComponent]
+});
     fixture = TestBed.createComponent(BreadcrumbComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

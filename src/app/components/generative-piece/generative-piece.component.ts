@@ -1,14 +1,14 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CANVASES } from '@constants/canvas.constants';
-import { Canvas } from '@models/canvas.models';
 import { Subscription } from 'rxjs';
+import { CanvasContainerComponent } from '../canvas-container/canvas-container.component';
 
 @Component({
     selector: 'app-generative-piece',
     templateUrl: './generative-piece.component.html',
     styleUrls: ['./generative-piece.component.scss'],
-    standalone: false
+    imports: [CanvasContainerComponent]
 })
 export class GenerativePieceComponent implements OnInit, OnDestroy {
   private activatedRoute = inject(ActivatedRoute);

@@ -1,9 +1,6 @@
 import { Directive, ElementRef, EventEmitter, inject, Output } from '@angular/core';
 
-@Directive({
-    selector: '[appLazyLoad]',
-    standalone: false
-})
+@Directive({ selector: '[appLazyLoad]' })
 export class LazyLoadDirective {
   private el = inject(ElementRef);
   

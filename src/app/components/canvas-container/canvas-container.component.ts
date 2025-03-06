@@ -6,8 +6,7 @@ import p5 from 'p5';
 @Component({
     selector: 'app-canvas-container',
     templateUrl: './canvas-container.component.html',
-    styleUrls: ['./canvas-container.component.scss'],
-    standalone: false
+    styleUrls: ['./canvas-container.component.scss']
 })
 export class CanvasContainerComponent {
   private sessionQuery = inject(SessionQuery);

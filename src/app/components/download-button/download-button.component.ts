@@ -1,10 +1,15 @@
 import { Component, input } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-download-button',
     templateUrl: './download-button.component.html',
     styleUrl: './download-button.component.scss',
-    standalone: false
+    imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, TranslatePipe]
 })
 export class DownloadButtonComponent {
   link = input<string>();

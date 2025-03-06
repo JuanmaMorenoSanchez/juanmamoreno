@@ -8,8 +8,8 @@ describe('ContactComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ContactComponent]
-    });
+    imports: [ContactComponent]
+});
     fixture = TestBed.createComponent(ContactComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

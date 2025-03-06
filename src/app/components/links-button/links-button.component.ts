@@ -2,13 +2,17 @@ import { Component, inject, input, OnInit } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { MatDialog } from '@angular/material/dialog';
 import { LinksModalComponent } from '@components/links-modal/links-modal.component';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 
 @Component({
     selector: 'app-links-button',
     templateUrl: './links-button.component.html',
     styleUrl: './links-button.component.scss',
-    standalone: false
+    imports: [MatIconButton, MatTooltip, MatIcon, TranslatePipe]
 })
 export class LinksButtonComponent implements OnInit {
   private nftsService = inject(NftsService);

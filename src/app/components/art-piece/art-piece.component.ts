@@ -1,5 +1,5 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@constants/nft.constants';
 import { NftFilters } from '@models/nfts.models';
 
@@ -7,12 +7,21 @@ import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { NftImage, Nft } from 'alchemy-sdk';
 import { map, switchMap } from 'rxjs';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DownloadButtonComponent } from '../download-button/download-button.component';
+import { PdfButtonComponent } from '../pdf-button/pdf-button.component';
+import { LinksButtonComponent } from '../links-button/links-button.component';
+import { MatDivider } from '@angular/material/divider';
+import { ArtPiecesListComponent } from '../art-pieces-list/art-pieces-list.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-art-piece',
     templateUrl: './art-piece.component.html',
     styleUrls: ['./art-piece.component.scss'],
-    standalone: false
+    imports: [MatGridList, MatGridTile, ImageViewerComponent, RouterLink, MatTooltip, DownloadButtonComponent, PdfButtonComponent, LinksButtonComponent, MatDivider, ArtPiecesListComponent, TranslatePipe]
 })
 export class ArtPieceComponent {
   private router = inject(Router);

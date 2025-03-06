@@ -3,6 +3,7 @@ import { Component, computed, ElementRef, input,  output,  signal,  SimpleChange
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-image-viewer',
@@ -15,7 +16,7 @@ import { Observable } from 'rxjs';
             transition('visible <=> hidden', animate('0.6s ease-in-out')),
         ]),
     ],
-    standalone: false
+    imports: [MatIcon]
 })
 export class ImageViewerComponent {
 

@@ -5,9 +5,17 @@ import { NftFilters } from '@models/nfts.models';
 import { NftsService } from '@services/nfts.service';
 import { ResponsiveService } from '@services/responsive.service';
 import { SessionQuery } from '@store/session.query';
-import { Nft, NftImage } from 'alchemy-sdk';
+import { Nft } from 'alchemy-sdk';
 import { distinctUntilChanged, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { MatChipListbox, MatChip } from '@angular/material/chips';
+import { MatIcon } from '@angular/material/icon';
+import { PdfButtonComponent } from '../pdf-button/pdf-button.component';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatCard, MatCardImage } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LazyLoadDirective } from '../../directives/lazy-load.directive';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -15,7 +23,7 @@ type SortOrder = 'asc' | 'desc';
     selector: 'app-art-pieces-list',
     templateUrl: './art-pieces-list.component.html',
     styleUrls: ['./art-pieces-list.component.scss'],
-    standalone: false
+    imports: [NgClass, MatChipListbox, MatChip, MatIcon, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective, AsyncPipe]
 })
 export class ArtPiecesListComponent implements OnInit {
   private router = inject(Router);

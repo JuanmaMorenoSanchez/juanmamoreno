@@ -8,8 +8,8 @@ describe('GenerativePieceComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GenerativePieceComponent]
-    });
+    imports: [GenerativePieceComponent]
+});
     fixture = TestBed.createComponent(GenerativePieceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

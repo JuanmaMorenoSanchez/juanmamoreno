@@ -8,8 +8,8 @@ describe('CanvasContainerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CanvasContainerComponent]
-    });
+    imports: [CanvasContainerComponent]
+});
     fixture = TestBed.createComponent(CanvasContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -4,12 +4,14 @@ import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
+import { TopMenuComponent } from './components/top-menu/top-menu.component';
+import { ShareButtonComponent } from './components/share-button/share-button.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: false
+    imports: [TopMenuComponent, ShareButtonComponent]
 })
 export class AppComponent {
   private translateService = inject(TranslateService);

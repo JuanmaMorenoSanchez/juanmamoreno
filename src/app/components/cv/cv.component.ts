@@ -2,12 +2,16 @@ import { Component, inject } from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import { DOWNLOADTYPES, Timeline, TimelineItem } from '@models/cv.models';
 import { CV_OBJECT } from '@constants/cv.constants';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { PdfButtonComponent } from '../pdf-button/pdf-button.component';
+import { MatDivider } from '@angular/material/divider';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-cv',
     templateUrl: './cv.component.html',
     styleUrls: ['./cv.component.scss'],
-    standalone: false
+    imports: [MatGridList, MatGridTile, PdfButtonComponent, MatDivider, TranslatePipe]
 })
 export class CvComponent {
   private breakpointObserver = inject(BreakpointObserver);
