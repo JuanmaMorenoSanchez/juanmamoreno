@@ -111,7 +111,10 @@
           }
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "buildTarget": "juanmamoreno:build:production"
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
