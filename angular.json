@@ -19,7 +19,7 @@
           "options": {
             "outputPath": {
               "base": "dist/juanmamoreno"
-            },
+            },           
             "browser": "src/main.ts",
             "index": "src/index.html",
             "polyfills": [
@@ -42,7 +42,10 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/juanmamoreno/",
+              "outputPath": {
+                "base": "dist/juanmamoreno",
+                "browser": ""
+              },      
               "budgets": [
                 {
                   "type": "initial",
