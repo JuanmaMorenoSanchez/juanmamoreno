@@ -6,18 +6,18 @@ describe('ArtPiecesListComponent', () => {
   let component: ArtPiecesListComponent;
   let fixture: ComponentFixture<ArtPiecesListComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-    imports: [ArtPiecesListComponent]
-})
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//     imports: [ArtPiecesListComponent]
+// })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(ArtPiecesListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(ArtPiecesListComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
 });

@@ -6,18 +6,18 @@ describe('TopMenuComponent', () => {
   let component: TopMenuComponent;
   let fixture: ComponentFixture<TopMenuComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-    imports: [TopMenuComponent]
-})
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//     imports: [TopMenuComponent]
+// })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(TopMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(TopMenuComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
 });

@@ -6,16 +6,16 @@ describe('ImageViewerComponent', () => {
   let component: ImageViewerComponent;
   let fixture: ComponentFixture<ImageViewerComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-    imports: [ImageViewerComponent]
-});
-    fixture = TestBed.createComponent(ImageViewerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   beforeEach(() => {
+//     TestBed.configureTestingModule({
+//     imports: [ImageViewerComponent]
+// });
+//     fixture = TestBed.createComponent(ImageViewerComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
 });

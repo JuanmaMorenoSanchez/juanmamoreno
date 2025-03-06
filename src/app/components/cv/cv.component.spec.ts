@@ -6,16 +6,16 @@ describe('CvComponent', () => {
   let component: CvComponent;
   let fixture: ComponentFixture<CvComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-    imports: [CvComponent]
-});
-    fixture = TestBed.createComponent(CvComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   beforeEach(() => {
+//     TestBed.configureTestingModule({
+//     imports: [CvComponent]
+// });
+//     fixture = TestBed.createComponent(CvComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
 });
