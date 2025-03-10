@@ -34,9 +34,9 @@ export class ArtPieceComponent {
   public displayingIndex: WritableSignal<number> = signal(0);
   public nfts: WritableSignal<Array<Nft>> = signal([]);
   public nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()])
-  
   public numberOfViewMoreColumns = 3;
   public horizontalView = false;
+  private latestVersionIndex: number = 0;
 
   constructor( ) {
     this.responsiveService.displayMobileLayout.subscribe(display => {
@@ -53,22 +53,27 @@ export class ArtPieceComponent {
     this.activatedroute.paramMap.pipe(
       map(paramMap => paramMap.get('id')!),
       switchMap((id: string) => {
-        this.displayingIndex.set(0);
         return this.nftsService.getSameArtThanObservable(id);
       })
     ).subscribe(nfts => {
       this.nfts.set(nfts);
+      this.latestVersionIndex = this.nftsService.getLatestVersionIndex(this.nfts());
+      this.displayingIndex.set(this.latestVersionIndex);
     });
   }
 
   public getViewLabel(nft: Nft): string {
     switch (this.getTraitValue(nft, this.validTraits.IMAGETYPE)) {
       case VIEW_TYPES.PROGRESS:
-        return "(Work in progress)"
+        return `(${VIEW_TYPES.PROGRESS})`
       case VIEW_TYPES.DETAIL:
-        return "(Detail view)"
+        return `(${VIEW_TYPES.DETAIL})`
       default:
-        return ""
+        if (this.displayingIndex() === this.latestVersionIndex) {
+          return ""
+        } else {
+          return `(${VIEW_TYPES.PROGRESS})`
+        }
     }
   }
 

@@ -161,21 +161,29 @@ export class NftsService {
     });
   }
 
-  // TODO: upload more NFTS with version to be able to test this.
   public isFrontalView(nft: Nft): boolean {
     const frontalViewNfts: Nft[] = this.getArtByTitle(nft!.name!).filter(sameArtworkNft => 
       this.getTraitValue(sameArtworkNft, VALIDTRAITS.IMAGETYPE) === VIEW_TYPES.FRONTAL
     );
     if (frontalViewNfts.length > 1) {
-      const latestVersionNft = frontalViewNfts.reduce((latest, current) => {
-        const currentVersion = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION) || '0', 10);
-        const latestVersion = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION) || '0', 10);
-        return currentVersion > latestVersion ? current : latest;
-      }, frontalViewNfts[0]);
+      const latestVersionNft = this.getLatestVersionNft(frontalViewNfts);
       return latestVersionNft?.tokenId === nft?.tokenId;
     } else {
       return frontalViewNfts[0]?.tokenId === nft?.tokenId;
     }
+  }
+
+  public getLatestVersionNft(nfts: Array<Nft>): Nft {
+    return nfts.reduce((latest, current) => {
+      const currentVersion = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION) || '0', 10);
+      const latestVersion = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION) || '0', 10);
+      return currentVersion > latestVersion ? current : latest;
+    }, nfts[0]);
+  }
+
+  public getLatestVersionIndex(nfts: Array<Nft>): number {
+    const latestNft = this.getLatestVersionNft(nfts);
+    return nfts.findIndex(nft => nft.tokenId === latestNft.tokenId);
   }
 
   private getArtByTitle(nameToSearch: string): Array<Nft> {

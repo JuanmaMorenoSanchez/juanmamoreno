@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, computed, ElementRef, input,  output,  signal,  SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, ElementRef, input,  OnInit,  output,  signal,  SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { NftsService } from '@services/nfts.service';
 import { Nft } from 'alchemy-sdk';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ import { MatIcon } from '@angular/material/icon';
     ],
     imports: [MatIcon]
 })
-export class ImageViewerComponent {
+export class ImageViewerComponent implements OnInit {
 
   nfts = input<Nft[]>([]);
   displayIndex: WritableSignal<number> =  signal(0);
@@ -41,11 +41,15 @@ export class ImageViewerComponent {
   ) {
   }
 
+  ngOnInit() {
+    this.displayIndex.set(this.nftService.getLatestVersionIndex(this.nfts()));
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1;
     this.isImgVisible = false;
-    this.displayIndexOutput.emit(0);
-    this.displayIndex.set(0);
+    this.displayIndexOutput.emit(this.nftService.getLatestVersionIndex(this.nfts()));
+    this.displayIndex.set(this.nftService.getLatestVersionIndex(this.nfts()));
   }
 
   public setHover(hovering: boolean) {
@@ -70,10 +74,6 @@ export class ImageViewerComponent {
 
   public getSmallImg(nft: Nft): Observable<string> {
     return this.nftService.getOptimalUrl(nft);
-  }
-
-  public isFrontalView(nft: Nft): boolean {
-    return this.nftService.isFrontalView(nft);
   }
 
   public onAnimationDone(event: any) {
