@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:e2e": "npx cypress open",
     "deploy": "ng deploy --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint"
   },
@@ -45,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "angular-cli-ghpages": "^2.0.0",
+    "cypress": "^14.1.0",
     "eslint": "^8.51.0",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",
