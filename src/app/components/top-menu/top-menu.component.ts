@@ -12,6 +12,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { MatDrawerContainer, MatDrawer, MatDrawerContent } from '@angular/material/sidenav';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { ALLOWED_LANGUAGES } from '@constants/languages.constans';
 
 @Component({
     selector: 'app-top-menu',
@@ -48,7 +49,7 @@ export class TopMenuComponent {
   }
 
   public changeLanguage(): void {
-    const nextLang = this.currentLang === "en-EN" ? "es-ES" : "en-EN";
+    const nextLang = this.currentLang === ALLOWED_LANGUAGES.ENGLISH ? ALLOWED_LANGUAGES.SPANISH : ALLOWED_LANGUAGES.ENGLISH;
     this.translateService.use(nextLang);
   }
 

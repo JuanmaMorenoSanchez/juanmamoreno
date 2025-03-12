@@ -6,6 +6,7 @@ import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
 import { TopMenuComponent } from './components/top-menu/top-menu.component';
 import { ShareButtonComponent } from './components/share-button/share-button.component';
+import { ALLOWED_LANGUAGES } from '@constants/languages.constans';
 
 @Component({
     selector: 'app-root',
@@ -18,8 +19,9 @@ export class AppComponent {
   private nftsService = inject(NftsService);
 
   constructor( ) {
-    this.translateService.setTranslation('en-EN', translationsEN);
-    this.translateService.setTranslation('es-ES', translationsES);
+    this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
+    this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
+    this.translateService.use(this.translateService.getDefaultLang());
     this.getAppData();
   }
 
