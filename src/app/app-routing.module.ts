@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AboutComponent } from '@components/about/about.component';
-import { ArtPieceComponent } from '@components/art-piece/art-piece.component';
-import { ArtPiecesListComponent } from '@components/art-pieces-list/art-pieces-list.component';
-import { ContactComponent } from '@components/contact/contact.component';
-import { CvComponent } from '@components/cv/cv.component';
-import { GenerativePieceComponent } from '@components/generative-piece/generative-piece.component';
-import { NotFoundComponent } from '@components/not-found/not-found.component';
+import { ArtPieceComponent } from '@features/artwork/art-piece.component';
+import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
+import { ContactComponent } from '@features/contact/contact.component';
+import { CvComponent } from '@features/cv/cv.component';
+import { GenerativePieceComponent } from '@features/generative/generative-piece.component';
+import { AboutComponent } from '@features/statement/about.component';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 const routes: Routes = [
   { 

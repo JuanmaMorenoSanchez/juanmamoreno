@@ -26,7 +26,6 @@
     "@datorama/akita": "^8.0.1",
     "@ngx-translate/core": "^16.0.4",
     "@types/p5": "^1.7.6",
-    "alchemy-sdk": "^3.5.0",
     "jspdf": "^2.5.2",
     "p5": "^1.11.0",
     "rxjs": "~7.5.0",

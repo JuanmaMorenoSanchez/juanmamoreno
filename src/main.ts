@@ -1,14 +1,15 @@
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
-import { akitaDevtools, enableAkitaProdMode, persistState } from '@datorama/akita';
-import { environment } from '@environments/environment';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { AppRoutingModule } from './app/app-routing.module';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { akitaDevtools, enableAkitaProdMode, persistState } from '@datorama/akita';
+import { ArtworkService } from '@domain/artwork/artwork.service';
+import { environment } from '@environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constans';
+import { AppRoutingModule } from 'src/app/app-routing.module';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ALLOWED_LANGUAGES } from '@constants/languages.constans';
 
 const storage = persistState();
 
@@ -31,6 +32,7 @@ bootstrapApplication(AppComponent, {
         })),
         provideHttpClient(withInterceptorsFromDi()),
         provideAnimationsAsync(),
-        provideAnimations()
+        provideAnimations(),
+        ArtworkService // we need to provide domain dependencies so Angular can find them
     ]
 }).catch(err => console.error(err));

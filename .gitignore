@@ -6,6 +6,9 @@
 /out-tsc
 /bazel-out
 
+# Cypress examples
+/cypress/e2e/examples
+
 # Node
 /node_modules
 npm-debug.log

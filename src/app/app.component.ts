@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { Nft } from '@domain/artwork/artwork.entity';
+import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { TranslateService } from '@ngx-translate/core';
-import { NftsService } from '@services/nfts.service';
-import { Nft } from 'alchemy-sdk';
+import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
+import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constans';
 import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
-import { TopMenuComponent } from './components/top-menu/top-menu.component';
-import { ShareButtonComponent } from './components/share-button/share-button.component';
-import { ALLOWED_LANGUAGES } from '@constants/languages.constans';
 
 @Component({
     selector: 'app-root',
@@ -16,7 +16,7 @@ import { ALLOWED_LANGUAGES } from '@constants/languages.constans';
 })
 export class AppComponent {
   private translateService = inject(TranslateService);
-  private nftsService = inject(NftsService);
+  private artworkInfraService = inject(ArtworkInfraService);
 
   constructor( ) {
     this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
@@ -27,7 +27,7 @@ export class AppComponent {
 
   getAppData() {
   
-    this.nftsService.getNfts().subscribe((nfts: Array<Nft>) => {
+    this.artworkInfraService.getArtPiecesObservable().subscribe((nfts: Array<Nft>) => {
       const tokenIds: Array<string> = [];
       nfts.forEach(nft => {
         if (!nft.image?.thumbnailUrl) {
