@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store, StoreConfig } from '@datorama/akita';
-import { SessionState } from '@shared/entities/session.model';
+import { SessionState } from '@shared/entities/session.entity';
 
 export function createInitialState(): SessionState {
     return {

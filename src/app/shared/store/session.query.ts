@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Query } from '@datorama/akita';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
-import { SessionState } from '@shared/entities/session.model';
+import { SessionState } from '@shared/entities/session.entity';
 import DateUtils from '@shared/utils/date.utils';
 import { SessionStore } from './session.store';
 

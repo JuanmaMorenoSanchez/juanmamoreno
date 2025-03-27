@@ -12,12 +12,12 @@ import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ArtworkService } from '@domain/artwork/artwork.service';
 import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
+import { SORT } from '@shared/constants/order.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SessionQuery } from '@shared/store/session.query';
+import { SortOrder } from '@shared/types/sort.type';
 import { distinctUntilChanged, Observable } from 'rxjs';
-
-type SortOrder = 'asc' | 'desc';
 
 @Component({
     selector: 'app-art-pieces-list',
@@ -43,7 +43,7 @@ export class ArtPiecesListComponent implements OnInit {
   public artPieces: Signal<Nft[] | undefined>;
   public dataReady = computed(() => this.artPieces()?.length ? true : false);
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
-  public sortOrder: WritableSignal<SortOrder> = signal('desc')
+  public sortOrder: WritableSignal<SortOrder> = signal(SORT.DESC)
   public sortedArtPieces = computed(() => {
     switch (this.activeSortMethod()) {
       case SortMethod.SIZE:
@@ -93,7 +93,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   public toggleSortOrder(): void {
-    this.sortOrder.set(this.sortOrder() === 'asc' ? 'desc' : 'asc');
+    this.sortOrder.set(this.sortOrder() === SORT.ASC ? SORT.DESC : SORT.ASC);
   }
 
   public changeSortMethod(method: string): void {
@@ -101,7 +101,7 @@ export class ArtPiecesListComponent implements OnInit {
       this.toggleSortOrder();
     } else {
       this.activeSortMethod.set(method as SortMethod);
-      this.sortOrder.set('asc');
+      this.sortOrder.set(SORT.ASC);
     }
   }
 
