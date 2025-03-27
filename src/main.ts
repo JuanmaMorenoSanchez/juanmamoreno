@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -30,6 +30,7 @@ bootstrapApplication(AppComponent, {
                 : ALLOWED_LANGUAGES.ENGLISH;
             })()
         })),
+        provideExperimentalZonelessChangeDetection(),
         provideHttpClient(withInterceptorsFromDi()),
         provideAnimationsAsync(),
         provideAnimations(),

@@ -29,8 +29,7 @@
     "jspdf": "^2.5.2",
     "p5": "^1.11.0",
     "rxjs": "~7.5.0",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.15.0"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.1",
