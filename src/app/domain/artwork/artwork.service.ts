@@ -94,8 +94,8 @@ export class ArtworkService {
 
   getLatestVersion(nfts: Nft[]): Nft {
     return nfts.reduce((latest, current) => {
-      const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION));
-      const vB = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION));
+      const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
+      const vB = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION)) || 0;
       return vB > vA ? current : latest;
     });
   }
