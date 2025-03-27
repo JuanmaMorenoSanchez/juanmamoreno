@@ -14,6 +14,7 @@ import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
+import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, Observable } from 'rxjs';
 
 type SortOrder = 'asc' | 'desc';
@@ -30,6 +31,7 @@ export class ArtPiecesListComponent implements OnInit {
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private responsiveService = inject(ResponsiveService);
+  private sessionQuery = inject(SessionQuery);
   
   numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
@@ -104,7 +106,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   public displayPiece(nft: Nft): boolean {
-    const sameFrontalArtworks = this.artworkInfraService.getArtByTitle(nft.name);
+    const sameFrontalArtworks = this.artworkDomainService.getArtByTitle(nft.name, this.sessionQuery.selectArtPieces);
     return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.artworkDomainService.isFrontalView(nft, sameFrontalArtworks);
   }
 

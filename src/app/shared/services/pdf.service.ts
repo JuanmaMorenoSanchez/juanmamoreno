@@ -4,8 +4,8 @@ import { Nft } from '@domain/artwork/artwork.entity';
 import { ArtworkService } from '@domain/artwork/artwork.service';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { TranslateService } from '@ngx-translate/core';
+import { SessionQuery } from '@shared/store/session.query';
 import jsPDF from 'jspdf';
 
 @Injectable({
@@ -13,7 +13,8 @@ import jsPDF from 'jspdf';
 })
 export class PdfService {
   private artworkDomainService = inject(ArtworkService);
-  private artworkInfraService = inject(ArtworkInfraService);
+  private artworkService = inject(ArtworkService);
+  private sessionQuery = inject(SessionQuery);
   private translateService = inject(TranslateService);
 
   private margin = 20;
@@ -55,7 +56,7 @@ export class PdfService {
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = (pageHeight / 5);
 
-    const coverImgUrl = this.artworkDomainService.getNftQualityUrl(this.artworkInfraService.getNftById("68")!.image)
+    const coverImgUrl = this.artworkDomainService.getNftQualityUrl(this.artworkService.getNftById("68", this.sessionQuery.selectArtPieces)!.image)
     const originalImg = await this.loadImage(coverImgUrl);
     const { width: originalWidth, height: originalHeight } = doc.getImageProperties(originalImg);
     const aspectRatio = originalWidth / originalHeight;

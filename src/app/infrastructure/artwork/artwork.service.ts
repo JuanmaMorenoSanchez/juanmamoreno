@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Nft, NftThumbnail } from "@domain/artwork/artwork.entity";
+import { ArtworkService } from "@domain/artwork/artwork.service";
 import { environment } from "@environments/environment";
 import { SessionQuery } from "@shared/store/session.query";
 import { SessionStore } from "@shared/store/session.store";
@@ -10,11 +11,10 @@ import { catchError, filter, map, Observable, of, tap } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class ArtworkInfraService {
-  constructor(
-    private http: HttpClient,
-    private sessionStore: SessionStore,
-    private sessionQuery: SessionQuery
-  ) {}
+  private artworkDomainService = inject(ArtworkService);
+  private http = inject(HttpClient);
+  private sessionStore = inject(SessionStore);
+  private sessionQuery = inject(SessionQuery);
 
   getArtPiecesObservable(): Observable<Nft[]> {
     if (this.itIsNeccesaryToFetch()) {
@@ -30,26 +30,17 @@ export class ArtworkInfraService {
     return this.sessionQuery.getArtPiecesObservable;
   }
 
-  getNftById(id: string): Nft | null {
-    const foundArt = this.sessionQuery.selectArtPieces.find(({ tokenId }) => id === tokenId);
-    return foundArt || null;
-  }
-
-  getNftByIdObservable(id: string): Observable<Nft | undefined> {
+  // Here and not in domain service because of rxjs
+  getNftByIdObservable(id: string): Observable<Nft | null> {
     return this.sessionQuery.getArtPiecesObservable.pipe(
-      map(nfts => nfts.find(({ tokenId }) => id === tokenId))
+      map(nfts => this.artworkDomainService.getNftById(id, nfts))
     );
   }
-
-  getArtByTitle(nameToSearch: string): Array<Nft> {
-    return this.sessionQuery.selectArtPieces?.filter(({ name }) => name === nameToSearch);
-  }
-
 
   getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
       filter(nft => !!nft?.name),
-      map(nft => this.getArtByTitle(nft!.name!))
+      map(nft => this.artworkDomainService.getArtByTitle(nft!.name!, this.sessionQuery.selectArtPieces))
     );
   }
 

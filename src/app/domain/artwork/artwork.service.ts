@@ -72,6 +72,14 @@ export class ArtworkService {
     return height + width;
   }
 
+  getNftById(id: string, nfts: Array<Nft>): Nft | null {
+    return nfts.find(({ tokenId }) => id === tokenId) || null;
+  }
+
+  getArtByTitle(nameToSearch: string, nfts: Array<Nft>): Array<Nft> {
+    return nfts.filter(({ name }) => name === nameToSearch);
+  }
+
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
     const frontals = this.filterFrontalArtworks(sameNamedArt);
     if (frontals.length <= 1) return frontals[0]?.tokenId === nft.tokenId;
