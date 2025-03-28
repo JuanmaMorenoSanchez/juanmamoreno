@@ -82,7 +82,7 @@ export class ArtworkService {
   }
 
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
-    console.log("adfs")
+    // TODO: Gets called too many times. Fix
     const frontals = this.filterFrontalArtworks(sameNamedArt);
     if (frontals.length <= 1) return frontals[0]?.tokenId === nft.tokenId;
     return this.getLatestVersion(frontals).tokenId === nft.tokenId;

@@ -1,22 +1,13 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, computed, ElementRef, inject, input, OnInit, output, signal, SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, OnInit, output, signal, SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ArtworkService } from '@domain/artwork/artwork.service';
 import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
-import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-image-viewer',
     templateUrl: './image-viewer.component.html',
     styleUrls: ['./image-viewer.component.scss'],
-    animations: [
-        trigger('fadeTrigger', [
-            state('visible', style({ opacity: 1 })),
-            state('hidden', style({ opacity: 0 })),
-            transition('visible <=> hidden', animate('0.6s ease-in-out')),
-        ]),
-    ],
     imports: [MatIcon]
 })
 export class ImageViewerComponent implements OnInit {
@@ -25,9 +16,8 @@ export class ImageViewerComponent implements OnInit {
 
   nfts = input<Nft[]>([]);
   displayIndex: WritableSignal<number> =  signal(0);
-  previewImage = computed(() => 
-    this.isFullScreen ? 'none' : `url(${this.getSmallImg(this.nfts()[this.displayIndex()])})`
-  );
+  previewImage = signal<string>('none');
+  isFullScreen  = signal<boolean>(false);
   displayIndexOutput = output<number>({
     alias: "displayIndex"
   });
@@ -35,16 +25,26 @@ export class ImageViewerComponent implements OnInit {
   displayArrows = false;
   displayExpand = false;
   isImgVisible = false;
-  isFullScreen  = false;
 
   @ViewChild('imageElement') imageElement!: ElementRef;
+
+  constructor() {
+    effect(() => {
+      const nfts = this.nfts();
+      const displayIndex = this.displayIndex();
+      const isFullScreen = this.isFullScreen();
+      this.artworkInfraService.getAvailableOptimalUrl(nfts[displayIndex]).subscribe(url => {
+        this.previewImage.set(isFullScreen ? 'none' : `url(${url})`);
+      });
+    });
+  }
 
   ngOnInit() {
     this.displayIndex.set(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.displayArrows = changes['nfts'].currentValue.length > 1;
+  this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto?
     this.isImgVisible = false;
     this.displayIndexOutput.emit(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
     this.displayIndex.set(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
@@ -70,21 +70,11 @@ export class ImageViewerComponent implements OnInit {
     return this.artworkDomainService.getNftQualityUrl(nft?.image);
   }
 
-  public getSmallImg(nft: Nft): Observable<string> {
-    return this.artworkInfraService.getAvailableOptimalUrl(nft);
-  }
-
-  public onAnimationDone(event: any) {
-    // if (event.toState === 'hidden') {
-      // neccesary?
-    // }
-  }
-
   public handleImageClick() {
     if (this.displayExpand) {
       this.enterFullScreen();
     } else {
-      if (!this.isFullScreen) {
+      if (!this.isFullScreen()) {
         this.displayExpand = true;
         setTimeout(() => {
             this.displayExpand = false;
@@ -96,13 +86,13 @@ export class ImageViewerComponent implements OnInit {
   }
 
   public handleDoubleClick() {
-    if (!this.isFullScreen) {
+    if (!this.isFullScreen()) {
       this.enterFullScreen();
     }
   }
 
   private enterFullScreen() {
-    this.isFullScreen = true;
+    this.isFullScreen.set(true);
     const elem = this.imageElement.nativeElement;
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
@@ -114,7 +104,7 @@ export class ImageViewerComponent implements OnInit {
   }
 
   private exitFullScreen() {
-      this.isFullScreen = false;
+      this.isFullScreen.set(false);
       if (document.exitFullscreen) {
           document.exitFullscreen();
       } else if ((document as any).webkitExitFullscreen) {

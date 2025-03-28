@@ -13,8 +13,6 @@
     <div class="image-container" (click)="handleImageClick()" (dblclick)="handleDoubleClick()">
         <img
             #imageElement
-            [@fadeTrigger]="isImgVisible ? 'visible' : 'hidden'"
-            (@fadeTrigger.done)="onAnimationDone($event)"
             [src]="getQualityImg(nfts()[(displayIndex())])" 
             [style.backgroundImage]="previewImage()"
             (load)="imageLoad()"
