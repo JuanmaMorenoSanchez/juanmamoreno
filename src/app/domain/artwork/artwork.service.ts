@@ -81,6 +81,10 @@ export class ArtworkService {
     return nfts.filter(({ name }) => name === nameToSearch);
   }
 
+  getNftLenghtByYear(year: string, nfts: Array<Nft>): number {
+    return nfts.filter(nft => this.getTraitValue(nft, VALIDTRAITS.YEAR) === year).length;
+  }
+
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
     // TODO: Gets called too many times. Fix
     const frontals = this.filterFrontalArtworks(sameNamedArt);

@@ -1,7 +1,7 @@
 
 <div class="container margin-top">
   <mat-grid-list cols="3">
-    <mat-grid-tile [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft())">
+    <mat-grid-tile class="viewer-container" [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft())">
       <app-image-viewer 
         class="fit-width" 
         [nfts]="nfts()"
@@ -45,7 +45,7 @@
       <h3>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h3>
     </div>
   }
-  @if (nfts().length) {
+  @if (thereAreMoreInYear()) {
     <div class="margin-top">
       <mat-divider></mat-divider>
       <h3>

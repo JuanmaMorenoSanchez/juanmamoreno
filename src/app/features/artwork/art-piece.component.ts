@@ -34,6 +34,10 @@ export class ArtPieceComponent {
   public displayingIndex: WritableSignal<number> = signal(0);
   public nfts: WritableSignal<Array<Nft>> = signal([]);
   public nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()])
+  public thereAreMoreInYear: Signal<boolean> = computed(() => {
+    const currentYear = this.artworkDomainService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
+    return this.artworkInfraService.getNftLenghtByYear(currentYear) > 1; // by default there is allways at least 1
+  });
   public numberOfViewMoreColumns = 3;
   public horizontalView = false;
   private latestVersionIndex: number = 0;

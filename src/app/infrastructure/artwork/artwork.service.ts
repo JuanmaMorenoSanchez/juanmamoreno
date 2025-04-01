@@ -44,6 +44,10 @@ export class ArtworkInfraService {
     );
   }
 
+  getNftLenghtByYear(year: string): number {
+    return this.artworkDomainService.getNftLenghtByYear(year, this.sessionQuery.selectArtPieces);
+  }
+
   private getLocalCacheImg(tokenId: string): Observable<string> {
     const cachedThumbnail = this.sessionQuery.getThumbnailByTokenId(tokenId);
     if (cachedThumbnail) {
