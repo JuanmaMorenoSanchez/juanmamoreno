@@ -8,7 +8,7 @@
   </div>
 
   <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
-    <mat-grid-list cols="2" rowHeight="10vh">
+    <mat-grid-list cols="2" rowHeight="12vh">
       <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
         <mat-form-field class="fit-width padding-sides">
           <mat-label>{{ 'contact.name' | translate}}</mat-label>
@@ -33,7 +33,7 @@
         <mat-form-field class="fit-width padding-sides">
           <mat-label>{{ 'contact.message' | translate}}</mat-label>
           <textarea matInput [formControl]="message" maxlength="256" placeholder="I'm interested in..." required></textarea>
-          <mat-hint>{{message.value.length}}/256</mat-hint>
+          <mat-hint>{{message.value?.length || 0}}/256</mat-hint>
           @if (message.invalid) {
             <mat-error>{{getMessageError()}}</mat-error>
           }

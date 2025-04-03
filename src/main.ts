@@ -7,7 +7,7 @@ import { akitaDevtools, enableAkitaProdMode, persistState } from '@datorama/akit
 import { ArtworkService } from '@domain/artwork/artwork.service';
 import { environment } from '@environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constans';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { AppComponent } from './app/app.component';
 

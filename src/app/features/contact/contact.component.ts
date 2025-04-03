@@ -1,14 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormGroup } from '@angular/forms';
-import { environment } from '@environments/environment';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
-import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatInput } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { ContactService } from '@infrastructure/contact/contact.service';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 
 @Component({
@@ -20,69 +20,73 @@ import { ResponsiveService } from '@shared/services/responsive.service';
 export class ContactComponent {
   private formBuilder = inject(FormBuilder);
   private translateService = inject(TranslateService);
-  private httpClient = inject(HttpClient);
+  private contactService = inject(ContactService);
   private responsiveService = inject(ResponsiveService);
   private snackBar = inject(MatSnackBar);
 
-  readonly EMPTYSTRING = "";
-
   public form: FormGroup;
-  public name: FormControl = new FormControl(this.EMPTYSTRING, [Validators.required]);
-  public email: FormControl = new FormControl(this.EMPTYSTRING, [Validators.required, Validators.email]);
-  public message: FormControl = new FormControl(this.EMPTYSTRING, [Validators.required, Validators.maxLength(500)]);
-  public honeypot: FormControl = new FormControl(this.EMPTYSTRING);
-
   public submitted = false;
   public isLoading = false;
   public horizontalView = true;
 
   constructor( ) {
     this.form = this.formBuilder.group({
-      name: this.name,
-      email: this.email,
-      message: this.message,
-      honeypot: this.honeypot
+      name: new FormControl(EMPTYSTRING, [Validators.required]),
+      email: new FormControl(EMPTYSTRING, [Validators.required, Validators.email]),
+      message: new FormControl(EMPTYSTRING, [Validators.required, Validators.maxLength(500)]),
+      honeypot: new FormControl(EMPTYSTRING)
     })
-    this.responsiveService.displayMobileLayout.subscribe(display => this.horizontalView = display)
+    this.responsiveService.displayMobileLayout
+      .pipe(takeUntilDestroyed(inject(DestroyRef))) //closes subscription on destroy
+      .subscribe(display => this.horizontalView = display);
   }
 
   onSubmit() {
     if (this.checkFormValidity()) {
-      this.form.disable();
-      const formData = {
-        name: this.form.get("name")?.value,
-        email: this.form.get("email")?.value,
-        message: this.form.get("message")?.value
-      }
-
-      this.isLoading = true;
-
-      // TODO: move to new contact service
-      this.httpClient.post(environment.backendUrl+'contact', formData).subscribe((res: any) => {
-        this.form.enable();
-        this.form.reset();
-        this.openSnackBar(res.message)
-        this.submitted = true;
-        this.isLoading = false;
-      }, error => {
-        console.error("error ", error);
-        this.form.enable();
-        this.openSnackBar(error.message)
-        this.submitted = true;
-        this.isLoading = false;
-      })
+      const { name, email, message } = this.form.value;
+      this.prepareSubmission();
+      this.contactService.sendContactMessage({ name, email, message }).subscribe({
+        next: (res) => this.handleSuccess(res),
+        error: (err) => this.handleError(err)
+      });
     }
+  }
+
+  private prepareSubmission() {
+    this.form.disable();
+    this.isLoading = true;
+  }
+  
+  private handleSuccess(res: { message: string }) {
+    this.resetForm();
+    this.openSnackBar(res.message);
+    this.finalizeSubmission();
+  }
+  
+  private handleError(err: any) {
+    this.openSnackBar(err.message || 'Unknown error');
+    this.finalizeSubmission();
+  }
+
+  private finalizeSubmission(): void {
+    this.form.enable();
+    this.isLoading = false;
+    this.submitted = true;
+  }
+  
+  private resetForm(): void {
+    this.form.reset();
   }
 
   private openSnackBar(message: string): void {
     const snackBarConfig: MatSnackBarConfig = {
-      duration: 3000,
+      duration: SNACKBAR_DURATION_MS,
     };
     this.snackBar.open(message, "Ok!", snackBarConfig);
   }
 
-  private checkFormValidity() {
-    return this.form.valid && this.honeypot.value === this.EMPTYSTRING
+  private checkFormValidity(): boolean {
+    return this.form.valid && this.honeypot.value === EMPTYSTRING
   }
 
   getNameError() {
@@ -95,5 +99,21 @@ export class ContactComponent {
 
   getMessageError() {
     return this.message.hasError('required') && this.translateService.instant("error.noValue")
+  }
+
+  get name(): FormControl {
+    return this.form.get('name') as FormControl;
+  }
+
+  get email(): FormControl {
+    return this.form.get('email') as FormControl;
+  }
+
+  get message(): FormControl {
+    return this.form.get('message') as FormControl;
+  }
+
+  get honeypot(): FormControl {
+    return this.form.get('honeypot') as FormControl;
   }
 }

@@ -4,7 +4,7 @@ import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constans';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
 

@@ -10,7 +10,7 @@ import { CANVASES } from '@domain/generative/canvas.constants';
 import { Canvas } from '@domain/generative/canvas.entity';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constans';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SessionQuery } from '@shared/store/session.query';
 
