@@ -59,6 +59,7 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
     }
 
     p.draw = () => {
+        let t = p.millis() * 0.001;
         drawBackground();
         if (weatherData && stockData){	
             teslaGrow = Number(getGrow(stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["1. open"], stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["4. close"]));
@@ -68,7 +69,8 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
             const particleImg: Image = (Math.sign(Number(teslaGrow)) == 1) ? headAngel : head;
             systems.forEach(system => {
                 system.addParticle(particleImg, windRad, teslaGrow);
-                system.run();
+                p.tint(255, 150, 255, 50 + 100 * Math.abs(Math.sin(t)));
+                system.run()
             });
 
             getTexts();
@@ -108,11 +110,16 @@ export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?
     };
 
     const drawBackground = () => {
+        let t = p.millis() * 0.001;
         let gradient = p.drawingContext.createLinearGradient(0, 0, p.width, p.height);
-        gradient.addColorStop(0, p.color(180, 255, 220, 50));
-        gradient.addColorStop(1, p.color(255, 220, 180, 50));
+        gradient.addColorStop(0, `rgba(${180 + 50 * Math.sin(t)}, 255, 220, 0.2)`);
+        gradient.addColorStop(1, `rgba(255, ${180 + 50 * Math.cos(t * 0.8)}, 180, 0.2)`);
         p.drawingContext.fillStyle = gradient;
         p.rect(0, 0, p.width, p.height);
+        if (p.frameCount % 10 < 1) {
+            p.fill(255, 10); // flickering overlay
+            p.rect(0, 0, p.width, p.height);
+        }
     }
 
     const loadData = () => {
