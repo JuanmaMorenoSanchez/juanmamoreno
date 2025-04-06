@@ -1,63 +1,54 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ArtPieceComponent } from '@features/artwork/art-piece.component';
-import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
-import { ContactComponent } from '@features/contact/contact.component';
-import { CvComponent } from '@features/cv/cv.component';
-import { GenerativePieceComponent } from '@features/generative/generative-piece.component';
-import { AboutComponent } from '@features/statement/about.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 const routes: Routes = [
-  { 
-    path: '', 
-    pathMatch: "full", 
-    component: ArtPiecesListComponent,
-    data: {
-      breadcrumb: 'Paintings'
-    }
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('@features/artworks/art-pieces-list.component').then(m => m.ArtPiecesListComponent),
+    data: { breadcrumb: 'Paintings' }
   },
-  { 
-    path: 'artworks', 
-    component: ArtPiecesListComponent,
-    data: {
-      breadcrumb: 'Paintings'
-    },
-    children: [
-      { 
-        path: '', 
-        component: ArtPiecesListComponent,
-        data: {
-          breadcrumb: ''
-        },
-      },
-    ] 
+  {
+    path: 'artworks',
+    loadComponent: () =>
+      import('@features/artworks/art-pieces-list.component').then(m => m.ArtPiecesListComponent),
+    data: { breadcrumb: 'Paintings' }
   },
-  { 
+  {
     path: 'artwork/:id',
-    component: ArtPieceComponent
+    loadComponent: () =>
+      import('@features/artwork/art-piece.component').then(m => m.ArtPieceComponent)
   },
-  { 
+  {
     path: 'generative/:id',
-    component: GenerativePieceComponent
+    loadComponent: () =>
+      import('@features/generative/generative-piece.component').then(m => m.GenerativePieceComponent)
   },
-  { 
-    path: 'cv', 
-    component: CvComponent
+  {
+    path: 'cv',
+    loadComponent: () =>
+      import('@features/cv/cv.component').then(m => m.CvComponent)
   },
-  { 
-    path: 'about', 
-    component: AboutComponent
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('@features/statement/about.component').then(m => m.AboutComponent)
   },
-  { 
-    path: 'contact', 
-    component: ContactComponent
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('@features/contact/contact.component').then(m => m.ContactComponent)
   },
-  { path: '**', component: NotFoundComponent }
+  {
+    path: '**',
+    component: NotFoundComponent
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
