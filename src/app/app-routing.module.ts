@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 const routes: Routes = [
@@ -48,7 +48,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: PreloadAllModules // Its still lazyloading, but loads everything in the background. We do it for cypress and performance. No the same of eagerloading.
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
