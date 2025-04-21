@@ -1,5 +1,5 @@
 import { NgFor } from '@angular/common';
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatChip, MatChipListbox } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
@@ -19,7 +19,7 @@ import { BreadCrumb } from './breadcrumbs.entity';
     styleUrls: ['./breadcrumb.component.scss'],
     imports: [MatChipListbox, MatChip, RouterLink, RouterLinkActive, MatIcon, MatFormField, MatSelect, FormsModule, NgFor, MatOption, TranslatePipe]
 })
-export class BreadcrumbComponent {
+export class BreadcrumbComponent implements OnInit{
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private translateService = inject(TranslateService);
@@ -60,7 +60,7 @@ export class BreadcrumbComponent {
   }
 
   get validYears(): number[] {
-    return [...this.sessionQuery.years].filter(year => !this.selectedYears.includes(year));
+    return [...this.artworkDomainService.getYears(this.sessionQuery.getValue().artPieces)].filter(year => !this.selectedYears.includes(year));
   }
 
   private updateQueryParams() {

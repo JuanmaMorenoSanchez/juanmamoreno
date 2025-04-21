@@ -34,13 +34,14 @@ export class ArtPieceComponent {
   public displayingIndex: WritableSignal<number> = signal(0);
   public nfts: WritableSignal<Array<Nft>> = signal([]);
   public nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()])
+  public frontalViewNft: WritableSignal<Nft | undefined> = signal(undefined);
   public thereAreMoreInYear: Signal<boolean> = computed(() => {
     const currentYear = this.artworkDomainService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
     return this.artworkInfraService.getNftLenghtByYear(currentYear) > 1; // by default there is allways at least 1
   });
   public numberOfViewMoreColumns = 3;
   public horizontalView = false;
-  private latestVersionIndex: number = 0;
+  private latestVersionIndex = 0;
 
   constructor( ) {
     this.responsiveService.displayMobileLayout.subscribe(display => {
@@ -63,6 +64,7 @@ export class ArtPieceComponent {
       this.nfts.set(nfts);
       this.latestVersionIndex = this.artworkDomainService.getLatestVersionIndex(this.nfts());
       this.displayingIndex.set(this.latestVersionIndex);
+      this.setFrontalView(nfts);
     });
   }
 
@@ -99,10 +101,6 @@ export class ArtPieceComponent {
     return filters
   }
 
-  public getFrontalViewNft(): Nft {
-    return this.nfts().find(nft => this.artworkDomainService.isFrontalView(nft, this.nfts()))!;
-  }
-
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
     return this.artworkDomainService.getTraitValue(nft, validTrait);
   }
@@ -117,6 +115,11 @@ export class ArtPieceComponent {
 
   public indexChanged(event: number) {
     this.displayingIndex.set(event);
+  }
+
+  private setFrontalView(nfts: Nft[]): void {
+    const frontal = nfts.find(nft => this.artworkDomainService.isFrontalView(nft, nfts));
+    this.frontalViewNft.set(frontal);
   }
 
   handleSelectedItem(tokenId: string): void {

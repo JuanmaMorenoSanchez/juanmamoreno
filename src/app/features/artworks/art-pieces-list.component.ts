@@ -57,6 +57,8 @@ export class ArtPiecesListComponent implements OnInit {
   public visibleImages = new Set<string>();
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
+  private frontalViewMap = new Map<string, boolean>();
+
   constructor( ) {
     this.artPieces = toSignal(this.artworkInfraService.getLocalArtPiecesObservable())
   }
@@ -106,8 +108,7 @@ export class ArtPiecesListComponent implements OnInit {
   }
 
   public displayPiece(nft: Nft): boolean {
-    const sameFrontalArtworks = this.artworkDomainService.getArtByTitle(nft.name, this.sessionQuery.selectArtPieces);
-    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.artworkDomainService.isFrontalView(nft, sameFrontalArtworks);
+    return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.isMemoizedFrontalView(nft);
   }
 
   public getImgThumbUrl(nft: Nft): Observable<string> {
@@ -126,6 +127,18 @@ export class ArtPiecesListComponent implements OnInit {
   public methodTracking(method: SortMethod) {
     return method
   }
+
+  private isMemoizedFrontalView(nft: Nft): boolean {
+    if (this.frontalViewMap.has(nft.tokenId)) {
+      return this.frontalViewMap.get(nft.tokenId) || false;
+    } else {
+      const sameFrontalArtworks = this.artworkDomainService.getArtByTitle(nft.name, this.sessionQuery.selectArtPieces);
+      const result = this.artworkDomainService.isFrontalView(nft, sameFrontalArtworks);
+      this.frontalViewMap.set(nft.tokenId, result);
+      return result;
+    }
+  }
+  
 
   private listenYearParamChange(): void {
     this.router.events.pipe(

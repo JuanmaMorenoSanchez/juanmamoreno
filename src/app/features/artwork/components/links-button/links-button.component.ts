@@ -37,8 +37,9 @@ export class LinksButtonComponent {
 
   constructor( ) {
     effect(() => {
-      const urlsValue: any = this.rxUrls.value()!; // not elegant, but works. rxResource wrapps the data in a object with extra metadata (ex: loading status)
-      this.haveLinks.set(!!urlsValue?.urls.length);
+      const urlsValue: any = this.rxUrls.value();
+      const urls = urlsValue?.urls;
+      this.haveLinks.set(Array.isArray(urls) && urls.length > 0);
     });
   }
 

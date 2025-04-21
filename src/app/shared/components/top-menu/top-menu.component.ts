@@ -6,6 +6,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { ArtworkService } from '@domain/artwork/artwork.service';
 import { CANVASES } from '@domain/generative/canvas.constants';
 import { Canvas } from '@domain/generative/canvas.entity';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -22,6 +23,7 @@ import { SessionQuery } from '@shared/store/session.query';
 })
 export class TopMenuComponent {
   private sessionQuery = inject(SessionQuery);
+  private artworkService = inject(ArtworkService);
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
 
@@ -37,7 +39,7 @@ export class TopMenuComponent {
   }
 
   get years(): Set<number> {
-    return this.sessionQuery.years;
+    return this.artworkService.getYears(this.sessionQuery.getValue().artPieces);
   }
 
   get currentLang(): string {

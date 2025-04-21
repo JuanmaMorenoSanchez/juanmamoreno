@@ -34,7 +34,6 @@ export class AppComponent {
           tokenIds.push(nft.tokenId);
         }
       });
-      console.log("Missing metadata count: ", tokenIds.length);
     });
   }
 }

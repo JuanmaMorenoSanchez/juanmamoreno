@@ -28,9 +28,11 @@
               [link]="getQualityImg(nft().image)"
               [name]="nft().name"
             ></app-download-button>
-            <app-pdf-button
-              [nfts]="[getFrontalViewNft()]"
-            ></app-pdf-button>
+            @if (frontalViewNft()) {
+              <app-pdf-button 
+                [nfts]="[frontalViewNft()!]"
+              ></app-pdf-button>
+            }
             <app-links-button [tokenId]="nft().tokenId">
             </app-links-button>
           </small>

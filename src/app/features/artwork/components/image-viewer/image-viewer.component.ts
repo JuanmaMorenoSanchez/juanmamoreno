@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, input, OnInit, output, signal, SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, OnChanges, OnInit, output, signal, SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ArtworkService } from '@domain/artwork/artwork.service';
@@ -10,7 +10,7 @@ import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
     styleUrls: ['./image-viewer.component.scss'],
     imports: [MatIcon]
 })
-export class ImageViewerComponent implements OnInit {
+export class ImageViewerComponent implements OnInit, OnChanges {
   private artworkDomainService = inject(ArtworkService);
   private artworkInfraService = inject(ArtworkInfraService);
 
@@ -44,7 +44,7 @@ export class ImageViewerComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-  this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto?
+    this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto??
     this.isImgVisible = false;
     this.displayIndexOutput.emit(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
     this.displayIndex.set(this.artworkDomainService.getLatestVersionIndex(this.nfts()));

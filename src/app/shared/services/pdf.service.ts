@@ -285,7 +285,6 @@ export class PdfService {
     doc.setFont('helvetica', 'normal');
     const technicalData = this.getTraitsAsText(nft);
     doc.text(technicalData, this.margin + doc.getTextWidth(nft.name!) + 2, yPosition + resizedHeight + 10);
-    console.log("nft.tokenId ", nft.tokenId)
     if (SOLDCERTIFICATES.includes(nft.tokenId)) {
       const dotSize = 2;
       const dotX = this.margin + doc.getTextWidth(technicalData) + doc.getTextWidth(nft.name!) + 7;

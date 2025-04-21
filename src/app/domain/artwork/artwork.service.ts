@@ -28,6 +28,21 @@ export class ArtworkService {
     }
   }
 
+  getYears(nfts: Nft[]): Set<number> {
+    const years = nfts?.map((artPiece) => {
+      const attributes = artPiece.raw.metadata?.['attributes'];
+      const yearTrait = attributes?.find(
+        (trait) => trait['trait_type'] === VALIDTRAITS.YEAR
+      );
+      const value = yearTrait?.['value'];
+      return value !== undefined ? Number(value) : null;
+    })
+    .filter((year): year is number => typeof year === 'number' && !isNaN(year))
+    .sort().reverse(); 
+
+    return new Set(years);
+  }
+
   sortByYear(nfts: Nft[], order: SORT.ASC | SORT.DESC = SORT.ASC): Nft[] {
     return [...nfts].sort((a, b) => {
       const yearA = Number(this.getTraitValue(a, VALIDTRAITS.YEAR));
@@ -86,7 +101,6 @@ export class ArtworkService {
   }
 
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
-    // TODO: Gets called too many times. Fix
     const frontals = this.filterFrontalArtworks(sameNamedArt);
     if (frontals.length <= 1) return frontals[0]?.tokenId === nft.tokenId;
     return this.getLatestVersion(frontals).tokenId === nft.tokenId;

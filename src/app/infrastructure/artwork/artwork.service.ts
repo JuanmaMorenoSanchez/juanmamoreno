@@ -74,7 +74,9 @@ export class ArtworkInfraService {
   }
 
   public getLinks(tokenId: string): Observable<string[]> {
-    return this.http.get<string[]>(environment.backendUrl+'vision-search/'+tokenId);
+    return this.http.get<string[]>(environment.backendUrl+'vision-search/'+tokenId).pipe(
+      catchError(() => of([]))
+    );
   }
 
   private itIsNeccesaryToFetch(): boolean {
