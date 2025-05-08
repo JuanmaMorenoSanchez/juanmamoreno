@@ -6,6 +6,7 @@ import { MatChip, MatChipListbox } from '@angular/material/chips';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
@@ -23,7 +24,7 @@ import { distinctUntilChanged, Observable } from 'rxjs';
     selector: 'app-art-pieces-list',
     templateUrl: './art-pieces-list.component.html',
     styleUrls: ['./art-pieces-list.component.scss'],
-    imports: [NgClass, MatChipListbox, MatChip, MatIcon, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective, AsyncPipe],
+    imports: [NgClass, MatChipListbox, MatChip, MatIcon, MatTooltip, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective, AsyncPipe],
 })
 export class ArtPiecesListComponent implements OnInit {
   private artworkDomainService = inject(ArtworkService);
