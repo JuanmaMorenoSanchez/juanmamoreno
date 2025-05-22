@@ -53,7 +53,7 @@ export class ArtworkInfraService {
     return of(cachedThumbnail ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail) : null);
   }
 
-  private fetchRemoteThumbnail(tokenId: string): Observable<string> {
+  private fetchRemoteThumbnail(tokenId: string): Observable<string | null> {
     return this.http.get<NftThumbnail>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
       tap(thumbnail => {
         const currentCache = this.sessionQuery.getValue().imageCache;
@@ -61,7 +61,9 @@ export class ArtworkInfraService {
           imageCache: [...currentCache, thumbnail],
         });
       }),
-      map(thumbnail => CommonUtils.composeImgSrc(thumbnail.thumbnail))
+      map(thumbnail => 
+        (thumbnail ? CommonUtils.composeImgSrc(thumbnail?.thumbnail) : null)
+      ),
     );
   }
 
@@ -73,7 +75,7 @@ export class ArtworkInfraService {
           return of(cachedUrl);
         } else {
           return this.fetchRemoteThumbnail(nft.tokenId).pipe(
-            catchError(() => of(nft.image.thumbnailUrl || nft.image.originalUrl!))
+            map(fetched => fetched || nft.image.thumbnailUrl || nft.image.originalUrl!)
           );
         }
       })

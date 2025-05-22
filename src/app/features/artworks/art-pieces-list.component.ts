@@ -18,7 +18,7 @@ import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SessionQuery } from '@shared/store/session.query';
 import { SortOrder } from '@shared/types/sort.type';
-import { distinctUntilChanged, Observable } from 'rxjs';
+import { distinctUntilChanged, take } from 'rxjs';
 
 @Component({
     selector: 'app-art-pieces-list',
@@ -56,6 +56,7 @@ export class ArtPiecesListComponent implements OnInit {
     }
   });
   public visibleImages = new Set<string>();
+  public imgThumbUrls = signal(new Map<string, string>());
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
   private frontalViewMap = new Map<string, boolean>();
@@ -70,6 +71,22 @@ export class ArtPiecesListComponent implements OnInit {
 
   public onImageVisible(tokenId: string): void {
     this.visibleImages.add(tokenId);
+    const nft = this.artPieces()?.find(p => p.tokenId === tokenId);
+    if (nft) this.loadImgThumbUrl(nft);
+  }
+
+  public loadImgThumbUrl(nft: Nft): void {
+    if (!this.imgThumbUrls().has(nft.tokenId)){
+      this.artworkInfraService.getAvailableOptimalUrl(nft).pipe(
+        take(1)
+      ).subscribe(url => {
+        this.imgThumbUrls.update(map => {
+          const newMap = new Map(map);
+          newMap.set(nft.tokenId, url);
+          return newMap;
+        });
+      });
+    }
   }
 
   public toggleNftSelection(event: MouseEvent, nft: Nft): void {
@@ -112,9 +129,6 @@ export class ArtPiecesListComponent implements OnInit {
     return !this.isExcludedByYear(nft) && !this.isExcludedById(nft) && this.isMemoizedFrontalView(nft);
   }
 
-  public getImgThumbUrl(nft: Nft): Observable<string> {
-    return this.artworkInfraService.getAvailableOptimalUrl(nft).pipe(distinctUntilChanged());
-  }
 
   public handleArtPieceClick(tokenId: string) {
     this.selectedTokenId.emit(tokenId);
@@ -166,7 +180,7 @@ export class ArtPiecesListComponent implements OnInit {
   private isExcludedByYear(nft: Nft): boolean {
     if (this.nftFilters().years?.length) {
       return !this.nftFilters().years!.some(year =>
-        nft.raw.metadata!['attributes'].some((attr: any) => 
+        nft.raw.metadata!['attributes']?.some((attr: any) => 
           attr['trait_type'] === VALIDTRAITS.YEAR && attr['value'] === year
         )
       );

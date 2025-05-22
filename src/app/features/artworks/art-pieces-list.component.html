@@ -54,7 +54,7 @@
                 class="front-image" 
                 mat-card-image
                 loading="lazy" 
-                [src]="visibleImages.has(artPiece.tokenId) ? (getImgThumbUrl(artPiece) | async) : null"
+                [src]="visibleImages.has(artPiece.tokenId) ? imgThumbUrls().get(artPiece.tokenId) ?? null : null"
                 [alt]="artPiece.name" 
                 appLazyLoad 
                 (visible)="onImageVisible(artPiece.tokenId)"
