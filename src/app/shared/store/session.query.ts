@@ -38,6 +38,6 @@ export class SessionQuery extends Query<SessionState> {
 
     // TODO: move logict to corresponding service
     getThumbnailByTokenId(tokenId: string): NftThumbnail | undefined {
-        return this.getValue().imageCache.find(thumbnail => thumbnail.tokenId === tokenId);
+        return this.getValue().imageCache.find(thumbnail => thumbnail?.tokenId === tokenId);
     }
 }

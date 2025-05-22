@@ -7,7 +7,7 @@ import { SessionQuery } from "@shared/store/session.query";
 import { SessionStore } from "@shared/store/session.store";
 import CommonUtils from "@shared/utils/common.utils";
 import DateUtils from "@shared/utils/date.utils";
-import { catchError, filter, map, Observable, of, tap } from "rxjs";
+import { catchError, filter, map, Observable, of, switchMap, tap } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class ArtworkInfraService {
@@ -48,27 +48,34 @@ export class ArtworkInfraService {
     return this.artworkDomainService.getNftLenghtByYear(year, this.sessionQuery.selectArtPieces);
   }
 
-  private getLocalCacheImg(tokenId: string): Observable<string> {
+  private getLocalCachedThumbnail(tokenId: string): Observable<string | null> {
     const cachedThumbnail = this.sessionQuery.getThumbnailByTokenId(tokenId);
-    if (cachedThumbnail) {
-      return of(CommonUtils.composeImgSrc(cachedThumbnail.thumbnail));
-    } else {
-      return this.http.get<NftThumbnail>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
-        tap(thumbnail => {
-          const currentCache = this.sessionQuery.getValue().imageCache;
-          this.sessionStore.update({
-            imageCache: [...currentCache, thumbnail],
-          });
-        }),
-        map(thumbnail => CommonUtils.composeImgSrc(thumbnail.thumbnail))
-      );
-    }
-  }  
+    return of(cachedThumbnail ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail) : null);
+  }
+
+  private fetchRemoteThumbnail(tokenId: string): Observable<string> {
+    return this.http.get<NftThumbnail>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
+      tap(thumbnail => {
+        const currentCache = this.sessionQuery.getValue().imageCache;
+        this.sessionStore.update({
+          imageCache: [...currentCache, thumbnail],
+        });
+      }),
+      map(thumbnail => CommonUtils.composeImgSrc(thumbnail.thumbnail))
+    );
+  }
+
 
   getAvailableOptimalUrl(nft: Nft): Observable<string> {
-    return this.getLocalCacheImg(nft.tokenId).pipe(
-      catchError(() => {
-          return of(nft.image.thumbnailUrl || nft.image.originalUrl!);
+    return this.getLocalCachedThumbnail(nft.tokenId).pipe(
+      switchMap(cachedUrl => {
+        if (cachedUrl) {
+          return of(cachedUrl);
+        } else {
+          return this.fetchRemoteThumbnail(nft.tokenId).pipe(
+            catchError(() => of(nft.image.thumbnailUrl || nft.image.originalUrl!))
+          );
+        }
       })
     );
   }
