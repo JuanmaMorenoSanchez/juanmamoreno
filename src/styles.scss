@@ -3,7 +3,10 @@ body {
 }
 
 .front-image {
-    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .fit-width {
@@ -13,6 +16,7 @@ body {
 .mat-grid-tile .mat-grid-tile-content {
     justify-content: flex-start;
     align-items: start;
+    height: 100%;
 }
 
 .mat-drawer-content {

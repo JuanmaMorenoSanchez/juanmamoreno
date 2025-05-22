@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, computed, inject, input, OnInit, output, signal, Signal, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardImage } from '@angular/material/card';
@@ -24,7 +24,7 @@ import { distinctUntilChanged, take } from 'rxjs';
     selector: 'app-art-pieces-list',
     templateUrl: './art-pieces-list.component.html',
     styleUrls: ['./art-pieces-list.component.scss'],
-    imports: [NgClass, MatChipListbox, MatChip, MatIcon, MatTooltip, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective, AsyncPipe],
+    imports: [NgClass, MatChipListbox, MatChip, MatIcon, MatTooltip, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective],
 })
 export class ArtPiecesListComponent implements OnInit {
   private artworkDomainService = inject(ArtworkService);
