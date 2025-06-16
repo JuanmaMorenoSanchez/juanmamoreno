@@ -56,7 +56,6 @@ export const SOLDCERTIFICATES = [
   "126",
   "136",
   "159",
-  "160",
   "161",
   "163",
   "165",

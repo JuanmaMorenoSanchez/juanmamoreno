@@ -5,12 +5,24 @@ import { ArtworkService } from "@domain/artwork/artwork.service";
 import { environment } from "@environments/environment";
 import { SessionQuery } from "@shared/store/session.query";
 import { SessionStore } from "@shared/store/session.store";
+import { ApiResponse } from '@shared/types/api-response.type';
 import CommonUtils from "@shared/utils/common.utils";
 import DateUtils from "@shared/utils/date.utils";
 import { catchError, filter, map, Observable, of, switchMap, tap } from "rxjs";
 
+
+/* TODO: better architecture.
+  Add port interfaces to domain services. And maybe rename such services to just the class name?
+  In infra folder, move features logic and group infraservices together
+*/
+
+/**
+ * Try to group functions like: http functions, store functions, etc..
+ * 
+ */
+
 @Injectable({ providedIn: 'root' })
-export class ArtworkInfraService {
+export class ArtworkInfraService { 
   private artworkDomainService = inject(ArtworkService);
   private http = inject(HttpClient);
   private sessionStore = inject(SessionStore);
@@ -18,8 +30,18 @@ export class ArtworkInfraService {
 
   getArtPiecesObservable(): Observable<Nft[]> {
     if (this.itIsNeccesaryToFetch()) {
-      return this.http.get<Nft[]>(`${environment.backendUrl}nfts-snapshot`).pipe(
-        tap(nfts => this.saveNftsLocally(nfts))
+      return this.http.get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`).pipe(
+        map((res: ApiResponse<Nft[]>) => {
+                      console.log("res ", res)
+
+          if (res.success && res.data) {
+            return res.data;
+          } else {
+            return [];
+          }
+        }),
+        tap(nfts => this.saveNftsLocally(nfts)),
+        catchError(() => this.getLocalArtPiecesObservable())
       );
     } else {
       return this.getLocalArtPiecesObservable();
@@ -54,16 +76,18 @@ export class ArtworkInfraService {
   }
 
   private fetchRemoteThumbnail(tokenId: string): Observable<string | null> {
-    return this.http.get<NftThumbnail>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
-      tap(thumbnail => {
-        const currentCache = this.sessionQuery.getValue().imageCache;
-        this.sessionStore.update({
-          imageCache: [...currentCache, thumbnail],
-        });
+    return this.http.get<ApiResponse<NftThumbnail>>(`${environment.backendUrl}nft-thumbnails/${tokenId}`).pipe(
+      tap(res => {
+        if (res.success && res.data) {
+          const currentCache = this.sessionQuery.getValue().imageCache;
+          this.sessionStore.update({
+            imageCache: [...currentCache, res.data],
+          });
+        }
       }),
-      map(thumbnail => 
-        (thumbnail ? CommonUtils.composeImgSrc(thumbnail?.thumbnail) : null)
-      ),
+      map(res => 
+        (res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null)
+      )
     );
   }
 
@@ -83,7 +107,14 @@ export class ArtworkInfraService {
   }
 
   public getLinks(tokenId: string): Observable<string[]> {
-    return this.http.get<string[]>(environment.backendUrl+'vision-search/'+tokenId).pipe(
+    return this.http.get<ApiResponse<string[]>>(environment.backendUrl+'vision/search/'+tokenId).pipe(
+      map((res: ApiResponse<string[]>) => {
+        if (res.success && res.data) {
+          return res.data;
+        } else {
+          return [];
+        }
+      }),
       catchError(() => of([]))
     );
   }

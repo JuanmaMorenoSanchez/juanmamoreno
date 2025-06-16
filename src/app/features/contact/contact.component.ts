@@ -10,6 +10,7 @@ import { ContactService } from '@infrastructure/contact/contact.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
+import { ApiResponse } from '@shared/types/api-response.type';
 
 @Component({
     selector: 'app-contact',
@@ -46,8 +47,8 @@ export class ContactComponent {
       const { name, email, message } = this.form.value;
       this.prepareSubmission();
       this.contactService.sendContactMessage({ name, email, message }).subscribe({
-        next: (res) => this.handleSuccess(res),
-        error: (err) => this.handleError(err)
+        next: (res) => this.handleResponse(res),
+        error: (err) => this.handleResponse(err)
       });
     }
   }
@@ -56,18 +57,13 @@ export class ContactComponent {
     this.form.disable();
     this.isLoading = true;
   }
-  
-  private handleSuccess(res: { message: string }) {
-    this.resetForm();
-    this.openSnackBar(res.message);
-    this.finalizeSubmission();
-  }
-  
-  private handleError(err: any) {
-    this.openSnackBar(err.message || 'Unknown error');
-    this.finalizeSubmission();
-  }
 
+  private handleResponse(res: ApiResponse<string>) {
+    if (res.success) this.resetForm();
+    this.openSnackBar(res.message!);
+    this.finalizeSubmission();
+  }
+  
   private finalizeSubmission(): void {
     this.form.enable();
     this.isLoading = false;

@@ -13,7 +13,7 @@ export class CanvasContainerComponent {
   private store = inject(SessionStore);
   
 
-  @Input() identifier!: string;
+  @Input() identifier!: string; // TODO: update to signal input
   @Input() logic!: (p: any, sessionQuery?: SessionQuery, store?: SessionStore) => void;
 
   @ViewChild("container") div?: ElementRef;
