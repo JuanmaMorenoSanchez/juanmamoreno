@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Nft } from '@domain/artwork/artwork.entity';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
+import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';

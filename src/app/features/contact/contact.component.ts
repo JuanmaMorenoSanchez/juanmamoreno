@@ -6,11 +6,11 @@ import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/for
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatInput } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { ContactService } from '@infrastructure/contact/contact.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { ApiResponse } from '@shared/types/api-response.type';
+import { ContactService } from './contact.service';
 
 @Component({
     selector: 'app-contact',

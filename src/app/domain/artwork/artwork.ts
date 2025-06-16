@@ -2,8 +2,8 @@ import { SORT } from '@shared/constants/order.constants';
 import { VALIDTRAITS, VIEW_TYPES } from './artwork.constants';
 import { Nft, NftImage } from './artwork.entity';
 
-export class ArtworkService {
-  getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
+export class ArtworkDomain {
+  static getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
     try {
       return nft.raw.metadata.attributes.find(t => t.trait_type === trait)?.value ?? '';
     } catch {
@@ -28,7 +28,7 @@ export class ArtworkService {
     }
   }
 
-  getYears(nfts: Nft[]): Set<number> {
+  static getYears(nfts: Nft[]): Set<number> {
     const years = nfts?.map((artPiece) => {
       const attributes = artPiece.raw.metadata?.['attributes'];
       const yearTrait = attributes?.find(
@@ -43,7 +43,7 @@ export class ArtworkService {
     return new Set(years);
   }
 
-  sortByYear(nfts: Nft[], order: SORT.ASC | SORT.DESC = SORT.ASC): Nft[] {
+  static sortByYear(nfts: Nft[], order: SORT.ASC | SORT.DESC = SORT.ASC): Nft[] {
     return [...nfts].sort((a, b) => {
       const yearA = Number(this.getTraitValue(a, VALIDTRAITS.YEAR));
       const yearB = Number(this.getTraitValue(b, VALIDTRAITS.YEAR));
@@ -51,7 +51,7 @@ export class ArtworkService {
     });
   }
 
-  sortByMedium(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
+  static sortByMedium(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     const MEDIUM_ORDER = ['oil', 'watercolor'];
     return [...nfts].sort((a, b) => {
       const mediumA = this.getTraitValue(a, VALIDTRAITS.MEDIUM).toLowerCase() || '';
@@ -63,7 +63,7 @@ export class ArtworkService {
     });
   }
 
-  sortBySize(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
+  static sortBySize(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     return [...nfts].sort((a, b) => {
       const sizeA = this.getSize(a);
       const sizeB = this.getSize(b);
@@ -72,7 +72,7 @@ export class ArtworkService {
     });
   }
 
-  sortByName(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
+  static sortByName(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     return [...nfts].sort((a, b) => {
       const nameA = a.name?.toLowerCase() || '';
       const nameB = b.name?.toLowerCase() || '';
@@ -82,37 +82,37 @@ export class ArtworkService {
     });
   }
 
-  getSize(nft: Nft): number {
+  static getSize(nft: Nft): number {
     const height = parseInt(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
     const width = parseInt(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
     return height + width;
   }
 
-  getNftById(id: string, nfts: Array<Nft>): Nft | null {
+  static getNftById(id: string, nfts: Array<Nft>): Nft | null {
     return nfts.find(({ tokenId }) => id === tokenId) || null;
   }
 
-  getArtByTitle(nameToSearch: string, nfts: Array<Nft>): Array<Nft> {
+  static getArtByTitle(nameToSearch: string, nfts: Array<Nft>): Array<Nft> {
     return nfts.filter(({ name }) => name === nameToSearch);
   }
 
-  getNftLenghtByYear(year: string, nfts: Array<Nft>): number {
+  static getNftLenghtByYear(year: string, nfts: Array<Nft>): number {
     return nfts.filter(nft => this.getTraitValue(nft, VALIDTRAITS.YEAR) === year).length;
   }
 
-  isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
+  static isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
     const frontals = this.filterFrontalArtworks(sameNamedArt);
     if (frontals.length <= 1) return frontals[0]?.tokenId === nft.tokenId;
     return this.getLatestVersion(frontals).tokenId === nft.tokenId;
   }
 
-  filterFrontalArtworks(nfts: Nft[]) {
+  static filterFrontalArtworks(nfts: Nft[]) {
     return nfts.filter(nft =>
       this.getTraitValue(nft, VALIDTRAITS.IMAGETYPE) === VIEW_TYPES.FRONTAL
     );
   }
 
-  getLatestVersion(nfts: Nft[]): Nft {
+  static getLatestVersion(nfts: Nft[]): Nft {
     return nfts.reduce((latest, current) => {
       const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
       const vB = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION)) || 0;
@@ -120,16 +120,16 @@ export class ArtworkService {
     });
   }
 
-  getLatestVersionIndex(nfts: Array<Nft>): number {
+  static getLatestVersionIndex(nfts: Array<Nft>): number {
     const latestNft = this.getLatestVersion(nfts);
     return nfts.findIndex(nft => nft.tokenId === latestNft.tokenId);
   }
 
-  getNftQualityUrl(image: NftImage): string {
+  static getNftQualityUrl(image: NftImage): string {
     return image?.originalUrl || image?.cachedUrl || image?.thumbnailUrl!
   }
 
-  getNftOptimalUrl(image: NftImage): string {
+  static getNftOptimalUrl(image: NftImage): string {
     return image.thumbnailUrl || image?.cachedUrl || image.originalUrl!;
   }
 

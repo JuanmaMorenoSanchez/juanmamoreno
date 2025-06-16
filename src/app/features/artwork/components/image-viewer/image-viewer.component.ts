@@ -1,8 +1,8 @@
 import { Component, effect, ElementRef, inject, input, OnChanges, OnInit, output, signal, SimpleChanges, ViewChild, WritableSignal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
+import { ArtworkDomain } from '@domain/artwork/artwork';
 import { Nft } from '@domain/artwork/artwork.entity';
-import { ArtworkService } from '@domain/artwork/artwork.service';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
+import { ArtworkInfraService } from '@features/artwork/artwork.service';
 
 @Component({
     selector: 'app-image-viewer',
@@ -11,7 +11,6 @@ import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
     imports: [MatIcon]
 })
 export class ImageViewerComponent implements OnInit, OnChanges {
-  private artworkDomainService = inject(ArtworkService);
   private artworkInfraService = inject(ArtworkInfraService);
 
   nfts = input<Nft[]>([]);
@@ -40,14 +39,14 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.displayIndex.set(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
+    this.displayIndex.set(ArtworkDomain.getLatestVersionIndex(this.nfts()));
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto??
     this.isImgVisible = false;
-    this.displayIndexOutput.emit(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
-    this.displayIndex.set(this.artworkDomainService.getLatestVersionIndex(this.nfts()));
+    this.displayIndexOutput.emit(ArtworkDomain.getLatestVersionIndex(this.nfts()));
+    this.displayIndex.set(ArtworkDomain.getLatestVersionIndex(this.nfts()));
   }
 
   public setHover(hovering: boolean) {
@@ -67,7 +66,7 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   public getQualityImg(nft: Nft): string {
-    return this.artworkDomainService.getNftQualityUrl(nft?.image);
+    return ArtworkDomain.getNftQualityUrl(nft?.image);
   }
 
   public handleImageClick() {

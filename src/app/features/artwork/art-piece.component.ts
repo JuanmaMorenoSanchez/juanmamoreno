@@ -3,11 +3,11 @@ import { MatDivider } from '@angular/material/divider';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ArtworkDomain } from '@domain/artwork/artwork';
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters, NftImage } from '@domain/artwork/artwork.entity';
-import { ArtworkService } from '@domain/artwork/artwork.service';
+import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { ResponsiveService } from '@shared/services/responsive.service';
@@ -25,7 +25,6 @@ import { LinksButtonComponent } from './components/links-button/links-button.com
 export class ArtPieceComponent {
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
-  private artworkDomainService = inject(ArtworkService);
   private artworkInfraService = inject(ArtworkInfraService);
   private responsiveService = inject(ResponsiveService);
   
@@ -36,7 +35,7 @@ export class ArtPieceComponent {
   public nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()])
   public frontalViewNft: WritableSignal<Nft | undefined> = signal(undefined);
   public thereAreMoreInYear: Signal<boolean> = computed(() => {
-    const currentYear = this.artworkDomainService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
+    const currentYear = ArtworkDomain.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
     return this.artworkInfraService.getNftLenghtByYear(currentYear) > 1; // by default there is allways at least 1
   });
   public numberOfViewMoreColumns = 3;
@@ -62,7 +61,7 @@ export class ArtPieceComponent {
       })
     ).subscribe(nfts => {
       this.nfts.set(nfts);
-      this.latestVersionIndex = this.artworkDomainService.getLatestVersionIndex(this.nfts());
+      this.latestVersionIndex = ArtworkDomain.getLatestVersionIndex(this.nfts());
       this.displayingIndex.set(this.latestVersionIndex);
       this.setFrontalView(nfts);
     });
@@ -102,7 +101,7 @@ export class ArtPieceComponent {
   }
 
   public getTraitValue(nft: Nft, validTrait: VALIDTRAITS): string {
-    return this.artworkDomainService.getTraitValue(nft, validTrait);
+    return ArtworkDomain.getTraitValue(nft, validTrait);
   }
 
   public sold(tokenId: string): boolean {
@@ -110,7 +109,7 @@ export class ArtPieceComponent {
   }
 
   public getQualityImg(image: NftImage): string {
-    return this.artworkDomainService.getNftQualityUrl(image);
+    return ArtworkDomain.getNftQualityUrl(image);
   }
 
   public indexChanged(event: number) {
@@ -118,7 +117,7 @@ export class ArtPieceComponent {
   }
 
   private setFrontalView(nfts: Nft[]): void {
-    const frontal = nfts.find(nft => this.artworkDomainService.isFrontalView(nft, nfts));
+    const frontal = nfts.find(nft => ArtworkDomain.isFrontalView(nft, nfts));
     this.frontalViewNft.set(frontal);
   }
 

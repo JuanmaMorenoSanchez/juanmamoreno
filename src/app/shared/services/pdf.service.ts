@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
+import { ArtworkDomain } from '@domain/artwork/artwork';
 import { SOLDCERTIFICATES, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
-import { ArtworkService } from '@domain/artwork/artwork.service';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,8 +12,6 @@ import jsPDF from 'jspdf';
   providedIn: 'root',
 })
 export class PdfService {
-  private artworkDomainService = inject(ArtworkService);
-  private artworkService = inject(ArtworkService);
   private sessionQuery = inject(SessionQuery);
   private translateService = inject(TranslateService);
 
@@ -56,7 +54,7 @@ export class PdfService {
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = (pageHeight / 5);
 
-    const coverImgUrl = this.artworkDomainService.getNftQualityUrl(this.artworkService.getNftById("68", this.sessionQuery.selectArtPieces)!.image)
+    const coverImgUrl = ArtworkDomain.getNftQualityUrl(ArtworkDomain.getNftById("68", this.sessionQuery.selectArtPieces)!.image)
     const originalImg = await this.loadImage(coverImgUrl);
     const { width: originalWidth, height: originalHeight } = doc.getImageProperties(originalImg);
     const aspectRatio = originalWidth / originalHeight;
@@ -260,7 +258,7 @@ export class PdfService {
     const contentWidth = pageWidth - 2 * this.margin;
     const contentHeight = pageHeight - 2 * this.margin;
 
-    const imgUrl = this.artworkDomainService.getNftQualityUrl(nft.image);
+    const imgUrl = ArtworkDomain.getNftQualityUrl(nft.image);
     const imgCompressed = await this.loadCompressedImage(imgUrl, contentWidth, contentHeight);
 
     const { width: originalWidth, height: originalHeight } = doc.getImageProperties(imgCompressed);
@@ -294,11 +292,11 @@ export class PdfService {
   }
 
   private getTraitsAsText(nft: Nft): string {
-    const year = this.artworkDomainService.getTraitValue(nft, VALIDTRAITS.YEAR) || 'Unknown year';
-    const medium = this.translateService.instant(this.artworkDomainService.getTraitValue(nft, VALIDTRAITS.MEDIUM)) || 'Unknown medium';
-    const height = this.artworkDomainService.getTraitValue(nft, VALIDTRAITS.HEIGHT) || 'Unknown height';
-    const width = this.artworkDomainService.getTraitValue(nft, VALIDTRAITS.WIDTH) || 'Unknown width';
-    const unit = this.artworkDomainService.getTraitValue(nft, VALIDTRAITS.UNIT) || 'Unknown unit';
+    const year = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.YEAR) || 'Unknown year';
+    const medium = this.translateService.instant(ArtworkDomain.getTraitValue(nft, VALIDTRAITS.MEDIUM)) || 'Unknown medium';
+    const height = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.HEIGHT) || 'Unknown height';
+    const width = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.WIDTH) || 'Unknown width';
+    const unit = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.UNIT) || 'Unknown unit';
     return `${year}, ${medium}, ${height} x ${width} ${unit}.`;
   }
 

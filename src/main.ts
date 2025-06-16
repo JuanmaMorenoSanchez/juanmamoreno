@@ -1,15 +1,9 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { enableProdMode, importProvidersFrom, provideExperimentalZonelessChangeDetection } from '@angular/core';
-import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { enableProdMode } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { akitaDevtools, enableAkitaProdMode, persistState } from '@datorama/akita';
-import { ArtworkService } from '@domain/artwork/artwork.service';
 import { environment } from '@environments/environment';
-import { TranslateModule } from '@ngx-translate/core';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
-import { AppRoutingModule } from 'src/app/app-routing.module';
 import { AppComponent } from './app/app.component';
+import { appConfig } from './app/appConfig';
 
 const storage = persistState();
 
@@ -20,20 +14,4 @@ if (environment.production) {
   akitaDevtools();
 }
 
-bootstrapApplication(AppComponent, {
-    providers: [
-        importProvidersFrom(AppRoutingModule, BrowserModule, TranslateModule.forRoot({
-            defaultLanguage: (() => {
-              const browserLang = window.navigator.language || window.navigator.languages[0] || ALLOWED_LANGUAGES.ENGLISH;
-              return Object.values(ALLOWED_LANGUAGES).includes(browserLang as ALLOWED_LANGUAGES)
-                ? (browserLang as ALLOWED_LANGUAGES)
-                : ALLOWED_LANGUAGES.ENGLISH;
-            })()
-        })),
-        provideExperimentalZonelessChangeDetection(),
-        provideHttpClient(withInterceptorsFromDi()),
-        provideAnimationsAsync(),
-        provideAnimations(),
-        ArtworkService // we need to provide domain dependencies so Angular can find them
-    ]
-}).catch(err => console.error(err));
+bootstrapApplication(AppComponent, appConfig).catch(err => console.error(err));

@@ -8,10 +8,10 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ArtworkDomain } from '@domain/artwork/artwork';
 import { SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
-import { ArtworkService } from '@domain/artwork/artwork.service';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
+import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
@@ -27,7 +27,6 @@ import { distinctUntilChanged, take } from 'rxjs';
     imports: [NgClass, MatChipListbox, MatChip, MatIcon, MatTooltip, PdfButtonComponent, MatGridList, MatGridTile, MatCard, MatProgressSpinner, MatCardImage, LazyLoadDirective],
 })
 export class ArtPiecesListComponent implements OnInit {
-  private artworkDomainService = inject(ArtworkService);
   private artworkInfraService = inject(ArtworkInfraService);
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
@@ -41,18 +40,18 @@ export class ArtPiecesListComponent implements OnInit {
 
   public sortMethods = Object.values(SortMethod);
   
-  public artPieces: Signal<Nft[] | undefined>;
+  public artPieces: Signal<Nft[] | undefined> = toSignal(this.artworkInfraService.getArtPiecesObservable());
   public dataReady = computed(() => this.artPieces()?.length ? true : false);
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
   public sortOrder: WritableSignal<SortOrder> = signal(SORT.DESC)
   public sortedArtPieces = computed(() => {
     switch (this.activeSortMethod()) {
       case SortMethod.SIZE:
-        return this.artworkDomainService.sortBySize(this.artPieces()!, this.sortOrder())
+        return ArtworkDomain.sortBySize(this.artPieces()!, this.sortOrder())
       case SortMethod.MEDIUM:
-        return this.artworkDomainService.sortByMedium(this.artPieces()!, this.sortOrder())
+        return ArtworkDomain.sortByMedium(this.artPieces()!, this.sortOrder())
       case SortMethod.YEAR:
-        return this.artworkDomainService.sortByYear(this.artPieces()!, this.sortOrder())
+        return ArtworkDomain.sortByYear(this.artPieces()!, this.sortOrder())
     }
   });
   public visibleImages = new Set<string>();
@@ -61,9 +60,7 @@ export class ArtPiecesListComponent implements OnInit {
 
   private frontalViewMap = new Map<string, boolean>();
 
-  constructor( ) {
-    this.artPieces = toSignal(this.artworkInfraService.getLocalArtPiecesObservable())
-  }
+
 
   ngOnInit(): void {
     this.listenYearParamChange();
@@ -147,8 +144,8 @@ export class ArtPiecesListComponent implements OnInit {
     if (this.frontalViewMap.has(nft.tokenId)) {
       return this.frontalViewMap.get(nft.tokenId) || false;
     } else {
-      const sameFrontalArtworks = this.artworkDomainService.getArtByTitle(nft.name, this.sessionQuery.selectArtPieces);
-      const result = this.artworkDomainService.isFrontalView(nft, sameFrontalArtworks);
+      const sameFrontalArtworks = ArtworkDomain.getArtByTitle(nft.name, this.sessionQuery.selectArtPieces);
+      const result = ArtworkDomain.isFrontalView(nft, sameFrontalArtworks);
       this.frontalViewMap.set(nft.tokenId, result);
       return result;
     }

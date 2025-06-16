@@ -7,7 +7,7 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { ArtworkService } from '@domain/artwork/artwork.service';
+import { ArtworkDomain } from '@domain/artwork/artwork';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
@@ -24,7 +24,6 @@ export class BreadcrumbComponent implements OnInit{
   private activatedRoute = inject(ActivatedRoute);
   private translateService = inject(TranslateService);
   private sessionQuery = inject(SessionQuery);
-  private artworkDomainService = inject(ArtworkService);
   
   public breadcrumbs: Array<BreadCrumb>;
   public selectedYears: number[] = [];
@@ -60,7 +59,7 @@ export class BreadcrumbComponent implements OnInit{
   }
 
   get validYears(): number[] {
-    return [...this.artworkDomainService.getYears(this.sessionQuery.getValue().artPieces)].filter(year => !this.selectedYears.includes(year));
+    return [...ArtworkDomain.getYears(this.sessionQuery.getValue().artPieces)].filter(year => !this.selectedYears.includes(year));
   }
 
   private updateQueryParams() {
@@ -116,6 +115,6 @@ export class BreadcrumbComponent implements OnInit{
   }
 
   private extractNameFromId(id: string): string | null {
-    return this.artworkDomainService.getNftById(id, this.sessionQuery.selectArtPieces)!.name || null;
+    return ArtworkDomain.getNftById(id, this.sessionQuery.selectArtPieces)!.name || null;
   }
 }

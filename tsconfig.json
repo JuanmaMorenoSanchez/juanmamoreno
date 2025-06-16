@@ -8,8 +8,6 @@
       "@features/*": ["src/app/features/*"],
       "@shared/*": ["src/app/shared/*"],
       "@domain/*": ["src/app/domain/*"],
-      "@infrastructure/*": ["src/app/infrastructure/*"],
-      "@core/*": ["src/app/core/*"],
       "@mocks/*": ["src/app/mocks/*"],
       "@translations/*": ["src/assets/translations/*"]
     },

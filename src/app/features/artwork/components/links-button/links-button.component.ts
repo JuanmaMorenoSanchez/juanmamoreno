@@ -4,8 +4,8 @@ import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { LinksModalComponent } from '@features/artwork/components/links-modal/links-modal.component';
-import { ArtworkInfraService } from '@infrastructure/artwork/artwork.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, distinctUntilChanged, map, of } from 'rxjs';
 

@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
+import { ArtworkDomain } from "@domain/artwork/artwork";
 import { Nft, NftThumbnail } from "@domain/artwork/artwork.entity";
-import { ArtworkService } from "@domain/artwork/artwork.service";
+import { ArtworkPort } from "@domain/artwork/artwork.port";
 import { environment } from "@environments/environment";
 import { SessionQuery } from "@shared/store/session.query";
 import { SessionStore } from "@shared/store/session.store";
@@ -10,20 +11,8 @@ import CommonUtils from "@shared/utils/common.utils";
 import DateUtils from "@shared/utils/date.utils";
 import { catchError, filter, map, Observable, of, switchMap, tap } from "rxjs";
 
-
-/* TODO: better architecture.
-  Add port interfaces to domain services. And maybe rename such services to just the class name?
-  In infra folder, move features logic and group infraservices together
-*/
-
-/**
- * Try to group functions like: http functions, store functions, etc..
- * 
- */
-
 @Injectable({ providedIn: 'root' })
-export class ArtworkInfraService { 
-  private artworkDomainService = inject(ArtworkService);
+export class ArtworkInfraService implements ArtworkPort{
   private http = inject(HttpClient);
   private sessionStore = inject(SessionStore);
   private sessionQuery = inject(SessionQuery);
@@ -32,8 +21,6 @@ export class ArtworkInfraService {
     if (this.itIsNeccesaryToFetch()) {
       return this.http.get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`).pipe(
         map((res: ApiResponse<Nft[]>) => {
-                      console.log("res ", res)
-
           if (res.success && res.data) {
             return res.data;
           } else {
@@ -41,33 +28,59 @@ export class ArtworkInfraService {
           }
         }),
         tap(nfts => this.saveNftsLocally(nfts)),
-        catchError(() => this.getLocalArtPiecesObservable())
+        catchError(() => this.sessionQuery.getArtPiecesObservable)
       );
     } else {
-      return this.getLocalArtPiecesObservable();
+      return this.sessionQuery.getArtPiecesObservable;
     }
   }
 
-  getLocalArtPiecesObservable(): Observable<Nft[]> {
-    return this.sessionQuery.getArtPiecesObservable;
-  }
-
-  // Here and not in domain service because of rxjs
   getNftByIdObservable(id: string): Observable<Nft | null> {
     return this.sessionQuery.getArtPiecesObservable.pipe(
-      map(nfts => this.artworkDomainService.getNftById(id, nfts))
+      map(nfts => ArtworkDomain.getNftById(id, nfts))
     );
   }
 
   getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
       filter(nft => !!nft?.name),
-      map(nft => this.artworkDomainService.getArtByTitle(nft!.name!, this.sessionQuery.selectArtPieces))
+      map(nft => ArtworkDomain.getArtByTitle(nft!.name!, this.sessionQuery.selectArtPieces))
     );
   }
 
   getNftLenghtByYear(year: string): number {
-    return this.artworkDomainService.getNftLenghtByYear(year, this.sessionQuery.selectArtPieces);
+    return ArtworkDomain.getNftLenghtByYear(year, this.sessionQuery.selectArtPieces);
+  }
+
+  getAvailableOptimalUrl(nft: Nft): Observable<string> {
+    return this.getLocalCachedThumbnail(nft.tokenId).pipe(
+      switchMap(cachedUrl => {
+        if (cachedUrl) {
+          return of(cachedUrl);
+        } else {
+          return this.fetchRemoteThumbnail(nft.tokenId).pipe(
+            map(fetched => fetched || nft.image.thumbnailUrl || nft.image.originalUrl!)
+          );
+        }
+      })
+    );
+  }
+
+  getLinks(tokenId: string): Observable<string[]> {
+    return this.http.get<ApiResponse<string[]>>(environment.backendUrl+'vision/search/'+tokenId).pipe(
+      map((res: ApiResponse<string[]>) => {
+        if (res.success && res.data) {
+          return res.data;
+        } else {
+          return [];
+        }
+      }),
+      catchError(() => of([]))
+    );
+  }
+
+  saveNftsLocally(nfts: Array<Nft>): void {
+    this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
   }
 
   private getLocalCachedThumbnail(tokenId: string): Observable<string | null> {
@@ -91,34 +104,6 @@ export class ArtworkInfraService {
     );
   }
 
-
-  getAvailableOptimalUrl(nft: Nft): Observable<string> {
-    return this.getLocalCachedThumbnail(nft.tokenId).pipe(
-      switchMap(cachedUrl => {
-        if (cachedUrl) {
-          return of(cachedUrl);
-        } else {
-          return this.fetchRemoteThumbnail(nft.tokenId).pipe(
-            map(fetched => fetched || nft.image.thumbnailUrl || nft.image.originalUrl!)
-          );
-        }
-      })
-    );
-  }
-
-  public getLinks(tokenId: string): Observable<string[]> {
-    return this.http.get<ApiResponse<string[]>>(environment.backendUrl+'vision/search/'+tokenId).pipe(
-      map((res: ApiResponse<string[]>) => {
-        if (res.success && res.data) {
-          return res.data;
-        } else {
-          return [];
-        }
-      }),
-      catchError(() => of([]))
-    );
-  }
-
   private itIsNeccesaryToFetch(): boolean {
     const daysBeforeExpireData = 7;
     return (
@@ -128,7 +113,4 @@ export class ArtworkInfraService {
     )
   }
 
-  public saveNftsLocally(nfts: Array<Nft>): void {
-    this.sessionStore.update({ artPieces: nfts, lastArtPiecesUpdate: new Date() });
-  }
 }
