@@ -6,7 +6,8 @@ import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { SessionQuery } from '@shared/store/session.query';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
+
 
 @Injectable({
   providedIn: 'root',
