@@ -1,64 +1,56 @@
 
 <div class="container margin-top">
-  <mat-grid-list cols="3">
-    <mat-grid-tile class="viewer-container" [colspan]="horizontalView ? 2 : 3" [rowspan]="generateRatio(nft())">
-      <app-image-viewer 
-        class="fit-width" 
-        [nfts]="nfts()"
-        (displayIndex)="indexChanged($event)"
-        ></app-image-viewer>
-    </mat-grid-tile>
+    <app-image-viewer 
+      class="fit-width" 
+      [nfts]="nfts()"
+      (displayIndex)="indexChanged($event)"
+      ></app-image-viewer>
     @if (nft()) {
-      <mat-grid-tile [colspan]="horizontalView ? 1 : 3" rowspan="2">
-        <div class="art-piece-labels">
-          <h3>
-            <i>{{nft().name}}. <small>{{ getViewLabel(nft()) }}</small></i>
-          </h3>
-          <h3>
-            <small>
-              <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft(), validTraits.YEAR) }">{{ getTraitValue(nft(), validTraits.YEAR ) }}</a>,
-              {{ getTraitValue(nft(), validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft(), validTraits.HEIGHT) }} x {{ getTraitValue(nft(), validTraits.WIDTH) }} {{ getTraitValue(nft(), validTraits.UNIT) }}.
-              @if (sold(nft().tokenId)) {
-                <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
-              }
-            </small>
-          </h3>
+      <div class="art-piece-labels">
+        <h1>
+          <i>{{nft().name}}. <small>{{ getViewLabel(nft()) }}</small></i>
+        </h1>
+        <h2>
           <small>
-            <app-download-button 
-              [link]="getQualityImg(nft().image)"
-              [name]="nft().name"
-            ></app-download-button>
-            @if (frontalViewNft()) {
-              <app-pdf-button 
-                [nfts]="[frontalViewNft()!]"
-              ></app-pdf-button>
+            <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft(), validTraits.YEAR) }">{{ getTraitValue(nft(), validTraits.YEAR ) }}</a>,
+            {{ getTraitValue(nft(), validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft(), validTraits.HEIGHT) }} x {{ getTraitValue(nft(), validTraits.WIDTH) }} {{ getTraitValue(nft(), validTraits.UNIT) }}.
+            @if (sold(nft().tokenId)) {
+              <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
             }
-            <app-links-button [tokenId]="nft().tokenId">
-            </app-links-button>
           </small>
-        </div>
-      </mat-grid-tile>
+        </h2>
+        <small>
+          <app-download-button 
+            [link]="getQualityImg(nft().image)"
+            [name]="nft().name"
+          ></app-download-button>
+          @if (frontalViewNft()) {
+            <app-pdf-button 
+              [nfts]="[frontalViewNft()!]"
+            ></app-pdf-button>
+          }
+          <app-links-button [tokenId]="nft().tokenId">
+          </app-links-button>
+        </small>
+      </div>
     }
-  </mat-grid-list>
-  @if (nft().description) {
+  @if (nft().description?.length) {
     <div class="art-piece-desc">
       <h3>{{ getTraitValue(nft(), validTraits.PROJECT)}}</h3>
       <p>{{nft().description}}</p>
-      <h3>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h3>
+      <h4>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h4>
     </div>
   }
   @if (thereAreMoreInYear()) {
-    <div class="margin-top">
-      <mat-divider></mat-divider>
-      <h3>
-        {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
-      </h3>
-      <app-art-pieces-list
-        [viewAsWidget]="true"
-        [numberOfCols]="numberOfViewMoreColumns"
-        [nftFilters]="getSameYearListFilter(nft())"
-        (selectedTokenId)="handleSelectedItem($event)">
-      </app-art-pieces-list>
-    </div>
+    <mat-divider></mat-divider>
+    <p>
+      {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
+    </p>
+    <app-art-pieces-list
+      [viewAsWidget]="true"
+      [numberOfCols]="numberOfViewMoreColumns"
+      [nftFilters]="getSameYearListFilter(nft())"
+      (selectedTokenId)="handleSelectedItem($event)">
+    </app-art-pieces-list>
   }
 </div>

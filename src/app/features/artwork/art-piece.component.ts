@@ -1,6 +1,5 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArtworkDomain } from '@domain/artwork/artwork';
@@ -20,7 +19,7 @@ import { LinksButtonComponent } from './components/links-button/links-button.com
     selector: 'app-art-piece',
     templateUrl: './art-piece.component.html',
     styleUrls: ['./art-piece.component.scss'],
-    imports: [MatGridList, MatGridTile, ImageViewerComponent, RouterLink, MatTooltip, DownloadButtonComponent, PdfButtonComponent, LinksButtonComponent, MatDivider, ArtPiecesListComponent, TranslatePipe]
+    imports: [ImageViewerComponent, RouterLink, MatTooltip, DownloadButtonComponent, PdfButtonComponent, LinksButtonComponent, MatDivider, ArtPiecesListComponent, TranslatePipe]
   })
 export class ArtPieceComponent {
   private router = inject(Router);
@@ -39,12 +38,10 @@ export class ArtPieceComponent {
     return this.artworkInfraService.getNftLenghtByYear(currentYear) > 1; // by default there is allways at least 1
   });
   public numberOfViewMoreColumns = 3;
-  public horizontalView = false;
   private latestVersionIndex = 0;
 
   constructor( ) {
     this.responsiveService.displayMobileLayout.subscribe(display => {
-      this.horizontalView = display;
       this.numberOfViewMoreColumns = !display ? 3 : 6;
     });
   }
@@ -80,15 +77,6 @@ export class ArtPieceComponent {
           return `(${VIEW_TYPES.PROGRESS})`
         }
     }
-  }
-
-  public generateRatio(nft: Nft): number {
-    // TODO: resolve when there are multiple images in same art
-    const height = parseFloat(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
-    const width = parseFloat(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
-    const mobileAdjustement = !this.horizontalView ? Math.ceil((height/width)) : 0;
-    const ratio = Math.ceil((height/width)*2)+mobileAdjustement;
-    return ratio
   }
 
   public getSameYearListFilter(nft: Nft): NftFilters {
