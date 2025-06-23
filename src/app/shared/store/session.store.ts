@@ -7,8 +7,8 @@ export function createInitialState(): SessionState {
         artPieces: [],
         lastArtPiecesUpdate: undefined,
         imageCache: [],
-        canvasDataStock: undefined,
-        canvasDataWeather: undefined
+        // canvasDataStock: undefined,
+        // canvasDataWeather: undefined
     };
 }
 

@@ -25,9 +25,7 @@
     "@angular/router": "^19.2.1",
     "@datorama/akita": "^8.0.1",
     "@ngx-translate/core": "^16.0.4",
-    "@types/p5": "^1.7.6",
     "jspdf": "^3.0.1",
-    "p5": "^1.11.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0"
   },

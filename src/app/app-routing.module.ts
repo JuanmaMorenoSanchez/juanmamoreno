@@ -20,11 +20,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@features/artwork/art-piece.component').then(m => m.ArtPieceComponent)
   },
-  {
-    path: 'generative/:id',
-    loadComponent: () =>
-      import('@features/generative/generative-piece.component').then(m => m.GenerativePieceComponent)
-  },
+  // {
+  //   path: 'generative/:id',
+  //   loadComponent: () =>
+  //     import('@features/generative/generative-piece.component').then(m => m.GenerativePieceComponent)
+  // },
   {
     path: 'cv',
     loadComponent: () =>

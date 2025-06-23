@@ -1,44 +1,43 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row >
-    <button mat-button [routerLink]="['/']">Juanma Moreno Sánchez</button>
-    <span class="spacer"></span>
-    @if (!mobileMenu) {
-      <button mat-icon-button aria-label="menu" (click)="drawer.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-    } @else {
-      <ng-template *ngTemplateOutlet="menuButtons"></ng-template>
-    }
-  </mat-toolbar-row>
-</mat-toolbar>
-
 <mat-drawer-container>
-  <mat-drawer #drawer mode="over">
-    <ng-template *ngTemplateOutlet="menuButtons"></ng-template>
+  <mat-drawer #drawer mode="over" position="end" class="drawer">
+    <div>
+      <ng-container *ngTemplateOutlet="menuButtons"></ng-container>
+    </div>
   </mat-drawer>
+
   <mat-drawer-content>
-    <app-breadcrumb></app-breadcrumb>
-    <router-outlet></router-outlet>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <button mat-button [routerLink]="['/']">Juanma Moreno Sánchez</button>
+        <span class="spacer"></span>
+
+        @if(!mobileMenu()) {
+          <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
+            <mat-icon>menu</mat-icon>
+          </button>
+        } @else {
+          <ng-container *ngTemplateOutlet="menuButtons"></ng-container>
+        }
+
+      </mat-toolbar-row>
+    </mat-toolbar>
   </mat-drawer-content>
 </mat-drawer-container>
 
 <ng-template #menuButtons>
-  <button mat-button [matMenuTriggerFor]="paintingMenu" class="menu-button">
+  <button mat-button [matMenuTriggerFor]="paintingMenu">
     {{ 'paintings' | translate }}
   </button>
-  <button mat-button [matMenuTriggerFor]="generativeMenu" class="menu-button">
-    {{ 'menu.generative' | translate }}
-  </button>
-  <button mat-button [routerLink]="['/about']" class="menu-button">
+  <button mat-button [routerLink]="['/about']">
     {{ 'menu.about' | translate }}
   </button>
-  <button mat-button [routerLink]="['/cv']" class="menu-button">
+  <button mat-button [routerLink]="['/cv']">
     CV
   </button>
-  <button mat-button [routerLink]="['/contact']" class="menu-button">
+  <button mat-button [routerLink]="['/contact']">
     {{ 'menu.contact' | translate }}
   </button>
-  <button mat-button (click)="changeLanguage()" class="menu-button">
+  <button mat-button (click)="changeLanguage()">
     {{ currentLang }}
   </button>
 </ng-template>
@@ -54,16 +53,8 @@
 
 <mat-menu #yearsMenu="matMenu">
   @for (year of years; track year) {
-    <button mat-menu-item 
-      [routerLink]="['/artworks']" 
-      [queryParams]="{ years: year }">
-      {{year}}
+    <button mat-menu-item [routerLink]="['/artworks']" [queryParams]="{ years: year }">
+      {{ year }}
     </button>
-  }
-</mat-menu>
-
-<mat-menu #generativeMenu="matMenu">
-  @for (generativePiece of generativePieces; track generativePiece) {
-    <button mat-menu-item [routerLink]="['/generative', generativePiece.id]">{{generativePiece.label}}</button>
   }
 </mat-menu>
