@@ -2,9 +2,9 @@
 
 DDD project structure. Look at folders and/or tsconfig paths to see it clearly.
 
-- Domain: Code that have all bussiness specific functionality
-- Infrastructure: "Impure" code that touches Angular, http, dependencies, etc..
-- Features: UI logic
+- Domain: Code that have all bussiness specific functionality. Isolated from any dependency including Angular
+- Features: "Impure" code that touches Angular, http, dependencies, etc.., organized by feature
+- Shared: Shared logic accross the app
 
 ## Run
 

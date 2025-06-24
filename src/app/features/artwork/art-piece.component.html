@@ -1,5 +1,6 @@
 
 <div class="container margin-top">
+  <div class="fade-container" [class.fade-out]="isFading()">
     <app-image-viewer 
       class="fit-width" 
       [nfts]="nfts()"
@@ -8,20 +9,20 @@
     @if (nft()) {
       <div class="art-piece-labels">
         <h1>
-          <i>{{nft().name}}. <small>{{ getViewLabel(nft()) }}</small></i>
+          <i>{{nft().name}}. <small>{{ viewLabel() }}</small></i>
         </h1>
         <h2>
           <small>
-            <a [routerLink]="['/artworks']" [queryParams]="{ years: getTraitValue(nft(), validTraits.YEAR) }">{{ getTraitValue(nft(), validTraits.YEAR ) }}</a>,
-            {{ getTraitValue(nft(), validTraits.MEDIUM ) | translate }}, {{ getTraitValue(nft(), validTraits.HEIGHT) }} x {{ getTraitValue(nft(), validTraits.WIDTH) }} {{ getTraitValue(nft(), validTraits.UNIT) }}.
-            @if (sold(nft().tokenId)) {
+            <a [routerLink]="['/artworks']" [queryParams]="{ years: nft() | trait: validTraits.YEAR }">{{ nft() | trait: validTraits.YEAR }}</a>,
+            {{ nft() | trait: validTraits.MEDIUM | translate }}, {{ nft() | trait: validTraits.HEIGHT }} x {{ nft() | trait: validTraits.WIDTH }} {{ nft() | trait: validTraits.UNIT }}.
+            @if (sold()) {
               <span matTooltip="{{ 'sold' | translate}}" class="dot"></span>
             }
           </small>
         </h2>
         <small>
           <app-download-button 
-            [link]="getQualityImg(nft().image)"
+            [link]="qualityImg()"
             [name]="nft().name"
           ></app-download-button>
           @if (frontalViewNft()) {
@@ -34,22 +35,23 @@
         </small>
       </div>
     }
-  @if (nft().description?.length) {
+  </div>
+  <!-- @if (nft().description?.length) {
     <div class="art-piece-desc">
-      <h3>{{ getTraitValue(nft(), validTraits.PROJECT)}}</h3>
+      <h3>{{ nft() | trait: validTraits.PROJECT }}</h3>
       <p>{{nft().description}}</p>
-      <h4>{{ getTraitValue(nft(), validTraits.DESC_AUTHOR)}}</h4>
+      <h4>{{ nft() | trait: validTraits.DESC_AUTHOR }}</h4>
     </div>
-  }
+  } -->
   @if (thereAreMoreInYear()) {
     <mat-divider></mat-divider>
     <p>
-      {{ 'moreOn' | translate }} {{ getTraitValue(nft(), validTraits.YEAR)}}
+      {{ 'moreOn' | translate }} {{ nft() | trait: validTraits.YEAR }}
     </p>
     <app-art-pieces-list
       [viewAsWidget]="true"
-      [numberOfCols]="numberOfViewMoreColumns"
-      [nftFilters]="getSameYearListFilter(nft())"
+      [numberOfCols]="numberOfViewMoreColumns()"
+      [nftFilters]="getSameYearListFilter()"
       (selectedTokenId)="handleSelectedItem($event)">
     </app-art-pieces-list>
   }

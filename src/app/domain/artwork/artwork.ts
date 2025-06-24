@@ -119,7 +119,7 @@ export class ArtworkDomain {
       return vB > vA ? current : latest;
     });
   }
-
+  
   static getLatestVersionIndex(nfts: Array<Nft>): number {
     const latestNft = this.getLatestVersion(nfts);
     return nfts.findIndex(nft => nft.tokenId === latestNft.tokenId);
