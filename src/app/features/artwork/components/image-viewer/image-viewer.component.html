@@ -16,7 +16,10 @@
             [src]="getQualityImg(nfts()[(displayIndex())])" 
             [style.backgroundImage]="previewImage()"
             (load)="imageLoad()"
-            class="art-viewer"/>
+            class="art-viewer"
+            [class.fade-in]="isImgVisible()"
+            [class.fade-out]="!isImgVisible()"
+            [attr.data-key]="isFullScreen() ? null : displayIndex()"/>
         @if (displayExpand) {
             <mat-icon class="fullscreen-icon">
                 fullscreen

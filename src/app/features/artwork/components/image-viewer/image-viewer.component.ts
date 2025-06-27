@@ -20,15 +20,16 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   displayIndexOutput = output<number>({
     alias: "displayIndex"
   });
+  readonly isImgVisible = signal<boolean>(false);
   hovering = false;
   displayArrows = false;
   displayExpand = false;
-  isImgVisible = false;
 
   @ViewChild('imageElement') imageElement!: ElementRef;
 
   constructor() {
     effect(() => {
+      this.isImgVisible.set(false)
       const nfts = this.nfts();
       const displayIndex = this.displayIndex();
       const isFullScreen = this.isFullScreen();
@@ -44,7 +45,6 @@ export class ImageViewerComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto??
-    this.isImgVisible = false;
     this.displayIndexOutput.emit(ArtworkDomain.getLatestVersionIndex(this.nfts()));
     this.displayIndex.set(ArtworkDomain.getLatestVersionIndex(this.nfts()));
   }
@@ -54,7 +54,7 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   public nextNft(relativeIndex: number) {
-    this.isImgVisible = false;
+    this.isImgVisible.set(false)
     const newIndex = (this.displayIndex() + relativeIndex + this.nfts().length) % this.nfts().length;  
     this.displayIndexOutput.emit(newIndex);
     this.displayIndex.set(newIndex);
@@ -62,11 +62,12 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   public imageLoad() { 
-    this.isImgVisible = true;
+    this.isImgVisible.set(true)
   }
 
   public getQualityImg(nft: Nft): string {
-    return ArtworkDomain.getNftQualityUrl(nft?.image);
+    const baseUrl = ArtworkDomain.getNftQualityUrl(nft?.image);
+    return `${baseUrl}?v=${Date.now()}`; // 👈 changes every time = reload guaranteed
   }
 
   public handleImageClick() {
