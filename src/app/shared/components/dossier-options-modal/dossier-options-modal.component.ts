@@ -6,12 +6,13 @@ import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDi
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-dossier-options-modal',
     templateUrl: './dossier-options-modal.component.html',
     styleUrl: './dossier-options-modal.component.scss',
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatSlideToggle, FormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose]
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatSlideToggle, FormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class DossierOptionsModalComponent {
   customTitle: string = '';

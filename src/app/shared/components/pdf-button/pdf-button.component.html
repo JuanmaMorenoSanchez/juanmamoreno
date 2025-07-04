@@ -1,12 +1,17 @@
-<button 
-    mat-icon-button 
-    (click)="createPDF()" 
-    [disabled]="isCreating"
-    [matTooltip]="getTooltip()" 
-    matTooltipPosition="below">
-    @if (!isCreating) {
-        <mat-icon>assignment</mat-icon>
-    } @else {
-        <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
-    }
+<button
+  mat-icon-button
+  (click)="createPDF()"
+  [disabled]="isCreating"
+  [matTooltip]="getTooltip()"
+  [attr.aria-label]="getTooltip()"
+  matTooltipPosition="below"
+>
+  @if (!isCreating) {
+  <mat-icon>assignment</mat-icon>
+  } @else {
+  <mat-progress-spinner
+    diameter="24"
+    mode="indeterminate"
+  ></mat-progress-spinner>
+  }
 </button>

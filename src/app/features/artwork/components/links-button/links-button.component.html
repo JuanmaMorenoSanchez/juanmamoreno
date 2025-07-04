@@ -1,9 +1,11 @@
 @if (haveLinks()) {
-    <button 
-        mat-icon-button 
-        (click)="openLinksModal()"
-        matTooltip="{{'links.view' | translate}}" 
-        matTooltipPosition="below">
-            <mat-icon>link</mat-icon>
-    </button>
+<button
+  mat-icon-button
+  (click)="openLinksModal()"
+  attr.aria-label="{{ 'links.view' | translate }}"
+  matTooltip="{{ 'links.view' | translate }}"
+  matTooltipPosition="below"
+>
+  <mat-icon>link</mat-icon>
+</button>
 }

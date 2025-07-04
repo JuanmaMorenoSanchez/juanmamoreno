@@ -1,71 +1,71 @@
-<div [ngClass]="{'container' : !viewAsWidget()}">
+<div [ngClass]="{ container: !viewAsWidget() }">
   @if (!viewAsWidget()) {
-    <div class="sort-group">
-      <mat-chip-listbox>
-
-        @for (method of sortMethods; track methodTracking(method)) {
-          <mat-chip 
-            color="primary"
-            (click)="changeSortMethod(method)"
-            matTooltip="Sort by {{method}}" 
-            aria-label="Sort by {{method}}">
-            <mat-icon>
-              {{ 
-                (method === 'year') ? 'calendar_today' : 
-                (method === 'medium') ? 'palette' :
-                'crop_free'
-              }}
-            </mat-icon>
-            @if (activeSortMethod() === method) {
-              <mat-icon>
-                {{ sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
-              </mat-icon>
-            }
-          </mat-chip>
+  <div class="sort-group">
+    <mat-chip-listbox>
+      @for (method of sortMethods; track methodTracking(method)) {
+      <mat-chip
+        color="primary"
+        (click)="changeSortMethod(method)"
+        matTooltip="Sort by {{ method }}"
+        aria-label="Sort by {{ method }}"
+      >
+        <mat-icon>
+          {{
+            method === "year"
+              ? "calendar_today"
+              : method === "medium"
+              ? "palette"
+              : "crop_free"
+          }}
+        </mat-icon>
+        @if (activeSortMethod() === method) {
+        <mat-icon>
+          {{ sortOrder() === "asc" ? "arrow_upward" : "arrow_downward" }}
+        </mat-icon>
         }
-        @if (selectedNfts().length) {
-          <mat-chip>
-            <app-pdf-button
-              [nfts]="selectedNfts()"
-            ></app-pdf-button>
-          </mat-chip>
-        }
-      </mat-chip-listbox>
-    </div>
-  }
-
-  @if (dataReady()) {
-    <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
-      @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
-        @if (displayPiece(artPiece)) {
-          <mat-grid-tile
-            (contextmenu)="toggleNftSelection($event, artPiece)"
-            (click)="handleArtPieceClick(artPiece.tokenId)">
-            <mat-card>
-              @if (isSelected(artPiece)) {
-                <div class="overlay">
-                  <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
-                </div>
-              }
-              @if (!visibleImages.has(artPiece.tokenId)) {
-                  <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
-              }
-              <img 
-                class="front-image" 
-                mat-card-image
-                loading="lazy" 
-                [src]="visibleImages.has(artPiece.tokenId) ? imgThumbUrls().get(artPiece.tokenId) ?? null : null"
-                [alt]="artPiece.name" 
-                appLazyLoad 
-                (visible)="onImageVisible(artPiece.tokenId)"
-              />
-            </mat-card>
-          </mat-grid-tile>
-        }
+      </mat-chip>
+      } @if (selectedNfts().length) {
+      <mat-chip>
+        <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
+      </mat-chip>
       }
-    </mat-grid-list>
+    </mat-chip-listbox>
+  </div>
+  } @if (dataReady()) {
+  <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
+    @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
+    @if (displayPiece(artPiece)) {
+    <mat-grid-tile
+      (contextmenu)="toggleNftSelection($event, artPiece)"
+      (click)="handleArtPieceClick(artPiece.tokenId)"
+    >
+      <mat-card>
+        @if (isSelected(artPiece)) {
+        <div class="overlay">
+          <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
+        </div>
+        }
+        <img
+          class="front-image"
+          mat-card-image
+          loading="lazy"
+          [src]="
+            visibleImages.has(artPiece.tokenId)
+              ? imgThumbUrls().get(artPiece.tokenId) ?? null
+              : null
+          "
+          [alt]="artPiece.name"
+          appLazyLoad
+          (visible)="onImageVisible(artPiece.tokenId)"
+        />
+      </mat-card>
+    </mat-grid-tile>
+    } }
+  </mat-grid-list>
   } @else {
-    <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+  <mat-progress-spinner
+    diameter="48"
+    mode="indeterminate"
+  ></mat-progress-spinner>
   }
 </div>
-

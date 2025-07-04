@@ -1,13 +1,25 @@
-<h1 mat-dialog-title>{{ 'links.view' | translate }}</h1>
+<h1 mat-dialog-title>{{ "links.view" | translate }}</h1>
 <div mat-dialog-content>
   <mat-list>
     <mat-list-item *ngFor="let link of data.links">
       <a mat-line [href]="link" target="_blank" rel="noopener noreferrer">
-        {{ link.replace('https://', '').replace('http://', '').replace('www.', '') }}
-    </a>
+        {{
+          link
+            .replace("https://", "")
+            .replace("http://", "")
+            .replace("www.", "")
+        }}
+      </a>
     </mat-list-item>
   </mat-list>
 </div>
 <div mat-dialog-actions>
-  <button mat-raised-button color="primary" (click)="close()">Close</button>
+  <button
+    mat-raised-button
+    attr.aria-label="{{ 'close' | translate }}"
+    color="primary"
+    (click)="close()"
+  >
+    {{ "close" | translate }}
+  </button>
 </div>

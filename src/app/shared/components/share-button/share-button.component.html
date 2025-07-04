@@ -1,6 +1,12 @@
 <!-- <button *ngIf="canShare" (click)="handleClick()" mat-icon-button color="primary" class="share-button"> -->
 @if (canShare) {
-  <button (click)="handleClick()" mat-mini-fab color="primary" class="share-button">
-    <mat-icon aria-label="Share Juanma Moreno website!">share</mat-icon>
-  </button>
+<button
+  aria-label="share"
+  (click)="handleClick()"
+  mat-mini-fab
+  color="primary"
+  class="share-button"
+>
+  <mat-icon aria-label="Share Juanma Moreno website!">share</mat-icon>
+</button>
 }
