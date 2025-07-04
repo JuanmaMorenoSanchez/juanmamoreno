@@ -19,6 +19,8 @@
 
         @if(!mobileMenu()) {
         <button
+          aria-expanded="false"
+          aria-controls="menu"
           mat-icon-button
           (click)="drawer.toggle()"
           aria-label="Toggle menu"

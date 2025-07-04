@@ -5,6 +5,7 @@
       @for (method of sortMethods; track methodTracking(method)) {
       <mat-chip
         color="primary"
+        role="button"
         (click)="changeSortMethod(method)"
         matTooltip="Sort by {{ method }}"
         aria-label="Sort by {{ method }}"
