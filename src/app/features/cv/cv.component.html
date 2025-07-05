@@ -1,59 +1,67 @@
-<img class="front-image" src="assets/images/juanma_estudio.jpg" alt="Juanma Moreno Sánchez art studio"/>
+<img
+  class="front-image"
+  src="assets/images/juanma_estudio.jpg"
+  alt="Juanma Moreno Sánchez art studio"
+/>
 
 <div class="container margin-top">
   <mat-grid-list [cols]="totalCols" rowHeight="2.8rem">
     <mat-grid-tile [colspan]="yearColSpan" rowspan="3"></mat-grid-tile>
 
     <mat-grid-tile [colspan]="descColSpan">
-      <h1>
+      <h2>
         CV
-        <app-pdf-button
-          [downloadFileType]="downloadType"
-        ></app-pdf-button>
-      </h1>
+        <app-pdf-button [downloadFileType]="downloadType"></app-pdf-button>
+      </h2>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <p innerHtml="{{ 'cv.shortBio' | translate}}"></p>
+      <p innerHtml="{{ 'cv.shortBio' | translate }}"></p>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
-      <p innerHtml="{{ 'contact.representedBy' | translate}}"></p>
+      <p innerHtml="{{ 'contact.representedBy' | translate }}"></p>
     </mat-grid-tile>
   </mat-grid-list>
 
   @for (cvSection of cvTimeline; track cvSection) {
-    <mat-divider class="breathe-space"></mat-divider>
-    <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
-      <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
-      <mat-grid-tile [colspan]="descColSpan" role="listitem">
-        <h2>{{cvSection.title | translate}}</h2>
+  <mat-divider class="breathe-space"></mat-divider>
+  <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
+    <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
+    <mat-grid-tile [colspan]="descColSpan" role="listitem">
+      <h2>{{ cvSection.title | translate }}</h2>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
+    @for (cvItem of cvSection.items; track cvItem) {
+    <div>
+      @if (displayYearLabel(cvSection.items, cvItem)) {
+      <mat-grid-tile
+        [colspan]="yearColSpan"
+        [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)"
+      >
+        <h3>{{ cvItem.year }}</h3>
       </mat-grid-tile>
-    </mat-grid-list>
-    <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
-      @for (cvItem of cvSection.items; track cvItem) {
-        <div>
-          @if (displayYearLabel(cvSection.items, cvItem)) {
-            <mat-grid-tile [colspan]="yearColSpan" [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)">
-              <h3>{{cvItem.year}}</h3>
-            </mat-grid-tile>
-          }
-          <mat-grid-tile [colspan]="descColSpan" role="listitem">
-            <p>
-              <i><strong><span innerHTML="{{ cvItem.title | translate}}"></span></strong></i>,
-              <small>
-                @if (cvItem.venue) {
-                  <span innerHTML="{{ cvItem.venue | translate}}, "></span>
-                }
-                @if (cvItem.city) {
-                  <span> {{cvItem.city}}, </span>
-                }
-                @if (cvItem.country) {
-                  <span>({{cvItem.country | translate}})</span>
-                }
-              </small>
-            </p>
-          </mat-grid-tile>
-        </div>
       }
-    </mat-grid-list>
+      <mat-grid-tile [colspan]="descColSpan" role="listitem">
+        <p>
+          <i
+            ><strong
+              ><span
+                innerHTML="{{ cvItem.title | translate }}"
+              ></span></strong></i
+          >,
+          <small>
+            @if (cvItem.venue) {
+            <span innerHTML="{{ cvItem.venue | translate }}, "></span>
+            } @if (cvItem.city) {
+            <span> {{ cvItem.city }}, </span>
+            } @if (cvItem.country) {
+            <span>({{ cvItem.country | translate }})</span>
+            }
+          </small>
+        </p>
+      </mat-grid-tile>
+    </div>
+    }
+  </mat-grid-list>
   }
 </div>

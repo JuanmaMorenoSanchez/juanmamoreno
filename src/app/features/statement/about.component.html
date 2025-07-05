@@ -1,34 +1,25 @@
-<img 
-  class="front-image" 
-  [src]="statement.introduction.image.src" 
-  [alt]="statement.introduction.image.alt" 
+<img
+  class="front-image"
+  [src]="statement.introduction.image.src"
+  [alt]="statement.introduction.image.alt"
 />
 
 <div class="container margin-top">
-  <h1>
+  <h2>
     Statement
-    <app-pdf-button
-      [downloadFileType]="downloadType"
-    ></app-pdf-button>
-  </h1>
-  <p>{{ statement.introduction.content | translate}}</p>
+    <app-pdf-button [downloadFileType]="downloadType"></app-pdf-button>
+  </h2>
+  <p>{{ statement.introduction.content | translate }}</p>
 
   @for (section of statement.sections; track section) {
-    <h2>{{ section.title | translate}}</h2>
+  <h2>{{ section.title | translate }}</h2>
 
-    @if (section.content) {
-      @for (paragraph of section.content; track paragraph) {
-        <p innerHtml="{{ paragraph | translate}}">
-        </p>
-      }
-    }
-    @if (section.items) {
-      @for (item of section.items; track item) {
-        <p>
-          <strong class="subtitle">{{ item.subtitle | translate }}</strong>
-          <span innerHTML="{{ item.content | translate}}"></span>
-        </p>
-      }
-    }
-  }
+  @if (section.content) { @for (paragraph of section.content; track paragraph) {
+  <p innerHtml="{{ paragraph | translate }}"></p>
+  } } @if (section.items) { @for (item of section.items; track item) {
+  <p>
+    <strong class="subtitle">{{ item.subtitle | translate }}</strong>
+    <span innerHTML="{{ item.content | translate }}"></span>
+  </p>
+  } } }
 </div>
