@@ -40,8 +40,8 @@
     role="list"
     aria-label="Art Pieces"
   >
-    @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
-    @if (displayPiece(artPiece)) {
+    @for (artPiece of visibleArtPieces(); track listTracking($index, artPiece))
+    {
     <mat-grid-tile
       (contextmenu)="toggleNftSelection($event, artPiece)"
       (click)="handleArtPieceClick(artPiece.tokenId)"
@@ -60,7 +60,7 @@
           mat-card-image
           loading="lazy"
           [src]="
-            visibleImages.has(artPiece.tokenId)
+            displayedImages.has(artPiece.tokenId)
               ? imgThumbUrls().get(artPiece.tokenId) ?? null
               : null
           "
@@ -70,7 +70,7 @@
         />
       </mat-card>
     </mat-grid-tile>
-    } }
+    }
   </mat-grid-list>
   } @else {
   <mat-progress-spinner
