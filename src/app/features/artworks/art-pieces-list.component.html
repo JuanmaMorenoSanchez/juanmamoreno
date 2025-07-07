@@ -46,6 +46,7 @@
       (contextmenu)="toggleNftSelection($event, artPiece)"
       (click)="handleArtPieceClick(artPiece.tokenId)"
       role="listitem"
+      [attr.aria-label]="artPiece.name"
       [attr.aria-selected]="isSelected(artPiece)"
     >
       <mat-card>
