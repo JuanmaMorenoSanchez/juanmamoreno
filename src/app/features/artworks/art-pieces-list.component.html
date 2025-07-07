@@ -6,9 +6,9 @@
       <mat-chip
         color="primary"
         role="button"
+        [attr.aria-label]="`Sort by ${method}`"
         (click)="changeSortMethod(method)"
         matTooltip="Sort by {{ method }}"
-        [attr.aria-label]="'Sort by ' + method"
       >
         <mat-icon>
           {{

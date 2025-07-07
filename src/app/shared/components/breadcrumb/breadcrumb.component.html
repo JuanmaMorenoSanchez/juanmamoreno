@@ -2,26 +2,30 @@
 <nav class="container" aria-label="Breadcrumb">
   <mat-chip-listbox>
     <mat-chip color="primary">
-      <span
-        routerLink="/"
-        routerLinkActive="router-link-active"
-        aria-label="Home"
-        matLine
-      >
-        <mat-icon>home</mat-icon>
+      <span>
+        <a
+          routerLink="/"
+          routerLinkActive="router-link-active"
+          class="link-as-text"
+          aria-label="Home"
+          matLine
+        >
+          <mat-icon>home</mat-icon>
+        </a>
       </span>
     </mat-chip>
     @for (breadcrumb of breadcrumbs; track breadcrumb) {
     <mat-chip color="primary">
-      <span
+      <a
         [routerLink]="breadcrumb.url"
         [queryParams]="breadcrumb.queryParams"
         [attr.aria-label]="breadcrumb.queryParams"
         routerLinkActive="router-link-active"
+        class="link-as-text"
         matLine
       >
         {{ breadcrumb.label }}
-      </span>
+      </a>
     </mat-chip>
     }
     <mat-form-field class="small-input" appearance="fill">

@@ -1,6 +1,14 @@
 .small-input {
-    width: 27em; /* or any value you want for the width */
-    height: 11em;
-    font-size: 0.4em; /* Optional, to reduce the font size */
-    margin-left: 2em;
+  width: 27em; /* or any value you want for the width */
+  height: 11em;
+  font-size: 0.4em; /* Optional, to reduce the font size */
+  margin-left: 2em;
+}
+
+.link-as-text {
+  all: unset;
+  display: inline;
+  color: inherit;
+  text-decoration: none;
+  cursor: text; /* optional: makes it behave like a span on hover */
 }
