@@ -1,13 +1,26 @@
-import { Component, computed, inject, signal, Signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ArtworkDomain } from '@domain/artwork/artwork';
-import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
+import {
+  SOLDCERTIFICATES,
+  VALIDTRAITS,
+  VIEW_TYPES,
+} from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
+import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
@@ -16,7 +29,7 @@ import { map, switchMap, tap } from 'rxjs';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
-import { TraitPipe } from "./pipes/traits.pipe";
+import { TraitPipe } from './pipes/traits.pipe';
 
 @Component({
   selector: 'app-art-piece',
@@ -33,62 +46,115 @@ import { TraitPipe } from "./pipes/traits.pipe";
     MatDivider,
     ArtPiecesListComponent,
     TranslatePipe,
-    TraitPipe
-]
+    TraitPipe,
+  ],
 })
 export class ArtPieceComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private artworkService = inject(ArtworkInfraService);
   private responsiveService = inject(ResponsiveService);
+  private translateService = inject(TranslateService);
 
   readonly validTraits = VALIDTRAITS;
   readonly numberOfViewMoreColumns: Signal<number> = toSignal(
-    this.responsiveService.displayMobileLayout.pipe(map(display => display ? 6 : 3)),
+    this.responsiveService.displayMobileLayout.pipe(
+      map((display) => (display ? 6 : 3))
+    ),
     { initialValue: 3 }
   );
   readonly displayingIndex: WritableSignal<number> = signal(0);
-  readonly fullNftsList = toSignal(this.artworkService.getArtPiecesObservable())
+  readonly fullNftsList = toSignal(
+    this.artworkService.getArtPiecesObservable()
+  );
   readonly nfts: Signal<Nft[]> = toSignal(
     this.route.paramMap.pipe(
-      map(paramMap => paramMap.get('id')!),
+      map((paramMap) => paramMap.get('id')!),
       switchMap((id: string) => {
         return this.artworkService.getSameArtThanObservable(id);
       }),
-      tap(nfts => this.displayingIndex.set(ArtworkDomain.getLatestVersionIndex(nfts)))
+      tap((nfts) =>
+        this.displayingIndex.set(ArtworkDomain.getLatestVersionIndex(nfts))
+      )
     ),
     { initialValue: [] }
   );
-  readonly nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()]);
+  readonly nft: Signal<Nft> = computed(
+    () => this.nfts()[this.displayingIndex()]
+  );
+  readonly tokenId = computed(() => this.nft().tokenId);
+
+  readonly currentLang = signal(
+    this.translateService.currentLang === 'es-ES' ? 'es' : 'en'
+  );
+
+  readonly descriptions = signal<Descriptions | null>(null);
+  readonly description = computed(() => {
+    const descriptions = this.descriptions();
+    const currentLang = this.currentLang();
+    return this.getShortDescription(descriptions, currentLang);
+  });
+
   readonly frontalViewNft: Signal<Nft | undefined> = computed(() =>
-    this.nfts().find(nft => ArtworkDomain.isFrontalView(nft, this.nfts()))
+    this.nfts().find((nft) => ArtworkDomain.isFrontalView(nft, this.nfts()))
   );
   readonly thereAreMoreInYear: Signal<boolean> = computed(() => {
     const year = ArtworkDomain.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
     return this.artworkService.getNftLenghtByYear(year) > 1;
   });
   readonly getSameYearListFilter: Signal<NftFilters> = computed(() => ({
-      years: [this.getTraitValue(this.nft(), VALIDTRAITS.YEAR)],
-      idsToExclude: this.nfts().map(n => n.tokenId)
-    }))
+    years: [this.getTraitValue(this.nft(), VALIDTRAITS.YEAR)],
+    idsToExclude: this.nfts().map((n) => n.tokenId),
+  }));
   readonly viewLabel: Signal<string> = computed(() => {
     const currentNft = this.nft();
     if (!currentNft) return '';
-    const imageType = this.getTraitValue(currentNft, this.validTraits.IMAGETYPE);
+    const imageType = this.getTraitValue(
+      currentNft,
+      this.validTraits.IMAGETYPE
+    );
     if (imageType === VIEW_TYPES.PROGRESS || imageType === VIEW_TYPES.DETAIL) {
       return `(${imageType})`;
     }
-    return this.displayingIndex() === ArtworkDomain.getLatestVersionIndex(this.nfts())
+    return this.displayingIndex() ===
+      ArtworkDomain.getLatestVersionIndex(this.nfts())
       ? ''
       : `(${VIEW_TYPES.PROGRESS})`;
   });
-  readonly qualityImg: Signal<string> = computed(() => ArtworkDomain.getNftQualityUrl(this.nft().image));
-  readonly sold: Signal<boolean> = computed(() => SOLDCERTIFICATES.includes(this.nft().tokenId))
+  readonly qualityImg: Signal<string> = computed(() =>
+    ArtworkDomain.getNftQualityUrl(this.nft().image)
+  );
+  readonly sold: Signal<boolean> = computed(() =>
+    SOLDCERTIFICATES.includes(this.tokenId())
+  );
 
   readonly isFading: WritableSignal<boolean> = signal(false);
 
+  constructor() {
+    this.translateService.onLangChange.subscribe(({ lang }) => {
+      this.currentLang.set(lang === 'es-ES' ? 'es' : 'en');
+    });
+    effect(() => {
+      const token = this.tokenId();
+      this.artworkService.getArtPieceDescriptions(token).subscribe((data) => {
+        this.descriptions.set(data);
+      });
+    });
+  }
+
   private getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
     return ArtworkDomain.getTraitValue(nft, trait);
+  }
+
+  private getShortDescription(
+    descriptions: Descriptions | null,
+    lang: string
+  ): string {
+    if (!descriptions) return 'No description available';
+    return (
+      descriptions.translated.find((t) => t.lang === lang)?.shortDesc ||
+      'No description available'
+    );
   }
 
   indexChanged(index: number): void {
@@ -96,7 +162,7 @@ export class ArtPieceComponent {
     setTimeout(() => {
       this.displayingIndex.set(index);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => this.isFading.set(false), 300); 
+      setTimeout(() => this.isFading.set(false), 300);
     }, 150);
   }
 

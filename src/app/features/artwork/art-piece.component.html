@@ -3,6 +3,7 @@
     <app-image-viewer
       class="fit-width"
       [nfts]="nfts()"
+      [description]="description()"
       (displayIndex)="indexChanged($event)"
     ></app-image-viewer>
     @if (nft()) {
@@ -34,7 +35,7 @@
         @if (frontalViewNft()) {
         <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
         }
-        <app-links-button [tokenId]="nft().tokenId"> </app-links-button>
+        <app-links-button [tokenId]="tokenId()"> </app-links-button>
       </small>
     </div>
     }
