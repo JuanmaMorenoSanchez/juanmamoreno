@@ -1,12 +1,24 @@
 import { NgFor } from '@angular/common';
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatChip, MatChipListbox } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { ArtworkDomain } from '@domain/artwork/artwork';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SessionQuery } from '@shared/store/session.query';
@@ -14,33 +26,48 @@ import { distinctUntilChanged, filter } from 'rxjs';
 import { BreadCrumb } from './breadcrumbs.entity';
 
 @Component({
-    selector: 'app-breadcrumb',
-    templateUrl: './breadcrumb.component.html',
-    styleUrls: ['./breadcrumb.component.scss'],
-    imports: [MatChipListbox, MatChip, RouterLink, RouterLinkActive, MatIcon, MatFormField, MatSelect, FormsModule, NgFor, MatOption, TranslatePipe]
+  selector: 'app-breadcrumb',
+  templateUrl: './breadcrumb.component.html',
+  styleUrls: ['./breadcrumb.component.scss'],
+  imports: [
+    MatChipListbox,
+    MatChip,
+    RouterLink,
+    RouterLinkActive,
+    MatIcon,
+    MatFormField,
+    MatSelect,
+    FormsModule,
+    NgFor,
+    MatOption,
+    TranslatePipe,
+    MatLabel,
+  ],
 })
-export class BreadcrumbComponent implements OnInit{
+export class BreadcrumbComponent implements OnInit {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private translateService = inject(TranslateService);
   private sessionQuery = inject(SessionQuery);
-  
+
   public breadcrumbs: Array<BreadCrumb>;
   public selectedYears: number[] = [];
   public newYear: WritableSignal<number | null> = signal(null);
-  
-  constructor( ) {
+
+  constructor() {
     this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
   }
 
   ngOnInit() {
-    this.router.events.pipe(
+    this.router.events
+      .pipe(
         filter((event: unknown) => event instanceof NavigationEnd),
-        distinctUntilChanged(),
-    ).subscribe(() => {
-      this.selectedYears = this.extractSelectedYears(); 
-      this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
-    })
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        this.selectedYears = this.extractSelectedYears();
+        this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
+      });
   }
 
   public handleYearChange(event: number) {
@@ -55,11 +82,13 @@ export class BreadcrumbComponent implements OnInit{
   }
 
   public removeYearFilter(label: string) {
-    this.selectedYears.filter(y => y === Number(label))
+    this.selectedYears.filter((y) => y === Number(label));
   }
 
   get validYears(): number[] {
-    return [...ArtworkDomain.getYears(this.sessionQuery.getValue().artPieces)].filter(year => !this.selectedYears.includes(year));
+    return [
+      ...ArtworkDomain.getYears(this.sessionQuery.getValue().artPieces),
+    ].filter((year) => !this.selectedYears.includes(year));
   }
 
   private updateQueryParams() {
@@ -69,20 +98,30 @@ export class BreadcrumbComponent implements OnInit{
 
   private extractSelectedYears(): number[] {
     const queryParams = this.activatedRoute.snapshot.queryParamMap.get('years');
-    return queryParams ? queryParams.split(',').map(param => Number(param)) : [];
+    return queryParams
+      ? queryParams.split(',').map((param) => Number(param))
+      : [];
   }
 
-  private buildBreadCrumb(route: ActivatedRoute, url: string = '', breadcrumbs: Array<BreadCrumb> = []): Array<BreadCrumb> {
-    let label: string = route.routeConfig && route.routeConfig.data ? route.routeConfig.data['breadcrumb'] : '';
-    let path = route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
+  private buildBreadCrumb(
+    route: ActivatedRoute,
+    url: string = '',
+    breadcrumbs: Array<BreadCrumb> = []
+  ): Array<BreadCrumb> {
+    let label: string =
+      route.routeConfig && route.routeConfig.data
+        ? route.routeConfig.data['breadcrumb']
+        : '';
+    let path =
+      route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
 
-    const lastRoutePart = path ? path.split('/').pop(): "";
+    const lastRoutePart = path ? path.split('/').pop() : '';
     const isDynamicRoute = lastRoutePart!.startsWith(':');
-    if(isDynamicRoute && !!route.snapshot) {
+    if (isDynamicRoute && !!route.snapshot) {
       const paramName = lastRoutePart!.split(':')[1];
       const paramValue = route.snapshot.params[paramName];
       path = path!.replace(lastRoutePart!, paramValue);
-      if (paramName === "id") {
+      if (paramName === 'id') {
         const name = this.extractNameFromId(paramValue);
         label = name || paramValue;
       } else {
@@ -91,11 +130,13 @@ export class BreadcrumbComponent implements OnInit{
     }
     const nextUrl = path ? `${url}/${path}` : url;
     const baseBreadcrumb: BreadCrumb = {
-      label: label ? this.translateService.instant(label.toLowerCase()): '',
+      label: label ? this.translateService.instant(label.toLowerCase()) : '',
       url: nextUrl,
-      queryParams: {years: []},
+      queryParams: { years: [] },
     };
-    const newBreadcrumbs = label ? [...breadcrumbs, baseBreadcrumb] : [...breadcrumbs];
+    const newBreadcrumbs = label
+      ? [...breadcrumbs, baseBreadcrumb]
+      : [...breadcrumbs];
     if (route.firstChild) {
       return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
     } else {
@@ -115,6 +156,9 @@ export class BreadcrumbComponent implements OnInit{
   }
 
   private extractNameFromId(id: string): string | null {
-    return ArtworkDomain.getNftById(id, this.sessionQuery.selectArtPieces)!.name || null;
+    return (
+      ArtworkDomain.getNftById(id, this.sessionQuery.selectArtPieces)!.name ||
+      null
+    );
   }
 }

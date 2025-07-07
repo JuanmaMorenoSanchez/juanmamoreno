@@ -27,7 +27,7 @@
   <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
     <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan" role="listitem">
-      <h2>{{ cvSection.title | translate }}</h2>
+      <h3>{{ cvSection.title | translate }}</h3>
     </mat-grid-tile>
   </mat-grid-list>
   <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
@@ -38,7 +38,7 @@
         [colspan]="yearColSpan"
         [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)"
       >
-        <h3>{{ cvItem.year }}</h3>
+        <h4>{{ cvItem.year }}</h4>
       </mat-grid-tile>
       }
       <mat-grid-tile [colspan]="descColSpan" role="listitem">

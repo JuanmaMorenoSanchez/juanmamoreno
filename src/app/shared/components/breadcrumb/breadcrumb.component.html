@@ -1,29 +1,40 @@
 @if (breadcrumbs && breadcrumbs.length) {
-  <div class="container">
-    <mat-chip-listbox>
-      <mat-chip color="primary">
-        <span routerLink="/" routerLinkActive="router-link-active">
-          <mat-icon>home</mat-icon>
-        </span>
-      </mat-chip>
-      @for (breadcrumb of breadcrumbs; track breadcrumb) {
-        <mat-chip color="primary">
-          <span
-            [routerLink]="breadcrumb.url"
-            [queryParams]="breadcrumb.queryParams"
-            routerLinkActive="router-link-active"
-          >
-            {{ breadcrumb.label }}
-          </span>
-        </mat-chip>
-      }
-      <mat-form-field class="small-input">
-        <mat-select placeholder="{{'selectYear' | translate}}" [ngModel]="newYear()" (ngModelChange)="handleYearChange($event)">
-          <mat-option *ngFor="let year of validYears" [value]="year">
-            {{ year }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </mat-chip-listbox>
-  </div>
+<nav class="container" aria-label="Breadcrumb">
+  <mat-chip-listbox>
+    <mat-chip color="primary">
+      <span
+        routerLink="/"
+        routerLinkActive="router-link-active"
+        aria-label="Home"
+        matLine
+      >
+        <mat-icon>home</mat-icon>
+      </span>
+    </mat-chip>
+    @for (breadcrumb of breadcrumbs; track breadcrumb) {
+    <mat-chip color="primary">
+      <span
+        [routerLink]="breadcrumb.url"
+        [queryParams]="breadcrumb.queryParams"
+        routerLinkActive="router-link-active"
+        matLine
+      >
+        {{ breadcrumb.label }}
+      </span>
+    </mat-chip>
+    }
+    <mat-form-field class="small-input" appearance="fill">
+      <mat-label>{{ "selectYear" | translate }}</mat-label>
+      <mat-select
+        [ngModel]="newYear()"
+        (ngModelChange)="handleYearChange($event)"
+        aria-label="Select year"
+      >
+        <mat-option *ngFor="let year of validYears" [value]="year">
+          {{ year }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-chip-listbox>
+</nav>
 }

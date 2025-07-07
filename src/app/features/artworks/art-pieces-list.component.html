@@ -8,7 +8,7 @@
         role="button"
         (click)="changeSortMethod(method)"
         matTooltip="Sort by {{ method }}"
-        aria-label="Sort by {{ method }}"
+        [attr.aria-label]="'Sort by ' + method"
       >
         <mat-icon>
           {{
@@ -33,12 +33,20 @@
     </mat-chip-listbox>
   </div>
   } @if (dataReady()) {
-  <mat-grid-list [cols]="numberOfCols()" gutterSize="10" rowHeight="1:1">
+  <mat-grid-list
+    [cols]="numberOfCols()"
+    gutterSize="10"
+    rowHeight="1:1"
+    role="list"
+    aria-label="Art Pieces"
+  >
     @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
     @if (displayPiece(artPiece)) {
     <mat-grid-tile
       (contextmenu)="toggleNftSelection($event, artPiece)"
       (click)="handleArtPieceClick(artPiece.tokenId)"
+      role="listitem"
+      [attr.aria-selected]="isSelected(artPiece)"
     >
       <mat-card>
         @if (isSelected(artPiece)) {
@@ -55,7 +63,7 @@
               ? imgThumbUrls().get(artPiece.tokenId) ?? null
               : null
           "
-          [alt]="artPiece.name"
+          [alt]="'Artwork ' + artPiece.name"
           appLazyLoad
           (visible)="onImageVisible(artPiece.tokenId)"
         />
@@ -67,6 +75,7 @@
   <mat-progress-spinner
     diameter="48"
     mode="indeterminate"
+    aria-label="Loading art pieces"
   ></mat-progress-spinner>
   }
 </div>
