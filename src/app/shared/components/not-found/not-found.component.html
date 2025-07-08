@@ -4,7 +4,7 @@
   <mat-list role="list">
     <mat-list-item>
       <button
-        attr.aria-label="{{ 'paintings' | translate }}"
+        [attr.aria-label]="'paintings' | translate"
         mat-button
         color="primary"
         (click)="navigateTo('/artworks')"
@@ -14,7 +14,7 @@
     </mat-list-item>
     <mat-list-item>
       <button
-        attr.aria-label="{{ 'statement.title' | translate }}"
+        [attr.aria-label]="'statement.title' | translate"
         mat-button
         color="primary"
         (click)="navigateTo('/about')"
@@ -34,7 +34,7 @@
     </mat-list-item>
     <mat-list-item>
       <button
-        attr.aria-label="{{ 'menu.contact' | translate }}"
+        [attr.aria-label]="'menu.contact' | translate"
         mat-button
         color="primary"
         (click)="navigateTo('/contact')"

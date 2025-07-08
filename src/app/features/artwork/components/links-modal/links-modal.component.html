@@ -16,7 +16,7 @@
 <div mat-dialog-actions>
   <button
     mat-raised-button
-    attr.aria-label="{{ 'close' | translate }}"
+    [attr.aria-label]="'close' | translate"
     color="primary"
     (click)="close()"
   >

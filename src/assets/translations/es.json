@@ -33,6 +33,7 @@
     "progreso": "En progreso",
     "detail": "Vista de detalle"
   },
+  "sortBy": "Ordenar por ",
   "sortMethod": {
     "year": "Año",
     "size": "Tamaño",

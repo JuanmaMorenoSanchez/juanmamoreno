@@ -22,6 +22,7 @@ import { ArtworkDomain } from '@domain/artwork/artwork';
 import { SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
+import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
@@ -47,6 +48,7 @@ import { distinctUntilChanged, take } from 'rxjs';
     MatProgressSpinner,
     MatCardImage,
     LazyLoadDirective,
+    TranslatePipe,
   ],
 })
 export class ArtPiecesListComponent implements OnInit {

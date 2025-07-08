@@ -36,15 +36,11 @@
 </mat-drawer-container>
 
 <ng-template #menuButtons>
-  <button
-    attr.aria-label="{{ 'paintings' | translate }}"
-    mat-button
-    [matMenuTriggerFor]="paintingMenu"
-  >
+  <button x mat-button [matMenuTriggerFor]="paintingMenu">
     {{ "paintings" | translate }}
   </button>
   <button
-    attr.aria-label="{{ 'menu.about' | translate }}"
+    [attr.aria-label]="'menu.about' | translate"
     mat-button
     [routerLink]="['/about']"
   >
@@ -52,7 +48,7 @@
   </button>
   <button aria-label="CV" mat-button [routerLink]="['/cv']">CV</button>
   <button
-    attr.aria-label="{{ 'menu.contact' | translate }}"
+    [attr.aria-label]="'menu.contact' | translate"
     mat-button
     [routerLink]="['/contact']"
   >
@@ -65,14 +61,14 @@
 
 <mat-menu #paintingMenu="matMenu">
   <button
-    attr.aria-label="{{ 'menu.allPaintings' | translate }}"
+    [attr.aria-label]="'menu.allPaintings' | translate"
     mat-menu-item
     routerLink="/artworks"
   >
     {{ "menu.allPaintings" | translate }}
   </button>
   <button
-    attr.aria-label="{{ 'menu.byYear' | translate }}"
+    [attr.aria-label]="'menu.byYear' | translate"
     mat-menu-item
     [matMenuTriggerFor]="yearsMenu"
   >

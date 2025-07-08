@@ -6,9 +6,9 @@
       <mat-chip
         color="primary"
         role="button"
-        [attr.aria-label]="`Sort by ${method}`"
+        [attr.aria-label]="`${'sortBy' | translate} ${method}`"
         (click)="changeSortMethod(method)"
-        matTooltip="Sort by {{ method }}"
+        [matTooltip]="`${'sortBy' | translate } ${ method }`"
       >
         <mat-icon>
           {{
@@ -26,7 +26,10 @@
         }
       </mat-chip>
       } @if (selectedNfts().length) {
-      <mat-chip>
+      <mat-chip
+        role="button"
+        [attr.aria-label]="'download.portfolio' | translate"
+      >
         <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
       </mat-chip>
       }
@@ -47,7 +50,6 @@
       (click)="handleArtPieceClick(artPiece.tokenId)"
       role="listitem"
       [attr.aria-label]="artPiece.name"
-      [attr.aria-selected]="isSelected(artPiece)"
     >
       <mat-card>
         @if (isSelected(artPiece)) {

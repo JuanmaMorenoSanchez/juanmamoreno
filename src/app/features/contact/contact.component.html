@@ -1,8 +1,8 @@
 <div class="container margin-top">
   <div class="padding-sides">
     <h2>{{ "contact.title" | translate }}</h2>
-    <h3 innerHtml="{{ 'contact.representedBy' | translate }}"></h3>
-    <h4 innerHtml="{{ 'contact.contactText' | translate }}"></h4>
+    <h3 [innerHtml]="'contact.representedBy' | translate"></h3>
+    <h4 [innerHtml]="'contact.contactText' | translate"></h4>
   </div>
 
   <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
@@ -52,7 +52,7 @@
         <div class="padding-sides">
           <button
             mat-raised-button
-            attr.aria-label="{{ 'submit' | translate }}"
+            [attr.aria-label]="'submit' | translate"
             color="primary"
             [disabled]="isLoading"
             type="submit"

@@ -39,17 +39,13 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button
-    mat-button
-    attr.aria-label="{{ 'cancel' | translate }}"
-    mat-dialog-close
-  >
+  <button mat-button [attr.aria-label]="'cancel' | translate" mat-dialog-close>
     {{ "cancel" | translate }}
   </button>
 
   <button
     mat-raised-button
-    attr.aria-label="{{ 'download.portfolio' | translate }}"
+    [attr.aria-label]="'download.portfolio' | translate"
     color="primary"
     [disabled]="isSubmitting"
     (click)="submit()"

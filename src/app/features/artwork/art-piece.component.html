@@ -23,7 +23,7 @@
           {{ nft() | trait : validTraits.HEIGHT }} x
           {{ nft() | trait : validTraits.WIDTH }}
           {{ nft() | trait : validTraits.UNIT }}. @if (sold()) {
-          <span matTooltip="{{ 'sold' | translate }}" class="dot"></span>
+          <span [matTooltip]="'sold' | translate" class="dot"></span>
           }
         </small>
       </h3>

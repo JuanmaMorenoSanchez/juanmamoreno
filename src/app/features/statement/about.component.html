@@ -15,11 +15,11 @@
   <h2>{{ section.title | translate }}</h2>
 
   @if (section.content) { @for (paragraph of section.content; track paragraph) {
-  <p innerHtml="{{ paragraph | translate }}"></p>
+  <p [innerHtml]="paragraph | translate"></p>
   } } @if (section.items) { @for (item of section.items; track item) {
   <p>
     <strong class="subtitle">{{ item.subtitle | translate }}</strong>
-    <span innerHTML="{{ item.content | translate }}"></span>
+    <span [innerHTML]="item.content | translate"></span>
   </p>
   } } }
 </div>

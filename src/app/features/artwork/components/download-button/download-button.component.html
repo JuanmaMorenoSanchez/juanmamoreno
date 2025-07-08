@@ -2,8 +2,8 @@
   mat-icon-button
   (click)="downloadImage()"
   [disabled]="isDownloading"
-  attr.aria-label="{{ 'download.hd' | translate }}"
-  matTooltip="{{ 'download.hd' | translate }}"
+  [attr.aria-label]="'download.hd' | translate"
+  [matTooltip]="'download.hd' | translate"
   matTooltipPosition="below"
 >
   @if (!isDownloading) {
