@@ -17,7 +17,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
+import { SortMethod } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -72,7 +72,7 @@ export class ArtPiecesListComponent {
     ),
     { initialValue: [] }
   );
-  public nftFilters = input<NftFilters>({ years: this.yearParamSignal() });
+  public nftFilters = input<NftFilters>({});
 
   public artPieces: Signal<Nft[] | undefined> = toSignal(
     this.artworkService.getArtPiecesObservable()
@@ -102,10 +102,14 @@ export class ArtPiecesListComponent {
 
   public visibleArtPieces = computed(() => {
     const sortedArtPieces = this.sortedArtPieces();
-    const years = this.yearParamSignal();
+    const yearsQeryParams = this.yearParamSignal();
+    const yearsInput = this.nftFilters()?.years;
     return (sortedArtPieces ?? []).filter(
       (nft) =>
-        !this.isExcludedByYear(nft, years) &&
+        !this.artworkService.isExcludedByYear(
+          nft,
+          yearsInput?.length ? yearsInput : yearsQeryParams
+        ) &&
         !this.isExcludedById(nft) &&
         this.isMemoizedFrontalView(nft)
     );
@@ -215,20 +219,6 @@ export class ArtPiecesListComponent {
       return this.nftFilters().idsToExclude!.includes(nft.tokenId);
     } else {
       return false;
-    }
-  }
-
-  private isExcludedByYear(nft: Nft, years: string[] = []): boolean {
-    // move to domain
-    if (!years || years.length === 0) {
-      return false;
-    } else {
-      return !years.some((year) =>
-        nft.raw.metadata!['attributes']?.some(
-          (attr: any) =>
-            attr['trait_type'] === VALIDTRAITS.YEAR && attr['value'] === year
-        )
-      );
     }
   }
 }

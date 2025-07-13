@@ -144,6 +144,15 @@ export class Artwork {
     );
   }
 
+  isExcludedByYear(nft: Nft, years: string[] = []): boolean {
+    if (!years?.length) {
+      return false;
+    } else {
+      const nftYear = this.getTraitValue(nft, VALIDTRAITS.YEAR);
+      return !years.includes(nftYear);
+    }
+  }
+
   getLatestVersion(nfts: Nft[]): Nft {
     return nfts.reduce((latest, current) => {
       const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
