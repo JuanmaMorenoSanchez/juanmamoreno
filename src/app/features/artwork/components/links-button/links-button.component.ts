@@ -1,22 +1,29 @@
-import { Component, effect, inject, input, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { ArtworkInfraService } from '@features/artwork/artwork.service';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { LinksModalComponent } from '@features/artwork/components/links-modal/links-modal.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, distinctUntilChanged, map, of } from 'rxjs';
 
 @Component({
-    selector: 'app-links-button',
-    templateUrl: './links-button.component.html',
-    styleUrl: './links-button.component.scss',
-    imports: [MatIconButton, MatTooltip, MatIcon, TranslatePipe]
+  selector: 'app-links-button',
+  templateUrl: './links-button.component.html',
+  styleUrl: './links-button.component.scss',
+  imports: [MatIconButton, MatTooltip, MatIcon, TranslatePipe],
 })
 export class LinksButtonComponent {
-  private artworkInfraService = inject(ArtworkInfraService);
+  private artworkService = inject(ARTWORK_PORT);
   private dialog = inject(MatDialog);
 
   public tokenId = input<string>();
@@ -27,15 +34,14 @@ export class LinksButtonComponent {
   private rxUrls = rxResource({
     request: () => this.tokenId(),
     loader: ({ request }) =>
-      this.artworkInfraService.getLinks(request as string).pipe(
+      this.artworkService.getLinks(request as string).pipe(
         distinctUntilChanged(),
         map((urls) => urls || []),
-        catchError(() => of([])
-      )
-    )
+        catchError(() => of([]))
+      ),
   });
 
-  constructor( ) {
+  constructor() {
     effect(() => {
       const urlsValue: any = this.rxUrls.value();
       const urls = urlsValue?.urls;
@@ -46,7 +52,7 @@ export class LinksButtonComponent {
   public openLinksModal() {
     const urlsValue: any = this.rxUrls.value()!;
     this.dialog.open(LinksModalComponent, {
-      data: { links: urlsValue?.urls}
+      data: { links: urlsValue?.urls },
     });
   }
 }

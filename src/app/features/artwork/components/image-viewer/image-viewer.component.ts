@@ -13,9 +13,8 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { ArtworkDomain } from '@domain/artwork/artwork';
 import { Nft } from '@domain/artwork/artwork.entity';
-import { ArtworkInfraService } from '@features/artwork/artwork.service';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 
 @Component({
   selector: 'app-image-viewer',
@@ -24,7 +23,7 @@ import { ArtworkInfraService } from '@features/artwork/artwork.service';
   imports: [MatIcon],
 })
 export class ImageViewerComponent implements OnInit, OnChanges {
-  private artworkInfraService = inject(ArtworkInfraService);
+  private artworkService = inject(ARTWORK_PORT);
 
   nfts = input<Nft[]>([]);
   description = input<string>('No description');
@@ -47,7 +46,7 @@ export class ImageViewerComponent implements OnInit, OnChanges {
       const nfts = this.nfts();
       const displayIndex = this.displayIndex();
       const isFullScreen = this.isFullScreen();
-      this.artworkInfraService
+      this.artworkService
         .getAvailableOptimalUrl(nfts[displayIndex])
         .subscribe((url) => {
           this.previewImage.set(isFullScreen ? 'none' : `url(${url})`);
@@ -56,15 +55,19 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.displayIndex.set(ArtworkDomain.getLatestVersionIndex(this.nfts()));
+    this.displayIndex.set(
+      this.artworkService.getLatestVersionIndex(this.nfts())
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto??
     this.displayIndexOutput.emit(
-      ArtworkDomain.getLatestVersionIndex(this.nfts())
+      this.artworkService.getLatestVersionIndex(this.nfts())
     );
-    this.displayIndex.set(ArtworkDomain.getLatestVersionIndex(this.nfts()));
+    this.displayIndex.set(
+      this.artworkService.getLatestVersionIndex(this.nfts())
+    );
   }
 
   public setHover(hovering: boolean) {
@@ -85,7 +88,7 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   public getQualityImg(nft: Nft): string {
-    const baseUrl = ArtworkDomain.getNftQualityUrl(nft?.image);
+    const baseUrl = this.artworkService.getNftQualityUrl(nft?.image);
     return `${baseUrl}?v=${Date.now()}`; // 👈 changes every time = reload guaranteed
   }
 

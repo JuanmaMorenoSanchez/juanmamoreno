@@ -79,7 +79,7 @@
 <mat-menu #yearsMenu="matMenu">
   @for (year of years; track year) {
   <button
-    attr.aria-label="{{ year }}"
+    [attr.aria-label]="year"
     mat-menu-item
     [routerLink]="['/artworks']"
     [queryParams]="{ years: year }"

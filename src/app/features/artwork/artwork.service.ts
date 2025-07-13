@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { ArtworkDomain } from '@domain/artwork/artwork';
+import { inject } from '@angular/core';
+import { Artwork } from '@domain/artwork/artwork';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
 import { ArtworkPort } from '@domain/artwork/artwork.port';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
@@ -12,8 +12,7 @@ import CommonUtils from '@shared/utils/common.utils';
 import DateUtils from '@shared/utils/date.utils';
 import { catchError, filter, map, Observable, of, switchMap, tap } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
-export class ArtworkInfraService implements ArtworkPort {
+export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
   private sessionStore = inject(SessionStore);
   private sessionQuery = inject(SessionQuery);
@@ -57,7 +56,7 @@ export class ArtworkInfraService implements ArtworkPort {
 
   getNftByIdObservable(id: string): Observable<Nft | null> {
     return this.sessionQuery.getArtPiecesObservable.pipe(
-      map((nfts) => ArtworkDomain.getNftById(id, nfts))
+      map((nfts) => this.getNftById(id, nfts))
     );
   }
 
@@ -65,18 +64,8 @@ export class ArtworkInfraService implements ArtworkPort {
     return this.getNftByIdObservable(tokenId).pipe(
       filter((nft) => !!nft?.name),
       map((nft) =>
-        ArtworkDomain.getArtByTitle(
-          nft!.name!,
-          this.sessionQuery.selectArtPieces
-        )
+        this.getArtByTitle(nft!.name!, this.sessionQuery.selectArtPieces)
       )
-    );
-  }
-
-  getNftLenghtByYear(year: string): number {
-    return ArtworkDomain.getNftLenghtByYear(
-      year,
-      this.sessionQuery.selectArtPieces
     );
   }
 
@@ -161,4 +150,11 @@ export class ArtworkInfraService implements ArtworkPort {
       )
     );
   }
+
+  /* Expose domain functions*/
+  // no se pueden implementar en la interfaz porque son funciones estáticas
+  // lo que puedo hacer es dejarlo como está
+  // public getTraitValue(nft: Nft, trait: VALIDTRAITS) {
+  //   return this.domain.getTraitValue(nft, trait);
+  // }
 }

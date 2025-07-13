@@ -4,7 +4,6 @@ import {
   computed,
   inject,
   input,
-  OnInit,
   output,
   signal,
   Signal,
@@ -18,10 +17,9 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArtworkDomain } from '@domain/artwork/artwork';
 import { SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
-import { ArtworkInfraService } from '@features/artwork/artwork.service';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
@@ -29,7 +27,7 @@ import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SessionQuery } from '@shared/store/session.query';
 import { SortOrder } from '@shared/types/sort.type';
-import { distinctUntilChanged, take } from 'rxjs';
+import { map, take } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -51,8 +49,8 @@ import { distinctUntilChanged, take } from 'rxjs';
     TranslatePipe,
   ],
 })
-export class ArtPiecesListComponent implements OnInit {
-  private artworkInfraService = inject(ArtworkInfraService);
+export class ArtPiecesListComponent {
+  private artworkService = inject(ARTWORK_PORT);
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private responsiveService = inject(ResponsiveService);
@@ -62,13 +60,22 @@ export class ArtPiecesListComponent implements OnInit {
     !this.responsiveService.displayMobileLayout.value ? 2 : 3
   );
   viewAsWidget = input<boolean>(false);
-  nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>();
 
   public sortMethods = Object.values(SortMethod);
+  public yearParamSignal = toSignal(
+    this.activatedroute.queryParamMap.pipe(
+      map((params) => {
+        const yearValues = params.get('years');
+        return yearValues ? yearValues.split(',') : [];
+      })
+    ),
+    { initialValue: [] }
+  );
+  public nftFilters = input<NftFilters>({ years: this.yearParamSignal() });
 
   public artPieces: Signal<Nft[] | undefined> = toSignal(
-    this.artworkInfraService.getArtPiecesObservable()
+    this.artworkService.getArtPiecesObservable()
   );
   public dataReady = computed(() => (this.artPieces()?.length ? true : false));
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
@@ -76,32 +83,39 @@ export class ArtPiecesListComponent implements OnInit {
   public sortedArtPieces = computed(() => {
     switch (this.activeSortMethod()) {
       case SortMethod.SIZE:
-        return ArtworkDomain.sortBySize(this.artPieces()!, this.sortOrder());
+        return this.artworkService.sortBySize(
+          this.artPieces()!,
+          this.sortOrder()
+        );
       case SortMethod.MEDIUM:
-        return ArtworkDomain.sortByMedium(this.artPieces()!, this.sortOrder());
+        return this.artworkService.sortByMedium(
+          this.artPieces()!,
+          this.sortOrder()
+        );
       case SortMethod.YEAR:
-        return ArtworkDomain.sortByYear(this.artPieces()!, this.sortOrder());
+        return this.artworkService.sortByYear(
+          this.artPieces()!,
+          this.sortOrder()
+        );
     }
   });
 
-  public visibleArtPieces = computed(() =>
-    (this.sortedArtPieces() ?? []).filter(
+  public visibleArtPieces = computed(() => {
+    const sortedArtPieces = this.sortedArtPieces();
+    const years = this.yearParamSignal();
+    return (sortedArtPieces ?? []).filter(
       (nft) =>
-        !this.isExcludedByYear(nft) &&
+        !this.isExcludedByYear(nft, years) &&
         !this.isExcludedById(nft) &&
         this.isMemoizedFrontalView(nft)
-    )
-  );
+    );
+  });
 
   public displayedImages = new Set<string>();
   public imgThumbUrls = signal(new Map<string, string>());
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
   private frontalViewMap = new Map<string, boolean>();
-
-  ngOnInit(): void {
-    this.listenYearParamChange();
-  }
 
   public onImageVisible(tokenId: string): void {
     this.displayedImages.add(tokenId);
@@ -111,7 +125,7 @@ export class ArtPiecesListComponent implements OnInit {
 
   public loadImgThumbUrl(nft: Nft): void {
     if (!this.imgThumbUrls().has(nft.tokenId)) {
-      this.artworkInfraService
+      this.artworkService
         .getAvailableOptimalUrl(nft)
         .pipe(take(1))
         .subscribe((url) => {
@@ -183,30 +197,17 @@ export class ArtPiecesListComponent implements OnInit {
     if (this.frontalViewMap.has(nft.tokenId)) {
       return this.frontalViewMap.get(nft.tokenId) || false;
     } else {
-      const sameFrontalArtworks = ArtworkDomain.getArtByTitle(
+      const sameFrontalArtworks = this.artworkService.getArtByTitle(
         nft.name,
         this.sessionQuery.selectArtPieces
       );
-      const result = ArtworkDomain.isFrontalView(nft, sameFrontalArtworks);
+      const result = this.artworkService.isFrontalView(
+        nft,
+        sameFrontalArtworks
+      );
       this.frontalViewMap.set(nft.tokenId, result);
       return result;
     }
-  }
-
-  private listenYearParamChange(): void {
-    this.router.events.pipe(distinctUntilChanged()).subscribe(() => {
-      if (this.activatedroute.firstChild) {
-        // is on list page. Not ideal. Refactor maybe
-        const yearValues =
-          this.activatedroute.firstChild.snapshot.queryParamMap.get('years')!;
-        this.nftFilters().years = yearValues ? yearValues.split(',') : [];
-      } else if (!this.activatedroute.snapshot.paramMap.get('id')) {
-        // not on single view
-        const yearValues =
-          this.activatedroute.snapshot.queryParamMap.get('years')!;
-        this.nftFilters().years = yearValues ? yearValues.split(',') : [];
-      }
-    });
   }
 
   private isExcludedById(nft: Nft): boolean {
@@ -217,16 +218,17 @@ export class ArtPiecesListComponent implements OnInit {
     }
   }
 
-  private isExcludedByYear(nft: Nft): boolean {
-    if (this.nftFilters().years?.length) {
-      return !this.nftFilters().years!.some((year) =>
+  private isExcludedByYear(nft: Nft, years: string[] = []): boolean {
+    // move to domain
+    if (!years || years.length === 0) {
+      return false;
+    } else {
+      return !years.some((year) =>
         nft.raw.metadata!['attributes']?.some(
           (attr: any) =>
             attr['trait_type'] === VALIDTRAITS.YEAR && attr['value'] === year
         )
       );
-    } else {
-      return false;
     }
   }
 }

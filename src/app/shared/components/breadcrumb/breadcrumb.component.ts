@@ -19,7 +19,7 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { ArtworkDomain } from '@domain/artwork/artwork';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
@@ -45,6 +45,7 @@ import { BreadCrumb } from './breadcrumbs.entity';
   ],
 })
 export class BreadcrumbComponent implements OnInit {
+  private artworkService = inject(ARTWORK_PORT);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private translateService = inject(TranslateService);
@@ -87,7 +88,7 @@ export class BreadcrumbComponent implements OnInit {
 
   get validYears(): number[] {
     return [
-      ...ArtworkDomain.getYears(this.sessionQuery.getValue().artPieces),
+      ...this.artworkService.getYears(this.sessionQuery.getValue().artPieces),
     ].filter((year) => !this.selectedYears.includes(year));
   }
 
@@ -157,8 +158,8 @@ export class BreadcrumbComponent implements OnInit {
 
   private extractNameFromId(id: string): string | null {
     return (
-      ArtworkDomain.getNftById(id, this.sessionQuery.selectArtPieces)!.name ||
-      null
+      this.artworkService.getNftById(id, this.sessionQuery.selectArtPieces)!
+        .name || null
     );
   }
 }

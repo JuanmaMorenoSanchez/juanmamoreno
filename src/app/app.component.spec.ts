@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { ArtworkInfraService } from '@features/artwork/artwork.service';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AppComponent } from './app.component';
 import { mockArtworkInfraService } from './test/mocks/infrastructure/artwork/artwork.service.mock';
@@ -11,15 +11,12 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-        imports: [
-          AppComponent,
-          TranslateModule.forRoot(),
-        ],
-        providers: [
-          provideAnimations(),
-          provideRouter([]),
-          {provide: ArtworkInfraService, useValue: mockArtworkInfraService}
-        ],
+      imports: [AppComponent, TranslateModule.forRoot()],
+      providers: [
+        provideAnimations(),
+        provideRouter([]),
+        { provide: ARTWORK_PORT, useValue: mockArtworkInfraService },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);

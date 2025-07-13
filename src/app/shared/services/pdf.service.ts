@@ -1,18 +1,21 @@
 import { inject, Injectable } from '@angular/core';
-import { ArtworkDomain } from '@domain/artwork/artwork';
-import { SOLDCERTIFICATES, VALIDTRAITS } from '@domain/artwork/artwork.constants';
+import {
+  SOLDCERTIFICATES,
+  VALIDTRAITS,
+} from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { SessionQuery } from '@shared/store/session.query';
 import { jsPDF } from 'jspdf';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class PdfService {
+  private artworkService = inject(ARTWORK_PORT);
   private sessionQuery = inject(SessionQuery);
   private translateService = inject(TranslateService);
 
@@ -36,7 +39,7 @@ export class PdfService {
     await this.addCoverToPdf(doc, nfts[0], customTitle);
     if (customText) await this.addArbitraryText(doc, customText);
     if (includeStatement) await this.addStatementToPdf(doc);
-    let index = 0
+    let index = 0;
     for (const nft of nfts) {
       await this.addNftToPdf(doc, nft);
       index++;
@@ -47,29 +50,52 @@ export class PdfService {
     return doc;
   }
 
-  private async addCoverToPdf(doc: jsPDF, nft: Nft, customTitle?: string): Promise<void> {
+  private async addCoverToPdf(
+    doc: jsPDF,
+    nft: Nft,
+    customTitle?: string
+  ): Promise<void> {
     // TODO: add select in FE to decide if you want cover being figurative oil, ia oil, or watercolor
     // Depending of this, load one image or other.
 
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
-    let yPosition = (pageHeight / 5);
+    let yPosition = pageHeight / 5;
 
-    const coverImgUrl = ArtworkDomain.getNftQualityUrl(ArtworkDomain.getNftById("68", this.sessionQuery.selectArtPieces)!.image)
+    const coverImgUrl = this.artworkService.getNftQualityUrl(
+      this.artworkService.getNftById('68', this.sessionQuery.selectArtPieces)!
+        .image
+    );
     const originalImg = await this.loadImage(coverImgUrl);
-    const { width: originalWidth, height: originalHeight } = doc.getImageProperties(originalImg);
+    const { width: originalWidth, height: originalHeight } =
+      doc.getImageProperties(originalImg);
     const aspectRatio = originalWidth / originalHeight;
-    const imgCompressed = await this.loadCompressedImage(coverImgUrl, pageWidth * aspectRatio, pageHeight);
-    doc.addImage(imgCompressed, 'JPEG', 0, 0, pageWidth * aspectRatio, pageHeight);
+    const imgCompressed = await this.loadCompressedImage(
+      coverImgUrl,
+      pageWidth * aspectRatio,
+      pageHeight
+    );
+    doc.addImage(
+      imgCompressed,
+      'JPEG',
+      0,
+      0,
+      pageWidth * aspectRatio,
+      pageHeight
+    );
 
-    doc.setTextColor(255,255,255);
+    doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(16);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
     yPosition += 16;
     doc.setFontSize(24);
-    doc.text(`${customTitle ? customTitle : 'Portfolio'}`, this.margin, yPosition);
-    doc.setTextColor(0,0,0)
+    doc.text(
+      `${customTitle ? customTitle : 'Portfolio'}`,
+      this.margin,
+      yPosition
+    );
+    doc.setTextColor(0, 0, 0);
     doc.addPage();
   }
 
@@ -87,7 +113,10 @@ export class PdfService {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     const introContent = this.extractWordsFromElement(text);
-    const introLines = this.splitTextToFit(introContent, pageWidth + this.margin * 2);
+    const introLines = this.splitTextToFit(
+      introContent,
+      pageWidth + this.margin * 2
+    );
     introLines.forEach((line) => {
       if (yPosition + 12 > pageHeight - this.margin) {
         doc.addPage();
@@ -106,8 +135,13 @@ export class PdfService {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    const introContent = this.extractWordsFromElement(this.translateService.instant(STATEMENT_OBJECT.introduction.content));
-    const introLines = this.splitTextToFit(introContent, pageWidth + this.margin * 2);
+    const introContent = this.extractWordsFromElement(
+      this.translateService.instant(STATEMENT_OBJECT.introduction.content)
+    );
+    const introLines = this.splitTextToFit(
+      introContent,
+      pageWidth + this.margin * 2
+    );
     introLines.forEach((line) => {
       doc.text(line, this.margin, yPosition);
       yPosition += 6;
@@ -122,21 +156,34 @@ export class PdfService {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text(this.translateService.instant(section.title), this.margin, yPosition);
+      doc.text(
+        this.translateService.instant(section.title),
+        this.margin,
+        yPosition
+      );
       yPosition += 10;
 
       if (section.content) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         section.content.forEach((paragraph) => {
-          const cleanParagraph = this.extractWordsFromElement(this.translateService.instant(paragraph));
-          const paragraphLines = this.splitTextToFit(cleanParagraph, pageWidth + this.margin * 2);
+          const cleanParagraph = this.extractWordsFromElement(
+            this.translateService.instant(paragraph)
+          );
+          const paragraphLines = this.splitTextToFit(
+            cleanParagraph,
+            pageWidth + this.margin * 2
+          );
           paragraphLines.forEach((line) => {
             if (yPosition + 10 > pageHeight - this.margin) {
               doc.addPage();
               yPosition = this.margin;
             }
-            doc.text(this.translateService.instant(line), this.margin, yPosition);
+            doc.text(
+              this.translateService.instant(line),
+              this.margin,
+              yPosition
+            );
             yPosition += 6;
           });
           yPosition += 6;
@@ -150,21 +197,36 @@ export class PdfService {
             yPosition = this.margin;
           }
 
-          const cleanSubtitle = this.extractWordsFromElement(this.translateService.instant(item.subtitle));
+          const cleanSubtitle = this.extractWordsFromElement(
+            this.translateService.instant(item.subtitle)
+          );
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(10);
-          doc.text(this.translateService.instant(cleanSubtitle), this.margin, yPosition);
+          doc.text(
+            this.translateService.instant(cleanSubtitle),
+            this.margin,
+            yPosition
+          );
           yPosition += 6;
 
-          const cleanContent = this.extractWordsFromElement(this.translateService.instant(item.content));
-          const itemContentLines = this.splitTextToFit(cleanContent, pageWidth + this.margin * 2);
+          const cleanContent = this.extractWordsFromElement(
+            this.translateService.instant(item.content)
+          );
+          const itemContentLines = this.splitTextToFit(
+            cleanContent,
+            pageWidth + this.margin * 2
+          );
           itemContentLines.forEach((line) => {
             if (yPosition + 6 > pageHeight - this.margin) {
               doc.addPage();
               yPosition = this.margin;
             }
             doc.setFont('helvetica', 'normal');
-            doc.text(this.translateService.instant(line), this.margin, yPosition);
+            doc.text(
+              this.translateService.instant(line),
+              this.margin,
+              yPosition
+            );
             yPosition += 6;
           });
           yPosition += 6;
@@ -190,7 +252,11 @@ export class PdfService {
     let yPosition = this.margin;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(16);
-    doc.text(this.translateService.instant('contact.title'), this.margin, yPosition);
+    doc.text(
+      this.translateService.instant('contact.title'),
+      this.margin,
+      yPosition
+    );
     yPosition += 6;
     doc.setFontSize(10);
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
@@ -201,7 +267,11 @@ export class PdfService {
     yPosition += 5;
     doc.text('www.juanmamoreno.com', this.margin, yPosition);
     yPosition += 15;
-    doc.text(this.translateService.instant('contact.representedBy'), this.margin, yPosition);
+    doc.text(
+      this.translateService.instant('contact.representedBy'),
+      this.margin,
+      yPosition
+    );
     yPosition += 5;
     doc.text('(+34) 606780084', this.margin, yPosition);
     yPosition += 5;
@@ -214,7 +284,7 @@ export class PdfService {
   private async addCVToPdf(doc: jsPDF): Promise<void> {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = this.margin;
-  
+
     CV_OBJECT.forEach((section) => {
       if (yPosition + 8 > pageHeight - this.margin) {
         doc.addPage();
@@ -222,18 +292,30 @@ export class PdfService {
       }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(16);
-      doc.text(this.translateService.instant(section.title), this.margin, yPosition);
+      doc.text(
+        this.translateService.instant(section.title),
+        this.margin,
+        yPosition
+      );
       yPosition += 6;
-  
+
       section.items.forEach((item) => {
         if (yPosition + 8 > pageHeight - this.margin) {
           doc.addPage();
           yPosition = this.margin;
         }
-  
-        const title = this.extractWordsFromElement(this.translateService.instant(item.title));
-        const venue = item.venue ? `${this.extractWordsFromElement(this.translateService.instant(item.venue))}, ` : '';
-        const details = `${venue}${item.city || ""}, ${this.translateService.instant(item.country)}, ${item.year}`;
+
+        const title = this.extractWordsFromElement(
+          this.translateService.instant(item.title)
+        );
+        const venue = item.venue
+          ? `${this.extractWordsFromElement(
+              this.translateService.instant(item.venue)
+            )}, `
+          : '';
+        const details = `${venue}${
+          item.city || ''
+        }, ${this.translateService.instant(item.country)}, ${item.year}`;
 
         let xPosition = this.margin;
         doc.setFont('helvetica', 'italic');
@@ -247,7 +329,7 @@ export class PdfService {
       });
       yPosition += 6;
     });
-  }  
+  }
 
   private extractWordsFromElement(stringifiedHTML: string): string {
     return stringifiedHTML.replace(/<\/?[^>]+(>|$)/g, '').trim();
@@ -259,10 +341,15 @@ export class PdfService {
     const contentWidth = pageWidth - 2 * this.margin;
     const contentHeight = pageHeight - 2 * this.margin;
 
-    const imgUrl = ArtworkDomain.getNftQualityUrl(nft.image);
-    const imgCompressed = await this.loadCompressedImage(imgUrl, contentWidth, contentHeight);
+    const imgUrl = this.artworkService.getNftQualityUrl(nft.image);
+    const imgCompressed = await this.loadCompressedImage(
+      imgUrl,
+      contentWidth,
+      contentHeight
+    );
 
-    const { width: originalWidth, height: originalHeight } = doc.getImageProperties(imgCompressed);
+    const { width: originalWidth, height: originalHeight } =
+      doc.getImageProperties(imgCompressed);
     const aspectRatio = originalWidth / originalHeight;
 
     let resizedWidth = contentWidth;
@@ -276,32 +363,62 @@ export class PdfService {
     const xPosition = (pageWidth - resizedWidth) / 2;
     const yPosition = this.margin;
 
-    doc.addImage(imgCompressed, 'JPEG', xPosition, yPosition, resizedWidth, resizedHeight);
+    doc.addImage(
+      imgCompressed,
+      'JPEG',
+      xPosition,
+      yPosition,
+      resizedWidth,
+      resizedHeight
+    );
 
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(12);
-    doc.text(nft.name!+",", this.margin, yPosition + resizedHeight + 10);
+    doc.text(nft.name! + ',', this.margin, yPosition + resizedHeight + 10);
     doc.setFont('helvetica', 'normal');
     const technicalData = this.getTraitsAsText(nft);
-    doc.text(technicalData, this.margin + doc.getTextWidth(nft.name!) + 2, yPosition + resizedHeight + 10);
+    doc.text(
+      technicalData,
+      this.margin + doc.getTextWidth(nft.name!) + 2,
+      yPosition + resizedHeight + 10
+    );
     if (SOLDCERTIFICATES.includes(nft.tokenId)) {
       const dotSize = 2;
-      const dotX = this.margin + doc.getTextWidth(technicalData) + doc.getTextWidth(nft.name!) + 7;
-      doc.setFillColor("red");
-      doc.circle(dotX, yPosition + resizedHeight + 9, dotSize, "F");
+      const dotX =
+        this.margin +
+        doc.getTextWidth(technicalData) +
+        doc.getTextWidth(nft.name!) +
+        7;
+      doc.setFillColor('red');
+      doc.circle(dotX, yPosition + resizedHeight + 9, dotSize, 'F');
     }
   }
 
   private getTraitsAsText(nft: Nft): string {
-    const year = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.YEAR) || 'Unknown year';
-    const medium = this.translateService.instant(ArtworkDomain.getTraitValue(nft, VALIDTRAITS.MEDIUM)) || 'Unknown medium';
-    const height = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.HEIGHT) || 'Unknown height';
-    const width = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.WIDTH) || 'Unknown width';
-    const unit = ArtworkDomain.getTraitValue(nft, VALIDTRAITS.UNIT) || 'Unknown unit';
+    const year =
+      this.artworkService.getTraitValue(nft, VALIDTRAITS.YEAR) ||
+      'Unknown year';
+    const medium =
+      this.translateService.instant(
+        this.artworkService.getTraitValue(nft, VALIDTRAITS.MEDIUM)
+      ) || 'Unknown medium';
+    const height =
+      this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT) ||
+      'Unknown height';
+    const width =
+      this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH) ||
+      'Unknown width';
+    const unit =
+      this.artworkService.getTraitValue(nft, VALIDTRAITS.UNIT) ||
+      'Unknown unit';
     return `${year}, ${medium}, ${height} x ${width} ${unit}.`;
   }
 
-  private async loadCompressedImage(src: string, maxWidth: number, maxHeight: number): Promise<string> {
+  private async loadCompressedImage(
+    src: string,
+    maxWidth: number,
+    maxHeight: number
+  ): Promise<string> {
     const img = await this.loadImage(src);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
