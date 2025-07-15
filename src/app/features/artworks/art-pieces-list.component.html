@@ -43,8 +43,7 @@
     role="list"
     aria-label="Art Pieces"
   >
-    @for (artPiece of visibleArtPieces(); track listTracking($index, artPiece))
-    {
+    @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
     <mat-grid-tile
       (contextmenu)="toggleNftSelection($event, artPiece)"
       (click)="handleArtPieceClick(artPiece.tokenId)"

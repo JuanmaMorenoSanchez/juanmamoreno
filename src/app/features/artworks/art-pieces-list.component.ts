@@ -27,7 +27,7 @@ import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SessionQuery } from '@shared/store/session.query';
 import { SortOrder } from '@shared/types/sort.type';
-import { map, take } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -56,70 +56,58 @@ export class ArtPiecesListComponent {
   private responsiveService = inject(ResponsiveService);
   private sessionQuery = inject(SessionQuery);
 
+  public displayedImages = new Set<string>();
+  private frontalViewMap = new Map<string, boolean>();
+  public sortMethods = Object.values(SortMethod);
+
   numberOfCols = input<number>(
     !this.responsiveService.displayMobileLayout.value ? 2 : 3
   );
   viewAsWidget = input<boolean>(false);
+  nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>();
 
-  public sortMethods = Object.values(SortMethod);
-  public yearParamSignal = toSignal(
-    this.activatedroute.queryParamMap.pipe(
-      map((params) => {
-        const yearValues = params.get('years');
-        return yearValues ? yearValues.split(',') : [];
-      })
-    ),
-    { initialValue: [] }
-  );
-  public nftFilters = input<NftFilters>({});
-
-  public artPieces: Signal<Nft[] | undefined> = toSignal(
+  yearParamSignal = toSignal(this.queryParamsObservable(), {
+    initialValue: [],
+  });
+  imgThumbUrls = signal(new Map<string, string>());
+  private artPieces: Signal<Nft[] | undefined> = toSignal(
     this.artworkService.getArtPiecesObservable()
   );
   public dataReady = computed(() => (this.artPieces()?.length ? true : false));
-  public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
-  public sortOrder: WritableSignal<SortOrder> = signal(SORT.DESC);
-  public sortedArtPieces = computed(() => {
-    switch (this.activeSortMethod()) {
-      case SortMethod.SIZE:
-        return this.artworkService.sortBySize(
-          this.artPieces()!,
-          this.sortOrder()
-        );
-      case SortMethod.MEDIUM:
-        return this.artworkService.sortByMedium(
-          this.artPieces()!,
-          this.sortOrder()
-        );
-      case SortMethod.YEAR:
-        return this.artworkService.sortByYear(
-          this.artPieces()!,
-          this.sortOrder()
-        );
-    }
-  });
-
-  public visibleArtPieces = computed(() => {
-    const sortedArtPieces = this.sortedArtPieces();
+  private filteredArtPieces = computed(() => {
+    const artPieces = this.artPieces();
     const yearsQeryParams = this.yearParamSignal();
     const yearsInput = this.nftFilters()?.years;
-    return (sortedArtPieces ?? []).filter(
+    return (artPieces ?? []).filter(
       (nft) =>
         !this.artworkService.isExcludedByYear(
           nft,
-          yearsInput?.length ? yearsInput : yearsQeryParams
+          yearsInput?.length
+            ? yearsInput
+            : yearsQeryParams?.length
+            ? yearsQeryParams
+            : []
         ) &&
         !this.isExcludedById(nft) &&
         this.isMemoizedFrontalView(nft)
     );
   });
-
-  public displayedImages = new Set<string>();
-  public imgThumbUrls = signal(new Map<string, string>());
+  public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
+  public sortOrder: WritableSignal<SortOrder> = signal(SORT.DESC);
+  public sortedArtPieces = computed(() => {
+    const sortOrder = this.sortOrder();
+    const artPieces = this.filteredArtPieces();
+    switch (this.activeSortMethod()) {
+      case SortMethod.SIZE:
+        return this.artworkService.sortBySize(artPieces!, sortOrder);
+      case SortMethod.MEDIUM:
+        return this.artworkService.sortByMedium(artPieces!, sortOrder);
+      case SortMethod.YEAR:
+        return this.artworkService.sortByYear(artPieces!, sortOrder);
+    }
+  });
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
-
-  private frontalViewMap = new Map<string, boolean>();
 
   public onImageVisible(tokenId: string): void {
     this.displayedImages.add(tokenId);
@@ -195,6 +183,15 @@ export class ArtPiecesListComponent {
 
   public methodTracking(method: SortMethod) {
     return method;
+  }
+
+  private queryParamsObservable(): Observable<string[]> {
+    return this.activatedroute.queryParamMap.pipe(
+      map((params) => {
+        const yearValues = params.get('years');
+        return yearValues ? yearValues.split(',') : [];
+      })
+    );
   }
 
   private isMemoizedFrontalView(nft: Nft): boolean {

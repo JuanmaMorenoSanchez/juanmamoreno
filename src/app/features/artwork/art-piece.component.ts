@@ -108,7 +108,7 @@ export class ArtPieceComponent {
       this.nft(),
       VALIDTRAITS.YEAR
     );
-    return this.artworkService.getNftLenghtByYear(year, this.nfts()) > 1;
+    return this.artworkService.getFullNftLenghtByYear(year) > 1;
   });
   readonly getSameYearListFilter: Signal<NftFilters> = computed(() => ({
     years: [this.getTraitValue(this.nft(), VALIDTRAITS.YEAR)],

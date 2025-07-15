@@ -61,7 +61,7 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.displayArrows = changes['nfts'].currentValue.length > 1; // quitar y poner en efecto??
+    this.displayArrows = changes['nfts']?.currentValue?.length > 1; // quitar y poner en efecto??
     this.displayIndexOutput.emit(
       this.artworkService.getLatestVersionIndex(this.nfts())
     );
