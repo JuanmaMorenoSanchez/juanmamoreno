@@ -26,7 +26,7 @@ export class ImageViewerComponent {
   nfts = input<Nft[]>([]);
   description = input<string>('No description');
 
-  // NEEDED FIX getLatestVersionIndex da valores raros. está mal está mal. Dice que el default no es el que debiera
+  // TODO: NEEDED FIX getLatestVersionIndex da valores raros. está mal está mal. Dice que el default no es el que debiera
 
   defaultDisplayIndex: number = 0; // arreglar para casos edgy
   currentDisplayIndex: WritableSignal<number> = signal(
@@ -50,9 +50,11 @@ export class ImageViewerComponent {
 
   constructor() {
     effect(() => {
-      const currentImage = this.nfts()[this.currentDisplayIndex()];
-      this.previewImage.set('none');
-      this.qualityImage.set('none');
+      const nfts = this.nfts();
+      const currentIndex = this.currentDisplayIndex();
+      const currentImage = nfts[currentIndex];
+      // this.previewImage.set('none');
+      // this.qualityImage.set('none');
       this.artworkService
         .getAvailableOptimalUrl(currentImage)
         .subscribe((url) => {
