@@ -133,8 +133,10 @@ export class Artwork {
 
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
     const frontals = this.filterFrontalArtworks(sameNamedArt);
-    if (frontals.length <= 1) return frontals[0]?.tokenId === nft.tokenId;
-    return this.getLatestVersion(frontals).tokenId === nft.tokenId;
+    if (!frontals.length) return false;
+    if (frontals.length === 1) return frontals[0].tokenId === nft.tokenId;
+    const latest = this.getLatestVersion(frontals);
+    return latest?.tokenId === nft.tokenId;
   }
 
   filterFrontalArtworks(nfts: Nft[]) {
@@ -153,7 +155,8 @@ export class Artwork {
     }
   }
 
-  getLatestVersion(nfts: Nft[]): Nft {
+  getLatestVersion(nfts: Nft[]): Nft | null {
+    if (!nfts.length) return null;
     return nfts.reduce((latest, current) => {
       const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
       const vB =
@@ -164,7 +167,9 @@ export class Artwork {
 
   getLatestVersionIndex(nfts: Array<Nft>): number {
     const latestNft = this.getLatestVersion(nfts);
-    return nfts.findIndex((nft) => nft.tokenId === latestNft.tokenId);
+    return nfts.findIndex(
+      (nft) => latestNft && nft.tokenId === latestNft.tokenId
+    );
   }
 
   getNftQualityUrl(image: NftImage): string {

@@ -1,14 +1,12 @@
 import {
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
   input,
-  OnChanges,
-  OnInit,
   output,
   signal,
-  SimpleChanges,
   ViewChild,
   WritableSignal,
 } from '@angular/core';
@@ -22,52 +20,48 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
   styleUrls: ['./image-viewer.component.scss'],
   imports: [MatIcon],
 })
-export class ImageViewerComponent implements OnInit, OnChanges {
+export class ImageViewerComponent {
   private artworkService = inject(ARTWORK_PORT);
 
   nfts = input<Nft[]>([]);
   description = input<string>('No description');
-  displayIndex: WritableSignal<number> = signal(0);
+
+  // NEEDED FIX getLatestVersionIndex da valores raros. está mal está mal. Dice que el default no es el que debiera
+
+  defaultDisplayIndex: number = 0; // arreglar para casos edgy
+  currentDisplayIndex: WritableSignal<number> = signal(
+    this.defaultDisplayIndex
+  );
+
   previewImage = signal<string>('none');
+  qualityImage = signal<string>('none');
+
   isFullScreen = signal<boolean>(false);
   displayIndexOutput = output<number>({
     alias: 'displayIndex',
   });
-  readonly isImgVisible = signal<boolean>(false);
+  displayArrows = computed(() => this.nfts().length > 1);
+
+  readonly isImgVisible = signal<boolean>(true);
   hovering = false;
-  displayArrows = false;
   displayExpand = false;
 
   @ViewChild('imageElement') imageElement!: ElementRef;
 
   constructor() {
     effect(() => {
-      this.isImgVisible.set(false);
-      const nfts = this.nfts();
-      const displayIndex = this.displayIndex();
-      const isFullScreen = this.isFullScreen();
+      const currentImage = this.nfts()[this.currentDisplayIndex()];
+      this.previewImage.set('none');
+      this.qualityImage.set('none');
       this.artworkService
-        .getAvailableOptimalUrl(nfts[displayIndex])
+        .getAvailableOptimalUrl(currentImage)
         .subscribe((url) => {
-          this.previewImage.set(isFullScreen ? 'none' : `url(${url})`);
+          this.previewImage.set(this.isFullScreen() ? 'none' : `url(${url})`);
         });
+      this.qualityImage.set(
+        this.artworkService.getNftQualityUrl(currentImage?.image) || 'none'
+      );
     });
-  }
-
-  ngOnInit() {
-    this.displayIndex.set(
-      this.artworkService.getLatestVersionIndex(this.nfts())
-    );
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    this.displayArrows = changes['nfts']?.currentValue?.length > 1; // quitar y poner en efecto??
-    this.displayIndexOutput.emit(
-      this.artworkService.getLatestVersionIndex(this.nfts())
-    );
-    this.displayIndex.set(
-      this.artworkService.getLatestVersionIndex(this.nfts())
-    );
   }
 
   public setHover(hovering: boolean) {
@@ -75,21 +69,11 @@ export class ImageViewerComponent implements OnInit, OnChanges {
   }
 
   public nextNft(relativeIndex: number) {
-    this.isImgVisible.set(false);
     const newIndex =
-      (this.displayIndex() + relativeIndex + this.nfts().length) %
+      (this.currentDisplayIndex() + relativeIndex + this.nfts().length) %
       this.nfts().length;
     this.displayIndexOutput.emit(newIndex);
-    this.displayIndex.set(newIndex);
-  }
-
-  public imageLoad() {
-    this.isImgVisible.set(true);
-  }
-
-  public getQualityImg(nft: Nft): string {
-    const baseUrl = this.artworkService.getNftQualityUrl(nft?.image);
-    return `${baseUrl}?v=${Date.now()}`; // 👈 changes every time = reload guaranteed
+    this.currentDisplayIndex.set(newIndex);
   }
 
   public handleImageClick() {

@@ -1,27 +1,18 @@
 .dot {
-    height: 1rem;
-    width: 1rem;
-    background-color: #cf2525;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 0.8rem;
-    vertical-align: middle;
+  height: 1rem;
+  width: 1rem;
+  background-color: #cf2525;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 0.8rem;
+  vertical-align: middle;
 }
 
 .art-piece-labels {
-    padding: 8%;
-    text-align: center;
+  padding: 8%;
+  text-align: center;
 }
 
 .art-piece-desc {
-    white-space: pre-line;
-}
-
-.fade-container {
-  transition: opacity 0.3s ease-in-out;
-  opacity: 1;
-
-  &.fade-out {
-    opacity: 0;
-  }
+  white-space: pre-line;
 }

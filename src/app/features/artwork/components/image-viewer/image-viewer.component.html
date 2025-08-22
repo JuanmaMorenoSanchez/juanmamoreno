@@ -3,7 +3,7 @@
   (mouseover)="setHover(true)"
   (mouseleave)="setHover(false)"
 >
-  @if (displayArrows && hovering) {
+  @if (displayArrows() && hovering) {
   <div class="overlay left" (click)="nextNft(-1)">
     <mat-icon class="arrow"> arrow_back </mat-icon>
   </div>
@@ -16,19 +16,16 @@
     <img
       [attr.alt]="description()"
       #imageElement
-      [src]="getQualityImg(nfts()[displayIndex()])"
+      [src]="qualityImage()"
       [style.backgroundImage]="previewImage()"
-      (load)="imageLoad()"
       class="art-viewer"
-      [class.fade-in]="isImgVisible()"
-      [class.fade-out]="!isImgVisible()"
-      [attr.data-key]="isFullScreen() ? null : displayIndex()"
+      [attr.data-key]="isFullScreen() ? null : currentDisplayIndex()"
     />
     @if (displayExpand) {
     <mat-icon class="fullscreen-icon"> fullscreen </mat-icon>
     }
   </div>
-  @if (displayArrows && hovering) {
+  @if (displayArrows() && hovering) {
   <div class="overlay right" (click)="nextNft(1)">
     <mat-icon class="arrow"> arrow_forward </mat-icon>
   </div>
