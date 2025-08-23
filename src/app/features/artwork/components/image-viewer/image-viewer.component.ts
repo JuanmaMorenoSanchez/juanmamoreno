@@ -28,7 +28,7 @@ export class ImageViewerComponent {
 
   // TODO: NEEDED FIX getLatestVersionIndex da valores raros. está mal está mal. Dice que el default no es el que debiera
 
-  defaultDisplayIndex: number = 0; // arreglar para casos edgy
+  defaultDisplayIndex: number = 0; // redundant, remove
   currentDisplayIndex: WritableSignal<number> = signal(
     this.defaultDisplayIndex
   );
@@ -53,8 +53,13 @@ export class ImageViewerComponent {
       const nfts = this.nfts();
       const currentIndex = this.currentDisplayIndex();
       const currentImage = nfts[currentIndex];
-      // this.previewImage.set('none');
-      // this.qualityImage.set('none');
+      this.previewImage.set('none');
+      this.qualityImage.set('none');
+      if (!currentImage) {
+        this.currentDisplayIndex.set(0);
+        return;
+      }
+
       this.artworkService
         .getAvailableOptimalUrl(currentImage)
         .subscribe((url) => {
