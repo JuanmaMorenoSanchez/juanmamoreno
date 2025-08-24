@@ -25,7 +25,7 @@ import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { ResponsiveService } from '@shared/services/responsive.service';
-import { map, switchMap, tap } from 'rxjs';
+import { map, switchMap } from 'rxjs';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
@@ -63,25 +63,27 @@ export class ArtPieceComponent {
     ),
     { initialValue: 3 }
   );
-  readonly displayingIndex: WritableSignal<number> = signal(0);
-  readonly fullNftsList = toSignal(
-    this.artworkService.getArtPiecesObservable()
-  );
   readonly nfts: Signal<Nft[]> = toSignal(
     this.route.paramMap.pipe(
       map((paramMap) => paramMap.get('id')!),
       switchMap((id: string) => {
         return this.artworkService.getSameArtThanObservable(id);
-      }),
-      tap(
-        (nfts) =>
-          this.displayingIndex.set(
-            this.artworkService.getLatestVersionIndex(nfts)
-          ) // estoy importando 2 veces
-      )
+      })
     ),
     { initialValue: [] }
   );
+
+  defaultDisplayIndex = computed(() => {
+    const nfts = this.nfts();
+    const latestFrontalNft = this.artworkService.getLatestVersion(
+      this.artworkService.filterFrontalArtworks(nfts)
+    );
+    return nfts.findIndex((nft) => nft.tokenId === latestFrontalNft?.tokenId);
+  });
+  readonly displayingIndex: WritableSignal<number> = signal(
+    this.defaultDisplayIndex() || 0
+  );
+
   readonly nft: Signal<Nft> = computed(
     () => this.nfts()[this.displayingIndex()]
   );
@@ -124,8 +126,11 @@ export class ArtPieceComponent {
     if (imageType === VIEW_TYPES.PROGRESS || imageType === VIEW_TYPES.DETAIL) {
       return `(${imageType})`;
     }
-    return this.displayingIndex() ===
-      this.artworkService.getLatestVersionIndex(this.nfts())
+
+    const latestFrontalNft = this.artworkService.getLatestVersion(
+      this.artworkService.filterFrontalArtworks(this.nfts())
+    );
+    return this.nft().tokenId === latestFrontalNft?.tokenId
       ? ''
       : `(${VIEW_TYPES.PROGRESS})`;
   });
@@ -142,6 +147,11 @@ export class ArtPieceComponent {
     this.translateService.onLangChange.subscribe(({ lang }) => {
       this.currentLang.set(lang === 'es-ES' ? 'es' : 'en');
     });
+
+    effect(() => {
+      this.displayingIndex.set(this.defaultDisplayIndex() || 0);
+    });
+
     effect(() => {
       const token = this.tokenId();
       this.artworkService.getArtPieceDescriptions(token).subscribe((data) => {

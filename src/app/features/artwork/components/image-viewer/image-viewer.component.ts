@@ -26,11 +26,15 @@ export class ImageViewerComponent {
   nfts = input<Nft[]>([]);
   description = input<string>('No description');
 
-  // TODO: NEEDED FIX getLatestVersionIndex da valores raros. está mal está mal. Dice que el default no es el que debiera
-
-  defaultDisplayIndex: number = 0; // redundant, remove
+  defaultDisplayIndex = computed(() => {
+    const nfts = this.nfts();
+    const latestFrontalNft = this.artworkService.getLatestVersion(
+      this.artworkService.filterFrontalArtworks(nfts)
+    );
+    return nfts.findIndex((nft) => nft.tokenId === latestFrontalNft?.tokenId);
+  });
   currentDisplayIndex: WritableSignal<number> = signal(
-    this.defaultDisplayIndex
+    this.defaultDisplayIndex() || 0
   );
 
   previewImage = signal<string>('none');
@@ -50,24 +54,11 @@ export class ImageViewerComponent {
 
   constructor() {
     effect(() => {
-      const nfts = this.nfts();
-      const currentIndex = this.currentDisplayIndex();
-      const currentImage = nfts[currentIndex];
-      this.previewImage.set('none');
-      this.qualityImage.set('none');
-      if (!currentImage) {
-        this.currentDisplayIndex.set(0);
-        return;
-      }
+      this.currentDisplayIndex.set(this.defaultDisplayIndex() || 0);
+    });
 
-      this.artworkService
-        .getAvailableOptimalUrl(currentImage)
-        .subscribe((url) => {
-          this.previewImage.set(this.isFullScreen() ? 'none' : `url(${url})`);
-        });
-      this.qualityImage.set(
-        this.artworkService.getNftQualityUrl(currentImage?.image) || 'none'
-      );
+    effect(() => {
+      this.loadCurrentImage();
     });
   }
 
@@ -102,6 +93,30 @@ export class ImageViewerComponent {
     if (!this.isFullScreen()) {
       this.enterFullScreen();
     }
+  }
+
+  private loadCurrentImage(): void {
+    const currentImage = this.nfts()[this.currentDisplayIndex()];
+
+    if (!currentImage && this.nfts().length > 0) {
+      this.currentDisplayIndex.set(0);
+      return;
+    }
+
+    if (!currentImage) return;
+
+    this.previewImage.set('none');
+    this.qualityImage.set('none');
+
+    // Load preview image (only if not in fullscreen)
+    if (!this.isFullScreen()) {
+      this.artworkService
+        .getAvailableOptimalUrl(currentImage)
+        .subscribe((url) => this.previewImage.set(`url(${url})`));
+    }
+    // Load quality image
+    const qualityUrl = this.artworkService.getNftQualityUrl(currentImage.image);
+    this.qualityImage.set(qualityUrl || 'none');
   }
 
   private enterFullScreen() {
