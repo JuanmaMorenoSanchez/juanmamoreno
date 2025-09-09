@@ -63,6 +63,11 @@
       "lefranc": "Lefranc&Bourgueois art award",
       "fag": "<a href='http://www.fundacionantoniogala.org/' target='blank'>Antonio Gala Foundation Residence Program</a>"
     },
+    "conferences": {
+      "title": "Conferences",
+      "unia": "<a href='https://www.unia.es/' target='blank'>International University of Andalucia</a>",
+      "invierno-ia": "<a href='https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas' target='blank'>Towards a New AI Winter</a>"
+    },
     "education": {
       "title": "Education",
       "degree": "Bachelor on arts degree",

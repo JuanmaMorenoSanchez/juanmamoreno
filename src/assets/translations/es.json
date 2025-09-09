@@ -58,6 +58,11 @@
     "collectiveShows": {
       "title": "Exposiciones colectivas (selección)"
     },
+    "conferences": {
+      "title": "Conferencias",
+      "unia": "<a href='https://www.unia.es/' target='blank'>Universidad Internacional de Andalucía</a>",
+      "invierno-ia": "<a href='https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas' target='blank'>¿Hacia un nuevo invierno de la IA?</a>"
+    },
     "awards": {
       "title": "Premios y becas (selección)",
       "lefranc": "Becas Lefranc&Bourgueois",

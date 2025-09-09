@@ -43,10 +43,7 @@
       }
       <mat-grid-tile [colspan]="descColSpan" role="listitem">
         <p>
-          <i
-            ><strong
-              ><span [innerHTML]="cvItem.title | translate"></span></strong></i
-          >,
+          <i><span [innerHTML]="cvItem.title | translate"></span></i>,
           <small>
             @if (cvItem.venue) {
             <span [innerHTML]="`${cvItem.venue | translate}, `"></span>
