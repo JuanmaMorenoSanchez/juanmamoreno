@@ -87,7 +87,7 @@ export class ArtPieceComponent {
   readonly nft: Signal<Nft> = computed(
     () => this.nfts()[this.displayingIndex()]
   );
-  readonly tokenId = computed(() => this.nft().tokenId);
+  readonly tokenId = computed(() => this.nft()?.tokenId);
 
   readonly currentLang = signal(
     this.translateService.currentLang === 'es-ES' ? 'es' : 'en'

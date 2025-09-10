@@ -10,7 +10,7 @@ import { SessionStore } from '@shared/store/session.store';
 import { ApiResponse } from '@shared/types/api-response.type';
 import CommonUtils from '@shared/utils/common.utils';
 import DateUtils from '@shared/utils/date.utils';
-import { catchError, filter, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
@@ -62,10 +62,20 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
-      filter((nft) => !!nft?.name),
-      map((nft) =>
-        this.getArtByTitle(nft!.name!, this.sessionQuery.selectArtPieces)
-      )
+      switchMap((nft) => {
+        if (!nft) {
+          return this.getArtPiecesObservable().pipe(
+            switchMap((nfts) => {
+              const foundNft = this.getNftById(tokenId, nfts);
+              if (!foundNft?.name) return of([]);
+              return of(this.getArtByTitle(foundNft.name, nfts));
+            })
+          );
+        }
+        return of(
+          this.getArtByTitle(nft.name!, this.sessionQuery.selectArtPieces)
+        );
+      })
     );
   }
 
@@ -154,11 +164,4 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       )
     );
   }
-
-  /* Expose domain functions*/
-  // no se pueden implementar en la interfaz porque son funciones estáticas
-  // lo que puedo hacer es dejarlo como está
-  // public getTraitValue(nft: Nft, trait: VALIDTRAITS) {
-  //   return this.domain.getTraitValue(nft, trait);
-  // }
 }
