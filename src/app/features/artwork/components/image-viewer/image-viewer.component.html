@@ -19,7 +19,7 @@
       [src]="qualityImage()"
       [style.backgroundImage]="previewImage()"
       class="art-viewer"
-      [attr.data-key]="isFullScreen() ? null : currentDisplayIndex()"
+      [attr.data-key]="isFullScreen() ? null : displayIndex()"
     />
     @if (displayExpand) {
     <mat-icon class="fullscreen-icon"> fullscreen </mat-icon>

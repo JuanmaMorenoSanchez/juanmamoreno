@@ -5,10 +5,9 @@ import {
   ElementRef,
   inject,
   input,
-  output,
+  model,
   signal,
   ViewChild,
-  WritableSignal,
 } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Nft } from '@domain/artwork/artwork.entity';
@@ -25,25 +24,12 @@ export class ImageViewerComponent {
 
   nfts = input<Nft[]>([]);
   description = input<string>('No description');
-
-  defaultDisplayIndex = computed(() => {
-    const nfts = this.nfts();
-    const latestFrontalNft = this.artworkService.getLatestVersion(
-      this.artworkService.filterFrontalArtworks(nfts)
-    );
-    return nfts.findIndex((nft) => nft.tokenId === latestFrontalNft?.tokenId);
-  });
-  currentDisplayIndex: WritableSignal<number> = signal(
-    this.defaultDisplayIndex() || 0
-  );
+  displayIndex = model<number>(0);
 
   previewImage = signal<string>('none');
   qualityImage = signal<string>('none');
 
   isFullScreen = signal<boolean>(false);
-  displayIndexOutput = output<number>({
-    alias: 'displayIndex',
-  });
   displayArrows = computed(() => this.nfts().length > 1);
 
   readonly isImgVisible = signal<boolean>(true);
@@ -53,10 +39,6 @@ export class ImageViewerComponent {
   @ViewChild('imageElement') imageElement!: ElementRef;
 
   constructor() {
-    effect(() => {
-      this.currentDisplayIndex.set(this.defaultDisplayIndex() || 0);
-    });
-
     effect(() => {
       this.loadCurrentImage();
     });
@@ -68,10 +50,9 @@ export class ImageViewerComponent {
 
   public nextNft(relativeIndex: number) {
     const newIndex =
-      (this.currentDisplayIndex() + relativeIndex + this.nfts().length) %
+      (this.displayIndex() + relativeIndex + this.nfts().length) %
       this.nfts().length;
-    this.displayIndexOutput.emit(newIndex);
-    this.currentDisplayIndex.set(newIndex);
+    this.displayIndex.set(newIndex);
   }
 
   public handleImageClick() {
@@ -96,10 +77,10 @@ export class ImageViewerComponent {
   }
 
   private loadCurrentImage(): void {
-    const currentImage = this.nfts()[this.currentDisplayIndex()];
+    const currentImage = this.nfts()[this.displayIndex()];
 
     if (!currentImage && this.nfts().length > 0) {
-      this.currentDisplayIndex.set(0);
+      this.displayIndex.set(0);
       return;
     }
 

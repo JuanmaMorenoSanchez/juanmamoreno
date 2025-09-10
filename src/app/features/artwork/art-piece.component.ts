@@ -153,6 +153,15 @@ export class ArtPieceComponent {
     });
 
     effect(() => {
+      const index = this.displayingIndex();
+      this.isFading.set(true);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => this.isFading.set(false), 300);
+      }, 150);
+    });
+
+    effect(() => {
       const token = this.tokenId();
       this.artworkService.getArtPieceDescriptions(token).subscribe((data) => {
         this.descriptions.set(data);
@@ -173,15 +182,6 @@ export class ArtPieceComponent {
       descriptions.translated.find((t) => t.lang === lang)?.shortDesc ||
       'No description available'
     );
-  }
-
-  indexChanged(index: number): void {
-    this.isFading.set(true);
-    setTimeout(() => {
-      this.displayingIndex.set(index);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => this.isFading.set(false), 300);
-    }, 150);
   }
 
   handleSelectedItem(tokenId: string): void {

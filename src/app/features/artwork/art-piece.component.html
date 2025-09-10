@@ -4,7 +4,7 @@
       class="fit-width"
       [nfts]="nfts()"
       [description]="description()"
-      (displayIndex)="indexChanged($event)"
+      [(displayIndex)]="displayingIndex"
     ></app-image-viewer>
     @if (nft()) {
     <div class="art-piece-labels">
