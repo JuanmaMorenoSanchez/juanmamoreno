@@ -1,4 +1,5 @@
 <div class="container margin-top">
+  <app-back-button></app-back-button>
   <div class="fade-container" [class.fade-out]="isFading()">
     <app-image-viewer
       class="fit-width"
@@ -48,7 +49,7 @@
     </div>
   } -->
   @if (thereAreMoreInYear()) {
-  <mat-divider></mat-divider>
+  <mat-divider class="separator"></mat-divider>
   <p>{{ "moreOn" | translate }} {{ nft() | trait : validTraits.YEAR }}</p>
   <app-art-pieces-list
     [viewAsWidget]="true"

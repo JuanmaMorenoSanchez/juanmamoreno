@@ -23,6 +23,7 @@ import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
+import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { map, switchMap } from 'rxjs';
@@ -47,6 +48,7 @@ import { TraitPipe } from './pipes/traits.pipe';
     ArtPiecesListComponent,
     TranslatePipe,
     TraitPipe,
+    BackButtonComponent,
   ],
 })
 export class ArtPieceComponent {
