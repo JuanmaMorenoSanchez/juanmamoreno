@@ -18,7 +18,10 @@
       #imageElement
       [src]="qualityImage()"
       [style.backgroundImage]="previewImage()"
-      class="art-viewer"
+      class="art-viewer blur"
+      [class.loaded]="hiResLoaded()"
+      (load)="onHiResLoad()"
+      (error)="onHiResLoadError()"
       [attr.data-key]="isFullScreen() ? null : displayIndex()"
     />
     @if (displayExpand) {

@@ -30,6 +30,7 @@ export class ImageViewerComponent {
   qualityImage = signal<string>('none');
 
   isFullScreen = signal<boolean>(false);
+  hiResLoaded = signal<boolean>(false);
   displayArrows = computed(() => this.nfts().length > 1);
 
   readonly isImgVisible = signal<boolean>(true);
@@ -76,6 +77,15 @@ export class ImageViewerComponent {
     }
   }
 
+  public onHiResLoad() {
+    this.hiResLoaded.set(true);
+  }
+
+  public onHiResLoadError() {
+    this.displayIndex.set(0);
+    this.hiResLoaded.set(true);
+  }
+
   private loadCurrentImage(): void {
     const currentImage = this.nfts()[this.displayIndex()];
 
@@ -88,14 +98,14 @@ export class ImageViewerComponent {
 
     this.previewImage.set('none');
     this.qualityImage.set('none');
+    this.hiResLoaded.set(false);
 
-    // Load preview image (only if not in fullscreen)
     if (!this.isFullScreen()) {
       this.artworkService
         .getAvailableOptimalUrl(currentImage)
         .subscribe((url) => this.previewImage.set(`url(${url})`));
     }
-    // Load quality image
+
     const qualityUrl = this.artworkService.getNftQualityUrl(currentImage.image);
     this.qualityImage.set(qualityUrl || 'none');
   }
