@@ -10,7 +10,16 @@ import { SessionStore } from '@shared/store/session.store';
 import { ApiResponse } from '@shared/types/api-response.type';
 import CommonUtils from '@shared/utils/common.utils';
 import DateUtils from '@shared/utils/date.utils';
-import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { FALLBACK_ARTWORKS_API_CALL } from './constants/artworks-fallback.constants';
 
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
@@ -22,6 +31,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       return this.http
         .get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`)
         .pipe(
+          startWith(FALLBACK_ARTWORKS_API_CALL),
           map((res: ApiResponse<Nft[]>) => {
             if (res.success && res.data) {
               return res.data;
@@ -30,7 +40,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
             }
           }),
           tap((nfts) => this.saveNftsLocally(nfts)),
-          catchError(() => this.sessionQuery.getArtPiecesObservable)
+          catchError(() => this.sessionQuery.getArtPiecesObservable),
         );
     } else {
       return this.sessionQuery.getArtPiecesObservable;
@@ -39,9 +49,9 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null> {
     return this.http
-      .get<ApiResponse<Descriptions>>(
-        `${environment.backendUrl}descriptions/${tokenId}`
-      )
+      .get<
+        ApiResponse<Descriptions>
+      >(`${environment.backendUrl}descriptions/${tokenId}`)
       .pipe(
         map((res: ApiResponse<Descriptions>) => {
           if (res.success && res.data) {
@@ -50,13 +60,13 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
             return null;
           }
         }),
-        catchError(() => of(null))
+        catchError(() => of(null)),
       );
   }
 
   getNftByIdObservable(id: string): Observable<Nft | null> {
     return this.sessionQuery.getArtPiecesObservable.pipe(
-      map((nfts) => this.getNftById(id, nfts))
+      map((nfts) => this.getNftById(id, nfts)),
     );
   }
 
@@ -69,13 +79,13 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
               const foundNft = this.getNftById(tokenId, nfts);
               if (!foundNft?.name) return of([]);
               return of(this.getArtByTitle(foundNft.name, nfts));
-            })
+            }),
           );
         }
         return of(
-          this.getArtByTitle(nft.name!, this.sessionQuery.selectArtPieces)
+          this.getArtByTitle(nft.name!, this.sessionQuery.selectArtPieces),
         );
-      })
+      }),
     );
   }
 
@@ -92,19 +102,19 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
           return this.fetchRemoteThumbnail(nft.tokenId).pipe(
             map(
               (fetched) =>
-                fetched || nft.image.thumbnailUrl || nft.image.originalUrl!
-            )
+                fetched || nft.image.thumbnailUrl || nft.image.originalUrl!,
+            ),
           );
         }
-      })
+      }),
     );
   }
 
   getLinks(tokenId: string): Observable<string[]> {
     return this.http
-      .get<ApiResponse<string[]>>(
-        environment.backendUrl + 'vision/search/' + tokenId
-      )
+      .get<
+        ApiResponse<string[]>
+      >(environment.backendUrl + 'vision/search/' + tokenId)
       .pipe(
         map((res: ApiResponse<string[]>) => {
           if (res.success && res.data) {
@@ -113,7 +123,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
             return [];
           }
         }),
-        catchError(() => of([]))
+        catchError(() => of([])),
       );
   }
 
@@ -129,15 +139,15 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     return of(
       cachedThumbnail
         ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail)
-        : null
+        : null,
     );
   }
 
   private fetchRemoteThumbnail(tokenId: string): Observable<string | null> {
     return this.http
-      .get<ApiResponse<NftThumbnail>>(
-        `${environment.backendUrl}nft-thumbnails/${tokenId}`
-      )
+      .get<
+        ApiResponse<NftThumbnail>
+      >(`${environment.backendUrl}nft-thumbnails/${tokenId}`)
       .pipe(
         tap((res) => {
           if (res.success && res.data) {
@@ -148,8 +158,8 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
           }
         }),
         map((res) =>
-          res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null
-        )
+          res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null,
+        ),
       );
   }
 
@@ -160,7 +170,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       !this.sessionQuery.selectLastArtPiecesUpdate ||
       DateUtils.olderThanNDays(
         this.sessionQuery.selectLastArtPiecesUpdate,
-        daysBeforeExpireData
+        daysBeforeExpireData,
       )
     );
   }
