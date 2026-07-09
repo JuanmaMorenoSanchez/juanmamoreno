@@ -158,6 +158,15 @@ export class Artwork {
     return [...new Set(candidates.filter((url): url is string => !!url))];
   }
 
+  getNftFetchableUrls(image: NftImage): string[] {
+    const candidates = [
+      image?.originalUrl,
+      image?.pngUrl,
+      image?.thumbnailUrl,
+    ];
+    return [...new Set(candidates.filter((url): url is string => !!url))];
+  }
+
   getNftQualityUrl(image: NftImage): string {
     return this.getNftQualityUrls(image)[0] || '';
   }

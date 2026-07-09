@@ -12,32 +12,41 @@ import { TranslatePipe } from '@ngx-translate/core';
     imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, TranslatePipe]
 })
 export class DownloadButtonComponent {
-  link = input<string>();
+  // Candidate urls for the same image, best quality first
+  links = input<string[]>([]);
   name = input<string>();
   isDownloading = false;
 
-  downloadImage(): void {
-    this.isDownloading = true
-    fetch(this.link()!)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch the image.');
-        }
-        return response.blob();
-      })
-      .then(blob => {
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `${this.name()}.jpg`;
-        link.click();
-        URL.revokeObjectURL(blobUrl);
-      })
-      .catch(error => {
-        console.error('Error downloading the image:', error);
-      })
-      .finally(() => {
-        this.isDownloading = false; // Reset the state
-      });
+  async downloadImage(): Promise<void> {
+    this.isDownloading = true;
+    try {
+      const blob = await this.fetchBestAvailable(this.links());
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${this.name()}.${this.extensionFor(blob)}`;
+      link.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error downloading the image:', error);
+    } finally {
+      this.isDownloading = false;
+    }
+  }
+
+  private extensionFor(blob: Blob): string {
+    return blob.type === 'image/png' ? 'png' : 'jpg';
+  }
+
+  private async fetchBestAvailable(urls: string[]): Promise<Blob> {
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) return await response.blob();
+      } catch {
+        console.error('Error fetching image from URL:', url);
+      }
+    }
+    throw new Error('No image source could be downloaded.');
   }
 }

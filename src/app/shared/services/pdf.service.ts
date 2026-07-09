@@ -3,7 +3,7 @@ import {
   SOLDCERTIFICATES,
   VALIDTRAITS,
 } from '@domain/artwork/artwork.constants';
-import { Nft } from '@domain/artwork/artwork.entity';
+import { Nft, NftImage } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
@@ -62,16 +62,14 @@ export class PdfService {
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = pageHeight / 5;
 
-    const coverImgUrl = this.artworkService.getNftQualityUrl(
-      this.artworkService.getNftById('68', this.sessionQuery.selectArtPieces)!
-        .image
+    const coverNft = this.artworkService.getNftById(
+      '68',
+      this.sessionQuery.selectArtPieces
     );
-    const originalImg = await this.loadImage(coverImgUrl);
-    const { width: originalWidth, height: originalHeight } =
-      doc.getImageProperties(originalImg);
-    const aspectRatio = originalWidth / originalHeight;
-    const imgCompressed = await this.loadCompressedImage(
-      coverImgUrl,
+    const coverImg = await this.loadBestImage(coverNft!.image);
+    const aspectRatio = coverImg.width / coverImg.height;
+    const imgCompressed = this.compressImage(
+      coverImg,
       pageWidth * aspectRatio,
       pageHeight
     );
@@ -337,12 +335,8 @@ export class PdfService {
     const contentWidth = pageWidth - 2 * this.margin;
     const contentHeight = pageHeight - 2 * this.margin;
 
-    const imgUrl = this.artworkService.getNftQualityUrl(nft.image);
-    const imgCompressed = await this.loadCompressedImage(
-      imgUrl,
-      contentWidth,
-      contentHeight
-    );
+    const img = await this.loadBestImage(nft.image);
+    const imgCompressed = this.compressImage(img, contentWidth, contentHeight);
 
     const { width: originalWidth, height: originalHeight } =
       doc.getImageProperties(imgCompressed);
@@ -410,12 +404,23 @@ export class PdfService {
     return `${year}, ${medium}, ${height} x ${width} ${unit}.`;
   }
 
-  private async loadCompressedImage(
-    src: string,
+  private async loadBestImage(image: NftImage): Promise<HTMLImageElement> {
+    const candidates = this.artworkService.getNftFetchableUrls(image);
+    for (const url of candidates) {
+      try {
+        return await this.loadImage(url);
+      } catch {
+        // Source unreachable: try the next best quality
+      }
+    }
+    throw new Error('No image source could be loaded.');
+  }
+
+  private compressImage(
+    img: HTMLImageElement,
     maxWidth: number,
     maxHeight: number
-  ): Promise<string> {
-    const img = await this.loadImage(src);
+  ): string {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
     const aspectRatio = img.width / img.height;

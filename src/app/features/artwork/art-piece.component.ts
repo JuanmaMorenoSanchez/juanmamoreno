@@ -133,9 +133,10 @@ export class ArtPieceComponent {
       ? ''
       : `(${VIEW_TYPES.PROGRESS})`;
   });
-  readonly qualityImg: Signal<string> = computed(() =>
-    this.artworkService.getNftQualityUrl(this.nft().image)
-  );
+  readonly qualityUrls: Signal<string[]> = computed(() => {
+    const nft = this.nft();
+    return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];
+  });
   readonly sold: Signal<boolean> = computed(() =>
     SOLDCERTIFICATES.includes(this.tokenId())
   );

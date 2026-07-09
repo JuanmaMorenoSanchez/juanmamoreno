@@ -13,7 +13,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/2",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/74c4399be3c6b29643951ea6ec310e75",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/74c4399be3c6b29643951ea6ec310e75"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/74c4399be3c6b29643951ea6ec310e75",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/74c4399be3c6b29643951ea6ec310e75"
       },
       "raw": {
         "metadata": {
@@ -56,7 +57,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/4",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f"
       },
       "raw": {
         "metadata": {
@@ -99,7 +101,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/5",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/cf77b37f8f36966ab201233b607bc71d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cf77b37f8f36966ab201233b607bc71d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cf77b37f8f36966ab201233b607bc71d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/cf77b37f8f36966ab201233b607bc71d"
       },
       "raw": {
         "metadata": {
@@ -142,7 +145,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/6",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3"
       },
       "raw": {
         "metadata": {
@@ -185,7 +189,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/7",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8"
       },
       "raw": {
         "metadata": {
@@ -228,7 +233,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/8",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/01d8c63a623a81f09bab60c161497426",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/01d8c63a623a81f09bab60c161497426"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/01d8c63a623a81f09bab60c161497426",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/01d8c63a623a81f09bab60c161497426"
       },
       "raw": {
         "metadata": {
@@ -271,7 +277,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/9",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6"
       },
       "raw": {
         "metadata": {
@@ -314,7 +321,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/10",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1"
       },
       "raw": {
         "metadata": {
@@ -357,7 +365,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/11",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c71f7674622e776491706d6023d8171d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c71f7674622e776491706d6023d8171d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c71f7674622e776491706d6023d8171d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c71f7674622e776491706d6023d8171d"
       },
       "raw": {
         "metadata": {
@@ -400,7 +409,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/12",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8"
       },
       "raw": {
         "metadata": {
@@ -443,7 +453,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/13",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1"
       },
       "raw": {
         "metadata": {
@@ -486,7 +497,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/14",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f5db77233fecd005f46ce37befeaa30f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f5db77233fecd005f46ce37befeaa30f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f5db77233fecd005f46ce37befeaa30f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f5db77233fecd005f46ce37befeaa30f"
       },
       "raw": {
         "metadata": {
@@ -529,7 +541,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/15",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9"
       },
       "raw": {
         "metadata": {
@@ -572,7 +585,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/16",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881"
       },
       "raw": {
         "metadata": {
@@ -615,7 +629,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/17",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283"
       },
       "raw": {
         "metadata": {
@@ -658,7 +673,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/18",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc"
       },
       "raw": {
         "metadata": {
@@ -701,7 +717,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/19",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698"
       },
       "raw": {
         "metadata": {
@@ -744,7 +761,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/20",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d"
       },
       "raw": {
         "metadata": {
@@ -787,7 +805,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/21",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a"
       },
       "raw": {
         "metadata": {
@@ -830,7 +849,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/22",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f9f062d7991159eb3803c22e51272068",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f9f062d7991159eb3803c22e51272068"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f9f062d7991159eb3803c22e51272068",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f9f062d7991159eb3803c22e51272068"
       },
       "raw": {
         "metadata": {
@@ -873,7 +893,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/23",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7"
       },
       "raw": {
         "metadata": {
@@ -916,7 +937,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/24",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c"
       },
       "raw": {
         "metadata": {
@@ -959,7 +981,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/25",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/7decace872ed74510ccd31ff06f736a0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7decace872ed74510ccd31ff06f736a0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7decace872ed74510ccd31ff06f736a0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/7decace872ed74510ccd31ff06f736a0"
       },
       "raw": {
         "metadata": {
@@ -1002,7 +1025,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/26",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b"
       },
       "raw": {
         "metadata": {
@@ -1045,7 +1069,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/27",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2"
       },
       "raw": {
         "metadata": {
@@ -1088,7 +1113,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/28",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66"
       },
       "raw": {
         "metadata": {
@@ -1131,7 +1157,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/29",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/1183926ba3b8333eea4626fcc479ed81",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1183926ba3b8333eea4626fcc479ed81"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1183926ba3b8333eea4626fcc479ed81",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/1183926ba3b8333eea4626fcc479ed81"
       },
       "raw": {
         "metadata": {
@@ -1174,7 +1201,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/30",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b21fed290eb20a775503c67ae0ab191b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b21fed290eb20a775503c67ae0ab191b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b21fed290eb20a775503c67ae0ab191b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b21fed290eb20a775503c67ae0ab191b"
       },
       "raw": {
         "metadata": {
@@ -1217,7 +1245,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/31",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf"
       },
       "raw": {
         "metadata": {
@@ -1260,7 +1289,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/32",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789"
       },
       "raw": {
         "metadata": {
@@ -1303,7 +1333,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/34",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32"
       },
       "raw": {
         "metadata": {
@@ -1346,7 +1377,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/35",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d"
       },
       "raw": {
         "metadata": {
@@ -1389,7 +1421,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/36",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf"
       },
       "raw": {
         "metadata": {
@@ -1432,7 +1465,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/37",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/48c3898443a58dfb528d65db53cbd71e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48c3898443a58dfb528d65db53cbd71e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48c3898443a58dfb528d65db53cbd71e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/48c3898443a58dfb528d65db53cbd71e"
       },
       "raw": {
         "metadata": {
@@ -1475,7 +1509,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/38",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/ac728505c99a0810d3e771c0c8197e66",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ac728505c99a0810d3e771c0c8197e66"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ac728505c99a0810d3e771c0c8197e66",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/ac728505c99a0810d3e771c0c8197e66"
       },
       "raw": {
         "metadata": {
@@ -1518,7 +1553,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/39",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/66909476028044f320522ef698297959",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/66909476028044f320522ef698297959"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/66909476028044f320522ef698297959",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/66909476028044f320522ef698297959"
       },
       "raw": {
         "metadata": {
@@ -1561,7 +1597,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/40",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/48094a780190c7a20060cf23997bf0f0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48094a780190c7a20060cf23997bf0f0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48094a780190c7a20060cf23997bf0f0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/48094a780190c7a20060cf23997bf0f0"
       },
       "raw": {
         "metadata": {
@@ -1604,7 +1641,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/41",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/5a1316c26b386301ae14a259afb25d58",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5a1316c26b386301ae14a259afb25d58"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5a1316c26b386301ae14a259afb25d58",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/5a1316c26b386301ae14a259afb25d58"
       },
       "raw": {
         "metadata": {
@@ -1647,7 +1685,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/42",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b0b997438aec7b94aea074435f1661df",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b0b997438aec7b94aea074435f1661df"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b0b997438aec7b94aea074435f1661df",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b0b997438aec7b94aea074435f1661df"
       },
       "raw": {
         "metadata": {
@@ -1690,7 +1729,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/43",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/448fd7add46d8ea60abef7379010aee3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/448fd7add46d8ea60abef7379010aee3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/448fd7add46d8ea60abef7379010aee3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/448fd7add46d8ea60abef7379010aee3"
       },
       "raw": {
         "metadata": {
@@ -1733,7 +1773,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/44",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/51697c339b213304b839b5504c3fca6f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/51697c339b213304b839b5504c3fca6f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/51697c339b213304b839b5504c3fca6f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/51697c339b213304b839b5504c3fca6f"
       },
       "raw": {
         "metadata": {
@@ -1776,7 +1817,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/45",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/993df381cfda7c2083aff16cc5f3050c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/993df381cfda7c2083aff16cc5f3050c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/993df381cfda7c2083aff16cc5f3050c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/993df381cfda7c2083aff16cc5f3050c"
       },
       "raw": {
         "metadata": {
@@ -1819,7 +1861,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/46",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab"
       },
       "raw": {
         "metadata": {
@@ -1862,7 +1905,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/47",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/962b2a71133bf408e1486f2a9f98127d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/962b2a71133bf408e1486f2a9f98127d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/962b2a71133bf408e1486f2a9f98127d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/962b2a71133bf408e1486f2a9f98127d"
       },
       "raw": {
         "metadata": {
@@ -1905,7 +1949,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/48",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/45f841445f919ca273266e8a0cedf6c2",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/45f841445f919ca273266e8a0cedf6c2"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/45f841445f919ca273266e8a0cedf6c2",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/45f841445f919ca273266e8a0cedf6c2"
       },
       "raw": {
         "metadata": {
@@ -1948,7 +1993,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/49",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c"
       },
       "raw": {
         "metadata": {
@@ -1991,7 +2037,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/50",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a"
       },
       "raw": {
         "metadata": {
@@ -2034,7 +2081,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/51",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18"
       },
       "raw": {
         "metadata": {
@@ -2077,7 +2125,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/52",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d4bc0fb71dae55046056b7c127d72331",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d4bc0fb71dae55046056b7c127d72331"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d4bc0fb71dae55046056b7c127d72331",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d4bc0fb71dae55046056b7c127d72331"
       },
       "raw": {
         "metadata": {
@@ -2120,7 +2169,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/53",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed"
       },
       "raw": {
         "metadata": {
@@ -2163,7 +2213,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/54",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/df919eb17420bc535220d38384b7ca88",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/df919eb17420bc535220d38384b7ca88"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/df919eb17420bc535220d38384b7ca88",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/df919eb17420bc535220d38384b7ca88"
       },
       "raw": {
         "metadata": {
@@ -2206,7 +2257,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/56",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/4dec7e754f47fac8a044b93950e0717a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4dec7e754f47fac8a044b93950e0717a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4dec7e754f47fac8a044b93950e0717a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/4dec7e754f47fac8a044b93950e0717a"
       },
       "raw": {
         "metadata": {
@@ -2249,7 +2301,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/57",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/1391679376c50a26382c38907169f564",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1391679376c50a26382c38907169f564"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1391679376c50a26382c38907169f564",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/1391679376c50a26382c38907169f564"
       },
       "raw": {
         "metadata": {
@@ -2292,7 +2345,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/58",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f"
       },
       "raw": {
         "metadata": {
@@ -2335,7 +2389,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/59",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788"
       },
       "raw": {
         "metadata": {
@@ -2378,7 +2433,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/60",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0"
       },
       "raw": {
         "metadata": {
@@ -2421,7 +2477,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/61",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3adc2274530081851673ba91ca3b1f60",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3adc2274530081851673ba91ca3b1f60"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3adc2274530081851673ba91ca3b1f60",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3adc2274530081851673ba91ca3b1f60"
       },
       "raw": {
         "metadata": {
@@ -2464,7 +2521,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/62",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902"
       },
       "raw": {
         "metadata": {
@@ -2507,7 +2565,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/63",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/715d899aa154683e202bcf83b41e7a87",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/715d899aa154683e202bcf83b41e7a87"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/715d899aa154683e202bcf83b41e7a87",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/715d899aa154683e202bcf83b41e7a87"
       },
       "raw": {
         "metadata": {
@@ -2550,7 +2609,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/64",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/59cbca75b73c7ad148420251871c7c91",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/59cbca75b73c7ad148420251871c7c91"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/59cbca75b73c7ad148420251871c7c91",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/59cbca75b73c7ad148420251871c7c91"
       },
       "raw": {
         "metadata": {
@@ -2593,7 +2653,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/65",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74"
       },
       "raw": {
         "metadata": {
@@ -2636,7 +2697,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/66",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c"
       },
       "raw": {
         "metadata": {
@@ -2679,7 +2741,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/67",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f27986c97a8a26ce8645282c07e59227",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f27986c97a8a26ce8645282c07e59227"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f27986c97a8a26ce8645282c07e59227",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f27986c97a8a26ce8645282c07e59227"
       },
       "raw": {
         "metadata": {
@@ -2722,7 +2785,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/68",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f"
       },
       "raw": {
         "metadata": {
@@ -2765,7 +2829,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/69",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44"
       },
       "raw": {
         "metadata": {
@@ -2808,7 +2873,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/70",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e"
       },
       "raw": {
         "metadata": {
@@ -2851,7 +2917,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/71",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67"
       },
       "raw": {
         "metadata": {
@@ -2894,7 +2961,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/72",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e"
       },
       "raw": {
         "metadata": {
@@ -2937,7 +3005,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/73",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0"
       },
       "raw": {
         "metadata": {
@@ -2980,7 +3049,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/74",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1"
       },
       "raw": {
         "metadata": {
@@ -3023,7 +3093,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/75",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8d47f4f152ca94891898b483c2698f56",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8d47f4f152ca94891898b483c2698f56"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8d47f4f152ca94891898b483c2698f56",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8d47f4f152ca94891898b483c2698f56"
       },
       "raw": {
         "metadata": {
@@ -3066,7 +3137,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/76",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f"
       },
       "raw": {
         "metadata": {
@@ -3109,7 +3181,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/77",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1"
       },
       "raw": {
         "metadata": {
@@ -3152,7 +3225,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/78",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6160683af3b681180123e4b2670479d6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6160683af3b681180123e4b2670479d6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6160683af3b681180123e4b2670479d6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6160683af3b681180123e4b2670479d6"
       },
       "raw": {
         "metadata": {
@@ -3195,7 +3269,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/79",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f"
       },
       "raw": {
         "metadata": {
@@ -3238,7 +3313,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/80",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3"
       },
       "raw": {
         "metadata": {
@@ -3281,7 +3357,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/81",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb"
       },
       "raw": {
         "metadata": {
@@ -3324,7 +3401,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/82",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/599490b89e969920beb21008af3e969c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/599490b89e969920beb21008af3e969c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/599490b89e969920beb21008af3e969c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/599490b89e969920beb21008af3e969c"
       },
       "raw": {
         "metadata": {
@@ -3367,7 +3445,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/83",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e"
       },
       "raw": {
         "metadata": {
@@ -3410,7 +3489,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/84",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/339b4f06e879fd32ceff026363b8cead",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/339b4f06e879fd32ceff026363b8cead"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/339b4f06e879fd32ceff026363b8cead",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/339b4f06e879fd32ceff026363b8cead"
       },
       "raw": {
         "metadata": {
@@ -3453,7 +3533,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/85",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c97949893498603b519fc6f063f60adf",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c97949893498603b519fc6f063f60adf"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c97949893498603b519fc6f063f60adf",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c97949893498603b519fc6f063f60adf"
       },
       "raw": {
         "metadata": {
@@ -3496,7 +3577,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/86",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/921d7041201b3fd7b278049090c94333",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/921d7041201b3fd7b278049090c94333"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/921d7041201b3fd7b278049090c94333",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/921d7041201b3fd7b278049090c94333"
       },
       "raw": {
         "metadata": {
@@ -3539,7 +3621,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/87",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6"
       },
       "raw": {
         "metadata": {
@@ -3582,7 +3665,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/88",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc"
       },
       "raw": {
         "metadata": {
@@ -3625,7 +3709,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/89",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b"
       },
       "raw": {
         "metadata": {
@@ -3668,7 +3753,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/90",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33"
       },
       "raw": {
         "metadata": {
@@ -3711,7 +3797,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/91",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4"
       },
       "raw": {
         "metadata": {
@@ -3754,7 +3841,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeif2qnh5b3xxiev2ke2vmuntv7qcqqbujdkx3qo6epyokomknte6qa/92",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/96723b18d225fb0901feedbf0afcd62e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/96723b18d225fb0901feedbf0afcd62e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/96723b18d225fb0901feedbf0afcd62e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/96723b18d225fb0901feedbf0afcd62e"
       },
       "raw": {
         "metadata": {
@@ -3797,7 +3885,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicezajfbkgebx5yyjmzdoq33tsclvfg4fzz3cpoo5cafsa4g5ovv4/93",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5"
       },
       "raw": {
         "metadata": {
@@ -3840,7 +3929,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiegrp5aspqctnslpgwfy2jmufkjw2m67rpksc7kfnvxxnrj5rffpm/94",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623"
       },
       "raw": {
         "metadata": {
@@ -3883,7 +3973,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeia76j3tbe62h3nbnnrzchk6bskqwuckwwqydz7gfctza2t6muxyse/95",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9f0019740220d125df2a92f57bc344d6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9f0019740220d125df2a92f57bc344d6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9f0019740220d125df2a92f57bc344d6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9f0019740220d125df2a92f57bc344d6"
       },
       "raw": {
         "metadata": {
@@ -3926,7 +4017,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifmv4abjmrzaqbng3qqj6lhnmmhbb7rhfivwnhdbywe464fsi6ipe/96",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/40d0358b08a14d14d7771d96e20654fd",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40d0358b08a14d14d7771d96e20654fd"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/40d0358b08a14d14d7771d96e20654fd",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/40d0358b08a14d14d7771d96e20654fd"
       },
       "raw": {
         "metadata": {
@@ -3969,7 +4061,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibjb3ef5d5vv7uc367dxy33nyjgzjyrtzugn2lk3pflndbc5cfpam/97",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3438148e9008a52cbd1244056fbea5e0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3438148e9008a52cbd1244056fbea5e0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3438148e9008a52cbd1244056fbea5e0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3438148e9008a52cbd1244056fbea5e0"
       },
       "raw": {
         "metadata": {
@@ -4012,7 +4105,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifm5ocdmfu7zwftuf2ggh45wfjeofuancopnhr6st22633hg5orci/98",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/919f3d93999d63e714c44dae3706b80b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/919f3d93999d63e714c44dae3706b80b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/919f3d93999d63e714c44dae3706b80b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/919f3d93999d63e714c44dae3706b80b"
       },
       "raw": {
         "metadata": {
@@ -4055,7 +4149,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifxds2k4l3osorrkgdqgayudij7zswlvlr2maj4wm62g6dbxtpqha/99",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/896db43c2683cd0bac4241e3797c57e6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/896db43c2683cd0bac4241e3797c57e6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/896db43c2683cd0bac4241e3797c57e6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/896db43c2683cd0bac4241e3797c57e6"
       },
       "raw": {
         "metadata": {
@@ -4098,7 +4193,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigogfwyeeqqd6drrgcm7fl4vuvrmn3b4egqxrbv7rkyzzfqjabwii/100",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684"
       },
       "raw": {
         "metadata": {
@@ -4153,7 +4249,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihjst2vt2xozrz4ijpeejdoy37ecgk52crexz2wd7fd5zrtt6ymwe/101",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c4327f72d792631bbb58746bae15c285",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c4327f72d792631bbb58746bae15c285"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c4327f72d792631bbb58746bae15c285",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c4327f72d792631bbb58746bae15c285"
       },
       "raw": {
         "metadata": {
@@ -4208,7 +4305,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeickehr2ijypqzxiim2o2ctk2odkvadxmactm5d4bzipsfy5bbxxca/102",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242"
       },
       "raw": {
         "metadata": {
@@ -4263,7 +4361,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifo7nro4vvfmclrsqqxog74uccyjssylwgrvy5kjjsywaqc6ip2we/104",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/25f08e5e422efc21ebfdb7f0277a479c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/25f08e5e422efc21ebfdb7f0277a479c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/25f08e5e422efc21ebfdb7f0277a479c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/25f08e5e422efc21ebfdb7f0277a479c"
       },
       "raw": {
         "metadata": {
@@ -4306,7 +4405,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihljn5uoxid4xr5ogyrmqk6cvpfnf6scd7luov7pvcm6skkpd7cwy/105",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/55d09ebf438ef13f4d0f44d973273a96",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/55d09ebf438ef13f4d0f44d973273a96"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/55d09ebf438ef13f4d0f44d973273a96",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/55d09ebf438ef13f4d0f44d973273a96"
       },
       "raw": {
         "metadata": {
@@ -4349,7 +4449,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiflyrcgd5oyldzdk7wwqmqpgh5wwxti442oe7m7smh7lzaf65wugu/106",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667"
       },
       "raw": {
         "metadata": {
@@ -4392,7 +4493,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihtlxldrxj6vnni7x5zazr4eg77uou377wke37ooar5bwiksioosy/107",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3"
       },
       "raw": {
         "metadata": {
@@ -4435,7 +4537,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih3i7mqyjvqej5eoh52dk4zh3ftw24ug5t4gbabrowpu34v6ff4di/108",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab"
       },
       "raw": {
         "metadata": {
@@ -4478,7 +4581,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidykioebpup3sf7bbgnyb6nvwt7zgse565xybaj3c6zufbqegkc3y/109",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/2de86b758f2718f126c89b92aa631865",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2de86b758f2718f126c89b92aa631865"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2de86b758f2718f126c89b92aa631865",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/2de86b758f2718f126c89b92aa631865"
       },
       "raw": {
         "metadata": {
@@ -4521,7 +4625,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifwnrci2mxb4fbw2o7n4enqvokrbak7miwdrovbqorhlqu3yp2rlu/110",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29"
       },
       "raw": {
         "metadata": {
@@ -4564,7 +4669,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicl7ys7eyaeowutbigk5qnlfsvhmkzhtgnsy36mmndjwk6hhtt5ly/111",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0"
       },
       "raw": {
         "metadata": {
@@ -4607,7 +4713,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidihkfp3c44azbu3uwrblfyrrmpz6cgiirn44ygypaqqelowhcdcy/112",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602"
       },
       "raw": {
         "metadata": {
@@ -4650,7 +4757,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibjbzvnh3vrhpppmavigpkuuzrefosn5elrvmnnx23oxl7z3zsp2u/113",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/4a482d546b8c27940da4716f08f84317",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4a482d546b8c27940da4716f08f84317"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4a482d546b8c27940da4716f08f84317",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/4a482d546b8c27940da4716f08f84317"
       },
       "raw": {
         "metadata": {
@@ -4693,7 +4801,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicfs3szewngywpl62axirm6mvmiln26afdfo3uclnz7oin4cg672a/114",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7"
       },
       "raw": {
         "metadata": {
@@ -4736,7 +4845,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibmcycx3jpqrzlwpqbjfyyjl4a52z7oxnshw5wnc2bgzhevdl6uwu/115",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d"
       },
       "raw": {
         "metadata": {
@@ -4779,7 +4889,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidz2hhn2umukngq6w4al2wy5rxcom63a2o4qi33ndsyjjgsfs6w2m/117",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752"
       },
       "raw": {
         "metadata": {
@@ -4818,7 +4929,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibmobpyjoftk4jxflaep7ibd7s4xzdu3fi5srewa5sk4xj673g5g4/118",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/db0723a1e7f23c3202f948176546e86d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/db0723a1e7f23c3202f948176546e86d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/db0723a1e7f23c3202f948176546e86d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/db0723a1e7f23c3202f948176546e86d"
       },
       "raw": {
         "metadata": {
@@ -4861,7 +4973,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidvgfid472ripzx4avv45jrgg4a6tngcyft2gsgpzhytxzhomacv4/119",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae"
       },
       "raw": {
         "metadata": {
@@ -4904,7 +5017,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidv2yoip4t2twngxvdmgtsukvqipircx4o42juepra2y2fehhaw3y/120",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c2cda1ad8344e93f209186957ad14365",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c2cda1ad8344e93f209186957ad14365"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c2cda1ad8344e93f209186957ad14365",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c2cda1ad8344e93f209186957ad14365"
       },
       "raw": {
         "metadata": {
@@ -4947,7 +5061,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeib44utmsaadt64inlknib6vpupnmlgl3givcnvbfmd47qupicusbu/122",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/02d4f6f55c34470786ef46881b05b70b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/02d4f6f55c34470786ef46881b05b70b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/02d4f6f55c34470786ef46881b05b70b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/02d4f6f55c34470786ef46881b05b70b"
       },
       "raw": {
         "metadata": {
@@ -4990,7 +5105,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih4utpgfw36bycezv3mo2lz47slkvldubx2vspexlflbofk2aeufq/123",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/17f7a7a68646a05846f303dddddcb96d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/17f7a7a68646a05846f303dddddcb96d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/17f7a7a68646a05846f303dddddcb96d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/17f7a7a68646a05846f303dddddcb96d"
       },
       "raw": {
         "metadata": {
@@ -5033,7 +5149,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeieyprrizhjf5vc2eohde4jj3nofvduwwj4ley7tdynpcuqqyl3zse/124",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e"
       },
       "raw": {
         "metadata": {
@@ -5076,7 +5193,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibpdqxlc7hm4b2ttumlt5turhxk37uokegpmny47wvo5y5czonsmi/125",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9df19c9b36c15f412114db67e4efddb2",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9df19c9b36c15f412114db67e4efddb2"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9df19c9b36c15f412114db67e4efddb2",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9df19c9b36c15f412114db67e4efddb2"
       },
       "raw": {
         "metadata": {
@@ -5119,7 +5237,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigco33hmek2wifus76la6ikijgpnz7zdkf4kbsx47hjev25siswlm/126",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34"
       },
       "raw": {
         "metadata": {
@@ -5162,7 +5281,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigysh2uxescce6kpzrh76gpq3g26gqpto67wd3g7lvmqtfdsgjp4m/127",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/eeffd462116904de6abac6c6219741c3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/eeffd462116904de6abac6c6219741c3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/eeffd462116904de6abac6c6219741c3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/eeffd462116904de6abac6c6219741c3"
       },
       "raw": {
         "metadata": {
@@ -5205,7 +5325,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihic665r42wmyuby4o3qonqbkcyzexf3jjxunoutotyca2qqdw62e/128",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d"
       },
       "raw": {
         "metadata": {
@@ -5248,7 +5369,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigj3w7jhlfjfmitctgkn4yms567ycz3mm7lf2huefnlz4mayqd2lm/129",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/647f885ea549c683942c6469bb57fe1a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/647f885ea549c683942c6469bb57fe1a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/647f885ea549c683942c6469bb57fe1a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/647f885ea549c683942c6469bb57fe1a"
       },
       "raw": {
         "metadata": {
@@ -5291,7 +5413,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiejd7hla53dr3bttgnlvvtgxpwlfidizodrbvwpzrzw6omfhdqkwu/130",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9"
       },
       "raw": {
         "metadata": {
@@ -5334,7 +5457,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih3r53gkliqx7dhqixkl5bd27m2i2u3hdf4rskcgwoeba2wulftly/131",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9"
       },
       "raw": {
         "metadata": {
@@ -5377,7 +5501,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiddj2aydjiknmgxp3sdiznnbglmdj5kafzrspuvyuimgwwvax2kpa/132",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b"
       },
       "raw": {
         "metadata": {
@@ -5420,7 +5545,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih4mfltyzqdtwl2u7ovn42kwmgptj3ws7i6vumsisvjkd362bjohu/133",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d"
       },
       "raw": {
         "metadata": {
@@ -5463,7 +5589,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeid7ncxa3fgme3c6n45rf24adlr2xfp5yr2vu6f4m4jvtlnlbjfwpq/134",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6f66e6181222c192694a932fedc89e6d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6f66e6181222c192694a932fedc89e6d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6f66e6181222c192694a932fedc89e6d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6f66e6181222c192694a932fedc89e6d"
       },
       "raw": {
         "metadata": {
@@ -5506,7 +5633,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicrmbz5a4ihzgvuouaimd53pd45xggt2u6jdirbe6tembtocbqzfa/135",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c279df89f165e8d65faafc7b1fb3a365",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c279df89f165e8d65faafc7b1fb3a365"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c279df89f165e8d65faafc7b1fb3a365",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c279df89f165e8d65faafc7b1fb3a365"
       },
       "raw": {
         "metadata": {
@@ -5549,7 +5677,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihzdgfif65osr63q4rebdw5o7wb7gov7gkpczncv4azjwepy2cyf4/136",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f"
       },
       "raw": {
         "metadata": {
@@ -5592,7 +5721,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeig2cf3xdidwn3xhfhwq6vjbk4ywd6bsi3dgaqd2ho5lhxqo7yli3q/137",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e"
       },
       "raw": {
         "metadata": {
@@ -5635,7 +5765,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihli3fwi2uyvqxd3al7nf3v6pw3he2rm2635w22yl5jqh4djcfbba/138",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0"
       },
       "raw": {
         "metadata": {
@@ -5678,7 +5809,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeib323apfydxncwtax2h5d3juj3xcyp7oriw7ivsjf64dciygiwmoq/139",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b71a38b44dce0116395de851b46b01ec",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b71a38b44dce0116395de851b46b01ec"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b71a38b44dce0116395de851b46b01ec",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b71a38b44dce0116395de851b46b01ec"
       },
       "raw": {
         "metadata": {
@@ -5721,7 +5853,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeig4x6qluqxxuadqviejbga53twlqpqnbri7gf7xhq2uowjxgzeh7y/140",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c"
       },
       "raw": {
         "metadata": {
@@ -5764,7 +5897,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeie72b67lc7qhknzlmqbrrozby2yrvjc4csrocqnr64c7o7q42kefi/141",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7"
       },
       "raw": {
         "metadata": {
@@ -5807,7 +5941,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicl4jn5oyiagvugvakhmrfougmrn3ojvereu2h2orxausskn7j7si/143",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/dcd3bf14450f376668e0db397eb386da",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dcd3bf14450f376668e0db397eb386da"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/dcd3bf14450f376668e0db397eb386da",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/dcd3bf14450f376668e0db397eb386da"
       },
       "raw": {
         "metadata": {
@@ -5862,7 +5997,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeig5jbx7q4xxljedwq2cr2j7oddixasuc5n2jawj3lztysqfhovlca/144",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/439003066d5365a783644795cd472735",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/439003066d5365a783644795cd472735"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/439003066d5365a783644795cd472735",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/439003066d5365a783644795cd472735"
       },
       "raw": {
         "metadata": {
@@ -5905,7 +6041,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifplcncah3fyqzj4zdpzskp3vkqb64wldo7hibsoirdrfr6ivf5ru/145",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/66d296397015c4cb98b75bf74947000a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/66d296397015c4cb98b75bf74947000a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/66d296397015c4cb98b75bf74947000a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/66d296397015c4cb98b75bf74947000a"
       },
       "raw": {
         "metadata": {
@@ -5948,7 +6085,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeian23lydo25st4pru5b2wypb4rc3rmowazx66jgoi3i2as252xhba/146",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/774c69e0690f85b0476708137dc6bfc7",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/774c69e0690f85b0476708137dc6bfc7"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/774c69e0690f85b0476708137dc6bfc7",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/774c69e0690f85b0476708137dc6bfc7"
       },
       "raw": {
         "metadata": {
@@ -5991,7 +6129,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidhmddf4bddht3q2bjviprea2pkzs72d7bvuu6wa6ilrnu4d6ktiu/147",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/38b2c428becb90e26a318941f45eba28",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/38b2c428becb90e26a318941f45eba28"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/38b2c428becb90e26a318941f45eba28",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/38b2c428becb90e26a318941f45eba28"
       },
       "raw": {
         "metadata": {
@@ -6034,7 +6173,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihgmc2saaufx4kbuv3vmc63fmkk2gemzb7bsmeql2nemy54cupsrq/148",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e8612c53b433719b88f5d4354f04fb9d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e8612c53b433719b88f5d4354f04fb9d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e8612c53b433719b88f5d4354f04fb9d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e8612c53b433719b88f5d4354f04fb9d"
       },
       "raw": {
         "metadata": {
@@ -6077,7 +6217,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih73espxrd5vcpsr4atmr6k645hqe646qf2f4fhg67skx6t5hwuqi/149",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9cbcf39d3fc92f37c7f57d63c8bf7a55",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9cbcf39d3fc92f37c7f57d63c8bf7a55"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9cbcf39d3fc92f37c7f57d63c8bf7a55",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9cbcf39d3fc92f37c7f57d63c8bf7a55"
       },
       "raw": {
         "metadata": {
@@ -6120,7 +6261,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiah6gnrjeqe3oepkhoe5bsc33osnu3guwgf5gbuofbnswpofmelna/150",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a"
       },
       "raw": {
         "metadata": {
@@ -6163,7 +6305,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifxcvvfxbx7d5lzjhb3fxee3eokcbkssh3bwu3zuk5camykhd5gce/151",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/391bc91c4267fb44345ce4ed25cbf506",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/391bc91c4267fb44345ce4ed25cbf506"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/391bc91c4267fb44345ce4ed25cbf506",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/391bc91c4267fb44345ce4ed25cbf506"
       },
       "raw": {
         "metadata": {
@@ -6206,7 +6349,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifynk4vvi2moa5abzmntk2ediskpany5obxxm3gp24yigtyrbj7au/152",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25"
       },
       "raw": {
         "metadata": {
@@ -6253,7 +6397,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeib5wpdqsbbyqehmiydodjlpyb7u6bygtoirkernhixyderstiu5wi/153",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d"
       },
       "raw": {
         "metadata": {
@@ -6296,7 +6441,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifdx64m3lqrlrrvqj2fytfsn435fsxa42x4ka4h7vmwvdcr7rez3m/154",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/32a669f7e9506825ee024ee113769dd0",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/32a669f7e9506825ee024ee113769dd0"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/32a669f7e9506825ee024ee113769dd0",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/32a669f7e9506825ee024ee113769dd0"
       },
       "raw": {
         "metadata": {
@@ -6339,7 +6485,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeig7sukx3exsvia6dadzdgxa45v4w54ub5j2pndgq7cwfsbon5wvoq/156",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c"
       },
       "raw": {
         "metadata": {
@@ -6382,7 +6529,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiboslxztnluwnkgzfob5t5tn3z7stsiw3lhvx72337wbjptmwtyp4/157",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/896039078805687a51e61f5296ed7dee",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/896039078805687a51e61f5296ed7dee"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/896039078805687a51e61f5296ed7dee",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/896039078805687a51e61f5296ed7dee"
       },
       "raw": {
         "metadata": {
@@ -6425,7 +6573,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifiamie5bhnma5j5jcxdrbl4b3f6u3jlwvky27tmcjyxbm56yedna/158",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/1f305b8a62a72a52e8a4b1166c8fcfcd",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1f305b8a62a72a52e8a4b1166c8fcfcd"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/1f305b8a62a72a52e8a4b1166c8fcfcd",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/1f305b8a62a72a52e8a4b1166c8fcfcd"
       },
       "raw": {
         "metadata": {
@@ -6468,7 +6617,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicgi73f5jxktnscuvhnvvtoguiedrai5aipl5hotxqxnfvndmy7fy/159",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1"
       },
       "raw": {
         "metadata": {
@@ -6511,7 +6661,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiezotrgoshszrthvgi5hkk4q3bqhm6rizpo7i363aruueewmmhuji/160",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d"
       },
       "raw": {
         "metadata": {
@@ -6554,7 +6705,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibck55kkbyb3vwcv62g3s6xejlq3voodrksvgynscspfdhhppqm3m/161",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd"
       },
       "raw": {
         "metadata": {
@@ -6597,7 +6749,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicxx6hyemiplqptfqb7w3ixbfajj5b6ce67h3sychxjs2rformmqa/162",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e"
       },
       "raw": {
         "metadata": {
@@ -6640,7 +6793,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeib7axbrhmo6qe5v565au4z7kvgdj5vejbyicjhmszetpszid2xv54/163",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5"
       },
       "raw": {
         "metadata": {
@@ -6683,7 +6837,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigcxwdna2wwwwb56mdtowjzdfshdmebqq7zrc5j2yfap53tj6tuie/164",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d"
       },
       "raw": {
         "metadata": {
@@ -6726,7 +6881,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeib4oiqrxstiztiznrnyc7jtvtlq3xvumijq53na6zm5lf4tt4c2ki/165",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/95f63d5565733e468472be3cf661b228",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/95f63d5565733e468472be3cf661b228"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/95f63d5565733e468472be3cf661b228",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/95f63d5565733e468472be3cf661b228"
       },
       "raw": {
         "metadata": {
@@ -6769,7 +6925,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigau5c77kikhxlzihf37bucpapuqdbsuneyljd5j6zwtzyrhns2fu/166",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff"
       },
       "raw": {
         "metadata": {
@@ -6812,7 +6969,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiby5vjlruzpweoa7twckssbrbl46ifw225hqfghmd6nnphbb25cka/167",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/2af4f2c08207e8694b40f5f032174a08",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2af4f2c08207e8694b40f5f032174a08"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2af4f2c08207e8694b40f5f032174a08",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/2af4f2c08207e8694b40f5f032174a08"
       },
       "raw": {
         "metadata": {
@@ -6855,7 +7013,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicukfovh6nbsfp7q5plvtiwffavqdawmftkkw5i54iaj5nwt4etta/168",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7"
       },
       "raw": {
         "metadata": {
@@ -6898,7 +7057,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeibxrtf37dqjnnrqbqeolgdw67y35dnj5slst3vcmea2huhkv2p4ma/169",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/7f055059a88ae3714bc72a836daa8736",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7f055059a88ae3714bc72a836daa8736"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7f055059a88ae3714bc72a836daa8736",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/7f055059a88ae3714bc72a836daa8736"
       },
       "raw": {
         "metadata": {
@@ -6941,7 +7101,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifwzkpmep3lcoltf7ugdenbixabfvzx3bv4yyvy5sjlmf3rzejp3y/170",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e01bd64f58e696214d12bd754773dc37",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e01bd64f58e696214d12bd754773dc37"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e01bd64f58e696214d12bd754773dc37",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e01bd64f58e696214d12bd754773dc37"
       },
       "raw": {
         "metadata": {
@@ -6984,7 +7145,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeierf5gm6tlfwe7linxyghw56xs5l5n4qu3lln2k5dvz5n4o4jkcra/171",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b7d577eda8e3fa7add2d708592682aed",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b7d577eda8e3fa7add2d708592682aed"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b7d577eda8e3fa7add2d708592682aed",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b7d577eda8e3fa7add2d708592682aed"
       },
       "raw": {
         "metadata": {
@@ -7027,7 +7189,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidgxfga7zd6uewxbruanuet54q5apyvfugmqlf6vnvcpcl47nch3m/172",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/95983e30b735782b86100d4890f94b4d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/95983e30b735782b86100d4890f94b4d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/95983e30b735782b86100d4890f94b4d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/95983e30b735782b86100d4890f94b4d"
       },
       "raw": {
         "metadata": {
@@ -7070,7 +7233,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihyppx2a4xx24ua3ybra37wjkibuis6pq2ynmnwroikjiqtjbmksi/173",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c"
       },
       "raw": {
         "metadata": {
@@ -7113,7 +7277,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiey42aloc2u4gqhobtlbe2kshj6nuydt6nafmquit2oir4jl3iifu/174",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/766b487c802c16d90a692c741b342174",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/766b487c802c16d90a692c741b342174"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/766b487c802c16d90a692c741b342174",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/766b487c802c16d90a692c741b342174"
       },
       "raw": {
         "metadata": {
@@ -7156,7 +7321,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiajuzlxrzdbmcccliuvgbfk4qu556u2ftf272h2k5fp56lzitlvt4/176",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/2bfea1d4584e654d2b94ccb5d3c66b0e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2bfea1d4584e654d2b94ccb5d3c66b0e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/2bfea1d4584e654d2b94ccb5d3c66b0e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/2bfea1d4584e654d2b94ccb5d3c66b0e"
       },
       "raw": {
         "metadata": {
@@ -7199,7 +7365,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidx6b6tgkjgl73ccm3qe3sqvylkkpzam6ojsnlnbqrlvu4lsgdpum/177",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b04e7850e254875fdedf00055cae105f",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b04e7850e254875fdedf00055cae105f"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b04e7850e254875fdedf00055cae105f",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b04e7850e254875fdedf00055cae105f"
       },
       "raw": {
         "metadata": {
@@ -7242,7 +7409,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiatrfdpqxz6m65aibi6byictlwo5svvmd2ssvt2l46s53ciokp2c4/178",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8c3648d80cd45edf3949a90c1e6077ab",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8c3648d80cd45edf3949a90c1e6077ab"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8c3648d80cd45edf3949a90c1e6077ab",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8c3648d80cd45edf3949a90c1e6077ab"
       },
       "raw": {
         "metadata": {
@@ -7285,7 +7453,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiboebziwc2bvsuebwqkepunyjqzph6pb2mqb4ebyt5ggi6k5jcaam/179",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/523fa7168b467ced9fa0deb2602390a3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/523fa7168b467ced9fa0deb2602390a3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/523fa7168b467ced9fa0deb2602390a3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/523fa7168b467ced9fa0deb2602390a3"
       },
       "raw": {
         "metadata": {
@@ -7328,7 +7497,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifbh3dq5ls6ncqtylhqyz3ir334zu5ju5nl6svaieqsuhnkq4tfoa/180",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9610b235b910bcb22500b41ba8b07ef6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9610b235b910bcb22500b41ba8b07ef6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9610b235b910bcb22500b41ba8b07ef6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9610b235b910bcb22500b41ba8b07ef6"
       },
       "raw": {
         "metadata": {
@@ -7371,7 +7541,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeih6v3bdmtipzfwvrdvj7phfxr3sqxprscge4mgrm3ukxfslypr6tm/181",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/9cbb47f6f89e3a70b209bf49858d0544",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9cbb47f6f89e3a70b209bf49858d0544"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/9cbb47f6f89e3a70b209bf49858d0544",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/9cbb47f6f89e3a70b209bf49858d0544"
       },
       "raw": {
         "metadata": {
@@ -7414,7 +7585,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiaixcfstjyofz3z5za7tzczpdk2xcc535ype4s2aa3v7bm34cgmuu/182",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6"
       },
       "raw": {
         "metadata": {
@@ -7457,7 +7629,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiba56lpivxsgalf662crtwwtgbkuwzjut6kysjjfnteoo72cahxdy/183",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/7ddba28c32a8c5e6e48412d5341bafac",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7ddba28c32a8c5e6e48412d5341bafac"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7ddba28c32a8c5e6e48412d5341bafac",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/7ddba28c32a8c5e6e48412d5341bafac"
       },
       "raw": {
         "metadata": {
@@ -7500,7 +7673,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihemrcpd2krpj23zfzhaxx2u56dxyagkzef62jieysf2g6s3ak2wu/184",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a"
       },
       "raw": {
         "metadata": {
@@ -7543,7 +7717,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihiaktbsxodqokwtyqmbcryrtqy5ov3nfzgqn5uecwbfhrqv52xda/185",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e08949ac044c9d63fc3948e347acd21c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e08949ac044c9d63fc3948e347acd21c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e08949ac044c9d63fc3948e347acd21c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e08949ac044c9d63fc3948e347acd21c"
       },
       "raw": {
         "metadata": {
@@ -7586,7 +7761,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifcz2q2s4ynozlgq5j5f4gtirxaeo5w6yp3hhu42c2hrsozokhcpi/186",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300"
       },
       "raw": {
         "metadata": {
@@ -7629,7 +7805,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeihu6gw2ztdcaepfc4dbt4vba3ifyhag5wahbpjcnfzkcwspbpfyh4/187",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6"
       },
       "raw": {
         "metadata": {
@@ -7672,7 +7849,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeicxsaf2j6jtc5jxrargoxpudlygzoautltuvhiwjuzjd25vpthbiy/188",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/0eb07a294d3fe4b7b0c074e59c63bbf6",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0eb07a294d3fe4b7b0c074e59c63bbf6"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/0eb07a294d3fe4b7b0c074e59c63bbf6",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/0eb07a294d3fe4b7b0c074e59c63bbf6"
       },
       "raw": {
         "metadata": {
@@ -7715,7 +7893,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiah6yjtihg73fxeajcbezidqeu5u4qglhwq6ulojxucsqf34ea7sq/189",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e00764e6d77a3f99492a7e82d941bd0d",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e00764e6d77a3f99492a7e82d941bd0d"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e00764e6d77a3f99492a7e82d941bd0d",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e00764e6d77a3f99492a7e82d941bd0d"
       },
       "raw": {
         "metadata": {
@@ -7758,7 +7937,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeifstzskktuj6jv2k2atggkkd3grhlruxgvoqucgmxs33eqmtrakse/190",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/8bd4c5d81e63e744955526b085a97d83",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8bd4c5d81e63e744955526b085a97d83"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/8bd4c5d81e63e744955526b085a97d83",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/8bd4c5d81e63e744955526b085a97d83"
       },
       "raw": {
         "metadata": {
@@ -7801,7 +7981,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeidinqyjk3mkdui3tttddn3upq2kxxckrkyfy266iqpzs63t7krtbi/191",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/edfdcfa6d0f7ff699f4b3ec4842d85c3",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/edfdcfa6d0f7ff699f4b3ec4842d85c3"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/edfdcfa6d0f7ff699f4b3ec4842d85c3",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/edfdcfa6d0f7ff699f4b3ec4842d85c3"
       },
       "raw": {
         "metadata": {
@@ -7844,7 +8025,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeic6esa3qrmb5hjqtewdd2lmmynbfn33xpeql5yrekere6cm747ium/192",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/3fe0f2d46db245af31fe82b563d9a3f2",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3fe0f2d46db245af31fe82b563d9a3f2"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/3fe0f2d46db245af31fe82b563d9a3f2",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/3fe0f2d46db245af31fe82b563d9a3f2"
       },
       "raw": {
         "metadata": {
@@ -7887,7 +8069,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeic7wseihyibkjovctfjjok7l4qwjamnfbkyw7sooniafdoqco3i6m/193",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178"
       },
       "raw": {
         "metadata": {
@@ -7930,7 +8113,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeiegp3o46ovrjqlbu2cqp5bs2g4zm26eaxpmzynvetgpesbieyalya",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9"
       },
       "raw": {
         "metadata": {
@@ -7973,7 +8157,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigipyrbcyhi4flek4hxt4tgqshfqvw5i366ykubd7k7oljdvvhqva",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e"
       },
       "raw": {
         "metadata": {
@@ -8016,7 +8201,8 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
       "image": {
         "originalUrl": "https://ipfs.io/ipfs/bafybeigorgxf2tknogo6ybu5h7wjwo2k4sw5aywab2s4b4qlfyjmtbroxe",
         "cachedUrl": "https://nft2-cdn.alchemy.com/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c"
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c",
+        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c"
       },
       "raw": {
         "metadata": {
