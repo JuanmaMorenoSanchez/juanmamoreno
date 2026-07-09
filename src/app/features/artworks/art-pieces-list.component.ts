@@ -25,7 +25,6 @@ import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.com
 import { SORT } from '@shared/constants/order.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
-import { SessionQuery } from '@shared/store/session.query';
 import { SortOrder } from '@shared/types/sort.type';
 import { map, Observable, take } from 'rxjs';
 
@@ -54,10 +53,8 @@ export class ArtPiecesListComponent {
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private responsiveService = inject(ResponsiveService);
-  private sessionQuery = inject(SessionQuery);
 
   public displayedImages = new Set<string>();
-  private frontalViewMap = new Map<string, boolean>();
   public sortMethods = Object.values(SortMethod);
 
   numberOfCols = input<number>(
@@ -81,12 +78,35 @@ export class ArtPiecesListComponent {
     const yearsInput = this.nftFilters()?.years;
     // Years passed as input take precedence over the ones in the URL
     const years = yearsInput?.length ? yearsInput : yearsQueryParams ?? [];
+    const frontalViewByToken = this.frontalViewByToken();
     return (artPieces ?? []).filter(
       (nft) =>
         !this.artworkService.isExcludedByYear(nft, years) &&
         !this.isExcludedById(nft) &&
-        this.isMemoizedFrontalView(nft)
+        (frontalViewByToken.get(nft.tokenId) ?? false)
     );
+  });
+  // Classifies each piece against the list it belongs to (not the store),
+  // recomputed whenever the list changes (fallback -> API data).
+  private frontalViewByToken = computed(() => {
+    const nfts = this.artPieces() ?? [];
+    const byName = new Map<string, Nft[]>();
+    for (const nft of nfts) {
+      const group = byName.get(nft.name);
+      if (group) {
+        group.push(nft);
+      } else {
+        byName.set(nft.name, [nft]);
+      }
+    }
+    const frontals = new Map<string, boolean>();
+    for (const nft of nfts) {
+      frontals.set(
+        nft.tokenId,
+        this.artworkService.isFrontalView(nft, byName.get(nft.name) ?? [])
+      );
+    }
+    return frontals;
   });
   public activeSortMethod: WritableSignal<SortMethod> = signal(SortMethod.YEAR);
   public sortOrder: WritableSignal<SortOrder> = signal(SORT.DESC);
@@ -187,23 +207,6 @@ export class ArtPiecesListComponent {
         return yearValues ? yearValues.split(',') : [];
       })
     );
-  }
-
-  private isMemoizedFrontalView(nft: Nft): boolean {
-    if (this.frontalViewMap.has(nft.tokenId)) {
-      return this.frontalViewMap.get(nft.tokenId) || false;
-    } else {
-      const sameFrontalArtworks = this.artworkService.getArtByTitle(
-        nft.name,
-        this.sessionQuery.selectArtPieces
-      );
-      const result = this.artworkService.isFrontalView(
-        nft,
-        sameFrontalArtworks
-      );
-      this.frontalViewMap.set(nft.tokenId, result);
-      return result;
-    }
   }
 
   private isExcludedById(nft: Nft): boolean {

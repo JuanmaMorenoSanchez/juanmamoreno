@@ -6,18 +6,18 @@ export interface Nft {
   description?: string;
   image: NftImage;
   raw: {
-    tokenUri: string;
+    tokenUri?: string;
     metadata: {
-      name: string;
+      name?: string;
       description?: string;
-      image: string;
+      image?: string;
       attributes: Array<Trait>;
     };
   };
   tokenUri?: string;
-  timeLastUpdated: string;
-  contract: any;
-  tokenType: any;
+  timeLastUpdated?: string;
+  contract?: any;
+  tokenType?: any;
   acquiredAt?: any;
   collection?: any;
   mint?: any;
@@ -28,8 +28,8 @@ export interface NftImage {
   cachedUrl?: string;
   thumbnailUrl?: string;
   pngUrl?: string;
-  contentType: string;
-  size: number;
+  contentType?: string;
+  size?: number;
 }
 
 export interface NftFilters {
