@@ -21,6 +21,10 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return of(nft?.image?.thumbnailUrl || '');
   }
 
+  getProgressiveImageUrls(nft: Nft): Observable<string> {
+    return of(nft?.image?.thumbnailUrl || '');
+  }
+
   getFullNftLenghtByYear(): number {
     return 0;
   }

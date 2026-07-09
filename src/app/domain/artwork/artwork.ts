@@ -147,8 +147,19 @@ export class Artwork {
     );
   }
 
+  // Every displayable url for an artwork, best quality first. Consumers can
+  // walk down the list when a source fails to load (e.g. IPFS blocked).
+  getNftQualityUrls(image: NftImage): string[] {
+    const candidates = [
+      image?.originalUrl,
+      image?.cachedUrl,
+      image?.thumbnailUrl,
+    ];
+    return [...new Set(candidates.filter((url): url is string => !!url))];
+  }
+
   getNftQualityUrl(image: NftImage): string {
-    return image?.originalUrl || image?.cachedUrl || image?.thumbnailUrl || '';
+    return this.getNftQualityUrls(image)[0] || '';
   }
 
   getNftOptimalUrl(image: NftImage): string {

@@ -12,14 +12,32 @@ import CommonUtils from '@shared/utils/common.utils';
 import DateUtils from '@shared/utils/date.utils';
 import {
   catchError,
+  distinctUntilChanged,
+  EMPTY,
+  filter,
   from,
   map,
+  merge,
   Observable,
   of,
+  scan,
   startWith,
   switchMap,
   tap,
 } from 'rxjs';
+
+// Relative quality of each preview source, used to only ever upgrade the
+// displayed image while the sources race each other.
+enum PreviewQuality {
+  BACKEND_THUMBNAIL = 1,
+  NFT_THUMBNAIL = 2,
+  NFT_CACHED = 3,
+}
+
+interface PreviewCandidate {
+  url: string | null;
+  quality: number;
+}
 
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
@@ -128,6 +146,59 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
         }
       }),
     );
+  }
+
+  // Races every available source for an artwork image and emits the urls as
+  // they arrive, in strictly increasing quality: backend thumbnail (or its
+  // session cache), then the NFT's own thumbnailUrl and cachedUrl. Sources
+  // that resolve late with a lower quality than what is already displayed
+  // are discarded. The multi-MB originalUrl is intentionally not part of the
+  // race: the viewer's <img> downloads it in parallel as the final step.
+  getProgressiveImageUrls(nft: Nft): Observable<string> {
+    const backendThumbnail$ = this.getLocalCachedThumbnail(nft.tokenId).pipe(
+      switchMap((cachedUrl) =>
+        cachedUrl ? of(cachedUrl) : this.fetchRemoteThumbnail(nft.tokenId),
+      ),
+      catchError(() => of(null)),
+      map((url) => ({ url, quality: PreviewQuality.BACKEND_THUMBNAIL })),
+    );
+    const nftThumbnail$ = this.preloadImage(nft.image?.thumbnailUrl).pipe(
+      map((url) => ({ url, quality: PreviewQuality.NFT_THUMBNAIL })),
+    );
+    const nftCached$ = this.preloadImage(nft.image?.cachedUrl).pipe(
+      map((url) => ({ url, quality: PreviewQuality.NFT_CACHED })),
+    );
+
+    return merge(backendThumbnail$, nftThumbnail$, nftCached$).pipe(
+      scan(
+        (best: PreviewCandidate, candidate: PreviewCandidate) =>
+          candidate.url && candidate.quality > best.quality ? candidate : best,
+        { url: null, quality: 0 },
+      ),
+      map(({ url }) => url),
+      filter((url): url is string => !!url),
+      distinctUntilChanged(),
+    );
+  }
+
+  // Downloads an image off-screen and emits its url once it is ready to be
+  // displayed. Unsubscribing aborts the in-flight download.
+  private preloadImage(url: string | undefined): Observable<string> {
+    if (!url) return EMPTY;
+    return new Observable<string>((subscriber) => {
+      const img = new Image();
+      img.onload = () => {
+        subscriber.next(url);
+        subscriber.complete();
+      };
+      img.onerror = () => subscriber.complete();
+      img.src = url;
+      return () => {
+        img.onload = null;
+        img.onerror = null;
+        if (!img.complete) img.src = '';
+      };
+    });
   }
 
   getLinks(tokenId: string): Observable<string[]> {

@@ -5,13 +5,16 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   model,
   signal,
   ViewChild,
 } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { map, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-image-viewer',
@@ -27,11 +30,33 @@ export class ImageViewerComponent {
   displayIndex = model<number>(0);
 
   previewImage = signal<string>('none');
-  qualityImage = signal<string>('none');
 
   isFullScreen = signal<boolean>(false);
-  hiResLoaded = signal<boolean>(false);
   displayArrows = computed(() => this.nfts().length > 1);
+  private currentNft = computed<Nft | undefined>(
+    () => this.nfts()[this.displayIndex()]
+  );
+
+  // Hi-res fallback chain: every displayable url, best quality first. When
+  // one fails to load (e.g. a firewall blocking IPFS) the viewer walks down
+  // to the next best source instead of staying blurred forever.
+  private readonly qualityCandidates = computed(() => {
+    const nft = this.currentNft();
+    return nft ? this.artworkService.getNftQualityUrls(nft.image) : [];
+  });
+  // Index of the candidate being displayed; resets when the artwork changes.
+  private readonly qualityIndex = linkedSignal({
+    source: this.qualityCandidates,
+    computation: () => 0,
+  });
+  readonly qualityImage = computed(
+    () => this.qualityCandidates()[this.qualityIndex()] ?? 'none'
+  );
+  // Re-blurs automatically every time a new quality url starts loading.
+  readonly hiResLoaded = linkedSignal({
+    source: this.qualityImage,
+    computation: () => false,
+  });
 
   readonly isImgVisible = signal<boolean>(true);
   hovering = false;
@@ -41,8 +66,28 @@ export class ImageViewerComponent {
 
   constructor() {
     effect(() => {
-      this.loadCurrentImage();
+      if (!this.currentNft() && this.nfts().length > 0) {
+        this.displayIndex.set(0);
+      }
     });
+
+    // Cascade load: all preview sources race in parallel and the background
+    // upgrades as better ones arrive. switchMap aborts in-flight downloads
+    // when the displayed artwork changes.
+    toObservable(
+      computed(() => ({ nft: this.currentNft(), fullScreen: this.isFullScreen() }))
+    )
+      .pipe(
+        switchMap(({ nft, fullScreen }) => {
+          if (!nft || fullScreen) return of('none');
+          return this.artworkService.getProgressiveImageUrls(nft).pipe(
+            map((url) => `url(${url})`),
+            startWith('none')
+          );
+        }),
+        takeUntilDestroyed()
+      )
+      .subscribe((background) => this.previewImage.set(background));
   }
 
   public setHover(hovering: boolean) {
@@ -82,32 +127,15 @@ export class ImageViewerComponent {
   }
 
   public onHiResLoadError() {
-    this.displayIndex.set(0);
-    this.hiResLoaded.set(true);
-  }
-
-  private loadCurrentImage(): void {
-    const currentImage = this.nfts()[this.displayIndex()];
-
-    if (!currentImage && this.nfts().length > 0) {
-      this.displayIndex.set(0);
-      return;
+    const nextIndex = this.qualityIndex() + 1;
+    if (nextIndex < this.qualityCandidates().length) {
+      // This source failed (e.g. IPFS blocked by a firewall): fall back to
+      // the next best quality url.
+      this.qualityIndex.set(nextIndex);
+    } else {
+      // Nothing left to try: keep the preview and remove the blur.
+      this.hiResLoaded.set(true);
     }
-
-    if (!currentImage) return;
-
-    this.previewImage.set('none');
-    this.qualityImage.set('none');
-    this.hiResLoaded.set(false);
-
-    if (!this.isFullScreen()) {
-      this.artworkService
-        .getAvailableOptimalUrl(currentImage)
-        .subscribe((url) => this.previewImage.set(`url(${url})`));
-    }
-
-    const qualityUrl = this.artworkService.getNftQualityUrl(currentImage.image);
-    this.qualityImage.set(qualityUrl || 'none');
   }
 
   private enterFullScreen() {
