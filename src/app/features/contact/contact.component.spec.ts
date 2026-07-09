@@ -5,8 +5,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { mockResponsiveService } from 'src/app/test/mocks/shared/services/responsive.service.mock';
+import { ApiResponse } from '@shared/types/api-response.type';
 import { ContactComponent } from './contact.component';
 
 // Mock MatSnackBar
@@ -50,12 +51,10 @@ describe('ContactComponent', () => {
     component.message.setValue('Hello!');
     component.honeypot.setValue('');
 
-    spyOn(component['httpClient'], 'post').and.returnValue(of({ message: 'Thank you!' }));
+    const pendingResponse = new Subject<ApiResponse<string>>();
+    spyOn(component['contactService'], 'sendContactMessage').and.returnValue(pendingResponse.asObservable());
 
     component.onSubmit();
-
-    console.log("component.formdisabled", component.form.disabled);
-    console.log("component.isLoading", component.isLoading);
 
     expect(component.form.disabled).toBeTrue();
     expect(component.isLoading).toBeTrue();
@@ -73,11 +72,11 @@ describe('ContactComponent', () => {
     component.message.setValue('Spam spam spam');
     component.honeypot.setValue('I am a bot');
 
-    const httpSpy = spyOn(component['httpClient'], 'post');
+    const sendSpy = spyOn(component['contactService'], 'sendContactMessage');
 
     component.onSubmit();
 
-    expect(httpSpy).not.toHaveBeenCalled();
+    expect(sendSpy).not.toHaveBeenCalled();
     expect(component.form.enabled).toBeTrue();
   });
 

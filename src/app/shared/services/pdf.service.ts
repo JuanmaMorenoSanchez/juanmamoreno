@@ -37,7 +37,7 @@ export class PdfService {
   ) {
     const doc = new jsPDF();
     await this.addCoverToPdf(doc, nfts[0], customTitle);
-    if (customText) await this.addArbitraryText(doc, customText);
+    if (customText) this.addArbitraryText(doc, customText);
     if (includeStatement) await this.addStatementToPdf(doc);
     let index = 0;
     for (const nft of nfts) {
@@ -90,18 +90,14 @@ export class PdfService {
     doc.text('Juanma Moreno Sánchez', this.margin, yPosition);
     yPosition += 16;
     doc.setFontSize(24);
-    doc.text(
-      `${customTitle ? customTitle : 'Portfolio'}`,
-      this.margin,
-      yPosition
-    );
+    doc.text(customTitle || 'Portfolio', this.margin, yPosition);
     doc.setTextColor(0, 0, 0);
     doc.addPage();
   }
 
   public async createStatement(): Promise<jsPDF> {
     const doc = new jsPDF();
-    this.addStatementToPdf(doc);
+    await this.addStatementToPdf(doc);
     return doc;
   }
 
@@ -243,7 +239,7 @@ export class PdfService {
 
   public async createCV(): Promise<jsPDF> {
     const doc = new jsPDF();
-    this.addCVToPdf(doc);
+    await this.addCVToPdf(doc);
     return doc;
   }
 

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// Component is currently commented out; restore these imports along with it.
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CanvasContainerComponent } from './canvas-container.component';
+// import { CanvasContainerComponent } from './canvas-container.component';
 
 // describe('CanvasContainerComponent', () => {
 //   let component: CanvasContainerComponent;

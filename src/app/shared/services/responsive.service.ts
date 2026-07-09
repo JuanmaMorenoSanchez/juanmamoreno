@@ -16,10 +16,9 @@ export class ResponsiveService {
       Breakpoints.XSmall
     ]).pipe(distinctUntilChanged())
     .subscribe(result => {
-      this.displayMobileLayout.next(true);
-      if (result.matches) {
-        this.displayMobileLayout.next(false);
-      }
+      // Note: historically inverted — emits false on XSmall (mobile) screens
+      // and true otherwise; consumers rely on this convention.
+      this.displayMobileLayout.next(!result.matches);
     });
   }
 }

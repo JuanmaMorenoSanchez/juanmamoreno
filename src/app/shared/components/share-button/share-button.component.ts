@@ -10,23 +10,16 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class ShareButtonComponent {
 
-  private regex_mobile = new RegExp('/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/', 'i');
-
-  public canShare;
-
-  constructor() {
-    this.canShare = this.regex_mobile.test(window.navigator.userAgent) || true;
-  }
+  public canShare = typeof navigator.share === 'function';
 
   public handleClick() {
     if (this.canShare) {
-      const url = window.location.href;
       const shareData: ShareData = {
         title: 'Juanma Moreno Sánchez',
         text: 'Contemporary Art',
-        url,
+        url: window.location.href,
       };
-      navigator?.share(shareData)
+      navigator.share(shareData);
     }
   }
 }

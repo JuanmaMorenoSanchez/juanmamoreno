@@ -2,16 +2,29 @@
   class="image-viewer"
   (mouseover)="setHover(true)"
   (mouseleave)="setHover(false)"
+  (focus)="setHover(true)"
+  (blur)="setHover(false)"
 >
   @if (displayArrows() && hovering) {
-  <div class="overlay left" (click)="nextNft(-1)">
+  <div
+    class="overlay left"
+    role="button"
+    tabindex="0"
+    aria-label="Previous image"
+    (click)="nextNft(-1)"
+    (keyup.enter)="nextNft(-1)"
+  >
     <mat-icon class="arrow"> arrow_back </mat-icon>
   </div>
   }
   <div
     class="image-container"
+    role="button"
+    tabindex="0"
+    aria-label="Toggle fullscreen"
     (click)="handleImageClick()"
     (dblclick)="handleDoubleClick()"
+    (keyup.enter)="handleDoubleClick()"
   >
     <img
       [attr.alt]="description()"
@@ -29,7 +42,14 @@
     }
   </div>
   @if (displayArrows() && hovering) {
-  <div class="overlay right" (click)="nextNft(1)">
+  <div
+    class="overlay right"
+    role="button"
+    tabindex="0"
+    aria-label="Next image"
+    (click)="nextNft(1)"
+    (keyup.enter)="nextNft(1)"
+  >
     <mat-icon class="arrow"> arrow_forward </mat-icon>
   </div>
   }

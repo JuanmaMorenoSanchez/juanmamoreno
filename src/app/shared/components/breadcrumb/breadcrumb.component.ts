@@ -83,7 +83,8 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   public removeYearFilter(label: string) {
-    this.selectedYears.filter((y) => y === Number(label));
+    this.selectedYears = this.selectedYears.filter((y) => y !== Number(label));
+    this.updateQueryParams();
   }
 
   get validYears(): number[] {
@@ -106,7 +107,7 @@ export class BreadcrumbComponent implements OnInit {
 
   private buildBreadCrumb(
     route: ActivatedRoute,
-    url: string = '',
+    url = '',
     breadcrumbs: Array<BreadCrumb> = []
   ): Array<BreadCrumb> {
     let label: string =
@@ -158,8 +159,8 @@ export class BreadcrumbComponent implements OnInit {
 
   private extractNameFromId(id: string): string | null {
     return (
-      this.artworkService.getNftById(id, this.sessionQuery.selectArtPieces)!
-        .name || null
+      this.artworkService.getNftById(id, this.sessionQuery.selectArtPieces)
+        ?.name || null
     );
   }
 }

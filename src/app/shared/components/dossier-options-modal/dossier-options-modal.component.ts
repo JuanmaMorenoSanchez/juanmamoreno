@@ -15,12 +15,12 @@ import { TranslatePipe } from '@ngx-translate/core';
     imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatSlideToggle, FormsModule, MatFormField, MatLabel, MatInput, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class DossierOptionsModalComponent {
-  customTitle: string = '';
-  customText: string = '';
-  includeContact: boolean = false;
-  includeCv: boolean = false;
-  includeStatement: boolean = false;
-  isSubmitting: boolean = false;
+  customTitle = '';
+  customText = '';
+  includeContact = false;
+  includeCv = false;
+  includeStatement = false;
+  isSubmitting = false;
 
   constructor(private dialogRef: MatDialogRef<DossierOptionsModalComponent>) {}
 

@@ -74,21 +74,16 @@ export class ArtPiecesListComponent {
   private artPieces: Signal<Nft[] | undefined> = toSignal(
     this.artworkService.getArtPiecesObservable()
   );
-  public dataReady = computed(() => (this.artPieces()?.length ? true : false));
+  public dataReady = computed(() => !!this.artPieces()?.length);
   private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
-    const yearsQeryParams = this.yearParamSignal();
+    const yearsQueryParams = this.yearParamSignal();
     const yearsInput = this.nftFilters()?.years;
+    // Years passed as input take precedence over the ones in the URL
+    const years = yearsInput?.length ? yearsInput : yearsQueryParams ?? [];
     return (artPieces ?? []).filter(
       (nft) =>
-        !this.artworkService.isExcludedByYear(
-          nft,
-          yearsInput?.length
-            ? yearsInput
-            : yearsQeryParams?.length
-            ? yearsQeryParams
-            : []
-        ) &&
+        !this.artworkService.isExcludedByYear(nft, years) &&
         !this.isExcludedById(nft) &&
         this.isMemoizedFrontalView(nft)
     );

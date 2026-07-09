@@ -9,6 +9,7 @@ import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { DossierOptionsModalComponent } from '@shared/components/dossier-options-modal/dossier-options-modal.component';
 import { PdfService } from '@shared/services/pdf.service';
+import type { jsPDF } from 'jspdf';
 
 @Component({
     selector: 'app-pdf-button',
@@ -47,43 +48,44 @@ export class PdfButtonComponent {
     this.isCreating = true;
     switch(this.downloadFileType())  {
       case DOWNLOADTYPES.CV:
-        this.pdfService.createCV().then((doc) => {
-          doc.save('cv-juanmamoreno.pdf');
-          this.isCreating = false;
-        });
+        this.saveDocument(this.pdfService.createCV(), 'cv-juanmamoreno.pdf');
         break;
       case DOWNLOADTYPES.STATEMENT:
-        this.pdfService.createStatement().then((doc) => {
-          doc.save('statement-juanmamoreno.pdf');
-          this.isCreating = false;
-        });
+        this.saveDocument(this.pdfService.createStatement(), 'statement-juanmamoreno.pdf');
         break;
       case DOWNLOADTYPES.IMAGE:
       default:
         if (this.isSingleArtPage()) {
-          this.pdfService.createTechnicalSheet(this.nfts()[0]).then((doc) => {
-            doc.save(`${this.nfts()[0].name! || 'juanmamoreno'}.pdf`);
-            this.isCreating = false;
-          });
+          const nft = this.nfts()[0];
+          this.saveDocument(this.pdfService.createTechnicalSheet(nft), `${nft.name || 'juanmamoreno'}.pdf`);
         } else {
-          const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
-            data: { includeContact: true, includeCv: true, includeStatement: true, customTitle: '', customText: '' }
-          });
-    
-          dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-              const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
-              this.pdfService.createDossier(this.nfts(), includeContact, includeCv, includeStatement, customTitle, customText).then(doc => {
-                doc.save('dossier-juanmamoreno.pdf');
-                this.isCreating = false;
-              });
-            } else {
-              this.isCreating = false;
-            }
-          });
+          this.openDossierDialog();
         }
         break;
     }
   }
 
+  private openDossierDialog(): void {
+    const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
+      data: { includeContact: true, includeCv: true, includeStatement: true, customTitle: '', customText: '' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
+        this.saveDocument(
+          this.pdfService.createDossier(this.nfts(), includeContact, includeCv, includeStatement, customTitle, customText),
+          'dossier-juanmamoreno.pdf'
+        );
+      } else {
+        this.isCreating = false;
+      }
+    });
+  }
+
+  private saveDocument(docPromise: Promise<jsPDF>, fileName: string): void {
+    docPromise
+      .then((doc) => doc.save(fileName))
+      .finally(() => (this.isCreating = false));
+  }
 }

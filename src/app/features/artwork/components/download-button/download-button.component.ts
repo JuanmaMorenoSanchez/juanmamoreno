@@ -38,6 +38,6 @@ export class DownloadButtonComponent {
       })
       .finally(() => {
         this.isDownloading = false; // Reset the state
-      });;
+      });
   }
 }
