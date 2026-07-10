@@ -141,8 +141,6 @@ export class ArtPieceComponent {
     SOLDCERTIFICATES.includes(this.tokenId())
   );
 
-  readonly isFading: WritableSignal<boolean> = signal(false);
-
   constructor() {
     this.translateService.onLangChange
       .pipe(takeUntilDestroyed())
@@ -155,12 +153,8 @@ export class ArtPieceComponent {
     });
 
     effect(() => {
-      this.displayingIndex(); // read to re-trigger the fade on index changes
-      this.isFading.set(true);
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => this.isFading.set(false), 300);
-      }, 150);
+      this.displayingIndex(); // read to scroll back up when the view changes
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     effect(() => {

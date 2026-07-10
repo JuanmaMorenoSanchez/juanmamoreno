@@ -29,6 +29,10 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return 0;
   }
 
+  getAvailableYears(): Set<number> {
+    return new Set<number>();
+  }
+
   getLinks(): Observable<string[]> {
     return of([]);
   }

@@ -150,21 +150,13 @@ export class Artwork {
   // Every displayable url for an artwork, best quality first. Consumers can
   // walk down the list when a source fails to load (e.g. IPFS blocked).
   getNftQualityUrls(image: NftImage): string[] {
-    const candidates = [
-      image?.originalUrl,
-      image?.cachedUrl,
-      image?.thumbnailUrl,
-    ];
-    return [...new Set(candidates.filter((url): url is string => !!url))];
+    return this.collectUrls(image, ['originalUrl', 'cachedUrl', 'thumbnailUrl']);
   }
 
+  // Same idea, but restricted to CORS-enabled sources (fetch(), canvas):
+  // cachedUrl sends no Access-Control-Allow-Origin header, pngUrl does.
   getNftFetchableUrls(image: NftImage): string[] {
-    const candidates = [
-      image?.originalUrl,
-      image?.pngUrl,
-      image?.thumbnailUrl,
-    ];
-    return [...new Set(candidates.filter((url): url is string => !!url))];
+    return this.collectUrls(image, ['originalUrl', 'pngUrl', 'thumbnailUrl']);
   }
 
   getNftQualityUrl(image: NftImage): string {
@@ -172,6 +164,21 @@ export class Artwork {
   }
 
   getNftOptimalUrl(image: NftImage): string {
-    return image?.thumbnailUrl || image?.cachedUrl || image?.originalUrl || '';
+    return (
+      this.collectUrls(image, ['thumbnailUrl', 'cachedUrl', 'originalUrl'])[0] ||
+      ''
+    );
+  }
+
+  private collectUrls(
+    image: NftImage,
+    order: Array<keyof NftImage>
+  ): string[] {
+    const candidates = order.map((key) => image?.[key]);
+    return [
+      ...new Set(
+        candidates.filter((url): url is string => typeof url === 'string' && !!url)
+      ),
+    ];
   }
 }

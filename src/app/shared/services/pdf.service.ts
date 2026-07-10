@@ -99,8 +99,22 @@ export class PdfService {
     return doc;
   }
 
-  private addArbitraryText(doc: jsPDF, text: string): void {
+  // Starts a new page when the next block would overflow the bottom margin,
+  // returning the y position to keep writing at.
+  private breakPageIfNeeded(
+    doc: jsPDF,
+    yPosition: number,
+    requiredSpace: number
+  ): number {
     const pageHeight = doc.internal.pageSize.getHeight();
+    if (yPosition + requiredSpace > pageHeight - this.margin) {
+      doc.addPage();
+      return this.margin;
+    }
+    return yPosition;
+  }
+
+  private addArbitraryText(doc: jsPDF, text: string): void {
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = this.margin;
 
@@ -112,10 +126,7 @@ export class PdfService {
       pageWidth + this.margin * 2
     );
     introLines.forEach((line) => {
-      if (yPosition + 12 > pageHeight - this.margin) {
-        doc.addPage();
-        yPosition = this.margin;
-      }
+      yPosition = this.breakPageIfNeeded(doc, yPosition, 12);
       doc.text(line, this.margin, yPosition);
       yPosition += 6;
     });
@@ -123,7 +134,6 @@ export class PdfService {
   }
 
   private async addStatementToPdf(doc: jsPDF): Promise<void> {
-    const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = this.margin;
 
@@ -143,10 +153,7 @@ export class PdfService {
     yPosition += 10;
 
     STATEMENT_OBJECT.sections.forEach((section) => {
-      if (yPosition + 12 > pageHeight - this.margin) {
-        doc.addPage();
-        yPosition = this.margin;
-      }
+      yPosition = this.breakPageIfNeeded(doc, yPosition, 12);
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
@@ -169,10 +176,7 @@ export class PdfService {
             pageWidth + this.margin * 2
           );
           paragraphLines.forEach((line) => {
-            if (yPosition + 10 > pageHeight - this.margin) {
-              doc.addPage();
-              yPosition = this.margin;
-            }
+            yPosition = this.breakPageIfNeeded(doc, yPosition, 10);
             doc.text(
               this.translateService.instant(line),
               this.margin,
@@ -186,10 +190,7 @@ export class PdfService {
 
       if (section.items) {
         section.items.forEach((item) => {
-          if (yPosition + 10 > pageHeight - this.margin) {
-            doc.addPage();
-            yPosition = this.margin;
-          }
+          yPosition = this.breakPageIfNeeded(doc, yPosition, 10);
 
           const cleanSubtitle = this.extractWordsFromElement(
             this.translateService.instant(item.subtitle)
@@ -211,10 +212,7 @@ export class PdfService {
             pageWidth + this.margin * 2
           );
           itemContentLines.forEach((line) => {
-            if (yPosition + 6 > pageHeight - this.margin) {
-              doc.addPage();
-              yPosition = this.margin;
-            }
+            yPosition = this.breakPageIfNeeded(doc, yPosition, 6);
             doc.setFont('helvetica', 'normal');
             doc.text(
               this.translateService.instant(line),
@@ -276,14 +274,10 @@ export class PdfService {
   }
 
   private async addCVToPdf(doc: jsPDF): Promise<void> {
-    const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = this.margin;
 
     CV_OBJECT.forEach((section) => {
-      if (yPosition + 8 > pageHeight - this.margin) {
-        doc.addPage();
-        yPosition = this.margin;
-      }
+      yPosition = this.breakPageIfNeeded(doc, yPosition, 8);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(16);
       doc.text(
@@ -294,10 +288,7 @@ export class PdfService {
       yPosition += 6;
 
       section.items.forEach((item) => {
-        if (yPosition + 8 > pageHeight - this.margin) {
-          doc.addPage();
-          yPosition = this.margin;
-        }
+        yPosition = this.breakPageIfNeeded(doc, yPosition, 8);
 
         const title = this.extractWordsFromElement(
           this.translateService.instant(item.title)

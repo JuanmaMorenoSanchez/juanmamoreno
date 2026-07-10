@@ -20,6 +20,7 @@ import {
   merge,
   Observable,
   of,
+  OperatorFunction,
   scan,
   startWith,
   switchMap,
@@ -52,13 +53,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     const apiCall$ = this.http
       .get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`)
       .pipe(
-        map((res: ApiResponse<Nft[]>) => {
-          if (res.success && res.data) {
-            return res.data;
-          } else {
-            return [];
-          }
-        }),
+        this.extractData<Nft[]>([]),
         tap((nfts) => this.saveNftsLocally(nfts)),
         catchError(() => this.sessionQuery.getArtPiecesObservable),
       );
@@ -91,15 +86,14 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
         ApiResponse<Descriptions>
       >(`${environment.backendUrl}descriptions/${tokenId}`)
       .pipe(
-        map((res: ApiResponse<Descriptions>) => {
-          if (res.success && res.data) {
-            return res.data;
-          } else {
-            return null;
-          }
-        }),
+        this.extractData<Descriptions | null>(null),
         catchError(() => of(null)),
       );
+  }
+
+  // Unwraps an ApiResponse, falling back when the call was not successful
+  private extractData<T>(fallback: T): OperatorFunction<ApiResponse<T>, T> {
+    return map((res) => (res.success && res.data ? res.data : fallback));
   }
 
   getNftByIdObservable(id: string): Observable<Nft | null> {
@@ -207,15 +201,13 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
         ApiResponse<string[]>
       >(environment.backendUrl + 'vision/search/' + tokenId)
       .pipe(
-        map((res: ApiResponse<string[]>) => {
-          if (res.success && res.data) {
-            return res.data;
-          } else {
-            return [];
-          }
-        }),
+        this.extractData<string[]>([]),
         catchError(() => of([])),
       );
+  }
+
+  getAvailableYears(): Set<number> {
+    return this.getYears(this.sessionQuery.selectArtPieces);
   }
 
   saveNftsLocally(nfts: Array<Nft>): void {

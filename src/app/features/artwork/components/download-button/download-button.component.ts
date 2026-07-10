@@ -4,6 +4,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
+import CommonUtils from '@shared/utils/common.utils';
 
 @Component({
     selector: 'app-download-button',
@@ -24,7 +25,7 @@ export class DownloadButtonComponent {
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = `${this.name()}.${this.extensionFor(blob)}`;
+      link.download = `${this.name()}.${CommonUtils.imageExtensionFor(blob)}`;
       link.click();
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
@@ -32,10 +33,6 @@ export class DownloadButtonComponent {
     } finally {
       this.isDownloading = false;
     }
-  }
-
-  private extensionFor(blob: Blob): string {
-    return blob.type === 'image/png' ? 'png' : 'jpg';
   }
 
   private async fetchBestAvailable(urls: string[]): Promise<Blob> {

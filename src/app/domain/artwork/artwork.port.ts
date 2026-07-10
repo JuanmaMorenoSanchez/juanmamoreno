@@ -10,6 +10,7 @@ export interface ArtworkPort extends Artwork {
   getAvailableOptimalUrl(nft: Nft): Observable<string>;
   getProgressiveImageUrls(nft: Nft): Observable<string>;
   getFullNftLenghtByYear(year: string): number;
+  getAvailableYears(): Set<number>;
   getLinks(tokenId: string): Observable<string[]>;
   saveNftsLocally(nfts: Array<Nft>): void;
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null>;

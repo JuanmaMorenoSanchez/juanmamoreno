@@ -20,4 +20,8 @@ export default class CommonUtils {
   static composeImgSrc(base64: string): string {
     return `data:image/jpeg;base64,${base64}`
   }
+
+  static imageExtensionFor(blob: Blob): string {
+    return blob.type === 'image/png' ? 'png' : 'jpg';
+  }
 }

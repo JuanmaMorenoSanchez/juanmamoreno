@@ -88,9 +88,9 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   get validYears(): number[] {
-    return [
-      ...this.artworkService.getYears(this.sessionQuery.getValue().artPieces),
-    ].filter((year) => !this.selectedYears.includes(year));
+    return [...this.artworkService.getAvailableYears()].filter(
+      (year) => !this.selectedYears.includes(year)
+    );
   }
 
   private updateQueryParams() {

@@ -16,12 +16,37 @@
     transform: none !important;
   }
 
-  .art-viewer {
+  // Carries the low-res preview as background (and the blur while the hi-res
+  // loads), so a stale <img> bitmap can never cover the incoming artwork.
+  .art-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     max-width: 100%;
     max-height: 100%;
     background-repeat: no-repeat;
     background-size: 100% 100%;
+
+    // Every hi-res source failed: the preview is the final image, give it room
+    &.preview-only {
+      min-width: 80%;
+      min-height: 60vh;
+      background-size: contain;
+      background-position: center;
+    }
+  }
+
+  .art-viewer {
+    max-width: 100%;
+    max-height: 100%;
     cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+
+  // Hi-res not ready yet: keep the <img> invisible (its old bitmap included)
+  // so the preview behind it stays visible.
+  .hi-res-pending {
+    opacity: 0;
   }
 
   .overlay {

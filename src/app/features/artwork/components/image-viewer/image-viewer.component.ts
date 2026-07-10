@@ -57,6 +57,12 @@ export class ImageViewerComponent {
     source: this.qualityImage,
     computation: () => false,
   });
+  // True when every hi-res candidate failed: the preview becomes the final
+  // image (unblurred, <img> kept hidden). Resets when the artwork changes.
+  readonly allCandidatesFailed = linkedSignal({
+    source: this.qualityCandidates,
+    computation: () => false,
+  });
 
   readonly isImgVisible = signal<boolean>(true);
   hovering = false;
@@ -134,7 +140,7 @@ export class ImageViewerComponent {
       this.qualityIndex.set(nextIndex);
     } else {
       // Nothing left to try: keep the preview and remove the blur.
-      this.hiResLoaded.set(true);
+      this.allCandidatesFailed.set(true);
     }
   }
 

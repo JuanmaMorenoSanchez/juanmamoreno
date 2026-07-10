@@ -26,17 +26,22 @@
     (dblclick)="handleDoubleClick()"
     (keyup.enter)="handleDoubleClick()"
   >
-    <img
-      [attr.alt]="description()"
+    <div
       #imageElement
-      [src]="qualityImage()"
+      class="art-frame blur"
+      [class.loaded]="hiResLoaded() || allCandidatesFailed()"
+      [class.preview-only]="allCandidatesFailed()"
       [style.backgroundImage]="previewImage()"
-      class="art-viewer blur"
-      [class.loaded]="hiResLoaded()"
-      (load)="onHiResLoad()"
-      (error)="onHiResLoadError()"
-      [attr.data-key]="isFullScreen() ? null : displayIndex()"
-    />
+    >
+      <img
+        [attr.alt]="description()"
+        [src]="qualityImage()"
+        class="art-viewer"
+        [class.hi-res-pending]="!hiResLoaded()"
+        (load)="onHiResLoad()"
+        (error)="onHiResLoadError()"
+      />
+    </div>
     @if (displayExpand) {
     <mat-icon class="fullscreen-icon"> fullscreen </mat-icon>
     }

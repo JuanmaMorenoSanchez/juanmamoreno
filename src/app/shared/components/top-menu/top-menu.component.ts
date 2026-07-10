@@ -17,7 +17,6 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
-import { SessionQuery } from '@shared/store/session.query';
 
 @Component({
   selector: 'app-top-menu',
@@ -42,7 +41,6 @@ import { SessionQuery } from '@shared/store/session.query';
 })
 export class TopMenuComponent {
   private artworkService = inject(ARTWORK_PORT);
-  private sessionQuery = inject(SessionQuery);
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
 
@@ -53,7 +51,7 @@ export class TopMenuComponent {
   // }
 
   get years(): Set<number> {
-    return this.artworkService.getYears(this.sessionQuery.getValue().artPieces);
+    return this.artworkService.getAvailableYears();
   }
 
   get currentLang(): string {
