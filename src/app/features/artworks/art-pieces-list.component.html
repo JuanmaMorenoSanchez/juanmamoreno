@@ -50,25 +50,21 @@
       role="listitem"
       [attr.aria-label]="artPiece.name"
     >
-      <mat-card>
+      <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
         @if (isSelected(artPiece)) {
         <div class="overlay">
           <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
         </div>
-        }
+        } @if (imgThumbUrls().get(artPiece.tokenId); as thumbUrl) {
         <img
           class="front-image"
           mat-card-image
-          loading="lazy"
-          [src]="
-            displayedImages.has(artPiece.tokenId)
-              ? imgThumbUrls().get(artPiece.tokenId) ?? null
-              : null
-          "
+          [class.loaded]="loadedImages.has(artPiece.tokenId)"
+          [src]="thumbUrl"
           [alt]="'Artwork ' + artPiece.name"
-          appLazyLoad
-          (visible)="onImageVisible(artPiece.tokenId)"
+          (load)="onImageLoaded(artPiece.tokenId)"
         />
+        }
       </mat-card>
     </mat-grid-tile>
     }

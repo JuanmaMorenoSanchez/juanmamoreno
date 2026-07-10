@@ -9,6 +9,18 @@ mat-card {
     display: flex;
     align-items: stretch;
     justify-content: stretch;
+    // Light grey placeholder shown while the thumbnail is still loading
+    --mdc-elevated-card-container-color: #ebebe9;
+    background-color: #ebebe9;
+}
+
+.front-image {
+    opacity: 0;
+    transition: opacity 0.35s ease-in;
+
+    &.loaded {
+        opacity: 1;
+    }
 }
 
 .container {

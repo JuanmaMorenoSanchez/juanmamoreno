@@ -54,7 +54,7 @@ export class ArtPiecesListComponent {
   private activatedroute = inject(ActivatedRoute);
   private responsiveService = inject(ResponsiveService);
 
-  public displayedImages = new Set<string>();
+  public loadedImages = new Set<string>();
   public sortMethods = Object.values(SortMethod);
 
   numberOfCols = input<number>(
@@ -124,8 +124,11 @@ export class ArtPiecesListComponent {
   });
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
+  public onImageLoaded(tokenId: string): void {
+    this.loadedImages.add(tokenId);
+  }
+
   public onImageVisible(tokenId: string): void {
-    this.displayedImages.add(tokenId);
     const nft = this.artPieces()?.find((p) => p.tokenId === tokenId);
     if (nft) this.loadImgThumbUrl(nft);
   }
