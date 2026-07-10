@@ -1,61 +1,93 @@
-<div
-  class="image-viewer"
-  (mouseover)="setHover(true)"
-  (mouseleave)="setHover(false)"
-  (focus)="setHover(true)"
-  (blur)="setHover(false)"
->
-  @if (displayArrows() && hovering) {
-  <div
-    class="overlay left"
-    role="button"
-    tabindex="0"
+<ng-template #controls>
+  @if (displayArrows()) {
+  <button
+    mat-icon-button
     aria-label="Previous image"
+    matTooltip="Previous"
+    matTooltipPosition="below"
     (click)="nextNft(-1)"
-    (keyup.enter)="nextNft(-1)"
   >
-    <mat-icon class="arrow"> arrow_back </mat-icon>
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span class="counter">{{ displayIndex() + 1 }} / {{ nfts().length }}</span>
+  <button
+    mat-icon-button
+    aria-label="Next image"
+    matTooltip="Next"
+    matTooltipPosition="below"
+    (click)="nextNft(1)"
+  >
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  }
+  <button
+    mat-icon-button
+    class="fullscreen-btn"
+    aria-label="Toggle fullscreen"
+    [matTooltip]="isFullScreen() ? 'Exit fullscreen' : 'Fullscreen'"
+    matTooltipPosition="below"
+    (click)="toggleFullScreen()"
+  >
+    <mat-icon>{{ isFullScreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+</ng-template>
+
+<div class="image-viewer">
+  @if (!isFullScreen()) {
+  <div class="viewer-toolbar" [style.width]="frameWidth()">
+    <ng-container [ngTemplateOutlet]="controls"></ng-container>
   </div>
   }
+
   <div
     class="image-container"
-    role="button"
     tabindex="0"
-    aria-label="Toggle fullscreen"
-    (click)="handleImageClick()"
-    (dblclick)="handleDoubleClick()"
-    (keyup.enter)="handleDoubleClick()"
+    role="region"
+    aria-label="Artwork viewer"
+    (dblclick)="toggleFullScreen()"
+    (keydown.arrowLeft)="nextNft(-1)"
+    (keydown.arrowRight)="nextNft(1)"
   >
     <div
       #imageElement
-      class="art-frame blur"
-      [class.loaded]="hiResLoaded() || allCandidatesFailed()"
-      [class.preview-only]="allCandidatesFailed()"
-      [style.backgroundImage]="previewImage()"
+      class="art-frame"
+      [style.aspectRatio]="aspectRatio()"
+      [style.width]="frameWidth()"
     >
+      <div
+        class="preview-layer"
+        [class.visible]="hasPreview() && !hasImage()"
+        [style.backgroundImage]="previewImage()"
+      ></div>
+
+      @if (layerA() !== 'none') {
       <img
+        class="art-viewer layer"
+        [class.visible]="activeIsA()"
+        [src]="layerA()"
         [attr.alt]="description()"
-        [src]="qualityImage()"
-        class="art-viewer"
-        [class.hi-res-pending]="!hiResLoaded()"
-        (load)="onHiResLoad()"
-        (error)="onHiResLoadError()"
       />
+      } @if (layerB() !== 'none') {
+      <img
+        class="art-viewer layer"
+        [class.visible]="!activeIsA()"
+        [src]="layerB()"
+        [attr.alt]="description()"
+      />
+      }
+
+      @if (loading()) {
+      <div class="spinner" aria-hidden="true"></div>
+      }
+
+      @if (isFullScreen()) {
+      <div
+        class="viewer-toolbar overlay"
+        (dblclick)="$event.stopPropagation()"
+      >
+        <ng-container [ngTemplateOutlet]="controls"></ng-container>
+      </div>
+      }
     </div>
-    @if (displayExpand) {
-    <mat-icon class="fullscreen-icon"> fullscreen </mat-icon>
-    }
   </div>
-  @if (displayArrows() && hovering) {
-  <div
-    class="overlay right"
-    role="button"
-    tabindex="0"
-    aria-label="Next image"
-    (click)="nextNft(1)"
-    (keyup.enter)="nextNft(1)"
-  >
-    <mat-icon class="arrow"> arrow_forward </mat-icon>
-  </div>
-  }
 </div>

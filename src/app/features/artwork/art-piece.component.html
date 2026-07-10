@@ -1,45 +1,47 @@
 <div class="container margin-top">
-  <app-back-button></app-back-button>
-  <div>
-    <app-image-viewer
-      class="fit-width"
-      [nfts]="nfts()"
-      [description]="description()"
-      [(displayIndex)]="displayingIndex"
-    ></app-image-viewer>
-    @if (nft()) {
-    <div class="art-piece-labels">
-      <h2>
-        <i
-          >{{ nft().name }}. <small>{{ viewLabel() }}</small></i
-        >
-      </h2>
-      <h3>
+  <div class="viewer-header">
+    <app-back-button></app-back-button>
+    <div class="viewer-column">
+      <app-image-viewer
+        class="fit-width"
+        [nfts]="nfts()"
+        [description]="description()"
+        [(displayIndex)]="displayingIndex"
+      ></app-image-viewer>
+      @if (nft()) {
+      <div class="art-piece-labels">
+        <h2>
+          <i
+            >{{ nft().name }}. <small>{{ viewLabel() }}</small></i
+          >
+        </h2>
+        <h3>
+          <small>
+            <a
+              [routerLink]="['/artworks']"
+              [queryParams]="{ years: nft() | trait : validTraits.YEAR }"
+              >{{ nft() | trait : validTraits.YEAR }}</a
+            >, {{ nft() | trait : validTraits.MEDIUM | translate }},
+            {{ nft() | trait : validTraits.HEIGHT }} x
+            {{ nft() | trait : validTraits.WIDTH }}
+            {{ nft() | trait : validTraits.UNIT }}. @if (sold()) {
+            <span [matTooltip]="'sold' | translate" class="dot"></span>
+            }
+          </small>
+        </h3>
         <small>
-          <a
-            [routerLink]="['/artworks']"
-            [queryParams]="{ years: nft() | trait : validTraits.YEAR }"
-            >{{ nft() | trait : validTraits.YEAR }}</a
-          >, {{ nft() | trait : validTraits.MEDIUM | translate }},
-          {{ nft() | trait : validTraits.HEIGHT }} x
-          {{ nft() | trait : validTraits.WIDTH }}
-          {{ nft() | trait : validTraits.UNIT }}. @if (sold()) {
-          <span [matTooltip]="'sold' | translate" class="dot"></span>
+          <app-download-button
+            [links]="qualityUrls()"
+            [name]="nft().name"
+          ></app-download-button>
+          @if (frontalViewNft()) {
+          <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
           }
+          <app-links-button [tokenId]="tokenId()"> </app-links-button>
         </small>
-      </h3>
-      <small>
-        <app-download-button
-          [links]="qualityUrls()"
-          [name]="nft().name"
-        ></app-download-button>
-        @if (frontalViewNft()) {
-        <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
-        }
-        <app-links-button [tokenId]="tokenId()"> </app-links-button>
-      </small>
+      </div>
+      }
     </div>
-    }
   </div>
   <!-- @if (nft().description?.length) {
     <div class="art-piece-desc">
