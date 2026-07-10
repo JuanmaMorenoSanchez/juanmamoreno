@@ -8,7 +8,7 @@ import { Nft } from '@domain/artwork/artwork.entity';
 import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { DossierOptionsModalComponent } from '@shared/components/dossier-options-modal/dossier-options-modal.component';
-import { PdfService } from '@shared/services/pdf.service';
+import { PdfService } from '@shared/services/pdf/pdf.service';
 import type { jsPDF } from 'jspdf';
 
 @Component({
