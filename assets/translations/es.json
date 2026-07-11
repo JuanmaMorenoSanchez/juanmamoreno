@@ -89,28 +89,28 @@
   "statement": {
     "title": "Statement",
     "introduction": {
-      "content": "La generación milenial, a la que pertenezco, se caracteriza por ser la primera que ha tenido que buscarse la vida en un ambiente digital, habiéndo sido educada tomando notas en clase con bolígrafo y papel. Es la intersección entre lo analógico y lo digital, especialmente evidente en mi caso, ya que divido mi fuerza de trabajo entre la producción artística que necesito para ser feliz y la programación de software que necesito para poder comer. Mi obra abraza la tecnología tanto como tema como herramienta creativa, manteniendo un diálogo constante con el pasado mientras intenta aprovechar las oportunidades de la era digital."
+      "content": "Mi obra artística es profundamente analógica, si bien la creación suele tener su origen en lo digital. Esta es la gran contradicción de <a href='https://www.plataformadeartecontemporaneo.com/pac/juanma-moreno-lo-peor-y-lo-mejor-de-la-selfie-generation/' target='_blank' rel='noopener noreferrer'><em>la generación milenial, a la que pertenezco</a>. Somos la última generación que se ha formado usando papel y lápiz que ha tenido que buscarse la vida en un ambiente digital. Es la intersección entre dos mundos, una colisión que no intento disimular. De hecho, divido mi fuerza de trabajo entre la producción artística que necesito para ser feliz y la programación de software que necesito para poder comer."
     },
     "painting": {
       "title": "Pintura",
-      "distance": "En la pintura es donde, a lo largo de toda mi vida, he encontrado un refugio para distanciarme de lo cotidiano. La pintura es importante. La pintura es útil.",
-      "outOfNoise": "Esta distancia implica pasar tiempo fuera del automatismo de la rutina y de las dinámicas en las que pasamos la mayor parte del tiempo, una condición necesaria para poder concebir nuevas narrativas, lugares y formas.",
-      "anacronism": "La pintura es un oficio ancestral que permite trabajar en una superficie tanto tiempo como el artista quiera, teniendo como únicos límites el espacio y el tiempo. <strong>La pintura es un anacronismo precioso.</strong> Al mismo tiempo, la pintura es siempre relevante porque es un campo infinito de conocimiento. Cada artista, a lo largo de los años, descubre pequeños hallazgos en su camino, que juntos son inevitablemente únicos. Por eso, la obra de un artista que ha trabajado durante años es casi siempre especial y valiosa."
+      "distance": "En la pintura es donde, a lo largo de toda mi vida, he encontrado refugio. La pintura es importante. La pintura es útil. La pintura es casa.",
+      "outOfNoise": "Esta distancia implica pasar tiempo fuera del automatismo de la rutina, una condición necesaria para poder observar, analizar y finalmente construir.",
+      "anacronism": "La pintura es un oficio ancestral que permite trabajar en una superficie tanto o tan poco como el artista quiera, teniendo como únicos límites el espacio y el tiempo. <strong>La pintura es un anacronismo precioso.</strong> Al mismo tiempo, la pintura es siempre relevante porque es un campo infinito de conocimiento. Cada artista, a lo largo de los años, va descubriendo pequeños hallazgos, que en su conjunto acaban por formar algo único e irrepetible."
     },
     "art": {
       "title": "Arte",
-      "arts": "Mi refugio en la pintura, la escultura, el arte generativo o el arte digital ha dado frutos diferentes a lo largo del tiempo. Hay frutos que nunca han sido documentados, y también los hay que nunca han sido recogidos. En cualquier caso, hay peculiaridades en mi arte que son constantes y atraviesan la producción, y hay otras que son variables, que van y vienen con el tiempo:"
+      "arts": "Mi refugio en la pintura, la escultura, el arte generativo o el arte digital ha dado frutos diferentes a lo largo del tiempo. Hay frutos que nunca han sido documentados, y también los hay que ni siquiera han sido vistos por otra persona más que yo mismo. En cualquier caso, hay peculiaridades en mi arte que son constantes y atraviesan la producción, y hay otras que son variables; obsesiones que van y vienen con el tiempo:"
     },
     "constants": {
       "title": "Constantes",
       "items": {
         "first": {
           "title": "Internet",
-          "content": "Representar a la tecnología en la pintura y crear tecnología artesanalmente son formas de intentar reconciliar nuestras dos mitades: nuestro yo físico y nuestro avatar. Por una razón, mi generación, <a href='https://www.plataformadeartecontemporaneo.com/pac/juanma-moreno-lo-peor-y-lo-mejor-de-la-selfie-generation/' target='_blank' rel='noopener noreferrer'><em>los millennials</em></a>, es la única que ha tenido que vivir y trabajar en Internet, habiendo sido educada con lápiz y papel. Además, la mayoría de las imágenes que uso en mi proceso creativo provienen de Internet, específicamente de encuentros fortuitos con imágenes aleatorias. Estas imágenes son secuestradas por mí, y me apropio de ellas. Incluso antes de la aparición de las IA, Internet ya era virtualmente infinito, considerando la diminuta capacidad de procesamiento de información que tenemos los humanos individualmente."
+          "content": "Representar a la tecnología en la pintura y crear tecnología artesanalmente son formas de intentar reconciliar nuestro yo físico y nuestro avatar.La mayoría de las imágenes que uso en mi proceso creativo provienen de Internet, específicamente de encuentros fortuitos con imágenes aleatorias. Incluso antes de la aparición de las IA, Internet ya era un mundo visual virtualmente infinito."
         },
         "second": {
           "title": "Elemento inquietante",
-          "content": "En una pintura hipotética, un personaje mira o interactúa con algo. Pero no sabemos quién es, qué está haciendo o por qué lo está haciendo. Incluso si es algo indeterminado, la acción introduce una narrativa e invita a pasar tiempo contemplando la imagen. La idea es que la imagen proponga una premisa abierta, algo más allá de la pose, y que el espectador la complete."
+          "content": "En una pintura hipotética, un personaje mira o interactúa con algo. Pero no sabemos quién es, qué está haciendo o por qué lo está haciendo. Incluso si es algo indeterminado, la acción introduce una narrativa e invita a pasar tiempo contemplando la imagen. La idea es que la imagen proponga una premisa abierta, algo más allá de la pose, y que el espectador la complete. Lo inquietante como punto de partida."
         },
         "third": {
           "title": "Tradición",
@@ -118,7 +118,7 @@
         },
         "fourth": {
           "title": "El fracaso como una de las Bellas Artes",
-          "content": "'He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.' Esta cita del polifacético Pepín Tre ilustra perfectamente la razón de la multidisciplinariedad. El genio, la iluminación divina o la inspiración no son más que clichés mitológicos. La realidad, como siempre, es mucho más prosaica: es el fracaso (real o percibido) lo que mueve a un artista a investigar, probar nuevas técnicas, nuevas formas de llegar al público, etc. Por el contrario, estoy convencido de que el éxito (real o percibido) tiene una capacidad paralizante y termina produciendo artistas aburridos de su propio arte y de sí mismos. El fracaso frustra, pero también estimula, o eso quiero creer yo."
+          "content": "'He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.' Esta cita del polifacético Pepín Tre ilustra perfectamente la razón de la multidisciplinariedad. El genio, la iluminación divina o la inspiración no son más que clichés mitológicos. La realidad, como siempre, es mucho más prosaica: es el fracaso (real o percibido) lo que mueve a un artista a investigar, probar nuevas técnicas, nuevas formas de llegar al público, etc. Por el contrario, estoy convencido de que el éxito (real o percibido) tiene una capacidad paralizante y termina produciendo artistas aburridos de su propio arte y por tanto de sí mismos. El fracaso frustra, pero también estimula, o eso quiero creer yo."
         }
       }
     },
@@ -141,7 +141,9 @@
     "statement": "Generar y descargar statement",
     "sheet": "Generar y descargar ficha técnica",
     "portfolio": "Generar y descargar dossier",
-    "hd": "Descargar imagen en alta resolución"
+    "hd": "Descargar imagen en alta resolución",
+    "success": "Descarga lista",
+    "error": "No se pudo generar el archivo"
   },
   "links": {
     "view": "Ver repercusión de la pieza en Internet",
