@@ -1,3 +1,5 @@
 .back-button {
-  margin-bottom: 1em;
+  // Nudge the double-chevron optically onto the toolbar baseline shared with
+  // the other icon buttons (it renders a touch low otherwise).
+  margin-right: 0.25em;
 }

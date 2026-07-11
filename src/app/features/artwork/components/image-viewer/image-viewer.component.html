@@ -35,6 +35,7 @@
 <div class="image-viewer">
   @if (!isFullScreen()) {
   <div class="viewer-toolbar" [style.width]="frameWidth()">
+    <ng-content select="[viewer-lead]"></ng-content>
     <ng-container [ngTemplateOutlet]="controls"></ng-container>
   </div>
   }

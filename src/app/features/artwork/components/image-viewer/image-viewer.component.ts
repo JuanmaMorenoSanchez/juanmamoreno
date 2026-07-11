@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -11,7 +12,6 @@ import {
   untracked,
   ViewChild,
 } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -20,6 +20,11 @@ import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { map, of, startWith, switchMap } from 'rxjs';
+
+// Max time to wait on a single image source before abandoning it for the next
+// candidate. Long enough for a legitimately slow download, short enough that an
+// unresponsive IPFS gateway doesn't leave the viewer stuck on the preview.
+const DECODE_TIMEOUT_MS = 5000;
 
 @Component({
   selector: 'app-image-viewer',
@@ -122,8 +127,24 @@ export class ImageViewerComponent {
     effect(() => {
       const candidates = this.qualityCandidates();
       const token = ++this.loadToken;
-      untracked(() => this.loadBestCandidate(candidates, token));
+      untracked(() => {
+        // Drop the previous view's hi-res so it stops covering the preview.
+        // Without this the buffer keeps the old sharp image up for the whole
+        // new download; navigation should instead fall back to the new view's
+        // low-res preview immediately and upgrade from there.
+        this.resetLayers();
+        this.loadBestCandidate(candidates, token);
+      });
     });
+  }
+
+  // Clears both hi-res layers so the low-res preview shows through again. Used
+  // on every artwork change so each view starts from its preview, exactly like
+  // the very first load.
+  private resetLayers() {
+    this.layerA.set('none');
+    this.layerB.set('none');
+    this.activeIsA.set(true);
   }
 
   public nextNft(relativeIndex: number) {
@@ -157,7 +178,7 @@ export class ImageViewerComponent {
       try {
         await this.decode(url);
       } catch {
-        continue; // this source failed (e.g. IPFS blocked): try the next best
+        continue; // this source failed or stalled: try the next best
       }
       if (token !== this.loadToken) return; // superseded by a newer artwork
       this.promote(url);
@@ -168,12 +189,31 @@ export class ImageViewerComponent {
     if (token === this.loadToken) this.loading.set(false);
   }
 
-  // Downloads and fully decodes an image off-screen; rejects if it cannot load.
-  private decode(url: string): Promise<void> {
+  // Downloads and fully decodes an image off-screen; rejects if it cannot load
+  // OR does not arrive within the timeout. The timeout is essential: an
+  // unresponsive IPFS gateway leaves decode() pending indefinitely, which would
+  // otherwise stall the whole quality chain and never fall through to the
+  // faster, more reliable CDN mirrors that come next in the candidate list.
+  private decode(url: string, timeoutMs = DECODE_TIMEOUT_MS): Promise<void> {
     if (!url) return Promise.reject(new Error('Empty image url'));
     const img = new Image();
     img.src = url;
-    return img.decode();
+    return new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        img.src = ''; // abort the stalled download so it stops using bandwidth
+        reject(new Error(`decode timeout: ${url}`));
+      }, timeoutMs);
+      img.decode().then(
+        () => {
+          clearTimeout(timer);
+          resolve();
+        },
+        (err) => {
+          clearTimeout(timer);
+          reject(err);
+        }
+      );
+    });
   }
 
   // Cross-fade: write the ready image into whichever layer is hidden, then flip
