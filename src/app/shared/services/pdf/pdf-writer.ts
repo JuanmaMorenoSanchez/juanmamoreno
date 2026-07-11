@@ -1,5 +1,9 @@
-import { jsPDF } from 'jspdf';
+import type { jsPDF } from 'jspdf';
 import { PDF_COLORS, PDF_PAGE, PDF_TYPE } from './pdf-theme';
+
+// jsPDF is dynamically imported so the heavy PDF stack stays out of the
+// initial bundle; the constructor is handed in rather than imported here.
+export type JsPdfConstructor = typeof jsPDF;
 
 export interface PdfTextStyle {
   size?: number;
@@ -19,8 +23,8 @@ export class PdfWriter {
   readonly doc: jsPDF;
   y: number;
 
-  constructor() {
-    this.doc = new jsPDF({ unit: 'mm', format: PDF_PAGE.format });
+  constructor(JsPdf: JsPdfConstructor) {
+    this.doc = new JsPdf({ unit: 'mm', format: PDF_PAGE.format });
     this.y = PDF_PAGE.margin;
   }
 

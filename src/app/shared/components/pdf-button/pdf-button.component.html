@@ -1,12 +1,12 @@
 <button
   mat-icon-button
   (click)="createPDF()"
-  [disabled]="isCreating"
+  [disabled]="isCreating()"
   [matTooltip]="getTooltip()"
   [attr.aria-label]="getTooltip()"
   matTooltipPosition="below"
 >
-  @if (!isCreating) {
+  @if (!isCreating()) {
   <mat-icon>assignment</mat-icon>
   } @else {
   <mat-progress-spinner

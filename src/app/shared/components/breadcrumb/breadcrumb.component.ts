@@ -1,4 +1,3 @@
-import { NgFor } from '@angular/common';
 import {
   Component,
   inject,
@@ -38,7 +37,6 @@ import { BreadCrumb } from './breadcrumbs.entity';
     MatFormField,
     MatSelect,
     FormsModule,
-    NgFor,
     MatOption,
     TranslatePipe,
     MatLabel,
@@ -51,12 +49,15 @@ export class BreadcrumbComponent implements OnInit {
   private translateService = inject(TranslateService);
   private sessionQuery = inject(SessionQuery);
 
-  public breadcrumbs: Array<BreadCrumb>;
+  // Signals (not plain fields) so navigation updates actually schedule a
+  // re-render under the app's zoneless change detection — a plain field
+  // mutated inside a router.events subscription never notifies Angular here.
+  public breadcrumbs: WritableSignal<Array<BreadCrumb>>;
   public selectedYears: number[] = [];
   public newYear: WritableSignal<number | null> = signal(null);
 
   constructor() {
-    this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
+    this.breadcrumbs = signal(this.buildBreadCrumb(this.activatedRoute.root));
   }
 
   ngOnInit() {
@@ -67,7 +68,7 @@ export class BreadcrumbComponent implements OnInit {
       )
       .subscribe(() => {
         this.selectedYears = this.extractSelectedYears();
-        this.breadcrumbs = this.buildBreadCrumb(this.activatedRoute.root);
+        this.breadcrumbs.set(this.buildBreadCrumb(this.activatedRoute.root));
       });
   }
 

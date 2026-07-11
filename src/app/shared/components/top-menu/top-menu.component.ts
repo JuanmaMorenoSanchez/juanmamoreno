@@ -56,8 +56,9 @@ export class TopMenuComponent {
 
   get currentLang(): string {
     return (
-      this.translateService.currentLang ||
-      this.translateService.getDefaultLang()
+      this.translateService.getCurrentLang() ||
+      this.translateService.getFallbackLang() ||
+      ALLOWED_LANGUAGES.ENGLISH
     );
   }
 

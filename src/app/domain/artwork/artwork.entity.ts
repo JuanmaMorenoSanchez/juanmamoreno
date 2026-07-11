@@ -16,11 +16,11 @@ export interface Nft {
   };
   tokenUri?: string;
   timeLastUpdated?: string;
-  contract?: any;
-  tokenType?: any;
-  acquiredAt?: any;
-  collection?: any;
-  mint?: any;
+  contract?: unknown;
+  tokenType?: unknown;
+  acquiredAt?: unknown;
+  collection?: unknown;
+  mint?: unknown;
 }
 
 export interface NftImage {

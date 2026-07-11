@@ -1,4 +1,4 @@
-@if (breadcrumbs && breadcrumbs.length) {
+@if (breadcrumbs().length) {
 <nav class="container" aria-label="Breadcrumb">
   <mat-chip-listbox>
     <mat-chip color="primary">
@@ -14,7 +14,7 @@
         </a>
       </span>
     </mat-chip>
-    @for (breadcrumb of breadcrumbs; track breadcrumb) {
+    @for (breadcrumb of breadcrumbs(); track breadcrumb) {
     <mat-chip color="primary">
       <a
         [routerLink]="breadcrumb.url"
@@ -35,9 +35,11 @@
         (ngModelChange)="handleYearChange($event)"
         aria-label="Select year"
       >
-        <mat-option *ngFor="let year of validYears" [value]="year">
+        @for (year of validYears; track year) {
+        <mat-option [value]="year">
           {{ year }}
         </mat-option>
+        }
       </mat-select>
     </mat-form-field>
   </mat-chip-listbox>

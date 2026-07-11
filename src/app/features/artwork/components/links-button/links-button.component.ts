@@ -32,9 +32,9 @@ export class LinksButtonComponent {
   // still an experimental feature in angular v19
   // not sure if i need this here. It fixes problem with subscriptions not finishing and behaving weird, but it also wrapes data in a weird format that i dont care about
   private rxUrls = rxResource({
-    request: () => this.tokenId(),
-    loader: ({ request }) =>
-      this.artworkService.getLinks(request as string).pipe(
+    params: () => this.tokenId(),
+    stream: ({ params }) =>
+      this.artworkService.getLinks(params as string).pipe(
         distinctUntilChanged(),
         map((urls) => urls || []),
         catchError(() => of([]))
@@ -43,14 +43,14 @@ export class LinksButtonComponent {
 
   constructor() {
     effect(() => {
-      const urlsValue: any = this.rxUrls.value();
+      const urlsValue = this.rxUrls.value() as { urls?: string[] } | undefined;
       const urls = urlsValue?.urls;
       this.haveLinks.set(Array.isArray(urls) && urls.length > 0);
     });
   }
 
   public openLinksModal() {
-    const urlsValue: any = this.rxUrls.value()!;
+    const urlsValue = this.rxUrls.value() as { urls?: string[] } | undefined;
     this.dialog.open(LinksModalComponent, {
       data: { links: urlsValue?.urls },
     });

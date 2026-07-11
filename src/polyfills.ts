@@ -1,4 +1,5 @@
-window.global = window;
+// Some third-party libs expect a Node-style `global`; alias it to `window`.
+(window as unknown as Record<string, unknown>)['global'] = window;
 
 /**
  * This file includes polyfills needed by Angular and is loaded before the app.

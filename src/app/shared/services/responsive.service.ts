@@ -1,17 +1,16 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResponsiveService {
+  private responsive = inject(BreakpointObserver);
 
   public displayMobileLayout: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(
-    private responsive: BreakpointObserver
-  ) {
+  constructor() {
     this.responsive.observe([
       Breakpoints.XSmall
     ]).pipe(distinctUntilChanged())

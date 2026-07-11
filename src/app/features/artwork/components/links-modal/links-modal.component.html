@@ -1,7 +1,8 @@
 <h2 mat-dialog-title>{{ "links.view" | translate }}</h2>
 <div mat-dialog-content>
   <mat-list>
-    <mat-list-item *ngFor="let link of data.links">
+    @for (link of data.links; track link) {
+    <mat-list-item>
       <a mat-line [href]="link" target="_blank" rel="noopener noreferrer">
         {{
           link
@@ -11,6 +12,7 @@
         }}
       </a>
     </mat-list-item>
+    }
   </mat-list>
 </div>
 <div mat-dialog-actions>

@@ -8,7 +8,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
-import { GState, jsPDF } from 'jspdf';
+import type { jsPDF } from 'jspdf';
 import {
   compressImage,
   grayscaleZoomedSquare,
@@ -31,8 +31,21 @@ export class PdfService {
   private artworkService = inject(ARTWORK_PORT);
   private translateService = inject(TranslateService);
 
+  // The jsPDF module is loaded on demand so it stays out of the initial
+  // bundle; cached after first use so repeat downloads don't re-import.
+  private jspdf?: typeof import('jspdf');
+
+  private async loadJspdf(): Promise<typeof import('jspdf')> {
+    return (this.jspdf ??= await import('jspdf'));
+  }
+
+  private async newWriter(): Promise<PdfWriter> {
+    const { jsPDF } = await this.loadJspdf();
+    return new PdfWriter(jsPDF);
+  }
+
   public async createTechnicalSheet(nft: Nft): Promise<jsPDF> {
-    const writer = new PdfWriter();
+    const writer = await this.newWriter();
     await this.addArtworkPage(writer, nft);
     return writer.doc;
   }
@@ -45,7 +58,7 @@ export class PdfService {
     customTitle?: string,
     customText?: string
   ): Promise<jsPDF> {
-    const writer = new PdfWriter();
+    const writer = await this.newWriter();
     await this.addCover(writer, nfts, customTitle);
     if (customText) {
       writer.newPage();
@@ -72,13 +85,13 @@ export class PdfService {
   }
 
   public async createStatement(): Promise<jsPDF> {
-    const writer = new PdfWriter();
+    const writer = await this.newWriter();
     this.addStatement(writer);
     return writer.doc;
   }
 
   public async createCV(): Promise<jsPDF> {
-    const writer = new PdfWriter();
+    const writer = await this.newWriter();
     this.addCv(writer);
     return writer.doc;
   }
@@ -90,6 +103,7 @@ export class PdfService {
     nfts: Array<Nft>,
     customTitle?: string
   ): Promise<void> {
+    const { GState } = await this.loadJspdf();
     const randomNft = nfts[Math.floor(Math.random() * nfts.length)];
     const img = await loadFirstAvailableImage(
       this.artworkService.getNftFetchableUrls(randomNft.image)

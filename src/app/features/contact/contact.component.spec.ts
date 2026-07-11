@@ -1,18 +1,20 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { mockResponsiveService } from 'src/app/test/mocks/shared/services/responsive.service.mock';
+import { vi } from 'vitest';
+import { mockResponsiveService } from '../../test/mocks/shared/services/responsive.service.mock';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { ContactComponent } from './contact.component';
 
 // Mock MatSnackBar
 const mockSnackBar = {
-  open: jasmine.createSpy('open')
+  open: vi.fn()
 };
 
 describe('ContactComponent', () => {
@@ -24,10 +26,11 @@ describe('ContactComponent', () => {
         ContactComponent,
         FormsModule,
         ReactiveFormsModule,
-        TranslateModule.forRoot(),
-        HttpClientTestingModule,
       ],
       providers: [
+        provideTranslateService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         provideAnimations(),
         provideRouter([]),
         { provide: MatSnackBar, useValue: mockSnackBar },
@@ -52,12 +55,12 @@ describe('ContactComponent', () => {
     component.honeypot.setValue('');
 
     const pendingResponse = new Subject<ApiResponse<string>>();
-    spyOn(component['contactService'], 'sendContactMessage').and.returnValue(pendingResponse.asObservable());
+    vi.spyOn(component['contactService'], 'sendContactMessage').mockReturnValue(pendingResponse.asObservable());
 
     component.onSubmit();
 
-    expect(component.form.disabled).toBeTrue();
-    expect(component.isLoading).toBeTrue();
+    expect(component.form.disabled).toBe(true);
+    expect(component.isLoading).toBe(true);
 
     // await Promise.resolve();
 
@@ -72,12 +75,12 @@ describe('ContactComponent', () => {
     component.message.setValue('Spam spam spam');
     component.honeypot.setValue('I am a bot');
 
-    const sendSpy = spyOn(component['contactService'], 'sendContactMessage');
+    const sendSpy = vi.spyOn(component['contactService'], 'sendContactMessage');
 
     component.onSubmit();
 
     expect(sendSpy).not.toHaveBeenCalled();
-    expect(component.form.enabled).toBeTrue();
+    expect(component.form.enabled).toBe(true);
   });
 
   it('should show error message for invalid name', () => {

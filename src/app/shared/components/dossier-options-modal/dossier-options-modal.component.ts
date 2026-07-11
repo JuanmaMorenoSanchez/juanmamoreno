@@ -1,5 +1,5 @@
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ export class DossierOptionsModalComponent {
   includeStatement = false;
   isSubmitting = false;
 
-  constructor(private dialogRef: MatDialogRef<DossierOptionsModalComponent>) {}
+  private dialogRef = inject<MatDialogRef<DossierOptionsModalComponent>>(MatDialogRef);
 
   submit() {
     this.isSubmitting = true;

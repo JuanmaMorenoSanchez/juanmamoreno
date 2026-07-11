@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Query } from '@datorama/akita';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
 import { SessionState } from '@shared/entities/session.entity';
@@ -8,8 +8,8 @@ import { SessionStore } from './session.store';
 export class SessionQuery extends Query<SessionState> {
     getArtPiecesObservable = this.select(({ artPieces }) => [...artPieces]);
 
-    constructor(protected override store: SessionStore) {
-        super(store);
+    constructor() {
+        super(inject(SessionStore));
     }
 
     get selectArtPieces(): Array<Nft> {

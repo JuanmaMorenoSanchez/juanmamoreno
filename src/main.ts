@@ -5,7 +5,7 @@ import { environment } from '@environments/environment';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/appConfig';
 
-const storage = persistState({
+persistState({
   preStorageUpdate: (storeName, state) => {
     // Fallback artworks are stored without lastArtPiecesUpdate: keep them
     // in memory only, never in localStorage. Server data (which always has

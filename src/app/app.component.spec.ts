@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { AppComponent } from './app.component';
 import { mockArtworkInfraService } from './test/mocks/infrastructure/artwork/artwork.service.mock';
 
@@ -11,8 +11,9 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, TranslateModule.forRoot()],
+      imports: [AppComponent],
       providers: [
+        provideTranslateService(),
         provideAnimations(),
         provideRouter([]),
         { provide: ARTWORK_PORT, useValue: mockArtworkInfraService },
@@ -26,7 +27,7 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     const translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('en');
+    translate.setFallbackLang('en');
     TestBed.inject(TranslateService);
   });
 

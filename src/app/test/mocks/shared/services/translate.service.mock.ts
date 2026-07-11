@@ -1,10 +1,10 @@
 import { Observable, of } from 'rxjs';
 
 export class MockTranslateService {
-  setTranslation(lang: string, translations: object) {
+  setTranslation() {
     // no-op in tests
   }
-  use(lang: string) {
+  use() {
     // no-op in tests
   }
   get(key: string): Observable<string> {

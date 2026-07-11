@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { ALLOWED_LANGUAGES, getPreferredLanguage } from '@shared/constants/languages.constants';
 import translationsEN from "@translations/en.json";
 import translationsES from "@translations/es.json";
 
@@ -25,6 +25,6 @@ export class AppComponent {
   constructor( ) {
     this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
     this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
-    this.translateService.use(this.translateService.getDefaultLang());
+    this.translateService.use(getPreferredLanguage());
   }
 }
