@@ -1,3 +1,13 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+// .catalog-heading sets a soft grey tone meant for light backgrounds; the
+// toolbar is dark, so the brand name keeps its own light color while still
+// picking up the shared uppercase/tracked treatment.
+.brand {
+  color: inherit;
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0;
+}

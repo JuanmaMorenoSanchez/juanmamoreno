@@ -15,7 +15,11 @@
         </span>
       </mat-chip>
       @for (breadcrumb of breadcrumbs(); track breadcrumb) {
-        <mat-chip color="primary">
+        <mat-chip
+          color="primary"
+          [removable]="!!breadcrumb.isYear"
+          (removed)="removeYearFilter(breadcrumb.label)"
+        >
           <a
             [routerLink]="breadcrumb.url"
             [queryParams]="breadcrumb.queryParams"
@@ -26,9 +30,14 @@
           >
             {{ breadcrumb.label }}
           </a>
+          @if (breadcrumb.isYear) {
+            <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          }
         </mat-chip>
       }
-      <mat-form-field class="small-input" appearance="fill">
+      <mat-form-field class="small-input" appearance="fill" subscriptSizing="dynamic">
         <mat-label>{{ 'selectYear' | translate }}</mat-label>
         <mat-select
           [ngModel]="newYear()"

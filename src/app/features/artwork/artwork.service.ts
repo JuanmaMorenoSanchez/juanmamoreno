@@ -124,6 +124,10 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
           return of(cachedUrl);
         } else {
           return this.fetchRemoteThumbnail(nft.tokenId).pipe(
+            // Without this, a failed request (e.g. a CORS rejection) errors
+            // the whole observable instead of reaching the fallback below,
+            // leaving the tile's thumbnail permanently unset.
+            catchError(() => of(null)),
             map((fetched) => fetched || nft.image.thumbnailUrl || nft.image.originalUrl!)
           );
         }

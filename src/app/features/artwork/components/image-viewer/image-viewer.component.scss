@@ -115,7 +115,8 @@
 
     // While the real Fullscreen API is active, only the fullscreened element
     // (.art-frame) and its descendants are rendered — this variant overlays
-    // the same controls on top of the image so they stay reachable.
+    // the same controls on top of the image so they stay reachable. No blur
+    // or dimming here: the artwork underneath should stay fully visible.
     &.overlay {
       position: absolute;
       top: 10px;
@@ -125,10 +126,12 @@
       width: auto;
       margin-bottom: 0;
       padding: 2px 6px;
-      border-radius: 999px;
-      background-color: rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(6px);
       color: white;
+
+      .mat-icon,
+      .counter {
+        filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.85));
+      }
     }
   }
 }

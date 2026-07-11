@@ -1,5 +1,40 @@
+// Catalog design tokens — mirror PDF_COLORS/PDF_TYPE in
+// src/app/shared/services/pdf/pdf-theme.ts so the site and the generated
+// PDFs (technical sheets, dossier, CV, statement) read as one continuous
+// catalog rather than two different design languages.
+:root {
+  --catalog-ink: #1f1f1f;
+  --catalog-soft: #6e6e6e;
+  --catalog-faint: #a3a3a3;
+  --catalog-accent: #cf2525;
+}
+
 body {
   margin: 0;
+  color: var(--catalog-ink);
+}
+
+a {
+  color: inherit;
+}
+
+// Section-header treatment: quiet, uppercase, letter-spaced, soft-toned —
+// mirrors PdfWriter.heading() (STATEMENT, PAINTING, CONSTANTS, ...). Applied
+// deliberately per-element (not to every h1-h4) since several headings in
+// this app are actually mis-tagged body copy that would become unreadable if
+// uppercased and tracked.
+.catalog-heading {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--catalog-soft);
+}
+
+// Secondary/meta text (year, medium, dimensions) — mirrors the PDF's caption
+// style used under every artwork plate.
+.catalog-caption {
+  color: var(--catalog-soft);
+  letter-spacing: 0.02em;
 }
 
 .front-image {

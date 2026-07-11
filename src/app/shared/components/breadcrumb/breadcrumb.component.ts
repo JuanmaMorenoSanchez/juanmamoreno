@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatChip, MatChipListbox } from '@angular/material/chips';
+import { MatChip, MatChipListbox, MatChipRemove } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -25,6 +25,7 @@ import { BreadCrumb } from './breadcrumbs.entity';
   imports: [
     MatChipListbox,
     MatChip,
+    MatChipRemove,
     RouterLink,
     RouterLinkActive,
     MatIcon,
@@ -138,6 +139,7 @@ export class BreadcrumbComponent implements OnInit {
             label: year,
             url: nextUrl,
             queryParams: { years: year },
+            isYear: true,
           });
         });
       }

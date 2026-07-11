@@ -58,6 +58,11 @@ export class TopMenuComponent {
     );
   }
 
+  // Short display code for the switcher button ('en-EN' -> 'EN').
+  get currentLangLabel(): string {
+    return this.currentLang.slice(0, 2).toUpperCase();
+  }
+
   public changeLanguage(): void {
     const nextLang =
       this.currentLang === ALLOWED_LANGUAGES.ENGLISH

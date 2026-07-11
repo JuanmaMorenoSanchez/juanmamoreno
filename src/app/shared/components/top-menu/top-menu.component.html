@@ -9,7 +9,7 @@
     <mat-toolbar color="primary">
       <mat-toolbar-row>
         <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="['/']">
-          <h1>Juanma Moreno Sánchez</h1>
+          <h1 class="catalog-heading brand">Juanma Moreno Sánchez</h1>
         </button>
         <span class="spacer"></span>
 
@@ -43,7 +43,7 @@
     {{ 'menu.contact' | translate }}
   </button>
   <button aria-label="Language switcher" mat-button (click)="changeLanguage()">
-    {{ currentLang }}
+    {{ currentLangLabel }}
   </button>
 </ng-template>
 

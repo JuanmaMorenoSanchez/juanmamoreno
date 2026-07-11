@@ -1,8 +1,26 @@
 .small-input {
-  width: 27em; /* or any value you want for the width */
-  height: 11em;
-  font-size: 0.4em; /* Optional, to reduce the font size */
+  width: 27em;
+  font-size: 0.4em;
   margin-left: 2em;
+  align-self: flex-start;
+  // mat-chip carries its own 4px margin-top (Material's default chip
+  // spacing), which the form-field doesn't have. Matching it is what
+  // actually lines up the two top borders — flex alignment alone can't,
+  // since both already sit flush against the row's start.
+  margin-top: 4px;
+
+  // MDC's fill appearance reserves ~56px of infix height for a full
+  // label+value stack, making the field noticeably taller than the chips
+  // beside it. Trimmed so its box sits flush with the chip row's top border
+  // instead of towering over it.
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+  }
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
 }
 
 .link-as-text {
