@@ -57,9 +57,7 @@ export class ArtPiecesListComponent {
   public loadedImages = new Set<string>();
   public sortMethods = Object.values(SortMethod);
 
-  numberOfCols = input<number>(
-    !this.responsiveService.displayMobileLayout.value ? 2 : 3
-  );
+  numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
   nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>();
@@ -77,7 +75,7 @@ export class ArtPiecesListComponent {
     const yearsQueryParams = this.yearParamSignal();
     const yearsInput = this.nftFilters()?.years;
     // Years passed as input take precedence over the ones in the URL
-    const years = yearsInput?.length ? yearsInput : yearsQueryParams ?? [];
+    const years = yearsInput?.length ? yearsInput : (yearsQueryParams ?? []);
     const frontalViewByToken = this.frontalViewByToken();
     return (artPieces ?? []).filter(
       (nft) =>
@@ -101,10 +99,7 @@ export class ArtPiecesListComponent {
     }
     const frontals = new Map<string, boolean>();
     for (const nft of nfts) {
-      frontals.set(
-        nft.tokenId,
-        this.artworkService.isFrontalView(nft, byName.get(nft.name) ?? [])
-      );
+      frontals.set(nft.tokenId, this.artworkService.isFrontalView(nft, byName.get(nft.name) ?? []));
     }
     return frontals;
   });
@@ -151,9 +146,7 @@ export class ArtPiecesListComponent {
   public toggleNftSelection(event: MouseEvent, nft: Nft): void {
     event.preventDefault();
     const currentSelection = this.selectedNfts();
-    const index = currentSelection.findIndex(
-      (selected) => selected.tokenId === nft.tokenId
-    );
+    const index = currentSelection.findIndex((selected) => selected.tokenId === nft.tokenId);
 
     if (index === -1) {
       this.selectedNfts.set([...currentSelection, nft]);
@@ -165,15 +158,11 @@ export class ArtPiecesListComponent {
   }
 
   public isSelected(nft: Nft): boolean {
-    return this.selectedNfts().some(
-      (selected) => selected.tokenId === nft.tokenId
-    );
+    return this.selectedNfts().some((selected) => selected.tokenId === nft.tokenId);
   }
 
   public getOrderNumber(nft: Nft): number | null {
-    const index = this.selectedNfts().findIndex(
-      (selected) => selected.tokenId === nft.tokenId
-    );
+    const index = this.selectedNfts().findIndex((selected) => selected.tokenId === nft.tokenId);
     return index !== -1 ? index + 1 : null;
   }
 

@@ -7,10 +7,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import CommonUtils from '@shared/utils/common.utils';
 
 @Component({
-    selector: 'app-download-button',
-    templateUrl: './download-button.component.html',
-    styleUrl: './download-button.component.scss',
-    imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, TranslatePipe]
+  selector: 'app-download-button',
+  templateUrl: './download-button.component.html',
+  styleUrl: './download-button.component.scss',
+  imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, TranslatePipe],
 })
 export class DownloadButtonComponent {
   // Candidate urls for the same image, best quality first

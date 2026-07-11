@@ -1,11 +1,4 @@
-import {
-  Component,
-  effect,
-  inject,
-  input,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, effect, inject, input, signal, WritableSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';

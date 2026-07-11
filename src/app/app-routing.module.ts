@@ -6,19 +6,19 @@ export const routes: Routes = [
     path: '',
     pathMatch: 'full',
     loadComponent: () =>
-      import('@features/artworks/art-pieces-list.component').then(m => m.ArtPiecesListComponent),
-    data: { breadcrumb: 'Paintings' }
+      import('@features/artworks/art-pieces-list.component').then((m) => m.ArtPiecesListComponent),
+    data: { breadcrumb: 'Paintings' },
   },
   {
     path: 'artworks',
     loadComponent: () =>
-      import('@features/artworks/art-pieces-list.component').then(m => m.ArtPiecesListComponent),
-    data: { breadcrumb: 'Paintings' }
+      import('@features/artworks/art-pieces-list.component').then((m) => m.ArtPiecesListComponent),
+    data: { breadcrumb: 'Paintings' },
   },
   {
     path: 'artwork/:id',
     loadComponent: () =>
-      import('@features/artwork/art-piece.component').then(m => m.ArtPieceComponent)
+      import('@features/artwork/art-piece.component').then((m) => m.ArtPieceComponent),
   },
   // {
   //   path: 'generative/:id',
@@ -27,31 +27,29 @@ export const routes: Routes = [
   // },
   {
     path: 'cv',
-    loadComponent: () =>
-      import('@features/cv/cv.component').then(m => m.CvComponent)
+    loadComponent: () => import('@features/cv/cv.component').then((m) => m.CvComponent),
   },
   {
     path: 'about',
     loadComponent: () =>
-      import('@features/statement/about.component').then(m => m.AboutComponent)
+      import('@features/statement/about.component').then((m) => m.AboutComponent),
   },
   {
     path: 'contact',
     loadComponent: () =>
-      import('@features/contact/contact.component').then(m => m.ContactComponent)
+      import('@features/contact/contact.component').then((m) => m.ContactComponent),
   },
   {
     path: 'terms',
-    loadComponent: () =>
-      import('@features/terms/terms.component').then(m => m.TermsComponent)
+    loadComponent: () => import('@features/terms/terms.component').then((m) => m.TermsComponent),
   },
   {
     path: 'privacy',
     loadComponent: () =>
-      import('@features/privacy/privacy.component').then(m => m.PrivacyComponent)
+      import('@features/privacy/privacy.component').then((m) => m.PrivacyComponent),
   },
   {
     path: '**',
-    component: NotFoundComponent
-  }
+    component: NotFoundComponent,
+  },
 ];

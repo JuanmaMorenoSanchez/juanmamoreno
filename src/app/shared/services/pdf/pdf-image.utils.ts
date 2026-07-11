@@ -16,9 +16,7 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
 
 // Walks a best-quality-first candidate list until one source loads
 // (e.g. IPFS originals may be blocked by firewalls)
-export async function loadFirstAvailableImage(
-  urls: string[]
-): Promise<HTMLImageElement> {
+export async function loadFirstAvailableImage(urls: string[]): Promise<HTMLImageElement> {
   for (const url of urls) {
     try {
       return await loadImage(url);
@@ -48,11 +46,7 @@ export function compressImage(
 
 // Cover treatment: random square crop (zoomed into the artwork) converted
 // to black & white.
-export function grayscaleZoomedSquare(
-  img: HTMLImageElement,
-  sizePx = 1200,
-  zoom = 2.2
-): string {
+export function grayscaleZoomedSquare(img: HTMLImageElement, sizePx = 1200, zoom = 2.2): string {
   const cropSize = Math.min(img.width, img.height) / zoom;
   const sx = (img.width - cropSize) * Math.random();
   const sy = (img.height - cropSize) * Math.random();
@@ -66,19 +60,14 @@ export function grayscaleZoomedSquare(
   const imageData = ctx.getImageData(0, 0, sizePx, sizePx);
   const pixels = imageData.data;
   for (let i = 0; i < pixels.length; i += 4) {
-    const luminance =
-      0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
+    const luminance = 0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
     pixels[i] = pixels[i + 1] = pixels[i + 2] = luminance;
   }
   ctx.putImageData(imageData, 0, 0);
   return canvas.toDataURL('image/jpeg', 0.82);
 }
 
-function drawToCanvas(
-  img: HTMLImageElement,
-  width: number,
-  height: number
-): HTMLCanvasElement {
+function drawToCanvas(img: HTMLImageElement, width: number, height: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;

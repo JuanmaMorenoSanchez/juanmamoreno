@@ -46,5 +46,4 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
   }
 }
 
-export const mockArtworkInfraService: ArtworkPort =
-  new MockArtworkInfraService();
+export const mockArtworkInfraService: ArtworkPort = new MockArtworkInfraService();

@@ -1,17 +1,12 @@
-<h2 mat-dialog-title>{{ "links.view" | translate }}</h2>
+<h2 mat-dialog-title>{{ 'links.view' | translate }}</h2>
 <div mat-dialog-content>
   <mat-list>
     @for (link of data.links; track link) {
-    <mat-list-item>
-      <a mat-line [href]="link" target="_blank" rel="noopener noreferrer">
-        {{
-          link
-            .replace("https://", "")
-            .replace("http://", "")
-            .replace("www.", "")
-        }}
-      </a>
-    </mat-list-item>
+      <mat-list-item>
+        <a mat-line [href]="link" target="_blank" rel="noopener noreferrer">
+          {{ link.replace('https://', '').replace('http://', '').replace('www.', '') }}
+        </a>
+      </mat-list-item>
     }
   </mat-list>
 </div>
@@ -22,6 +17,6 @@
     color="primary"
     (click)="close()"
   >
-    {{ "close" | translate }}
+    {{ 'close' | translate }}
   </button>
 </div>

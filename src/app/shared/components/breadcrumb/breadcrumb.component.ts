@@ -1,10 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatChip, MatChipListbox } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
@@ -101,9 +95,7 @@ export class BreadcrumbComponent implements OnInit {
 
   private extractSelectedYears(): number[] {
     const queryParams = this.activatedRoute.snapshot.queryParamMap.get('years');
-    return queryParams
-      ? queryParams.split(',').map((param) => Number(param))
-      : [];
+    return queryParams ? queryParams.split(',').map((param) => Number(param)) : [];
   }
 
   private buildBreadCrumb(
@@ -112,11 +104,8 @@ export class BreadcrumbComponent implements OnInit {
     breadcrumbs: Array<BreadCrumb> = []
   ): Array<BreadCrumb> {
     let label: string =
-      route.routeConfig && route.routeConfig.data
-        ? route.routeConfig.data['breadcrumb']
-        : '';
-    let path =
-      route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
+      route.routeConfig && route.routeConfig.data ? route.routeConfig.data['breadcrumb'] : '';
+    let path = route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
 
     const lastRoutePart = path ? path.split('/').pop() : '';
     const isDynamicRoute = lastRoutePart!.startsWith(':');
@@ -137,9 +126,7 @@ export class BreadcrumbComponent implements OnInit {
       url: nextUrl,
       queryParams: { years: [] },
     };
-    const newBreadcrumbs = label
-      ? [...breadcrumbs, baseBreadcrumb]
-      : [...breadcrumbs];
+    const newBreadcrumbs = label ? [...breadcrumbs, baseBreadcrumb] : [...breadcrumbs];
     if (route.firstChild) {
       return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
     } else {
@@ -159,9 +146,6 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   private extractNameFromId(id: string): string | null {
-    return (
-      this.artworkService.getNftById(id, this.sessionQuery.selectArtPieces)
-        ?.name || null
-    );
+    return this.artworkService.getNftById(id, this.sessionQuery.selectArtPieces)?.name || null;
   }
 }

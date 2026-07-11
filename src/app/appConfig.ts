@@ -1,17 +1,7 @@
-import {
-  ApplicationConfig,
-  provideZonelessChangeDetection,
-} from '@angular/core';
-import {
-  PreloadAllModules,
-  provideRouter,
-  withPreloading,
-} from '@angular/router';
+import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
+import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';

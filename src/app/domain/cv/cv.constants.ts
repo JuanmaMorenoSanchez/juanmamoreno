@@ -9,7 +9,8 @@ export enum COUNTRIES {
   ITALY = 'cv.countries.italy',
 }
 
-export enum DOWNLOADTYPES { // move from here
+export enum DOWNLOADTYPES {
+  // move from here
   CV = 'cv',
   STATEMENT = 'statement',
   IMAGE = 'image',
@@ -110,8 +111,7 @@ export const CV_OBJECT: Array<Timeline> = [
       },
       {
         title: 'Pintores pensando la pintura',
-        venue:
-          "<a href='https://www.espacio75.com/' target='_blank'>Espacio 75 Art Gallery</a>",
+        venue: "<a href='https://www.espacio75.com/' target='_blank'>Espacio 75 Art Gallery</a>",
         city: 'Madrid',
         country: COUNTRIES.SPAIN,
         year: 2023,
@@ -138,15 +138,13 @@ export const CV_OBJECT: Array<Timeline> = [
         year: 2022,
       },
       {
-        title:
-          "<a href='https://www.luccaartfair.com/' target='_blank'> Lucca Art Fair</a>",
+        title: "<a href='https://www.luccaartfair.com/' target='_blank'> Lucca Art Fair</a>",
         country: COUNTRIES.ONLINE,
         year: 2021,
       },
       {
         title: 'Figuración Fantástica Sevillana',
-        venue:
-          "<a href='https://impulsogaleria.com/en/home/' target='_blank'>Galería Impulso</a>",
+        venue: "<a href='https://impulsogaleria.com/en/home/' target='_blank'>Galería Impulso</a>",
         city: 'Querétaro',
         country: COUNTRIES.MEXICO,
         year: 2021,
@@ -174,8 +172,7 @@ export const CV_OBJECT: Array<Timeline> = [
       },
       {
         title: 'Redes de fe',
-        venue:
-          "<a href='https://renace.art/' target='_blank'>Galería Renace Art</a>",
+        venue: "<a href='https://renace.art/' target='_blank'>Galería Renace Art</a>",
         city: 'Jaen',
         country: COUNTRIES.SPAIN,
         year: 2019,
@@ -203,8 +200,7 @@ export const CV_OBJECT: Array<Timeline> = [
       },
       {
         title: 'A paloma muerta',
-        venue:
-          "<a href='http://estudio22photo.es' target='blank'>Estudio22 </a>",
+        venue: "<a href='http://estudio22photo.es' target='blank'>Estudio22 </a>",
         city: 'Logroño',
         country: COUNTRIES.SPAIN,
         year: 2015,
@@ -260,16 +256,14 @@ export const CV_OBJECT: Array<Timeline> = [
       },
       {
         title: 'Weisser TV',
-        venue:
-          "<a href='https://www.129gallery.com/' target='blank'>129 Gallery</a>",
+        venue: "<a href='https://www.129gallery.com/' target='blank'>129 Gallery</a>",
         city: 'Berlin',
         country: COUNTRIES.GERMANY,
         year: 2011,
       },
       {
         title: 'Mehr Licht, tributo a Chema Alvargonzalez',
-        venue:
-          "<a href='https://glogauair.net/' target='blank'>GlogauAIR Project Space</a>",
+        venue: "<a href='https://glogauair.net/' target='blank'>GlogauAIR Project Space</a>",
         city: 'Berlin',
         country: COUNTRIES.GERMANY,
         year: 2011,
@@ -321,8 +315,7 @@ export const CV_OBJECT: Array<Timeline> = [
         year: 2012,
       },
       {
-        title:
-          "<a href='http://www.glogauair.net/' target='blank'>GlogauAIR Residence Program</a>",
+        title: "<a href='http://www.glogauair.net/' target='blank'>GlogauAIR Residence Program</a>",
         city: 'Berlín',
         country: COUNTRIES.GERMANY,
         year: 2010,

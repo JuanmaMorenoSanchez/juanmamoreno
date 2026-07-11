@@ -28,10 +28,7 @@
     "target": "es2022",
     "skipLibCheck": true,
     "module": "preserve",
-    "lib": [
-      "es2022",
-      "dom"
-    ]
+    "lib": ["es2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

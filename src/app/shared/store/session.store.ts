@@ -3,13 +3,13 @@ import { Store, StoreConfig } from '@datorama/akita';
 import { SessionState } from '@shared/entities/session.entity';
 
 export function createInitialState(): SessionState {
-    return {
-        artPieces: [],
-        lastArtPiecesUpdate: undefined,
-        imageCache: [],
-        // canvasDataStock: undefined,
-        // canvasDataWeather: undefined
-    };
+  return {
+    artPieces: [],
+    lastArtPiecesUpdate: undefined,
+    imageCache: [],
+    // canvasDataStock: undefined,
+    // canvasDataWeather: undefined
+  };
 }
 
 @Injectable({ providedIn: 'root' })

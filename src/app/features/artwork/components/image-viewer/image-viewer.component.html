@@ -1,24 +1,24 @@
 <ng-template #controls>
   @if (displayArrows()) {
-  <button
-    mat-icon-button
-    aria-label="Previous image"
-    matTooltip="Previous"
-    matTooltipPosition="below"
-    (click)="nextNft(-1)"
-  >
-    <mat-icon>chevron_left</mat-icon>
-  </button>
-  <span class="counter">{{ displayIndex() + 1 }} / {{ nfts().length }}</span>
-  <button
-    mat-icon-button
-    aria-label="Next image"
-    matTooltip="Next"
-    matTooltipPosition="below"
-    (click)="nextNft(1)"
-  >
-    <mat-icon>chevron_right</mat-icon>
-  </button>
+    <button
+      mat-icon-button
+      aria-label="Previous image"
+      matTooltip="Previous"
+      matTooltipPosition="below"
+      (click)="nextNft(-1)"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="counter">{{ displayIndex() + 1 }} / {{ nfts().length }}</span>
+    <button
+      mat-icon-button
+      aria-label="Next image"
+      matTooltip="Next"
+      matTooltipPosition="below"
+      (click)="nextNft(1)"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   }
   <button
     mat-icon-button
@@ -34,10 +34,10 @@
 
 <div class="image-viewer">
   @if (!isFullScreen()) {
-  <div class="viewer-toolbar" [style.width]="frameWidth()">
-    <ng-content select="[viewer-lead]"></ng-content>
-    <ng-container [ngTemplateOutlet]="controls"></ng-container>
-  </div>
+    <div class="viewer-toolbar" [style.width]="frameWidth()">
+      <ng-content select="[viewer-lead]"></ng-content>
+      <ng-container [ngTemplateOutlet]="controls"></ng-container>
+    </div>
   }
 
   <div
@@ -62,32 +62,30 @@
       ></div>
 
       @if (layerA() !== 'none') {
-      <img
-        class="art-viewer layer"
-        [class.visible]="activeIsA()"
-        [src]="layerA()"
-        [attr.alt]="description()"
-      />
-      } @if (layerB() !== 'none') {
-      <img
-        class="art-viewer layer"
-        [class.visible]="!activeIsA()"
-        [src]="layerB()"
-        [attr.alt]="description()"
-      />
+        <img
+          class="art-viewer layer"
+          [class.visible]="activeIsA()"
+          [src]="layerA()"
+          [attr.alt]="description()"
+        />
+      }
+      @if (layerB() !== 'none') {
+        <img
+          class="art-viewer layer"
+          [class.visible]="!activeIsA()"
+          [src]="layerB()"
+          [attr.alt]="description()"
+        />
       }
 
       @if (loading()) {
-      <div class="spinner" aria-hidden="true"></div>
+        <div class="spinner" aria-hidden="true"></div>
       }
 
       @if (isFullScreen()) {
-      <div
-        class="viewer-toolbar overlay"
-        (dblclick)="$event.stopPropagation()"
-      >
-        <ng-container [ngTemplateOutlet]="controls"></ng-container>
-      </div>
+        <div class="viewer-toolbar overlay" (dblclick)="$event.stopPropagation()">
+          <ng-container [ngTemplateOutlet]="controls"></ng-container>
+        </div>
       }
     </div>
   </div>

@@ -12,7 +12,7 @@
 // })
 // export class GenerativePieceComponent implements OnInit, OnDestroy {
 //   private activatedRoute = inject(ActivatedRoute);
-  
+
 //   public id: string;
 //   public logic: (p: any) => void;
 //   private routeSub?: Subscription;

@@ -8,27 +8,23 @@
   <mat-drawer-content>
     <mat-toolbar color="primary">
       <mat-toolbar-row>
-        <button
-          aria-label="Juanma Moreno Sánchez"
-          mat-button
-          [routerLink]="['/']"
-        >
+        <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="['/']">
           <h1>Juanma Moreno Sánchez</h1>
         </button>
         <span class="spacer"></span>
 
-        @if(!mobileMenu()) {
-        <button
-          aria-expanded="false"
-          aria-controls="menu"
-          mat-icon-button
-          (click)="drawer.toggle()"
-          aria-label="Toggle menu"
-        >
-          <mat-icon>menu</mat-icon>
-        </button>
+        @if (!mobileMenu()) {
+          <button
+            aria-expanded="false"
+            aria-controls="menu"
+            mat-icon-button
+            (click)="drawer.toggle()"
+            aria-label="Toggle menu"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
         } @else {
-        <ng-container *ngTemplateOutlet="menuButtons"></ng-container>
+          <ng-container *ngTemplateOutlet="menuButtons"></ng-container>
         }
       </mat-toolbar-row>
     </mat-toolbar>
@@ -37,22 +33,14 @@
 
 <ng-template #menuButtons>
   <button x mat-button [matMenuTriggerFor]="paintingMenu">
-    {{ "paintings" | translate }}
+    {{ 'paintings' | translate }}
   </button>
-  <button
-    [attr.aria-label]="'menu.about' | translate"
-    mat-button
-    [routerLink]="['/about']"
-  >
-    {{ "menu.about" | translate }}
+  <button [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="['/about']">
+    {{ 'menu.about' | translate }}
   </button>
   <button aria-label="CV" mat-button [routerLink]="['/cv']">CV</button>
-  <button
-    [attr.aria-label]="'menu.contact' | translate"
-    mat-button
-    [routerLink]="['/contact']"
-  >
-    {{ "menu.contact" | translate }}
+  <button [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="['/contact']">
+    {{ 'menu.contact' | translate }}
   </button>
   <button aria-label="Language switcher" mat-button (click)="changeLanguage()">
     {{ currentLang }}
@@ -60,31 +48,27 @@
 </ng-template>
 
 <mat-menu #paintingMenu="matMenu">
-  <button
-    [attr.aria-label]="'menu.allPaintings' | translate"
-    mat-menu-item
-    routerLink="/artworks"
-  >
-    {{ "menu.allPaintings" | translate }}
+  <button [attr.aria-label]="'menu.allPaintings' | translate" mat-menu-item routerLink="/artworks">
+    {{ 'menu.allPaintings' | translate }}
   </button>
   <button
     [attr.aria-label]="'menu.byYear' | translate"
     mat-menu-item
     [matMenuTriggerFor]="yearsMenu"
   >
-    {{ "menu.byYear" | translate }}
+    {{ 'menu.byYear' | translate }}
   </button>
 </mat-menu>
 
 <mat-menu #yearsMenu="matMenu">
   @for (year of years; track year) {
-  <button
-    [attr.aria-label]="year"
-    mat-menu-item
-    [routerLink]="['/artworks']"
-    [queryParams]="{ years: year }"
-  >
-    {{ year }}
-  </button>
+    <button
+      [attr.aria-label]="year"
+      mat-menu-item
+      [routerLink]="['/artworks']"
+      [queryParams]="{ years: year }"
+    >
+      {{ year }}
+    </button>
   }
 </mat-menu>

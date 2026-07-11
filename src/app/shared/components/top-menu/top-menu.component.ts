@@ -4,11 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
-import {
-  MatDrawer,
-  MatDrawerContainer,
-  MatDrawerContent,
-} from '@angular/material/sidenav';
+import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';

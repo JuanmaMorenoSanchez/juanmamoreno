@@ -1,32 +1,33 @@
 /// <reference types="cypress" />
 
 describe('art pieces list', () => {
-    beforeEach(() => {
-        cy.intercept('GET', 'https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/nfts-snapshot').as('getPaintings')
-        cy.intercept('GET', 'https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/nft-thumbnails/*').as('getNftThumbnail')
-        cy.visit('https://juanmamoreno.com')
-    })
-  
-    it('displays a list of painting containers by default', () => {
-        cy.wait('@getPaintings')
-        cy.get('.mat-grid-list .mat-grid-tile').should('have.length.greaterThan', 137) // 138 is the current length. This lenght can only increase over time
-    })
+  beforeEach(() => {
+    cy.intercept(
+      'GET',
+      'https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/nfts-snapshot'
+    ).as('getPaintings');
+    cy.intercept(
+      'GET',
+      'https://juanmamoreno-backend-164035848667.europe-southwest1.run.app/nft-thumbnails/*'
+    ).as('getNftThumbnail');
+    cy.visit('https://juanmamoreno.com');
+  });
 
-    it('should render the thumbnail image with base64 src', () => {
-        cy.get('img.mat-mdc-card-image.mdc-card__media.front-image')
-          .should('have.attr', 'src')
-          .and('match', /^data:image\/jpeg;base64,/);
-    });
+  it('displays a list of painting containers by default', () => {
+    cy.wait('@getPaintings');
+    cy.get('.mat-grid-list .mat-grid-tile').should('have.length.greaterThan', 137); // 138 is the current length. This lenght can only increase over time
+  });
 
-    it('content is accessible', () => {
-    })
+  it('should render the thumbnail image with base64 src', () => {
+    cy.get('img.mat-mdc-card-image.mdc-card__media.front-image')
+      .should('have.attr', 'src')
+      .and('match', /^data:image\/jpeg;base64,/);
+  });
 
-    it('keyboard navigation', () => {
-    })
+  it('content is accessible', () => {});
 
-})
-
-
+  it('keyboard navigation', () => {});
+});
 
 // COSAS A TESTAR:
 

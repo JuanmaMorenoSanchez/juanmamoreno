@@ -1,4 +1,3 @@
-
 // import { SessionQuery } from "@shared/store/session.query";
 // import { SessionStore } from "@shared/store/session.store";
 // import p5 from "p5";
@@ -50,11 +49,11 @@
 //         let mapped2=p.map(p.mouseY, 0, height, 10, 300);
 
 //         p.image(cabeza, width/2-cabeza.width/2, height/2 - cabeza.height/2, cabeza.width, cabeza.height);
-        
-//         p.push();	
+
+//         p.push();
 //         p.translate(width/2, height/2);
-//         p.rotate(angle);	
-      
+//         p.rotate(angle);
+
 //         for (let i=0; i<prayerAmmount; i++) {
 //             p.push();
 //             p.rotate(i*TWO_PI/prayerAmmount);
@@ -75,27 +74,27 @@
 //             }
 //             p.pop();
 //         }
-//         p.pop();	
+//         p.pop();
 //         angle += speed;
-    
+
 //     }
 
 //     p.mouseClicked = () => {
 //         setRandomValues();
 //     }
-    
+
 //     const setRandomValues = () => {
 //         prayerNumber = Number(Math.floor(Math.random() * 4) + 1);
 //         prayerAmmount = Number(Math.floor(Math.random() * 6) + 3);
 //     }
-    
+
 //     const getPrayer = () => {
 //         if (prayerNumber == 1){
 //             return prayer1;
-//         } 
+//         }
 //         if (prayerNumber == 2){
 //             return prayer2;
-//         } 
+//         }
 //         if (prayerNumber == 3){
 //             return prayer3;
 //         } else {

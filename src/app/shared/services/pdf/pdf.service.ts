@@ -1,19 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  SOLDCERTIFICATES,
-  VALIDTRAITS,
-} from '@domain/artwork/artwork.constants';
+import { SOLDCERTIFICATES, VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
 import type { jsPDF } from 'jspdf';
-import {
-  compressImage,
-  grayscaleZoomedSquare,
-  loadFirstAvailableImage,
-} from './pdf-image.utils';
+import { compressImage, grayscaleZoomedSquare, loadFirstAvailableImage } from './pdf-image.utils';
 import { PDF_COLORS, PDF_TYPE } from './pdf-theme';
 import { PdfWriter } from './pdf-writer';
 
@@ -98,11 +91,7 @@ export class PdfService {
 
   // --- Cover: black & white zoomed crop of a random artwork, full bleed ---
 
-  private async addCover(
-    writer: PdfWriter,
-    nfts: Array<Nft>,
-    customTitle?: string
-  ): Promise<void> {
+  private async addCover(writer: PdfWriter, nfts: Array<Nft>, customTitle?: string): Promise<void> {
     const { GState } = await this.loadJspdf();
     const randomNft = nfts[Math.floor(Math.random() * nfts.length)];
     const img = await loadFirstAvailableImage(
@@ -142,9 +131,7 @@ export class PdfService {
     const { doc, pageWidth, pageHeight, margin, contentWidth } = writer;
     const maxImageHeight = pageHeight - 2 * margin - CAPTION_BLOCK;
 
-    const img = await loadFirstAvailableImage(
-      this.artworkService.getNftFetchableUrls(nft.image)
-    );
+    const img = await loadFirstAvailableImage(this.artworkService.getNftFetchableUrls(nft.image));
     const compressed = compressImage(img, contentWidth, maxImageHeight);
 
     const { width, height } = doc.getImageProperties(compressed);
@@ -211,10 +198,7 @@ export class PdfService {
       writer.space(2);
 
       section.content?.forEach((paragraph) => {
-        writer.paragraph(
-          this.translateService.instant(paragraph),
-          columnStyle
-        );
+        writer.paragraph(this.translateService.instant(paragraph), columnStyle);
         writer.space(3);
       });
 
@@ -305,10 +289,11 @@ export class PdfService {
     });
 
     writer.space(14);
-    writer.paragraph(
-      this.translateService.instant('contact.representedBy'),
-      { ...centered, size: PDF_TYPE.size.caption, color: PDF_COLORS.faint }
-    );
+    writer.paragraph(this.translateService.instant('contact.representedBy'), {
+      ...centered,
+      size: PDF_TYPE.size.caption,
+      color: PDF_COLORS.faint,
+    });
     writer.space(2);
     writer.paragraph('(+34) 606780084', {
       ...centered,
@@ -339,13 +324,11 @@ export class PdfService {
   }
 
   private getTraitsAsText(nft: Nft): string {
-    const trait = (key: VALIDTRAITS) =>
-      this.artworkService.getTraitValue(nft, key);
+    const trait = (key: VALIDTRAITS) => this.artworkService.getTraitValue(nft, key);
     const medium = this.translateService.instant(trait(VALIDTRAITS.MEDIUM));
     const size = `${trait(VALIDTRAITS.HEIGHT)} × ${trait(
       VALIDTRAITS.WIDTH
     )} ${trait(VALIDTRAITS.UNIT)}`;
     return `${trait(VALIDTRAITS.YEAR)} · ${medium} · ${size}`;
   }
-
 }

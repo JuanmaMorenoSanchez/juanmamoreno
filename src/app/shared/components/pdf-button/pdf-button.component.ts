@@ -53,10 +53,7 @@ export class PdfButtonComponent {
         this.saveDocument(this.pdfService.createCV(), 'cv-juanmamoreno.pdf');
         break;
       case DOWNLOADTYPES.STATEMENT:
-        this.saveDocument(
-          this.pdfService.createStatement(),
-          'statement-juanmamoreno.pdf',
-        );
+        this.saveDocument(this.pdfService.createStatement(), 'statement-juanmamoreno.pdf');
         break;
       case DOWNLOADTYPES.IMAGE:
       default:
@@ -64,7 +61,7 @@ export class PdfButtonComponent {
           const nft = this.nfts()[0];
           this.saveDocument(
             this.pdfService.createTechnicalSheet(nft),
-            `${nft.name || 'juanmamoreno'}.pdf`,
+            `${nft.name || 'juanmamoreno'}.pdf`
           );
         } else {
           this.openDossierDialog();
@@ -86,13 +83,7 @@ export class PdfButtonComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const {
-          includeContact,
-          includeCv,
-          includeStatement,
-          customTitle,
-          customText,
-        } = result;
+        const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
         this.saveDocument(
           this.pdfService.createDossier(
             this.nfts(),
@@ -100,9 +91,9 @@ export class PdfButtonComponent {
             includeCv,
             includeStatement,
             customTitle,
-            customText,
+            customText
           ),
-          'dossier-juanmamoreno.pdf',
+          'dossier-juanmamoreno.pdf'
         );
       } else {
         this.isCreating.set(false);

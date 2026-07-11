@@ -11,7 +11,6 @@
 // export class CanvasContainerComponent {
 //   private sessionQuery = inject(SessionQuery);
 //   private store = inject(SessionStore);
-  
 
 //   @Input() identifier!: string; // TODO: update to signal input
 //   @Input() logic!: (p: any, sessionQuery?: SessionQuery, store?: SessionStore) => void;
@@ -19,7 +18,7 @@
 //   @ViewChild("container") div?: ElementRef;
 
 //   private p5: p5 | undefined;
-  
+
 //   constructor( ) {
 //     window.onresize = this.onWindowResize;
 //   }

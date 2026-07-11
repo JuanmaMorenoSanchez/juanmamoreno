@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  Signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, computed, effect, inject, signal, Signal, WritableSignal } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -14,11 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
-import {
-  SOLDCERTIFICATES,
-  VALIDTRAITS,
-  VIEW_TYPES,
-} from '@domain/artwork/artwork.constants';
+import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
@@ -60,9 +48,7 @@ export class ArtPieceComponent {
 
   readonly validTraits = VALIDTRAITS;
   readonly numberOfViewMoreColumns: Signal<number> = toSignal(
-    this.responsiveService.displayMobileLayout.pipe(
-      map((display) => (display ? 6 : 3))
-    ),
+    this.responsiveService.displayMobileLayout.pipe(map((display) => (display ? 6 : 3))),
     { initialValue: 3 }
   );
   readonly nfts: Signal<Nft[]> = toSignal(
@@ -83,22 +69,14 @@ export class ArtPieceComponent {
   );
 
   defaultDisplayIndex = computed(() =>
-    this.nfts().findIndex(
-      (nft) => nft.tokenId === this.frontalViewNft()?.tokenId
-    )
+    this.nfts().findIndex((nft) => nft.tokenId === this.frontalViewNft()?.tokenId)
   );
-  readonly displayingIndex: WritableSignal<number> = signal(
-    this.defaultDisplayIndex() || 0
-  );
+  readonly displayingIndex: WritableSignal<number> = signal(this.defaultDisplayIndex() || 0);
 
-  readonly nft: Signal<Nft> = computed(
-    () => this.nfts()[this.displayingIndex()]
-  );
+  readonly nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()]);
   readonly tokenId = computed(() => this.nft()?.tokenId);
 
-  readonly currentLang = signal(
-    this.toShortLang(this.translateService.getCurrentLang() ?? '')
-  );
+  readonly currentLang = signal(this.toShortLang(this.translateService.getCurrentLang() ?? ''));
 
   readonly descriptions = signal<Descriptions | null>(null);
   readonly description = computed(() => {
@@ -108,10 +86,7 @@ export class ArtPieceComponent {
   });
 
   readonly thereAreMoreInYear: Signal<boolean> = computed(() => {
-    const year = this.artworkService.getTraitValue(
-      this.nft(),
-      VALIDTRAITS.YEAR
-    );
+    const year = this.artworkService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
     return this.artworkService.getFullNftLenghtByYear(year) > 1;
   });
   readonly getSameYearListFilter: Signal<NftFilters> = computed(() => ({
@@ -121,32 +96,23 @@ export class ArtPieceComponent {
   readonly viewLabel: Signal<string> = computed(() => {
     const currentNft = this.nft();
     if (!currentNft) return '';
-    const imageType = this.getTraitValue(
-      currentNft,
-      this.validTraits.IMAGETYPE
-    );
+    const imageType = this.getTraitValue(currentNft, this.validTraits.IMAGETYPE);
     if (imageType === VIEW_TYPES.PROGRESS || imageType === VIEW_TYPES.DETAIL) {
       return `(${imageType})`;
     }
 
-    return currentNft.tokenId === this.frontalViewNft()?.tokenId
-      ? ''
-      : `(${VIEW_TYPES.PROGRESS})`;
+    return currentNft.tokenId === this.frontalViewNft()?.tokenId ? '' : `(${VIEW_TYPES.PROGRESS})`;
   });
   readonly qualityUrls: Signal<string[]> = computed(() => {
     const nft = this.nft();
     return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];
   });
-  readonly sold: Signal<boolean> = computed(() =>
-    SOLDCERTIFICATES.includes(this.tokenId())
-  );
+  readonly sold: Signal<boolean> = computed(() => SOLDCERTIFICATES.includes(this.tokenId()));
 
   constructor() {
-    this.translateService.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(({ lang }) => {
-        this.currentLang.set(this.toShortLang(lang));
-      });
+    this.translateService.onLangChange.pipe(takeUntilDestroyed()).subscribe(({ lang }) => {
+      this.currentLang.set(this.toShortLang(lang));
+    });
 
     effect(() => {
       this.displayingIndex.set(this.defaultDisplayIndex() || 0);
@@ -173,14 +139,10 @@ export class ArtPieceComponent {
     return lang === 'es-ES' ? 'es' : 'en';
   }
 
-  private getShortDescription(
-    descriptions: Descriptions | null,
-    lang: string
-  ): string {
+  private getShortDescription(descriptions: Descriptions | null, lang: string): string {
     if (!descriptions) return 'No description available';
     return (
-      descriptions.translated.find((t) => t.lang === lang)?.shortDesc ||
-      'No description available'
+      descriptions.translated.find((t) => t.lang === lang)?.shortDesc || 'No description available'
     );
   }
 

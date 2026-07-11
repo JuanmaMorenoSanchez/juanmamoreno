@@ -9,7 +9,7 @@
         color="primary"
         (click)="navigateTo('/artworks')"
       >
-        {{ "paintings" | translate }}
+        {{ 'paintings' | translate }}
       </button>
     </mat-list-item>
     <mat-list-item>
@@ -19,18 +19,11 @@
         color="primary"
         (click)="navigateTo('/about')"
       >
-        {{ "statement.title" | translate }}
+        {{ 'statement.title' | translate }}
       </button>
     </mat-list-item>
     <mat-list-item>
-      <button
-        aria-label="cv"
-        mat-button
-        color="primary"
-        (click)="navigateTo('/cv')"
-      >
-        CV
-      </button>
+      <button aria-label="cv" mat-button color="primary" (click)="navigateTo('/cv')">CV</button>
     </mat-list-item>
     <mat-list-item>
       <button
@@ -39,7 +32,7 @@
         color="primary"
         (click)="navigateTo('/contact')"
       >
-        {{ "menu.contact" | translate }}
+        {{ 'menu.contact' | translate }}
       </button>
     </mat-list-item>
   </mat-list>

@@ -1,9 +1,17 @@
-import { Directive, ElementRef, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 
 @Directive({ selector: '[appLazyLoad]' })
 export class LazyLoadDirective implements OnInit, OnDestroy {
   private el = inject(ElementRef);
-  
+
   @Output() visible = new EventEmitter<void>();
 
   private observer: IntersectionObserver;

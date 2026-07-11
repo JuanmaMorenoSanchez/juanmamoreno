@@ -1,58 +1,58 @@
 mat-grid-tile {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 mat-card {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: stretch;
-    justify-content: stretch;
-    // Light grey placeholder shown while the thumbnail is still loading
-    --mdc-elevated-card-container-color: #ebebe9;
-    background-color: #ebebe9;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  // Light grey placeholder shown while the thumbnail is still loading
+  --mdc-elevated-card-container-color: #ebebe9;
+  background-color: #ebebe9;
 }
 
 .front-image {
-    opacity: 0;
-    transition: opacity 0.35s ease-in;
+  opacity: 0;
+  transition: opacity 0.35s ease-in;
 
-    &.loaded {
-        opacity: 1;
-    }
+  &.loaded {
+    opacity: 1;
+  }
 }
 
 .container {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .sort-group {
-    margin-bottom: 2em;
+  margin-bottom: 2em;
 }
 
 .sort-desc {
-    margin-left: 2em;
-    align-items: center;
-    display: flex;
+  margin-left: 2em;
+  align-items: center;
+  display: flex;
 }
 
 .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5em;
-    z-index: 1;
-    pointer-events: none; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5em;
+  z-index: 1;
+  pointer-events: none;
 }
-  
+
 .order-number {
-    font-weight: bold;
+  font-weight: bold;
 }

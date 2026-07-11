@@ -14,7 +14,7 @@ import { ContactComponent } from './contact.component';
 
 // Mock MatSnackBar
 const mockSnackBar = {
-  open: vi.fn()
+  open: vi.fn(),
 };
 
 describe('ContactComponent', () => {
@@ -22,11 +22,7 @@ describe('ContactComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        ContactComponent,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [ContactComponent, FormsModule, ReactiveFormsModule],
       providers: [
         provideTranslateService(),
         provideHttpClient(),
@@ -36,7 +32,7 @@ describe('ContactComponent', () => {
         { provide: MatSnackBar, useValue: mockSnackBar },
         // { provide: TranslateService, useValue: { instant: (key: string) => key } },
         { provide: 'ResponsiveService', useValue: mockResponsiveService }, // Injectable token if using inject(ResponsiveService)
-      ]
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ContactComponent);
@@ -55,7 +51,9 @@ describe('ContactComponent', () => {
     component.honeypot.setValue('');
 
     const pendingResponse = new Subject<ApiResponse<string>>();
-    vi.spyOn(component['contactService'], 'sendContactMessage').mockReturnValue(pendingResponse.asObservable());
+    vi.spyOn(component['contactService'], 'sendContactMessage').mockReturnValue(
+      pendingResponse.asObservable()
+    );
 
     component.onSubmit();
 

@@ -70,10 +70,7 @@ export class PdfWriter {
     } = style;
     this.applyStyle(style);
     const x = style.x ?? (align === 'center' ? this.centerX : this.margin);
-    const lines: string[] = this.doc.splitTextToSize(
-      PdfWriter.stripHtml(text),
-      maxWidth
-    );
+    const lines: string[] = this.doc.splitTextToSize(PdfWriter.stripHtml(text), maxWidth);
     for (const line of lines) {
       this.ensureRoom(lineHeight);
       this.drawLine(line, x, this.y, align, charSpace);
@@ -95,23 +92,14 @@ export class PdfWriter {
   // Single line at a fixed position; does not move the cursor
   textAt(text: string, x: number, y: number, style: PdfTextStyle = {}): void {
     this.applyStyle(style);
-    this.drawLine(
-      PdfWriter.stripHtml(text),
-      x,
-      y,
-      style.align ?? 'left',
-      style.charSpace ?? 0
-    );
+    this.drawLine(PdfWriter.stripHtml(text), x, y, style.align ?? 'left', style.charSpace ?? 0);
   }
 
   // Visual width including letter spacing (jsPDF ignores it for built-in fonts)
   textWidth(text: string, style: PdfTextStyle = {}): number {
     this.applyStyle(style);
     const clean = PdfWriter.stripHtml(text);
-    return (
-      this.doc.getTextWidth(clean) +
-      (style.charSpace ?? 0) * Math.max(clean.length - 1, 0)
-    );
+    return this.doc.getTextWidth(clean) + (style.charSpace ?? 0) * Math.max(clean.length - 1, 0);
   }
 
   // Small faint page numbers, optionally skipping the cover
@@ -147,8 +135,7 @@ export class PdfWriter {
     charSpace: number
   ): void {
     if (align === 'center' && charSpace > 0) {
-      const width =
-        this.doc.getTextWidth(text) + charSpace * Math.max(text.length - 1, 0);
+      const width = this.doc.getTextWidth(text) + charSpace * Math.max(text.length - 1, 0);
       this.doc.text(text, x - width / 2, y, { charSpace });
     } else {
       this.doc.text(text, x, y, { align, charSpace });

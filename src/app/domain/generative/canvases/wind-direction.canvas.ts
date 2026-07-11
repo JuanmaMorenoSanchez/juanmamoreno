@@ -4,7 +4,7 @@
 // import { WIND_DIRECTION_ID } from "../canvas.constants";
 // import { ParticleSystem } from "../particles/particle-system";
 
-// export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?: SessionStore)  => { 
+// export const WIND_DIRECTION_CANVAS = (p: p5, sessionQuery?: SessionQuery, store?: SessionStore)  => {
 //     const moreInfo = "Press 'i' for more information";
 //     const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 1 day in milliseconds
 //     const numSources = 7;
@@ -13,7 +13,7 @@
 //     let windRad: number;
 //     let windSpeed: number;
 //     let teslaGrow: number;
-//     let headGirl: Image; 
+//     let headGirl: Image;
 //     let headAngel: Image;
 //     let head: Image;
 //     let canvas;
@@ -22,7 +22,7 @@
 //     let showMoreText = false;
 //     let startTime: number;
 //     let spawnPoints: Array<{ x: number, y: number }> = [];
-    
+
 //     //parametrize urls
 //     const weatherUrl = 'https://api.weatherstack.com/current?access_key=1a330d041afefa98931ce41dda2c2c67&query=JERUSALEM';
 //     const wallStreetUrl = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=TSLA&apikey=ZNJXBTJOOX3LEJ5S'; //25 per day rate limit
@@ -53,7 +53,7 @@
 //             const y = p.random(p.height);
 //             spawnPoints.push({ x, y });
 //         }
-    
+
 //         systems = spawnPoints.map(point => new ParticleSystem(p, p.createVector(point.x, point.y)));
 //         startTime = p.millis();
 //     }
@@ -61,7 +61,7 @@
 //     p.draw = () => {
 //         let t = p.millis() * 0.001;
 //         drawBackground();
-//         if (weatherData && stockData){	
+//         if (weatherData && stockData){
 //             teslaGrow = Number(getGrow(stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["1. open"], stockData["Time Series (Daily)"][Object.keys(stockData["Time Series (Daily)"])[0]]["4. close"]));
 
 //             windRad = weatherData.current.wind_degree;
@@ -74,7 +74,7 @@
 //             });
 
 //             getTexts();
-            
+
 //             if (Math.sign(teslaGrow) == 1) {
 //                 let greenTint = p.map(teslaGrow, 0, 100, 180, 255);
 //                 p.tint(greenTint, 255, 220, 60);
@@ -82,7 +82,7 @@
 //                 let redTint = p.map(teslaGrow, -100, 0, 255, 180);
 //                 p.tint(255, redTint, 180, 60);
 //             }
-            
+
 //             p.image(headGirl, 0+p.round(p.random(-2,2)), 0+p.round(p.random(-2,2)));
 //             p.image(headGirl, p.windowWidth/2+p.round(p.random(-2,2)), 0+p.round(p.random(-2,2)));
 //             p.image(headGirl, p.windowWidth/1.3+p.round(p.random(-2,2)), 0+p.round(p.random(-2,2)));
@@ -90,10 +90,10 @@
 
 //             p.rotate(p.PI / 180 * 180);
 //             p.image(headGirl, p.windowWidth/-1.5+p.round(p.random((p.windowWidth/3)*-1,(p.windowWidth/3))), p.windowHeight*-1+p.round(p.random(-2,2)));
-            
+
 //             p.noTint();
-//         } 
-        
+//         }
+
 //     }
 
 //     p.keyPressed = () => {
@@ -145,7 +145,7 @@
 //         }
 //         p.frameCount = -1;
 //     }
-    
+
 //     const drawTopElements = () => {
 //         p.rotate(p.PI / 180 * 180);
 //         p.tint(255, 120);
@@ -172,7 +172,7 @@
 //         p.strokeWeight(2);
 //         p.fill(255);
 //         p.textSize(p.windowWidth > p.windowHeight ? 18: 24);
-        
+
 //         if (!showMoreText) {
 //             p.text(moreInfo, 10, 40)
 //         }
@@ -182,7 +182,7 @@
 //             } else {
 //                 p.text("Loading weather in Jerusalem...", 10, 70);
 //             }
-            
+
 //             if (stockData){
 //                 p.text("Tesla stock performed "+teslaGrow+"% (Last update: "+Object.keys(stockData["Time Series (Daily)"])[0]+")", 10, 90);
 //             } else {
@@ -192,5 +192,3 @@
 //     }
 
 // }
-
-

@@ -7,18 +7,19 @@ $jm-accent: mat.m2-define-palette(mat.$m2-green-palette, 'A400');
 $jm-warn: mat.m2-define-palette(mat.$m2-pink-palette, 500);
 
 $jm-typo: mat.m2-define-typography-config(
-    $font-family: 'Roboto, "Helvetica Neue", sans-serif',
+  $font-family: 'Roboto, "Helvetica Neue", sans-serif',
 );
 
-
-$jm-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $jm-primary,
-    accent: $jm-accent,
-    warn: $jm-warn,
-  ),
-  // typography: $jm-typo,
-));
+$jm-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $jm-primary,
+      accent: $jm-accent,
+      warn: $jm-warn,
+    ),
+    // typography: $jm-typo,
+  )
+);
 
 @include mat.all-component-themes($jm-theme);
 @include mat.all-component-typographies($jm-typo);

@@ -42,9 +42,7 @@ export class ImageViewerComponent {
   isFullScreen = signal<boolean>(false);
   displayArrows = computed(() => this.nfts().length > 1);
 
-  private currentNft = computed<Nft | undefined>(
-    () => this.nfts()[this.displayIndex()]
-  );
+  private currentNft = computed<Nft | undefined>(() => this.nfts()[this.displayIndex()]);
 
   // Low-res preview shown only until the first hi-res image is ready: grey
   // placeholder -> progressive thumbnail. Once a hi-res layer is up it is
@@ -69,9 +67,7 @@ export class ImageViewerComponent {
   readonly layerA = signal<string>('none');
   readonly layerB = signal<string>('none');
   readonly activeIsA = signal<boolean>(true);
-  readonly hasImage = computed(
-    () => this.layerA() !== 'none' || this.layerB() !== 'none'
-  );
+  readonly hasImage = computed(() => this.layerA() !== 'none' || this.layerB() !== 'none');
   // True while the next hi-res image is decoding: drives a subtle spinner so a
   // slow source does not look frozen (the previous image stays up meanwhile).
   readonly loading = signal<boolean>(false);
@@ -85,17 +81,11 @@ export class ImageViewerComponent {
   readonly aspectRatio = computed(() => {
     const nft = this.currentNft();
     if (!nft) return 0.8;
-    const width = parseFloat(
-      this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH)
-    );
-    const height = parseFloat(
-      this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT)
-    );
+    const width = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH));
+    const height = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT));
     return width > 0 && height > 0 ? width / height : 0.8;
   });
-  readonly frameWidth = computed(
-    () => `min(100%, calc(100vh * ${this.aspectRatio()}))`
-  );
+  readonly frameWidth = computed(() => `min(100%, calc(100vh * ${this.aspectRatio()}))`);
 
   @ViewChild('imageElement') imageElement!: ElementRef;
 
@@ -150,8 +140,7 @@ export class ImageViewerComponent {
   public nextNft(relativeIndex: number) {
     if (!this.displayArrows()) return;
     const newIndex =
-      (this.displayIndex() + relativeIndex + this.nfts().length) %
-      this.nfts().length;
+      (this.displayIndex() + relativeIndex + this.nfts().length) % this.nfts().length;
     this.displayIndex.set(newIndex);
   }
 

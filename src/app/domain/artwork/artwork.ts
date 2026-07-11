@@ -5,10 +5,7 @@ import { Nft, NftImage } from './artwork.entity';
 export class Artwork {
   getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
     try {
-      return (
-        nft.raw.metadata.attributes.find((t) => t.trait_type === trait)
-          ?.value ?? ''
-      );
+      return nft.raw.metadata.attributes.find((t) => t.trait_type === trait)?.value ?? '';
     } catch {
       switch (trait) {
         case VALIDTRAITS.VERSION:
@@ -48,10 +45,7 @@ export class Artwork {
     });
   }
 
-  sortByMedium(
-    nfts: Array<Nft>,
-    order: SORT.ASC | SORT.DESC = SORT.ASC
-  ): Array<Nft> {
+  sortByMedium(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     const MEDIUM_ORDER = ['oil', 'watercolor'];
     const mediumRank = (nft: Nft): number => {
       const medium = this.getTraitValue(nft, VALIDTRAITS.MEDIUM).toLowerCase();
@@ -64,20 +58,14 @@ export class Artwork {
     });
   }
 
-  sortBySize(
-    nfts: Array<Nft>,
-    order: SORT.ASC | SORT.DESC = SORT.ASC
-  ): Array<Nft> {
+  sortBySize(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     return [...nfts].sort((a, b) => {
       const result = this.getSize(a) - this.getSize(b);
       return order === SORT.ASC ? result : -result;
     });
   }
 
-  sortByName(
-    nfts: Array<Nft>,
-    order: SORT.ASC | SORT.DESC = SORT.ASC
-  ): Array<Nft> {
+  sortByName(nfts: Array<Nft>, order: SORT.ASC | SORT.DESC = SORT.ASC): Array<Nft> {
     return [...nfts].sort((a, b) => {
       const nameA = a.name?.toLowerCase() || '';
       const nameB = b.name?.toLowerCase() || '';
@@ -101,9 +89,7 @@ export class Artwork {
   }
 
   getNftLenghtByYear(year: string, nfts: Array<Nft>): number {
-    return nfts.filter(
-      (nft) => this.getTraitValue(nft, VALIDTRAITS.YEAR) === year
-    ).length;
+    return nfts.filter((nft) => this.getTraitValue(nft, VALIDTRAITS.YEAR) === year).length;
   }
 
   isFrontalView(nft: Nft, sameNamedArt: Nft[]): boolean {
@@ -116,8 +102,7 @@ export class Artwork {
 
   filterFrontalArtworks(nfts: Nft[]) {
     return nfts.filter(
-      (nft) =>
-        this.getTraitValue(nft, VALIDTRAITS.IMAGETYPE) === VIEW_TYPES.FRONTAL
+      (nft) => this.getTraitValue(nft, VALIDTRAITS.IMAGETYPE) === VIEW_TYPES.FRONTAL
     );
   }
 
@@ -134,17 +119,14 @@ export class Artwork {
     if (!nfts.length) return null;
     return nfts.reduce((latest, current) => {
       const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
-      const vB =
-        parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION)) || 0;
+      const vB = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION)) || 0;
       return vB > vA ? current : latest;
     });
   }
 
   getLatestVersionIndex(nfts: Array<Nft>): number {
     const latestNft = this.getLatestVersion(nfts);
-    return nfts.findIndex(
-      (nft) => latestNft && nft.tokenId === latestNft.tokenId
-    );
+    return nfts.findIndex((nft) => latestNft && nft.tokenId === latestNft.tokenId);
   }
 
   // Every displayable url for an artwork, best quality first. Consumers can
@@ -164,21 +146,13 @@ export class Artwork {
   }
 
   getNftOptimalUrl(image: NftImage): string {
-    return (
-      this.collectUrls(image, ['thumbnailUrl', 'cachedUrl', 'originalUrl'])[0] ||
-      ''
-    );
+    return this.collectUrls(image, ['thumbnailUrl', 'cachedUrl', 'originalUrl'])[0] || '';
   }
 
-  private collectUrls(
-    image: NftImage,
-    order: Array<keyof NftImage>
-  ): string[] {
+  private collectUrls(image: NftImage, order: Array<keyof NftImage>): string[] {
     const candidates = order.map((key) => image?.[key]);
     return [
-      ...new Set(
-        candidates.filter((url): url is string => typeof url === 'string' && !!url)
-      ),
+      ...new Set(candidates.filter((url): url is string => typeof url === 'string' && !!url)),
     ];
   }
 }

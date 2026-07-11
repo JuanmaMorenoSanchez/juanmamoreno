@@ -55,7 +55,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .pipe(
         this.extractData<Nft[]>([]),
         tap((nfts) => this.saveNftsLocally(nfts)),
-        catchError(() => this.sessionQuery.getArtPiecesObservable),
+        catchError(() => this.sessionQuery.getArtPiecesObservable)
       );
 
     if (this.sessionQuery.selectArtPieces.length) {
@@ -67,27 +67,23 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     return this.getFallbackArtworks().pipe(
       // Put the fallback in the store (WITHOUT lastArtPiecesUpdate, so it
       // never counts as fresh) because menus and lookups read from the store.
-      tap((fallbackNfts) =>
-        this.sessionStore.update({ artPieces: fallbackNfts }),
-      ),
-      switchMap((fallbackNfts) => apiCall$.pipe(startWith(fallbackNfts))),
+      tap((fallbackNfts) => this.sessionStore.update({ artPieces: fallbackNfts })),
+      switchMap((fallbackNfts) => apiCall$.pipe(startWith(fallbackNfts)))
     );
   }
 
   private getFallbackArtworks(): Observable<Nft[]> {
     return from(import('./constants/artworks-fallback.constants')).pipe(
-      map((m) => m.FALLBACK_ARTWORKS_API_CALL.data ?? []),
+      map((m) => m.FALLBACK_ARTWORKS_API_CALL.data ?? [])
     );
   }
 
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null> {
     return this.http
-      .get<
-        ApiResponse<Descriptions>
-      >(`${environment.backendUrl}descriptions/${tokenId}`)
+      .get<ApiResponse<Descriptions>>(`${environment.backendUrl}descriptions/${tokenId}`)
       .pipe(
         this.extractData<Descriptions | null>(null),
-        catchError(() => of(null)),
+        catchError(() => of(null))
       );
   }
 
@@ -97,9 +93,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
   }
 
   getNftByIdObservable(id: string): Observable<Nft | null> {
-    return this.sessionQuery.getArtPiecesObservable.pipe(
-      map((nfts) => this.getNftById(id, nfts)),
-    );
+    return this.sessionQuery.getArtPiecesObservable.pipe(map((nfts) => this.getNftById(id, nfts)));
   }
 
   getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
@@ -111,13 +105,11 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
               const foundNft = this.getNftById(tokenId, nfts);
               if (!foundNft?.name) return of([]);
               return of(this.getArtByTitle(foundNft.name, nfts));
-            }),
+            })
           );
         }
-        return of(
-          this.getArtByTitle(nft.name!, this.sessionQuery.selectArtPieces),
-        );
-      }),
+        return of(this.getArtByTitle(nft.name!, this.sessionQuery.selectArtPieces));
+      })
     );
   }
 
@@ -132,13 +124,10 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
           return of(cachedUrl);
         } else {
           return this.fetchRemoteThumbnail(nft.tokenId).pipe(
-            map(
-              (fetched) =>
-                fetched || nft.image.thumbnailUrl || nft.image.originalUrl!,
-            ),
+            map((fetched) => fetched || nft.image.thumbnailUrl || nft.image.originalUrl!)
           );
         }
-      }),
+      })
     );
   }
 
@@ -151,27 +140,27 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
   getProgressiveImageUrls(nft: Nft): Observable<string> {
     const backendThumbnail$ = this.getLocalCachedThumbnail(nft.tokenId).pipe(
       switchMap((cachedUrl) =>
-        cachedUrl ? of(cachedUrl) : this.fetchRemoteThumbnail(nft.tokenId),
+        cachedUrl ? of(cachedUrl) : this.fetchRemoteThumbnail(nft.tokenId)
       ),
       catchError(() => of(null)),
-      map((url) => ({ url, quality: PreviewQuality.BACKEND_THUMBNAIL })),
+      map((url) => ({ url, quality: PreviewQuality.BACKEND_THUMBNAIL }))
     );
     const nftThumbnail$ = this.preloadImage(nft.image?.thumbnailUrl).pipe(
-      map((url) => ({ url, quality: PreviewQuality.NFT_THUMBNAIL })),
+      map((url) => ({ url, quality: PreviewQuality.NFT_THUMBNAIL }))
     );
     const nftCached$ = this.preloadImage(nft.image?.cachedUrl).pipe(
-      map((url) => ({ url, quality: PreviewQuality.NFT_CACHED })),
+      map((url) => ({ url, quality: PreviewQuality.NFT_CACHED }))
     );
 
     return merge(backendThumbnail$, nftThumbnail$, nftCached$).pipe(
       scan(
         (best: PreviewCandidate, candidate: PreviewCandidate) =>
           candidate.url && candidate.quality > best.quality ? candidate : best,
-        { url: null, quality: 0 },
+        { url: null, quality: 0 }
       ),
       map(({ url }) => url),
       filter((url): url is string => !!url),
-      distinctUntilChanged(),
+      distinctUntilChanged()
     );
   }
 
@@ -197,12 +186,10 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   getLinks(tokenId: string): Observable<string[]> {
     return this.http
-      .get<
-        ApiResponse<string[]>
-      >(environment.backendUrl + 'vision/search/' + tokenId)
+      .get<ApiResponse<string[]>>(environment.backendUrl + 'vision/search/' + tokenId)
       .pipe(
         this.extractData<string[]>([]),
-        catchError(() => of([])),
+        catchError(() => of([]))
       );
   }
 
@@ -219,18 +206,12 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   private getLocalCachedThumbnail(tokenId: string): Observable<string | null> {
     const cachedThumbnail = this.sessionQuery.getThumbnailByTokenId(tokenId);
-    return of(
-      cachedThumbnail
-        ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail)
-        : null,
-    );
+    return of(cachedThumbnail ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail) : null);
   }
 
   private fetchRemoteThumbnail(tokenId: string): Observable<string | null> {
     return this.http
-      .get<
-        ApiResponse<NftThumbnail>
-      >(`${environment.backendUrl}nft-thumbnails/${tokenId}`)
+      .get<ApiResponse<NftThumbnail>>(`${environment.backendUrl}nft-thumbnails/${tokenId}`)
       .pipe(
         tap((res) => {
           if (res.success && res.data) {
@@ -240,9 +221,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
             });
           }
         }),
-        map((res) =>
-          res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null,
-        ),
+        map((res) => (res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null))
       );
   }
 
@@ -251,10 +230,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     return (
       !this.sessionQuery.selectArtPieces.length ||
       !this.sessionQuery.selectLastArtPiecesUpdate ||
-      DateUtils.olderThanNDays(
-        this.sessionQuery.selectLastArtPiecesUpdate,
-        daysBeforeExpireData,
-      )
+      DateUtils.olderThanNDays(this.sessionQuery.selectLastArtPiecesUpdate, daysBeforeExpireData)
     );
   }
 }

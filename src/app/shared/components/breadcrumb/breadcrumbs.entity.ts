@@ -1,5 +1,5 @@
 export interface BreadCrumb {
-    label: string;
-    url: string;
-    queryParams?: { [key: string]: string | string[] }
+  label: string;
+  url: string;
+  queryParams?: { [key: string]: string | string[] };
 }

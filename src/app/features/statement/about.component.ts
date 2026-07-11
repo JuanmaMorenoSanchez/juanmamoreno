@@ -5,10 +5,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 
 @Component({
-    selector: 'app-about',
-    templateUrl: './about.component.html',
-    styleUrls: ['./about.component.scss'],
-    imports: [PdfButtonComponent, TranslatePipe]
+  selector: 'app-about',
+  templateUrl: './about.component.html',
+  styleUrls: ['./about.component.scss'],
+  imports: [PdfButtonComponent, TranslatePipe],
 })
 export class AboutComponent {
   readonly statement = STATEMENT_OBJECT;

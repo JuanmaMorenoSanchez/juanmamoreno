@@ -1,6 +1,13 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
@@ -13,10 +20,22 @@ import { ApiResponse } from '@shared/types/api-response.type';
 import { ContactService } from './contact.service';
 
 @Component({
-    selector: 'app-contact',
-    templateUrl: './contact.component.html',
-    styleUrls: ['./contact.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatGridList, MatGridTile, MatFormField, MatLabel, MatInput, MatError, MatHint, MatButton, TranslatePipe]
+  selector: 'app-contact',
+  templateUrl: './contact.component.html',
+  styleUrls: ['./contact.component.scss'],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatGridList,
+    MatGridTile,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    MatHint,
+    MatButton,
+    TranslatePipe,
+  ],
 })
 export class ContactComponent {
   private formBuilder = inject(FormBuilder);
@@ -30,16 +49,16 @@ export class ContactComponent {
   public isLoading = false;
   public horizontalView = true;
 
-  constructor( ) {
+  constructor() {
     this.form = this.formBuilder.group({
       name: new FormControl(EMPTYSTRING, [Validators.required]),
       email: new FormControl(EMPTYSTRING, [Validators.required, Validators.email]),
       message: new FormControl(EMPTYSTRING, [Validators.required, Validators.maxLength(500)]),
-      honeypot: new FormControl(EMPTYSTRING)
-    })
+      honeypot: new FormControl(EMPTYSTRING),
+    });
     this.responsiveService.displayMobileLayout
       .pipe(takeUntilDestroyed(inject(DestroyRef))) //closes subscription on destroy
-      .subscribe(display => this.horizontalView = display);
+      .subscribe((display) => (this.horizontalView = display));
   }
 
   onSubmit() {
@@ -48,7 +67,7 @@ export class ContactComponent {
       this.prepareSubmission();
       this.contactService.sendContactMessage({ name, email, message }).subscribe({
         next: (res) => this.handleResponse(res),
-        error: (err) => this.handleResponse(err)
+        error: (err) => this.handleResponse(err),
       });
     }
   }
@@ -63,13 +82,13 @@ export class ContactComponent {
     this.openSnackBar(res.message!);
     this.finalizeSubmission();
   }
-  
+
   private finalizeSubmission(): void {
     this.form.enable();
     this.isLoading = false;
     this.submitted = true;
   }
-  
+
   private resetForm(): void {
     this.form.reset();
   }
@@ -78,23 +97,25 @@ export class ContactComponent {
     const snackBarConfig: MatSnackBarConfig = {
       duration: SNACKBAR_DURATION_MS,
     };
-    this.snackBar.open(message, "Ok!", snackBarConfig);
+    this.snackBar.open(message, 'Ok!', snackBarConfig);
   }
 
   private checkFormValidity(): boolean {
-    return this.form.valid && this.honeypot.value === EMPTYSTRING
+    return this.form.valid && this.honeypot.value === EMPTYSTRING;
   }
 
   getNameError() {
-    return this.name.hasError('required') && this.translateService.instant("error.noValue")
+    return this.name.hasError('required') && this.translateService.instant('error.noValue');
   }
 
   getEmailError() {
-    return this.email.hasError('required') ? this.translateService.instant("error.noValue") : this.email.hasError('email') && this.translateService.instant("error.invalidEmail")
+    return this.email.hasError('required')
+      ? this.translateService.instant('error.noValue')
+      : this.email.hasError('email') && this.translateService.instant('error.invalidEmail');
   }
 
   getMessageError() {
-    return this.message.hasError('required') && this.translateService.instant("error.noValue")
+    return this.message.hasError('required') && this.translateService.instant('error.noValue');
   }
 
   get name(): FormControl {

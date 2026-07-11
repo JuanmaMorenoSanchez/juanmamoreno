@@ -6,37 +6,36 @@ import { SessionStore } from './session.store';
 
 @Injectable({ providedIn: 'root' })
 export class SessionQuery extends Query<SessionState> {
-    getArtPiecesObservable = this.select(({ artPieces }) => [...artPieces]);
+  getArtPiecesObservable = this.select(({ artPieces }) => [...artPieces]);
 
-    constructor() {
-        super(inject(SessionStore));
-    }
+  constructor() {
+    super(inject(SessionStore));
+  }
 
-    get selectArtPieces(): Array<Nft> {
-        return this.getValue().artPieces
-    }
+  get selectArtPieces(): Array<Nft> {
+    return this.getValue().artPieces;
+  }
 
-    get selectLastArtPiecesUpdate() {
-        return this.getValue().lastArtPiecesUpdate
-    }
+  get selectLastArtPiecesUpdate() {
+    return this.getValue().lastArtPiecesUpdate;
+  }
 
+  // get canvasWeatherData(): any | undefined {
+  //     const daysBeforeExpireData = 1;
+  //     const weatherDataTime = this.getValue().canvasDataWeather?.fetchTime;
+  //     const invalidDate = weatherDataTime ? DateUtils.olderThanNDays(weatherDataTime, daysBeforeExpireData) : true;
+  //     return !weatherDataTime || invalidDate ? undefined : this.getValue().canvasDataWeather?.data
+  // }
 
-    // get canvasWeatherData(): any | undefined {
-    //     const daysBeforeExpireData = 1;
-    //     const weatherDataTime = this.getValue().canvasDataWeather?.fetchTime;
-    //     const invalidDate = weatherDataTime ? DateUtils.olderThanNDays(weatherDataTime, daysBeforeExpireData) : true;
-    //     return !weatherDataTime || invalidDate ? undefined : this.getValue().canvasDataWeather?.data
-    // }
+  // get canvasStockData(): any | undefined {
+  //     const daysBeforeExpireData = 1;
+  //     const stockDataTime = this.getValue().canvasDataStock?.fetchTime;
+  //     const invalidDate = stockDataTime ? DateUtils.olderThanNDays(stockDataTime, daysBeforeExpireData) : true;
+  //     return !stockDataTime || invalidDate ? undefined : this.getValue().canvasDataStock?.data
+  // }
 
-    // get canvasStockData(): any | undefined {
-    //     const daysBeforeExpireData = 1;
-    //     const stockDataTime = this.getValue().canvasDataStock?.fetchTime;
-    //     const invalidDate = stockDataTime ? DateUtils.olderThanNDays(stockDataTime, daysBeforeExpireData) : true;
-    //     return !stockDataTime || invalidDate ? undefined : this.getValue().canvasDataStock?.data
-    // }
-
-    // TODO: move logict to corresponding service
-    getThumbnailByTokenId(tokenId: string): NftThumbnail | undefined {
-        return this.getValue().imageCache.find(thumbnail => thumbnail?.tokenId === tokenId);
-    }
+  // TODO: move logict to corresponding service
+  getThumbnailByTokenId(tokenId: string): NftThumbnail | undefined {
+    return this.getValue().imageCache.find((thumbnail) => thumbnail?.tokenId === tokenId);
+  }
 }

@@ -1,10 +1,10 @@
 export default class CommonUtils {
   static scrollToTop(): void {
-      window.scroll({ 
-        top: 0, 
-        left: 0, 
-        behavior: 'smooth' 
-      });
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
   }
 
   static isElementDisplayed(elementId: string): boolean {
@@ -18,7 +18,7 @@ export default class CommonUtils {
   }
 
   static composeImgSrc(base64: string): string {
-    return `data:image/jpeg;base64,${base64}`
+    return `data:image/jpeg;base64,${base64}`;
   }
 
   static imageExtensionFor(blob: Blob): string {

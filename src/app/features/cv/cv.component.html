@@ -23,40 +23,42 @@
   </mat-grid-list>
 
   @for (cvSection of cvTimeline; track cvSection) {
-  <mat-divider class="breathe-space"></mat-divider>
-  <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
-    <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
-    <mat-grid-tile [colspan]="descColSpan" role="listitem">
-      <h3>{{ cvSection.title | translate }}</h3>
-    </mat-grid-tile>
-  </mat-grid-list>
-  <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
-    @for (cvItem of cvSection.items; track cvItem) {
-    <div>
-      @if (displayYearLabel(cvSection.items, cvItem)) {
-      <mat-grid-tile
-        [colspan]="yearColSpan"
-        [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)"
-      >
-        <h4>{{ cvItem.year }}</h4>
-      </mat-grid-tile>
-      }
+    <mat-divider class="breathe-space"></mat-divider>
+    <mat-grid-list [cols]="totalCols" rowHeight="5rem" role="list">
+      <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
       <mat-grid-tile [colspan]="descColSpan" role="listitem">
-        <p>
-          <i><span [innerHTML]="cvItem.title | translate"></span></i>,
-          <small>
-            @if (cvItem.venue) {
-            <span [innerHTML]="`${cvItem.venue | translate}, `"></span>
-            } @if (cvItem.city) {
-            <span> {{ cvItem.city }}, </span>
-            } @if (cvItem.country) {
-            <span>({{ cvItem.country | translate }})</span>
-            }
-          </small>
-        </p>
+        <h3>{{ cvSection.title | translate }}</h3>
       </mat-grid-tile>
-    </div>
-    }
-  </mat-grid-list>
+    </mat-grid-list>
+    <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
+      @for (cvItem of cvSection.items; track cvItem) {
+        <div>
+          @if (displayYearLabel(cvSection.items, cvItem)) {
+            <mat-grid-tile
+              [colspan]="yearColSpan"
+              [rowspan]="numberOfItemsInYear(cvSection.items, cvItem)"
+            >
+              <h4>{{ cvItem.year }}</h4>
+            </mat-grid-tile>
+          }
+          <mat-grid-tile [colspan]="descColSpan" role="listitem">
+            <p>
+              <i><span [innerHTML]="cvItem.title | translate"></span></i>,
+              <small>
+                @if (cvItem.venue) {
+                  <span [innerHTML]="`${(cvItem.venue | translate)}, `"></span>
+                }
+                @if (cvItem.city) {
+                  <span> {{ cvItem.city }}, </span>
+                }
+                @if (cvItem.country) {
+                  <span>({{ cvItem.country | translate }})</span>
+                }
+              </small>
+            </p>
+          </mat-grid-tile>
+        </div>
+      }
+    </mat-grid-list>
   }
 </div>
