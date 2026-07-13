@@ -37,6 +37,7 @@
     <div class="viewer-toolbar" [style.width]="frameWidth()">
       <ng-content select="[viewer-lead]"></ng-content>
       <ng-container [ngTemplateOutlet]="controls"></ng-container>
+      <ng-content select="[viewer-trail]"></ng-content>
     </div>
   }
 

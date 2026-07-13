@@ -1,5 +1,7 @@
 import { Component, computed, effect, inject, signal, Signal, WritableSignal } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
+import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -13,6 +15,7 @@ import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
+import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { map, switchMap } from 'rxjs';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
@@ -29,6 +32,8 @@ import { TraitPipe } from './pipes/traits.pipe';
     ImageViewerComponent,
     RouterLink,
     MatTooltip,
+    MatIconButton,
+    MatIcon,
     DownloadButtonComponent,
     PdfButtonComponent,
     LinksButtonComponent,
@@ -109,6 +114,32 @@ export class ArtPieceComponent {
   });
   readonly sold: Signal<boolean> = computed(() => SOLDCERTIFICATES.includes(this.tokenId()));
 
+  // Every artwork represented by its frontal view, newest year first — the same
+  // ordering the "more on {year}" list at the bottom uses. Walking this flat
+  // sequence is how the "next artwork" button advances through the current year
+  // and then rolls into the first piece of the previous (older) year.
+  private readonly allArtPieces: Signal<Nft[]> = toSignal(
+    this.artworkService.getArtPiecesObservable(),
+    { initialValue: [] }
+  );
+  private readonly orderedFrontalPieces: Signal<Nft[]> = computed(() => {
+    const all = this.allArtPieces();
+    const byName = new Map<string, Nft[]>();
+    for (const piece of all) {
+      const group = byName.get(piece.name);
+      if (group) group.push(piece);
+      else byName.set(piece.name, [piece]);
+    }
+    const frontals = all.filter((piece) =>
+      this.artworkService.isFrontalView(piece, byName.get(piece.name) ?? [])
+    );
+    // Stable sort keeps within-year store order, matching the bottom list.
+    return this.artworkService.sortByYear(frontals, SORT.DESC);
+  });
+  readonly hasNextArtPiece: Signal<boolean> = computed(
+    () => this.orderedFrontalPieces().length > 1
+  );
+
   constructor() {
     this.translateService.onLangChange.pipe(takeUntilDestroyed()).subscribe(({ lang }) => {
       this.currentLang.set(this.toShortLang(lang));
@@ -148,5 +179,18 @@ export class ArtPieceComponent {
 
   handleSelectedItem(tokenId: string): void {
     this.router.navigate(['/artwork', tokenId]);
+  }
+
+  // Advances to the next artwork in the year sequence; at the last piece of a
+  // year it continues into the first piece of the previous (older) year, and
+  // wraps from the very last artwork back to the first (newest).
+  goToNextArtPiece(): void {
+    const ordered = this.orderedFrontalPieces();
+    if (ordered.length <= 1) return;
+    const currentName = this.nft()?.name;
+    const index = ordered.findIndex((piece) => piece.name === currentName);
+    if (index === -1) return;
+    const next = ordered[(index + 1) % ordered.length];
+    this.router.navigate(['/artwork', next.tokenId]);
   }
 }
