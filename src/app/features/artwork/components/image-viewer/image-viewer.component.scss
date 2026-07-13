@@ -44,7 +44,8 @@
     position: absolute;
     inset: 0;
     background-repeat: no-repeat;
-    background-size: 100% 100%;
+    background-size: contain;
+    background-position: center;
     filter: blur(10px);
     transform: scale(1.02);
     opacity: 0;
