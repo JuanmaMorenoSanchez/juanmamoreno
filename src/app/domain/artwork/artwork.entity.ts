@@ -1,5 +1,3 @@
-import { FirestoreObject } from '@shared/entities/firestore-object.entity';
-
 export interface Nft {
   tokenId: string;
   name: string;
@@ -46,8 +44,10 @@ export interface Trait {
   trait_count?: number;
 }
 
-export interface NftThumbnail extends FirestoreObject {
+export interface NftThumbnail {
   originalUrl: string;
   thumbnail: string;
   tokenId: string;
+  createdAt: string;
+  updatedAt: string;
 }

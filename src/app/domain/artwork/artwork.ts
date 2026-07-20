@@ -21,7 +21,9 @@ export class Artwork {
         case VALIDTRAITS.YEAR:
           return 'XXXX';
         case VALIDTRAITS.IMAGETYPE:
-          return 'Frontal view';
+          // Must NOT be a real VIEW_TYPES value: otherwise malformed data would
+          // be silently classified as a frontal view by filterFrontalArtworks.
+          return '';
         default:
           return 'Error getting data';
       }
@@ -38,9 +40,15 @@ export class Artwork {
   }
 
   sortByYear(nfts: Nft[], order: SORT.ASC | SORT.DESC = SORT.ASC): Nft[] {
+    // Non-numeric years (e.g. the "XXXX" fallback) map to 0 rather than NaN:
+    // a NaN return from the comparator makes the sort order engine-dependent.
+    const toYear = (nft: Nft): number => {
+      const year = Number(this.getTraitValue(nft, VALIDTRAITS.YEAR));
+      return Number.isNaN(year) ? 0 : year;
+    };
     return [...nfts].sort((a, b) => {
-      const yearA = Number(this.getTraitValue(a, VALIDTRAITS.YEAR));
-      const yearB = Number(this.getTraitValue(b, VALIDTRAITS.YEAR));
+      const yearA = toYear(a);
+      const yearB = toYear(b);
       return order === SORT.ASC ? yearA - yearB : yearB - yearA;
     });
   }
@@ -75,9 +83,13 @@ export class Artwork {
   }
 
   getSize(nft: Nft): number {
-    const height = parseInt(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
-    const width = parseInt(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
-    return height + width;
+    // Non-numeric dimensions (e.g. the "XX" fallback) count as 0 rather than
+    // making the whole size NaN, which would corrupt sortBySize.
+    const parse = (trait: VALIDTRAITS): number => {
+      const value = Number.parseInt(this.getTraitValue(nft, trait), 10);
+      return Number.isNaN(value) ? 0 : value;
+    };
+    return parse(VALIDTRAITS.HEIGHT) + parse(VALIDTRAITS.WIDTH);
   }
 
   getNftById(id: string, nfts: Array<Nft>): Nft | null {

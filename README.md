@@ -1,23 +1,37 @@
-# Structure
+# Juanma Moreno Sánchez — artist portfolio
 
-DDD project structure. Look at folders and/or tsconfig paths to see it clearly.
+Angular 22 portfolio site, deployed as a static site to GitHub Pages.
 
-- Domain: Code that have all bussiness specific functionality. Isolated from any dependency including Angular
-- Features: "Impure" code that touches Angular, http, dependencies, etc.., organized by feature
-- Shared: Shared logic accross the app
+## Structure
+
+DDD project structure. Look at the folders and/or the tsconfig `paths` aliases to see it clearly.
+
+- **Domain** (`@domain`): business logic and data, isolated from any dependency including Angular.
+- **Features** (`@features`): "impure" code that touches Angular, HTTP, and dependencies, organized by feature.
+- **Shared** (`@shared`): logic shared across the app.
+
+See [CLAUDE.md](./CLAUDE.md) for the architecture in more depth (port/adapter for artwork data, zoneless + signals, Akita state, i18n).
 
 ## Run
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `npm start` for a dev server, then open http://127.0.0.1:4201/. The app reloads automatically on source changes.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm run build` to build the project (artifacts in `dist/`). Use `npm run watch` for a development build that rebuilds on change.
 
-## Running unit tests
+## Unit tests
 
-Run `npm run test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `npm test` to execute the unit tests via [Vitest](https://vitest.dev). Use `npm run test:watch` to keep them running. To run a single spec file:
 
-## Running end-to-end tests
+```
+npx ng test --no-watch --include="src/app/domain/artwork/artwork.spec.ts"
+```
 
-Run `npm run test:e2e` to execute the end-to-end Cypress tests
+## End-to-end tests
+
+Run `npm run test:e2e` to open the [Cypress](https://www.cypress.io) runner.
+
+## Deploy
+
+Run `npm run deploy` to build and publish to GitHub Pages (the `gh-pages` branch, served at juanmamoreno.com).
