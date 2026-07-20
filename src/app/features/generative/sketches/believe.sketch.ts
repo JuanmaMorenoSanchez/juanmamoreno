@@ -1,26 +1,46 @@
-import { map, randInt } from '@domain/generative/math';
+import { clamp, map, randInt } from '@domain/generative/math';
+import { Parallax } from '@domain/generative/parallax';
 import { Frame, loadImages, Sketch } from './sketch';
 
 const IMAGES_ROUTE = 'assets/images/canvases/';
 const TWO_PI = Math.PI * 2;
-const ROTATION_SPEED = 0.005;
-// Frames between each translucent green wash that leaves the kaleidoscope trail.
-const FADE_INTERVAL = 10;
+// Slow, meditative rotation — museum video-art pace, not a screensaver.
+const ROTATION_SPEED = 0.0015;
+// Same tone as the top bar (Material blue-grey 900 — see theme.scss) so the
+// canvas reads as the same dark surface as the rest of the page, not a
+// separate black void.
+const BASE_COLOR = '#263238';
+// A wash of that SAME tone, painted every frame: figures dissolve into an
+// identical backdrop instead of visibly shifting hue as they fade (the old
+// green-tinted fade against a near-black base read as an ugly seam).
+const FADE_COLOR = 'rgba(38, 50, 56, 0.035)';
+// Golden-ratio conjugate: a simple, deterministic way to scatter per-cell
+// phases across a full turn so neighbouring copies never pulse in lockstep.
+const GOLDEN_ANGLE = 0.6180339887 * TWO_PI;
 
 /**
- * "Believe" — a kaleidoscope of prayer figures rotating around a central head,
- * their radius driven by the pointer. A translucent green wash every few frames
- * leaves the characteristic trailing echo. Tap/click reseeds the pattern.
+ * "Believe" — a slow kaleidoscope of prayer figures woven into three
+ * overlapping rings around a glowing central head. Every copy breathes its
+ * own small, continuous drift in size and transparency, so the pattern never
+ * holds still even at rest — an imbricated, shimmering weave rather than a
+ * rigid repeat. The head and the kaleidoscope body sit at different parallax
+ * depths, so they answer the pointer at different rates. Tap/click reseeds.
  *
- * Canvas 2D port of the original p5 sketch (no rendering library).
+ * Canvas 2D port of the original p5 sketch, re-scored for a slow, mystic feel.
  */
 export class BelieveSketch implements Sketch {
   private width = 0;
   private height = 0;
   private angle = 0;
-  private frame = 0;
   private prayerNumber = 1;
   private prayerCount = 4;
+
+  // Depth layers sharing one pointer reference: the head sits nearest (moves
+  // most), the kaleidoscope body sits further back (moves least). That gap in
+  // responsiveness is what reads as depth rather than everything panning as
+  // one flat image.
+  private readonly headParallax = new Parallax(1, 16, 0.03);
+  private readonly bodyParallax = new Parallax(0.4, 26, 0.02);
 
   private head?: HTMLImageElement;
   private prayers: HTMLImageElement[] = [];
@@ -39,19 +59,14 @@ export class BelieveSketch implements Sketch {
     this.head = images['head'];
     this.prayers = [images['p1'], images['p2'], images['p3'], images['p4']];
 
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, width, height);
+    this.paintBase(ctx);
     this.reseed();
   }
 
   resize(ctx: CanvasRenderingContext2D, width: number, height: number): void {
     this.width = width;
     this.height = height;
-    // The backing store was cleared on resize; repaint the white base so it
-    // covers the full (newly sized) canvas.
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, width, height);
-    this.frame = 0;
+    this.paintBase(ctx);
   }
 
   pointerDown(): void {
@@ -62,28 +77,34 @@ export class BelieveSketch implements Sketch {
     const { width, height } = this;
     if (!this.head) return;
 
-    // Periodic translucent green wash → trailing echo of previous frames.
-    if (this.frame > FADE_INTERVAL) {
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.04)';
-      ctx.fillRect(0, 0, width, height);
-      this.frame = 0;
-    }
-    this.frame++;
+    ctx.fillStyle = FADE_COLOR;
+    ctx.fillRect(0, 0, width, height);
 
-    // Pointer maps to the two orbit radii; a still pointer sits mid-range.
+    // Pointer steers the two orbit radii; a still pointer sits mid-range.
     const px = frame.pointer.active ? frame.pointer.x : width / 2;
     const py = frame.pointer.active ? frame.pointer.y : height / 2;
-    const radius1 = map(px, 0, width, 10, 300);
-    const radius2 = map(py, 0, height, 10, 300);
+    const radius1 = map(px, 0, width, 20, 260);
+    const radius2 = map(py, 0, height, 20, 260);
 
-    ctx.drawImage(
-      this.head,
-      width / 2 - this.head.width / 2,
-      height / 2 - this.head.height / 2
-    );
+    // Shared depth reference: pointer offset from centre, normalized to
+    // roughly [-1, 1] (resting at 0 when the pointer hasn't moved yet).
+    const refX = frame.pointer.active ? clamp((px - width / 2) / (width / 2), -1, 1) : 0;
+    const refY = frame.pointer.active ? clamp((py - height / 2) / (height / 2), -1, 1) : 0;
+    this.headParallax.update(refX, refY);
+    this.bodyParallax.update(refX, refY);
 
     ctx.save();
-    ctx.translate(width / 2, height / 2);
+    ctx.shadowColor = 'rgba(150, 180, 190, 0.35)'; // soft, cool glow — no green cast
+    ctx.shadowBlur = 40;
+    ctx.drawImage(
+      this.head,
+      width / 2 - this.head.width / 2 + this.headParallax.x,
+      height / 2 - this.head.height / 2 + this.headParallax.y
+    );
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(width / 2 + this.bodyParallax.x, height / 2 + this.bodyParallax.y);
     ctx.rotate(this.angle);
     for (let i = 0; i < this.prayerCount; i++) {
       ctx.save();
@@ -93,7 +114,16 @@ export class BelieveSketch implements Sketch {
         ctx.save();
         ctx.rotate((j * TWO_PI) / this.prayerCount);
         ctx.translate(0, radius2);
-        this.drawPrayer(ctx);
+        // A third ring at the same radius but its own rotational offset: the
+        // overlap between it and the j-ring is what weaves the pattern into
+        // something imbricated rather than a clean, single repeat.
+        for (let k = 0; k < this.prayerCount; k++) {
+          ctx.save();
+          ctx.rotate((k * TWO_PI) / this.prayerCount);
+          ctx.translate(0, radius2);
+          this.drawPrayer(ctx, frame.t, i, j, k);
+          ctx.restore();
+        }
         ctx.restore();
       }
       ctx.restore();
@@ -103,14 +133,37 @@ export class BelieveSketch implements Sketch {
     this.angle += ROTATION_SPEED;
   }
 
-  private drawPrayer(ctx: CanvasRenderingContext2D): void {
+  // Draws one copy with a small, continuous, per-cell drift in scale and
+  // opacity — every instance breathes on its own cycle instead of all copies
+  // looking frozen-identical.
+  private drawPrayer(
+    ctx: CanvasRenderingContext2D,
+    t: number,
+    i: number,
+    j: number,
+    k: number
+  ): void {
     const prayer = this.prayers[this.prayerNumber - 1] ?? this.prayers[0];
-    // Centered so it rotates around its own middle.
-    ctx.drawImage(prayer, -30, -45, 60, 90);
+    const cellIndex = (i * this.prayerCount + j) * this.prayerCount + k;
+    const phase = (cellIndex * GOLDEN_ANGLE) % TWO_PI;
+
+    const scale = 1 + 0.14 * Math.sin(t * 0.5 + phase);
+    const alpha = 0.5 + 0.35 * (0.5 + 0.5 * Math.sin(t * 0.35 + phase * 1.7));
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.scale(scale, scale);
+    ctx.drawImage(prayer, -30, -45, 60, 90); // centered on its own middle
+    ctx.restore();
+  }
+
+  private paintBase(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = BASE_COLOR;
+    ctx.fillRect(0, 0, this.width, this.height);
   }
 
   private reseed(): void {
     this.prayerNumber = randInt(1, 4);
-    this.prayerCount = randInt(3, 6);
+    this.prayerCount = randInt(3, 5);
   }
 }

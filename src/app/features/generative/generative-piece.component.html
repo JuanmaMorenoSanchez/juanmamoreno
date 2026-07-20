@@ -1,5 +1,6 @@
 <div class="generative">
   <canvas #canvas class="sketch-canvas" [class.hidden]="notFound()"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
   @if (notFound()) {
     <div class="not-found">
       <p>{{ 'generative.notFound' | translate }}</p>

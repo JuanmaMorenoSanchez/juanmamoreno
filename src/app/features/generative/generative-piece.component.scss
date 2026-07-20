@@ -13,10 +13,22 @@
   height: 100%;
   touch-action: none; // let the sketch handle pointer/touch, no scroll/zoom
   cursor: crosshair;
+  filter: saturate(0.9) contrast(1.03);
 
   &.hidden {
     display: none;
   }
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 52%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
 }
 
 .not-found {

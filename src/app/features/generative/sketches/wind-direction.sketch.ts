@@ -4,16 +4,21 @@ import { Frame, loadImages, Sketch } from './sketch';
 
 const IMAGES_ROUTE = 'assets/images/canvases/';
 const SOURCE_COUNT = 7;
+// Higher = sparser emission (~1 in N frames per source). Keeps the field calm.
+const SPAWN_RARITY = 16;
+// Same tone as the top bar (Material blue-grey 900 — see theme.scss), so both
+// generative pieces read as the same dark surface rather than a black void.
+const BASE_COLOR = '#263238';
 
 /**
- * "Wind direction" — figures drift on a wind whose angle follows the pointer
- * (and drifts on its own when idle). A "growth" value — originally live Tesla
- * stock data, now a smooth random walk nudged by vertical pointer motion —
- * decides each figure's look (angel when positive, head when negative) and
- * washes the scene green or red. Tap to add an emitter.
+ * "Wind direction" — figures drift on a slow wind whose angle follows the
+ * pointer (and wanders on its own when idle). A "growth" value — originally
+ * live Tesla stock data, now a gentle random walk nudged by vertical pointer
+ * motion — decides each figure's look (angel when positive, head when
+ * negative) and washes the scene a muted green or rose. Tap to add an emitter.
  *
- * The particle simulation is pure and lives in @domain/generative/particles;
- * this sketch only renders it with Canvas 2D. No external data, no API keys.
+ * The particle simulation is pure (@domain/generative/particles); this sketch
+ * only renders it with Canvas 2D. No external data, no API keys.
  */
 export class WindDirectionSketch implements Sketch {
   private width = 0;
@@ -63,12 +68,12 @@ export class WindDirectionSketch implements Sketch {
     this.drawBackground(ctx, frame.t);
 
     for (const system of this.systems) {
-      system.spawn(this.windRad, this.grow);
+      system.spawn(this.windRad, this.grow, SPAWN_RARITY);
       system.update();
       for (const particle of system.particles) {
         const img = particle.positive ? this.angel : this.head;
         ctx.save();
-        ctx.globalAlpha = particle.alpha * 0.7;
+        ctx.globalAlpha = particle.alpha * 0.55; // soft, veiled figures
         ctx.drawImage(
           img,
           particle.x - particle.size / 2,
@@ -80,52 +85,58 @@ export class WindDirectionSketch implements Sketch {
       }
     }
 
-    // Green when growing, red when shrinking — intensity tracks magnitude.
+    // Muted green when growing, muted rose when shrinking — a slow mood wash.
     const intensity = clamp(Math.abs(this.grow) / 100, 0, 1);
     ctx.save();
-    ctx.globalAlpha = 0.06 + intensity * 0.12;
-    ctx.fillStyle = this.grow >= 0 ? '#4dff9e' : '#ff5a5a';
+    ctx.globalAlpha = 0.035 + intensity * 0.07;
+    ctx.fillStyle = this.grow >= 0 ? '#6fae8e' : '#b06a7c';
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    this.drawHeadGirls(ctx);
+    this.drawHeadGirls(ctx, frame.t);
   }
 
-  // Wind angle follows the pointer from screen centre; drifts when idle.
-  // "Growth" is a bounded random walk nudged by vertical pointer motion.
+  // Wind angle eases toward the pointer's bearing from centre; wanders slowly
+  // when idle. "Growth" is a gentle, smoothed random walk nudged by vertical
+  // pointer motion.
   private updateForces(frame: Frame): void {
     const { pointer, width, height } = frame;
     if (pointer.active && (Math.abs(pointer.vx) > 0.1 || Math.abs(pointer.vy) > 0.1)) {
-      this.windRad = Math.atan2(pointer.y - height / 2, pointer.x - width / 2);
+      const target = Math.atan2(pointer.y - height / 2, pointer.x - width / 2);
+      this.windRad += (target - this.windRad) * 0.05; // ease, don't snap
     } else {
-      this.windRad += Math.sin(frame.t * 0.2) * 0.01 + rand(-0.01, 0.01);
+      this.windRad += Math.sin(frame.t * 0.1) * 0.006 + rand(-0.005, 0.005);
     }
-    const nudge = -pointer.vy * 0.4; // dragging up grows, down shrinks
-    this.grow = clamp(this.grow * 0.98 + nudge + rand(-0.6, 0.6), -100, 100);
+    const nudge = -pointer.vy * 0.25; // dragging up grows, down shrinks
+    this.grow = clamp(this.grow * 0.99 + nudge + rand(-0.3, 0.3), -100, 100);
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D, t: number): void {
     const { width, height } = this;
+    const slow = t * 0.35;
     const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, `rgba(${180 + 50 * Math.sin(t)}, 255, 220, 0.18)`);
-    gradient.addColorStop(1, `rgba(255, ${180 + 50 * Math.cos(t * 0.8)}, 180, 0.18)`);
+    gradient.addColorStop(0, `rgba(${140 + 30 * Math.sin(slow)}, 200, 180, 0.1)`);
+    gradient.addColorStop(1, `rgba(200, ${140 + 30 * Math.cos(slow * 0.8)}, 160, 0.1)`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   }
 
-  private drawHeadGirls(ctx: CanvasRenderingContext2D): void {
+  // Large, near-still faces along the top — a slow vertical breathing instead
+  // of the original nervous per-frame jitter.
+  private drawHeadGirls(ctx: CanvasRenderingContext2D, t: number): void {
     if (!this.headGirl) return;
-    const jitter = () => Math.round(rand(-2, 2));
+    const positions = [0, this.width / 2, this.width / 1.3];
     ctx.save();
-    ctx.globalAlpha = 0.85;
-    ctx.drawImage(this.headGirl, jitter(), jitter());
-    ctx.drawImage(this.headGirl, this.width / 2 + jitter(), jitter());
-    ctx.drawImage(this.headGirl, this.width / 1.3 + jitter(), jitter());
+    ctx.globalAlpha = 0.7;
+    positions.forEach((x, i) => {
+      const bob = Math.sin(t * 0.25 + i) * 4;
+      ctx.drawImage(this.headGirl!, x, bob);
+    });
     ctx.restore();
   }
 
   private paintBase(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = '#111';
+    ctx.fillStyle = BASE_COLOR;
     ctx.fillRect(0, 0, this.width, this.height);
   }
 

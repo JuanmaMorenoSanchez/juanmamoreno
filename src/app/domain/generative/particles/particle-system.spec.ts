@@ -17,8 +17,8 @@ describe('Particle', () => {
   it('sizes within the expected range', () => {
     for (let i = 0; i < 50; i++) {
       const { size } = new Particle(0, 0, 0, 0);
-      expect(size).toBeGreaterThanOrEqual(30);
-      expect(size).toBeLessThan(160);
+      expect(size).toBeGreaterThanOrEqual(40);
+      expect(size).toBeLessThan(170);
     }
   });
 
@@ -29,7 +29,7 @@ describe('Particle', () => {
     expect(p.x !== 100 || p.y !== 100).toBe(true);
     expect(p.alpha).toBeLessThan(1);
 
-    for (let i = 0; i < 200; i++) p.update();
+    for (let i = 0; i < 400; i++) p.update(); // beyond lifespan (255 / 0.8 ≈ 319)
     expect(p.dead).toBe(true);
     expect(p.alpha).toBe(0); // clamped, never negative
   });
@@ -50,8 +50,8 @@ describe('ParticleSystem', () => {
     const system = new ParticleSystem(0, 0);
     for (let i = 0; i < 5; i++) system.spawn(0, 10, 1);
     expect(system.particles).toHaveLength(5);
-    // Well beyond every particle's lifespan (255 / 1.6 ≈ 160 updates).
-    for (let i = 0; i < 200; i++) system.update();
+    // Well beyond every particle's lifespan (255 / 0.8 ≈ 319 updates).
+    for (let i = 0; i < 400; i++) system.update();
     expect(system.particles).toHaveLength(0);
   });
 });
