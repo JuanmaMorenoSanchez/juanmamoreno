@@ -1,1 +1,8 @@
-<app-canvas-container [identifier]="id" [logic]="logic"></app-canvas-container>
+<div class="generative">
+  <canvas #canvas class="sketch-canvas" [class.hidden]="notFound()"></canvas>
+  @if (notFound()) {
+    <div class="not-found">
+      <p>{{ 'generative.notFound' | translate }}</p>
+    </div>
+  }
+</div>

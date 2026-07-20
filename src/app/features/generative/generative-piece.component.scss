@@ -1,0 +1,30 @@
+.generative {
+  position: relative;
+  width: 100%;
+  // Fill the viewport below the toolbar; the canvas is the whole experience.
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  background: #000;
+}
+
+.sketch-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none; // let the sketch handle pointer/touch, no scroll/zoom
+  cursor: crosshair;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.not-found {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0.7;
+}

@@ -8,8 +8,7 @@ import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/materi
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
-// import { CANVASES } from '@domain/generative/canvas.constants';
-// import { Canvas } from '@domain/generative/canvas.entity';
+import { SKETCH_LIST } from '@features/generative/sketches/registry';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
@@ -42,9 +41,7 @@ export class TopMenuComponent {
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 
-  // get generativePieces(): Array<Canvas> {
-  //   return CANVASES
-  // }
+  public readonly generativePieces = SKETCH_LIST;
 
   get years(): Set<number> {
     return this.artworkService.getAvailableYears();

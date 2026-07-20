@@ -1,54 +1,52 @@
-// import p5 from "p5";
+import { clamp, rand } from '../math';
 
-// export class Particle {
-//   private p: p5;
-//   private acceleration: p5.Vector;
-//   private velocity: p5.Vector;
-//   private position: p5.Vector;
-//   private lifespan: number;
-//   private texture: p5.Image;
-//   private size: number;
+/**
+ * A drifting figure blown by "wind", with a finite lifespan. Pure simulation —
+ * it holds position/velocity/life and advances one step per `update()`. It has
+ * no knowledge of canvas or images: the feature layer reads this state (`x`,
+ * `y`, `size`, `alpha`, `positive`) and renders it.
+ */
+export class Particle {
+  x: number;
+  y: number;
+  readonly size: number;
+  /**
+   * Whether "growth" was positive at birth. The renderer uses this to pick the
+   * figure (e.g. angel vs. head), so a particle keeps its look for its whole
+   * life instead of flipping as the global value changes.
+   */
+  readonly positive: boolean;
 
-//   constructor(p: p5, position: p5.Vector, img: p5.Image, windRad: number, nasdaqPerf: number) {
-//     this.p = p;
-//     this.acceleration = p5.Vector.fromAngle(windRad).mult(1 / 50).add(0, -nasdaqPerf / 100);
-//     this.velocity = new p5.Vector(this.p.random(-1, 1), this.p.random(-1, 0));
-//     this.position = position.copy();
-//     this.lifespan = 255;
-//     this.texture = img;
-//     this.size = this.p.random(30, 180);
-//   }
+  private vx = rand(-1, 1);
+  private vy = rand(-1, 0);
+  private readonly ax: number;
+  private readonly ay: number;
+  private life = 255;
 
-//   run() {
-//     this.update();
-//     this.display();
-//   }
+  constructor(x: number, y: number, windRad: number, grow: number) {
+    this.x = x;
+    this.y = y;
+    this.positive = grow >= 0;
+    this.size = rand(30, 160);
+    // Accelerate along the wind angle, plus a vertical push from "growth".
+    this.ax = Math.cos(windRad) / 50;
+    this.ay = Math.sin(windRad) / 50 - grow / 100;
+  }
 
-//   private update() {
-//     this.velocity.add(this.acceleration);
-//     this.position.add(this.velocity);
-//     this.lifespan -= 1;
-//   }
+  update(): void {
+    this.vx += this.ax;
+    this.vy += this.ay;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= 1.6;
+  }
 
-//   private display() {
-//     if (this.lifespan < 255) {
-//       this.p.tint(255, this.lifespan);
-//     }
-//     this.p.image(
-//       this.texture,
-//       this.position.x,
-//       this.position.y,
-//       this.size,
-//       this.size
-//     );
-//     this.p.noTint();
-//   }
+  /** Remaining lifespan as a 0..1 opacity. */
+  get alpha(): number {
+    return clamp(this.life / 255, 0, 1);
+  }
 
-//   isDead(): boolean {
-//     return this.lifespan < 0;
-//   }
-
-//   createVector(x: number, y: number): p5.Vector {
-//     return new p5.Vector().set(x, y);
-//   }
-// }
+  get dead(): boolean {
+    return this.life < 0;
+  }
+}

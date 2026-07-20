@@ -11,6 +11,9 @@
   "cancel": "Cancel",
   "back": "Back",
   "next": "Next",
+  "generative": {
+    "notFound": "This generative piece was not found."
+  },
   "menu": {
     "allPaintings": "All paintings",
     "generative": "Generative",

@@ -35,6 +35,15 @@
   <button x mat-button [matMenuTriggerFor]="paintingMenu">
     {{ 'paintings' | translate }}
   </button>
+  @if (generativePieces.length) {
+    <button
+      [attr.aria-label]="'menu.generative' | translate"
+      mat-button
+      [matMenuTriggerFor]="generativeMenu"
+    >
+      {{ 'menu.generative' | translate }}
+    </button>
+  }
   <button [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="['/about']">
     {{ 'menu.about' | translate }}
   </button>
@@ -69,6 +78,14 @@
       [queryParams]="{ years: year }"
     >
       {{ year }}
+    </button>
+  }
+</mat-menu>
+
+<mat-menu #generativeMenu="matMenu">
+  @for (piece of generativePieces; track piece.id) {
+    <button [attr.aria-label]="piece.label" mat-menu-item [routerLink]="['/generative', piece.id]">
+      {{ piece.label }}
     </button>
   }
 </mat-menu>
