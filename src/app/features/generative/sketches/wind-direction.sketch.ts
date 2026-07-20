@@ -1,4 +1,5 @@
 import { clamp, rand } from '@domain/generative/math';
+import { Parallax } from '@domain/generative/parallax';
 import { ParticleSystem } from '@domain/generative/particles/particle-system';
 import { Frame, loadImages, Sketch } from './sketch';
 
@@ -17,6 +18,12 @@ const BASE_COLOR = '#263238';
  * motion — decides each figure's look (angel when positive, head when
  * negative) and washes the scene a muted green or rose. Tap to add an emitter.
  *
+ * Three depth layers share one pointer reference at different parallax
+ * strengths: the background gradient barely answers (farthest), the drifting
+ * particle field answers a little more (middle distance), and the foreground
+ * faces answer the most (nearest). That gap in responsiveness is what reads
+ * as depth rather than one flat image panning.
+ *
  * The particle simulation is pure (@domain/generative/particles); this sketch
  * only renders it with Canvas 2D. No external data, no API keys.
  */
@@ -26,6 +33,10 @@ export class WindDirectionSketch implements Sketch {
   private windRad = 0;
   private grow = 0;
   private systems: ParticleSystem[] = [];
+
+  private readonly backgroundParallax = new Parallax(0.15, 40, 0.015);
+  private readonly particlesParallax = new Parallax(0.5, 30, 0.02);
+  private readonly headGirlParallax = new Parallax(1, 22, 0.03);
 
   private headGirl?: HTMLImageElement;
   private angel?: HTMLImageElement;
@@ -65,8 +76,20 @@ export class WindDirectionSketch implements Sketch {
     const { width, height } = this;
 
     this.updateForces(frame);
+
+    // Shared depth reference: pointer offset from centre, normalized to
+    // roughly [-1, 1] (resting at 0 when the pointer hasn't moved yet).
+    const { pointer } = frame;
+    const refX = pointer.active ? clamp((pointer.x - width / 2) / (width / 2), -1, 1) : 0;
+    const refY = pointer.active ? clamp((pointer.y - height / 2) / (height / 2), -1, 1) : 0;
+    this.backgroundParallax.update(refX, refY);
+    this.particlesParallax.update(refX, refY);
+    this.headGirlParallax.update(refX, refY);
+
     this.drawBackground(ctx, frame.t);
 
+    ctx.save();
+    ctx.translate(this.particlesParallax.x, this.particlesParallax.y);
     for (const system of this.systems) {
       system.spawn(this.windRad, this.grow, SPAWN_RARITY);
       system.update();
@@ -84,6 +107,7 @@ export class WindDirectionSketch implements Sketch {
         ctx.restore();
       }
     }
+    ctx.restore();
 
     // Muted green when growing, muted rose when shrinking — a slow mood wash.
     const intensity = clamp(Math.abs(this.grow) / 100, 0, 1);
@@ -111,26 +135,30 @@ export class WindDirectionSketch implements Sketch {
     this.grow = clamp(this.grow * 0.99 + nudge + rand(-0.3, 0.3), -100, 100);
   }
 
+  // Farthest layer: the gradient's own anchor points drift with the parallax
+  // offset, so the wash itself subtly shifts instead of standing dead still.
   private drawBackground(ctx: CanvasRenderingContext2D, t: number): void {
     const { width, height } = this;
     const slow = t * 0.35;
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    const { x: dx, y: dy } = this.backgroundParallax;
+    const gradient = ctx.createLinearGradient(dx, dy, width + dx, height + dy);
     gradient.addColorStop(0, `rgba(${140 + 30 * Math.sin(slow)}, 200, 180, 0.1)`);
     gradient.addColorStop(1, `rgba(200, ${140 + 30 * Math.cos(slow * 0.8)}, 160, 0.1)`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   }
 
-  // Large, near-still faces along the top — a slow vertical breathing instead
-  // of the original nervous per-frame jitter.
+  // Nearest layer: large, near-still faces along the top — a slow vertical
+  // breathing plus the foreground parallax shift.
   private drawHeadGirls(ctx: CanvasRenderingContext2D, t: number): void {
     if (!this.headGirl) return;
     const positions = [0, this.width / 2, this.width / 1.3];
+    const { x: px, y: py } = this.headGirlParallax;
     ctx.save();
     ctx.globalAlpha = 0.7;
     positions.forEach((x, i) => {
       const bob = Math.sin(t * 0.25 + i) * 4;
-      ctx.drawImage(this.headGirl!, x, bob);
+      ctx.drawImage(this.headGirl!, x + px, bob + py);
     });
     ctx.restore();
   }
