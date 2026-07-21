@@ -2,6 +2,7 @@ import { NgClass } from '@angular/common';
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   output,
@@ -9,7 +10,7 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardImage } from '@angular/material/card';
 import { MatChip, MatChipListbox } from '@angular/material/chips';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
@@ -24,9 +25,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
+import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SortOrder } from '@shared/types/sort.type';
-import { map, Observable, take } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -45,6 +47,7 @@ import { map, Observable, take } from 'rxjs';
     MatProgressSpinner,
     MatCardImage,
     LazyLoadDirective,
+    ParallaxTiltDirective,
     TranslatePipe,
   ],
 })
@@ -53,9 +56,15 @@ export class ArtPiecesListComponent {
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private responsiveService = inject(ResponsiveService);
+  private destroyRef = inject(DestroyRef);
 
   public loadedImages = new Set<string>();
   public sortMethods = Object.values(SortMethod);
+  // Token ids whose thumbnail race has already started — guards against a
+  // duplicate race if loadImgThumbUrl is ever called twice for the same
+  // tile; it does NOT filter emissions, since one race legitimately keeps
+  // upgrading imgThumbUrls as better sources arrive (see loadImgThumbUrl).
+  private loadStarted = new Set<string>();
 
   numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
@@ -128,19 +137,24 @@ export class ArtPiecesListComponent {
     if (nft) this.loadImgThumbUrl(nft);
   }
 
+  // Races every cheap preview source for this artwork (backend thumbnail,
+  // the NFT's own thumbnailUrl/cachedUrl) and renders whichever arrives
+  // first; later, higher-quality arrivals replace it in imgThumbUrls, same
+  // cascade the single-artwork viewer already uses for its own preview.
   public loadImgThumbUrl(nft: Nft): void {
-    if (!this.imgThumbUrls().has(nft.tokenId)) {
-      this.artworkService
-        .getAvailableOptimalUrl(nft)
-        .pipe(take(1))
-        .subscribe((url) => {
-          this.imgThumbUrls.update((map) => {
-            const newMap = new Map(map);
-            newMap.set(nft.tokenId, url);
-            return newMap;
-          });
+    if (this.loadStarted.has(nft.tokenId)) return;
+    this.loadStarted.add(nft.tokenId);
+
+    this.artworkService
+      .getProgressiveImageUrls(nft)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((url) => {
+        this.imgThumbUrls.update((map) => {
+          const newMap = new Map(map);
+          newMap.set(nft.tokenId, url);
+          return newMap;
         });
-    }
+      });
   }
 
   public toggleNftSelection(event: MouseEvent, nft: Nft): void {

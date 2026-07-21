@@ -9,6 +9,9 @@ mat-card {
   display: flex;
   align-items: stretch;
   justify-content: stretch;
+  // Clips the slightly-oversized, parallax-shifted image below so it pans
+  // within the frame without ever revealing an edge.
+  overflow: hidden;
   // Light grey placeholder shown while the thumbnail is still loading
   --mdc-elevated-card-container-color: #ebebe9;
   background-color: #ebebe9;
@@ -16,7 +19,13 @@ mat-card {
 
 .front-image {
   opacity: 0;
-  transition: opacity 0.35s ease-in;
+  // Oversized by the same margin appParallaxTilt is allowed to shift (see
+  // parallax-tilt.directive.ts's default), so it always has slack to pan
+  // within its frame and never shows a gap at the edge.
+  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
+  transition:
+    opacity 0.35s ease-in,
+    transform 0.2s ease-out;
 
   &.loaded {
     opacity: 1;
