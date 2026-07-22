@@ -1,64 +1,52 @@
 <div class="container margin-top">
   <div class="padding-sides">
     <h2>{{ 'contact.title' | translate }}</h2>
-    <h3 [innerHtml]="'contact.representedBy' | translate"></h3>
-    <h4 [innerHtml]="'contact.contactText' | translate"></h4>
+    <p [innerHtml]="'contact.representedBy' | translate"></p>
+    <p [innerHtml]="'contact.contactText' | translate"></p>
   </div>
 
-  <form [formGroup]="form" method="post" (ngSubmit)="onSubmit()">
-    <mat-grid-list cols="2" rowHeight="12vh">
-      <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
-        <mat-form-field class="fit-width padding-sides">
-          <mat-label>{{ 'contact.name' | translate }}</mat-label>
-          <input matInput [formControl]="name" required />
-          @if (name.invalid) {
-            <mat-error>{{ getNameError() }}</mat-error>
-          }
-        </mat-form-field>
-      </mat-grid-tile>
+  <form [formRoot]="contactForm" (submit)="onSubmit()" class="contact-grid padding-sides">
+    <mat-form-field appearance="outline" class="fit-width">
+      <mat-label>{{ 'contact.name' | translate }}</mat-label>
+      <input matInput [formField]="contactForm.name" />
+      @if (contactForm.name().invalid()) {
+        <mat-error>{{ getNameError() }}</mat-error>
+      }
+    </mat-form-field>
 
-      <mat-grid-tile [colspan]="horizontalView ? 1 : 2">
-        <mat-form-field class="fit-width padding-sides">
-          <mat-label>Email</mat-label>
-          <input matInput [formControl]="email" placeholder="email@example.com" required />
-          @if (email.invalid) {
-            <mat-error>{{ getEmailError() }}</mat-error>
-          }
-        </mat-form-field>
-      </mat-grid-tile>
+    <mat-form-field appearance="outline" class="fit-width">
+      <mat-label>Email</mat-label>
+      <input matInput [formField]="contactForm.email" placeholder="email@example.com" />
+      @if (contactForm.email().invalid()) {
+        <mat-error>{{ getEmailError() }}</mat-error>
+      }
+    </mat-form-field>
 
-      <mat-grid-tile colspan="2">
-        <mat-form-field class="fit-width padding-sides">
-          <mat-label>{{ 'contact.message' | translate }}</mat-label>
-          <textarea
-            matInput
-            [formControl]="message"
-            maxlength="256"
-            placeholder="I'm interested in..."
-            required
-          ></textarea>
-          <mat-hint>{{ message.value?.length || 0 }}/256</mat-hint>
-          @if (message.invalid) {
-            <mat-error>{{ getMessageError() }}</mat-error>
-          }
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile colspan="2">
-        <div class="padding-sides">
-          <button
-            mat-raised-button
-            [attr.aria-label]="'submit' | translate"
-            color="primary"
-            [disabled]="isLoading"
-            type="submit"
-            class="margin-top"
-          >
-            {{ 'submit' | translate }}
-          </button>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
+    <mat-form-field appearance="outline" class="fit-width contact-grid-full">
+      <mat-label>{{ 'contact.message' | translate }}</mat-label>
+      <textarea
+        matInput
+        [formField]="contactForm.message"
+        placeholder="I'm interested in..."
+      ></textarea>
+      <mat-hint>{{ messageLength }}/256</mat-hint>
+      @if (contactForm.message().invalid()) {
+        <mat-error>{{ getMessageError() }}</mat-error>
+      }
+    </mat-form-field>
 
-    <input [formControl]="honeypot" class="hidden" type="text" />
+    <div class="contact-grid-full">
+      <button
+        mat-raised-button
+        [attr.aria-label]="'submit' | translate"
+        color="primary"
+        [disabled]="isLoading()"
+        type="submit"
+      >
+        {{ 'submit' | translate }}
+      </button>
+    </div>
+
+    <input [formField]="contactForm.honeypot" class="hidden" type="text" />
   </form>
 </div>

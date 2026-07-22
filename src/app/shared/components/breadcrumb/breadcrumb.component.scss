@@ -1,23 +1,14 @@
 .small-input {
-  width: 27em;
-  font-size: 0.4em;
-  margin-left: 2em;
+  width: 10.8rem;
+  margin-left: 0.8rem;
   align-self: flex-start;
-  // mat-chip carries its own margin-top (Material's default chip spacing),
-  // which the form-field doesn't have. Matching it is what actually lines up
-  // the two top borders — flex alignment alone can't, since both already sit
-  // flush against the row's start.
   margin-top: 0.25rem;
-
-  // The field's height itself is shrunk to match the chip row via
-  // mat.form-field-density(), applied globally in theme.scss — a component's
-  // own stylesheet can't reach mat-form-field's internal DOM (a different
-  // component's view) without ::ng-deep.
 }
 
 .link-as-text {
   all: unset;
-  display: inline;
+  display: flex;
+  align-items: center;
   color: inherit;
   text-decoration: none;
   cursor: text; /* optional: makes it behave like a span on hover */

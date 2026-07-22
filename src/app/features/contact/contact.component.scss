@@ -1,3 +1,21 @@
+@use '../../../styles/tokens';
+@use '../../../styles/breakpoints' as bp;
+
 .hidden {
   display: none;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem 1rem;
+  margin-top: 1.5rem;
+
+  @include bp.respond-above(tokens.$breakpoint-md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contact-grid-full {
+  grid-column: 1 / -1;
 }

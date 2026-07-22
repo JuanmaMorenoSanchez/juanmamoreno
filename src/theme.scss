@@ -30,4 +30,8 @@ $jm-theme: mat.define-theme(
   @include mat.form-field-density(mat.define-theme((density: (scale: -5))));
   --mat-form-field-container-height: 2rem; // 32px, matches the chip row
   --mat-form-field-container-vertical-padding: 0px;
+
+  --mat-select-trigger-text-size: 0.875rem;
+  --mat-form-field-container-text-size: 0.875rem;
+  --mat-form-field-outlined-label-text-size: 0.875rem;
 }

@@ -1,69 +1,56 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { disabled, email, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatInput } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
-import { ResponsiveService } from '@shared/services/responsive.service';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { ContactService } from './contact.service';
+
+interface ContactFormModel {
+  name: string;
+  email: string;
+  message: string;
+  honeypot: string;
+}
+
+const EMPTY_CONTACT_FORM: ContactFormModel = {
+  name: EMPTYSTRING,
+  email: EMPTYSTRING,
+  message: EMPTYSTRING,
+  honeypot: EMPTYSTRING,
+};
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatGridList,
-    MatGridTile,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatError,
-    MatHint,
-    MatButton,
-    TranslatePipe,
-  ],
+  imports: [FormField, FormRoot, MatFormField, MatLabel, MatInput, MatError, MatHint, MatButton, TranslatePipe],
 })
 export class ContactComponent {
-  private formBuilder = inject(FormBuilder);
   private translateService = inject(TranslateService);
   private contactService = inject(ContactService);
-  private responsiveService = inject(ResponsiveService);
   private snackBar = inject(MatSnackBar);
 
-  public form: FormGroup;
   public submitted = false;
-  public isLoading = false;
-  public horizontalView = true;
+  public isLoading = signal(false);
 
-  constructor() {
-    this.form = this.formBuilder.group({
-      name: new FormControl(EMPTYSTRING, [Validators.required]),
-      email: new FormControl(EMPTYSTRING, [Validators.required, Validators.email]),
-      message: new FormControl(EMPTYSTRING, [Validators.required, Validators.maxLength(500)]),
-      honeypot: new FormControl(EMPTYSTRING),
-    });
-    this.responsiveService.displayMobileLayout
-      .pipe(takeUntilDestroyed(inject(DestroyRef))) //closes subscription on destroy
-      .subscribe((display) => (this.horizontalView = display));
-  }
+  private readonly model = signal<ContactFormModel>({ ...EMPTY_CONTACT_FORM });
+
+  public readonly contactForm = form(this.model, (path) => {
+    required(path.name);
+    required(path.email);
+    email(path.email);
+    required(path.message);
+    maxLength(path.message, 256);
+    disabled(path, { when: () => this.isLoading() });
+  });
 
   onSubmit() {
     if (this.checkFormValidity()) {
-      const { name, email, message } = this.form.value;
+      const { name, email, message } = this.model();
       this.prepareSubmission();
       this.contactService.sendContactMessage({ name, email, message }).subscribe({
         next: (res) => this.handleResponse(res),
@@ -73,8 +60,7 @@ export class ContactComponent {
   }
 
   private prepareSubmission() {
-    this.form.disable();
-    this.isLoading = true;
+    this.isLoading.set(true);
   }
 
   private handleResponse(res: ApiResponse<string>) {
@@ -84,13 +70,12 @@ export class ContactComponent {
   }
 
   private finalizeSubmission(): void {
-    this.form.enable();
-    this.isLoading = false;
+    this.isLoading.set(false);
     this.submitted = true;
   }
 
   private resetForm(): void {
-    this.form.reset();
+    this.model.set({ ...EMPTY_CONTACT_FORM });
   }
 
   private openSnackBar(message: string): void {
@@ -101,36 +86,28 @@ export class ContactComponent {
   }
 
   private checkFormValidity(): boolean {
-    return this.form.valid && this.honeypot.value === EMPTYSTRING;
+    return this.contactForm().valid() && this.model().honeypot === EMPTYSTRING;
   }
 
   getNameError() {
-    return this.name.hasError('required') && this.translateService.instant('error.noValue');
+    return this.hasError(this.contactForm.name, 'required') && this.translateService.instant('error.noValue');
   }
 
   getEmailError() {
-    return this.email.hasError('required')
+    return this.hasError(this.contactForm.email, 'required')
       ? this.translateService.instant('error.noValue')
-      : this.email.hasError('email') && this.translateService.instant('error.invalidEmail');
+      : this.hasError(this.contactForm.email, 'email') && this.translateService.instant('error.invalidEmail');
   }
 
   getMessageError() {
-    return this.message.hasError('required') && this.translateService.instant('error.noValue');
+    return this.hasError(this.contactForm.message, 'required') && this.translateService.instant('error.noValue');
   }
 
-  get name(): FormControl {
-    return this.form.get('name') as FormControl;
+  get messageLength(): number {
+    return this.contactForm.message().value().length;
   }
 
-  get email(): FormControl {
-    return this.form.get('email') as FormControl;
-  }
-
-  get message(): FormControl {
-    return this.form.get('message') as FormControl;
-  }
-
-  get honeypot(): FormControl {
-    return this.form.get('honeypot') as FormControl;
+  private hasError(field: () => { errors: () => readonly { kind: string }[] }, kind: string): boolean {
+    return field().errors().some((error) => error.kind === kind);
   }
 }

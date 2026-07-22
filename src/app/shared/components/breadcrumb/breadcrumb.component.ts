@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, computed, effect, inject, OnInit, signal, untracked, WritableSignal } from '@angular/core';
+import { form, FormField } from '@angular/forms/signals';
 import { MatChip, MatChipListbox, MatChipRemove } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -18,6 +18,10 @@ import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
 import { BreadCrumb } from './breadcrumbs.entity';
 
+interface YearPickerModel {
+  newYear: number | null;
+}
+
 @Component({
   selector: 'app-breadcrumb',
   templateUrl: './breadcrumb.component.html',
@@ -31,7 +35,7 @@ import { BreadCrumb } from './breadcrumbs.entity';
     MatIcon,
     MatFormField,
     MatSelect,
-    FormsModule,
+    FormField,
     MatOption,
     TranslatePipe,
     MatLabel,
@@ -49,10 +53,26 @@ export class BreadcrumbComponent implements OnInit {
   // mutated inside a router.events subscription never notifies Angular here.
   public breadcrumbs: WritableSignal<Array<BreadCrumb>>;
   public selectedYears: number[] = [];
-  public newYear: WritableSignal<number | null> = signal(null);
+
+  // Split so the year picker can render between the two in the template,
+  // right after the static route crumbs (Home, Paintings, ...) and before any
+  // year chips — its position then only depends on those static crumbs, not
+  // on how many years are selected.
+  public readonly routeBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !b.isYear));
+  public readonly yearBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !!b.isYear));
+
+  private readonly yearPickerModel = signal<YearPickerModel>({ newYear: null });
+  public readonly yearPickerForm = form(this.yearPickerModel);
 
   constructor() {
     this.breadcrumbs = signal(this.buildBreadCrumb(this.activatedRoute.root));
+
+    effect(() => {
+      const year = this.yearPickerForm.newYear().value();
+      if (year !== null) {
+        untracked(() => this.handleYearChange(year));
+      }
+    });
   }
 
   ngOnInit() {
@@ -67,18 +87,15 @@ export class BreadcrumbComponent implements OnInit {
       });
   }
 
-  public handleYearChange(event: number) {
-    if (this.validYears.includes(event)) {
-      this.newYear.set(event);
-      if (!this.selectedYears.includes(event)) {
-        this.selectedYears.push(event);
-        this.updateQueryParams();
-      }
+  private handleYearChange(year: number) {
+    if (this.validYears.includes(year) && !this.selectedYears.includes(year)) {
+      this.selectedYears.push(year);
+      this.updateQueryParams();
     }
-    // Deferred to the next tick: setting null in the same tick as the value
-    // never registers as a change on [ngModel], so mat-select's internal
-    // selection never clears and a removed year can look "stuck" selected.
-    setTimeout(() => this.newYear.set(null));
+    // Deferred to the next tick: resetting in the same tick as the value was
+    // set never registers as a change, so mat-select's internal selection
+    // never clears and a removed year can look "stuck" selected.
+    setTimeout(() => this.yearPickerModel.set({ newYear: null }));
   }
 
   public removeYearFilter(label: string) {

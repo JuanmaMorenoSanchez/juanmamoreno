@@ -2,24 +2,18 @@
   <nav class="container" aria-label="Breadcrumb">
     <mat-chip-listbox>
       <mat-chip color="primary">
-        <span>
-          <a
-            routerLink="/"
-            routerLinkActive="router-link-active"
-            class="link-as-text"
-            aria-label="Home"
-            matLine
-          >
-            <mat-icon>home</mat-icon>
-          </a>
-        </span>
-      </mat-chip>
-      @for (breadcrumb of breadcrumbs(); track breadcrumb) {
-        <mat-chip
-          color="primary"
-          [removable]="!!breadcrumb.isYear"
-          (removed)="removeYearFilter(breadcrumb.label)"
+        <a
+          routerLink="/"
+          routerLinkActive="router-link-active"
+          class="link-as-text"
+          aria-label="Home"
+          matLine
         >
+          <mat-icon>home</mat-icon>
+        </a>
+      </mat-chip>
+      @for (breadcrumb of routeBreadcrumbs(); track breadcrumb) {
+        <mat-chip color="primary">
           <a
             [routerLink]="breadcrumb.url"
             [queryParams]="breadcrumb.queryParams"
@@ -30,20 +24,11 @@
           >
             {{ breadcrumb.label }}
           </a>
-          @if (breadcrumb.isYear) {
-            <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
-              <mat-icon>cancel</mat-icon>
-            </button>
-          }
         </mat-chip>
       }
       <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'selectYear' | translate }}</mat-label>
-        <mat-select
-          [ngModel]="newYear()"
-          (ngModelChange)="handleYearChange($event)"
-          aria-label="Select year"
-        >
+        <mat-select [formField]="yearPickerForm.newYear" aria-label="Select year">
           @for (year of validYears; track year) {
             <mat-option [value]="year">
               {{ year }}
@@ -51,6 +36,23 @@
           }
         </mat-select>
       </mat-form-field>
+      @for (breadcrumb of yearBreadcrumbs(); track breadcrumb) {
+        <mat-chip color="primary" [removable]="true" (removed)="removeYearFilter(breadcrumb.label)">
+          <a
+            [routerLink]="breadcrumb.url"
+            [queryParams]="breadcrumb.queryParams"
+            [attr.aria-label]="breadcrumb.queryParams"
+            routerLinkActive="router-link-active"
+            class="link-as-text"
+            matLine
+          >
+            {{ breadcrumb.label }}
+          </a>
+          <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
     </mat-chip-listbox>
   </nav>
 }
