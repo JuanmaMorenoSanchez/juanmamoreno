@@ -6,6 +6,15 @@
     [(displayIndex)]="displayingIndex"
   >
     <app-back-button viewer-lead></app-back-button>
+    @if (nft()) {
+      <ng-container viewer-actions>
+        <app-download-button [links]="qualityUrls()" [name]="nft().name"></app-download-button>
+        @if (frontalViewNft()) {
+          <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
+        }
+        <app-links-button [tokenId]="tokenId()"></app-links-button>
+      </ng-container>
+    }
     @if (hasNextArtPiece()) {
       <button
         viewer-trail
@@ -41,13 +50,6 @@
           }
         </small>
       </h3>
-      <small>
-        <app-download-button [links]="qualityUrls()" [name]="nft().name"></app-download-button>
-        @if (frontalViewNft()) {
-          <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
-        }
-        <app-links-button [tokenId]="tokenId()"> </app-links-button>
-      </small>
     </div>
   }
   <!-- @if (nft().description?.length) {

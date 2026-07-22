@@ -1,4 +1,4 @@
-<ng-template #controls>
+<ng-template #navControls>
   @if (displayArrows()) {
     <button
       mat-icon-button
@@ -20,9 +20,11 @@
       <mat-icon>chevron_right</mat-icon>
     </button>
   }
+</ng-template>
+
+<ng-template #fullscreenControl>
   <button
     mat-icon-button
-    class="fullscreen-btn"
     aria-label="Toggle fullscreen"
     [matTooltip]="isFullScreen() ? 'Exit fullscreen' : 'Fullscreen'"
     matTooltipPosition="below"
@@ -35,9 +37,17 @@
 <div class="image-viewer">
   @if (!isFullScreen()) {
     <div class="viewer-toolbar" [style.width]="frameWidth()">
-      <ng-content select="[viewer-lead]"></ng-content>
-      <ng-container [ngTemplateOutlet]="controls"></ng-container>
-      <ng-content select="[viewer-trail]"></ng-content>
+      <div class="toolbar-start">
+        <ng-content select="[viewer-lead]"></ng-content>
+      </div>
+      <div class="toolbar-center">
+        <ng-container [ngTemplateOutlet]="navControls"></ng-container>
+        <ng-content select="[viewer-actions]"></ng-content>
+        <ng-container [ngTemplateOutlet]="fullscreenControl"></ng-container>
+      </div>
+      <div class="toolbar-end">
+        <ng-content select="[viewer-trail]"></ng-content>
+      </div>
     </div>
   }
 
@@ -85,7 +95,12 @@
 
       @if (isFullScreen()) {
         <div class="viewer-toolbar overlay" (dblclick)="$event.stopPropagation()">
-          <ng-container [ngTemplateOutlet]="controls"></ng-container>
+          <div class="toolbar-start"></div>
+          <div class="toolbar-center">
+            <ng-container [ngTemplateOutlet]="navControls"></ng-container>
+            <ng-container [ngTemplateOutlet]="fullscreenControl"></ng-container>
+          </div>
+          <div class="toolbar-end"></div>
         </div>
       }
     </div>

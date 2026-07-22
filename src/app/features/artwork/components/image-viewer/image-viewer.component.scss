@@ -96,11 +96,38 @@
   // Controls row: same plain mat-icon-button look as app-back-button — no
   // pill background, always visible. Sits above the artwork in normal page
   // flow (not overlaid on the image).
+  //
+  // Three-zone grid (start / center / end) instead of a plain flex row: the
+  // outer 1fr columns are always equal width, so whatever sits in the center
+  // column is genuinely centered regardless of how wide start/end are — a
+  // plain flex row with `margin-left: auto` can only push things to an edge,
+  // it can't center a group between two others of unequal width.
   .viewer-toolbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     max-width: 100%;
     margin-bottom: 0.5em;
+
+    .toolbar-start {
+      justify-self: start;
+    }
+
+    .toolbar-center {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+    }
+
+    .toolbar-end {
+      justify-self: end;
+    }
+
+    .toolbar-start,
+    .toolbar-end {
+      display: flex;
+      align-items: center;
+    }
 
     .counter {
       min-width: 2.5em;
@@ -108,10 +135,6 @@
       font-size: 0.85rem;
       font-variant-numeric: tabular-nums;
       user-select: none;
-    }
-
-    .fullscreen-btn {
-      margin-left: auto;
     }
 
     // While the real Fullscreen API is active, only the fullscreened element
