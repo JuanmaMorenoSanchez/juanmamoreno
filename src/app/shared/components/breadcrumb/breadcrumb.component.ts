@@ -75,7 +75,10 @@ export class BreadcrumbComponent implements OnInit {
         this.updateQueryParams();
       }
     }
-    this.newYear.set(null);
+    // Deferred to the next tick: setting null in the same tick as the value
+    // never registers as a change on [ngModel], so mat-select's internal
+    // selection never clears and a removed year can look "stuck" selected.
+    setTimeout(() => this.newYear.set(null));
   }
 
   public removeYearFilter(label: string) {
@@ -90,8 +93,8 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   private updateQueryParams() {
-    const queryParams = { years: this.selectedYears.join(',') };
-    this.router.navigate([], { queryParams: queryParams });
+    const queryParams = { years: this.selectedYears.length ? this.selectedYears.join(',') : null };
+    this.router.navigate([], { queryParams });
   }
 
   private extractSelectedYears(): number[] {

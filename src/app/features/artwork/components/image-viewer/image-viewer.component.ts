@@ -75,10 +75,14 @@ export class ImageViewerComponent {
   // after the user has already navigated away are discarded.
   private loadToken = 0;
 
-  // The artwork's physical proportions are known from its traits before any
-  // image byte arrives: the frame reserves its final footprint upfront so the
-  // content below never jumps while images load.
+  // Trait dimensions reserve the frame's footprint before any image arrives,
+  // but photographed files sometimes crop slightly differently — once the
+  // hi-res file decodes, its real pixel ratio replaces the estimate so the
+  // frame never letterboxes the loaded image.
+  private readonly decodedAspectRatio = signal<number | null>(null);
   readonly aspectRatio = computed(() => {
+    const decoded = this.decodedAspectRatio();
+    if (decoded) return decoded;
     const nft = this.currentNft();
     if (!nft) return 0.8;
     const width = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH));
@@ -135,6 +139,7 @@ export class ImageViewerComponent {
     this.layerA.set('none');
     this.layerB.set('none');
     this.activeIsA.set(true);
+    this.decodedAspectRatio.set(null);
   }
 
   public nextNft(relativeIndex: number) {
@@ -164,12 +169,16 @@ export class ImageViewerComponent {
     if (candidates.length === 0) return;
     this.loading.set(true);
     for (const url of candidates) {
+      let size: { width: number; height: number };
       try {
-        await this.decode(url);
+        size = await this.decode(url);
       } catch {
         continue; // this source failed or stalled: try the next best
       }
       if (token !== this.loadToken) return; // superseded by a newer artwork
+      if (size.width > 0 && size.height > 0) {
+        this.decodedAspectRatio.set(size.width / size.height);
+      }
       this.promote(url);
       this.loading.set(false);
       return;
@@ -183,11 +192,14 @@ export class ImageViewerComponent {
   // unresponsive IPFS gateway leaves decode() pending indefinitely, which would
   // otherwise stall the whole quality chain and never fall through to the
   // faster, more reliable CDN mirrors that come next in the candidate list.
-  private decode(url: string, timeoutMs = DECODE_TIMEOUT_MS): Promise<void> {
+  private decode(
+    url: string,
+    timeoutMs = DECODE_TIMEOUT_MS
+  ): Promise<{ width: number; height: number }> {
     if (!url) return Promise.reject(new Error('Empty image url'));
     const img = new Image();
     img.src = url;
-    return new Promise<void>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         img.src = ''; // abort the stalled download so it stops using bandwidth
         reject(new Error(`decode timeout: ${url}`));
@@ -195,7 +207,7 @@ export class ImageViewerComponent {
       img.decode().then(
         () => {
           clearTimeout(timer);
-          resolve();
+          resolve({ width: img.naturalWidth, height: img.naturalHeight });
         },
         (err) => {
           clearTimeout(timer);

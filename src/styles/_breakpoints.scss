@@ -1,0 +1,32 @@
+@use 'sass:math';
+
+// Mobile-first: write base styles for narrow viewports, then reach for
+// respond-above to enhance at wider ones.
+@mixin respond-above($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Use sparingly — prefer respond-above (mobile-first). Useful when a style
+// only makes sense below a breakpoint (e.g. undoing a desktop assumption).
+@mixin respond-below($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin respond-between($lower, $upper) {
+  @media (min-width: $lower) and (max-width: $upper) {
+    @content;
+  }
+}
+
+// clamp()-based fluid value: $min-size at/below $min-viewport, $max-size
+// at/above $max-viewport, linearly interpolated between the two — avoids a
+// media query just to bump a font-size or spacing value.
+@function fluid-size($min-size, $max-size, $min-viewport: 22.5em, $max-viewport: 90em) {
+  $slope: math.div($max-size - $min-size, $max-viewport - $min-viewport);
+  $intersection: $min-size - $slope * $min-viewport;
+  @return clamp(#{$min-size}, #{$intersection} + #{$slope * 100vw}, #{$max-size});
+}

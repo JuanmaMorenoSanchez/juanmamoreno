@@ -2,3 +2,14 @@
   margin-top: 2em;
   margin-bottom: 2em;
 }
+
+// The "CV" heading's mat-grid-tile has a fixed rowHeight (2.8rem) and clips
+// overflow; a plain <h2>'s browser-default top/bottom margins push its box
+// taller than that, so the heading was rendering visually clipped. Scoped to
+// this component (not the shared .catalog-heading class other pages use).
+h2.catalog-heading {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

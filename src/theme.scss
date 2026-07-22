@@ -1,27 +1,33 @@
 @use '@angular/material' as mat;
+@use 'styles/tokens';
 @include mat.elevation-classes();
 @include mat.app-background();
 
-$jm-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette, 900);
-$jm-accent: mat.m2-define-palette(mat.$m2-green-palette, 'A400');
-$jm-warn: mat.m2-define-palette(mat.$m2-pink-palette, 500);
-
-// Matches PDF_TYPE.font ('helvetica') in pdf-theme.ts so the site and the
-// generated PDFs read as one continuous catalog.
-$jm-typo: mat.m2-define-typography-config(
-  $font-family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-);
-
-$jm-theme: mat.m2-define-light-theme(
+// M3 named palettes are pre-coordinated bundles, not single hues like M2's
+// m2-define-palette — azure/green are the closest stand-ins for the old
+// blue-grey-900/green-A400 combination.
+$jm-theme: mat.define-theme(
   (
     color: (
-      primary: $jm-primary,
-      accent: $jm-accent,
-      warn: $jm-warn,
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$green-palette,
     ),
-    // typography: $jm-typo,
+    typography: (
+      plain-family: tokens.$font-family-base,
+      brand-family: tokens.$font-family-base,
+    ),
   )
 );
 
 @include mat.all-component-themes($jm-theme);
-@include mat.all-component-typographies($jm-typo);
+
+// Shrinks the breadcrumb year-selector to match its 32px-tall neighboring
+// chips. Both the density mixin (height floor) and the padding custom
+// property are needed — global/unencapsulated on purpose, since a component
+// stylesheet can't reach mat-form-field's internal DOM without ::ng-deep.
+.small-input {
+  @include mat.form-field-density(mat.define-theme((density: (scale: -5))));
+  --mat-form-field-container-height: 2rem; // 32px, matches the chip row
+  --mat-form-field-container-vertical-padding: 0px;
+}

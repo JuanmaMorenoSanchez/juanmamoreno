@@ -13,8 +13,8 @@ mat-card {
   // within the frame without ever revealing an edge.
   overflow: hidden;
   // Light grey placeholder shown while the thumbnail is still loading
-  --mdc-elevated-card-container-color: #ebebe9;
-  background-color: #ebebe9;
+  --mdc-elevated-card-container-color: var(--catalog-frame-bg);
+  background-color: var(--catalog-frame-bg);
 }
 
 .front-image {
