@@ -36,6 +36,15 @@ export class GenerativePieceComponent implements AfterViewInit {
   private readonly pointer: Pointer = { x: 0, y: 0, vx: 0, vy: 0, down: false, active: false };
   private resizeObserver?: ResizeObserver;
 
+  // Idle wander: when the real pointer has been still for a while, drift it
+  // slowly toward randomly chosen points instead of leaving the piece static.
+  private static readonly IDLE_DELAY_MS = 1500;
+  private static readonly IDLE_EASE = 0.01;
+  private lastRealMoveTime = 0;
+  private idleTargetX = 0;
+  private idleTargetY = 0;
+  private nextIdleTargetTime = 0;
+
   ngAfterViewInit(): void {
     this.attachPointer();
     this.observeResize();
@@ -77,6 +86,7 @@ export class GenerativePieceComponent implements AfterViewInit {
     if (!this.ctx || !this.sketch) return;
     const dt = (now - this.lastTime) / 1000;
     this.lastTime = now;
+    this.updateIdlePointer(now);
 
     // Re-establish the CSS-pixel coordinate space each frame so a sketch that
     // forgets to balance save/restore can't corrupt the next frame.
@@ -96,6 +106,28 @@ export class GenerativePieceComponent implements AfterViewInit {
 
     this.rafId = requestAnimationFrame(this.loop);
   };
+
+  // Eases the pointer toward a randomly chosen point once real input has
+  // been still for a while, so a piece left alone still reads as alive
+  // instead of freezing at the last real position.
+  private updateIdlePointer(now: number): void {
+    if (now - this.lastRealMoveTime < GenerativePieceComponent.IDLE_DELAY_MS) return;
+
+    if (now >= this.nextIdleTargetTime) {
+      this.idleTargetX = Math.random() * this.cssWidth;
+      this.idleTargetY = Math.random() * this.cssHeight;
+      // 3-7s until the next wander target, so the drift reads as slow and lazy.
+      this.nextIdleTargetTime = now + 3000 + Math.random() * 4000;
+    }
+
+    const prevX = this.pointer.x;
+    const prevY = this.pointer.y;
+    this.pointer.x += (this.idleTargetX - this.pointer.x) * GenerativePieceComponent.IDLE_EASE;
+    this.pointer.y += (this.idleTargetY - this.pointer.y) * GenerativePieceComponent.IDLE_EASE;
+    this.pointer.vx = this.pointer.x - prevX;
+    this.pointer.vy = this.pointer.y - prevY;
+    this.pointer.active = true;
+  }
 
   private get cssWidth(): number {
     return this.canvasRef.nativeElement.clientWidth;
@@ -141,6 +173,7 @@ export class GenerativePieceComponent implements AfterViewInit {
       this.pointer.x = x;
       this.pointer.y = y;
       this.pointer.active = true;
+      this.lastRealMoveTime = performance.now();
     });
     canvas.addEventListener('pointerdown', (event) => {
       const { x, y } = toLocal(event);
@@ -148,6 +181,7 @@ export class GenerativePieceComponent implements AfterViewInit {
       this.pointer.y = y;
       this.pointer.down = true;
       this.pointer.active = true;
+      this.lastRealMoveTime = performance.now();
       this.sketch?.pointerDown?.(x, y);
     });
     canvas.addEventListener('pointerup', () => (this.pointer.down = false));
