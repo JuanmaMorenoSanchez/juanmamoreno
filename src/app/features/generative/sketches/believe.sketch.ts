@@ -1,3 +1,4 @@
+import { LightShine } from '@domain/generative/light-shine';
 import { clamp, map, randInt } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
 import { Frame, loadImages, Sketch } from './sketch';
@@ -6,14 +7,14 @@ const IMAGES_ROUTE = 'assets/images/canvases/';
 const TWO_PI = Math.PI * 2;
 // Slow, meditative rotation — museum video-art pace, not a screensaver.
 const ROTATION_SPEED = 0.0015;
-// Same tone as the top bar (Material blue-grey 900 — see theme.scss) so the
-// canvas reads as the same dark surface as the rest of the page, not a
-// separate black void.
-const BASE_COLOR = '#263238';
+// A dark, desaturated version of the head image's own palette (warm sienna
+// hair, amber hands, umber shadow) instead of the site's cool blue-grey, so
+// the canvas reads as an extension of the head rather than a mismatched
+// backdrop behind it.
+const BASE_COLOR = '#241d18';
 // A wash of that SAME tone, painted every frame: figures dissolve into an
-// identical backdrop instead of visibly shifting hue as they fade (the old
-// green-tinted fade against a near-black base read as an ugly seam).
-const FADE_COLOR = 'rgba(38, 50, 56, 0.035)';
+// identical backdrop instead of visibly shifting hue as they fade.
+const FADE_COLOR = 'rgba(36, 29, 24, 0.035)';
 // Golden-ratio conjugate: a simple, deterministic way to scatter per-cell
 // phases across a full turn so neighbouring copies never pulse in lockstep.
 const GOLDEN_ANGLE = 0.6180339887 * TWO_PI;
@@ -41,6 +42,8 @@ export class BelieveSketch implements Sketch {
   // one flat image.
   private readonly headParallax = new Parallax(1, 16, 0.03);
   private readonly bodyParallax = new Parallax(0.4, 26, 0.02);
+  // Occasional warm flare over the whole scene — see @domain/generative/light-shine.
+  private readonly lightShine = new LightShine();
 
   private head?: HTMLImageElement;
   private prayers: HTMLImageElement[] = [];
@@ -93,15 +96,11 @@ export class BelieveSketch implements Sketch {
     this.headParallax.update(refX, refY);
     this.bodyParallax.update(refX, refY);
 
-    ctx.save();
-    ctx.shadowColor = 'rgba(150, 180, 190, 0.35)'; // soft, cool glow — no green cast
-    ctx.shadowBlur = 40;
     ctx.drawImage(
       this.head,
       width / 2 - this.head.width / 2 + this.headParallax.x,
       height / 2 - this.head.height / 2 + this.headParallax.y
     );
-    ctx.restore();
 
     ctx.save();
     ctx.translate(width / 2 + this.bodyParallax.x, height / 2 + this.bodyParallax.y);
@@ -129,6 +128,9 @@ export class BelieveSketch implements Sketch {
       ctx.restore();
     }
     ctx.restore();
+
+    this.lightShine.update(frame.t);
+    this.lightShine.draw(ctx, width, height, frame.t);
 
     this.angle += ROTATION_SPEED;
   }
