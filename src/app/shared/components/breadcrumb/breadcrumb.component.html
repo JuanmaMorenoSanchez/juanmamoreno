@@ -12,7 +12,7 @@
           <mat-icon>home</mat-icon>
         </a>
       </mat-chip>
-      @for (breadcrumb of routeBreadcrumbs(); track breadcrumb) {
+      @for (breadcrumb of routeBreadcrumbs(); track breadcrumb.label) {
         <mat-chip color="primary">
           <a
             [routerLink]="breadcrumb.url"
@@ -36,8 +36,14 @@
           }
         </mat-select>
       </mat-form-field>
-      @for (breadcrumb of yearBreadcrumbs(); track breadcrumb) {
-        <mat-chip color="primary" [removable]="true" (removed)="removeYearFilter(breadcrumb.label)">
+      @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
+        <mat-chip
+          color="primary"
+          [removable]="true"
+          (removed)="removeYearFilter(breadcrumb.label)"
+          animate.enter="year-chip-enter"
+          animate.leave="year-chip-leave"
+        >
           <a
             [routerLink]="breadcrumb.url"
             [queryParams]="breadcrumb.queryParams"

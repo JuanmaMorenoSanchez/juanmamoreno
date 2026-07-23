@@ -206,6 +206,25 @@ export class ArtPiecesListComponent {
     return method;
   }
 
+  // Only the first screenful of tiles gets the entrance animation. Angular's
+  // animate.enter has real per-element setup cost, and applying it to a full
+  // catalog (100+ pieces) measurably blocked the main thread for over a
+  // second on load — tiles that far down are off-screen anyway, so skipping
+  // them there is free.
+  private static readonly MAX_ANIMATED_TILES = 20;
+  private static readonly TILE_DELAY_STEP_MS = 30;
+
+  public tileEnterClass(index: number): string {
+    return index < ArtPiecesListComponent.MAX_ANIMATED_TILES ? 'tile-enter' : '';
+  }
+
+  public tileEnterDelay(index: number): number {
+    return (
+      Math.min(index, ArtPiecesListComponent.MAX_ANIMATED_TILES) *
+      ArtPiecesListComponent.TILE_DELAY_STEP_MS
+    );
+  }
+
   private queryParamsObservable(): Observable<string[]> {
     return this.activatedroute.queryParamMap.pipe(
       map((params) => {

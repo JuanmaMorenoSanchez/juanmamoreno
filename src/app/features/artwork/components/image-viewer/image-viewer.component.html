@@ -63,6 +63,9 @@
     <div
       #imageElement
       class="art-frame"
+      [class.slide-next]="slideClass() === 'slide-next'"
+      [class.slide-prev]="slideClass() === 'slide-prev'"
+      (animationend)="slideClass.set('')"
       [style.aspectRatio]="aspectRatio()"
       [style.width]="frameWidth()"
     >

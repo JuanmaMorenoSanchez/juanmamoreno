@@ -91,6 +91,12 @@ export class ImageViewerComponent {
   });
   readonly frameWidth = computed(() => `min(100%, calc(100vh * ${this.aspectRatio()}))`);
 
+  // Brief directional nudge on prev/next so navigating between artworks reads
+  // as a deliberate step, not an abrupt swap. Cleared and re-set through an
+  // empty state first so the CSS animation restarts even when the same
+  // direction is pressed twice in a row (Angular skips a no-op class rebind).
+  readonly slideClass = signal<string>('');
+
   @ViewChild('imageElement') imageElement!: ElementRef;
 
   constructor() {
@@ -146,7 +152,13 @@ export class ImageViewerComponent {
     if (!this.displayArrows()) return;
     const newIndex =
       (this.displayIndex() + relativeIndex + this.nfts().length) % this.nfts().length;
+    this.triggerSlide(relativeIndex > 0 ? 'slide-next' : 'slide-prev');
     this.displayIndex.set(newIndex);
+  }
+
+  private triggerSlide(direction: 'slide-next' | 'slide-prev'): void {
+    this.slideClass.set('');
+    requestAnimationFrame(() => this.slideClass.set(direction));
   }
 
   public toggleFullScreen() {

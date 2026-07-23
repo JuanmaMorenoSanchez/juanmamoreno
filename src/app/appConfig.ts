@@ -1,5 +1,10 @@
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
-import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
+import {
+  PreloadAllModules,
+  provideRouter,
+  withPreloading,
+  withViewTransitions,
+} from '@angular/router';
 
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -11,7 +16,7 @@ import { routes } from './app-routing.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions()),
     // ngx-translate v18 dropped TranslateModule.forRoot in favour of this
     // provider. English is the fallback; the active language is selected in
     // AppComponent once the JSON dictionaries have been registered.

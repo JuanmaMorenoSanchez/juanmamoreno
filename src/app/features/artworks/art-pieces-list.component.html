@@ -39,12 +39,14 @@
       role="list"
       aria-label="Art Pieces"
     >
-      @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece)) {
+      @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece); let i = $index) {
         <mat-grid-tile
           (contextmenu)="toggleNftSelection($event, artPiece)"
           (click)="handleArtPieceClick(artPiece.tokenId)"
           role="listitem"
           [attr.aria-label]="artPiece.name"
+          [animate.enter]="tileEnterClass(i)"
+          [style.animation-delay.ms]="tileEnterDelay(i)"
         >
           <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
             @if (isSelected(artPiece)) {

@@ -36,6 +36,38 @@
       aspect-ratio: auto !important;
       background-color: black;
     }
+
+    // Brief directional nudge on prev/next navigation (see nextNft() /
+    // triggerSlide() in the component) so switching artworks reads as a step
+    // in a direction rather than an abrupt swap.
+    &.slide-next {
+      animation: slide-next-anim 220ms ease-out;
+    }
+    &.slide-prev {
+      animation: slide-prev-anim 220ms ease-out;
+    }
+  }
+
+  @keyframes slide-next-anim {
+    from {
+      transform: translateX(-1.5%);
+      opacity: 0.55;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-prev-anim {
+    from {
+      transform: translateX(1.5%);
+      opacity: 0.55;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   // Low-res thumbnail shown until the first hi-res layer is ready. Blurred to

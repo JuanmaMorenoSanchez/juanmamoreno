@@ -13,3 +13,33 @@
   text-decoration: none;
   cursor: text; /* optional: makes it behave like a span on hover */
 }
+
+@keyframes year-chip-enter-anim {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes year-chip-leave-anim {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+.year-chip-enter {
+  animation: year-chip-enter-anim 180ms ease-out;
+}
+
+.year-chip-leave {
+  animation: year-chip-leave-anim 150ms ease-in;
+}

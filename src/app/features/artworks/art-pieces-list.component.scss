@@ -2,6 +2,21 @@ mat-grid-tile {
   cursor: pointer;
 }
 
+@keyframes tile-enter-anim {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tile-enter {
+  animation: tile-enter-anim 320ms ease-out both;
+}
+
 mat-card {
   position: relative;
   height: 100%;
