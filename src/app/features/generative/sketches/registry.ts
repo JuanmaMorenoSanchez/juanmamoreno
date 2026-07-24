@@ -1,4 +1,5 @@
 import { BelieveSketch } from './believe.sketch';
+import { DustSketch } from './dust.sketch';
 import { SketchFactory } from './sketch';
 import { WindDirectionSketch } from './wind-direction.sketch';
 
@@ -7,13 +8,12 @@ export interface SketchEntry {
   label: string;
   /** Creates a fresh sketch instance. */
   factory: SketchFactory;
-  /** Whether this sketch can be reseeded by a mic-detected sound peak, same as a click. */
-  soundReactive?: boolean;
 }
 
 // Route id (`/generative/:id`) → sketch. Add new sketches here.
 export const SKETCHES: Record<string, SketchEntry> = {
-  believe: { label: 'Believe', factory: () => new BelieveSketch(), soundReactive: true },
+  believe: { label: 'Believe', factory: () => new BelieveSketch() },
+  dust: { label: 'Dust', factory: () => new DustSketch() },
   // 'wind-direction': { label: 'Wind direction', factory: () => new WindDirectionSketch() },
 };
 

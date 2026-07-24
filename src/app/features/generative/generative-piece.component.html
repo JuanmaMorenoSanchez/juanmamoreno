@@ -6,19 +6,4 @@
       <p>{{ 'generative.notFound' | translate }}</p>
     </div>
   }
-  @if (soundReactive()) {
-    <button
-      mat-icon-button
-      class="sound-toggle"
-      [attr.aria-label]="(soundListening() ? 'generative.disableSound' : 'generative.enableSound') | translate"
-      [matTooltip]="(soundListening() ? 'generative.disableSound' : 'generative.enableSound') | translate"
-      matTooltipPosition="left"
-      (click)="toggleSound()"
-    >
-      <mat-icon>{{ soundListening() ? 'mic' : 'mic_off' }}</mat-icon>
-    </button>
-    @if (soundError()) {
-      <p class="sound-error">{{ 'generative.soundError' | translate }}</p>
-    }
-  }
 </div>

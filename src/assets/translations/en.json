@@ -12,10 +12,7 @@
   "back": "Back",
   "next": "Next",
   "generative": {
-    "notFound": "This generative piece was not found.",
-    "enableSound": "React to sound",
-    "disableSound": "Stop reacting to sound",
-    "soundError": "Couldn't access the microphone"
+    "notFound": "This generative piece was not found."
   },
   "menu": {
     "allPaintings": "All paintings",
