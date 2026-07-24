@@ -53,7 +53,8 @@
   },
   "error": {
     "noValue": "Debes escribir algo",
-    "invalidEmail": "Email inválido"
+    "invalidEmail": "Email inválido",
+    "submissionFailed": "Algo salió mal al enviar tu mensaje. Inténtalo de nuevo más tarde."
   },
   "cv": {
     "shortBio": "Alcalá la Real (Jaén), 1986. Reside en Madrid.",

@@ -54,7 +54,7 @@ export class ContactComponent {
       this.prepareSubmission();
       this.contactService.sendContactMessage({ name, email, message }).subscribe({
         next: (res) => this.handleResponse(res),
-        error: (err) => this.handleResponse(err),
+        error: () => this.handleSubmissionError(),
       });
     }
   }
@@ -66,6 +66,11 @@ export class ContactComponent {
   private handleResponse(res: ApiResponse<string>) {
     if (res.success) this.resetForm();
     this.openSnackBar(res.message!);
+    this.finalizeSubmission();
+  }
+
+  private handleSubmissionError(): void {
+    this.openSnackBar(this.translateService.instant('error.submissionFailed'));
     this.finalizeSubmission();
   }
 

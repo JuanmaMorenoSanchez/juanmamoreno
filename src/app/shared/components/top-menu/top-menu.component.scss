@@ -17,3 +17,42 @@ mat-toolbar-row {
   font-weight: 400;
   margin: 0;
 }
+
+// mat-drawer-container only wraps the toolbar here (the routed page content
+// lives outside this component entirely), so Material's default
+// `position: absolute` on the drawer/backdrop — relative to that container —
+// squeezes both into the toolbar's own ~4rem height instead of covering the
+// viewport. `fixed` escapes that without touching the container's own size,
+// so the rest of the page layout is unaffected. Kept below the CDK overlay
+// baseline (z-index: 1000) so menus/tooltips opened from inside the drawer
+// still stack above it.
+.drawer {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: min(40vw, 200px);
+  z-index: 500;
+}
+
+::ng-deep .mat-drawer-backdrop {
+  position: fixed !important;
+  inset: 0;
+  z-index: 499;
+}
+
+// Sidebar list: one item per row instead of the toolbar's inline wrapping.
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  gap: 0.25rem;
+
+  button[mat-button] {
+    justify-content: flex-start;
+    width: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
