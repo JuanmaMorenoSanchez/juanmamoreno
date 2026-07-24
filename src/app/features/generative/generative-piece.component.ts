@@ -8,8 +8,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MicPeakService } from './audio/mic-peak.service';
 import { SKETCHES } from './sketches/registry';
 import { Frame, Pointer, Sketch } from './sketches/sketch';
 
@@ -17,15 +21,22 @@ import { Frame, Pointer, Sketch } from './sketches/sketch';
   selector: 'app-generative-piece',
   templateUrl: './generative-piece.component.html',
   styleUrl: './generative-piece.component.scss',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, MatIconButton, MatIcon, MatTooltip],
 })
 export class GenerativePieceComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly micPeak = inject(MicPeakService);
 
   @ViewChild('canvas') private canvasRef!: ElementRef<HTMLCanvasElement>;
 
   readonly notFound = signal(false);
+  // Whether the currently loaded sketch opts into sound reactivity at all
+  // (shows/hides the toggle button) — distinct from whether the mic is
+  // actually listening right now (micPeak.listening).
+  readonly soundReactive = signal(false);
+  readonly soundError = signal(false);
+  readonly soundListening = this.micPeak.listening;
 
   private ctx: CanvasRenderingContext2D | null = null;
   private sketch: Sketch | null = null;
@@ -65,6 +76,13 @@ export class GenerativePieceComponent implements AfterViewInit {
       return;
     }
     this.notFound.set(false);
+
+    // A sketch that doesn't opt in never keeps the mic running behind it.
+    if (!entry.soundReactive && this.micPeak.listening()) {
+      this.micPeak.disable();
+    }
+    this.soundReactive.set(!!entry.soundReactive);
+    this.soundError.set(false);
 
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d');
@@ -198,5 +216,44 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.resizeObserver?.disconnect();
     this.sketch?.dispose?.();
     this.sketch = null;
+    if (this.micPeak.listening()) this.micPeak.disable();
+  }
+
+  // Mic access must be requested from a user gesture, so this is only ever
+  // called from the toggle button's own click — never automatically.
+  async toggleSound(): Promise<void> {
+    if (this.micPeak.listening()) {
+      this.micPeak.disable();
+      return;
+    }
+    this.soundError.set(false);
+    try {
+      await this.micPeak.enable(() => {
+        // A sound has no on-screen position of its own, so it gets one: jolt
+        // the pointer to a fresh random spot exactly the way a real fast
+        // swipe would (same vx/vy formula the real pointermove handler
+        // uses, just one big jump instead of many small steps), then click
+        // there — same reaction as tapping the canvas, at the spot the
+        // "swipe" just landed on.
+        const { x, y } = this.simulateViolentMovement();
+        this.sketch?.pointerDown?.(x, y);
+      });
+    } catch {
+      // Permission denied, no mic present, etc. — fail quietly back to off.
+      this.soundError.set(true);
+    }
+  }
+
+  private simulateViolentMovement(): { x: number; y: number } {
+    const x = Math.random() * this.cssWidth;
+    const y = Math.random() * this.cssHeight;
+    this.pointer.vx = x - this.pointer.x;
+    this.pointer.vy = y - this.pointer.y;
+    this.pointer.x = x;
+    this.pointer.y = y;
+    this.pointer.active = true;
+    // Keeps idle-wander from immediately smoothing the jolt back away.
+    this.lastRealMoveTime = performance.now();
+    return { x, y };
   }
 }

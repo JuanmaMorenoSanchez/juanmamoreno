@@ -7,11 +7,13 @@ export interface SketchEntry {
   label: string;
   /** Creates a fresh sketch instance. */
   factory: SketchFactory;
+  /** Whether this sketch can be reseeded by a mic-detected sound peak, same as a click. */
+  soundReactive?: boolean;
 }
 
 // Route id (`/generative/:id`) → sketch. Add new sketches here.
 export const SKETCHES: Record<string, SketchEntry> = {
-  believe: { label: 'Believe', factory: () => new BelieveSketch() },
+  believe: { label: 'Believe', factory: () => new BelieveSketch(), soundReactive: true },
   // 'wind-direction': { label: 'Wind direction', factory: () => new WindDirectionSketch() },
 };
 
