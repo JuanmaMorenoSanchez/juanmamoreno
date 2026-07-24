@@ -7,6 +7,11 @@ import { SoundPeakDetector } from '@domain/generative/sound-peak-detector';
 // and crowd noise sit mostly above it and don't drown out the pulse.
 const BASS_MIN_HZ = 20;
 const BASS_MAX_HZ = 160;
+// Music-presence gate: flux only counts while the bass band actually holds
+// meaningful energy. A silent room's noise floor sits below the analyser's
+// minDecibels cutoff, reading ~0 here, so its jitter can never fire a peak
+// no matter how the relative thresholds are tuned.
+const MIN_BASS_PRESENCE = 0.12;
 
 /**
  * Turns microphone input into "peak" events tuned to a song's beat, so it can
@@ -66,10 +71,14 @@ export class MicPeakService {
     // would shrink the flux we key off). Raised maxDecibels leaves headroom
     // so a loud room's bass isn't permanently pinned at 255 (which would
     // flatten flux to zero).
+    // minDecibels is the anti-silence measure: anything quieter than -55dB
+    // reads as byte 0, so a silent room's noise floor produces literally zero
+    // bass level and zero flux — there is nothing left to false-trigger on.
+    // Real music playback and concert bass sit far above this cutoff.
     this.analyser.fftSize = 2048;
     this.analyser.smoothingTimeConstant = 0.4;
-    this.analyser.minDecibels = -85;
-    this.analyser.maxDecibels = -20;
+    this.analyser.minDecibels = -55;
+    this.analyser.maxDecibels = -15;
     source.connect(this.analyser);
 
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
@@ -125,8 +134,12 @@ export class MicPeakService {
     // Flux = how much bass energy just *rose* since the previous frame; only
     // the rise counts (a decay isn't an onset). Sustained energy → ~0 flux,
     // an attack → a spike. This is what the detector actually thresholds.
-    const flux = Math.max(0, bassLevel - this.previousBassLevel);
+    // Gated on actual bass presence: without music there is no rhythm to
+    // react to, so whatever residue remains below the presence threshold is
+    // fed to the detector as zero.
+    const rawFlux = Math.max(0, bassLevel - this.previousBassLevel);
     this.previousBassLevel = bassLevel;
+    const flux = bassLevel >= MIN_BASS_PRESENCE ? rawFlux : 0;
 
     const t = (performance.now() - this.startTime) / 1000;
     if (this.detector.addSample(t, flux)) {
