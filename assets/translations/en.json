@@ -53,7 +53,8 @@
   },
   "error": {
     "noValue": "You must enter a value",
-    "invalidEmail": "Not a valid email"
+    "invalidEmail": "Not a valid email",
+    "submissionFailed": "Something went wrong sending your message. Please try again later."
   },
   "cv": {
     "shortBio": "Alcalá la Real (Jaén, Spain), 1986. Based in Madrid (Spain)",
