@@ -1,6 +1,33 @@
 @use 'styles/tokens';
 @use 'styles/breakpoints' as bp;
 
+// Self-hosted via @fontsource/material-icons (see angular.json's styles array
+// for the @font-face + woff2 files) instead of fonts.googleapis.com, so no
+// visitor IP is sent to Google just to render an icon. Angular Material's
+// mat-icon applies this class name but doesn't ship the ligature rendering
+// rules itself — this is the same class Google's own stylesheet used to
+// provide alongside the font.
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 :root {
   --catalog-ink: #1f1f1f;
   --catalog-soft: #6e6e6e;
