@@ -49,7 +49,26 @@
     "representedBy": "Currently represented by <a href='https://galeriazunino.com/' target='_blank'>Zunino Gallery</a> (Sevilla)",
     "contactText": "If you want to contact me, use the form bellow and I will get back to you soon. You can also follow me on <a href='https://www.instagram.com/juanmamorenosanchez/' target='_blank'>Instagram</a> to stay on the loop.",
     "name": "Name",
-    "message": "Message"
+    "email": "Email",
+    "emailPlaceholder": "email@example.com",
+    "message": "Message",
+    "messagePlaceholder": "I'm interested in..."
+  },
+  "viewer": {
+    "previous": "Previous",
+    "next": "Next",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
+  },
+  "dossier": {
+    "title": "Dossier options",
+    "includeContact": "Include contact info",
+    "includeCv": "Include CV",
+    "includeStatement": "Include Statement",
+    "customTitle": "Custom title",
+    "customTitlePlaceholder": "Enter a title",
+    "customText": "Custom text",
+    "customTextPlaceholder": "Add custom text"
   },
   "error": {
     "noValue": "You must enter a value",
@@ -153,5 +172,66 @@
   "links": {
     "view": "View where this artwork appears on the Internet",
     "title": "Appearances of the artwork on the Internet"
+  },
+  "seo": {
+    "default": {
+      "description": "Contemporary art — oil painting, watercolour, drawings and generative art — by the artist Juanma Moreno Sánchez."
+    },
+    "paintings": {
+      "title": "Paintings",
+      "description": "Oil paintings, watercolours and works on paper by the artist Juanma Moreno Sánchez."
+    },
+    "artwork": {
+      "title": "Artwork"
+    },
+    "artworkBy": "Original artwork by Juanma Moreno Sánchez.",
+    "generative": {
+      "title": "Generative",
+      "description": "Interactive generative artwork by Juanma Moreno Sánchez, drawn live in the browser."
+    },
+    "cv": {
+      "title": "CV",
+      "description": "Exhibitions, awards, residencies and biography of the artist Juanma Moreno Sánchez."
+    },
+    "about": {
+      "title": "Statement",
+      "description": "Artist statement — the ideas and themes behind the work of Juanma Moreno Sánchez."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Get in touch with the artist Juanma Moreno Sánchez."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "Terms of service for juanmamoreno.com."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "Privacy policy for juanmamoreno.com — no cookies, no third-party trackers."
+    },
+    "notFound": {
+      "title": "Page not found"
+    }
+  },
+  "privacy": {
+    "title": "Privacy",
+    "noBanner": "No cookie banner here — you know why? Because we don't use any.",
+    "noTracking": "We honestly don't care about tracking you: not what you click, not where you go, not how long you stay.",
+    "noThirdParty": "No third-party cookies, no analytics, no ad networks — nothing following you around the web.",
+    "localOnly": "The only thing we keep on your device is a local copy of the gallery so it loads faster next time. It never leaves your browser and identifies no one.",
+    "contactUse": "If you write to us through the contact form, we use your message for one thing only: to reply."
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "intro": "By using this site, you agree to the following:",
+    "portfolio": "This is simply the artist's portfolio site: it shows the work and lets you get in touch.",
+    "noData": "We do not collect or store any personal information.",
+    "publicContent": "All content shown here is public.",
+    "ownRisk": "Use of this site is at your own risk. We are not responsible for any misuse of the content.",
+    "changes": "We may update these terms at any time without notice."
+  },
+  "notFound": {
+    "title": "404 — Page not found",
+    "message": "Oops! The page you are looking for does not exist. Try one of these instead:"
   }
 }

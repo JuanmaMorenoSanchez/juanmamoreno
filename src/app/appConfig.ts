@@ -2,6 +2,7 @@ import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core
 import {
   PreloadAllModules,
   provideRouter,
+  TitleStrategy,
   withPreloading,
   withViewTransitions,
 } from '@angular/router';
@@ -12,6 +13,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { provideTranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { routes } from './app-routing.module';
 
 export const appConfig: ApplicationConfig = {
@@ -28,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync(),
+    { provide: TitleStrategy, useExisting: SeoTitleStrategy },
   ],
 };

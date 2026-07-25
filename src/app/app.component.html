@@ -4,7 +4,9 @@
   <app-top-menu></app-top-menu>
 </header>
 
-<main role="main">
-  <app-breadcrumb></app-breadcrumb>
+<main role="main" [class.no-chrome]="hideBreadcrumb()">
+  @if (!hideBreadcrumb()) {
+    <app-breadcrumb></app-breadcrumb>
+  }
   <router-outlet></router-outlet>
 </main>

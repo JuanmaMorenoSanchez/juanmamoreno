@@ -16,6 +16,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { TranslatePipe } from '@ngx-translate/core';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
@@ -30,7 +31,7 @@ const DECODE_TIMEOUT_MS = 5000;
   selector: 'app-image-viewer',
   templateUrl: './image-viewer.component.html',
   styleUrls: ['./image-viewer.component.scss'],
-  imports: [MatIcon, MatIconButton, MatTooltip, NgTemplateOutlet],
+  imports: [MatIcon, MatIconButton, MatTooltip, NgTemplateOutlet, TranslatePipe],
 })
 export class ImageViewerComponent {
   private artworkService = inject(ARTWORK_PORT);

@@ -1,33 +1,41 @@
-<h2 mat-dialog-title>Dossier Options</h2>
+<h2 mat-dialog-title>{{ 'dossier.title' | translate }}</h2>
 <mat-dialog-content>
   <div class="form-group">
     <div class="pdf-options-group">
-      <mat-slide-toggle [(ngModel)]="includeContact">Include contact info</mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="includeContact">
+        {{ 'dossier.includeContact' | translate }}
+      </mat-slide-toggle>
     </div>
 
     <div class="pdf-options-group">
-      <mat-slide-toggle [(ngModel)]="includeCv">Include CV</mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="includeCv">{{ 'dossier.includeCv' | translate }}</mat-slide-toggle>
     </div>
 
     <div class="pdf-options-group">
-      <mat-slide-toggle [(ngModel)]="includeStatement">Include Statement</mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="includeStatement">
+        {{ 'dossier.includeStatement' | translate }}
+      </mat-slide-toggle>
     </div>
 
     <div class="pdf-options-group">
       <mat-form-field appearance="outline">
-        <mat-label>Custom Title</mat-label>
-        <input matInput [(ngModel)]="customTitle" placeholder="Enter a title" />
+        <mat-label>{{ 'dossier.customTitle' | translate }}</mat-label>
+        <input
+          matInput
+          [(ngModel)]="customTitle"
+          [placeholder]="'dossier.customTitlePlaceholder' | translate"
+        />
       </mat-form-field>
     </div>
 
     <div class="pdf-options-group">
       <mat-form-field appearance="outline">
-        <mat-label>Custom Text</mat-label>
+        <mat-label>{{ 'dossier.customText' | translate }}</mat-label>
         <textarea
           matInput
           rows="4"
           [(ngModel)]="customText"
-          placeholder="Add custom text"
+          [placeholder]="'dossier.customTextPlaceholder' | translate"
         ></textarea>
       </mat-form-field>
     </div>

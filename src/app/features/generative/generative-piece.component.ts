@@ -13,6 +13,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { SKETCHES } from './sketches/registry';
 import { Frame, Pointer, Sketch } from './sketches/sketch';
 
@@ -25,6 +26,7 @@ import { Frame, Pointer, Sketch } from './sketches/sketch';
 export class GenerativePieceComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly seo = inject(SeoTitleStrategy);
 
   @ViewChild('canvas') private canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('container') private containerRef!: ElementRef<HTMLElement>;
@@ -112,6 +114,9 @@ export class GenerativePieceComponent implements AfterViewInit {
       return;
     }
     this.notFound.set(false);
+    // Title the page by the sketch's own name (the route's translated
+    // description stays as-is).
+    this.seo.setPageTitle(entry.label);
 
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d');

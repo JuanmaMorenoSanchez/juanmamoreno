@@ -6,7 +6,7 @@
       type="button"
       mat-icon-button
       class="fullscreen-btn"
-      [attr.aria-label]="isFullScreen() ? 'Exit fullscreen' : 'Fullscreen'"
+      [attr.aria-label]="(isFullScreen() ? 'viewer.exitFullscreen' : 'viewer.fullscreen') | translate"
       (click)="toggleFullscreen()"
     >
       <mat-icon>{{ isFullScreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>

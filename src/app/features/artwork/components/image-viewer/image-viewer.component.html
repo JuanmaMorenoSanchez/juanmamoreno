@@ -2,8 +2,8 @@
   @if (displayArrows()) {
     <button
       mat-icon-button
-      aria-label="Previous image"
-      matTooltip="Previous"
+      [attr.aria-label]="'viewer.previous' | translate"
+      [matTooltip]="'viewer.previous' | translate"
       matTooltipPosition="below"
       (click)="nextNft(-1)"
     >
@@ -12,8 +12,8 @@
     <span class="counter">{{ displayIndex() + 1 }} / {{ nfts().length }}</span>
     <button
       mat-icon-button
-      aria-label="Next image"
-      matTooltip="Next"
+      [attr.aria-label]="'viewer.next' | translate"
+      [matTooltip]="'viewer.next' | translate"
       matTooltipPosition="below"
       (click)="nextNft(1)"
     >
@@ -25,8 +25,8 @@
 <ng-template #fullscreenControl>
   <button
     mat-icon-button
-    aria-label="Toggle fullscreen"
-    [matTooltip]="isFullScreen() ? 'Exit fullscreen' : 'Fullscreen'"
+    [attr.aria-label]="(isFullScreen() ? 'viewer.exitFullscreen' : 'viewer.fullscreen') | translate"
+    [matTooltip]="(isFullScreen() ? 'viewer.exitFullscreen' : 'viewer.fullscreen') | translate"
     matTooltipPosition="below"
     (click)="toggleFullScreen()"
   >

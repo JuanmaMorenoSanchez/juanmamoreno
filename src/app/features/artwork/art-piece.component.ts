@@ -17,11 +17,15 @@ import { BackButtonComponent } from '@shared/components/back-button/back-button.
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
+import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
 import { TraitPipe } from './pipes/traits.pipe';
+
+// Sentinel returned when an artwork has no generated description yet.
+const NO_DESCRIPTION = 'No description available';
 
 @Component({
   selector: 'app-art-piece',
@@ -50,6 +54,7 @@ export class ArtPieceComponent {
   private artworkService = inject(ARTWORK_PORT);
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
+  private seo = inject(SeoTitleStrategy);
 
   readonly validTraits = VALIDTRAITS;
   readonly numberOfViewMoreColumns: Signal<number> = toSignal(
@@ -160,6 +165,27 @@ export class ArtPieceComponent {
         this.descriptions.set(data);
       });
     });
+
+    // Title each artwork page by its own name so the many /artwork/:id pages are
+    // distinct to search. For the meta description, prefer the artwork's own
+    // (localized) generated description when it has loaded; otherwise fall back
+    // to one built from its year and medium.
+    effect(() => {
+      const nft = this.nft();
+      if (!nft?.name) return;
+      this.seo.setPageTitle(nft.name, this.seoDescription(nft));
+    });
+  }
+
+  private seoDescription(nft: Nft): string {
+    const generated = this.description();
+    if (generated && generated !== NO_DESCRIPTION) return generated;
+
+    const year = this.getTraitValue(nft, VALIDTRAITS.YEAR);
+    const medium = this.translateService.instant(this.getTraitValue(nft, VALIDTRAITS.MEDIUM));
+    const details = [year, medium].filter(Boolean).join(', ');
+    const by = this.translateService.instant('seo.artworkBy');
+    return details ? `${nft.name} — ${details}. ${by}` : `${nft.name}. ${by}`;
   }
 
   private getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
@@ -171,10 +197,8 @@ export class ArtPieceComponent {
   }
 
   private getShortDescription(descriptions: Descriptions | null, lang: string): string {
-    if (!descriptions) return 'No description available';
-    return (
-      descriptions.translated.find((t) => t.lang === lang)?.shortDesc || 'No description available'
-    );
+    if (!descriptions) return NO_DESCRIPTION;
+    return descriptions.translated.find((t) => t.lang === lang)?.shortDesc || NO_DESCRIPTION;
   }
 
   handleSelectedItem(tokenId: string): void {

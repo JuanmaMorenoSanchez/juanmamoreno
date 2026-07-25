@@ -8,8 +8,50 @@
       content="Contemporary art, mostly oil painting, watercolor, drawings, generative art, and information about the artist."
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1f1f1f" />
     <base href="/" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!-- Social preview defaults. These are what non-JS scrapers (Facebook,
+         WhatsApp, etc.) read; the SeoTitleStrategy refreshes title/description
+         per route at runtime for search engines that render JS. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Juanma Moreno Sánchez" />
+    <meta property="og:title" content="Juanma Moreno Sánchez, artist." />
+    <meta
+      property="og:description"
+      content="Contemporary art — oil painting, watercolour, drawings and generative art — by the artist Juanma Moreno Sánchez."
+    />
+    <meta property="og:url" content="https://www.juanmamoreno.com/" />
+    <meta
+      property="og:image"
+      content="https://www.juanmamoreno.com/assets/images/abstract_landscape.jpg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Juanma Moreno Sánchez, artist." />
+    <meta
+      name="twitter:description"
+      content="Contemporary art — oil painting, watercolour, drawings and generative art — by the artist Juanma Moreno Sánchez."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.juanmamoreno.com/assets/images/abstract_landscape.jpg"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Juanma Moreno Sánchez",
+        "url": "https://www.juanmamoreno.com",
+        "jobTitle": "Artist",
+        "image": "https://www.juanmamoreno.com/assets/images/juanma_estudio.jpg",
+        "sameAs": [
+          "https://www.instagram.com/juanmamorenosanchez/",
+          "https://galeriazunino.com/"
+        ]
+      }
+    </script>
   </head>
   <body class="mat-typography">
     <app-root></app-root>

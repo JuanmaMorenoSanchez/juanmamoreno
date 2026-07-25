@@ -1,4 +1,8 @@
 main {
   display: block;
   padding-bottom: 3rem;
+
+  &.no-chrome {
+    padding-bottom: 0;
+  }
 }
