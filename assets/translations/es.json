@@ -49,7 +49,26 @@
     "representedBy": "Representado por la <a href='https://galeriazunino.com/' target='_blank'>Galería Zunino </a> (Sevilla)",
     "contactText": "Si quieres contactar conmigo, usa el formulario debajo. También puedes seguirme en <a href='https://www.instagram.com/juanmamorenosanchez/' target='_blank'>Instagram</a>.",
     "name": "Nombre",
-    "message": "Mensaje"
+    "email": "Email",
+    "emailPlaceholder": "email@ejemplo.com",
+    "message": "Mensaje",
+    "messagePlaceholder": "Me interesa..."
+  },
+  "viewer": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
+  },
+  "dossier": {
+    "title": "Opciones del dossier",
+    "includeContact": "Incluir datos de contacto",
+    "includeCv": "Incluir CV",
+    "includeStatement": "Incluir statement",
+    "customTitle": "Título personalizado",
+    "customTitlePlaceholder": "Escribe un título",
+    "customText": "Texto personalizado",
+    "customTextPlaceholder": "Añade un texto personalizado"
   },
   "error": {
     "noValue": "Debes escribir algo",
@@ -153,5 +172,66 @@
   "links": {
     "view": "Ver repercusión de la pieza en Internet",
     "title": "Apariciones de la pieza en Internet"
+  },
+  "seo": {
+    "default": {
+      "description": "Arte contemporáneo — pintura al óleo, acuarela, dibujo y arte generativo — del artista Juanma Moreno Sánchez."
+    },
+    "paintings": {
+      "title": "Pinturas",
+      "description": "Pinturas al óleo, acuarelas y obra sobre papel del artista Juanma Moreno Sánchez."
+    },
+    "artwork": {
+      "title": "Obra"
+    },
+    "artworkBy": "Obra original de Juanma Moreno Sánchez.",
+    "generative": {
+      "title": "Generativo",
+      "description": "Arte generativo interactivo de Juanma Moreno Sánchez, generado en el navegador."
+    },
+    "cv": {
+      "title": "CV",
+      "description": "Exposiciones, premios, residencias y biografía del artista Juanma Moreno Sánchez."
+    },
+    "about": {
+      "title": "Statement",
+      "description": "Statement del artista — las ideas y los temas detrás de la obra de Juanma Moreno Sánchez."
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "Ponte en contacto con el artista Juanma Moreno Sánchez."
+    },
+    "terms": {
+      "title": "Términos del servicio",
+      "description": "Términos del servicio de juanmamoreno.com."
+    },
+    "privacy": {
+      "title": "Privacidad",
+      "description": "Política de privacidad de juanmamoreno.com — sin cookies ni rastreadores de terceros."
+    },
+    "notFound": {
+      "title": "Página no encontrada"
+    }
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "noBanner": "Aquí no hay banner de cookies, ¿sabes por qué? Porque no usamos ninguna.",
+    "noTracking": "De verdad que no nos importa rastrearte: ni lo que clicas, ni por dónde te mueves, ni cuánto te quedas.",
+    "noThirdParty": "Sin cookies de terceros, sin analíticas, sin redes de anuncios — nada que te siga por la web.",
+    "localOnly": "Lo único que guardamos en tu dispositivo es una copia local de la galería para que cargue más rápido la próxima vez. Nunca sale de tu navegador y no identifica a nadie.",
+    "contactUse": "Si nos escribes desde el formulario de contacto, usamos tu mensaje para una sola cosa: responderte."
+  },
+  "terms": {
+    "title": "Términos del servicio",
+    "intro": "Al usar este sitio, aceptas lo siguiente:",
+    "portfolio": "Esto es simplemente el portfolio del artista: muestra la obra y te permite ponerte en contacto.",
+    "noData": "No recopilamos ni almacenamos ningún dato personal.",
+    "publicContent": "Todo el contenido que se muestra aquí es público.",
+    "ownRisk": "El uso de este sitio es bajo tu propia responsabilidad. No nos hacemos responsables de un mal uso del contenido.",
+    "changes": "Podemos actualizar estos términos en cualquier momento sin previo aviso."
+  },
+  "notFound": {
+    "title": "404 — Página no encontrada",
+    "message": "¡Vaya! La página que buscas no existe. Prueba con una de estas:"
   }
 }
