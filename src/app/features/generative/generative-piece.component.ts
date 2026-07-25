@@ -3,11 +3,14 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  HostListener,
   inject,
   signal,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SKETCHES } from './sketches/registry';
@@ -17,15 +20,17 @@ import { Frame, Pointer, Sketch } from './sketches/sketch';
   selector: 'app-generative-piece',
   templateUrl: './generative-piece.component.html',
   styleUrl: './generative-piece.component.scss',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, MatIconButton, MatIcon],
 })
 export class GenerativePieceComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('canvas') private canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('container') private containerRef!: ElementRef<HTMLElement>;
 
   readonly notFound = signal(false);
+  readonly isFullScreen = signal(false);
 
   private ctx: CanvasRenderingContext2D | null = null;
   private sketch: Sketch | null = null;
@@ -52,6 +57,48 @@ export class GenerativePieceComponent implements AfterViewInit {
       void this.loadSketch(params.get('id'));
     });
     this.destroyRef.onDestroy(() => this.teardown());
+  }
+
+  // Fullscreens the sketch container. The Fullscreen API exits on Esc natively,
+  // firing 'fullscreenchange' which keeps the button's icon in sync. The
+  // ResizeObserver on the canvas handles the resulting resize automatically.
+  toggleFullscreen(): void {
+    if (this.fullscreenElement) {
+      this.exitFullscreen();
+    } else {
+      this.enterFullscreen();
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  @HostListener('document:webkitfullscreenchange')
+  onFullscreenChange(): void {
+    this.isFullScreen.set(!!this.fullscreenElement);
+  }
+
+  private get fullscreenElement(): Element | null {
+    const doc = document as Document & { webkitFullscreenElement?: Element | null };
+    return document.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
+  }
+
+  private enterFullscreen(): void {
+    const el = this.containerRef.nativeElement as HTMLElement & {
+      webkitRequestFullscreen?: () => void;
+      msRequestFullscreen?: () => void;
+    };
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  }
+
+  private exitFullscreen(): void {
+    const doc = document as Document & {
+      webkitExitFullscreen?: () => void;
+      msExitFullscreen?: () => void;
+    };
+    if (doc.exitFullscreen) doc.exitFullscreen();
+    else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+    else if (doc.msExitFullscreen) doc.msExitFullscreen();
   }
 
   private async loadSketch(id: string | null): Promise<void> {

@@ -41,4 +41,31 @@ describe('DustField', () => {
     field.gust(400, 300, 50, 10000); // covers the whole canvas
     expect(totalSpeed()).toBeGreaterThan(0);
   });
+
+  it('scales the mote count with the canvas area, clamped', () => {
+    const tiny = DustField.forArea(10, 10); // area far below the floor
+    expect(tiny.list.length).toBe(40); // MIN_COUNT
+    const huge = DustField.forArea(10000, 10000); // area far above the ceiling
+    expect(huge.list.length).toBe(220); // MAX_COUNT
+    const mid = DustField.forArea(800, 600); // 480k px² * 0.00012 = 57.6
+    expect(mid.list.length).toBe(58);
+  });
+
+  it('stir disturbs the field only above the speed threshold', () => {
+    const field = new DustField(800, 600, 60);
+    const totalSpeed = () =>
+      field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
+    field.stir(400, 300, 0.3); // below DRAFT_MIN_SPEED
+    expect(totalSpeed()).toBe(0);
+    field.stir(400, 300, 5); // above threshold
+    expect(totalSpeed()).toBeGreaterThan(0);
+  });
+
+  it('puff disturbs the field', () => {
+    const field = new DustField(800, 600, 60);
+    const totalSpeed = () =>
+      field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
+    field.puff(400, 300);
+    expect(totalSpeed()).toBeGreaterThan(0);
+  });
 });

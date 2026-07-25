@@ -29,6 +29,23 @@ export interface Mote {
 // slides fully off (glow included) rather than popping at the boundary.
 const MARGIN = 24;
 
+// Motes per pixel²: the count scales with the canvas area (clamped) so the
+// field looks equally dense on a phone and a projector.
+const DENSITY = 0.00012;
+const MIN_COUNT = 40;
+const MAX_COUNT = 220;
+
+// A moving pointer trails a soft, local draft: below this speed (px/frame) it
+// stirs nothing, above it the gust strength scales with speed.
+const DRAFT_MIN_SPEED = 0.5;
+const DRAFT_STRENGTH_PER_SPEED = 6;
+const DRAFT_RADIUS = 120;
+
+// A tap/press sends a stronger gust rippling out from the spot; its reach is a
+// fraction of the larger canvas dimension so it feels proportional on any size.
+const PUFF_STRENGTH = 260;
+const PUFF_RADIUS_FACTOR = 0.4;
+
 /**
  * A field of dust motes suspended in air. Pure simulation: `update` advances
  * the drift/meander/impulse of every mote and wraps them around the canvas so
@@ -44,6 +61,15 @@ export class DustField {
     private readonly count = 90
   ) {
     this.seed();
+  }
+
+  /**
+   * Builds a field whose mote count scales with the canvas area (clamped), so
+   * the density reads the same on a small phone as on a large display.
+   */
+  static forArea(width: number, height: number, density = DENSITY): DustField {
+    const count = Math.round(clamp(width * height * density, MIN_COUNT, MAX_COUNT));
+    return new DustField(width, height, count);
   }
 
   get list(): readonly Mote[] {
@@ -113,5 +139,20 @@ export class DustField {
       m.vx += (dx / d) * strength * falloff * m.depth;
       m.vy += (dy / d) * strength * falloff * m.depth;
     }
+  }
+
+  /**
+   * A moving pointer trails a soft, local draft through the field. `speed` is
+   * the pointer's velocity magnitude (px/frame); below a small threshold it
+   * stirs nothing, so a resting pointer leaves the field undisturbed.
+   */
+  stir(x: number, y: number, speed: number): void {
+    if (speed <= DRAFT_MIN_SPEED) return;
+    this.gust(x, y, speed * DRAFT_STRENGTH_PER_SPEED, DRAFT_RADIUS);
+  }
+
+  /** A tap/press: a stronger gust rippling out from the spot, sized to the field. */
+  puff(x: number, y: number): void {
+    this.gust(x, y, PUFF_STRENGTH, Math.max(this.width, this.height) * PUFF_RADIUS_FACTOR);
   }
 }

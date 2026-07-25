@@ -13,7 +13,7 @@ export interface SketchEntry {
 // Route id (`/generative/:id`) → sketch. Add new sketches here.
 export const SKETCHES: Record<string, SketchEntry> = {
   believe: { label: 'Believe', factory: () => new BelieveSketch() },
-  dust: { label: 'Dust', factory: () => new DustSketch() },
+  dust: { label: 'Hide until everybody is dead', factory: () => new DustSketch() },
   // 'wind-direction': { label: 'Wind direction', factory: () => new WindDirectionSketch() },
 };
 

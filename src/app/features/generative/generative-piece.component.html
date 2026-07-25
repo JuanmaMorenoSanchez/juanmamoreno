@@ -1,6 +1,17 @@
-<div class="generative">
+<div #container class="generative">
   <canvas #canvas class="sketch-canvas" [class.hidden]="notFound()"></canvas>
   <div class="vignette" aria-hidden="true"></div>
+  @if (!notFound()) {
+    <button
+      type="button"
+      mat-icon-button
+      class="fullscreen-btn"
+      [attr.aria-label]="isFullScreen() ? 'Exit fullscreen' : 'Fullscreen'"
+      (click)="toggleFullscreen()"
+    >
+      <mat-icon>{{ isFullScreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+  }
   @if (notFound()) {
     <div class="not-found">
       <p>{{ 'generative.notFound' | translate }}</p>

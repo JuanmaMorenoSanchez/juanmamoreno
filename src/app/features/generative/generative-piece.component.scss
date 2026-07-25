@@ -8,6 +8,28 @@
   height: calc(100dvh - var(--mat-toolbar-standard-height, 4rem));
   overflow: hidden;
   background: #000;
+
+  // When fullscreened, fill the whole screen (the toolbar is no longer there
+  // to subtract) — the ResizeObserver on the canvas picks up the new size.
+  &:fullscreen {
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+.fullscreen-btn {
+  position: absolute;
+  // Bottom-right corner; the global share fab is bottom-left, so no overlap.
+  right: 0.5rem;
+  bottom: 1rem;
+  z-index: 3;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+  }
 }
 
 .sketch-canvas {
