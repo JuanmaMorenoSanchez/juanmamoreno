@@ -3,6 +3,8 @@ import { FrameTimeline, Keyframe } from '@domain/generative/frame-timeline';
 import { clamp, rand } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
 import { DustField } from '@domain/generative/particles/dust-field';
+import { BeamSample, SweepBeam } from '@domain/generative/sweep-beam';
+import { Watcher, WatcherField } from '@domain/generative/watchers';
 import { Frame, loadImages, Sketch } from './sketch';
 
 const IMAGES_ROUTE = 'assets/images/canvases/';
@@ -20,6 +22,29 @@ const MOTE_OPACITY = 0.5;
 // The head fills most of the frame, centred (a little headroom is left for the
 // breathing scale-up so it never clips the edges).
 const HEAD_SIZE_FACTOR = 0.84;
+
+// --- Hidden watchers ("hide") -------------------------------------------------
+// Pairs of eyes that surface from the dust in the periphery, watch the head,
+// then hide back into it. Same warm light as the motes, so they read as the
+// dust briefly resolving into a gaze. They never encroach on the head (kept
+// outside WATCHER_SAFE * head size) and are drawn under it, so it stays clear.
+const WATCHER_COUNT = 5;
+const WATCHER_EYE_BASE = 0.02; // eye radius as a fraction of the min dimension
+const WATCHER_SAFE = 0.55; // exclusion radius around the head, × head size
+const WATCHER_COLOR = '255, 236, 200';
+
+// --- Sweeping beam (the "night") ----------------------------------------------
+// A directional shaft of light that scans the dark once in a while, like a
+// distant searchlight hunting for who's hiding, then fades away again. It sweeps
+// behind the head (which always stays in front), lighting the dusty air.
+const BEAM_GAP_MIN = 14; // seconds dormant between sweeps
+const BEAM_GAP_MAX = 34;
+const BEAM_DURATION = 5.5; // seconds per slow sweep
+const BEAM_ARC = 1.15; // radians the beam swings through
+const BEAM_WIDTH = 0.18; // shaft cross-width, × min dimension
+const BEAM_REACH = 0.7; // shaft length, × max dimension
+const BEAM_ALPHA = 0.5; // peak brightness
+const BEAM_COLOR = '#bcd2ff'; // pale cool searchlight
 
 // --- Blink (escondete1..3 = image indices 0..2) -------------------------------
 //   0 = escondete1 (eyes open — the resting pose, shown between blinks)
@@ -56,24 +81,37 @@ const ROT_SWAY_FREQ = 0.5;
 const ROT_SWAY_AMP = 0.05; // radians
 
 /**
- * "Dust" — a watercolour head suspended in a field of fine motes drifting on
- * faint air currents. It stays alive even idle: a slow autonomous drift,
- * breathing and tilt sway, with the eyes blinking at random 3-8s intervals.
- * Overhead coloured stage-lights sweep and pulse across the haze for a little
- * concert atmosphere — but the head and dust themselves stay calm, untouched by
- * that pulse. Moving the pointer stirs a local draft; a tap sends a gust out.
+ * "Hide until everybody is dead" — a watercolour head suspended in a field of
+ * fine motes. Hidden onlookers surface from the dust around it, watch for a
+ * moment, then hide back into it, so something is always quietly hiding at the
+ * edges while the head — the piece's anchor — stays in full view throughout.
+ * It stays alive even idle: a slow autonomous drift, breathing and tilt sway,
+ * with the eyes blinking at random intervals. Once in a while a directional
+ * beam of light sweeps across the dark, like a distant searchlight scanning for
+ * who is hiding, then fades. Overhead coloured stage-lights pulse gently for a
+ * little atmosphere. Moving the pointer stirs a local draft; a tap sends a gust.
  *
- * The timing/simulation is pure @domain/generative (DustField, FrameTimeline,
- * BeatClock, Parallax); this class only loads the frames and renders.
+ * The timing/simulation is pure @domain/generative (DustField, WatcherField,
+ * SweepBeam, FrameTimeline, BeatClock, Parallax); this only loads and renders.
  */
 export class DustSketch implements Sketch {
   private width = 0;
   private height = 0;
   private field!: DustField;
+  private watchers!: WatcherField;
 
   private frames: HTMLImageElement[] = [];
   // Drives only the stage lights (see drawStageLights).
   private readonly beat = new BeatClock(BPM);
+
+  // Occasional searchlight sweep. `beamBuffer` holds the soft shaft shape; the
+  // per-sweep path (origin side, swing direction) is re-rolled when the beam's
+  // id changes.
+  private readonly beam = new SweepBeam(BEAM_GAP_MIN, BEAM_GAP_MAX, BEAM_DURATION);
+  private readonly beamBuffer = document.createElement('canvas');
+  private beamId = -1;
+  private beamOriginX = 0.5;
+  private beamDir = 1;
 
   // Blink schedule: eyes rest open until `nextBlinkAt`, then a short blink plays
   // from `blinkStartT`; `blinkMotion` owns the half → closed → half timing.
@@ -93,6 +131,8 @@ export class DustSketch implements Sketch {
     this.width = width;
     this.height = height;
     this.field = DustField.forArea(width, height, 0.00016);
+    this.watchers = new WatcherField(width, height, WATCHER_COUNT);
+    this.buildBeamBuffer();
 
     const images = await loadImages({
       f1: `${IMAGES_ROUTE}escondete1.png`,
@@ -108,6 +148,7 @@ export class DustSketch implements Sketch {
     this.width = width;
     this.height = height;
     this.field.resize(width, height);
+    this.watchers.resize(width, height);
     this.paintBase(ctx);
   }
 
@@ -123,6 +164,8 @@ export class DustSketch implements Sketch {
     if (p.active) this.field.stir(p.x, p.y, Math.hypot(p.vx, p.vy));
 
     this.field.update(frame.dt, frame.t);
+    const headSize = Math.min(width, height) * HEAD_SIZE_FACTOR;
+    this.watchers.update(frame.t, headSize * WATCHER_SAFE);
 
     ctx.fillStyle = FADE_COLOR;
     ctx.fillRect(0, 0, width, height);
@@ -144,8 +187,124 @@ export class DustSketch implements Sketch {
     }
     ctx.restore();
 
+    // The searchlight sweeps through the dusty air, behind the head.
+    const beamSample = this.beam.sample(frame.t);
+    if (beamSample) this.drawBeam(ctx, beamSample);
+
+    // Lights first, then the watchers on top of them, so the eyes keep their
+    // warm colour instead of being tinted and muddied by the coloured wash.
     this.drawStageLights(ctx, frame);
+    this.drawWatchers(ctx);
     this.drawHead(ctx, frame);
+  }
+
+  // Draws the current sweep of the searchlight: a soft shaft from a source above
+  // the top edge, its angle swinging across the scene as the sweep progresses.
+  private drawBeam(ctx: CanvasRenderingContext2D, sample: BeamSample): void {
+    if (sample.id !== this.beamId) {
+      this.beamId = sample.id; // new sweep — re-roll its path
+      this.beamOriginX = rand(0.2, 0.8);
+      this.beamDir = Math.random() < 0.5 ? -1 : 1;
+    }
+
+    const { width, height } = this;
+    const originX = width * this.beamOriginX;
+    const originY = -height * 0.15; // just above the top edge
+    // Swing the beam through BEAM_ARC around straight-down, direction randomised.
+    const swept = this.beamDir >= 0 ? sample.sweep : 1 - sample.sweep;
+    const angle = Math.PI / 2 + (swept - 0.5) * BEAM_ARC;
+    const reach = Math.max(width, height) * BEAM_REACH;
+    const crossW = Math.min(width, height) * BEAM_WIDTH;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = sample.intensity * BEAM_ALPHA;
+    ctx.translate(originX, originY);
+    ctx.rotate(angle);
+    // Buffer's +x runs along the beam; centre it across the shaft width.
+    ctx.drawImage(this.beamBuffer, 0, -crossW / 2, reach, crossW);
+    ctx.restore();
+  }
+
+  // Bakes the soft shaft once: a coloured rectangle masked to a bell across its
+  // width and a fade along its length (brightest at the source), so the beam has
+  // soft edges and attenuates with distance. Resolution-independent — the draw
+  // stretches it to the beam's reach and width.
+  private buildBeamBuffer(): void {
+    const w = 1024;
+    const h = 256;
+    this.beamBuffer.width = w;
+    this.beamBuffer.height = h;
+    const b = this.beamBuffer.getContext('2d');
+    if (!b) return;
+
+    b.clearRect(0, 0, w, h);
+    b.globalCompositeOperation = 'source-over';
+    b.fillStyle = BEAM_COLOR;
+    b.fillRect(0, 0, w, h);
+
+    // Cross-width bell: transparent edges, opaque core → soft-edged shaft.
+    b.globalCompositeOperation = 'destination-in';
+    const cross = b.createLinearGradient(0, 0, 0, h);
+    cross.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    cross.addColorStop(0.5, 'rgba(0, 0, 0, 1)');
+    cross.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    b.fillStyle = cross;
+    b.fillRect(0, 0, w, h);
+
+    // Length fade: bright at the source (x=0), gone by the far end (multiplies
+    // the alpha already set by the cross bell).
+    const along = b.createLinearGradient(0, 0, w, 0);
+    along.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+    along.addColorStop(0.55, 'rgba(0, 0, 0, 0.5)');
+    along.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    b.fillStyle = along;
+    b.fillRect(0, 0, w, h);
+
+    b.globalCompositeOperation = 'source-over';
+  }
+
+  // Hidden onlookers: pairs of eyes coalescing from the dust and dissolving
+  // back, drawn additively in the same warm light as the motes.
+  private drawWatchers(ctx: CanvasRenderingContext2D): void {
+    const base = Math.min(this.width, this.height) * WATCHER_EYE_BASE;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const w of this.watchers.list) {
+      if (w.openness > 0.02) this.drawEyes(ctx, w, base);
+    }
+    ctx.restore();
+  }
+
+  private drawEyes(ctx: CanvasRenderingContext2D, w: Watcher, base: number): void {
+    const eyeW = base * w.scale;
+    const eyeH = eyeW * 0.62;
+    const gap = eyeW * 1.5;
+    // The iris glint leans toward the head, so the gaze reads as watching it.
+    const gazeX = Math.sign(this.width / 2 - w.x) * eyeW * 0.22;
+    const gazeY = Math.sign(this.height / 2 - w.y) * eyeH * 0.2;
+
+    ctx.save();
+    ctx.translate(w.x, w.y);
+    ctx.rotate(w.tilt);
+    for (const dir of [-1, 1]) {
+      ctx.save();
+      ctx.translate(dir * gap, 0);
+      ctx.scale(1, w.openness); // eyelid: the almond squashes shut as it hides
+      ctx.beginPath();
+      ctx.ellipse(0, 0, eyeW, eyeH, 0, 0, TWO_PI);
+      ctx.clip();
+      // A glowing iris ring around a dark pupil (the transparent centre reads as
+      // the pupil under additive blending, which can only add light).
+      const g = ctx.createRadialGradient(gazeX, gazeY, 0, gazeX, gazeY, eyeW);
+      g.addColorStop(0, `rgba(${WATCHER_COLOR}, 0)`);
+      g.addColorStop(0.42, `rgba(${WATCHER_COLOR}, ${0.95 * w.openness})`);
+      g.addColorStop(1, `rgba(${WATCHER_COLOR}, 0)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(-eyeW, -eyeH, eyeW * 2, eyeH * 2);
+      ctx.restore();
+    }
+    ctx.restore();
   }
 
   // Two coloured washes sweeping from overhead, pulsing softly on the beat.
