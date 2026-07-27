@@ -65,6 +65,9 @@
                 (load)="onImageLoaded(artPiece.tokenId)"
               />
             }
+            @if (isSold(artPiece)) {
+              <span class="sold-dot" role="img" [attr.aria-label]="'sold' | translate"></span>
+            }
           </mat-card>
         </mat-grid-tile>
       }

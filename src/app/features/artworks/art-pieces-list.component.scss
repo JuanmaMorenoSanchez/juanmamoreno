@@ -80,3 +80,17 @@ mat-card {
 .order-number {
   font-weight: bold;
 }
+
+.sold-dot {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--catalog-accent);
+  opacity: 0.65;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+  z-index: 2;
+  pointer-events: none;
+}

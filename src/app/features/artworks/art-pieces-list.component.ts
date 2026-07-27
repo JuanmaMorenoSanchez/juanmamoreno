@@ -18,7 +18,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SortMethod } from '@domain/artwork/artwork.constants';
+import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -173,6 +173,10 @@ export class ArtPiecesListComponent {
 
   public isSelected(nft: Nft): boolean {
     return this.selectedNfts().some((selected) => selected.tokenId === nft.tokenId);
+  }
+
+  public isSold(nft: Nft): boolean {
+    return SOLDCERTIFICATES.includes(nft.tokenId);
   }
 
   public getOrderNumber(nft: Nft): number | null {
