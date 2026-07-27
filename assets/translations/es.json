@@ -54,6 +54,17 @@
     "message": "Mensaje",
     "messagePlaceholder": "Me interesa..."
   },
+  "quote": {
+    "askPrice": "Preguntar precio",
+    "askInfo": "Preguntar por esta obra",
+    "priceTitle": "Solicitar precio",
+    "infoTitle": "Preguntar por esta obra",
+    "priceIntro": "¿Te interesa esta obra? Déjame tu email y te responderé con el precio y los detalles.",
+    "infoIntro": "Esta obra no está disponible, pero quizá pueda decirte dónde está, cómo verla o a quién comprársela. Déjame tu email y te responderé.",
+    "messageLabel": "Mensaje (opcional)",
+    "messagePlaceholder": "Lo que quieras añadir...",
+    "success": "¡Gracias! Te responderé pronto."
+  },
   "viewer": {
     "previous": "Anterior",
     "next": "Siguiente",
@@ -73,6 +84,7 @@
   "error": {
     "noValue": "Debes escribir algo",
     "invalidEmail": "Email inválido",
+    "tooLong": "Demasiado largo",
     "submissionFailed": "Algo salió mal al enviar tu mensaje. Inténtalo de nuevo más tarde."
   },
   "cv": {

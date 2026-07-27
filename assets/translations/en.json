@@ -54,6 +54,17 @@
     "message": "Message",
     "messagePlaceholder": "I'm interested in..."
   },
+  "quote": {
+    "askPrice": "Ask price",
+    "askInfo": "Ask about this piece",
+    "priceTitle": "Request a price",
+    "infoTitle": "Ask about this piece",
+    "priceIntro": "Interested in this piece? Leave your email and I'll get back to you with the price and details.",
+    "infoIntro": "This piece isn't available, but I may be able to tell you where it is, how to see it, or who you can buy it from. Leave your email and I'll get back to you.",
+    "messageLabel": "Message (optional)",
+    "messagePlaceholder": "Anything you'd like to add...",
+    "success": "Thanks! I'll get back to you soon."
+  },
   "viewer": {
     "previous": "Previous",
     "next": "Next",
@@ -73,6 +84,7 @@
   "error": {
     "noValue": "You must enter a value",
     "invalidEmail": "Not a valid email",
+    "tooLong": "Too long",
     "submissionFailed": "Something went wrong sending your message. Please try again later."
   },
   "cv": {
