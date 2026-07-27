@@ -1,0 +1,8 @@
+<button
+  mat-raised-button
+  color="primary"
+  (click)="open()"
+  [attr.aria-label]="(sold() ? 'quote.askInfo' : 'quote.askPrice') | translate"
+>
+  {{ (sold() ? 'quote.askInfo' : 'quote.askPrice') | translate }}
+</button>

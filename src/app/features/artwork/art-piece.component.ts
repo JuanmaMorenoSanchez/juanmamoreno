@@ -22,6 +22,7 @@ import { map, switchMap } from 'rxjs';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
+import { QuoteButtonComponent } from './components/quote-button/quote-button.component';
 import { TraitPipe } from './pipes/traits.pipe';
 
 // Sentinel returned when an artwork has no generated description yet.
@@ -41,6 +42,7 @@ const NO_DESCRIPTION = 'No description available';
     DownloadButtonComponent,
     PdfButtonComponent,
     LinksButtonComponent,
+    QuoteButtonComponent,
     MatDivider,
     ArtPiecesListComponent,
     TranslatePipe,

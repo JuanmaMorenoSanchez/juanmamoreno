@@ -50,15 +50,11 @@
           }
         </small>
       </h3>
+      <div class="art-piece-cta">
+        <app-quote-button [tokenId]="tokenId()" [artworkName]="nft().name"></app-quote-button>
+      </div>
     </div>
   }
-  <!-- @if (nft().description?.length) {
-    <div class="art-piece-desc">
-      <h4>{{ nft() | trait: validTraits.PROJECT }}</h4>
-      <p>{{nft().description}}</p>
-      <h5>{{ nft() | trait: validTraits.DESC_AUTHOR }}</h5>
-    </div>
-  } -->
   @if (thereAreMoreInYear()) {
     <mat-divider class="separator"></mat-divider>
     <p>{{ 'moreOn' | translate }} {{ nft() | trait: validTraits.YEAR }}</p>

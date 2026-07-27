@@ -6,8 +6,8 @@ import { MatInput } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
+import { MailService } from '@shared/services/mail/mail.service';
 import { ApiResponse } from '@shared/types/api-response.type';
-import { ContactService } from './contact.service';
 
 interface ContactFormModel {
   name: string;
@@ -31,7 +31,7 @@ const EMPTY_CONTACT_FORM: ContactFormModel = {
 })
 export class ContactComponent {
   private translateService = inject(TranslateService);
-  private contactService = inject(ContactService);
+  private contactService = inject(MailService);
   private snackBar = inject(MatSnackBar);
 
   public submitted = false;

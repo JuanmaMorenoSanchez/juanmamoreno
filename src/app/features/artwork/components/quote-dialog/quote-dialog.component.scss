@@ -1,0 +1,20 @@
+// The honeypot is a spam trap: kept in the DOM for bots to fill, hidden from
+// people. (The global .hidden lives in the contact form's scoped styles, so
+// the dialog needs its own.)
+.hidden {
+  display: none;
+}
+
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.quote-artwork {
+  margin-top: 0;
+  opacity: 0.75;
+}
+
+.fit-width {
+  width: 100%;
+}

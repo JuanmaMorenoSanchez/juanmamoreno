@@ -27,7 +27,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@features/artwork/art-piece.component').then((m) => m.ArtPieceComponent),
     title: 'seo.artwork.title',
-    data: { description: 'seo.paintings.description' },
+    data: { description: 'seo.paintings.description', hideBreadcrumb: true },
   },
   {
     path: 'generative/:id',
