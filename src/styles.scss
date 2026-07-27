@@ -36,7 +36,12 @@
   pointer-events: none;
 }
 
+main {
+  view-transition-name: routed-content;
+}
+
 :root {
+  view-transition-name: none;
   --catalog-ink: #1f1f1f;
   --catalog-soft: #6e6e6e;
   --catalog-faint: #a3a3a3;
