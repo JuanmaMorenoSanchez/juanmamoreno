@@ -18,7 +18,11 @@ import { routes } from './app-routing.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions()),
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules),
+      withViewTransitions({ skipInitialTransition: true })
+    ),
     // ngx-translate v18 dropped TranslateModule.forRoot in favour of this
     // provider. English is the fallback; the active language is selected in
     // AppComponent once the JSON dictionaries have been registered.

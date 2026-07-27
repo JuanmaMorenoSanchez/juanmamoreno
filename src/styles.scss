@@ -28,6 +28,14 @@
   user-select: none;
 }
 
+::view-transition,
+::view-transition-group(*),
+::view-transition-image-pair(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  pointer-events: none;
+}
+
 :root {
   --catalog-ink: #1f1f1f;
   --catalog-soft: #6e6e6e;
