@@ -39,12 +39,14 @@
       role="list"
       aria-label="Art Pieces"
     >
-      @for (artPiece of sortedArtPieces(); track listTracking($index, artPiece); let i = $index) {
+      @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
         <mat-grid-tile
           (contextmenu)="toggleNftSelection($event, artPiece)"
           (click)="handleArtPieceClick(artPiece.tokenId)"
           role="listitem"
-          [attr.aria-label]="artPiece.name"
+          [attr.aria-label]="
+            isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
+          "
           [animate.enter]="tileEnterClass(i)"
           [style.animation-delay.ms]="tileEnterDelay(i)"
         >
@@ -66,7 +68,7 @@
               />
             }
             @if (isSold(artPiece)) {
-              <span class="sold-dot" role="img" [attr.aria-label]="'sold' | translate"></span>
+              <span class="sold-dot" aria-hidden="true"></span>
             }
           </mat-card>
         </mat-grid-tile>

@@ -202,10 +202,6 @@ export class ArtPiecesListComponent {
     this.router.navigate(['/artwork', tokenId]);
   }
 
-  public listTracking(index: number, value: Nft) {
-    return value;
-  }
-
   public methodTracking(method: SortMethod) {
     return method;
   }
