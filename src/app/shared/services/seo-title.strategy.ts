@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@ang
 import { TranslateService } from '@ngx-translate/core';
 
 const SITE_NAME = 'Juanma Moreno Sánchez';
-const SITE_URL = 'https://www.juanmamoreno.com';
+const SITE_URL = 'https://juanmamoreno.com';
 // Route `title` / `data.description` hold translation keys; the fallback is one too.
 const DEFAULT_DESCRIPTION_KEY = 'seo.default.description';
 

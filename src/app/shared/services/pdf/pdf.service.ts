@@ -283,7 +283,7 @@ export class PdfService {
       ...centered,
       color: PDF_COLORS.soft,
     });
-    writer.paragraph('www.juanmamoreno.com', {
+    writer.paragraph('juanmamoreno.com', {
       ...centered,
       color: PDF_COLORS.soft,
     });
