@@ -2,6 +2,21 @@ mat-grid-tile {
   cursor: pointer;
 }
 
+// Screen-reader-only text: removed from view but kept in the accessibility tree
+// so an icon-only control still exposes a name.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 @keyframes tile-enter-anim {
   from {
     opacity: 0;

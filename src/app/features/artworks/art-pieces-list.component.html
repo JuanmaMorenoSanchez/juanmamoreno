@@ -6,10 +6,10 @@
           <mat-chip
             color="primary"
             role="button"
-            [attr.aria-label]="`${('sortBy' | translate)} ${method}`"
             (click)="changeSortMethod(method)"
             [matTooltip]="`${('sortBy' | translate)} ${method}`"
           >
+            <span class="visually-hidden">{{ 'sortBy' | translate }} {{ method }}</span>
             <mat-icon>
               {{
                 method === 'year' ? 'calendar_today' : method === 'medium' ? 'palette' : 'crop_free'
@@ -23,7 +23,7 @@
           </mat-chip>
         }
         @if (selectedNfts().length) {
-          <mat-chip role="button" [attr.aria-label]="'download.portfolio' | translate">
+          <mat-chip>
             <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
           </mat-chip>
         }
