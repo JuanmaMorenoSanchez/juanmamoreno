@@ -1,0 +1,66 @@
+.home {
+  min-height: calc(100dvh - var(--mat-toolbar-standard-height, 4rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 8vh 5vw;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.home-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-name {
+  margin: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: clamp(1.25rem, 4vw, 2.25rem);
+  color: var(--catalog-ink);
+}
+
+.home-tagline {
+  margin: 0;
+  color: var(--catalog-soft);
+  letter-spacing: 0.04em;
+}
+
+.home-featured {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-featured-frame {
+  display: block;
+  margin: 0 auto 0.75rem;
+}
+
+// Show the whole painting, uncropped, at its natural aspect ratio (like the
+// single-artwork page) rather than cover-cropping it into a square as the grid
+// does. Bounded so tall or wide pieces still fit the viewport.
+.home-featured-image {
+  display: block;
+  max-width: min(90vw, 34rem);
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+
+  &.loaded {
+    opacity: 1;
+  }
+}
+
+.home-featured-caption {
+  display: block;
+  font-style: italic;
+}

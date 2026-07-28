@@ -8,9 +8,11 @@
   <mat-drawer-content>
     <mat-toolbar color="primary">
       <mat-toolbar-row>
-        <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="['/']">
-          <h1 class="catalog-heading brand">Juanma Moreno Sánchez</h1>
-        </button>
+        @if (!heroTitleVisible()) {
+          <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="['/']">
+            <h1 class="catalog-heading brand">Juanma Moreno Sánchez</h1>
+          </button>
+        }
         <span class="spacer"></span>
 
         @if (!mobileMenu()) {

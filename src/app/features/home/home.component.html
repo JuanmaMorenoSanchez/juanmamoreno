@@ -1,0 +1,24 @@
+<section class="home">
+  <div class="home-intro">
+    <h1 #heroTitle class="home-name">Juanma Moreno Sánchez</h1>
+    <p class="home-tagline">{{ 'home.tagline' | translate }}</p>
+  </div>
+
+  @if (featured(); as nft) {
+    <a class="home-featured" [routerLink]="['/artwork', nft.tokenId]" [attr.aria-label]="nft.name">
+      <span class="home-featured-frame">
+        @if (featuredImage(); as img) {
+          <img
+            class="home-featured-image"
+            [class.loaded]="featuredLoaded()"
+            [src]="img"
+            [alt]="nft.name"
+            decoding="async"
+            (load)="featuredLoaded.set(true)"
+          />
+        }
+      </span>
+      <span class="home-featured-caption catalog-caption">{{ nft.name }}</span>
+    </a>
+  }
+</section>

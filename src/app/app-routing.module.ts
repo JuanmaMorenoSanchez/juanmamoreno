@@ -10,10 +10,11 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () =>
-      import('@features/artworks/art-pieces-list.component').then((m) => m.ArtPiecesListComponent),
-    title: 'seo.paintings.title',
-    data: { breadcrumb: 'Paintings', description: 'seo.paintings.description' },
+    loadComponent: () => import('@features/home/home.component').then((m) => m.HomeComponent),
+    // No `title` → the SeoTitleStrategy falls back to "Juanma Moreno Sánchez —
+    // artist", the right brand title for the landing. No breadcrumb: it's the
+    // root entry, not a step in a trail.
+    data: { description: 'seo.default.description', hideBreadcrumb: true },
   },
   {
     path: 'artworks',

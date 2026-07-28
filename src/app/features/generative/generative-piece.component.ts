@@ -124,7 +124,12 @@ export class GenerativePieceComponent implements AfterViewInit {
 
     this.resizeCanvas(); // also establishes the CSS-pixel base transform
     const sketch = entry.factory();
-    await sketch.setup(this.ctx, this.cssWidth, this.cssHeight);
+    try {
+      await sketch.setup(this.ctx, this.cssWidth, this.cssHeight);
+    } catch {
+      console.error('Error on sketch setup');
+      return;
+    }
     // A newer route may have superseded this one while setup awaited.
     if (this.sketch !== null) return;
     this.sketch = sketch;

@@ -11,6 +11,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SKETCH_LIST } from '@features/generative/sketches/registry';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ResponsiveService } from '@shared/services/responsive.service';
 
 @Component({
@@ -40,6 +41,10 @@ export class TopMenuComponent {
   private translateService = inject(TranslateService);
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
+
+  // True while a page shows its own hero title (the landing) — the top bar hides
+  // its duplicate brand copy meanwhile.
+  public readonly heroTitleVisible = inject(HeroTitleService).visible;
 
   public readonly generativePieces = SKETCH_LIST;
 
