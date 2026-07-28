@@ -1,7 +1,7 @@
 <div [ngClass]="{ container: !viewAsWidget() }">
   @if (!viewAsWidget()) {
     <div class="sort-group">
-      <mat-chip-listbox>
+      <mat-chip-set>
         @for (method of sortMethods; track methodTracking(method)) {
           <mat-chip
             color="primary"
@@ -27,7 +27,7 @@
             <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
           </mat-chip>
         }
-      </mat-chip-listbox>
+      </mat-chip-set>
     </div>
   }
   @if (dataReady()) {

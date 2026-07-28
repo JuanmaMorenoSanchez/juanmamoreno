@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardImage } from '@angular/material/card';
-import { MatChip, MatChipListbox } from '@angular/material/chips';
+import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -36,7 +36,7 @@ import { map, Observable } from 'rxjs';
   styleUrls: ['./art-pieces-list.component.scss'],
   imports: [
     NgClass,
-    MatChipListbox,
+    MatChipSet,
     MatChip,
     MatIcon,
     MatTooltip,

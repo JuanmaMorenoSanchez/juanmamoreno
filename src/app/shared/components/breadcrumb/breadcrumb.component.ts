@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, OnInit, signal, untracked, WritableSignal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { MatChip, MatChipListbox, MatChipRemove } from '@angular/material/chips';
+import { MatChip, MatChipRemove, MatChipSet } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -27,7 +27,7 @@ interface YearPickerModel {
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
   imports: [
-    MatChipListbox,
+    MatChipSet,
     MatChip,
     MatChipRemove,
     RouterLink,
