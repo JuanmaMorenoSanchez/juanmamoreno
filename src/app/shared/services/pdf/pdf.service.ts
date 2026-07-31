@@ -49,29 +49,49 @@ export class PdfService {
     includeCv?: boolean,
     includeStatement?: boolean,
     customTitle?: string,
-    customText?: string
+    customText?: string,
+    onProgress?: (fraction: number) => void
   ): Promise<jsPDF> {
     const writer = await this.newWriter();
+    // Report progress (0..1) after each section so the button can show a
+    // percentage — the artwork pages (each loading and compressing an image)
+    // dominate the multi-second runtime.
+    const total =
+      1 + // cover
+      (customText ? 1 : 0) +
+      (includeStatement ? 1 : 0) +
+      nfts.length +
+      (includeCv ? 1 : 0) +
+      (includeContact ? 1 : 0);
+    let done = 0;
+    const step = (): void => onProgress?.(++done / total);
+
     await this.addCover(writer, nfts, customTitle);
+    step();
     if (customText) {
       writer.newPage();
       this.addCustomText(writer, customText);
+      step();
     }
     if (includeStatement) {
       writer.newPage();
       this.addStatement(writer);
+      step();
     }
     for (const nft of nfts) {
       writer.newPage();
       await this.addArtworkPage(writer, nft);
+      step();
     }
     if (includeCv) {
       writer.newPage();
       this.addCv(writer);
+      step();
     }
     if (includeContact) {
       writer.newPage();
       this.addContact(writer);
+      step();
     }
     writer.addPageNumbers();
     return writer.doc;

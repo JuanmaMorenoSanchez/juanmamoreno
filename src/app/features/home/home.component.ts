@@ -11,11 +11,13 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SORT } from '@shared/constants/order.constants';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Subscription, takeLast } from 'rxjs';
 
 /**
  * Editorial landing page: the artist's name, a one-line statement, a single
@@ -62,8 +64,31 @@ export class HomeComponent implements AfterViewInit {
     return this.artworkService.sortByYear(frontals, SORT.DESC)[0];
   });
 
-  readonly featuredImage = signal<string | null>(null);
-  readonly featuredLoaded = signal(false);
+  // Blur-up (same idea as the artwork viewer's preview layer): the small
+  // thumbnail is shown blurred at full hero size first — fast — then the
+  // full-resolution image fades in over it.
+  readonly featuredThumb = signal<string | null>(null);
+  readonly featuredFull = signal<string | null>(null);
+  readonly fullLoaded = signal(false);
+  private hiResSub?: Subscription;
+
+  // Aspect ratio reserves the hero's box at full size before any (low-res)
+  // image arrives — otherwise the frame would shrink to the thumbnail's tiny
+  // natural size. Estimated from the artwork's traits, then corrected to the
+  // real pixel ratio once the full image decodes.
+  private readonly decodedAspect = signal<number | null>(null);
+  readonly featuredAspect = computed(() => {
+    const decoded = this.decodedAspect();
+    if (decoded) return decoded;
+    const nft = this.featured();
+    if (!nft) return 0.8;
+    const width = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH));
+    const height = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT));
+    return width > 0 && height > 0 ? width / height : 0.8;
+  });
+  // Fit the box within 90vw, 34rem, and 60vh of height (the last expressed as a
+  // width via the aspect ratio) — the same bounds the previous hero used.
+  readonly frameWidth = computed(() => `min(90vw, 34rem, calc(60vh * ${this.featuredAspect()}))`);
 
   constructor() {
     // Optimistic: on this page the hero name is on screen from the start, so
@@ -73,22 +98,48 @@ export class HomeComponent implements AfterViewInit {
 
     inject(DestroyRef).onDestroy(() => {
       this.observer?.disconnect();
+      this.hiResSub?.unsubscribe();
       this.heroTitle.visible.set(false);
     });
 
-    // Load the featured piece's preview progressively once it resolves; the
-    // cleanup drops the previous subscription if the pick changes (e.g. the
-    // fallback catalogue is replaced by server data).
+    // Thumbnail tier first (small, fast); once its race has settled, load the
+    // full-resolution image to override the blurred preview. Cleanup drops the
+    // subscriptions if the pick changes (e.g. the fallback catalogue is
+    // replaced by server data).
     effect((onCleanup) => {
       const nft = this.featured();
-      this.featuredImage.set(null);
-      this.featuredLoaded.set(false);
+      this.featuredThumb.set(null);
+      this.featuredFull.set(null);
+      this.fullLoaded.set(false);
+      this.decodedAspect.set(null);
+      this.hiResSub?.unsubscribe();
       if (!nft) return;
-      const sub = this.artworkService
-        .getProgressiveImageUrls(nft)
-        .subscribe((url) => this.featuredImage.set(url));
-      onCleanup(() => sub.unsubscribe());
+      const thumbSub = this.artworkService.getProgressiveImageUrls(nft, true).subscribe({
+        next: (url) => this.featuredThumb.set(url),
+        // complete fires once the thumbnail sources settle (loaded or not), so
+        // the full image loads even if no thumbnail was available.
+        complete: () => this.loadFullImage(nft),
+      });
+      onCleanup(() => {
+        thumbSub.unsubscribe();
+        this.hiResSub?.unsubscribe();
+      });
     });
+  }
+
+  private loadFullImage(nft: Nft): void {
+    this.hiResSub = this.artworkService
+      .getProgressiveImageUrls(nft)
+      .pipe(takeLast(1)) // only the highest-quality url, once the race settles
+      .subscribe((url) => this.featuredFull.set(url));
+  }
+
+  onFullLoad(event: Event): void {
+    this.fullLoaded.set(true);
+    const img = event.target as HTMLImageElement;
+    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+      this.decodedAspect.set(img.naturalWidth / img.naturalHeight);
+    }
   }
 
   ngAfterViewInit(): void {

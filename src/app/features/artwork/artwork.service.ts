@@ -141,7 +141,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
   // that resolve late with a lower quality than what is already displayed
   // are discarded. The multi-MB originalUrl is intentionally not part of the
   // race: the viewer's <img> downloads it in parallel as the final step.
-  getProgressiveImageUrls(nft: Nft): Observable<string> {
+  getProgressiveImageUrls(nft: Nft, thumbnailOnly = false): Observable<string> {
     const backendThumbnail$ = this.getLocalCachedThumbnail(nft.tokenId).pipe(
       switchMap((cachedUrl) =>
         cachedUrl ? of(cachedUrl) : this.fetchRemoteThumbnail(nft.tokenId)
@@ -152,11 +152,17 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     const nftThumbnail$ = this.preloadImage(nft.image?.thumbnailUrl).pipe(
       map((url) => ({ url, quality: PreviewQuality.NFT_THUMBNAIL }))
     );
-    const nftCached$ = this.preloadImage(nft.image?.cachedUrl).pipe(
-      map((url) => ({ url, quality: PreviewQuality.NFT_CACHED }))
-    );
+    const sources = [backendThumbnail$, nftThumbnail$];
+    if (!thumbnailOnly) {
+      // cachedUrl is Alchemy's full-resolution image (several MB); callers that
+      // only need a quick preview (thumbnailOnly) skip it and add it themselves.
+      const nftCached$ = this.preloadImage(nft.image?.cachedUrl).pipe(
+        map((url) => ({ url, quality: PreviewQuality.NFT_CACHED }))
+      );
+      sources.push(nftCached$);
+    }
 
-    return merge(backendThumbnail$, nftThumbnail$, nftCached$).pipe(
+    return merge(...sources).pipe(
       scan(
         (best: PreviewCandidate, candidate: PreviewCandidate) =>
           candidate.url && candidate.quality > best.quality ? candidate : best,

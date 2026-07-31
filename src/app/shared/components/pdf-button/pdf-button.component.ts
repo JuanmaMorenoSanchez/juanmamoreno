@@ -28,6 +28,10 @@ export class PdfButtonComponent {
   nfts = input<Nft[]>([]);
   downloadFileType = input<DOWNLOADTYPES>(DOWNLOADTYPES.IMAGE);
   public isCreating = signal(false);
+  // Generation progress 0..1, reported by createDossier; 0 means "no percentage
+  // yet" (the spinner stays indeterminate for the quick single-page downloads).
+  public progress = signal(0);
+  public progressPercent = computed(() => Math.round(this.progress() * 100));
   public isSingleArtPage = computed(() => this.nfts().length <= 1);
 
   public getTooltip(): string {
@@ -48,6 +52,7 @@ export class PdfButtonComponent {
 
   public createPDF() {
     this.isCreating.set(true);
+    this.progress.set(0);
     switch (this.downloadFileType()) {
       case DOWNLOADTYPES.CV:
         this.saveDocument(this.pdfService.createCV(), 'cv-juanmamoreno.pdf');
@@ -91,7 +96,8 @@ export class PdfButtonComponent {
             includeCv,
             includeStatement,
             customTitle,
-            customText
+            customText,
+            (fraction) => this.progress.set(fraction)
           ),
           'dossier-juanmamoreno.pdf'
         );

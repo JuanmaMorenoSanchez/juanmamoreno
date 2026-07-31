@@ -1,0 +1,11 @@
+// Keep the button and its progress label on one line, vertically centred.
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+// Live percentage beside the spinner, at the normal surrounding text size.
+.pdf-progress-label {
+  margin-left: 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
