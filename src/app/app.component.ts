@@ -6,6 +6,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
 import { ALLOWED_LANGUAGES, getPreferredLanguage } from '@shared/constants/languages.constants';
+import { CanonicalService } from '@shared/services/canonical.service';
 import translationsEN from '@translations/en.json';
 import translationsES from '@translations/es.json';
 import { filter } from 'rxjs';
@@ -18,14 +19,16 @@ import { filter } from 'rxjs';
 })
 export class AppComponent {
   private translateService = inject(TranslateService);
+  private canonicalService = inject(CanonicalService);
   private router = inject(Router);
 
-  // Routes like the generative sketches opt out of the breadcrumb (and its
-  // bottom spacing) via `data.hideBreadcrumb` — they're immersive, full-bleed
-  // views where the chrome would just get in the way.
-  readonly hideBreadcrumb = signal(this.deepestHideBreadcrumb(this.router.routerState.snapshot.root));
+  readonly hideBreadcrumb = signal(
+    this.deepestHideBreadcrumb(this.router.routerState.snapshot.root)
+  );
 
   constructor() {
+    this.canonicalService.init();
+
     this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
     this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
     this.translateService.use(getPreferredLanguage());
