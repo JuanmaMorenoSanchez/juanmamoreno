@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { Artwork } from './artwork';
 import { Nft } from './artwork.entity';
+import { ArtCritic } from './critic.entity';
 import { Descriptions } from './descriptions.entity';
 
 export interface ArtworkPort extends Artwork {
@@ -14,4 +15,5 @@ export interface ArtworkPort extends Artwork {
   getLinks(tokenId: string): Observable<string[]>;
   saveNftsLocally(nfts: Array<Nft>): void;
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null>;
+  getArtPieceCritic(tokenId: string): Observable<ArtCritic | null>;
 }

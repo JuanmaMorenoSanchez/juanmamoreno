@@ -1,6 +1,7 @@
 import { Artwork } from '@domain/artwork/artwork';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ArtworkPort } from '@domain/artwork/artwork.port';
+import { ArtCritic } from '@domain/artwork/critic.entity';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { Observable, of } from 'rxjs';
 
@@ -42,6 +43,10 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
   }
 
   getArtPieceDescriptions(): Observable<Descriptions | null> {
+    return of(null);
+  }
+
+  getArtPieceCritic(): Observable<ArtCritic | null> {
     return of(null);
   }
 }

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Artwork } from '@domain/artwork/artwork';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
 import { ArtworkPort } from '@domain/artwork/artwork.port';
+import { ArtCritic } from '@domain/artwork/critic.entity';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { environment } from '@environments/environment';
 import { SessionQuery } from '@shared/store/session.query';
@@ -83,6 +84,17 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .get<ApiResponse<Descriptions>>(`${environment.backendUrl}descriptions/${tokenId}`)
       .pipe(
         this.extractData<Descriptions | null>(null),
+        catchError(() => of(null))
+      );
+  }
+
+  // Null until the essay has been written: the backend answers 404 for an
+  // artwork it has not written about yet.
+  getArtPieceCritic(tokenId: string): Observable<ArtCritic | null> {
+    return this.http
+      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`)
+      .pipe(
+        this.extractData<ArtCritic | null>(null),
         catchError(() => of(null))
       );
   }

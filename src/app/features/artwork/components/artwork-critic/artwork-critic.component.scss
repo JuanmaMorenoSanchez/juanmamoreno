@@ -1,0 +1,95 @@
+@use '../../../../../styles/tokens';
+@use '../../../../../styles/breakpoints' as bp;
+
+// Width comes from the page, which sets it to the artwork's own frame width so
+// the text block lines up with the edges of the image above it.
+:host {
+  display: block;
+  margin: 0 auto;
+}
+
+.artwork-critic {
+  padding-bottom: tokens.$spacing-xl;
+  font-size: bp.fluid-size(0.875rem, 0.9375rem);
+}
+
+.artwork-critic-title {
+  margin: 0 0 tokens.$spacing-xl;
+  font-size: 1em;
+  font-weight: 400;
+  font-style: italic;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: var(--catalog-soft);
+}
+
+.artwork-critic-body {
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+
+  // The markdown arrives already rendered to HTML by the backend, so these
+  // nodes are inserted outside Angular's style encapsulation.
+  ::ng-deep {
+    p {
+      // Blocks, not indented prose: even edges on both sides, separated by
+      // space. Hyphenation is what keeps the justified rag from opening rivers
+      // at this measure — the lang attribute on the parent picks the dictionary.
+      margin: 0 0 tokens.$spacing-lg;
+      text-align: justify;
+      text-wrap: pretty;
+      hyphens: auto;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: tokens.$spacing-xl 0 tokens.$spacing-md;
+      font-size: 1em;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--catalog-soft);
+    }
+
+    // Nothing in the essay shouts: emphasis is carried by the italic alone.
+    strong,
+    b {
+      font-weight: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--catalog-faint);
+      text-underline-offset: 0.2em;
+      transition: text-decoration-color 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        text-decoration-color: var(--catalog-accent);
+      }
+    }
+  }
+}
+
+.artwork-critic-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.$spacing-sm;
+  padding-bottom: tokens.$spacing-xl;
+  font-size: bp.fluid-size(0.8125rem, 0.875rem);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--catalog-soft);
+
+  // Same weight as the text it sits beside, rather than the theme's accent.
+  .artwork-critic-spinner {
+    --mdc-circular-progress-active-indicator-color: var(--catalog-faint);
+  }
+}

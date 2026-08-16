@@ -8,6 +8,7 @@
     <app-back-button viewer-lead></app-back-button>
     @if (nft()) {
       <ng-container viewer-actions>
+        <app-quote-button [tokenId]="tokenId()" [artworkName]="nft().name"></app-quote-button>
         <app-download-button [links]="qualityUrls()" [name]="nft().name"></app-download-button>
         @if (frontalViewNft()) {
           <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
@@ -50,10 +51,8 @@
           }
         </small>
       </h3>
-      <div class="art-piece-cta">
-        <app-quote-button [tokenId]="tokenId()" [artworkName]="nft().name"></app-quote-button>
-      </div>
     </div>
+    <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
   }
   @if (thereAreMoreInYear()) {
     <mat-divider class="separator"></mat-divider>

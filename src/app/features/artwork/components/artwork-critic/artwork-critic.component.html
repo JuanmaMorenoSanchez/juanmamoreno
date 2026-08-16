@@ -1,0 +1,16 @@
+@if (translated(); as critic) {
+  <article class="artwork-critic" [attr.lang]="critic.lang">
+    <h3 class="artwork-critic-title">{{ critic.title }}</h3>
+    <div class="artwork-critic-body" [innerHTML]="critic.html"></div>
+  </article>
+} @else {
+  <div class="artwork-critic-loading" role="status">
+    <mat-progress-spinner
+      class="artwork-critic-spinner"
+      diameter="18"
+      mode="indeterminate"
+      aria-hidden="true"
+    ></mat-progress-spinner>
+    <span>{{ 'critic.generating' | translate }}</span>
+  </div>
+}

@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, signal, Signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  Signal,
+  viewChild,
+  WritableSignal,
+} from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
@@ -19,6 +28,7 @@ import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
+import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
 import { DownloadButtonComponent } from './components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
@@ -48,6 +58,7 @@ const NO_DESCRIPTION = 'No description available';
     TranslatePipe,
     TraitPipe,
     BackButtonComponent,
+    ArtworkCriticComponent,
   ],
 })
 export class ArtPieceComponent {
@@ -120,6 +131,13 @@ export class ArtPieceComponent {
     return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];
   });
   readonly sold: Signal<boolean> = computed(() => SOLDCERTIFICATES.includes(this.tokenId()));
+
+  // The essay is set to the width the viewer gives the artwork itself, so the
+  // text block sits exactly under the image rather than under the container.
+  // Read from the viewer instead of recomputed here: it narrows the frame to
+  // the image's real decoded ratio once it loads, and the two must not diverge.
+  private readonly imageViewer = viewChild(ImageViewerComponent);
+  readonly frameWidth = computed(() => this.imageViewer()?.frameWidth() ?? '100%');
 
   // Every artwork represented by its frontal view, newest year first — the same
   // ordering the "more on {year}" list at the bottom uses. Walking this flat

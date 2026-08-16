@@ -188,6 +188,9 @@
     "view": "Ver repercusión de la pieza en Internet",
     "title": "Apariciones de la pieza en Internet"
   },
+  "critic": {
+    "generating": "Generando la crítica"
+  },
   "seo": {
     "default": {
       "description": "Arte contemporáneo — pintura al óleo, acuarela, dibujo y arte generativo — del artista Juanma Moreno Sánchez."

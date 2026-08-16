@@ -188,6 +188,9 @@
     "view": "View where this artwork appears on the Internet",
     "title": "Appearances of the artwork on the Internet"
   },
+  "critic": {
+    "generating": "Generating critic"
+  },
   "seo": {
     "default": {
       "description": "Contemporary art — oil painting, watercolour, drawings and generative art — by the artist Juanma Moreno Sánchez."

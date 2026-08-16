@@ -1,8 +1,9 @@
 <button
-  mat-raised-button
-  color="primary"
+  mat-icon-button
   (click)="open()"
   [attr.aria-label]="(sold() ? 'quote.askInfo' : 'quote.askPrice') | translate"
+  [matTooltip]="(sold() ? 'quote.askInfo' : 'quote.askPrice') | translate"
+  matTooltipPosition="below"
 >
-  {{ (sold() ? 'quote.askInfo' : 'quote.askPrice') | translate }}
+  <mat-icon>shopping_cart</mat-icon>
 </button>
