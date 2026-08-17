@@ -8,6 +8,19 @@ const SITE_NAME = 'Juanma Moreno Sánchez';
 const SITE_URL = 'https://juanmamoreno.com';
 // Route `title` / `data.description` hold translation keys; the fallback is one too.
 const DEFAULT_DESCRIPTION_KEY = 'seo.default.description';
+const ARTWORK_JSON_LD_ID = 'artwork-structured-data';
+
+export interface ArtworkStructuredData {
+  name: string;
+  url: string;
+  image?: string;
+  description?: string;
+  year: string;
+  medium: string;
+  width: string;
+  height: string;
+  unit: string;
+}
 
 /**
  * Keeps each route's <title>, meta description, canonical link and Open Graph /
@@ -43,6 +56,52 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.setCanonical(url);
+    // Belongs to whichever artwork page we just left, not to this one.
+    this.clearArtworkStructuredData();
+  }
+
+  /**
+   * Describes the artwork as schema.org data in the page's head.
+   *
+   * The pages are prerendered, so this ends up in the served HTML: it is the
+   * one part of an artwork's facts — who made it, when, in what medium, at what
+   * size — that a crawler can read without interpreting prose or running any
+   * JavaScript. Especially worth having on the pieces that have no essay yet.
+   */
+  setArtworkStructuredData(artwork: ArtworkStructuredData): void {
+    const { name, url, image, description, year, medium, width, height, unit } = artwork;
+    const distance = (value: string) =>
+      value && unit ? { '@type': 'Distance', name: `${value} ${unit}` } : undefined;
+
+    const data = {
+      '@context': 'https://schema.org',
+      '@type': 'VisualArtwork',
+      name,
+      url,
+      image,
+      description: description || undefined,
+      artform: 'Painting',
+      artMedium: medium || undefined,
+      dateCreated: year || undefined,
+      width: distance(width),
+      height: distance(height),
+      creator: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
+    };
+
+    let script = this.document.head.querySelector<HTMLScriptElement>(`#${ARTWORK_JSON_LD_ID}`);
+    if (!script) {
+      script = this.document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('id', ARTWORK_JSON_LD_ID);
+      this.document.head.appendChild(script);
+    }
+    // undefined values drop out of JSON.stringify, so partial trait data yields
+    // a smaller object rather than one full of nulls.
+    script.textContent = JSON.stringify(data);
+  }
+
+  private clearArtworkStructuredData(): void {
+    this.document.head.querySelector(`#${ARTWORK_JSON_LD_ID}`)?.remove();
   }
 
   /**

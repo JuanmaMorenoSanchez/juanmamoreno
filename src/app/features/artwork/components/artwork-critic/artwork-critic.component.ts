@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
@@ -21,6 +22,7 @@ const POLL_INTERVAL_MS = 30_000;
 export class ArtworkCriticComponent {
   private artworkService = inject(ARTWORK_PORT);
   private translateService = inject(TranslateService);
+  protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly tokenId = input.required<string>();
 
@@ -30,16 +32,23 @@ export class ArtworkCriticComponent {
 
   private readonly critic = toSignal(
     toObservable(this.tokenId).pipe(
-      switchMap((tokenId) =>
-        timer(0, POLL_INTERVAL_MS).pipe(
-          switchMap(() => this.artworkService.getArtPieceCritic(tokenId)),
+      switchMap((tokenId) => {
+        const fetch$ = this.artworkService.getArtPieceCritic(tokenId);
+        // A build cannot sit in a polling loop waiting for an essay to be
+        // written: it asks once, and the page it emits carries the essay only
+        // if there already is one. In the browser it keeps asking as before.
+        const source$ = this.isBrowser
+          ? timer(0, POLL_INTERVAL_MS).pipe(switchMap(() => fetch$))
+          : fetch$;
+
+        return source$.pipe(
           filter((critic): critic is ArtCritic => !!critic),
           // Once the essay is there it never changes under the reader's feet.
           take(1),
           // Clears the previous artwork's essay while the new one is fetched.
           startWith(null)
-        )
-      )
+        );
+      })
     ),
     { initialValue: null }
   );

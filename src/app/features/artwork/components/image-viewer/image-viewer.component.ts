@@ -210,6 +210,9 @@ export class ImageViewerComponent {
     timeoutMs = DECODE_TIMEOUT_MS
   ): Promise<{ width: number; height: number }> {
     if (!url) return Promise.reject(new Error('Empty image url'));
+    // Prerendering has no Image to decode into. The markup still carries the
+    // artwork's frame and alt text; the browser loads the picture on hydration.
+    if (typeof Image === 'undefined') return Promise.reject(new Error('No Image available'));
     const img = new Image();
     img.src = url;
     return new Promise((resolve, reject) => {

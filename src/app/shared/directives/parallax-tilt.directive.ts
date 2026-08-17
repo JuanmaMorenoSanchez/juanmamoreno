@@ -40,10 +40,14 @@ export class ParallaxTiltDirective implements OnDestroy {
   };
 
   constructor() {
+    // Nothing points at anything while the pages are being prerendered, and
+    // there is no document to listen on.
+    if (typeof document === 'undefined') return;
     document.addEventListener('pointermove', this.onPointerMove, { passive: true });
   }
 
   ngOnDestroy(): void {
+    if (typeof document === 'undefined') return;
     document.removeEventListener('pointermove', this.onPointerMove);
     if (this.rafId) cancelAnimationFrame(this.rafId);
   }

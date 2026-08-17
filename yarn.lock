@@ -299,7 +299,7 @@
     yargs "18.0.0"
     zod "4.4.2"
 
-"@angular/common@^22.0.0 || ^23.0.0", "@angular/common@>=18", "@angular/common@22.0.4":
+"@angular/common@^22.0.0", "@angular/common@^22.0.0 || ^23.0.0", "@angular/common@>=18", "@angular/common@22.0.4":
   version "22.0.4"
   resolved "https://registry.npmjs.org/@angular/common/-/common-22.0.4.tgz"
   integrity sha512-ibHINcvajoXfKfb4aGdLx8aOFkUOadAYF9/Yy4j2C1gQdLS6uXOCPFD9+W9zWf8OeMhL0H+i+5KeNlh6XbGaZw==
@@ -357,10 +357,25 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/router@22.0.4":
+"@angular/platform-server@^22.0.0", "@angular/platform-server@22.0.4":
+  version "22.0.4"
+  resolved "https://registry.npmjs.org/@angular/platform-server/-/platform-server-22.0.4.tgz"
+  integrity sha512-bvAfVHRSZsHV/DGl9CN6PTaf6K0RB7hIw+XnUKBtI+zLtdYSpkTq6NK99MbNNIHioQe4iczYdZSXyDsc2Q9sNw==
+  dependencies:
+    tslib "^2.3.0"
+    xhr2 "^0.2.0"
+
+"@angular/router@^22.0.0", "@angular/router@22.0.4":
   version "22.0.4"
   resolved "https://registry.npmjs.org/@angular/router/-/router-22.0.4.tgz"
   integrity sha512-Kh236EphzUPNVt9w5Gv5hKJoQAMlo4fvAJ5E4E7vogFD36WM0ebt1COfYN3uATZel+4RehQg2VR45uepPI9HNA==
+  dependencies:
+    tslib "^2.3.0"
+
+"@angular/ssr@^22.0.4", "@angular/ssr@22.0.4":
+  version "22.0.4"
+  resolved "https://registry.npmjs.org/@angular/ssr/-/ssr-22.0.4.tgz"
+  integrity sha512-96JdKoJArd4H2jSiBsx/q7d2LOGq8PHNy7NBcinjg/f24GAqDMB6hrdYaHu/aO7NjKy0Q12amvtrvA34t69HNg==
   dependencies:
     tslib "^2.3.0"
 
@@ -5265,6 +5280,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+xhr2@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/xhr2/-/xhr2-0.2.1.tgz"
+  integrity sha512-sID0rrVCqkVNUn8t6xuv9+6FViXjUVXq8H5rWOH2rz9fDNQEd4g0EA2XlcEdJXRz5BMEn4O1pJFdT+z4YHhoWw==
 
 xml-name-validator@^5.0.0:
   version "5.0.0"

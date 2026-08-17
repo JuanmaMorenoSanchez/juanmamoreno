@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python \"C:/Users/User/AppData/Local/Temp/claude/c--Users-User-Projects-juanmamoreno/d5e699f4-51f2-4139-b1e6-18b1342f69ce/scratchpad/update_statement.py\")",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npm run lint 2>&1)",
+      "PowerShell(npm start 2>&1)",
+      "PowerShell(npm test 2>&1)",
+      "WebSearch"
+    ]
+  }
+}

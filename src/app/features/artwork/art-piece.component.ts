@@ -176,6 +176,7 @@ export class ArtPieceComponent {
 
     effect(() => {
       this.displayingIndex(); // read to scroll back up when the view changes
+      if (typeof window === 'undefined') return; // nothing to scroll in a build
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
@@ -193,7 +194,19 @@ export class ArtPieceComponent {
     effect(() => {
       const nft = this.nft();
       if (!nft?.name) return;
-      this.seo.setPageTitle(nft.name, this.seoDescription(nft));
+      const description = this.seoDescription(nft);
+      this.seo.setPageTitle(nft.name, description);
+      this.seo.setArtworkStructuredData({
+        name: nft.name,
+        url: `https://juanmamoreno.com/artwork/${nft.tokenId}`,
+        image: nft.image?.cachedUrl || nft.image?.thumbnailUrl,
+        description,
+        year: this.getTraitValue(nft, VALIDTRAITS.YEAR),
+        medium: this.translateService.instant(this.getTraitValue(nft, VALIDTRAITS.MEDIUM)),
+        width: this.getTraitValue(nft, VALIDTRAITS.WIDTH),
+        height: this.getTraitValue(nft, VALIDTRAITS.HEIGHT),
+        unit: this.getTraitValue(nft, VALIDTRAITS.UNIT),
+      });
     });
   }
 

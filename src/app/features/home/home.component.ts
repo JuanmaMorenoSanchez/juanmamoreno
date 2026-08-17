@@ -143,6 +143,9 @@ export class HomeComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    // No IntersectionObserver while prerendering, and nothing scrolls past the
+    // hero in a build for it to report on.
+    if (typeof IntersectionObserver === 'undefined') return;
     this.observer = new IntersectionObserver(([entry]) => {
       this.heroTitle.visible.set(entry.isIntersecting);
     });

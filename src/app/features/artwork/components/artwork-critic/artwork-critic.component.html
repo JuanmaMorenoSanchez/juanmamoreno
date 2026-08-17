@@ -3,7 +3,12 @@
     <h3 class="artwork-critic-title">{{ critic.title }}</h3>
     <div class="artwork-critic-body" [innerHTML]="critic.html"></div>
   </article>
-} @else {
+} @else if (isBrowser) {
+  <!--
+    Only in the browser. A prerendered page has nothing pending: if there is no
+    essay for this artwork yet the page simply ships without one, rather than
+    telling a crawler that something is "generating" that never will be.
+  -->
   <div class="artwork-critic-loading" role="status">
     <mat-progress-spinner
       class="artwork-critic-spinner"

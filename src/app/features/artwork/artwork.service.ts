@@ -1,5 +1,6 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { PLATFORM_ID, inject } from '@angular/core';
 import { Artwork } from '@domain/artwork/artwork';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
 import { ArtworkPort } from '@domain/artwork/artwork.port';
@@ -45,6 +46,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
   private sessionStore = inject(SessionStore);
   private sessionQuery = inject(SessionQuery);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   getArtPiecesObservable(): Observable<Nft[]> {
     if (!this.itIsNeccesaryToFetch()) {
@@ -90,9 +92,14 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   // Null until the essay has been written: the backend answers 404 for an
   // artwork it has not written about yet.
+  //
+  // A visitor asking for a missing one has the backend write it. A build must
+  // not: it prerenders a page for every artwork in the catalogue, so it asks
+  // read-only and ships whatever essay already exists.
   getArtPieceCritic(tokenId: string): Observable<ArtCritic | null> {
+    const options = this.isBrowser ? {} : { params: { generate: 'false' } };
     return this.http
-      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`)
+      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`, options)
       .pipe(
         this.extractData<ArtCritic | null>(null),
         catchError(() => of(null))
@@ -188,8 +195,10 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
 
   // Downloads an image off-screen and emits its url once it is ready to be
   // displayed. Unsubscribing aborts the in-flight download.
+  // No-op when the pages are prerendered: there is no Image to decode into,
+  // and a build has no screen to show a preview on.
   private preloadImage(url: string | undefined): Observable<string> {
-    if (!url) return EMPTY;
+    if (!url || typeof Image === 'undefined') return EMPTY;
     return new Observable<string>((subscriber) => {
       const img = new Image();
       img.onload = () => {
