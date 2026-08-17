@@ -1,0 +1,1 @@
+import{rb as e}from"./chunk-VOIB2WTI.js";var r=(()=>{class t{static \u0275fac=function(i){return new(i||t)};static \u0275dir=e({type:t,selectors:[["","mat-line",""],["","matLine",""]],hostAttrs:[1,"mat-line"]})}return t})();export{r as a};

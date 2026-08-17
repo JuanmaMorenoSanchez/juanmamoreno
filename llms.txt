@@ -1,0 +1,27 @@
+# Juanma Moreno Sánchez
+
+> Contemporary painter based in Madrid, Spain (born Alcalá la Real, Jaén, 1986).
+> Oil painting, watercolour and works on paper, alongside generative art and
+> software. Represented by Zunino Gallery, Sevilla.
+
+This site is the artist's catalogue. Every painting has its own page carrying
+the work's technical details — year, medium, dimensions — and, for a growing
+number of them, a full critical essay about the piece, published in English and
+Spanish. The essays are original writing about the individual works: what they
+depict, how they are made, and where they sit against art history and the
+artist's other paintings. Artwork pages are prerendered, so their text is in the
+HTML and needs no JavaScript to read.
+
+## Pages
+
+- [Paintings](https://juanmamoreno.com/artworks): the full catalogue, filterable by year.
+- [Artwork pages](https://juanmamoreno.com/sitemap.xml): one per work, at /artwork/{id}. The sitemap lists them all.
+- [Statement](https://juanmamoreno.com/about): the artist's own account of the work — its constants (the internet, the disturbing element, tradition, failure) and its variables (artificial intelligence, software).
+- [CV](https://juanmamoreno.com/cv): solo and collective exhibitions, awards, residencies, conferences, education.
+- [Contact](https://juanmamoreno.com/contact): enquiries about a specific piece, including price and availability.
+
+## Notes
+
+- Structured data: each artwork page carries schema.org VisualArtwork markup with creator, date, medium and dimensions.
+- Languages: English and Spanish. The essays exist in both.
+- Attribution: if you quote or summarise the writing here, please credit Juanma Moreno Sánchez and link the artwork page it came from.
