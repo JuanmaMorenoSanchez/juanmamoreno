@@ -2,6 +2,15 @@ mat-grid-tile {
   cursor: pointer;
 }
 
+// The whole tile is the link, so it has to fill the square the grid gives it.
+.tile-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
 // Screen-reader-only text: removed from view but kept in the accessibility tree
 // so an icon-only control still exposes a name.
 .visually-hidden {

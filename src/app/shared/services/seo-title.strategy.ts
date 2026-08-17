@@ -9,6 +9,7 @@ const SITE_URL = 'https://juanmamoreno.com';
 // Route `title` / `data.description` hold translation keys; the fallback is one too.
 const DEFAULT_DESCRIPTION_KEY = 'seo.default.description';
 const ARTWORK_JSON_LD_ID = 'artwork-structured-data';
+const BREADCRUMB_JSON_LD_ID = 'breadcrumb-structured-data';
 
 export interface ArtworkStructuredData {
   name: string;
@@ -120,20 +121,52 @@ export class SeoTitleStrategy extends TitleStrategy {
       creator: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
     };
 
-    let script = this.document.head.querySelector<HTMLScriptElement>(`#${ARTWORK_JSON_LD_ID}`);
+    // undefined values drop out of JSON.stringify, so partial trait data yields
+    // a smaller object rather than one full of nulls.
+    this.writeJsonLd(ARTWORK_JSON_LD_ID, data);
+    this.writeJsonLd(BREADCRUMB_JSON_LD_ID, this.breadcrumbTrail(name, url));
+  }
+
+  /**
+   * Home > Paintings > this artwork. Says where the page sits rather than
+   * leaving each of 186 artworks looking like an island, and it is what search
+   * results show as a path instead of a bare url.
+   */
+  private breadcrumbTrail(name: string, url: string) {
+    const spanish = url.includes('/es/');
+    const base = spanish ? `${SITE_URL}/es` : SITE_URL;
+    const trail = [
+      { name: spanish ? 'Inicio' : 'Home', item: `${base}/` },
+      { name: spanish ? 'Pinturas' : 'Paintings', item: `${base}/artworks/` },
+      { name, item: url },
+    ];
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: trail.map((entry, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: entry.name,
+        item: entry.item,
+      })),
+    };
+  }
+
+  private writeJsonLd(id: string, data: unknown): void {
+    let script = this.document.head.querySelector<HTMLScriptElement>(`#${id}`);
     if (!script) {
       script = this.document.createElement('script');
       script.setAttribute('type', 'application/ld+json');
-      script.setAttribute('id', ARTWORK_JSON_LD_ID);
+      script.setAttribute('id', id);
       this.document.head.appendChild(script);
     }
-    // undefined values drop out of JSON.stringify, so partial trait data yields
-    // a smaller object rather than one full of nulls.
     script.textContent = JSON.stringify(data);
   }
 
   private clearArtworkStructuredData(): void {
     this.document.head.querySelector(`#${ARTWORK_JSON_LD_ID}`)?.remove();
+    this.document.head.querySelector(`#${BREADCRUMB_JSON_LD_ID}`)?.remove();
   }
 
   /**

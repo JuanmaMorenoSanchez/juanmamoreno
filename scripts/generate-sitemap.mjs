@@ -2,7 +2,7 @@
 // hand-maintained list: every index.html in the build output is a real URL that
 // GitHub Pages will serve with a 200, and nothing else is. Run after `ng build`
 // (see the postbuild script), overwriting the placeholder copied from src/.
-import { readdir, writeFile } from 'node:fs/promises';
+import { readdir, stat, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 const ORIGIN = 'https://juanmamoreno.com';
@@ -43,21 +43,32 @@ const sorted = routes.sort((a, b) => {
   return known(a) - known(b) || a.localeCompare(b);
 });
 
-const body = sorted
-  .map((route) => {
-    const priority = PRIORITIES[route] ?? '0.7';
-    const changefreq = route in PRIORITIES ? 'monthly' : 'yearly';
-    return [
-      '  <url>',
-      // Trailing slash: that is the address Pages serves without a redirect,
-      // and it is what the page declares as its canonical.
-      `    <loc>${ORIGIN}/${route}${route ? '/' : ''}</loc>`,
-      `    <priority>${priority}</priority>`,
-      `    <changefreq>${changefreq}</changefreq>`,
-      '  </url>',
-    ].join('\n');
-  })
-  .join('\n');
+// When each page was written. Crawlers use it to decide what is worth
+// re-fetching — which is how a newly written essay gets noticed rather than
+// waiting for the whole catalogue to be crawled again.
+const lastmodOf = async (route) => {
+  const { mtime } = await stat(join(OUTPUT_DIR, route, 'index.html'));
+  return mtime.toISOString().slice(0, 10);
+};
+
+const body = (
+  await Promise.all(
+    sorted.map(async (route) => {
+      const priority = PRIORITIES[route] ?? '0.7';
+      const changefreq = route in PRIORITIES ? 'monthly' : 'yearly';
+      return [
+        '  <url>',
+        // Trailing slash: that is the address Pages serves without a redirect,
+        // and it is what the page declares as its canonical.
+        `    <loc>${ORIGIN}/${route}${route ? '/' : ''}</loc>`,
+        `    <lastmod>${await lastmodOf(route)}</lastmod>`,
+        `    <priority>${priority}</priority>`,
+        `    <changefreq>${changefreq}</changefreq>`,
+        '  </url>',
+      ].join('\n');
+    }),
+  )
+).join('\n');
 
 await writeFile(
   join(OUTPUT_DIR, 'sitemap.xml'),

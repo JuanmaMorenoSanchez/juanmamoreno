@@ -17,7 +17,7 @@ import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
@@ -49,6 +49,7 @@ import { map, Observable } from 'rxjs';
     LazyLoadDirective,
     ParallaxTiltDirective,
     TranslatePipe,
+    RouterLink,
   ],
 })
 export class ArtPiecesListComponent {
@@ -59,6 +60,10 @@ export class ArtPiecesListComponent {
   private destroyRef = inject(DestroyRef);
 
   public sortMethods = Object.values(SortMethod);
+  // Read once: this component is rebuilt when the route changes, and a grid
+  // never moves between languages without one.
+  private readonly inSpanish =
+    this.router.url === '/es' || this.router.url.startsWith('/es/');
   // Token ids whose thumbnail race has already started — guards against a
   // duplicate race if loadImgThumbUrl is ever called twice for the same
   // tile; it does NOT filter emissions, since one race legitimately keeps
@@ -192,9 +197,16 @@ export class ArtPiecesListComponent {
     }
   }
 
+  // Navigation is the anchor's job now; this only tells whoever is listening
+  // which piece was picked.
   public handleArtPieceClick(tokenId: string) {
     this.selectedTokenId.emit(tokenId);
-    this.router.navigate(['/artwork', tokenId]);
+  }
+
+  // Keeps the reader in the language they are reading: from /es/artworks a
+  // tile leads to /es/artwork/5, not to the English page.
+  public artworkLink(tokenId: string): string[] {
+    return this.inSpanish ? ['/es', 'artwork', tokenId] : ['/artwork', tokenId];
   }
 
   public methodTracking(method: SortMethod) {

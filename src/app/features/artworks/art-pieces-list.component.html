@@ -1,5 +1,9 @@
 <div [ngClass]="{ container: !viewAsWidget() }">
   @if (!viewAsWidget()) {
+    <!-- The catalogue's own heading. Hidden visually because the breadcrumb
+         above already names the page, but it gives the page the one h1 it
+         should have instead of borrowing the site's name. -->
+    <h1 class="visually-hidden">{{ 'seo.paintings.title' | translate }}</h1>
     <div class="sort-group">
       <mat-chip-set>
         @for (method of sortMethods; track methodTracking(method)) {
@@ -42,15 +46,26 @@
       @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
         <mat-grid-tile
           (contextmenu)="toggleNftSelection($event, artPiece)"
-          (click)="handleArtPieceClick(artPiece.tokenId)"
           role="listitem"
-          [attr.aria-label]="
-            isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
-          "
           [animate.enter]="tileEnterClass(i)"
           [style.animation-delay.ms]="tileEnterDelay(i)"
         >
-          <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
+          <!--
+            A real anchor, not a click handler: this grid is the only route
+            between the catalogue and the 186 artwork pages, and a page reached
+            only through the sitemap reads as an orphan to anything crawling
+            the site. It also restores what a link is supposed to do —
+            middle-click, open in a new tab, focus with the keyboard.
+          -->
+          <a
+            class="tile-link"
+            [routerLink]="artworkLink(artPiece.tokenId)"
+            [attr.aria-label]="
+              isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
+            "
+            (click)="handleArtPieceClick(artPiece.tokenId)"
+          >
+            <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
             @if (isSelected(artPiece)) {
               <div class="overlay">
                 <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
@@ -70,13 +85,14 @@
                 mat-card-image
                 decoding="async"
                 [src]="thumbUrl"
-                [alt]="'Artwork ' + artPiece.name"
+                [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
               />
             }
             @if (isSold(artPiece)) {
               <span class="sold-dot" aria-hidden="true"></span>
             }
-          </mat-card>
+            </mat-card>
+          </a>
         </mat-grid-tile>
       }
     </mat-grid-list>

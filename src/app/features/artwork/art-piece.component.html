@@ -31,11 +31,12 @@
   </app-image-viewer>
   @if (nft()) {
     <div class="art-piece-labels">
-      <h2>
+      <!-- The page's one h1: the artwork itself, not the site's name. -->
+      <h1>
         <i
           >{{ nft().name }}. <small>{{ viewLabel() }}</small></i
         >
-      </h2>
+      </h1>
       <h3 class="catalog-caption">
         <small>
           <a
@@ -61,7 +62,6 @@
       [viewAsWidget]="true"
       [numberOfCols]="numberOfViewMoreColumns()"
       [nftFilters]="getSameYearListFilter()"
-      (selectedTokenId)="handleSelectedItem($event)"
     >
     </app-art-pieces-list>
   }

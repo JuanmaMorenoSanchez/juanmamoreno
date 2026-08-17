@@ -239,10 +239,6 @@ export class ArtPieceComponent {
     return descriptions.translated.find((t) => t.lang === lang)?.shortDesc || NO_DESCRIPTION;
   }
 
-  handleSelectedItem(tokenId: string): void {
-    this.router.navigate(['/artwork', tokenId]);
-  }
-
   // Advances to the next artwork in the year sequence; at the last piece of a
   // year it continues into the first piece of the previous (older) year, and
   // wraps from the very last artwork back to the first (newest).
