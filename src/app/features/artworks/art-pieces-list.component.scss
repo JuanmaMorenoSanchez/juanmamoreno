@@ -47,19 +47,18 @@ mat-card {
   background-color: var(--catalog-frame-bg);
 }
 
+// Deliberately no fade-in. The grid reorders when the API list replaces the
+// bundled one, which relocates these <img> nodes, and a moved element restarts
+// its transitions — so an opacity fade replays on every reflow and blinks a
+// square that was already showing a painting. The url only reaches [src] once
+// it has been downloaded off-screen (see getProgressiveImageUrls), so there is
+// nothing to hide anyway: the image paints as soon as it is bound.
 .front-image {
-  opacity: 0;
   // Oversized by the same margin appParallaxTilt is allowed to shift (see
   // parallax-tilt.directive.ts's default), so it always has slack to pan
   // within its frame and never shows a gap at the edge.
   transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
-  transition:
-    opacity 0.35s ease-in,
-    transform 0.2s ease-out;
-
-  &.loaded {
-    opacity: 1;
-  }
+  transition: transform 0.2s ease-out;
 }
 
 .container {

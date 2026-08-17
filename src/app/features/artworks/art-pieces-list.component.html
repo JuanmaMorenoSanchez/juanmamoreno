@@ -61,10 +61,8 @@
                 class="front-image"
                 mat-card-image
                 decoding="async"
-                [class.loaded]="loadedImages.has(artPiece.tokenId)"
                 [src]="thumbUrl"
                 [alt]="'Artwork ' + artPiece.name"
-                (load)="onImageLoaded(artPiece.tokenId)"
               />
             }
             @if (isSold(artPiece)) {

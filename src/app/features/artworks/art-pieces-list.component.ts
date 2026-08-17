@@ -58,7 +58,6 @@ export class ArtPiecesListComponent {
   private responsiveService = inject(ResponsiveService);
   private destroyRef = inject(DestroyRef);
 
-  public loadedImages = new Set<string>();
   public sortMethods = Object.values(SortMethod);
   // Token ids whose thumbnail race has already started — guards against a
   // duplicate race if loadImgThumbUrl is ever called twice for the same
@@ -127,10 +126,6 @@ export class ArtPiecesListComponent {
     }
   });
   public selectedNfts: WritableSignal<Nft[]> = signal([]);
-
-  public onImageLoaded(tokenId: string): void {
-    this.loadedImages.add(tokenId);
-  }
 
   public onImageVisible(tokenId: string): void {
     const nft = this.artPieces()?.find((p) => p.tokenId === tokenId);
