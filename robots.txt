@@ -1,3 +1,35 @@
 User-agent: *
 Disallow:
+
+# The artwork pages carry original writing about each painting, and they are
+# prerendered so the text is in the HTML. These are named explicitly because a
+# blanket allow says nothing about intent, and Google-Extended in particular
+# governs whether the writing may inform Gemini and AI Overviews at all.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 Sitemap: https://juanmamoreno.com/sitemap.xml
