@@ -182,6 +182,10 @@ export class ArtPieceComponent {
 
     effect(() => {
       const token = this.tokenId();
+      // Undefined until the artwork has loaded. Asking anyway fetched
+      // /descriptions/undefined, which the backend answers with a 500 — once
+      // per page view, and once per prerendered page at build time.
+      if (!token) return;
       this.artworkService.getArtPieceDescriptions(token).subscribe((data) => {
         this.descriptions.set(data);
       });

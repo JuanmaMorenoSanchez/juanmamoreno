@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { PLATFORM_ID, inject } from '@angular/core';
+import { PLATFORM_ID, TransferState, inject, makeStateKey } from '@angular/core';
+import { Router } from '@angular/router';
 import { Artwork } from '@domain/artwork/artwork';
 import { Nft, NftThumbnail } from '@domain/artwork/artwork.entity';
 import { ArtworkPort } from '@domain/artwork/artwork.port';
@@ -42,13 +43,28 @@ interface PreviewCandidate {
   quality: number;
 }
 
+// The catalogue, handed from the build to the browser through the page itself.
+const ART_PIECES_KEY = makeStateKey<Nft[]>('artPieces');
+
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
   private sessionStore = inject(SessionStore);
   private sessionQuery = inject(SessionQuery);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private transferState = inject(TransferState);
+  private router = inject(Router);
 
   getArtPiecesObservable(): Observable<Nft[]> {
+    const transferred = this.takeTransferredArtPieces();
+    if (transferred) {
+      // Exactly what the build rendered this page's grid from. Using it makes
+      // the browser's first render identical to the served markup, so
+      // hydration keeps the tiles instead of tearing them down and building
+      // them again — which is what emptied every square for a moment.
+      this.saveNftsLocally(transferred);
+      return of(transferred);
+    }
+
     if (!this.itIsNeccesaryToFetch()) {
       return this.sessionQuery.getArtPiecesObservable;
     }
@@ -57,9 +73,21 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`)
       .pipe(
         this.extractData<Nft[]>([]),
-        tap((nfts) => this.saveNftsLocally(nfts)),
+        tap((nfts) => {
+          this.saveNftsLocally(nfts);
+          this.transferArtPieces(nfts);
+        }),
         catchError(() => this.sessionQuery.getArtPiecesObservable)
       );
+
+    // Prerendering waits on HTTP but not on an arbitrary promise, so the
+    // dynamic import below can still be in flight when the page is written out
+    // — which is how the built /artworks came to contain a spinner and no
+    // artworks at all. The build has the network and wants the real catalogue
+    // anyway; the bundled fallback exists to give a browser something instant.
+    if (!this.isBrowser) {
+      return apiCall$;
+    }
 
     if (this.sessionQuery.selectArtPieces.length) {
       // Stale-but-real persisted data beats the bundled fallback:
@@ -73,6 +101,30 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       tap((fallbackNfts) => this.sessionStore.update({ artPieces: fallbackNfts })),
       switchMap((fallbackNfts) => apiCall$.pipe(startWith(fallbackNfts)))
     );
+  }
+
+  /**
+   * Hands the catalogue to the browser through the page, but only on the pages
+   * built around the whole grid.
+   *
+   * It is ~430kB. Carrying it on all 386 prerendered pages to spare a request
+   * would be a bad trade; carrying it on the two that render every artwork is
+   * how those pages avoid rebuilding their grid the moment they load.
+   */
+  private transferArtPieces(nfts: Nft[]): void {
+    if (this.isBrowser || !nfts.length) return;
+    const path = this.router.url.split('?')[0].replace(/\/+$/, '');
+    if (path !== '/artworks' && path !== '/es/artworks') return;
+    this.transferState.set(ART_PIECES_KEY, nfts);
+  }
+
+  private takeTransferredArtPieces(): Nft[] | null {
+    if (!this.isBrowser || !this.transferState.hasKey(ART_PIECES_KEY)) return null;
+    const nfts = this.transferState.get(ART_PIECES_KEY, []);
+    // Read once: a later navigation should ask the API rather than replay a
+    // catalogue that was current when the page was built.
+    this.transferState.remove(ART_PIECES_KEY);
+    return nfts.length ? nfts : null;
   }
 
   private getFallbackArtworks(): Observable<Nft[]> {
@@ -201,15 +253,26 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     if (!url || typeof Image === 'undefined') return EMPTY;
     return new Observable<string>((subscriber) => {
       const img = new Image();
-      img.onload = () => {
-        subscriber.next(url);
-        subscriber.complete();
-      };
-      img.onerror = () => subscriber.complete();
+      let cancelled = false;
       img.src = url;
+      // decode(), not onload: onload only means the bytes arrived. Handing a
+      // url that has not been rasterised to the visible <img> clears whatever
+      // it was showing while the browser decodes the new one — the blank
+      // between one image and the next. Waiting for the bitmap makes the swap
+      // a single frame.
+      img
+        .decode()
+        .then(() => {
+          if (cancelled) return;
+          subscriber.next(url);
+          subscriber.complete();
+        })
+        .catch(() => {
+          // Failed, or aborted by the teardown below.
+          if (!cancelled) subscriber.complete();
+        });
       return () => {
-        img.onload = null;
-        img.onerror = null;
+        cancelled = true;
         if (!img.complete) img.src = '';
       };
     });

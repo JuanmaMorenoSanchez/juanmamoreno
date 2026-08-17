@@ -56,7 +56,15 @@
                 <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
               </div>
             }
-            @if (imgThumbUrls().get(artPiece.tokenId); as thumbUrl) {
+            <!--
+              The artwork's own thumbnail url is the starting point rather than
+              nothing: it needs no race to work out, so the tile carries a
+              picture from the very first paint — in the prerendered html, and
+              in the browser's first render, which is what lets hydration keep
+              it instead of rebuilding an empty square. The progressive race
+              then replaces it with something better.
+            -->
+            @if (imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl; as thumbUrl) {
               <img
                 class="front-image"
                 mat-card-image

@@ -7,7 +7,8 @@ import {
   withViewTransitions,
 } from '@angular/router';
 
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
@@ -32,7 +33,28 @@ export const appConfig: ApplicationConfig = {
       useClass: ArtworkInfraService, // ArtworkInfraService is the implementation for the ArtworkPort. Decopupled. We call the abstraction, not the implementation.
     },
     provideZonelessChangeDetection(),
-    provideHttpClient(withInterceptorsFromDi()),
+    // The pages are prerendered, and without this Angular throws that markup
+    // away on bootstrap and builds the page again from nothing — the reader
+    // sees the page, then a blank, then the page. Hydration reuses the served
+    // DOM instead.
+    //
+    // What the build fetched travels with the page, except for three things
+    // that would only make the page heavier:
+    //   nfts-snapshot  ~430kB of raw catalogue metadata, on every one of 386
+    //                  pages, to spare a request the app already caches in
+    //                  localStorage.
+    //   nft-thumbnails the preview is already inlined in the markup as a data
+    //                  uri; transferring it stores the same image twice.
+    //   critics        the build asks with ?generate=false and the browser
+    //                  without it, so the entry can never be matched — 26kB of
+    //                  essay carried on every page and read by no one.
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        filter: ({ url }) =>
+          !['nfts-snapshot', 'nft-thumbnails', 'critics'].some((path) => url.includes(path)),
+      })
+    ),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideAnimationsAsync(),
     { provide: TitleStrategy, useExisting: SeoTitleStrategy },
   ],
