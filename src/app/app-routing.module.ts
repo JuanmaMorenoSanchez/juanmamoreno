@@ -1,12 +1,16 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { englishRoute, spanishRoute } from '@shared/guards/language.guard';
 
 // `title` + `data.description` are translation keys (see the `seo.*` block in
 // the translation files), resolved per-language by the SeoTitleStrategy so
 // every page gets a distinct, localized <title>, meta description and canonical
 // URL. The :id routes carry a generic fallback; their components refine the
 // title once the artwork or sketch has loaded.
-export const routes: Routes = [
+//
+// Every one of these is served twice: unprefixed and under /es. See the
+// language guards for why the prefix exists.
+const contentRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
@@ -72,6 +76,11 @@ export const routes: Routes = [
     title: 'seo.privacy.title',
     data: { description: 'seo.privacy.description' },
   },
+];
+
+export const routes: Routes = [
+  { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
+  { path: '', canActivate: [englishRoute], children: contentRoutes },
   {
     path: '**',
     component: NotFoundComponent,

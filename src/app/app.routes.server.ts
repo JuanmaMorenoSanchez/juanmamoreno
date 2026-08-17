@@ -15,14 +15,16 @@ export async function artworkTokenIds(): Promise<string[]> {
   return (body.data ?? []).map((nft) => nft.tokenId).filter((id): id is string => !!id);
 }
 
+const artworkParams = async () => (await artworkTokenIds()).map((id) => ({ id }));
+
 export const serverRoutes: ServerRoute[] = [
-  {
-    path: 'artwork/:id',
-    renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => (await artworkTokenIds()).map((id) => ({ id })),
-  },
+  // Both languages: /artwork/5 carries the English essay, /es/artwork/5 the
+  // Spanish one, and each is a page in its own right.
+  { path: 'artwork/:id', renderMode: RenderMode.Prerender, getPrerenderParams: artworkParams },
+  { path: 'es/artwork/:id', renderMode: RenderMode.Prerender, getPrerenderParams: artworkParams },
   // The generative pieces are p5-style canvases: nothing to prerender, and
   // they need a real browser to exist at all.
   { path: 'generative/:id', renderMode: RenderMode.Client },
+  { path: 'es/generative/:id', renderMode: RenderMode.Client },
   { path: '**', renderMode: RenderMode.Prerender },
 ];

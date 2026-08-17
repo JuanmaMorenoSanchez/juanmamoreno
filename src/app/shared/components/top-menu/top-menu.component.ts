@@ -6,11 +6,11 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SKETCH_LIST } from '@features/generative/sketches/registry';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { ALLOWED_LANGUAGES, storeLanguageChoice } from '@shared/constants/languages.constants';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ResponsiveService } from '@shared/services/responsive.service';
 
@@ -39,6 +39,7 @@ export class TopMenuComponent {
   private artworkService = inject(ARTWORK_PORT);
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
+  private router = inject(Router);
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 
@@ -65,11 +66,18 @@ export class TopMenuComponent {
     return this.currentLang.slice(0, 2).toUpperCase();
   }
 
+  // The language lives in the address now (/artwork/5 vs /es/artwork/5), so
+  // switching it means going to the other page rather than swapping the words
+  // underneath the reader: the URL, the canonical and the essay must agree.
+  // The route's language guard applies the change on arrival.
   public changeLanguage(): void {
-    const nextLang =
-      this.currentLang === ALLOWED_LANGUAGES.ENGLISH
-        ? ALLOWED_LANGUAGES.SPANISH
-        : ALLOWED_LANGUAGES.ENGLISH;
-    this.translateService.use(nextLang);
+    const path = this.router.url.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
+    const isSpanishUrl = path === 'es' || path.startsWith('es/');
+    const bare = isSpanishUrl ? path.replace(/^es\/?/, '') : path;
+
+    // Remembered so the first-visit redirect stops second-guessing them: a
+    // Spanish browser asking for English must not be sent back to /es.
+    storeLanguageChoice(isSpanishUrl ? ALLOWED_LANGUAGES.ENGLISH : ALLOWED_LANGUAGES.SPANISH);
+    this.router.navigateByUrl(isSpanishUrl ? `/${bare}` : `/es/${bare}`);
   }
 }

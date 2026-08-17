@@ -46,7 +46,7 @@ export class SeoTitleStrategy extends TitleStrategy {
     const pageTitle = routeTitle ? `${routeTitle} · ${SITE_NAME}` : `${SITE_NAME} — artist`;
     const descriptionKey = this.deepestDescription(snapshot.root) ?? DEFAULT_DESCRIPTION_KEY;
     const description = this.translate.instant(descriptionKey);
-    const url = SITE_URL + (snapshot.url.split('?')[0] || '/');
+    const url = this.absoluteUrl(snapshot.url);
 
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
@@ -56,8 +56,40 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.setCanonical(url);
+    this.setLanguageAlternates(snapshot.url);
     // Belongs to whichever artwork page we just left, not to this one.
     this.clearArtworkStructuredData();
+  }
+
+  /**
+   * Pairs a page with its translation.
+   *
+   * The same artwork exists at /artwork/5 and /es/artwork/5 with the essay in
+   * either language. Left unpaired the two read as near-duplicates competing
+   * with each other; hreflang says they are one work in two languages, and
+   * lets a Spanish reader be sent to the Spanish one. x-default points at the
+   * English page, which is the one to fall back to for any other language.
+   */
+  private setLanguageAlternates(routerUrl: string): void {
+    const path = routerUrl.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
+    const bare = path === 'es' ? '' : path.replace(/^es\//, '');
+    const alternates: [string, string][] = [
+      ['en', this.absoluteUrl(bare)],
+      ['es', this.absoluteUrl(`es/${bare}`)],
+      ['x-default', this.absoluteUrl(bare)],
+    ];
+
+    this.document.head
+      .querySelectorAll('link[rel="alternate"][hreflang]')
+      .forEach((link) => link.remove());
+
+    for (const [hreflang, href] of alternates) {
+      const link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', href);
+      this.document.head.appendChild(link);
+    }
   }
 
   /**
@@ -110,7 +142,7 @@ export class SeoTitleStrategy extends TitleStrategy {
    * individually titled rather than sharing a generic route title. Callers pass
    * already-resolved text, not translation keys.
    */
-  setPageTitle(title: string, description?: string): void {
+  setPageTitle(title: string, description?: string, image?: string): void {
     const pageTitle = `${title} · ${SITE_NAME}`;
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ property: 'og:title', content: pageTitle });
@@ -119,6 +151,12 @@ export class SeoTitleStrategy extends TitleStrategy {
       this.meta.updateTag({ name: 'description', content: description });
       this.meta.updateTag({ property: 'og:description', content: description });
       this.meta.updateTag({ name: 'twitter:description', content: description });
+    }
+    // Without this every artwork shares the one image baked into index.html,
+    // so each of them previews as the same picture of somebody else's painting.
+    if (image) {
+      this.meta.updateTag({ property: 'og:image', content: image });
+      this.meta.updateTag({ name: 'twitter:image', content: image });
     }
   }
 
@@ -131,6 +169,20 @@ export class SeoTitleStrategy extends TitleStrategy {
       node = node.firstChild;
     }
     return found;
+  }
+
+  /**
+   * The URL exactly as GitHub Pages serves it.
+   *
+   * Prerendering writes each route as `<route>/index.html`, and Pages answers
+   * the bare path with a 301 to the trailing-slash form. Declaring the bare
+   * path as canonical would point every page at a redirect, so the slash is
+   * part of the address here and in the sitemap alike.
+   */
+  private absoluteUrl(routerUrl: string): string {
+    const path = routerUrl.split('?')[0].split('#')[0];
+    const trimmed = path.replace(/^\/+|\/+$/g, '');
+    return trimmed ? `${SITE_URL}/${trimmed}/` : `${SITE_URL}/`;
   }
 
   private setCanonical(url: string): void {

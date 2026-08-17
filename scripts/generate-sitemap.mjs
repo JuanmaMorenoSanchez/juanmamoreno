@@ -49,7 +49,9 @@ const body = sorted
     const changefreq = route in PRIORITIES ? 'monthly' : 'yearly';
     return [
       '  <url>',
-      `    <loc>${ORIGIN}/${route}</loc>`,
+      // Trailing slash: that is the address Pages serves without a redirect,
+      // and it is what the page declares as its canonical.
+      `    <loc>${ORIGIN}/${route}${route ? '/' : ''}</loc>`,
       `    <priority>${priority}</priority>`,
       `    <changefreq>${changefreq}</changefreq>`,
       '  </url>',

@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
-import { ALLOWED_LANGUAGES, getPreferredLanguage } from '@shared/constants/languages.constants';
+import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { CanonicalService } from '@shared/services/canonical.service';
 import translationsEN from '@translations/en.json';
 import translationsES from '@translations/es.json';
@@ -31,7 +31,10 @@ export class AppComponent {
 
     this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
     this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
-    this.translateService.use(getPreferredLanguage());
+    // A starting point only: the route's language guard settles which language
+    // this page is actually in, before anything renders. Picking the browser's
+    // language here instead would show one language for a frame and then swap.
+    this.translateService.use(ALLOWED_LANGUAGES.ENGLISH);
 
     this.router.events
       .pipe(

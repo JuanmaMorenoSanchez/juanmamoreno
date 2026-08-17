@@ -195,11 +195,12 @@ export class ArtPieceComponent {
       const nft = this.nft();
       if (!nft?.name) return;
       const description = this.seoDescription(nft);
-      this.seo.setPageTitle(nft.name, description);
+      const image = nft.image?.cachedUrl || nft.image?.thumbnailUrl;
+      this.seo.setPageTitle(nft.name, description, image);
       this.seo.setArtworkStructuredData({
         name: nft.name,
-        url: `https://juanmamoreno.com/artwork/${nft.tokenId}`,
-        image: nft.image?.cachedUrl || nft.image?.thumbnailUrl,
+        url: `https://juanmamoreno.com/artwork/${nft.tokenId}/`,
+        image,
         description,
         year: this.getTraitValue(nft, VALIDTRAITS.YEAR),
         medium: this.translateService.instant(this.getTraitValue(nft, VALIDTRAITS.MEDIUM)),
