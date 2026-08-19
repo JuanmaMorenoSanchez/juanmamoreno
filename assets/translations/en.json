@@ -22,7 +22,8 @@
     "generative": "Generative",
     "about": "About",
     "contact": "Contact",
-    "byYear": "By Year"
+    "byYear": "By Year",
+    "texts": "Texts"
   },
   "traits": {
     "medium": "Medium",
@@ -229,6 +230,10 @@
     },
     "notFound": {
       "title": "Page not found"
+    },
+    "texts": {
+      "title": "Texts",
+      "description": "Criticism, interviews and press about the painter Juanma Moreno Sánchez."
     }
   },
   "privacy": {
@@ -251,5 +256,27 @@
   "notFound": {
     "title": "404 — Page not found",
     "message": "Oops! The page you are looking for does not exist. Try one of these instead:"
+  },
+  "texts": "Texts",
+  "textsPage": {
+    "intro": "Writing about the work, published elsewhere. Each entry links to the original: these pieces belong to the people who wrote them and the outlets that ran them.",
+    "kind": {
+      "essay": "Curatorial text",
+      "press": "Press",
+      "interview": "Interview",
+      "review": "Review"
+    },
+    "salanova": {
+      "note": "The curatorial text for El Valle Inquietante at Zunino Gallery."
+    },
+    "abc": {
+      "note": "A column on artists who were working with artificial intelligence years before it became common."
+    },
+    "selfie": {
+      "note": "An interview on painting, the internet and the images a generation makes of itself."
+    },
+    "achtung": {
+      "note": "A review of the Zunino show of fifteen paintings from a decade of work, on how the artist treats the gestures and viral images of social media as modern rituals — somewhere between the mystical and the absurd."
+    }
   }
 }
