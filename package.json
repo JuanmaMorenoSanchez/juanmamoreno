@@ -8,11 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:watch": "ng test --watch",
-    "test:e2e": "npx cypress open",
+    "test:e2e": "cypress run --spec \"cypress/e2e/juanmamoreno/**/*.cy.js\"",
     "pretty": "prettier --write .",
     "deploy": "npm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
-    "postbuild": "node scripts/generate-sitemap.mjs"
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs",
+    "test:e2e:open": "cypress open"
   },
   "private": true,
   "dependencies": {
