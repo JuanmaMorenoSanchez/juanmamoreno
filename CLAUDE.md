@@ -72,7 +72,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Project
 
-Angular 22 portfolio site for the artist Juanma Moreno Sánchez, deployed as a **static site to GitHub Pages** (`master` is the working branch; `gh-pages` is the deployed branch). A separate Cloud Run backend supplies artwork descriptions and cached thumbnails, but the app itself ships static.
+Angular 22 portfolio site for the artist Juanma Moreno Sánchez, **prerendered to static files and served from GitHub Pages** (`master` is the working branch; `gh-pages` is the deployed branch). Every route is written out as html at build time, in English and Spanish — 388 pages — so the site is readable without JavaScript. A separate Cloud Run backend supplies the catalogue, the essays about each artwork and cached thumbnails, but the app itself ships static.
 
 ## Commands
 
@@ -82,10 +82,10 @@ Angular 22 portfolio site for the artist Juanma Moreno Sánchez, deployed as a *
 - **Run one spec file:** `npx ng test --no-watch --include="src/app/domain/artwork/artwork.spec.ts"`
 - **Filter by test name:** add `--filter="<name substring>"`
 - **Lint:** `npm run lint` · **Format:** `npm run pretty` (Prettier)
-- **E2E:** `npm run test:e2e` (Cypress, opens the runner)
-- **Deploy:** `npm run deploy` (builds + pushes `dist/juanmamoreno/browser` to `gh-pages`, CNAME juanmamoreno.com)
+- **E2E:** `npm run test:e2e` (Cypress, headless, against a running `npm start`) · `npm run test:e2e:open` for the interactive runner
+- **Deploy:** a push to `master` deploys via `.github/workflows/deploy.yml`. `npm run deploy` does the same locally, for when CI is unavailable.
 
-Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma — the README is stale on this. `ng test` sometimes fails on the first invocation with a "Timeout waiting for worker to respond" / "Failed to start forks worker" error; this is an environment flake, **just re-run it**.
+Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma. `ng test` sometimes fails on the first invocation with a "Timeout waiting for worker to respond" / "Failed to start forks worker" error; this is an environment flake, **just re-run it**.
 
 ## Architecture
 
@@ -102,6 +102,10 @@ Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma 
 **State:** Akita (`@datorama/akita`). `SessionStore` / `SessionQuery` in `shared/store` hold the artwork session, persisted to localStorage via `persistState` in `main.ts`. Persistence nuance: **fallback artworks (those lacking `lastArtPiecesUpdate`) are kept in memory only and never written to localStorage** — server data always carries the timestamp and overwrites.
 
 **i18n:** ngx-translate v18 via `provideTranslateService({ fallbackLang: English })`. Dictionaries are `src/assets/translations/{en,es}.json`; English is the fallback. Add keys to both files.
+
+**The language is part of the address.** Every route exists twice, at `/about` and `/es/about`, as one route table mounted under both an English and a Spanish parent whose guards set the language before anything renders (`shared/guards/language.guard.ts`). Build links with `LanguageUrlService.link()` rather than writing `/about` — an absolute link drops a Spanish reader back into English. Watch two traps: the router reads `/es/` as the segments `["es", ""]` and matches nothing, and a breadcrumb label is looked up as a translation key, so a root key of that name must be a string and not an object.
+
+**The build verifies itself.** `npm run build` prerenders, writes the sitemap, then runs `scripts/verify-render.mjs` over every page: own canonical, own title, the hreflang triple, real content, in-language navigation, no `[object Object]`, no unresolved translation keys. It fails the build, so it also fails CI. Point it at a directory to test it: `node scripts/verify-render.mjs some/fixture`.
 
 ## Conventions
 
