@@ -48,10 +48,16 @@ export const appConfig: ApplicationConfig = {
     //   critics        the build asks with ?generate=false and the browser
     //                  without it, so the entry can never be matched — 26kB of
     //                  essay carried on every page and read by no one.
+    //   version        the point of printing it is to say which backend is
+    //                  answering now. Carried in the page it would instead say
+    //                  which backend answered while the site was being built —
+    //                  and since the two deploy in parallel, that is usually
+    //                  the previous one.
     provideClientHydration(
       withHttpTransferCacheOptions({
         filter: ({ url }) =>
-          !['nfts-snapshot', 'nft-thumbnails', 'critics'].some((path) => url.includes(path)),
+          !['nfts-snapshot', 'nft-thumbnails', 'critics'].some((path) => url.includes(path)) &&
+          !url.endsWith('/version'),
       })
     ),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
