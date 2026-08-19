@@ -1,0 +1,57 @@
+name: Deploy
+
+# Every push to master publishes the site. The checks run first and the build
+# itself verifies its own output (scripts/verify-render.mjs), so a page that
+# renders wrong fails here rather than reaching juanmamoreno.com.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  # A newer push supersedes one still deploying; two gh-pages pushes racing
+  # each other is how a half-published site happens.
+  group: deploy-site
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # pushes the built site to the gh-pages branch
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      # Prerenders 388 pages, writes the sitemap, then verifies every page has
+      # its own canonical, title, hreflang pair and content.
+      - name: Build and verify
+        run: npm run build
+
+      - name: Publish to gh-pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          npx angular-cli-ghpages \
+            --dir=dist/juanmamoreno/browser \
+            --cname=juanmamoreno.com \
+            --repo=https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git \
+            --name="github-actions[bot]" \
+            --email="github-actions[bot]@users.noreply.github.com" \
+            --no-silent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

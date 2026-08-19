@@ -109,3 +109,23 @@ Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma 
 - **Strict TypeScript**, including `noPropertyAccessFromIndexSignature` and `useDefineForClassFields: false`.
 - **Tests use Vitest globals** (`describe`/`it`/`expect` are ambient — no imports needed). `src/test-providers.ts` applies `provideZonelessChangeDetection()` to every `TestBed`. Config lives in `vitest-base.config.ts` and `tsconfig.spec.json`.
 - The `domain/generative/*` files are entirely commented-out dead code (old p5.js experiments) — ignore them.
+
+## Versioning and releases
+
+Both halves of the site carry a version and are released together. The site is
+at **1.0.0** and the backend at **1.0.0** as of the first tagged release.
+
+- **Bump `package.json` on every feature**, in whichever repo changed: patch for
+  a fix, minor for a feature, major for a break. Do it as part of the change,
+  not afterwards — the number is how a page tells you which build it is.
+- **The site's version is generated, never typed.** `scripts/write-version.mjs`
+  copies it from `package.json` into `src/version.ts` before every build, so
+  `src/version.ts` is not edited by hand.
+- **The backend serves its own** at `GET /version`, read from its
+  `package.json` at startup.
+- **Both are printed at the foot of the home page** (`v1.0.0 · api v1.0.0`), so
+  a mismatched pair is visible without opening anything.
+- **Pushing deploys.** A push to `master` here, or to `main` on the backend,
+  runs the checks and publishes (`.github/workflows/deploy.yml`). The site's
+  build verifies its own prerendered output first, so a broken page fails the
+  workflow instead of reaching juanmamoreno.com.

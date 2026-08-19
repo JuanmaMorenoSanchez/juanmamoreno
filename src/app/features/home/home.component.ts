@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { VersionService } from '@shared/services/version.service';
+import { APP_VERSION } from '../../../version';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
@@ -36,6 +38,11 @@ import { Subscription, takeLast } from 'rxjs';
   imports: [RouterLink, TranslatePipe],
 })
 export class HomeComponent implements AfterViewInit {
+  // Printed small at the foot of the page: this build, and the build of the
+  // backend answering it.
+  protected readonly appVersion = APP_VERSION;
+  protected readonly apiVersion = inject(VersionService).apiVersion;
+
   private artworkService = inject(ARTWORK_PORT);
   private heroTitle = inject(HeroTitleService);
 

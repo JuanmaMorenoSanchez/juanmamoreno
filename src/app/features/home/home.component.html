@@ -29,3 +29,12 @@
     </a>
   }
 </section>
+
+<!--
+  Which pair of builds you are looking at. Small and last, because it is for
+  the artist and anyone reporting a problem, not for a visitor reading about
+  paintings. The api half stays blank when the backend cannot be reached.
+-->
+<p class="build-versions">
+  v{{ appVersion }}@if (apiVersion()) {<span> · api v{{ apiVersion() }}</span>}
+</p>
