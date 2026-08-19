@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4201",
@@ -13,7 +13,8 @@
     "deploy": "npm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
     "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs",
-    "test:e2e:open": "cypress open"
+    "test:e2e:open": "cypress open",
+    "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs"
   },
   "private": true,
   "dependencies": {
