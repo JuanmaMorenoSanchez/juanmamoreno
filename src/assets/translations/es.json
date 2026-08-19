@@ -183,7 +183,9 @@
     "portfolio": "Generar y descargar dossier",
     "hd": "Descargar imagen en alta resolución",
     "success": "Descarga lista",
-    "error": "No se pudo generar el archivo"
+    "error": "No se pudo generar el archivo",
+    "full": "Resolución completa",
+    "medium": "Resolución media"
   },
   "links": {
     "view": "Ver repercusión de la pieza en Internet",

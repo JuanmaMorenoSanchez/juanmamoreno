@@ -1,14 +1,27 @@
 <button
   mat-icon-button
-  (click)="downloadImage()"
-  [disabled]="isDownloading"
+  [matMenuTriggerFor]="sizeMenu"
+  [disabled]="isDownloading()"
   [attr.aria-label]="'download.hd' | translate"
   [matTooltip]="'download.hd' | translate"
   matTooltipPosition="below"
 >
-  @if (!isDownloading) {
+  @if (!isDownloading()) {
     <mat-icon>download</mat-icon>
   } @else {
     <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
   }
 </button>
+
+<mat-menu #sizeMenu="matMenu">
+  <button mat-menu-item (click)="downloadFull()">
+    <span>{{ 'download.full' | translate }}</span>
+  </button>
+  <!-- The numbers are in the label on purpose: this option exists to satisfy a
+       submission requirement, and the person using it is checking it against a
+       spec sheet. -->
+  <button mat-menu-item (click)="downloadMedium()">
+    <span>{{ 'download.medium' | translate }}</span>
+    <small class="size-hint">{{ minSide }} px · {{ maxMegabytes }} MB</small>
+  </button>
+</mat-menu>

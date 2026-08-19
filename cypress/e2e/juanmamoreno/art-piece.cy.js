@@ -29,6 +29,19 @@ describe('artwork page', () => {
     cy.get('app-artwork-critic').should('exist');
   });
 
+  // Both sizes have to be reachable. What the medium file actually measures is
+  // covered by the unit tests on mediumImageSize and by measuring a real
+  // download; this guards the way in to it.
+  it('offers both download sizes', () => {
+    cy.get('app-download-button button').click();
+    cy.get('.mat-mdc-menu-panel').should('be.visible');
+    cy.get('.mat-mdc-menu-panel button').should('have.length', 2);
+    cy.get('.mat-mdc-menu-panel').should('contain.text', 'Full resolution');
+    cy.get('.mat-mdc-menu-panel')
+      .should('contain.text', 'Medium resolution')
+      .and('contain.text', '2500 px');
+  });
+
   it('offers a way to enquire about the piece', () => {
     cy.get('app-quote-button button').should('exist').click();
     cy.get('mat-dialog-container, app-quote-dialog', { timeout: 10000 }).should('exist');
