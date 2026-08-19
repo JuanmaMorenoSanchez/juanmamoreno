@@ -3,7 +3,7 @@
 // Visual smoke check for the Canvas 2D generative sketches. Verifies the
 // canvas exists, is sized, and is actually painting non-blank pixels, and
 // captures screenshots for manual review.
-//   npx cypress run --spec cypress/e2e/juanmamoreno/generative.cy.js --config baseUrl=http://127.0.0.1:4201
+//   npm start   then   npm run test:e2e
 
 function assertCanvasHasColor(win) {
   const canvas = win.document.querySelector('canvas.sketch-canvas');

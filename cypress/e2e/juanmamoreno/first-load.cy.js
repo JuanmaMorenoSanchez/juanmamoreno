@@ -3,7 +3,7 @@
 // Regression test: on a first visit (empty storage) the bundled fallback
 // artworks must render immediately, without waiting for the slow API.
 // Run against a local dev server, e.g.:
-//   npx cypress run --spec cypress/e2e/juanmamoreno/first-load.cy.js --config baseUrl=http://127.0.0.1:4200
+//   npm start   then   npm run test:e2e
 describe('first load with empty storage', () => {
   it('renders fallback artworks while the nfts-snapshot call is still pending', () => {
     cy.intercept('GET', '**/nfts-snapshot', (req) => {
