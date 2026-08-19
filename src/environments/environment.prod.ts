@@ -3,5 +3,5 @@ export const environment = {
   homeTokenId: '2',
   adminAdress: '0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9',
   backendUrl: 'https://backend.juanmamoreno.com/',
-  backendUrlFallback: 'https://backend.juanmamoreno.com/',
+  backendUrlFallback: 'https://juanmamoreno-backend-164035848667.europe-west1.run.app/',
 };
