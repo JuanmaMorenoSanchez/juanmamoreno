@@ -183,7 +183,9 @@
     "portfolio": "Generate and download portfolio",
     "hd": "Download high resolution image",
     "success": "Download ready",
-    "error": "Could not generate the file"
+    "error": "Could not generate the file",
+    "full": "Full resolution",
+    "medium": "Medium resolution"
   },
   "links": {
     "view": "View where this artwork appears on the Internet",
