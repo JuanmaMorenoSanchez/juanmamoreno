@@ -1,0 +1,80 @@
+@use '../../../styles/tokens';
+@use '../../../styles/breakpoints' as bp;
+
+.texts-intro {
+  max-width: 34em;
+  color: var(--catalog-soft);
+}
+
+.texts-list {
+  list-style: none;
+  margin: tokens.$spacing-xl 0 6rem;
+  padding: 0;
+}
+
+// A reference, not a card: a rule above each entry, the way a bibliography
+// separates items, rather than a box around it.
+.text-entry {
+  padding: tokens.$spacing-lg 0;
+  border-top: 1px solid var(--catalog-frame-bg);
+
+  &:last-child {
+    border-bottom: 1px solid var(--catalog-frame-bg);
+  }
+}
+
+.text-meta {
+  display: flex;
+  gap: tokens.$spacing-md;
+  align-items: baseline;
+  margin: 0 0 tokens.$spacing-xs;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--catalog-faint);
+}
+
+.text-year {
+  font-variant-numeric: tabular-nums;
+  color: var(--catalog-accent);
+}
+
+.text-title {
+  margin: 0 0 tokens.$spacing-xs;
+  font-size: bp.fluid-size(1.05rem, 1.3rem);
+  font-weight: 400;
+  line-height: 1.35;
+  text-wrap: balance;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--catalog-faint);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-color: var(--catalog-accent);
+    }
+  }
+}
+
+.text-source {
+  margin: 0 0 tokens.$spacing-sm;
+  font-size: 0.9rem;
+  color: var(--catalog-soft);
+
+  .text-author::after {
+    content: ' · ';
+    color: var(--catalog-faint);
+  }
+}
+
+.text-note {
+  max-width: 40em;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--catalog-soft);
+}

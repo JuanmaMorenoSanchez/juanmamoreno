@@ -1,0 +1,26 @@
+<div class="container margin-top">
+  <h1 class="catalog-heading">{{ 'texts' | translate }}</h1>
+  <p class="texts-intro">{{ 'textsPage.intro' | translate }}</p>
+
+  <ol class="texts-list">
+    @for (text of texts; track text.url) {
+      <li class="text-entry">
+        <p class="text-meta">
+          <span class="text-year">{{ text.year }}</span>
+          <span class="text-kind">{{ text.kind | translate }}</span>
+        </p>
+        <h2 class="text-title">
+          <!-- Off-site by definition, so it opens away from here. -->
+          <a [href]="text.url" target="_blank" rel="noopener noreferrer">{{ text.title }}</a>
+        </h2>
+        <p class="text-source">
+          @if (text.author) {
+            <span class="text-author">{{ text.author }}</span>
+          }
+          <span class="text-publication">{{ text.publication }}</span>
+        </p>
+        <p class="text-note">{{ text.note | translate }}</p>
+      </li>
+    }
+  </ol>
+</div>

@@ -22,7 +22,8 @@
     "generative": "Generativo",
     "about": "Acerca de",
     "contact": "Contacto",
-    "byYear": "Por año"
+    "byYear": "Por año",
+    "texts": "Textos"
   },
   "traits": {
     "medium": "Técnica",
@@ -229,6 +230,10 @@
     },
     "notFound": {
       "title": "Página no encontrada"
+    },
+    "texts": {
+      "title": "Textos",
+      "description": "Crítica, entrevistas y prensa sobre el pintor Juanma Moreno Sánchez."
     }
   },
   "privacy": {
@@ -251,5 +256,27 @@
   "notFound": {
     "title": "404 — Página no encontrada",
     "message": "¡Vaya! La página que buscas no existe. Prueba con una de estas:"
+  },
+  "texts": "Textos",
+  "textsPage": {
+    "intro": "Textos sobre la obra, publicados en otros medios. Cada entrada enlaza al original: son de quienes los escribieron y de los medios que los publicaron.",
+    "kind": {
+      "essay": "Texto curatorial",
+      "press": "Prensa",
+      "interview": "Entrevista",
+      "review": "Reseña"
+    },
+    "salanova": {
+      "note": "El texto curatorial de la exposición El Valle Inquietante, en la Galería Zunino."
+    },
+    "abc": {
+      "note": "Una columna sobre artistas que trabajaban con inteligencia artificial años antes de que se generalizara."
+    },
+    "selfie": {
+      "note": "Una entrevista sobre pintura, internet y las imágenes que una generación hace de sí misma."
+    },
+    "achtung": {
+      "note": "Una reseña de la exposición en Zunino, quince cuadros de una década de trabajo, sobre cómo el artista trata los gestos y las imágenes virales de las redes como rituales contemporáneos, entre lo místico y lo absurdo."
+    }
   }
 }

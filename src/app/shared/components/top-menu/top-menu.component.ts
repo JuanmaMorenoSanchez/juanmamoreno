@@ -11,6 +11,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SKETCH_LIST } from '@features/generative/sketches/registry';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES, storeLanguageChoice } from '@shared/constants/languages.constants';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ResponsiveService } from '@shared/services/responsive.service';
 
@@ -40,6 +41,9 @@ export class TopMenuComponent {
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
   private router = inject(Router);
+  // Public: the template builds every link through it, so a Spanish reader
+  // clicking "About" lands on /es/about rather than back in English.
+  protected lang = inject(LanguageUrlService);
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 
@@ -78,6 +82,12 @@ export class TopMenuComponent {
     // Remembered so the first-visit redirect stops second-guessing them: a
     // Spanish browser asking for English must not be sent back to /es.
     storeLanguageChoice(isSpanishUrl ? ALLOWED_LANGUAGES.ENGLISH : ALLOWED_LANGUAGES.SPANISH);
-    this.router.navigateByUrl(isSpanishUrl ? `/${bare}` : `/es/${bare}`);
+    // Trailing slash stripped deliberately. From the home page `bare` is empty,
+    // so the naive target is "/es/", which the router reads as the two segments
+    // ["es", ""] and fails to match, landing the reader on the 404. Opening
+    // "/es/" as a link works only because the browser normalises it away before
+    // the router ever sees it, which is why this only broke on the button.
+    const target = (isSpanishUrl ? `/${bare}` : `/es/${bare}`).replace(/\/+$/, '') || '/';
+    this.router.navigateByUrl(target);
   }
 }

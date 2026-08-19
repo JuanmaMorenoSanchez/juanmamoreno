@@ -126,7 +126,10 @@ export class BreadcrumbComponent implements OnInit {
   ): Array<BreadCrumb> {
     let label: string =
       route.routeConfig && route.routeConfig.data ? route.routeConfig.data['breadcrumb'] : '';
-    let path = route.routeConfig && route.routeConfig.data ? route.routeConfig.path : '';
+    // The path is taken whether or not the route carries data. The language
+    // routes ("es") carry none, and skipping them dropped the prefix from every
+    // breadcrumb url, so a Spanish reader clicking the trail left Spanish.
+    let path = route.routeConfig ? route.routeConfig.path : '';
 
     const lastRoutePart = path ? path.split('/').pop() : '';
     const isDynamicRoute = lastRoutePart!.startsWith(':');

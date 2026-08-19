@@ -50,6 +50,14 @@ const contentRoutes: Routes = [
     data: { description: 'seo.cv.description' },
   },
   {
+    path: 'texts',
+    loadComponent: () => import('@features/texts/texts.component').then((m) => m.TextsComponent),
+    title: 'seo.texts.title',
+    // No breadcrumb: the page is a single flat list with nowhere to descend to,
+    // so a trail from Home to here says nothing the menu has not already said.
+    data: { description: 'seo.texts.description', hideBreadcrumb: true },
+  },
+  {
     path: 'about',
     loadComponent: () =>
       import('@features/statement/about.component').then((m) => m.AboutComponent),

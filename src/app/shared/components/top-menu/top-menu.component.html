@@ -9,7 +9,7 @@
     <mat-toolbar color="primary">
       <mat-toolbar-row>
         @if (!heroTitleVisible()) {
-          <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="['/']">
+          <button aria-label="Juanma Moreno Sánchez" mat-button [routerLink]="lang.link()">
             <p class="catalog-heading brand">Juanma Moreno Sánchez</p>
           </button>
         }
@@ -46,11 +46,14 @@
       {{ 'menu.generative' | translate }}
     </button>
   }
-  <button [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="['/about']">
+  <button [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="lang.link('about')">
     {{ 'menu.about' | translate }}
   </button>
-  <button aria-label="CV" mat-button [routerLink]="['/cv']">CV</button>
-  <button [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="['/contact']">
+  <button aria-label="CV" mat-button [routerLink]="lang.link('cv')">CV</button>
+  <button [attr.aria-label]="'menu.texts' | translate" mat-button [routerLink]="lang.link('texts')">
+    {{ 'menu.texts' | translate }}
+  </button>
+  <button [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="lang.link('contact')">
     {{ 'menu.contact' | translate }}
   </button>
   <button aria-label="Language switcher" mat-button (click)="changeLanguage()">
@@ -59,7 +62,7 @@
 </ng-template>
 
 <mat-menu #paintingMenu="matMenu">
-  <button [attr.aria-label]="'menu.allPaintings' | translate" mat-menu-item routerLink="/artworks">
+  <button [attr.aria-label]="'menu.allPaintings' | translate" mat-menu-item [routerLink]="lang.link('artworks')">
     {{ 'menu.allPaintings' | translate }}
   </button>
   <button
@@ -76,7 +79,7 @@
     <button
       [attr.aria-label]="year"
       mat-menu-item
-      [routerLink]="['/artworks']"
+      [routerLink]="lang.link('artworks')"
       [queryParams]="{ years: year }"
     >
       {{ year }}
@@ -86,7 +89,7 @@
 
 <mat-menu #generativeMenu="matMenu">
   @for (piece of generativePieces; track piece.id) {
-    <button [attr.aria-label]="piece.label" mat-menu-item [routerLink]="['/generative', piece.id]">
+    <button [attr.aria-label]="piece.label" mat-menu-item [routerLink]="lang.link('generative/' + piece.id)">
       {{ piece.label }}
     </button>
   }
