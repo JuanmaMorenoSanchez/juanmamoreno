@@ -15,7 +15,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
@@ -26,6 +26,7 @@ import { BackButtonComponent } from '@shared/components/back-button/back-button.
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
@@ -68,6 +69,7 @@ export class ArtPieceComponent {
   private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
   private seo = inject(SeoTitleStrategy);
+  private language = inject(LanguageUrlService);
 
   readonly validTraits = VALIDTRAITS;
   readonly numberOfViewMoreColumns: Signal<number> = toSignal(
@@ -78,7 +80,7 @@ export class ArtPieceComponent {
     this.route.paramMap.pipe(
       map((paramMap) => paramMap.get('id')!),
       switchMap((id: string) => {
-        return this.artworkService.getSameArtThanObservable(id);
+        return this.artworkService.getArtworkViewsObservable(id);
       })
     ),
     { initialValue: [] }
@@ -99,20 +101,17 @@ export class ArtPieceComponent {
   readonly nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()]);
   readonly tokenId = computed(() => this.nft()?.tokenId);
 
-  readonly currentLang = signal(this.toShortLang(this.translateService.getCurrentLang() ?? ''));
-
   readonly descriptions = signal<Descriptions | null>(null);
   readonly description = computed(() => {
     const descriptions = this.descriptions();
-    const currentLang = this.currentLang();
-    return this.getShortDescription(descriptions, currentLang);
+    return this.shortDescription(descriptions, this.language.contentLanguage());
   });
 
-  readonly thereAreMoreInYear: Signal<boolean> = computed(() => {
+  readonly hasMoreFromSameYear: Signal<boolean> = computed(() => {
     const year = this.artworkService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
-    return this.artworkService.getFullNftLenghtByYear(year) > 1;
+    return this.artworkService.countCatalogueArtworksInYear(year) > 1;
   });
-  readonly getSameYearListFilter: Signal<NftFilters> = computed(() => ({
+  readonly sameYearFilter: Signal<NftFilters> = computed(() => ({
     years: [this.getTraitValue(this.nft(), VALIDTRAITS.YEAR)],
     idsToExclude: this.nfts().map((n) => n.tokenId),
   }));
@@ -166,10 +165,6 @@ export class ArtPieceComponent {
   );
 
   constructor() {
-    this.translateService.onLangChange.pipe(takeUntilDestroyed()).subscribe(({ lang }) => {
-      this.currentLang.set(this.toShortLang(lang));
-    });
-
     effect(() => {
       this.displayingIndex.set(this.defaultDisplayIndex() || 0);
     });
@@ -230,13 +225,9 @@ export class ArtPieceComponent {
     return this.artworkService.getTraitValue(nft, trait);
   }
 
-  private toShortLang(lang: string): string {
-    return lang === 'es-ES' ? 'es' : 'en';
-  }
-
-  private getShortDescription(descriptions: Descriptions | null, lang: string): string {
-    if (!descriptions) return NO_DESCRIPTION;
-    return descriptions.translated.find((t) => t.lang === lang)?.shortDesc || NO_DESCRIPTION;
+  private shortDescription(descriptions: Descriptions | null, language: string): string {
+    const match = descriptions?.translated.find((entry) => entry.lang === language);
+    return match?.shortDesc || NO_DESCRIPTION;
   }
 
   // Advances to the next artwork in the year sequence; at the last piece of a

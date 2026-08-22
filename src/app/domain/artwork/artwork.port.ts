@@ -7,10 +7,10 @@ import { Descriptions } from './descriptions.entity';
 export interface ArtworkPort extends Artwork {
   getArtPiecesObservable(): Observable<Nft[]>;
   getNftByIdObservable(id: string): Observable<Nft | null>;
-  getSameArtThanObservable(tokenId: string): Observable<Array<Nft>>;
+  getArtworkViewsObservable(tokenId: string): Observable<Array<Nft>>;
   getAvailableOptimalUrl(nft: Nft): Observable<string>;
   getProgressiveImageUrls(nft: Nft, thumbnailOnly?: boolean): Observable<string>;
-  getFullNftLenghtByYear(year: string): number;
+  countCatalogueArtworksInYear(year: string): number;
   getAvailableYears(): Set<number>;
   getLinks(tokenId: string): Observable<string[]>;
   saveNftsLocally(nfts: Array<Nft>): void;

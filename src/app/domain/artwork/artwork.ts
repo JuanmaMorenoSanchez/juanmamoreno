@@ -2,6 +2,8 @@ import { SORT } from '@shared/constants/order.constants';
 import { VALIDTRAITS, VIEW_TYPES } from './artwork.constants';
 import { Nft, NftImage } from './artwork.entity';
 
+const FALLBACK_ASPECT_RATIO = 0.8;
+
 export class Artwork {
   getTraitValue(nft: Nft, trait: VALIDTRAITS): string {
     try {
@@ -92,6 +94,21 @@ export class Artwork {
     return parse(VALIDTRAITS.HEIGHT) + parse(VALIDTRAITS.WIDTH);
   }
 
+  /**
+   * Width over height, from the artwork's own measurements.
+   *
+   * Used to reserve a frame at the right shape before any image has loaded.
+   * Falls back to a portrait-ish guess when the traits are missing or
+   * unparseable, since a wrong shape reserves less badly than none at all.
+   */
+  getAspectRatio(nft: Nft | undefined): number {
+    if (!nft) return FALLBACK_ASPECT_RATIO;
+
+    const width = parseFloat(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
+    const height = parseFloat(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));
+    return width > 0 && height > 0 ? width / height : FALLBACK_ASPECT_RATIO;
+  }
+
   getNftById(id: string, nfts: Array<Nft>): Nft | null {
     return nfts.find(({ tokenId }) => id === tokenId) || null;
   }
@@ -100,7 +117,7 @@ export class Artwork {
     return nfts.filter(({ name }) => name === nameToSearch);
   }
 
-  getNftLenghtByYear(year: string, nfts: Array<Nft>): number {
+  countArtworksInYear(year: string, nfts: Array<Nft>): number {
     return nfts.filter((nft) => this.getTraitValue(nft, VALIDTRAITS.YEAR) === year).length;
   }
 

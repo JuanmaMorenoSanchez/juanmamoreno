@@ -65,7 +65,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       return of(transferred);
     }
 
-    if (!this.itIsNeccesaryToFetch()) {
+    if (!this.shouldRefetchCatalogue()) {
       return this.sessionQuery.getArtPiecesObservable;
     }
 
@@ -167,7 +167,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     return this.sessionQuery.getArtPiecesObservable.pipe(map((nfts) => this.getNftById(id, nfts)));
   }
 
-  getSameArtThanObservable(tokenId: string): Observable<Array<Nft>> {
+  getArtworkViewsObservable(tokenId: string): Observable<Array<Nft>> {
     return this.getNftByIdObservable(tokenId).pipe(
       switchMap((nft) => {
         if (!nft) {
@@ -184,8 +184,8 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     );
   }
 
-  getFullNftLenghtByYear(year: string): number {
-    return this.getNftLenghtByYear(year, this.sessionQuery.selectArtPieces);
+  countCatalogueArtworksInYear(year: string): number {
+    return this.countArtworksInYear(year, this.sessionQuery.selectArtPieces);
   }
 
   getAvailableOptimalUrl(nft: Nft): Observable<string> {
@@ -319,7 +319,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       );
   }
 
-  private itIsNeccesaryToFetch(): boolean {
+  private shouldRefetchCatalogue(): boolean {
     const daysBeforeExpireData = 7;
     return (
       !this.sessionQuery.selectArtPieces.length ||

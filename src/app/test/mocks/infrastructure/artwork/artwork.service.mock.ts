@@ -14,7 +14,7 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return of(null);
   }
 
-  getSameArtThanObservable(): Observable<Array<Nft>> {
+  getArtworkViewsObservable(): Observable<Array<Nft>> {
     return of([]);
   }
 
@@ -26,7 +26,7 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return of(nft?.image?.thumbnailUrl || '');
   }
 
-  getFullNftLenghtByYear(): number {
+  countCatalogueArtworksInYear(): number {
     return 0;
   }
 

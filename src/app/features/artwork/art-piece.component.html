@@ -55,13 +55,13 @@
     </div>
     <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
   }
-  @if (thereAreMoreInYear()) {
+  @if (hasMoreFromSameYear()) {
     <mat-divider class="separator"></mat-divider>
     <p>{{ 'moreOn' | translate }} {{ nft() | trait: validTraits.YEAR }}</p>
     <app-art-pieces-list
       [viewAsWidget]="true"
       [numberOfCols]="numberOfViewMoreColumns()"
-      [nftFilters]="getSameYearListFilter()"
+      [nftFilters]="sameYearFilter()"
     >
     </app-art-pieces-list>
   }

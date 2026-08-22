@@ -1,14 +1,12 @@
 /**
- * The medium-resolution download: at least 2500 px, at most 5 MB.
+ * The medium download: at least 2500 px, at most 5 MB.
  *
- * "At least 2500 px" is read as the *shorter* side, so both dimensions clear
- * 2500 whichever way the requirement was meant. The catalogue's originals are
- * around 3000-4500 px on the short side, so this is a genuine downscale rather
- * than a wish.
+ * The minimum is applied to the *shorter* side, so both dimensions clear it
+ * whichever way the requirement was meant.
  */
 export const MEDIUM_MIN_SIDE = 2500;
 
-/** 5 MB counted as 5,000,000 bytes, the smaller of the two readings. */
+/** 5 MB as 5,000,000 bytes, the stricter of the two readings. */
 export const MEDIUM_MAX_BYTES = 5_000_000;
 
 export interface ImageSize {
@@ -17,11 +15,8 @@ export interface ImageSize {
 }
 
 /**
- * The size a medium download should be drawn at.
- *
- * Never enlarges: an original already below the minimum is handed over as it
- * is, because inventing pixels would meet the number and not the requirement
- * behind it. Rounds up, so a rounding error cannot land a side on 2499.
+ * Never enlarges: inventing pixels would meet the number and not the
+ * requirement behind it. Rounds up, so no side can land on 2499.
  */
 export function mediumImageSize({ width, height }: ImageSize): ImageSize & { resized: boolean } {
   if (width <= 0 || height <= 0) return { width, height, resized: false };
@@ -39,13 +34,7 @@ export function mediumImageSize({ width, height }: ImageSize): ImageSize & { res
   };
 }
 
-/**
- * Whether a produced file still needs another pass.
- *
- * Below the minimum the size cap is dropped rather than shrinking the picture
- * further: the requirement asks for 2500 px and 5 MB, and of the two, silently
- * failing the pixel floor is the one that would get the image rejected.
- */
+/** Of the two limits the pixel floor is the harder one: a small file at 2499 px is rejected. */
 export function meetsMediumRequirements(bytes: number, size: ImageSize): boolean {
   return bytes <= MEDIUM_MAX_BYTES && Math.min(size.width, size.height) >= MEDIUM_MIN_SIDE;
 }

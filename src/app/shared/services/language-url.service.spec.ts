@@ -65,6 +65,14 @@ describe('LanguageUrlService', () => {
     expect(service.inSpanish()).toBe(false);
   });
 
+  it('reports the content language the backend tags its text with', async () => {
+    await at('/');
+    expect(service.contentLanguage()).toBe('en');
+
+    await at('/es');
+    expect(service.contentLanguage()).toBe('es');
+  });
+
   // The menu renders before the first navigation resolves. Reading the url once
   // baked English links into every prerendered Spanish page.
   it('updates once navigation lands, so links built early are corrected', async () => {

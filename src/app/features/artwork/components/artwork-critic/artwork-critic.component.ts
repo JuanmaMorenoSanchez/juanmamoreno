@@ -1,10 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, PLATFORM_ID, computed, inject, input } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtCritic } from '@domain/artwork/critic.entity';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { filter, startWith, switchMap, take, timer } from 'rxjs';
 
 // The essay is not written on demand: the backend writes it when the artwork is
@@ -21,14 +22,10 @@ const POLL_INTERVAL_MS = 30_000;
 })
 export class ArtworkCriticComponent {
   private artworkService = inject(ARTWORK_PORT);
-  private translateService = inject(TranslateService);
+  private language = inject(LanguageUrlService);
   protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly tokenId = input.required<string>();
-
-  private readonly currentLang = signal(
-    this.toShortLang(this.translateService.getCurrentLang() ?? '')
-  );
 
   private readonly critic = toSignal(
     toObservable(this.tokenId).pipe(
@@ -53,21 +50,10 @@ export class ArtworkCriticComponent {
     { initialValue: null }
   );
 
-  // The essay in the language the site is being read in, falling back to
-  // whichever translation exists rather than showing nothing.
+  // Falls back to whichever translation exists rather than showing nothing.
   readonly translated = computed(() => {
-    const translated = this.critic()?.translated ?? [];
-    const lang = this.currentLang();
-    return translated.find((entry) => entry.lang === lang) ?? translated[0] ?? null;
+    const translations = this.critic()?.translated ?? [];
+    const language = this.language.contentLanguage();
+    return translations.find((entry) => entry.lang === language) ?? translations[0] ?? null;
   });
-
-  constructor() {
-    this.translateService.onLangChange.pipe(takeUntilDestroyed()).subscribe(({ lang }) => {
-      this.currentLang.set(this.toShortLang(lang));
-    });
-  }
-
-  private toShortLang(lang: string): string {
-    return lang === 'es-ES' ? 'es' : 'en';
-  }
 }

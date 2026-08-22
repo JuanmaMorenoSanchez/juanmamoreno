@@ -33,26 +33,15 @@ export const appConfig: ApplicationConfig = {
       useClass: ArtworkInfraService, // ArtworkInfraService is the implementation for the ArtworkPort. Decopupled. We call the abstraction, not the implementation.
     },
     provideZonelessChangeDetection(),
-    // The pages are prerendered, and without this Angular throws that markup
-    // away on bootstrap and builds the page again from nothing — the reader
-    // sees the page, then a blank, then the page. Hydration reuses the served
-    // DOM instead.
-    //
-    // What the build fetched travels with the page, except for three things
-    // that would only make the page heavier:
-    //   nfts-snapshot  ~430kB of raw catalogue metadata, on every one of 386
-    //                  pages, to spare a request the app already caches in
-    //                  localStorage.
-    //   nft-thumbnails the preview is already inlined in the markup as a data
-    //                  uri; transferring it stores the same image twice.
-    //   critics        the build asks with ?generate=false and the browser
-    //                  without it, so the entry can never be matched — 26kB of
-    //                  essay carried on every page and read by no one.
-    //   version        the point of printing it is to say which backend is
-    //                  answering now. Carried in the page it would instead say
-    //                  which backend answered while the site was being built —
-    //                  and since the two deploy in parallel, that is usually
-    //                  the previous one.
+    // Without hydration Angular discards the prerendered markup and rebuilds
+    // every page from nothing, which the reader sees as a blank between two
+    // renders. Responses the build fetched travel with the page, except:
+    //   nfts-snapshot   430kB of catalogue on every page, already in localStorage
+    //   nft-thumbnails  already inlined in the markup as a data uri
+    //   critics         the build asks with ?generate=false, the browser without
+    //                   it, so the entry can never match
+    //   version         must report the backend answering now, not the one that
+    //                   answered while the site was building
     provideClientHydration(
       withHttpTransferCacheOptions({
         filter: ({ url }) =>

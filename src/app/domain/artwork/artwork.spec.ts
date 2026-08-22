@@ -202,7 +202,7 @@ describe('Artwork', () => {
     });
   });
 
-  // ── getNftById / getArtByTitle / getNftLenghtByYear ──────────────────────
+  // ── getNftById / getArtByTitle / countArtworksInYear ──────────────────────
   describe('lookup helpers', () => {
     const nfts = [nft('1', [year('2020')], { name: 'A' }), nft('2', [year('2021')], { name: 'B' })];
 
@@ -216,9 +216,9 @@ describe('Artwork', () => {
       expect(art.getArtByTitle('missing', nfts)).toEqual([]);
     });
 
-    it('getNftLenghtByYear counts matches for a year string', () => {
-      expect(art.getNftLenghtByYear('2020', nfts)).toBe(1);
-      expect(art.getNftLenghtByYear('1999', nfts)).toBe(0);
+    it('countArtworksInYear counts matches for a year string', () => {
+      expect(art.countArtworksInYear('2020', nfts)).toBe(1);
+      expect(art.countArtworksInYear('1999', nfts)).toBe(0);
     });
   });
 
@@ -345,5 +345,44 @@ describe('Artwork', () => {
       expect(art.getNftQualityUrls(undefined as unknown as NftImage)).toEqual([]);
       expect(art.getNftQualityUrl(undefined as unknown as NftImage)).toBe('');
     });
+  });
+});
+
+describe('getAspectRatio', () => {
+  const art = new Artwork();
+  const withSize = (width: string, height: string) =>
+    ({
+      raw: {
+        metadata: {
+          attributes: [
+            { trait_type: VALIDTRAITS.WIDTH, value: width },
+            { trait_type: VALIDTRAITS.HEIGHT, value: height },
+          ],
+        },
+      },
+    }) as unknown as Nft;
+
+  it('is width over height', () => {
+    expect(art.getAspectRatio(withSize('100', '50'))).toBe(2);
+    expect(art.getAspectRatio(withSize('50', '100'))).toBe(0.5);
+  });
+
+  // The frame is reserved from this before any image loads, so a NaN or a zero
+  // would collapse the box rather than merely getting the shape wrong.
+  it('falls back to a usable shape when the measurements are missing', () => {
+    expect(art.getAspectRatio(undefined)).toBeGreaterThan(0);
+    expect(art.getAspectRatio(withSize('XX', 'XX'))).toBeGreaterThan(0);
+    expect(art.getAspectRatio(withSize('0', '0'))).toBeGreaterThan(0);
+  });
+
+  it('never returns NaN', () => {
+    for (const [w, h] of [
+      ['', ''],
+      ['abc', '10'],
+      ['10', 'abc'],
+      ['-5', '10'],
+    ]) {
+      expect(Number.isNaN(art.getAspectRatio(withSize(w, h)))).toBe(false);
+    }
   });
 });

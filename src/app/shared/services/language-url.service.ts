@@ -4,22 +4,17 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 /**
- * Builds links that keep the reader in the language they are reading.
- *
- * Every page exists twice, at /about and /es/about, and a link written as
- * "/about" quietly throws a Spanish reader back into English halfway through
- * the site. Routes are read from the address, so the prefix comes from there.
- *
- * The language is a signal rather than a read of `router.url` at call time.
- * The menu lives in the root component and renders before the route activates,
- * so a plain read sees "/" and the links are built English — and nothing marks
- * them dirty afterwards, which baked the wrong prefix into every prerendered
- * Spanish page. A signal makes the change detection happen.
+ * Links that keep the reader in the language they are reading. Every page
+ * exists at both /about and /es/about, and a link written as "/about" drops a
+ * Spanish reader back into English.
  */
 @Injectable({ providedIn: 'root' })
 export class LanguageUrlService {
   private router = inject(Router);
 
+  // A signal, not a read of router.url at call time: the menu lives in the root
+  // component and renders before the route activates, so a plain read sees "/"
+  // and nothing marks the links dirty afterwards.
   private readonly url = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -33,12 +28,14 @@ export class LanguageUrlService {
     return path === '/es' || path.startsWith('/es/');
   });
 
+  /** The code the backend tags its translated text with. */
+  readonly contentLanguage = computed<'en' | 'es'>(() => (this.inSpanish() ? 'es' : 'en'));
+
   /**
    * `link('about')` gives "/about" in English and "/es/about" in Spanish.
    *
-   * A string rather than the usual segment array because the trailing slash
-   * matters: the router reads "/es/" as the two segments ["es", ""], matches
-   * no route, and shows the 404 page.
+   * Returns a string, and strips the trailing slash: the router reads "/es/" as
+   * the segments ["es", ""], matches no route, and shows the 404 page.
    */
   link(path = ''): string {
     const clean = path.replace(/^\/+|\/+$/g, '');

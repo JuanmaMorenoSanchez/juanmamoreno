@@ -13,7 +13,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { VersionService } from '@shared/services/version.service';
 import { APP_VERSION } from '../../../version';
-import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SORT } from '@shared/constants/order.constants';
@@ -79,22 +78,12 @@ export class HomeComponent implements AfterViewInit {
   readonly fullLoaded = signal(false);
   private hiResSub?: Subscription;
 
-  // Aspect ratio reserves the hero's box at full size before any (low-res)
-  // image arrives — otherwise the frame would shrink to the thumbnail's tiny
-  // natural size. Estimated from the artwork's traits, then corrected to the
-  // real pixel ratio once the full image decodes.
+  // Reserves the hero at full size before the low-res preview arrives, which
+  // would otherwise shrink the frame to the thumbnail's natural size.
   private readonly decodedAspect = signal<number | null>(null);
-  readonly featuredAspect = computed(() => {
-    const decoded = this.decodedAspect();
-    if (decoded) return decoded;
-    const nft = this.featured();
-    if (!nft) return 0.8;
-    const width = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH));
-    const height = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT));
-    return width > 0 && height > 0 ? width / height : 0.8;
-  });
-  // Fit the box within 90vw, 34rem, and 60vh of height (the last expressed as a
-  // width via the aspect ratio) — the same bounds the previous hero used.
+  readonly featuredAspect = computed(
+    () => this.decodedAspect() ?? this.artworkService.getAspectRatio(this.featured())
+  );
   readonly frameWidth = computed(() => `min(90vw, 34rem, calc(60vh * ${this.featuredAspect()}))`);
 
   constructor() {

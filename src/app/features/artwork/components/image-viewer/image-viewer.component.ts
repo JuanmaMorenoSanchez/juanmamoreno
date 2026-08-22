@@ -17,7 +17,6 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
-import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { map, of, startWith, switchMap } from 'rxjs';
@@ -76,20 +75,12 @@ export class ImageViewerComponent {
   // after the user has already navigated away are discarded.
   private loadToken = 0;
 
-  // Trait dimensions reserve the frame's footprint before any image arrives,
-  // but photographed files sometimes crop slightly differently — once the
-  // hi-res file decodes, its real pixel ratio replaces the estimate so the
-  // frame never letterboxes the loaded image.
+  // Photographed files sometimes crop slightly differently from the measured
+  // artwork, so the real ratio replaces the estimate once a file decodes.
   private readonly decodedAspectRatio = signal<number | null>(null);
-  readonly aspectRatio = computed(() => {
-    const decoded = this.decodedAspectRatio();
-    if (decoded) return decoded;
-    const nft = this.currentNft();
-    if (!nft) return 0.8;
-    const width = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH));
-    const height = parseFloat(this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT));
-    return width > 0 && height > 0 ? width / height : 0.8;
-  });
+  readonly aspectRatio = computed(
+    () => this.decodedAspectRatio() ?? this.artworkService.getAspectRatio(this.currentNft())
+  );
   readonly frameWidth = computed(() => `min(100%, calc(100vh * ${this.aspectRatio()}))`);
 
   // Brief directional nudge on prev/next so navigating between artworks reads
