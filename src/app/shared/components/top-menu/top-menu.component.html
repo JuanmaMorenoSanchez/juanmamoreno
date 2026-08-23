@@ -56,8 +56,15 @@
   <button [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="lang.link('contact')">
     {{ 'menu.contact' | translate }}
   </button>
-  <button aria-label="Language switcher" mat-button (click)="changeLanguage()">
+  <button
+    aria-label="Language switcher"
+    mat-button
+    [matMenuTriggerFor]="languageMenu"
+    [attr.aria-expanded]="languageTrigger.menuOpen"
+    #languageTrigger="matMenuTrigger"
+  >
     {{ currentLangLabel }}
+    <mat-icon>arrow_drop_down</mat-icon>
   </button>
 </ng-template>
 
@@ -91,6 +98,21 @@
   @for (piece of generativePieces; track piece.id) {
     <button [attr.aria-label]="piece.label" mat-menu-item [routerLink]="lang.link('generative/' + piece.id)">
       {{ piece.label }}
+    </button>
+  }
+</mat-menu>
+
+<!-- Collapsed to the current language until it is opened, so the bar keeps
+     showing one code rather than every language on offer. -->
+<mat-menu #languageMenu="matMenu">
+  @for (language of languages; track language.code) {
+    <button
+      mat-menu-item
+      [disabled]="language.code === activeLanguage"
+      [attr.aria-current]="language.code === activeLanguage ? 'true' : null"
+      (click)="selectLanguage(language.code)"
+    >
+      {{ language.label }}
     </button>
   }
 </mat-menu>

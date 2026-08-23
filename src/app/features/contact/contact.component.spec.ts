@@ -3,9 +3,9 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { ContactComponent } from './contact.component';
@@ -55,6 +55,40 @@ describe('ContactComponent', () => {
 
     expect(component.contactForm().disabled()).toBe(true);
     expect(component.isLoading()).toBe(true);
+  });
+
+  it('sends the reader home once the message is away', async () => {
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    component.contactForm.name().value.set('John');
+    component.contactForm.email().value.set('john@example.com');
+    component.contactForm.message().value.set('Hello!');
+    vi.spyOn(component['contactService'], 'sendContactMessage').mockReturnValue(
+      of({ success: true, message: 'Sent' } as ApiResponse<string>)
+    );
+
+    component.onSubmit();
+
+    expect(navigate).toHaveBeenCalledWith('/');
+    // The confirmation still has to be shown: the snackbar outlives the route.
+    expect(mockSnackBar.open).toHaveBeenCalled();
+  });
+
+  it('keeps the reader on the form when the message fails', () => {
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    component.contactForm.name().value.set('John');
+    component.contactForm.email().value.set('john@example.com');
+    component.contactForm.message().value.set('Hello!');
+    vi.spyOn(component['contactService'], 'sendContactMessage').mockReturnValue(
+      of({ success: false, message: 'Nope' } as ApiResponse<string>)
+    );
+
+    component.onSubmit();
+
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('should not submit the form when honeypot is filled (spam)', () => {

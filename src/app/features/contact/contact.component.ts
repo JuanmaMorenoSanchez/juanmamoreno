@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { disabled, email, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
@@ -6,6 +7,7 @@ import { MatInput } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EMPTYSTRING, SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { MailService } from '@shared/services/mail/mail.service';
 import { ApiResponse } from '@shared/types/api-response.type';
 
@@ -33,6 +35,8 @@ export class ContactComponent {
   private translateService = inject(TranslateService);
   private contactService = inject(MailService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private lang = inject(LanguageUrlService);
 
   public submitted = false;
   public isLoading = signal(false);
@@ -64,7 +68,13 @@ export class ContactComponent {
   }
 
   private handleResponse(res: ApiResponse<string>) {
-    if (res.success) this.resetForm();
+    if (res.success) {
+      this.resetForm();
+      // Home in whichever language they were reading. The snackbar is an
+      // overlay on the root, so the confirmation survives the navigation and
+      // is read on the page they land on.
+      this.router.navigateByUrl(this.lang.link());
+    }
     this.openSnackBar(res.message!);
     this.finalizeSubmission();
   }

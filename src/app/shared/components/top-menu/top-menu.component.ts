@@ -57,37 +57,44 @@ export class TopMenuComponent {
     return this.artworkService.getAvailableYears();
   }
 
-  get currentLang(): string {
-    return (
-      this.translateService.getCurrentLang() ||
-      this.translateService.getFallbackLang() ||
-      ALLOWED_LANGUAGES.ENGLISH
-    );
+  /** Offered in the switcher, in the order they appear in the list. */
+  public readonly languages = [
+    { code: ALLOWED_LANGUAGES.SPANISH, label: 'Espanol' },
+    { code: ALLOWED_LANGUAGES.ENGLISH, label: 'English' },
+  ];
+
+  // Read from the address rather than from the translate service: the URL is
+  // what decides the language, and the two disagree for a moment on arrival.
+  get activeLanguage(): ALLOWED_LANGUAGES {
+    return this.lang.inSpanish() ? ALLOWED_LANGUAGES.SPANISH : ALLOWED_LANGUAGES.ENGLISH;
   }
 
-  // Short display code for the switcher button ('en-EN' -> 'EN').
+  // Short display code for the collapsed switcher ('es-ES' -> 'ES').
   get currentLangLabel(): string {
-    return this.currentLang.slice(0, 2).toUpperCase();
+    return this.activeLanguage.slice(0, 2).toUpperCase();
   }
 
   // The language lives in the address now (/artwork/5 vs /es/artwork/5), so
   // switching it means going to the other page rather than swapping the words
   // underneath the reader: the URL, the canonical and the essay must agree.
   // The route's language guard applies the change on arrival.
-  public changeLanguage(): void {
+  public selectLanguage(language: ALLOWED_LANGUAGES): void {
+    if (language === this.activeLanguage) {
+      return;
+    }
+
     const path = this.router.url.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
-    const isSpanishUrl = path === 'es' || path.startsWith('es/');
-    const bare = isSpanishUrl ? path.replace(/^es\/?/, '') : path;
+    const bare = path === 'es' || path.startsWith('es/') ? path.replace(/^es\/?/, '') : path;
 
     // Remembered so the first-visit redirect stops second-guessing them: a
     // Spanish browser asking for English must not be sent back to /es.
-    storeLanguageChoice(isSpanishUrl ? ALLOWED_LANGUAGES.ENGLISH : ALLOWED_LANGUAGES.SPANISH);
+    storeLanguageChoice(language);
     // Trailing slash stripped deliberately. From the home page `bare` is empty,
     // so the naive target is "/es/", which the router reads as the two segments
     // ["es", ""] and fails to match, landing the reader on the 404. Opening
     // "/es/" as a link works only because the browser normalises it away before
     // the router ever sees it, which is why this only broke on the button.
-    const target = (isSpanishUrl ? `/${bare}` : `/es/${bare}`).replace(/\/+$/, '') || '/';
-    this.router.navigateByUrl(target);
+    const prefix = language === ALLOWED_LANGUAGES.SPANISH ? '/es' : '';
+    this.router.navigateByUrl(`${prefix}/${bare}`.replace(/\/+$/, '') || '/');
   }
 }
