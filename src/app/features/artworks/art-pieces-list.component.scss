@@ -9,6 +9,12 @@ mat-grid-tile {
   height: 100%;
   color: inherit;
   text-decoration: none;
+  // Paired with draggable="false" in the template: a link is draggable by
+  // default and a started drag eats the click, which left the catalogue's only
+  // route to an artwork failing on any click with a few pixels of mouse drift.
+  // See the note on `a img` in styles.scss.
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 
 // Screen-reader-only text: removed from view but kept in the accessibility tree

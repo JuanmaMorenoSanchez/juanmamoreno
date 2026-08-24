@@ -5,14 +5,25 @@
   </div>
 
   @if (featured(); as nft) {
-    <a class="home-featured" [routerLink]="['/artwork', nft.tokenId]" [attr.aria-label]="nft.name">
+    <a
+      class="home-featured"
+      draggable="false"
+      [routerLink]="['/artwork', nft.tokenId]"
+      [attr.aria-label]="nft.name"
+    >
       <span
         class="home-featured-frame"
         [style.aspect-ratio]="featuredAspect()"
         [style.width]="frameWidth()"
       >
         @if (featuredThumb(); as thumb) {
-          <img class="home-featured-image home-featured-image--preview" [src]="thumb" alt="" decoding="async" />
+          <img
+            class="home-featured-image home-featured-image--preview"
+            [src]="thumb"
+            alt=""
+            decoding="async"
+            draggable="false"
+          />
         }
         @if (featuredFull(); as full) {
           <img
@@ -21,6 +32,7 @@
             [src]="full"
             [alt]="nft.name"
             decoding="async"
+            draggable="false"
             (load)="onFullLoad($event)"
           />
         }

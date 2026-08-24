@@ -120,6 +120,39 @@ describe('ArtPiecesListComponent', () => {
     expect(imagesAfter[1]).toBe(imagesBefore[1]);
   });
 
+  // The grid is the only route from the catalogue to an artwork page, so the
+  // href is the whole feature: without it the tile is a picture that does
+  // nothing.
+  it('links every tile to its own artwork page', () => {
+    const { fixture, artworkService } = setup();
+    artworkService.artPieces$.next([makeNft('7', 'First piece'), makeNft('12', 'Second piece')]);
+    fixture.detectChanges();
+
+    const hrefs = Array.from(
+      fixture.nativeElement.querySelectorAll('a.tile-link'),
+      (link) => (link as HTMLAnchorElement).getAttribute('href')
+    );
+
+    expect(hrefs).toEqual(['/artwork/7', '/artwork/12']);
+  });
+
+  // Links and images are both draggable by default, and once the browser starts
+  // a drag it fires no click at all — so pressing a tile and letting the mouse
+  // drift a few pixels before releasing left the catalogue stuck on the list.
+  // Only a mouse can do it, which is why it looked like a desktop-only fault.
+  // Undoing either of these attributes brings the fault straight back.
+  it('refuses to be dragged, so a click that drifts still opens the artwork', () => {
+    const { fixture, artworkService } = setup();
+    artworkService.artPieces$.next([makeNft('7', 'First piece')]);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a.tile-link') as HTMLAnchorElement;
+    const image = fixture.nativeElement.querySelector('img.front-image') as HTMLImageElement;
+
+    expect(link.draggable).toBe(false);
+    expect(image.draggable).toBe(false);
+  });
+
   it('marks sold pieces and leaves available ones unmarked', () => {
     const { fixture, artworkService } = setup();
     // '23' is in SOLDCERTIFICATES, '999999' is not.

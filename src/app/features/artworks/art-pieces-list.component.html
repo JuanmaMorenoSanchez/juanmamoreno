@@ -59,6 +59,7 @@
           -->
           <a
             class="tile-link"
+            draggable="false"
             [routerLink]="artworkLink(artPiece.tokenId)"
             [attr.aria-label]="
               isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
@@ -84,6 +85,7 @@
                 class="front-image"
                 mat-card-image
                 decoding="async"
+                draggable="false"
                 [src]="thumbUrl"
                 [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
               />

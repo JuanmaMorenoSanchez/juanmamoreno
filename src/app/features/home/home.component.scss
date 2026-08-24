@@ -35,6 +35,10 @@
   display: block;
   text-decoration: none;
   color: inherit;
+  // Paired with draggable="false" in the template, for the same reason the
+  // catalogue tiles carry it: a dragged link fires no click. See styles.scss.
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 
 // Hero box, sized to the artwork's aspect ratio at full size (inline width +

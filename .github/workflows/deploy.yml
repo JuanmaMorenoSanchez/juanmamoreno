@@ -41,6 +41,16 @@ jobs:
       - name: Build and verify
         run: npm run build
 
+      # The catalogue tiles once rendered perfectly, carried the right href and
+      # still would not open, because a link is draggable and a browser that has
+      # started a drag fires no click. Nothing but a real pointer can see that,
+      # so this drives Chrome against the files about to be published.
+      - name: Catalogue opens with a mouse
+        run: |
+          node e2e/serve-dist.mjs &
+          until curl -sf http://127.0.0.1:4300 > /dev/null; do sleep 1; done
+          E2E_BASE_URL=http://127.0.0.1:4300 npm run test:e2e:mouse
+
       - name: Publish to gh-pages
         run: |
           git config --global user.name "github-actions[bot]"

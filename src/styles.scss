@@ -118,3 +118,22 @@ p {
     margin-right: auto;
   }
 }
+
+// Images and links are both draggable by default, and a drag suppresses the
+// click that would have followed: press on a picture inside a link, let the
+// mouse drift about four pixels before releasing, and the browser starts a
+// native drag and fires no click at all, so the link never opens. It only bites
+// with a mouse — touch has no drag gesture — which is why the catalogue
+// navigated everywhere except on the desktop, and why display scaling, which
+// shrinks that threshold in css pixels, makes it near-permanent on some
+// machines.
+//
+// Half the cure is here, for every image that sits inside a link. The other
+// half is on the picture links themselves, which have to give up being dragged
+// as links too: see .tile-link and .home-featured. Ordinary text links keep it,
+// since dragging one out is a real use and nothing there depends on a click
+// surviving a wobble.
+a img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
