@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { adminOnly } from '@shared/guards/admin.guard';
 import { englishRoute, spanishRoute } from '@shared/guards/language.guard';
 
 // `title` + `data.description` are translation keys (see the `seo.*` block in
@@ -87,6 +88,19 @@ const contentRoutes: Routes = [
 ];
 
 export const routes: Routes = [
+  // Outside the language trees: these are not pages anyone reads, so they need
+  // no Spanish twin, no hreflang pair and no place in the sitemap.
+  {
+    path: 'door',
+    loadComponent: () => import('@features/door/door.component').then((m) => m.DoorComponent),
+    data: { title: 'Door', hideBreadcrumb: true, noindex: true },
+  },
+  {
+    path: 'studio',
+    canActivate: [adminOnly],
+    loadComponent: () => import('@features/studio/studio.component').then((m) => m.StudioComponent),
+    data: { title: 'Studio', hideBreadcrumb: true, noindex: true },
+  },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

@@ -1,0 +1,17 @@
+<div class="container margin-top door">
+  <h1 class="catalog-heading">Door</h1>
+
+  @switch (status()) {
+    @case ('rejected') {
+      <p class="door-message">That account cannot come in.</p>
+    }
+    @case ('unconfigured') {
+      <p class="door-message">Sign-in is not configured yet.</p>
+    }
+    @default {
+      <p class="door-message">This door opens for one person.</p>
+    }
+  }
+
+  <div #googleButton class="door-button"></div>
+</div>

@@ -58,6 +58,7 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.setCanonical(url);
     this.setLanguageAlternates(snapshot.url);
+    this.setRobots(this.deepestData(snapshot.root, 'noindex') === true);
     // Belongs to whichever artwork page we just left, not to this one.
     this.clearArtworkStructuredData();
   }
@@ -216,6 +217,22 @@ export class SeoTitleStrategy extends TitleStrategy {
     const path = routerUrl.split('?')[0].split('#')[0];
     const trimmed = path.replace(/^\/+|\/+$/g, '');
     return trimmed ? `${SITE_URL}/${trimmed}/` : `${SITE_URL}/`;
+  }
+
+  /** Keeps the admin pages out of search results even when one is opened directly. */
+  private setRobots(noindex: boolean): void {
+    if (noindex) this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+    else this.meta.removeTag("name='robots'");
+  }
+
+  private deepestData(route: ActivatedRouteSnapshot, key: string): unknown {
+    let found: unknown;
+    let node: ActivatedRouteSnapshot | null = route;
+    while (node) {
+      if (node.data[key] !== undefined) found = node.data[key];
+      node = node.firstChild;
+    }
+    return found;
   }
 
   private setCanonical(url: string): void {

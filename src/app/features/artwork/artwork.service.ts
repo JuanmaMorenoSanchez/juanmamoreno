@@ -28,6 +28,7 @@ import {
   startWith,
   switchMap,
   tap,
+  timeout,
 } from 'rxjs';
 
 // Relative quality of each preview source, used to only ever upgrade the
@@ -45,6 +46,16 @@ interface PreviewCandidate {
 
 // The catalogue, handed from the build to the browser through the page itself.
 const ART_PIECES_KEY = makeStateKey<Nft[]>('artPieces');
+
+/**
+ * How long a build waits on the backend for one artwork's extras.
+ *
+ * Angular gives each prerendered route a fixed budget and fails the route when
+ * it runs out, which fails the build. Three hundred and eighty-eight pages ask
+ * for a description and an essay each, so a slow spell was taking whole deploys
+ * down. A page without its essay is worth having; a failed deploy is not.
+ */
+const PRERENDER_FETCH_TIMEOUT_MS = 8000;
 
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
@@ -138,6 +149,7 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .get<ApiResponse<Descriptions>>(`${environment.backendUrl}descriptions/${tokenId}`)
       .pipe(
         this.extractData<Descriptions | null>(null),
+        this.giveUpDuringBuild(),
         catchError(() => of(null))
       );
   }
@@ -154,8 +166,14 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`, options)
       .pipe(
         this.extractData<ArtCritic | null>(null),
+        this.giveUpDuringBuild(),
         catchError(() => of(null))
       );
+  }
+
+  /** Bounds a build's wait on the backend. Does nothing in a browser. */
+  private giveUpDuringBuild<T>(): OperatorFunction<T, T> {
+    return (source) => (this.isBrowser ? source : source.pipe(timeout(PRERENDER_FETCH_TIMEOUT_MS)));
   }
 
   // Unwraps an ApiResponse, falling back when the call was not successful

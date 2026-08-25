@@ -1,5 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /studio
+Disallow: /door
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a

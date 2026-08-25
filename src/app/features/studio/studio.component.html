@@ -1,0 +1,11 @@
+<div class="container margin-top studio">
+  <h1 class="catalog-heading">Studio</h1>
+  <p class="studio-empty">Nothing here yet.</p>
+
+  @if (identity(); as who) {
+    <p class="studio-who">
+      {{ who.email }}
+      <button type="button" class="studio-signout" (click)="signOut()">Sign out</button>
+    </p>
+  }
+</div>

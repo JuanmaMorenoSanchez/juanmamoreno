@@ -133,3 +133,17 @@ at **1.0.0** and the backend at **1.0.0** as of the first tagged release.
   runs the checks and publishes (`.github/workflows/deploy.yml`). The site's
   build verifies its own prerendered output first, so a broken page fails the
   workflow instead of reaching juanmamoreno.com.
+
+## Requirements and changelog
+
+Two files in each repo, kept current as part of the change that affects them,
+not afterwards.
+
+- **`REQUIREMENTS.md`** — one entry per behaviour someone asked for, and what
+  proves it still works. It exists so features are not quietly lost in a
+  refactor: an agent should be able to read it and check each one still holds.
+  Add or amend an entry in the same commit as the behaviour.
+- **`CHANGELOG.md`** — one line per push, newest first: `feat` for a new
+  behaviour, `fix` for a broken one, `chore` for anything that changes none.
+  The line and the version bump say the same thing (minor for a feat, patch for
+  a fix or chore).

@@ -1,0 +1,29 @@
+@use '../../../styles/tokens';
+
+.studio {
+  min-height: 40vh;
+}
+
+.studio-empty {
+  color: var(--catalog-soft);
+}
+
+.studio-who {
+  display: flex;
+  align-items: baseline;
+  gap: tokens.$spacing-md;
+  margin-top: 4rem;
+  font-size: 0.8rem;
+  color: var(--catalog-faint);
+}
+
+.studio-signout {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--catalog-accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

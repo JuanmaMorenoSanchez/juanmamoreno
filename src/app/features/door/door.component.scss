@@ -1,0 +1,14 @@
+@use '../../../styles/tokens';
+
+.door {
+  min-height: 40vh;
+}
+
+.door-message {
+  color: var(--catalog-soft);
+}
+
+.door-button {
+  margin-top: tokens.$spacing-lg;
+  min-height: 44px;
+}
