@@ -5,6 +5,10 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.2.1
+
+- fix: the door had no Google client id, so it could not open at all
+
 ## 1.2.0
 
 - feat: `/studio`, opening only for the one allowed account, and `/door` to sign

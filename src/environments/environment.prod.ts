@@ -8,6 +8,6 @@ export const environment = {
   // Google OAuth web client id. Public by design — it identifies the app, it
   // does not authorise anything. Empty until one is created, and the door says
   // so rather than failing silently.
-  googleClientId: '',
+  googleClientId: '164035848667-t6fv2d02rfhojassdhh3cv0q3qk44mde.apps.googleusercontent.com',
   backendUrlFallback: 'https://juanmamoreno-backend-164035848667.europe-west1.run.app/',
 };
