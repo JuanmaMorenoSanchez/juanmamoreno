@@ -1,0 +1,1 @@
+var e={production:!1,homeTokenId:"2",adminAdress:"0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9",backendUrl:"https://backend.juanmamoreno.com/",adminEmail:"morenosanchezjuanma@gmail.com",googleClientId:"164035848667-t6fv2d02rfhojassdhh3cv0q3qk44mde.apps.googleusercontent.com",backendUrlFallback:"https://juanmamoreno-backend-164035848667.europe-west1.run.app/"};export{e as a};
