@@ -178,16 +178,22 @@ large to qualify and is left untouched.
 *Proven by:* `prepare-photo.spec.ts` "specular highlights" (4 tests)
 
 ### R24 — The photograph is visible while it is being corrected · met
-The opened photograph is shown with its four corners drawn over it, and each
-corner can be dragged. This is what makes a mis-found outline recoverable
-rather than fatal.
-*Proven by:* the studio probe (the preview canvas is painted, not empty)
+The opened photograph is shown as large as the window allows, with its four
+corners drawn over it, and each corner can be dragged. Each handle carries a
+cross so the corner is placed on a point rather than somewhere under a circle.
+This is what makes a mis-found outline recoverable rather than fatal.
+*Proven by:* the studio probe (the preview canvas is painted and fills the
+window; each handle has both strokes)
 
-### R25 — The tones are opened out only when they are shut · met
+### R25 — The tones are opened out only when they are shut, and only partly · met
 When the photograph never reached either end of the range, it is stretched back
-out — by no more than a third, per channel rather than by luminance, and never
-onto pure black or pure white. When it already used its range, nothing is done.
-*Proven by:* `prepare-photo.spec.ts` "auto levels" (3 tests)
+out — per channel rather than by luminance, never onto pure black or pure white,
+at no more than half the full correction and no steeper than a third. The
+correction is scaled as one thing: capping the steepness alone while pinning the
+dark end to black drags every midtone down with it. When the photograph already
+used its range, nothing is done.
+*Proven by:* `prepare-photo.spec.ts` "auto levels" (4 tests, including that a
+midtone stays where it was)
 
 ### R26 — A colour cast is judged only where there is evidence · met
 A blue or yellow cast is measured from the pale, near-colourless parts of the
@@ -214,10 +220,11 @@ studio is one person's workshop and is written in one language, but the language
 switcher builds its target from the address alone.
 *Proven by:* `app-routing.module.ts`, and the studio probe
 
-### R24 — The result downloads losslessly · met
-The corrected image is offered as a PNG, so the file holds exactly the pixels
-that were computed.
-*Proven by:* `photo-prep.component.ts` (`toPngUrl`), and the studio probe
+### R30 — The result downloads as a JPEG · met
+The corrected painting is offered as JPEG at quality 95, which discards far less
+than the camera already did in making the file it came from.
+*Proven by:* `photo-prep.component.ts` (`toJpegUrl`), and the studio probe,
+which reads the saved blob's type back
 
 ---
 

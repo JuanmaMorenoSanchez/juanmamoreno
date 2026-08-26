@@ -9,10 +9,25 @@ import {
 import { fullFrame, type Point, type Quad } from '@domain/image/quad';
 import type { Raster } from '@domain/image/raster';
 
-/** The photograph is shown no larger than this. The corners are kept in its own pixels regardless. */
-const PREVIEW_LONG_SIDE = 900;
+/**
+ * The photograph is shown no larger than this. Corners are kept in its own
+ * pixels regardless, so this is about how precisely one can be placed by hand:
+ * a corner dropped a pixel out on a two thousand pixel preview is three pixels
+ * out on a six thousand pixel photograph, and nine on a nine hundred one.
+ */
+const PREVIEW_LONG_SIDE = 2000;
 /** Corner finding works on a copy this size, which is all the detail an outline needs. */
 const DETECTION_LONG_SIDE = 720;
+/**
+ * JPEG quality for the saved file.
+ *
+ * The photograph arrived as a camera JPEG and has already been through this
+ * once; at ninety-five the second pass throws away far less than the first did,
+ * which is the sense in which nothing is lost against the original. PNG would
+ * be exactly lossless but writes a couple of hundred megabytes for a forty
+ * megapixel painting, and preserves a fidelity the source never had.
+ */
+const JPEG_QUALITY = 0.95;
 
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
@@ -99,7 +114,7 @@ export class PhotoPrepComponent {
 
   protected readonly downloadName = computed(() => {
     const name = this.fileName().replace(/\.[^.]+$/, '') || 'painting';
-    return `${name}-flat.png`;
+    return `${name}-flat.jpg`;
   });
 
   protected setWidth(event: Event): void {
@@ -237,7 +252,7 @@ export class PhotoPrepComponent {
       });
 
       this.report.set(report);
-      this.resultUrl.set(await toPngUrl(image));
+      this.resultUrl.set(await toJpegUrl(image));
     } catch {
       this.problem.set(
         'The photograph was too large for this browser to hold. Try a smaller copy.'
@@ -283,15 +298,16 @@ function breathe(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 }
 
-/** PNG, so the file carries exactly the pixels that were computed and not a re-encoding of them. */
-async function toPngUrl(image: Raster): Promise<string> {
+async function toJpegUrl(image: Raster): Promise<string> {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
   canvas.height = image.height;
   const context = canvas.getContext('2d') as CanvasRenderingContext2D;
   context.putImageData(new ImageData(image.data, image.width, image.height), 0, 0);
 
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
+  );
   if (!blob) throw new Error('The corrected image could not be encoded');
   return URL.createObjectURL(blob);
 }

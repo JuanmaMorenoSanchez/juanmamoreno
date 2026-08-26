@@ -31,32 +31,34 @@
       }
     </p>
 
-    <div
-      #stage
-      class="prep-stage"
-      (pointermove)="drag($event)"
-      (pointerup)="release()"
-      (pointercancel)="release()"
-    >
-      <canvas #preview class="prep-canvas"></canvas>
-      <svg
-        class="prep-outline"
-        [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
-        preserveAspectRatio="none"
-        aria-hidden="true"
+    <div class="prep-bleed">
+      <div
+        #stage
+        class="prep-stage"
+        (pointermove)="drag($event)"
+        (pointerup)="release()"
+        (pointercancel)="release()"
       >
-        <polygon [attr.points]="outline()" vector-effect="non-scaling-stroke" />
-      </svg>
-      @for (handle of handles(); track $index) {
-        <button
-          type="button"
-          class="prep-handle"
-          [style.left]="handle.left"
-          [style.top]="handle.top"
-          [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
-          (pointerdown)="grab($index, $event)"
-        ></button>
-      }
+        <canvas #preview class="prep-canvas"></canvas>
+        <svg
+          class="prep-outline"
+          [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <polygon [attr.points]="outline()" vector-effect="non-scaling-stroke" />
+        </svg>
+        @for (handle of handles(); track $index) {
+          <button
+            type="button"
+            class="prep-handle"
+            [style.left]="handle.left"
+            [style.top]="handle.top"
+            [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
+            (pointerdown)="grab($index, $event)"
+          ></button>
+        }
+      </div>
     </div>
 
     <div class="prep-controls">
@@ -188,10 +190,10 @@
 
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
-        <a class="prep-download" [href]="url" [download]="downloadName()">Download PNG</a>
+        <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
         <p class="prep-note">
-          PNG, so the file holds exactly the pixels that were computed rather than a JPEG's guess at
-          them.
+          JPEG at 95, which discards far less than the camera already did making the file you
+          started from.
         </p>
       }
     </div>

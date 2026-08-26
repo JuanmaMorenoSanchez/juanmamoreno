@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.5.0
+
+- feat: the corner handles carry a cross, so a corner is placed on a point
+  rather than somewhere under a circle, and the photograph is shown as large as
+  the window allows instead of at the width of a paragraph
+- feat: the corrected painting saves as JPEG at 95 rather than PNG
+- fix: auto levels came back too heavy. Capping the steepness while still
+  pinning the darkest pixel to black is a different correction, not a gentler
+  one — the dark end arrives, the light end never does, and every tone between
+  is dragged down. On the photograph that prompted this, 44 to 197, the midtone
+  went 120 to 101; it now goes to 123 while the top lifts 197 to 223
+
 ## 1.4.1
 
 - fix: the catalogue mouse test waited for the page to finish loading, which

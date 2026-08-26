@@ -383,6 +383,30 @@ describe('auto levels', () => {
     expect(autoLevels(raster).applied).toBe(false);
   });
 
+  it('lifts the top of the range as much as it lowers the bottom', () => {
+    // The photograph the artist objected to ran 44 to 197. Pinning the dark end
+    // to black while the steepness cap stops the light end from ever reaching
+    // white pulls every tone between them down, and the painting comes back
+    // heavier than it is.
+    const raster = blank(140, 100, [44, 44, 44]);
+    for (let x = 70; x < 140; x++) {
+      for (let y = 0; y < 100; y++) put(raster, x, y, [197, 197, 197]);
+    }
+    const midtone = 120;
+    put(raster, 0, 0, [midtone, midtone, midtone]);
+
+    autoLevels(raster);
+
+    const dark = pixel(raster, 5, 50)[0];
+    const light = pixel(raster, 100, 50)[0];
+    expect(dark).toBeGreaterThan(10);
+    expect(dark).toBeLessThan(44);
+    expect(light).toBeGreaterThan(197);
+    // A midtone should sit near where it started, not be dragged down with the
+    // black point.
+    expect(Math.abs(pixel(raster, 0, 0)[0] - midtone)).toBeLessThan(12);
+  });
+
   it('does not crush a saturated colour to nothing', () => {
     // The channels run 40 to 200 while the luminance runs a much narrower band.
     // Taking the black point off the luminance would drive the 40s below zero.

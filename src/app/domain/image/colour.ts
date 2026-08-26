@@ -7,14 +7,24 @@ const HIGH_PERCENTILE = 0.998;
 const BLACK_ENOUGH = 5;
 const WHITE_ENOUGH = 250;
 /**
- * The most the tones may be opened out.
+ * The steepest the tones may be made.
  *
  * A photograph of a painting is usually a little flat, because light scattering
  * inside the lens veils the darks. Undoing that is restoring what was there.
- * Going further would be improving on the painting, which is not the job, so
- * the correction stops well short of what a contrast tool would do.
+ * Going further would be improving on the painting, which is not the job.
  */
 const MAX_LEVELS_GAIN = 1.3;
+/**
+ * And at most this much of the correction is applied.
+ *
+ * Stretching the darkest pixel all the way down to black assumes the painting
+ * contains black, and the lightest up to white assumes it contains white. Most
+ * do not. A canvas whose tones run 44 to 197 is partly veiled by the lens and
+ * partly a painting in a narrow register, and nothing in the file says which is
+ * which — so it gets part of the correction: enough to lift the veil, not
+ * enough to invent a contrast the paint never had.
+ */
+const LEVELS_STRENGTH = 0.5;
 /** The floor and ceiling the corrected range is mapped to, leaving both ends unclipped. */
 const KEEP_HEADROOM = 2;
 
@@ -63,14 +73,24 @@ export function autoLevels(raster: Raster): LevelsReport {
   }
 
   const span = 255 - KEEP_HEADROOM * 2;
-  const gain = Math.min(MAX_LEVELS_GAIN, span / (high - low));
-  if (gain <= 1.01) return { applied: false, low, high };
+  const full = span / (high - low);
+  if (full <= 1.01) return { applied: false, low, high };
+
+  // Part of the way from leaving each pixel alone to mapping the whole range
+  // onto the whole scale — the correction is taken as one thing and scaled
+  // down. Capping the steepness on its own while still pinning the darkest
+  // pixel to black would be a different correction, not a gentler one: the
+  // black end arrives, the white end does not, and every tone between them is
+  // dragged downwards. That is what made 44 to 197 come back too heavy.
+  const gentleness = Math.min(LEVELS_STRENGTH, (MAX_LEVELS_GAIN - 1) / (full - 1));
+  const slope = 1 + gentleness * (full - 1);
+  const offset = gentleness * (KEEP_HEADROOM - low * full);
 
   const { data } = raster;
   for (let i = 0; i < data.length; i += 4) {
-    data[i] = (data[i] - low) * gain + KEEP_HEADROOM;
-    data[i + 1] = (data[i + 1] - low) * gain + KEEP_HEADROOM;
-    data[i + 2] = (data[i + 2] - low) * gain + KEEP_HEADROOM;
+    data[i] = data[i] * slope + offset;
+    data[i + 1] = data[i + 1] * slope + offset;
+    data[i + 2] = data[i + 2] * slope + offset;
   }
   return { applied: true, low, high };
 }

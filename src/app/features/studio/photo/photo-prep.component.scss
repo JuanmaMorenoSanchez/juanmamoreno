@@ -85,18 +85,34 @@
   text-underline-offset: 0.2em;
 }
 
+/**
+ * Lets the photograph out of the column the prose is set in.
+ *
+ * Placing a corner by hand is only as precise as the picture is large, and the
+ * reading width of a paragraph is not a useful size to do it at.
+ */
+.prep-bleed {
+  width: 96vw;
+  margin: tokens.$spacing-md 0 tokens.$spacing-md calc(-48vw + 50%);
+  text-align: center;
+}
+
 .prep-stage {
   position: relative;
   display: inline-block;
-  max-width: 100%;
   background: var(--catalog-frame-bg);
   touch-action: none;
+  line-height: 0;
 }
 
 .prep-canvas {
   display: block;
-  max-width: 100%;
+  width: auto;
   height: auto;
+  max-width: 96vw;
+  // Leaves the dimensions and the buttons on screen with it, so the whole
+  // photograph can be seen while a corner is being placed.
+  max-height: 82vh;
 }
 
 .prep-outline {
@@ -116,19 +132,47 @@
 
 .prep-handle {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: 2px solid var(--catalog-accent);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
+  // Barely tinted rather than opaque: the corner of the painting has to stay
+  // visible underneath the thing being used to point at it.
+  background: rgba(255, 255, 255, 0.12);
   transform: translate(-50%, -50%);
   cursor: grab;
   touch-action: none;
 
+  // The two strokes of the cross, meeting at the exact point the handle marks.
+  // Diagonal on purpose: an upright cross would lie along the very edges being
+  // matched and hide them, where these leave both directions clear.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 12%;
+    width: 76%;
+    height: 1px;
+    background: var(--catalog-accent);
+  }
+
+  &::before {
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+
+  &:hover,
+  &:active {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
   &:active {
     cursor: grabbing;
-    background: var(--catalog-accent);
   }
 }
 
