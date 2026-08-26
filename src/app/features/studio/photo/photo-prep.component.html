@@ -54,6 +54,8 @@
             class="prep-handle"
             [style.left]="handle.left"
             [style.top]="handle.top"
+            [style.width.px]="handleSize()"
+            [style.height.px]="handleSize()"
             [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
             (pointerdown)="grab($index, $event)"
           ></button>
@@ -62,6 +64,21 @@
     </div>
 
     <div class="prep-controls">
+      <fieldset class="prep-field">
+        <legend>Aiming</legend>
+        <label>
+          Corner size
+          <input
+            type="range"
+            [min]="minHandleSize"
+            [max]="maxHandleSize"
+            [value]="handleSize()"
+            (input)="setHandleSize($event)"
+          />
+          {{ handleSize() }} px
+        </label>
+      </fieldset>
+
       <fieldset class="prep-field">
         <legend>The painting itself</legend>
         <label>

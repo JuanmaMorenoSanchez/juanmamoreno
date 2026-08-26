@@ -27,6 +27,20 @@ export const englishRoute: CanActivateFn = (_route, state) => {
 };
 
 /**
+ * For the pages whose address carries no language: apply whatever the reader
+ * last chose, or their browser's setting, and never redirect.
+ *
+ * Without this the studio opened in English however many times its owner had
+ * asked for Spanish, because nothing on the way in ever told the translate
+ * service which language to use — the two guards below only run inside the
+ * language trees.
+ */
+export const readerLanguage: CanActivateFn = () => {
+  inject(TranslateService).use(preferredLanguage());
+  return true;
+};
+
+/**
  * Never true while prerendering: the English pages are the ones canonical and
  * x-default point at, and a build has no language of its own to prefer.
  *
@@ -36,7 +50,11 @@ export const englishRoute: CanActivateFn = (_route, state) => {
  */
 function wantsSpanish(): boolean {
   if (typeof window === 'undefined') return false;
+  return preferredLanguage() === ALLOWED_LANGUAGES.SPANISH;
+}
 
-  const chosen = storedLanguageChoice();
-  return chosen ? chosen === ALLOWED_LANGUAGES.SPANISH : getPreferredLanguage() === ALLOWED_LANGUAGES.SPANISH;
+/** An explicit choice first, the browser's setting second, English otherwise. */
+export function preferredLanguage(): ALLOWED_LANGUAGES {
+  if (typeof window === 'undefined') return ALLOWED_LANGUAGES.ENGLISH;
+  return storedLanguageChoice() ?? getPreferredLanguage();
 }

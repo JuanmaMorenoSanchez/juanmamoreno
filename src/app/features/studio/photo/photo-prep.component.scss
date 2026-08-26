@@ -132,8 +132,8 @@
 
 .prep-handle {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  // Width and height are set from the component: the artist chooses how wide a
+  // ring to aim with, and the choice is remembered.
   padding: 0;
   border: 2px solid var(--catalog-accent);
   border-radius: 50%;

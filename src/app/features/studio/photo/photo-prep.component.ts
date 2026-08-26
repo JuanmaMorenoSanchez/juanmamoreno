@@ -39,6 +39,30 @@ const STAGE_LABELS: Record<PhotoStage, string> = {
 
 const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
 
+/**
+ * How wide a corner handle is drawn, in pixels of the page.
+ *
+ * Large by default, and adjustable, because the handle is what the pointer is
+ * on while the corner underneath it is what has to be judged: a small circle
+ * puts the cursor exactly where the eye needs to be. A wide ring is grabbed
+ * anywhere along its edge, so the hand can stay clear of the point it is
+ * setting. The cross keeps marking the exact pixel however wide the ring gets.
+ */
+const HANDLE_SIZE_KEY = 'juanmamoreno.studio.handleSize';
+const DEFAULT_HANDLE_SIZE = 46;
+const MIN_HANDLE_SIZE = 20;
+const MAX_HANDLE_SIZE = 110;
+
+function rememberedHandleSize(): number {
+  try {
+    const stored = Number(window.localStorage.getItem(HANDLE_SIZE_KEY));
+    if (!Number.isFinite(stored) || !stored) return DEFAULT_HANDLE_SIZE;
+    return Math.min(MAX_HANDLE_SIZE, Math.max(MIN_HANDLE_SIZE, stored));
+  } catch {
+    return DEFAULT_HANDLE_SIZE;
+  }
+}
+
 @Component({
   selector: 'app-photo-prep',
   imports: [DecimalPipe],
@@ -65,6 +89,22 @@ export class PhotoPrepComponent {
   }
 
   protected readonly cornerNames = CORNER_NAMES;
+  protected readonly minHandleSize = MIN_HANDLE_SIZE;
+  protected readonly maxHandleSize = MAX_HANDLE_SIZE;
+  protected readonly handleSize = signal(rememberedHandleSize());
+
+  protected setHandleSize(event: Event): void {
+    const size = Math.min(
+      MAX_HANDLE_SIZE,
+      Math.max(MIN_HANDLE_SIZE, numberIn(event) ?? DEFAULT_HANDLE_SIZE)
+    );
+    this.handleSize.set(size);
+    try {
+      window.localStorage.setItem(HANDLE_SIZE_KEY, String(size));
+    } catch {
+      // Storage off. The size holds for this session, which is enough.
+    }
+  }
 
   protected readonly fileName = signal('');
   protected readonly size = signal<{ width: number; height: number } | null>(null);

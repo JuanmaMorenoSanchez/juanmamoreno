@@ -3,6 +3,25 @@ export enum ALLOWED_LANGUAGES {
   ENGLISH = 'en-EN',
 }
 
+/**
+ * Pages that live outside the two language trees, so their address says nothing
+ * about which language the reader is in.
+ *
+ * They are the artist's own — a workshop and its door — rather than pages
+ * anyone reads, so they have no Spanish twin, no hreflang pair and no place in
+ * the sitemap. That left the switcher dead on them: it works by moving between
+ * /page and /es/page, and there is no other address to move to. The reader's
+ * choice still has to be honoured, so on these the switcher changes the words
+ * where it stands instead of changing the address.
+ */
+export const LANGUAGE_FREE_PATHS = ['studio', 'door'];
+
+/** True for an address whose first segment is one of those pages. */
+export function carriesNoLanguage(url: string): boolean {
+  const first = url.split('?')[0].split('#')[0].replace(/^\/+/, '').split('/')[0];
+  return LANGUAGE_FREE_PATHS.includes(first);
+}
+
 // Where an explicit choice from the language switcher is remembered. Only a
 // choice the visitor actually made goes in here: it is what stops the
 // first-visit redirect from overriding someone who has asked for English.

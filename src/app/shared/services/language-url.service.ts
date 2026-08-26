@@ -1,6 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
+import { carriesNoLanguage } from '@shared/constants/languages.constants';
 import { filter, map } from 'rxjs';
 
 /**
@@ -22,6 +23,12 @@ export class LanguageUrlService {
     ),
     { initialValue: this.router.url }
   );
+
+  /**
+   * Whether the address encodes a language. False on the studio and the door,
+   * which sit outside both trees — see LANGUAGE_FREE_PATHS.
+   */
+  readonly carriesLanguage = computed(() => !carriesNoLanguage(this.url()));
 
   readonly inSpanish = computed(() => {
     const path = this.url().split('?')[0].split('#')[0];

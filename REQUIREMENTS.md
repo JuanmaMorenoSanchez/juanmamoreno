@@ -62,6 +62,14 @@ Switching changes the address, not just the words, and the choice is remembered
 and beats the browser's own language.
 *Proven by:* `language.cy.js`
 
+### R9b — The switcher works on every page · met
+Including the studio and the door, which exist at one address only and so have
+no twin to move to. There the switcher changes the words where it stands, the
+label follows, and the choice is still remembered. It used to navigate to
+`/es/studio`, be redirected straight back, and change nothing.
+*Proven by:* `top-menu.component.spec.ts` "on a page whose address carries no
+language" (2 tests)
+
 ---
 
 ## Writing

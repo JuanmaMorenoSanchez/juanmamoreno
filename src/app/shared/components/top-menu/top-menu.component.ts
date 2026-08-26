@@ -65,7 +65,14 @@ export class TopMenuComponent {
 
   // Read from the address rather than from the translate service: the URL is
   // what decides the language, and the two disagree for a moment on arrival.
+  // Except where the address holds no language at all — the studio and the door
+  // — and the only record of the reader's choice is the one they made.
   get activeLanguage(): ALLOWED_LANGUAGES {
+    if (!this.lang.carriesLanguage()) {
+      return this.translateService.currentLang() === ALLOWED_LANGUAGES.SPANISH
+        ? ALLOWED_LANGUAGES.SPANISH
+        : ALLOWED_LANGUAGES.ENGLISH;
+    }
     return this.lang.inSpanish() ? ALLOWED_LANGUAGES.SPANISH : ALLOWED_LANGUAGES.ENGLISH;
   }
 
@@ -89,6 +96,16 @@ export class TopMenuComponent {
     // Remembered so the first-visit redirect stops second-guessing them: a
     // Spanish browser asking for English must not be sent back to /es.
     storeLanguageChoice(language);
+
+    // Nowhere to navigate to on a page that exists at one address only, so the
+    // change happens where the reader is standing. Leaving early also avoids
+    // the round trip through /es/studio and back, which changed nothing and
+    // read as a switcher that does not work.
+    if (!this.lang.carriesLanguage()) {
+      this.translateService.use(language);
+      return;
+    }
+
     // Trailing slash stripped deliberately. From the home page `bare` is empty,
     // so the naive target is "/es/", which the router reads as the two segments
     // ["es", ""] and fails to match, landing the reader on the 404. Opening
