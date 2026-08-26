@@ -63,6 +63,18 @@ async function requireServer() {
 /** How far the pointer wanders between press and release. Four is enough. */
 const DRIFT_PX = 12;
 
+/**
+ * Waiting for the address to change, and not for the page to finish loading.
+ *
+ * The catalogue hangs its thumbnails off a third-party CDN, a hundred and sixty
+ * of them, and the load event waits on every one. Left at its default this asks
+ * whether someone else's image host answered promptly, which is not what is
+ * being tested here and is not something this repository can keep true: the
+ * catalogue passed on the deployed build and failed on the same assertion an
+ * hour later, on a commit that touched none of it.
+ */
+const ARRIVAL = { timeout: 8000, waitUntil: 'commit' };
+
 let browser;
 
 /**
@@ -92,7 +104,7 @@ async function clickWithDriftingMouse(page, selector) {
   }
   await page.mouse.up();
 
-  await page.waitForURL((url) => url.pathname === href, { timeout: 8000 }).catch(() => {});
+  await page.waitForURL((url) => url.pathname === href, ARRIVAL).catch(() => {});
 
   return {
     href,
@@ -125,7 +137,7 @@ describe('opening an artwork with a mouse', () => {
 
     assert.match(href, /^\/artwork\/\d+$/);
     await link.click();
-    await page.waitForURL((url) => url.pathname === href, { timeout: 8000 });
+    await page.waitForURL((url) => url.pathname === href, ARRIVAL);
     await page.close();
   });
 

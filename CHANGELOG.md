@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.4.1
+
+- fix: the catalogue mouse test waited for the page to finish loading, which
+  waits on a hundred and sixty thumbnails from someone else's CDN. It asks
+  whether the address changed now. This is what stopped 1.4.0 reaching the site
+
 ## 1.4.0
 
 - feat: the studio judges the colour too. It opens the tones back out when the
