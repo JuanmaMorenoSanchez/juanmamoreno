@@ -1,4 +1,4 @@
-import { correctedSize, type Quad } from './quad';
+import { correctedSize, type EdgeBows, type Quad } from './quad';
 import { warpPerspective } from './perspective';
 import { equalizeIllumination, measureIllumination, type IlluminationReport } from './illumination';
 import { findSpecular, repairSpecular } from './specular';
@@ -11,6 +11,8 @@ export type PhotoStage = 'straightening' | 'lighting' | 'glare' | 'colour' | 'fo
 export interface PreparePhotoOptions {
   /** Where the painting's corners sit in the photograph. */
   quad: Quad;
+  /** How each side bows between those corners. Omitted means straight. */
+  bows?: EdgeBows;
   /** The painting itself, in whatever unit — only the ratio between them is read. */
   realWidth: number;
   realHeight: number;
@@ -68,11 +70,11 @@ export async function preparePhoto(
   source: Raster,
   options: PreparePhotoOptions
 ): Promise<PreparedPhoto> {
-  const { quad, realWidth, realHeight, onStage } = options;
+  const { quad, bows, realWidth, realHeight, onStage } = options;
 
   await onStage?.('straightening');
   const size = correctedSize(quad, realWidth, realHeight);
-  const image = warpPerspective(source, quad, size);
+  const image = warpPerspective(source, quad, size, bows);
 
   await onStage?.('lighting');
   const illumination = measureIllumination(image);

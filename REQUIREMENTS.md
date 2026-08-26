@@ -201,6 +201,45 @@ one region and is left alone entire.
 marked white garment left untouched while a real flare on the same canvas is
 still found)
 
+### R25 — A side that the lens bent can be described as a curve · met
+Four corners describe a painting seen at an angle and nothing more: a lens bows
+the long sides, and a stretcher that has taken a bow bows them for real. Each
+side carries the two control points of a cubic Bézier, dragged like the corners
+and drawn as the curve they make.
+
+The bow rides on top of the homography rather than replacing it. A patch fitted
+to the four sides interpolates evenly between them and loses the foreshortening
+that makes the far edge of a leaning canvas shorter than the near one, so the
+perspective stays where it was and each side's departure from its own straight
+chord is added to it. Every departure is zero at a corner, which is what keeps
+the corners exactly where the correction put them.
+*Proven by:* `edge-bows.spec.ts` — straight sides produce byte-identical output
+to having no bows at all, the corners do not move, and a card photographed
+through a bend comes back more than twice as close to the original as ignoring
+the bend does
+
+### R26 — Handles are as large as the hand wants · met
+The corner rings are wide by default and adjustable from 20 to 110 px, and the
+width is remembered. The handle is what the pointer sits on while the corner
+underneath it is what has to be judged, so a small ring puts the cursor exactly
+where the eye needs to be; a wide one is grabbed anywhere along its edge. The
+cross still marks the exact pixel.
+*Proven by:* `photo-prep.component.spec.ts` "aiming" (3 tests)
+
+### R27 — The file says whose it is · met
+The corrected jpeg carries the artist's name and a copyright notice as both exif
+and xmp, with the name remembered between sessions. A canvas encodes a jpeg with
+no metadata at all, so every corrected painting used to leave the studio
+anonymous.
+
+Both are header segments ahead of the compressed image, so writing them moves no
+pixel. Accented names survive: exif calls these fields ASCII, which has no room
+for the á in the artist's own name, so they are written as utf-8 — as every tool
+worth the name reads them — and the xmp block carries the same text in a format
+that specifies utf-8 outright.
+*Proven by:* `jpeg-rights.spec.ts` (11 tests, including the scan data being
+copied through byte for byte)
+
 ### R24 — The photograph is visible while it is being corrected · met
 The opened photograph is shown as large as the window allows, with its four
 corners drawn over it, and each corner can be dragged. Each handle carries a

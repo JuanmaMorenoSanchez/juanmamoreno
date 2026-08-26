@@ -122,11 +122,39 @@
   height: 100%;
   pointer-events: none;
 
-  polygon {
+  path {
     fill: none;
     stroke: var(--catalog-accent);
     stroke-width: 2;
     stroke-dasharray: 6 4;
+  }
+
+  .prep-tether {
+    stroke: rgba(255, 255, 255, 0.55);
+    stroke-width: 1;
+    stroke-dasharray: none;
+  }
+}
+
+// The control points that bend a side: smaller than a corner, and joined to
+// the corner they belong to by the line below.
+.prep-bow {
+  position: absolute;
+  padding: 0;
+  border: 2px solid var(--catalog-accent);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  touch-action: none;
+
+  &:hover,
+  &:active {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  &:active {
+    cursor: grabbing;
   }
 }
 

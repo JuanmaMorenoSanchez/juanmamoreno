@@ -1,5 +1,14 @@
 import { createRaster, type Raster, type Size } from './raster';
-import { distance, type Quad } from './quad';
+import {
+  bezierAt,
+  bowsAreStraight,
+  distance,
+  EDGE_CORNERS,
+  straightBows,
+  type EdgeBows,
+  type Point,
+  type Quad,
+} from './quad';
 import { solveLinearSystem } from './linear';
 
 /** Below this the warp is shrinking enough that point sampling would alias, so soften first. */
@@ -34,8 +43,23 @@ export function solveHomography(from: Quad, to: Quad): Float64Array {
  *
  * Catmull-Rom rather than bilinear: the result is a reproduction of a painting,
  * where a bilinear average visibly softens the brushwork it exists to record.
+ *
+ * The homography does the perspective. It is the right model for a flat thing
+ * seen at an angle and nothing replaces it — in particular not a patch fitted
+ * to the four sides, which interpolates evenly between them and so loses the
+ * foreshortening that makes the far edge of a leaning canvas shorter than the
+ * near one. When the sides are bowed, that bow is carried on top of it as a
+ * displacement: each side's departure from its own straight chord, faded across
+ * the picture so the two facing sides share the interior between them. Every
+ * departure is zero at a corner, which is what keeps the corners exactly where
+ * the homography put them.
  */
-export function warpPerspective(source: Raster, quad: Quad, size: Size): Raster {
+export function warpPerspective(
+  source: Raster,
+  quad: Quad,
+  size: Size,
+  bows?: EdgeBows
+): Raster {
   const { width, height } = size;
   const destination: Quad = [
     { x: 0, y: 0 },
@@ -47,18 +71,57 @@ export function warpPerspective(source: Raster, quad: Quad, size: Size): Raster 
   const sampled = prefilter(source, quad, size);
   const h = solveHomography(destination, quad);
   const out = createRaster(width, height);
+  // Straight sides displace nothing, so the arithmetic is skipped rather than
+  // run to produce zeroes: this is the common case and the loop is per pixel.
+  const bow = bows && !bowsAreStraight(quad, bows) ? bowDisplacement(quad, bows) : null;
 
   for (let v = 0; v < height; v++) {
     const cy = v + 0.5;
     for (let u = 0; u < width; u++) {
       const cx = u + 0.5;
       const w = h[6] * cx + h[7] * cy + 1;
-      const x = (h[0] * cx + h[1] * cy + h[2]) / w;
-      const y = (h[3] * cx + h[4] * cy + h[5]) / w;
+      let x = (h[0] * cx + h[1] * cy + h[2]) / w;
+      let y = (h[3] * cx + h[4] * cy + h[5]) / w;
+      if (bow) {
+        const shift = bow(cx / width, cy / height);
+        x += shift.x;
+        y += shift.y;
+      }
       sampleCubic(sampled, x - 0.5, y - 0.5, out.data, (v * width + u) * 4);
     }
   }
   return out;
+}
+
+/**
+ * How far to move the point the homography chose, for a position across the
+ * corrected rectangle.
+ *
+ * Each side contributes what it departs from its own chord at the matching
+ * parameter, weighted by how near that side is. The corner terms a Coons patch
+ * would subtract are not needed here: a departure is zero at both ends of every
+ * side, so the four contributions already vanish at the corners.
+ */
+function bowDisplacement(quad: Quad, bows: EdgeBows): (u: number, v: number) => Point {
+  const chord = straightBows(quad);
+
+  const departure = (edge: keyof EdgeBows, t: number): Point => {
+    const [from, to] = EDGE_CORNERS[edge];
+    const curved = bezierAt(quad[from], bows[edge][0], bows[edge][1], quad[to], t);
+    const straight = bezierAt(quad[from], chord[edge][0], chord[edge][1], quad[to], t);
+    return { x: curved.x - straight.x, y: curved.y - straight.y };
+  };
+
+  return (u, v) => {
+    const top = departure('top', u);
+    const bottom = departure('bottom', u);
+    const left = departure('left', v);
+    const right = departure('right', v);
+    return {
+      x: (1 - v) * top.x + v * bottom.x + (1 - u) * left.x + u * right.x,
+      y: (1 - v) * top.y + v * bottom.y + (1 - u) * left.y + u * right.y,
+    };
+  };
 }
 
 /**

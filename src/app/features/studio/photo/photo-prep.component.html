@@ -46,7 +46,14 @@
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <polygon [attr.points]="outline()" vector-effect="non-scaling-stroke" />
+          <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
+          @for (bow of bowHandles(); track bow.edge + bow.index) {
+            <path
+              class="prep-tether"
+              [attr.d]="bow.tether"
+              vector-effect="non-scaling-stroke"
+            />
+          }
         </svg>
         @for (handle of handles(); track $index) {
           <button
@@ -60,10 +67,68 @@
             (pointerdown)="grab($index, $event)"
           ></button>
         }
+        @for (bow of bowHandles(); track bow.edge + bow.index) {
+          <button
+            type="button"
+            class="prep-bow"
+            [style.left]="bow.left"
+            [style.top]="bow.top"
+            [style.width.px]="handleSize() * 0.55"
+            [style.height.px]="handleSize() * 0.55"
+            [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
+            (pointerdown)="grabBow(bow.edge, bow.index, $event)"
+          ></button>
+        }
       </div>
     </div>
 
     <div class="prep-controls">
+      <fieldset class="prep-field">
+        <legend>Whose it is</legend>
+        <label>
+          Name
+          <input
+            type="text"
+            [value]="artist()"
+            placeholder="Juanma Moreno Sánchez"
+            (input)="setArtist($event)"
+          />
+        </label>
+        <label>
+          Notice
+          <input
+            type="text"
+            [value]="notice()"
+            [placeholder]="noticePreview() || '© year name. All rights reserved.'"
+            (input)="setNotice($event)"
+          />
+        </label>
+        <label>
+          Terms page
+          <input
+            type="text"
+            [value]="webStatement()"
+            placeholder="https://www.juanmamoreno.com/terms"
+            (input)="setWebStatement($event)"
+          />
+        </label>
+        <p class="prep-hint">
+          Written into the file as exif and xmp, which costs nothing in quality.
+          Leave the name blank and the file goes out unattributed.
+        </p>
+      </fieldset>
+
+      <fieldset class="prep-field">
+        <legend>Sides</legend>
+        <p class="prep-hint">
+          Drag the small handles to follow a side that the lens has bent. Straight
+          sides change nothing.
+        </p>
+        <button type="button" class="prep-link" (click)="straightenSides()">
+          Straighten the sides
+        </button>
+      </fieldset>
+
       <fieldset class="prep-field">
         <legend>Aiming</legend>
         <label>

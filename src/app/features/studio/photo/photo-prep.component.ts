@@ -1,12 +1,21 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { detectQuad } from '@domain/image/detect-corners';
+import { copyrightNotice, withRights, type Rights } from '@domain/image/jpeg-rights';
 import {
   preparePhoto,
   type PhotoStage,
   type PreparePhotoReport,
 } from '@domain/image/prepare-photo';
-import { fullFrame, type Point, type Quad } from '@domain/image/quad';
+import {
+  EDGE_CORNERS,
+  fullFrame,
+  straightBows,
+  type EdgeBows,
+  type EdgeName,
+  type Point,
+  type Quad,
+} from '@domain/image/quad';
 import type { Raster } from '@domain/image/raster';
 
 /**
@@ -48,6 +57,26 @@ const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
  * anywhere along its edge, so the hand can stay clear of the point it is
  * setting. The cross keeps marking the exact pixel however wide the ring gets.
  */
+const ARTIST_KEY = 'juanmamoreno.studio.artist';
+const NOTICE_KEY = 'juanmamoreno.studio.notice';
+const STATEMENT_KEY = 'juanmamoreno.studio.webStatement';
+
+function remembered(key: string): string {
+  try {
+    return window.localStorage.getItem(key) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function remember(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage off. The field holds for this session, which is enough.
+  }
+}
+
 const HANDLE_SIZE_KEY = 'juanmamoreno.studio.handleSize';
 const DEFAULT_HANDLE_SIZE = 46;
 const MIN_HANDLE_SIZE = 20;
@@ -74,7 +103,8 @@ export class PhotoPrepComponent {
   private readonly previewCanvas = viewChild<ElementRef<HTMLCanvasElement>>('preview');
 
   private readonly photo = signal<ImageBitmap | null>(null);
-  private dragging: number | null = null;
+  /** Either a corner by index, or one control point of one side. */
+  private dragging: number | { edge: EdgeName; index: 0 | 1 } | null = null;
 
   constructor() {
     // The canvas is inside the block that `size` reveals, so at the moment the
@@ -89,6 +119,48 @@ export class PhotoPrepComponent {
   }
 
   protected readonly cornerNames = CORNER_NAMES;
+  /**
+   * Who made the painting, written into the file itself.
+   *
+   * A canvas encodes a jpeg with no author, no rights and no colour profile, so
+   * every corrected painting used to leave the studio anonymous — and a
+   * reproduction of a painting is exactly the kind of image that travels and
+   * arrives somewhere with nobody attached to it. Remembered between sessions,
+   * because it is the same answer every time.
+   */
+  protected readonly artist = signal(remembered(ARTIST_KEY));
+  protected readonly notice = signal(remembered(NOTICE_KEY));
+  protected readonly webStatement = signal(remembered(STATEMENT_KEY));
+
+  protected readonly noticePreview = computed(() =>
+    this.artist().trim() ? copyrightNotice(this.rights() as Rights) : ''
+  );
+
+  protected readonly rights = computed<Rights | null>(() => {
+    const artist = this.artist().trim();
+    if (!artist) return null;
+    return {
+      artist,
+      notice: this.notice().trim() || undefined,
+      webStatement: this.webStatement().trim() || undefined,
+    };
+  });
+
+  protected setArtist(event: Event): void {
+    this.artist.set(textIn(event));
+    remember(ARTIST_KEY, this.artist());
+  }
+
+  protected setNotice(event: Event): void {
+    this.notice.set(textIn(event));
+    remember(NOTICE_KEY, this.notice());
+  }
+
+  protected setWebStatement(event: Event): void {
+    this.webStatement.set(textIn(event));
+    remember(STATEMENT_KEY, this.webStatement());
+  }
+
   protected readonly minHandleSize = MIN_HANDLE_SIZE;
   protected readonly maxHandleSize = MAX_HANDLE_SIZE;
   protected readonly handleSize = signal(rememberedHandleSize());
@@ -109,6 +181,17 @@ export class PhotoPrepComponent {
   protected readonly fileName = signal('');
   protected readonly size = signal<{ width: number; height: number } | null>(null);
   protected readonly corners = signal<Quad | null>(null);
+  /**
+   * How each side bends between its corners.
+   *
+   * Four corners describe a painting seen at an angle, and nothing more: a lens
+   * bows the long sides, and a stretcher that has taken a bow bows them for
+   * real. Left straight, these change nothing whatsoever — the correction takes
+   * the same path it always did — so the cost of offering them is only what
+   * they are worth on the photographs that need them.
+   */
+  protected readonly bows = signal<EdgeBows | null>(null);
+  protected readonly edgeNames = Object.keys(EDGE_CORNERS) as EdgeName[];
   protected readonly foundEdges = signal(true);
   /** In centimetres, though only the ratio between them is ever read. */
   protected readonly realWidth = signal<number | null>(null);
@@ -137,9 +220,67 @@ export class PhotoPrepComponent {
     () => !!this.corners() && this.measured() && !this.busy()
   );
 
-  protected readonly outline = computed(() =>
-    (this.corners() ?? []).map((corner) => `${corner.x},${corner.y}`).join(' ')
-  );
+  /**
+   * The outline as a path rather than a polygon, so a bowed side is drawn as
+   * the curve it is. What is being judged is whether the line drawn follows the
+   * edge of the painting, and a straight line between bent corners cannot show
+   * that it does not.
+   */
+  protected readonly outline = computed(() => {
+    const corners = this.corners();
+    const bows = this.bows();
+    if (!corners) return '';
+    if (!bows) {
+      return `M ${corners.map((c) => `${c.x} ${c.y}`).join(' L ')} Z`;
+    }
+    const curve = (edge: EdgeName, reverse = false) => {
+      const [from, to] = EDGE_CORNERS[edge];
+      const [c0, c1] = bows[edge];
+      const end = reverse ? corners[from] : corners[to];
+      const first = reverse ? c1 : c0;
+      const second = reverse ? c0 : c1;
+      return `C ${first.x} ${first.y} ${second.x} ${second.y} ${end.x} ${end.y}`;
+    };
+    return [
+      `M ${corners[0].x} ${corners[0].y}`,
+      curve('top'),
+      curve('right'),
+      curve('bottom', true),
+      curve('left', true),
+      'Z',
+    ].join(' ');
+  });
+
+  /**
+   * The control points, placed like the corner handles. Each is drawn joined to
+   * the corner it belongs to, so it reads as a pull on that corner's side
+   * rather than a loose dot in the middle of the picture.
+   */
+  protected readonly bowHandles = computed(() => {
+    const size = this.size();
+    const corners = this.corners();
+    const bows = this.bows();
+    if (!size || !corners || !bows) return [];
+
+    return this.edgeNames.flatMap((edge) =>
+      ([0, 1] as const).map((index) => {
+        const point = bows[edge][index];
+        const anchor = corners[EDGE_CORNERS[edge][index]];
+        return {
+          edge,
+          index,
+          left: `${(point.x / size.width) * 100}%`,
+          top: `${(point.y / size.height) * 100}%`,
+          tether: `M ${anchor.x} ${anchor.y} L ${point.x} ${point.y}`,
+        };
+      })
+    );
+  });
+
+  protected straightenSides(): void {
+    const corners = this.corners();
+    if (corners) this.bows.set(straightBows(corners));
+  }
 
   /** Placed as a share of the frame, so a handle stays the same size however the photo is scaled. */
   protected readonly handles = computed(() => {
@@ -202,11 +343,13 @@ export class PhotoPrepComponent {
     const found = detectQuad(small);
     const scale = width / small.width;
     this.foundEdges.set(found.detected);
-    this.corners.set(
-      found.detected
-        ? (found.quad.map((corner) => ({ x: corner.x * scale, y: corner.y * scale })) as Quad)
-        : fullFrame({ width, height })
-    );
+    const quad = found.detected
+      ? (found.quad.map((corner) => ({ x: corner.x * scale, y: corner.y * scale })) as Quad)
+      : fullFrame({ width, height });
+    this.corners.set(quad);
+    // Straight to begin with: corner finding fits four sides, so a bow is
+    // always something the artist adds after looking.
+    this.bows.set(straightBows(quad));
   }
 
   /** Draws the photograph into a scratch canvas to read its pixels back out. */
@@ -233,6 +376,12 @@ export class PhotoPrepComponent {
     event.preventDefault();
   }
 
+  protected grabBow(edge: EdgeName, index: 0 | 1, event: PointerEvent): void {
+    this.dragging = { edge, index };
+    (event.target as Element).setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
   protected drag(event: PointerEvent): void {
     if (this.dragging === null) return;
 
@@ -241,12 +390,42 @@ export class PhotoPrepComponent {
     const corners = this.corners();
     if (!at || !size || !corners) return;
 
-    const moved = [...corners] as Quad;
-    moved[this.dragging] = {
+    const clamped = {
       x: Math.min(size.width, Math.max(0, at.x)),
       y: Math.min(size.height, Math.max(0, at.y)),
     };
+
+    if (typeof this.dragging !== 'number') {
+      const bows = this.bows();
+      if (!bows) return;
+      const { edge, index } = this.dragging;
+      const pair = [...bows[edge]] as [Point, Point];
+      pair[index] = clamped;
+      this.bows.set({ ...bows, [edge]: pair });
+      return;
+    }
+
+    const index = this.dragging;
+    const moved = [...corners] as Quad;
+    moved[index] = clamped;
     this.corners.set(moved);
+
+    // A corner takes its own two control points with it, so a side that has
+    // been bent keeps its bend when the corner it hangs from is repositioned.
+    // Recomputing them from the new chord instead would undo the bow the moment
+    // the corner beside it was nudged.
+    const shift = { x: clamped.x - corners[index].x, y: clamped.y - corners[index].y };
+    const bows = this.bows();
+    if (!bows) return;
+    const next = { ...bows };
+    for (const edge of this.edgeNames) {
+      const [from, to] = EDGE_CORNERS[edge];
+      const pair = [...bows[edge]] as [Point, Point];
+      if (from === index) pair[0] = { x: pair[0].x + shift.x, y: pair[0].y + shift.y };
+      if (to === index) pair[1] = { x: pair[1].x + shift.x, y: pair[1].y + shift.y };
+      next[edge] = pair;
+    }
+    this.bows.set(next);
   }
 
   protected release(): void {
@@ -279,6 +458,7 @@ export class PhotoPrepComponent {
     try {
       const { image, report } = await preparePhoto(this.rasterAt(), {
         quad: corners,
+      bows: this.bows() ?? undefined,
         realWidth,
         realHeight,
         equalizeLighting: this.evenLighting(),
@@ -292,7 +472,7 @@ export class PhotoPrepComponent {
       });
 
       this.report.set(report);
-      this.resultUrl.set(await toJpegUrl(image));
+      this.resultUrl.set(await toJpegUrl(image, this.rights()));
     } catch {
       this.problem.set(
         'The photograph was too large for this browser to hold. Try a smaller copy.'
@@ -321,6 +501,10 @@ export class PhotoPrepComponent {
   }
 }
 
+function textIn(event: Event): string {
+  return (event.target as HTMLInputElement).value;
+}
+
 function numberIn(event: Event): number | null {
   const value = Number.parseFloat((event.target as HTMLInputElement).value);
   return Number.isFinite(value) && value > 0 ? value : null;
@@ -338,7 +522,7 @@ function breathe(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 }
 
-async function toJpegUrl(image: Raster): Promise<string> {
+async function toJpegUrl(image: Raster, rights: Rights | null): Promise<string> {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
   canvas.height = image.height;
@@ -349,5 +533,10 @@ async function toJpegUrl(image: Raster): Promise<string> {
     canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
   );
   if (!blob) throw new Error('The corrected image could not be encoded');
-  return URL.createObjectURL(blob);
+  if (!rights) return URL.createObjectURL(blob);
+
+  // Header segments only, ahead of the compressed image, so nothing that was
+  // just corrected is touched to add them.
+  const stamped = withRights(new Uint8Array(await blob.arrayBuffer()), rights);
+  return URL.createObjectURL(new Blob([stamped.buffer as ArrayBuffer], { type: 'image/jpeg' }));
 }

@@ -8,6 +8,76 @@ export interface Point {
 /** The painting's four corners, always clockwise from the top left. */
 export type Quad = [Point, Point, Point, Point];
 
+/**
+ * How far each side departs from the straight line between its corners.
+ *
+ * A painting is a rectangle and its corners settle where they should, but the
+ * sides between them are not always straight in the photograph: a lens bends
+ * them, most visibly along the long side of a big canvas, and a stretcher that
+ * has taken a little bow bends them for real. Four corners cannot describe
+ * that, so each side also carries the two control points of a cubic Bézier
+ * running between its corners.
+ *
+ * Sides run the way the corners do — top left→right, right top→bottom, bottom
+ * left→right, left top→bottom — so the two horizontal sides are parameterised
+ * in the same direction as each other, and so are the two vertical ones.
+ */
+export interface EdgeBows {
+  top: [Point, Point];
+  right: [Point, Point];
+  bottom: [Point, Point];
+  left: [Point, Point];
+}
+
+export const EDGE_CORNERS = {
+  top: [0, 1],
+  right: [1, 2],
+  bottom: [3, 2],
+  left: [0, 3],
+} as const;
+
+export type EdgeName = keyof typeof EDGE_CORNERS;
+
+const along = (a: Point, b: Point, t: number): Point => ({
+  x: a.x + (b.x - a.x) * t,
+  y: a.y + (b.y - a.y) * t,
+});
+
+/** Control points sitting on the straight line, which is a side with no bow. */
+export function straightBows(quad: Quad): EdgeBows {
+  const make = (edge: EdgeName): [Point, Point] => {
+    const [from, to] = EDGE_CORNERS[edge];
+    return [along(quad[from], quad[to], 1 / 3), along(quad[from], quad[to], 2 / 3)];
+  };
+  return { top: make('top'), right: make('right'), bottom: make('bottom'), left: make('left') };
+}
+
+/** A point on the cubic Bézier of one side. */
+export function bezierAt(p0: Point, c0: Point, c1: Point, p1: Point, t: number): Point {
+  const s = 1 - t;
+  const a = s * s * s;
+  const b = 3 * s * s * t;
+  const c = 3 * s * t * t;
+  const d = t * t * t;
+  return {
+    x: a * p0.x + b * c0.x + c * c1.x + d * p1.x,
+    y: a * p0.y + b * c0.y + c * c1.y + d * p1.y,
+  };
+}
+
+/**
+ * Whether every side is straight to within a pixel, in which case the bows have
+ * nothing to say and the plain perspective correction is the whole answer.
+ */
+export function bowsAreStraight(quad: Quad, bows: EdgeBows, tolerance = 0.5): boolean {
+  const flat = straightBows(quad);
+  return (Object.keys(EDGE_CORNERS) as EdgeName[]).every((edge) =>
+    bows[edge].every(
+      (point, i) => distance(point, flat[edge][i]) <= tolerance
+    )
+  );
+}
+
 export function distance(a: Point, b: Point): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
