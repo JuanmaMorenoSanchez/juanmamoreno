@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.5.2
+
+- fix: the home page mouse test failed about two runs in five and blocked the
+  deploy. It counted drags on `window`, and a click landing before the page has
+  hydrated follows the link as a plain anchor and replaces the document, taking
+  the counter with it — which then read as "the link was dragged". The count is
+  kept where it outlives the navigation
+
 ## 1.5.1
 
 - fix: a white garment in a painting was read as light rather than as paint,

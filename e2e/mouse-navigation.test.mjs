@@ -63,6 +63,9 @@ async function requireServer() {
 /** How far the pointer wanders between press and release. Four is enough. */
 const DRIFT_PX = 12;
 
+/** Where the drag count is kept. See {@link clickWithDriftingMouse}. */
+const DRAG_COUNT = 'e2e.dragStarts';
+
 /**
  * Waiting for the address to change, and not for the page to finish loading.
  *
@@ -91,10 +94,23 @@ async function clickWithDriftingMouse(page, selector) {
   const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
 
-  await page.evaluate(() => {
-    window.__dragStarts = 0;
-    document.addEventListener('dragstart', () => (window.__dragStarts += 1), true);
-  });
+  // Counted in sessionStorage rather than on window, because the count has to
+  // outlive the document. Before the page has hydrated the link is a plain
+  // anchor and opening it replaces the document, taking any counter on window
+  // with it — and an undefined counter then reads as "the link was dragged",
+  // which is the opposite of what happened. sessionStorage survives the
+  // navigation, so the answer is the same whichever way the link was followed.
+  await page.evaluate((key) => {
+    sessionStorage.setItem(key, '0');
+    document.addEventListener(
+      'dragstart',
+      () => {
+        const seen = Number(sessionStorage.getItem(key) ?? '0');
+        sessionStorage.setItem(key, String(seen + 1));
+      },
+      true
+    );
+  }, DRAG_COUNT);
 
   await page.mouse.move(x, y);
   await page.mouse.down();
@@ -109,7 +125,9 @@ async function clickWithDriftingMouse(page, selector) {
   return {
     href,
     landedOn: new URL(page.url()).pathname,
-    dragStarts: await page.evaluate(() => window.__dragStarts),
+    dragStarts: Number(
+      await page.evaluate((key) => sessionStorage.getItem(key) ?? '0', DRAG_COUNT)
+    ),
   };
 }
 
