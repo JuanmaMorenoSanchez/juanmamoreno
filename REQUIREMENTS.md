@@ -169,13 +169,29 @@ the photograph, never synthesised by a model.
 Lighting is measured; if it is already even it is left alone. When it is not, a
 flat-field division lifts the dim side without touching the colour of the paint,
 clamped so it cannot flatten a composition it has misread.
-*Proven by:* `prepare-photo.spec.ts` "illumination" (4 tests)
+
+The light is fitted as a **plane**, discarding what disagrees with it, and never
+read off a blurred copy of the painting. A blurred copy cannot tell light from
+paint — a pale passage is bright at every scale — so a white garment came back
+as a lamp and was shaded to put it out. A plane can only say that one side got
+more light than the other, which is the common fault and one a garment cannot
+fake. Anything richer regains the freedom to sit down over the garment and call
+it light.
+*Proven by:* `prepare-photo.spec.ts` "illumination" (6 tests, including a white
+garment under even light being left untouched while a real lamp is still found
+on a canvas that has one)
 
 ### R23 — Glare is filled in, white paint is not · met
 Small, near-white, desaturated spots that are brighter than the paint around
 them are filled from their surroundings. A broad passage of white paint is too
-large to qualify and is left untouched.
-*Proven by:* `prepare-photo.spec.ts` "specular highlights" (4 tests)
+large to qualify and is left untouched — and so is a passage of white paint cut
+into pieces by dark marks, which size alone does not protect, since every piece
+is small and pale and brighter than the marks beside it. Candidates are joined
+up on a coarse grid first: real flare stays sparse, a patterned garment becomes
+one region and is left alone entire.
+*Proven by:* `prepare-photo.spec.ts` "specular highlights" (6 tests, including a
+marked white garment left untouched while a real flare on the same canvas is
+still found)
 
 ### R24 — The photograph is visible while it is being corrected · met
 The opened photograph is shown as large as the window allows, with its four

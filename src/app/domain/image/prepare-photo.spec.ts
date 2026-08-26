@@ -224,6 +224,43 @@ describe('illumination', () => {
     expect(measureIllumination(raster).variation).toBeLessThan(before / 2);
   });
 
+  /** An evenly lit painting with a large pale passage across the middle of it. */
+  const withWhiteGarment = (lamp: number) => {
+    const raster = evenly();
+    for (let y = 0; y < raster.height; y++) {
+      for (let x = 0; x < raster.width; x++) {
+        const light = 1 - lamp / 2 + (lamp * x) / raster.width;
+        const garment = x > 45 && x < 155 && y > 45 && y < 120;
+        put(raster, x, y, [
+          (garment ? 244 : 150) * light,
+          (garment ? 244 : 120) * light,
+          (garment ? 240 : 90) * light,
+        ]);
+      }
+    }
+    return raster;
+  };
+
+  it('does not read a white garment as a lamp shining on the canvas', () => {
+    // The reported fault. A pale passage is bright at every scale, so an
+    // illumination estimate that follows the picture calls it a bright lamp,
+    // and the correction then shades the garment to put the lamp out.
+    const raster = withWhiteGarment(0);
+    const before = pixel(raster, 100, 80);
+    const report = measureIllumination(raster);
+    equalizeIllumination(raster);
+
+    expect(report.uniform).toBe(true);
+    expect(pixel(raster, 100, 80)).toEqual(before);
+  });
+
+  it('still finds the lamp on a painting that has one', () => {
+    const report = measureIllumination(withWhiteGarment(0.5));
+
+    expect(report.uniform).toBe(false);
+    expect(report.variation).toBeGreaterThan(0.3);
+  });
+
   it('leaves the colour of the paint alone while lifting the dim corner', () => {
     const raster = unevenly();
     const [beforeR, beforeG] = pixel(raster, 10, 75);
@@ -269,6 +306,47 @@ describe('specular highlights', () => {
     );
 
     expect(findSpecular(raster).spots).toBe(0);
+  });
+
+  it('leaves a white garment painted with dark marks alone', () => {
+    // The marks cut the white into pieces and every piece, taken by itself,
+    // looks exactly like a highlight: small, near-white, colourless, brighter
+    // than what surrounds it. Filling them would shade the garment with the
+    // colour of its own marks.
+    const raster = painting();
+    for (let y = 30; y < 150; y++) {
+      for (let x = 40; x < 200; x++) put(raster, x, y, [246, 246, 244]);
+    }
+    for (let y = 34; y < 148; y += 11) {
+      for (let x = 44; x < 198; x += 13) {
+        for (let dy = 0; dy < 5; dy++) {
+          for (let dx = 0; dx < 6; dx++) put(raster, x + dx, y + dy, [22, 54, 40]);
+        }
+      }
+    }
+    const before = pixel(raster, 100, 100);
+    const finding = findSpecular(raster);
+    repairSpecular(raster, finding);
+
+    expect(finding.spots).toBe(0);
+    expect(pixel(raster, 100, 100)).toEqual(before);
+  });
+
+  it('still finds a real flare on a painting that also has a marked garment', () => {
+    const raster = painting();
+    for (let y = 30; y < 150; y++) {
+      for (let x = 40; x < 130; x++) put(raster, x, y, [246, 246, 244]);
+    }
+    for (let y = 34; y < 148; y += 11) {
+      for (let x = 44; x < 128; x += 13) {
+        for (let dy = 0; dy < 5; dy++) {
+          for (let dx = 0; dx < 6; dx++) put(raster, x + dx, y + dy, [22, 54, 40]);
+        }
+      }
+    }
+    disc(raster, 205, 150, 4, [255, 255, 255]);
+
+    expect(findSpecular(raster).spots).toBe(1);
   });
 
   it('fills the flare back in with the paint around it', () => {

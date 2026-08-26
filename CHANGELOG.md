@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.5.1
+
+- fix: a white garment in a painting was read as light rather than as paint,
+  and shaded to put the imagined lamp out. On an evenly lit canvas the lighting
+  pass reported 121% unevenness and darkened the garment from 244 to 181; both
+  are now left alone. The light is fitted as a plane, which can say one side got
+  more light than the other and cannot say a garment
+- fix: white paint broken up by dark marks — a patterned jumper — was filled in
+  as though each patch between the marks were a separate highlight, which shaded
+  it with the colour of its own marks
+
 ## 1.5.0
 
 - feat: the corner handles carry a cross, so a corner is placed on a point

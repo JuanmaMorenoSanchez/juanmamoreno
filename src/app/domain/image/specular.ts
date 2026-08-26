@@ -13,11 +13,21 @@ const MIN_SPOT_PIXELS = 6;
 /**
  * Larger than this is not a reflection.
  *
- * It is the single most important number here: a highlight is a small hot spot,
- * whereas white paint is a broad region that is also bright and also
- * unsaturated. Judging by size is what keeps the repair off the painting.
+ * A highlight is a small hot spot, whereas white paint is a broad region that
+ * is also bright and also unsaturated. Judging by size is most of what keeps
+ * the repair off the painting — but only most: see {@link paintedRegions}.
  */
 const MAX_SPOT_SHARE = 0.004;
+/**
+ * Where the question "is this one passage of white, or many highlights" is put.
+ *
+ * Coarse on purpose. Working at this scale, patches of white a few marks apart
+ * fall in neighbouring cells and join up, which is the whole point.
+ */
+const MERGE_AT = 320;
+const MERGE_RADIUS = 3;
+/** A joined-up region larger than this share of the painting is paint, not flare. */
+const MAX_MERGED_SHARE = 0.015;
 /** Glare fades out rather than stopping, so the repair takes a little more than was detected. */
 const SKIRT = 2;
 
@@ -68,11 +78,13 @@ export function findSpecular(raster: Raster): SpecularFinding {
     }
   }
 
+  const painted = paintedRegions(candidates, width, height);
   const largest = Math.max(MIN_SPOT_PIXELS, Math.floor(width * height * MAX_SPOT_SHARE));
   const mask = new Uint8Array(width * height);
   let spots = 0;
   for (const component of componentsOf(candidates, width, height)) {
     if (component.pixels.length < MIN_SPOT_PIXELS || component.pixels.length > largest) continue;
+    if (painted(component.pixels[0], width)) continue;
     for (const p of component.pixels) mask[p] = 1;
     spots++;
   }
@@ -82,6 +94,55 @@ export function findSpecular(raster: Raster): SpecularFinding {
   for (const flag of grown) covered += flag;
 
   return { mask: grown, spots, coverage: covered / (width * height) };
+}
+
+/**
+ * Says which parts of the picture are a passage of white paint rather than flare.
+ *
+ * Size alone is not enough. A white jumper painted with dark marks all over it
+ * is white paint, but the marks cut it into pieces, and every piece is small,
+ * near-white, colourless and brighter than the marks beside it — which is the
+ * whole description of a highlight. Each piece passes the size test on its own
+ * and gets filled in from its surroundings, and since its surroundings are the
+ * dark marks, the white comes back shaded.
+ *
+ * So the candidates are looked at again on a coarse grid, where pieces a few
+ * marks apart land in neighbouring cells and join into one region. Real flare
+ * is sparse and stays small when joined up; a stippled passage of paint becomes
+ * one large region and is left alone entire. What is being asked is whether the
+ * white is *spread over an area*, which is what tells paint from reflection,
+ * and never mind how it is broken up.
+ */
+function paintedRegions(
+  candidates: Uint8Array,
+  width: number,
+  height: number
+): (pixel: number, stride: number) => boolean {
+  const scale = Math.min(1, MERGE_AT / Math.max(width, height));
+  const cols = Math.max(1, Math.round(width * scale));
+  const rows = Math.max(1, Math.round(height * scale));
+
+  const coarse = new Uint8Array(cols * rows);
+  for (let p = 0; p < candidates.length; p++) {
+    if (!candidates[p]) continue;
+    const x = Math.min(cols - 1, Math.floor(((p % width) * cols) / width));
+    const y = Math.min(rows - 1, Math.floor((((p / width) | 0) * rows) / height));
+    coarse[y * cols + x] = 1;
+  }
+
+  const joined = dilate(coarse, cols, rows, MERGE_RADIUS);
+  const paint = new Uint8Array(cols * rows);
+  const tooBig = cols * rows * MAX_MERGED_SHARE;
+  for (const region of componentsOf(joined, cols, rows)) {
+    if (region.pixels.length <= tooBig) continue;
+    for (const p of region.pixels) paint[p] = 1;
+  }
+
+  return (pixel, stride) => {
+    const x = Math.min(cols - 1, Math.floor(((pixel % stride) * cols) / width));
+    const y = Math.min(rows - 1, Math.floor((((pixel / stride) | 0) * rows) / height));
+    return paint[y * cols + x] === 1;
+  };
 }
 
 /**
