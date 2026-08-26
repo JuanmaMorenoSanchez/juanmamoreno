@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { PhotoPrepComponent } from './photo/photo-prep.component';
 
 @Component({
   selector: 'app-studio',
+  imports: [PhotoPrepComponent],
   templateUrl: './studio.component.html',
   styleUrl: './studio.component.scss',
 })

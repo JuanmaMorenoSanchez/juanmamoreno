@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.3.0
+
+- feat: the studio flattens a photograph of a painting — finds its four corners,
+  squares up the perspective to the painting's real proportions, evens out
+  uneven lighting and fills in the glare off the varnish, then hands back a PNG.
+  Computer vision over the real pixels, in the browser: nothing is uploaded and
+  no part of the picture is regenerated
+
 ## 1.2.1
 
 - fix: the door had no Google client id, so it could not open at all

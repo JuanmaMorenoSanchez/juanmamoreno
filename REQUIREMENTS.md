@@ -131,6 +131,42 @@ appears among the built pages)
 
 ---
 
+## The studio
+
+### R20 — A photograph can be squared up · met
+The studio takes a photograph of a painting and the painting's real width and
+height, finds its four corners, and returns it as a rectangle of exactly those
+proportions. Corners that were found wrong can be dragged.
+*Proven by:* `detect-corners.spec.ts`, `quad.spec.ts` (`correctedSize`),
+`prepare-photo.spec.ts` (`warpPerspective`, `preparePhoto`)
+
+### R21 — No pixel is invented · met
+The corrected image is never enlarged beyond the detail the photograph holds
+along either axis: the largest rectangle of the right proportions that fits
+inside the measured edges. Nothing is generated — every pixel is resampled from
+the photograph, never synthesised by a model.
+*Proven by:* `quad.spec.ts` "never enlarges either axis", `prepare-photo.spec.ts`
+"never enlarges the photograph it was given"
+
+### R22 — Uneven lighting is evened out, gently · met
+Lighting is measured; if it is already even it is left alone. When it is not, a
+flat-field division lifts the dim side without touching the colour of the paint,
+clamped so it cannot flatten a composition it has misread.
+*Proven by:* `prepare-photo.spec.ts` "illumination" (4 tests)
+
+### R23 — Glare is filled in, white paint is not · met
+Small, near-white, desaturated spots that are brighter than the paint around
+them are filled from their surroundings. A broad passage of white paint is too
+large to qualify and is left untouched.
+*Proven by:* `prepare-photo.spec.ts` "specular highlights" (4 tests)
+
+### R24 — The result downloads losslessly · met
+The corrected image is offered as a PNG, so the file holds exactly the pixels
+that were computed.
+*Proven by:* `photo-prep.component.ts` (`toPngUrl`), and the studio probe
+
+---
+
 ## Versions
 
 ### R19 — Both halves report their version · met

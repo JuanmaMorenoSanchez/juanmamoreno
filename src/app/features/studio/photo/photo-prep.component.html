@@ -1,0 +1,151 @@
+<section class="prep">
+  <h2 class="prep-heading">Flatten a photograph</h2>
+  <p class="prep-lead">
+    Squares up a photograph of a painting, evens out the lighting and takes off the glare. Nothing
+    is uploaded and nothing is repainted — the work happens here, on the pixels you took.
+  </p>
+
+  @if (!size()) {
+    <label class="prep-drop" (drop)="onDrop($event)" (dragover)="allowDrop($event)">
+      <input type="file" accept="image/*" (change)="onFile($event)" hidden />
+      <span class="prep-drop-title">Choose a photograph</span>
+      <span class="prep-drop-hint">or drop one here</span>
+    </label>
+  }
+
+  @if (problem(); as message) {
+    <p class="prep-problem" role="alert">{{ message }}</p>
+  }
+
+  @if (size(); as photo) {
+    <p class="prep-file">
+      {{ fileName() }} — {{ photo.width }} × {{ photo.height }} px
+      <button type="button" class="prep-link" (click)="reset()">Choose another</button>
+    </p>
+
+    <p class="prep-hint">
+      @if (foundEdges()) {
+        The painting's edges were found. Drag any corner that sits wrong.
+      } @else {
+        The edges could not be picked out of this photograph. Drag the four corners onto them.
+      }
+    </p>
+
+    <div
+      #stage
+      class="prep-stage"
+      (pointermove)="drag($event)"
+      (pointerup)="release()"
+      (pointercancel)="release()"
+    >
+      <canvas #preview class="prep-canvas"></canvas>
+      <svg
+        class="prep-outline"
+        [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <polygon [attr.points]="outline()" vector-effect="non-scaling-stroke" />
+      </svg>
+      @for (handle of handles(); track $index) {
+        <button
+          type="button"
+          class="prep-handle"
+          [style.left]="handle.left"
+          [style.top]="handle.top"
+          [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
+          (pointerdown)="grab($index, $event)"
+        ></button>
+      }
+    </div>
+
+    <div class="prep-controls">
+      <fieldset class="prep-field">
+        <legend>The painting itself</legend>
+        <label>
+          Width
+          <input type="number" min="1" step="0.1" inputmode="decimal" (input)="setWidth($event)" />
+          cm
+        </label>
+        <label>
+          Height
+          <input type="number" min="1" step="0.1" inputmode="decimal" (input)="setHeight($event)" />
+          cm
+        </label>
+        <p class="prep-note">
+          The result is given these proportions exactly. Only the ratio is read, so any unit will do
+          as long as both are in it.
+        </p>
+      </fieldset>
+
+      <fieldset class="prep-field">
+        <legend>Also</legend>
+        <label class="prep-check">
+          <input
+            type="checkbox"
+            [checked]="evenLighting()"
+            (change)="evenLighting.set($any($event.target).checked)"
+          />
+          Even out the lighting, if it is uneven
+        </label>
+        <label class="prep-check">
+          <input
+            type="checkbox"
+            [checked]="takeOutGlare()"
+            (change)="takeOutGlare.set($any($event.target).checked)"
+          />
+          Take out the glare off the varnish
+        </label>
+      </fieldset>
+    </div>
+
+    <p class="prep-actions">
+      <button type="button" class="prep-go" [disabled]="!canProcess()" (click)="process()">
+        Flatten it
+      </button>
+      @if (busy()) {
+        <span class="prep-busy">{{ busyLabel() }}…</span>
+      } @else if (!measured()) {
+        <span class="prep-busy">Give the painting's width and height first.</span>
+      }
+    </p>
+  }
+
+  @if (report(); as done) {
+    <div class="prep-result">
+      <h3 class="prep-result-heading">Done</h3>
+      <ul class="prep-report">
+        <li>
+          {{ done.size.width }} × {{ done.size.height }} px, at the painting's own proportions.
+        </li>
+        <li>
+          @if (done.equalized) {
+            The lighting fell off by {{ done.illumination.variation * 100 | number: '1.0-0' }}%
+            across the canvas and has been flattened.
+          } @else if (done.illumination.uniform) {
+            The lighting was already even, so it was left alone.
+          } @else {
+            The lighting is uneven, but you asked for it to be left alone.
+          }
+        </li>
+        <li>
+          @if (done.spotsRemoved) {
+            {{ done.spotsRemoved }} bright spot{{ done.spotsRemoved === 1 ? '' : 's' }} filled in,
+            covering {{ done.glareCoverage * 100 | number: '1.0-2' }}% of the surface.
+          } @else {
+            No glare was found.
+          }
+        </li>
+      </ul>
+
+      @if (resultUrl(); as url) {
+        <img class="prep-preview" [src]="url" alt="The flattened painting" />
+        <a class="prep-download" [href]="url" [download]="downloadName()">Download PNG</a>
+        <p class="prep-note">
+          PNG, so the file holds exactly the pixels that were computed rather than a JPEG's guess at
+          them.
+        </p>
+      }
+    </div>
+  }
+</section>
