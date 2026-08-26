@@ -88,6 +88,14 @@ const contentRoutes: Routes = [
 ];
 
 export const routes: Routes = [
+  // The studio has no Spanish twin — it is one person's workshop, written in
+  // one language — but the language switcher builds /es/<wherever you are>
+  // from the address alone, and /es/studio matched nothing and answered 404.
+  // Sending it back to the page it is the translation of keeps the switcher
+  // honest, and catches a bookmarked /es address too. Listed before the `es`
+  // parent, which would otherwise claim the prefix and fail on the child.
+  { path: 'es/studio', redirectTo: '/studio' },
+  { path: 'es/door', redirectTo: '/door' },
   // Outside the language trees: these are not pages anyone reads, so they need
   // no Spanish twin, no hreflang pair and no place in the sitemap.
   {

@@ -4,6 +4,8 @@ import { detectQuad } from './detect-corners';
 import { solveHomography, warpPerspective } from './perspective';
 import { equalizeIllumination, measureIllumination } from './illumination';
 import { findSpecular, repairSpecular } from './specular';
+import { autoLevels, autoWhiteBalance } from './colour';
+import { checkFocus } from './focus';
 import { preparePhoto, type PhotoStage } from './prepare-photo';
 
 type Rgb = [number, number, number];
@@ -299,6 +301,8 @@ describe('preparePhoto', () => {
     realHeight: 80,
     equalizeLighting: true,
     removeGlare: true,
+    correctCast: true,
+    openTones: true,
   };
 
   it('gives back the painting at its own proportions', async () => {
@@ -317,7 +321,7 @@ describe('preparePhoto', () => {
       },
     });
 
-    expect(seen).toEqual(['straightening', 'lighting', 'glare']);
+    expect(seen).toEqual(['straightening', 'lighting', 'glare', 'colour', 'focus']);
   });
 
   it('leaves evenly lit paint untouched rather than correcting it anyway', async () => {
@@ -345,5 +349,130 @@ describe('preparePhoto', () => {
 
     expect(image.width).toBeLessThanOrEqual(400);
     expect(image.height).toBeLessThanOrEqual(300);
+  });
+});
+
+describe('auto levels', () => {
+  /** Nothing near black or white, as a photograph veiled by lens flare comes out. */
+  const flat = () => {
+    const raster = blank(120, 90, [60, 90, 120]);
+    const random = noise(3);
+    for (let y = 0; y < 90; y++) {
+      for (let x = 0; x < 120; x++) {
+        const lift = random() * 40;
+        put(raster, x, y, [60 + lift, 90 + lift, 120 + lift]);
+      }
+    }
+    return raster;
+  };
+
+  it('opens out a photograph that never reached either end', () => {
+    const raster = flat();
+    const report = autoLevels(raster);
+
+    expect(report.applied).toBe(true);
+    expect(report.low).toBeGreaterThan(20);
+    expect(report.high).toBeLessThan(200);
+  });
+
+  it('leaves a photograph that already used the range alone', () => {
+    const raster = blank(60, 40, [0, 0, 0]);
+    put(raster, 10, 10, [255, 255, 255]);
+    put(raster, 11, 10, [255, 255, 255]);
+
+    expect(autoLevels(raster).applied).toBe(false);
+  });
+
+  it('does not crush a saturated colour to nothing', () => {
+    // The channels run 40 to 200 while the luminance runs a much narrower band.
+    // Taking the black point off the luminance would drive the 40s below zero.
+    const raster = blank(80, 60, [200, 40, 40]);
+    for (let x = 40; x < 80; x++) {
+      for (let y = 0; y < 60; y++) put(raster, x, y, [40, 40, 200]);
+    }
+    autoLevels(raster);
+
+    const [r, g, b] = pixel(raster, 5, 5);
+    expect(g).toBeGreaterThan(0);
+    expect(b).toBeGreaterThan(0);
+    expect(r).toBeGreaterThan(g);
+  });
+});
+
+describe('colour temperature', () => {
+  const withPalePassage = (tint: Rgb) => {
+    const raster = blank(120, 90, [110, 70, 55]);
+    for (let y = 10; y < 50; y++) {
+      for (let x = 10; x < 80; x++) put(raster, x, y, tint);
+    }
+    return raster;
+  };
+
+  it('names and lifts a blue cast', () => {
+    const report = autoWhiteBalance(withPalePassage([200, 210, 235]));
+
+    expect(report.judged).toBe(true);
+    expect(report.applied).toBe(true);
+    expect(report.cast).toBe('blue');
+  });
+
+  it('names a yellow cast the other way', () => {
+    expect(autoWhiteBalance(withPalePassage([238, 226, 198])).cast).toBe('yellow');
+  });
+
+  it('leaves an already neutral photograph alone', () => {
+    const report = autoWhiteBalance(withPalePassage([236, 236, 236]));
+
+    expect(report.judged).toBe(true);
+    expect(report.applied).toBe(false);
+  });
+
+  it('refuses to judge a painting with nothing pale in it', () => {
+    // A terracotta ground is allowed to be terracotta. Assuming the picture
+    // ought to average to grey would turn it to mud.
+    const raster = blank(120, 90, [150, 72, 48]);
+    const before = pixel(raster, 60, 45);
+    const report = autoWhiteBalance(raster);
+
+    expect(report.judged).toBe(false);
+    expect(report.applied).toBe(false);
+    expect(pixel(raster, 60, 45)).toEqual(before);
+  });
+});
+
+describe('focus', () => {
+  /** Coarse modelling everywhere, fine grain only where the lens was sharp. */
+  const photograph = (softFrom: number) => {
+    const raster = blank(360, 240, [120, 120, 120]);
+    const random = noise(21);
+    for (let y = 0; y < 240; y++) {
+      for (let x = 0; x < 360; x++) {
+        const modelling = 26 * Math.sin(x / 11) * Math.cos(y / 9);
+        const grain = x >= softFrom ? 0 : (random() - 0.5) * 70;
+        const value = 120 + modelling + grain;
+        put(raster, x, y, [value, value, value]);
+      }
+    }
+    return raster;
+  };
+
+  it('passes a photograph that is sharp throughout', () => {
+    const report = checkFocus(photograph(360));
+
+    expect(report.judged).toBe(true);
+    expect(report.soft).toEqual([]);
+  });
+
+  it('points at the side that came out soft', () => {
+    const report = checkFocus(photograph(240));
+
+    expect(report.judged).toBe(true);
+    expect(report.soft.length).toBeGreaterThan(0);
+    expect(report.soft.every((where) => where.includes('right'))).toBe(true);
+  });
+
+  it('does not call flat paint out of focus', () => {
+    // Nothing in a flat panel was lost, so there is nothing to report.
+    expect(checkFocus(blank(360, 240, [130, 96, 70])).judged).toBe(false);
   });
 });

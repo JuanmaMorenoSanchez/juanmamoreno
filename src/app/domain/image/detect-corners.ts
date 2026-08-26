@@ -21,6 +21,11 @@ const FILLS_FRAME = 0.97;
 const EDGE_MARGIN = 0.15;
 /** Fewer points than this along a side is not enough to call it a line. */
 const MIN_EDGE_POINTS = 8;
+/** Candidate lines tried when looking for the one the most points agree with. */
+const CONSENSUS_TRIES = 40;
+/** How near a point must fall to count as agreeing, as a share of the side's length. */
+const CONSENSUS_TOLERANCE = 0.008;
+const MIN_CONSENSUS_TOLERANCE = 2;
 /** How far either side of the rough edge the sharp pass looks, as a share of the short side. */
 const REFINE_BAND = 0.03;
 /** Places sampled along each side when refining it. */
@@ -297,7 +302,7 @@ function activity(raster: Raster): Float32Array {
 }
 
 interface Region {
-  /** Filled row by row and column by column, so a flat passage of paint counts as inside. */
+  /** Holes closed, so a flat passage of paint counts as inside the painting. */
   mask: Uint8Array;
   count: number;
   minX: number;
@@ -306,13 +311,7 @@ interface Region {
   maxY: number;
 }
 
-/**
- * The largest connected patch of not-wall, made solid.
- *
- * A painting with a broad flat passage in it comes through as a ring rather
- * than a slab, so the span between the extremes of every row and every column
- * is filled in. What remains is the painting's silhouette.
- */
+/** The largest connected patch of not-wall, with the gaps inside it closed. */
 function largestRegion(mask: Uint8Array, width: number, height: number): Region | null {
   const seen = new Uint8Array(mask.length);
   let best: number[] | null = null;
@@ -347,7 +346,7 @@ function largestRegion(mask: Uint8Array, width: number, height: number): Region 
 
   const solid = new Uint8Array(mask.length);
   for (const p of best) solid[p] = 1;
-  fillSpans(solid, width, height);
+  fillHoles(solid, width, height);
 
   let count = 0;
   let minX = width;
@@ -367,29 +366,51 @@ function largestRegion(mask: Uint8Array, width: number, height: number): Region 
   return maxX < 0 ? null : { mask: solid, count, minX, maxX, minY, maxY };
 }
 
-function fillSpans(mask: Uint8Array, width: number, height: number): void {
-  for (let y = 0; y < height; y++) {
-    let first = -1;
-    let last = -1;
-    for (let x = 0; x < width; x++) {
-      if (mask[y * width + x]) {
-        if (first < 0) first = x;
-        last = x;
-      }
-    }
-    for (let x = first; x >= 0 && x <= last; x++) mask[y * width + x] = 1;
-  }
+/**
+ * Closes the gaps inside the silhouette, leaving its outline alone.
+ *
+ * A broad flat passage of paint registers as neither a different colour from
+ * the wall nor as textured, so it comes through as a hole. Filling by spanning
+ * each row between its extremes would close those, but it also joins anything
+ * else the row happens to touch: a shadow along the side of the painting that
+ * runs a little past its top corner turns every row above the painting into
+ * one solid bar, and the top edge is then found at the top of the frame.
+ *
+ * So the outside is flooded from the border instead, and whatever the flood
+ * never reaches was enclosed and is filled. Nothing that opens onto the wall
+ * can be closed by that, however it is shaped.
+ */
+function fillHoles(mask: Uint8Array, width: number, height: number): void {
+  const outside = new Uint8Array(mask.length);
+  const stack: number[] = [];
+
+  const open = (p: number) => {
+    if (mask[p] || outside[p]) return;
+    outside[p] = 1;
+    stack.push(p);
+  };
 
   for (let x = 0; x < width; x++) {
-    let first = -1;
-    let last = -1;
-    for (let y = 0; y < height; y++) {
-      if (mask[y * width + x]) {
-        if (first < 0) first = y;
-        last = y;
-      }
-    }
-    for (let y = first; y >= 0 && y <= last; y++) mask[y * width + x] = 1;
+    open(x);
+    open((height - 1) * width + x);
+  }
+  for (let y = 0; y < height; y++) {
+    open(y * width);
+    open(y * width + width - 1);
+  }
+
+  while (stack.length) {
+    const p = stack.pop() as number;
+    const x = p % width;
+    const y = (p / width) | 0;
+    if (x > 0) open(p - 1);
+    if (x < width - 1) open(p + 1);
+    if (y > 0) open(p - width);
+    if (y < height - 1) open(p + width);
+  }
+
+  for (let p = 0; p < mask.length; p++) {
+    if (!mask[p] && !outside[p]) mask[p] = 1;
   }
 }
 
@@ -448,11 +469,18 @@ function spanOf(
 }
 
 /**
- * Least squares, then again without the points that disagreed.
+ * The line the most points agree with, then least squares over just those.
  *
- * A nail in the wall, or a shadow touching the canvas, throws a handful of
- * points well off the line; refitting without them stops those few from
- * tilting the whole edge.
+ * Not a fit over everything, however it is weighted. A painting laid on the
+ * ground has moss or a shadow against part of its rim, and those stretches are
+ * not a scattering of stray points that averaging can absorb — they can be a
+ * fifth of one side, all pushed the same way, which drags any fit that counts
+ * them at all and inflates the spread that would have identified them.
+ *
+ * So candidate lines are drawn through widely separated pairs of points, each
+ * is scored by how many of the rest fall near it, and the winner is refitted on
+ * its supporters alone. A run of moss loses because the clean four fifths of
+ * the side outvote it.
  */
 function fitLine(points: Point[], upright: boolean): Fit | null {
   if (points.length < MIN_EDGE_POINTS) return null;
@@ -460,16 +488,39 @@ function fitLine(points: Point[], upright: boolean): Fit | null {
   const along = (p: Point) => (upright ? p.y : p.x);
   const across = (p: Point) => (upright ? p.x : p.y);
 
-  const first = leastSquares(points, along, across);
-  if (!first) return null;
+  const extent = Math.abs(along(points[points.length - 1]) - along(points[0]));
+  const tolerance = Math.max(MIN_CONSENSUS_TOLERANCE, extent * CONSENSUS_TOLERANCE);
 
-  const residuals = points.map((p) =>
-    Math.abs(across(p) - first.slope * along(p) - first.intercept)
-  );
-  const spread = median(residuals);
-  const kept = points.filter((_, i) => residuals[i] <= Math.max(1.5, spread * 3));
+  const half = points.length >> 1;
+  const stride = Math.max(1, Math.floor(half / CONSENSUS_TRIES));
+  let best: Point[] | null = null;
 
-  return kept.length >= MIN_EDGE_POINTS ? (leastSquares(kept, along, across) ?? first) : first;
+  for (let i = 0; i + half < points.length; i += stride) {
+    const candidate = through(points[i], points[i + half], along, across);
+    if (!candidate) continue;
+
+    const agree = points.filter(
+      (p) => Math.abs(across(p) - candidate.slope * along(p) - candidate.intercept) <= tolerance
+    );
+    if (!best || agree.length > best.length) best = agree;
+  }
+
+  const supporters = best && best.length >= MIN_EDGE_POINTS ? best : points;
+  return leastSquares(supporters, along, across);
+}
+
+/** The line through two points, in whichever parameterisation the caller is using. */
+function through(
+  a: Point,
+  b: Point,
+  along: (p: Point) => number,
+  across: (p: Point) => number
+): Fit | null {
+  const run = along(b) - along(a);
+  if (Math.abs(run) < 1e-9) return null;
+
+  const slope = (across(b) - across(a)) / run;
+  return { slope, intercept: across(a) - slope * along(a) };
 }
 
 function leastSquares(

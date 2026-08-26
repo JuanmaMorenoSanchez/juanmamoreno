@@ -245,3 +245,19 @@
   color: var(--catalog-accent);
   text-decoration: none;
 }
+
+.prep-alert {
+  max-width: 62ch;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-lg;
+  border-left: 2px solid var(--catalog-accent);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--catalog-ink);
+}
+
+.prep-sharp {
+  margin-bottom: tokens.$spacing-lg;
+  font-size: 0.78rem;
+  color: var(--catalog-faint);
+}

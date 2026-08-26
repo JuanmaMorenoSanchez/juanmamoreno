@@ -5,6 +5,30 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.4.0
+
+- feat: the studio judges the colour too. It opens the tones back out when the
+  photograph never reached either end, takes off a blue or yellow cast when
+  there is something pale enough in the painting to judge one by, and says
+  which of those it did. Both measure first and do nothing when nothing is wrong
+- feat: it also warns when part of the painting came out soft, told apart from
+  flat paint by the ratio of fine detail to coarse
+- fix: the photograph never appeared — the canvas is inside the block that
+  opening a file reveals, so it did not exist yet at the moment it was drawn
+  into. Without it a mis-found corner could not be dragged, which made every
+  other failure unrecoverable
+- fix: switching to Spanish anywhere in the studio answered 404. The switcher
+  builds /es/<wherever you are> from the address, and the studio has no Spanish
+  twin; those two addresses now lead back to the pages they are the translation
+  of
+- fix: a shadow along the edge of a canvas laid on the ground dragged the crop
+  badly. Gaps inside the silhouette were closed by spanning each row between its
+  extremes, which also joined anything else that row touched; only enclosed
+  holes are filled now. Moss against the rim is outvoted by consensus fitting
+  rather than averaged in
+- fix: auto levels read its black point from luminance and applied it per
+  channel, which drove a saturated red's other two channels to nothing
+
 ## 1.3.1
 
 - fix: the studio could not find a painting in a real photograph. It looked for

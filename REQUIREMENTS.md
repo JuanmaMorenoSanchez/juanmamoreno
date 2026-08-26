@@ -149,10 +149,13 @@ painting whose internal cross outvotes its outline), `quad.spec.ts`
 (`correctedSize`), `prepare-photo.spec.ts` (`warpPerspective`, `preparePhoto`)
 
 > Measured on real paintings from the catalogue, projected onto a wall across
-> three wall tones, two framings and two lighting conditions: 22 of 24 found
-> within 15px on a 1600px photograph, most within 3px. The two that miss are a
-> dark painting on a dark wall shot loose. Any corner can be dragged, so a miss
-> costs a moment rather than the result.
+> three wall tones, two framings and two lighting conditions: 23 of 24 found
+> within 15px on a 1600px photograph, most within 3px. Measured again on a
+> canvas laid on textured stone, as the artist photographs them: clean stone and
+> realistic moss within 3px; a shadow gap along the rim leaves about 9px of it
+> in the crop, since whether a dark seam belongs to the painting is genuinely
+> ambiguous; moss covering half of one side needs correcting by hand. Any corner
+> can be dragged, so a miss costs a moment rather than the result.
 
 ### R21 — No pixel is invented · met
 The corrected image is never enlarged beyond the detail the photograph holds
@@ -173,6 +176,43 @@ Small, near-white, desaturated spots that are brighter than the paint around
 them are filled from their surroundings. A broad passage of white paint is too
 large to qualify and is left untouched.
 *Proven by:* `prepare-photo.spec.ts` "specular highlights" (4 tests)
+
+### R24 — The photograph is visible while it is being corrected · met
+The opened photograph is shown with its four corners drawn over it, and each
+corner can be dragged. This is what makes a mis-found outline recoverable
+rather than fatal.
+*Proven by:* the studio probe (the preview canvas is painted, not empty)
+
+### R25 — The tones are opened out only when they are shut · met
+When the photograph never reached either end of the range, it is stretched back
+out — by no more than a third, per channel rather than by luminance, and never
+onto pure black or pure white. When it already used its range, nothing is done.
+*Proven by:* `prepare-photo.spec.ts` "auto levels" (3 tests)
+
+### R26 — A colour cast is judged only where there is evidence · met
+A blue or yellow cast is measured from the pale, near-colourless parts of the
+painting and corrected by at most 14% per channel. A painting with nothing pale
+in it is left exactly as photographed and the report says why — a mostly
+terracotta painting must never be averaged towards grey.
+*Proven by:* `prepare-photo.spec.ts` "colour temperature" (4 tests)
+
+### R27 — Softness is reported, never repaired · met
+Parts of the painting that came out soft are named. Blur is told from flat paint
+by the ratio of fine detail to coarse: flat paint has neither and is not judged.
+Nothing is sharpened — the report says the photograph wants taking again.
+*Proven by:* `prepare-photo.spec.ts` "focus" (3 tests)
+
+### R28 — Every correction reports what it did · met
+Each of the five passes says whether it acted and why: the lighting, the glare,
+the colour temperature, the tones, and the focus. A pass that found nothing
+wrong says so rather than staying silent.
+*Proven by:* the studio probe, which reads all five lines back
+
+### R29 — The studio has no Spanish twin, and does not 404 · met
+`/es/studio` and `/es/door` lead to the English pages rather than the 404. The
+studio is one person's workshop and is written in one language, but the language
+switcher builds its target from the address alone.
+*Proven by:* `app-routing.module.ts`, and the studio probe
 
 ### R24 — The result downloads losslessly · met
 The corrected image is offered as a PNG, so the file holds exactly the pixels

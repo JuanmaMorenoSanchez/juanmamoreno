@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { detectQuad } from '@domain/image/detect-corners';
 import {
   preparePhoto,
@@ -18,6 +18,8 @@ const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
   lighting: 'Evening out the lighting',
   glare: 'Taking out the glare',
+  colour: 'Checking the colour',
+  focus: 'Checking the focus',
 };
 
 const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
@@ -32,8 +34,20 @@ export class PhotoPrepComponent {
   private readonly stage = viewChild<ElementRef<HTMLElement>>('stage');
   private readonly previewCanvas = viewChild<ElementRef<HTMLCanvasElement>>('preview');
 
-  private photo: ImageBitmap | null = null;
+  private readonly photo = signal<ImageBitmap | null>(null);
   private dragging: number | null = null;
+
+  constructor() {
+    // The canvas is inside the block that `size` reveals, so at the moment the
+    // photograph is opened it does not exist yet and drawing into it draws into
+    // nothing. Waiting on the view child instead means the paint happens once
+    // the stage is actually on the page.
+    effect(() => {
+      const canvas = this.previewCanvas()?.nativeElement;
+      const photo = this.photo();
+      if (canvas && photo) drawInto(canvas, photo);
+    });
+  }
 
   protected readonly cornerNames = CORNER_NAMES;
 
@@ -46,6 +60,8 @@ export class PhotoPrepComponent {
   protected readonly realHeight = signal<number | null>(null);
   protected readonly evenLighting = signal(true);
   protected readonly takeOutGlare = signal(true);
+  protected readonly correctCast = signal(true);
+  protected readonly openTones = signal(true);
   protected readonly busy = signal<PhotoStage | null>(null);
   protected readonly report = signal<PreparePhotoReport | null>(null);
   protected readonly resultUrl = signal<string | null>(null);
@@ -113,18 +129,19 @@ export class PhotoPrepComponent {
     this.reset();
     this.fileName.set(file.name);
 
+    let photo: ImageBitmap;
     try {
       // Phone cameras record which way up they were held rather than rotating
       // the pixels, so without this a portrait painting arrives on its side.
-      this.photo = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      photo = await createImageBitmap(file, { imageOrientation: 'from-image' });
     } catch {
       this.problem.set('That file could not be read as an image.');
       return;
     }
 
-    const { width, height } = this.photo;
+    const { width, height } = photo;
+    this.photo.set(photo);
     this.size.set({ width, height });
-    this.drawPreview();
 
     const small = this.rasterAt(DETECTION_LONG_SIDE);
     const found = detectQuad(small);
@@ -137,19 +154,9 @@ export class PhotoPrepComponent {
     );
   }
 
-  private drawPreview(): void {
-    const canvas = this.previewCanvas()?.nativeElement;
-    if (!canvas || !this.photo) return;
-
-    const scale = Math.min(1, PREVIEW_LONG_SIDE / Math.max(this.photo.width, this.photo.height));
-    canvas.width = Math.round(this.photo.width * scale);
-    canvas.height = Math.round(this.photo.height * scale);
-    canvas.getContext('2d')?.drawImage(this.photo, 0, 0, canvas.width, canvas.height);
-  }
-
   /** Draws the photograph into a scratch canvas to read its pixels back out. */
   private rasterAt(longSide?: number): Raster {
-    const photo = this.photo as ImageBitmap;
+    const photo = this.photo() as ImageBitmap;
     const longest = Math.max(photo.width, photo.height);
     const scale = longSide ? Math.min(1, longSide / longest) : 1;
     const width = Math.max(1, Math.round(photo.width * scale));
@@ -209,7 +216,7 @@ export class PhotoPrepComponent {
     const corners = this.corners();
     const realWidth = this.realWidth();
     const realHeight = this.realHeight();
-    if (!corners || !realWidth || !realHeight || !this.photo) return;
+    if (!corners || !realWidth || !realHeight || !this.photo()) return;
 
     this.problem.set('');
     this.releaseResult();
@@ -221,6 +228,8 @@ export class PhotoPrepComponent {
         realHeight,
         equalizeLighting: this.evenLighting(),
         removeGlare: this.takeOutGlare(),
+        correctCast: this.correctCast(),
+        openTones: this.openTones(),
         onStage: async (stage) => {
           this.busy.set(stage);
           await breathe();
@@ -240,8 +249,8 @@ export class PhotoPrepComponent {
 
   protected reset(): void {
     this.releaseResult();
-    this.photo?.close();
-    this.photo = null;
+    this.photo()?.close();
+    this.photo.set(null);
     this.fileName.set('');
     this.size.set(null);
     this.corners.set(null);
@@ -260,6 +269,13 @@ export class PhotoPrepComponent {
 function numberIn(event: Event): number | null {
   const value = Number.parseFloat((event.target as HTMLInputElement).value);
   return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+function drawInto(canvas: HTMLCanvasElement, photo: ImageBitmap): void {
+  const scale = Math.min(1, PREVIEW_LONG_SIDE / Math.max(photo.width, photo.height));
+  canvas.width = Math.round(photo.width * scale);
+  canvas.height = Math.round(photo.height * scale);
+  canvas.getContext('2d')?.drawImage(photo, 0, 0, canvas.width, canvas.height);
 }
 
 /** Long enough for the browser to paint the stage it has just been told about. */

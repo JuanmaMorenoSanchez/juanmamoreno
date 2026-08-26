@@ -96,6 +96,26 @@
           />
           Take out the glare off the varnish
         </label>
+        <label class="prep-check">
+          <input
+            type="checkbox"
+            [checked]="correctCast()"
+            (change)="correctCast.set($any($event.target).checked)"
+          />
+          Correct the colour temperature, if it is off
+        </label>
+        <label class="prep-check">
+          <input
+            type="checkbox"
+            [checked]="openTones()"
+            (change)="openTones.set($any($event.target).checked)"
+          />
+          Open the tones back out, if they are flat
+        </label>
+        <p class="prep-note">
+          Each of these is permission rather than instruction: every one measures first and leaves
+          the photograph alone when it is already right. What was done is listed afterwards.
+        </p>
       </fieldset>
     </div>
 
@@ -136,7 +156,35 @@
             No glare was found.
           }
         </li>
+        <li>
+          @if (done.cast.applied) {
+            The photograph leaned {{ done.cast.cast }} by
+            {{ done.cast.strength * 100 | number: '1.0-0' }}%, and has been brought back to neutral.
+          } @else if (done.cast.judged) {
+            The colour temperature was already neutral.
+          } @else {
+            Nothing in the painting is pale enough to judge the colour temperature by, so it was
+            left as photographed.
+          }
+        </li>
+        <li>
+          @if (done.levels.applied) {
+            The tones only reached {{ done.levels.low }} to {{ done.levels.high }} of 255, and have
+            been opened back out.
+          } @else {
+            The tones were already using the range they had.
+          }
+        </li>
       </ul>
+
+      @if (done.focus.soft.length) {
+        <p class="prep-alert" role="alert">
+          Out of focus: the {{ done.focus.soft.join(', the ') }} of the painting came out softer
+          than the rest. Nothing here can put that back — it wants another photograph.
+        </p>
+      } @else if (done.focus.judged) {
+        <p class="prep-sharp">Sharp across the whole painting.</p>
+      }
 
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
