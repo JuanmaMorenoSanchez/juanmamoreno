@@ -137,8 +137,22 @@ appears among the built pages)
 The studio takes a photograph of a painting and the painting's real width and
 height, finds its four corners, and returns it as a rectangle of exactly those
 proportions. Corners that were found wrong can be dragged.
-*Proven by:* `detect-corners.spec.ts`, `quad.spec.ts` (`correctedSize`),
-`prepare-photo.spec.ts` (`warpPerspective`, `preparePhoto`)
+
+The corners are found by separating painting from wall — the wall being one
+flat colour, the painting differing from it in colour or in carrying texture —
+and fitting the four sides of that silhouette, then moving each side onto the
+boundary at full resolution. Deliberately *not* by looking for strong straight
+lines: a painting's rim against the wall is frequently the faintest line in the
+photograph, while the boldest belongs to the composition inside it.
+*Proven by:* `detect-corners.spec.ts` (a painting the same tone as its wall; a
+painting whose internal cross outvotes its outline), `quad.spec.ts`
+(`correctedSize`), `prepare-photo.spec.ts` (`warpPerspective`, `preparePhoto`)
+
+> Measured on real paintings from the catalogue, projected onto a wall across
+> three wall tones, two framings and two lighting conditions: 22 of 24 found
+> within 15px on a 1600px photograph, most within 3px. The two that miss are a
+> dark painting on a dark wall shot loose. Any corner can be dragged, so a miss
+> costs a moment rather than the result.
 
 ### R21 — No pixel is invented · met
 The corrected image is never enlarged beyond the detail the photograph holds

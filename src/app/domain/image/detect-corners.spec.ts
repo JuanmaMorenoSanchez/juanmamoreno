@@ -84,6 +84,65 @@ function hardPhoto(): { raster: Raster; quad: Quad } {
   return { raster, quad: corners.map(([x, y]) => ({ x, y })) as Quad };
 }
 
+/** A textured painting whose average tone is the wall's, which is what defeats edge finding. */
+function camouflaged(): { raster: Raster; quad: Quad } {
+  const W = 900;
+  const H = 700;
+  const corners: [number, number][] = [
+    [120, 90],
+    [780, 110],
+    [770, 610],
+    [130, 590],
+  ];
+  const raster = createRaster(W, H);
+  for (let i = 0; i < raster.data.length; i += 4) {
+    raster.data[i] = 96;
+    raster.data[i + 1] = 94;
+    raster.data[i + 2] = 90;
+    raster.data[i + 3] = 255;
+  }
+
+  let seed = 5;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const inside = (x: number, y: number) => {
+    let hit = false;
+    for (let i = 0, j = 3; i < 4; j = i++) {
+      const [ax, ay] = corners[i];
+      const [bx, by] = corners[j];
+      if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) hit = !hit;
+    }
+    return hit;
+  };
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      if (!inside(x, y)) continue;
+      // Brushwork around the very same average tone as the wall.
+      const stroke = (random() - 0.5) * 90;
+      const i = (y * W + x) * 4;
+      raster.data[i] = 96 + stroke;
+      raster.data[i + 1] = 94 + stroke * 0.9;
+      raster.data[i + 2] = 90 + stroke * 0.8;
+    }
+  }
+  return { raster, quad: corners.map(([x, y]) => ({ x, y })) as Quad };
+}
+
+describe('detectQuad, on a painting the same tone as its wall', () => {
+  it('finds it by its texture, having no difference in tone to go on', () => {
+    const { raster, quad } = camouflaged();
+    const found = detectQuad(raster);
+
+    expect(found.detected).toBe(true);
+    found.quad.forEach((corner, i) => {
+      expect(Math.hypot(corner.x - quad[i].x, corner.y - quad[i].y)).toBeLessThan(12);
+    });
+  });
+});
+
 describe('detectQuad, on a painting with a strong internal cross', () => {
   it('outlines the painting rather than one of its own quadrants', () => {
     const { raster, quad } = hardPhoto();
