@@ -47,8 +47,14 @@ jobs:
       # so this drives Chrome against the files about to be published.
       - name: Catalogue opens with a mouse
         run: |
+          echo "chrome: $(command -v google-chrome || echo 'not on PATH')"
+          google-chrome --version || true
           node e2e/serve-dist.mjs &
-          until curl -sf http://127.0.0.1:4300 > /dev/null; do sleep 1; done
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4300 > /dev/null && break
+            sleep 1
+          done
+          curl -sf -o /dev/null http://127.0.0.1:4300 || { echo "the built site would not serve"; exit 1; }
           E2E_BASE_URL=http://127.0.0.1:4300 npm run test:e2e:mouse
 
       - name: Publish to gh-pages

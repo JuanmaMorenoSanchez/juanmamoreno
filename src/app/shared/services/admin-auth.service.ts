@@ -41,6 +41,15 @@ export class AdminAuthService {
   readonly isAdmin = computed(() => this.identity() !== null);
 
   /**
+   * The raw credential, for putting in an Authorization header.
+   *
+   * Only ever sent to this site's own backend, which verifies it — signature
+   * included — before doing anything with it. Null unless it currently passes
+   * the checks here too, so an expired token is never sent anywhere.
+   */
+  readonly bearerToken = computed(() => (this.identity() ? this.token() : null));
+
+  /**
    * Accepts a credential from Google, or refuses it.
    *
    * Returns whether it was accepted so the caller can say why nothing happened

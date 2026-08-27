@@ -171,6 +171,40 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       );
   }
 
+  /**
+   * The same essay, with whether it has been edited, for the artist alone.
+   *
+   * A separate route rather than a flag on the public one: the backend can only
+   * answer this for a request it has authenticated, and asking somewhere else
+   * makes that impossible to forget.
+   */
+  getArtPieceCriticWithEdits(tokenId: string, token: string): Observable<ArtCritic | null> {
+    return this.http
+      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}/edits`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .pipe(
+        this.extractData<ArtCritic | null>(null),
+        catchError(() => of(null))
+      );
+  }
+
+  /** Replaces one language's text with the artist's own. */
+  editArtPieceCritic(
+    tokenId: string,
+    lang: string,
+    body: string,
+    token: string
+  ): Observable<ArtCritic | null> {
+    return this.http
+      .patch<ApiResponse<ArtCritic>>(
+        `${environment.backendUrl}critics/${tokenId}`,
+        { lang, body },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .pipe(this.extractData<ArtCritic | null>(null));
+  }
+
   /** Bounds a build's wait on the backend. Does nothing in a browser. */
   private giveUpDuringBuild<T>(): OperatorFunction<T, T> {
     return (source) => (this.isBrowser ? source : source.pipe(timeout(PRERENDER_FETCH_TIMEOUT_MS)));
