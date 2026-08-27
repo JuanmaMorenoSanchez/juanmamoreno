@@ -93,3 +93,75 @@
     --mdc-circular-progress-active-indicator-color: var(--catalog-faint);
   }
 }
+
+// Everything below belongs to the artist and is never rendered for a reader:
+// the flag that drives it is stripped from the public route, so an
+// unauthenticated page has nothing to show even if it tried.
+.artwork-critic-state {
+  margin-left: tokens.$spacing-sm;
+  font-size: 0.68em;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: var(--catalog-accent);
+}
+
+.artwork-critic-state--untouched {
+  color: var(--catalog-faint);
+}
+
+.artwork-critic-edit,
+.artwork-critic-save,
+.artwork-critic-cancel {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--catalog-faint);
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--catalog-soft);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--catalog-accent);
+    color: var(--catalog-accent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.artwork-critic-editor-label {
+  display: block;
+  margin-bottom: tokens.$spacing-xs;
+  font-size: 0.75rem;
+  color: var(--catalog-faint);
+}
+
+// Monospaced and generously sized: this is markdown being read closely, and
+// what matters is seeing where a link or an emphasis actually begins.
+.artwork-critic-draft {
+  width: 100%;
+  padding: tokens.$spacing-sm;
+  border: 1px solid var(--catalog-faint);
+  background: transparent;
+  font-family: ui-monospace, "SFMono-Regular", "Consolas", monospace;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: inherit;
+  resize: vertical;
+}
+
+.artwork-critic-actions {
+  display: flex;
+  gap: tokens.$spacing-sm;
+  margin-top: tokens.$spacing-sm;
+}
+
+.artwork-critic-problem {
+  margin: tokens.$spacing-sm 0 0;
+  font-size: 0.78rem;
+  color: var(--catalog-accent);
+}

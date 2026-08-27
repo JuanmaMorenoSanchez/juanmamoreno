@@ -1,7 +1,62 @@
 @if (translated(); as critic) {
   <article class="artwork-critic" [attr.lang]="critic.lang">
-    <h3 class="artwork-critic-title">{{ critic.title }}</h3>
-    <div class="artwork-critic-body" [innerHTML]="critic.html"></div>
+    <h3 class="artwork-critic-title">
+      {{ critic.title }}
+      <!--
+        The artist's own note to himself, across two hundred essays: has this
+        one been over yet. Nothing here is what keeps it from a reader — the
+        backend strips the flag from the public route, so an unauthenticated
+        page never receives it to begin with. This only decides where it sits.
+      -->
+      @if (hasBeenEdited() === true) {
+        <span class="artwork-critic-state">{{ 'critic.edited' | translate }}</span>
+      } @else if (hasBeenEdited() === false) {
+        <span class="artwork-critic-state artwork-critic-state--untouched">{{
+          'critic.notEdited' | translate
+        }}</span>
+      }
+    </h3>
+
+    @if (editing()) {
+      <div class="artwork-critic-editor">
+        <label class="artwork-critic-editor-label" for="critic-draft">
+          {{ 'critic.editing' | translate }}
+        </label>
+        <textarea
+          id="critic-draft"
+          class="artwork-critic-draft"
+          rows="18"
+          spellcheck="true"
+          [value]="draft()"
+          [attr.lang]="critic.lang"
+          [disabled]="saving()"
+          (input)="setDraft($event)"
+        ></textarea>
+        @if (problem()) {
+          <p class="artwork-critic-problem">{{ problem() | translate }}</p>
+        }
+        <div class="artwork-critic-actions">
+          <button type="button" class="artwork-critic-save" [disabled]="!canSave()" (click)="save()">
+            {{ (saving() ? 'critic.saving' : 'critic.save') | translate }}
+          </button>
+          <button
+            type="button"
+            class="artwork-critic-cancel"
+            [disabled]="saving()"
+            (click)="cancelEditing()"
+          >
+            {{ 'critic.cancel' | translate }}
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="artwork-critic-body" [innerHTML]="critic.html"></div>
+      @if (isArtist()) {
+        <button type="button" class="artwork-critic-edit" (click)="startEditing()">
+          {{ 'critic.edit' | translate }}
+        </button>
+      }
+    }
   </article>
 } @else if (isBrowser) {
   <!--

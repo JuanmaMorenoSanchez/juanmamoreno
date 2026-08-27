@@ -240,6 +240,19 @@ that specifies utf-8 outright.
 *Proven by:* `jpeg-rights.spec.ts` (11 tests, including the scan data being
 copied through byte for byte)
 
+### R28 — The artist can rewrite an essay from the page it is on · met
+Signed in as himself, an edit button sits under the text; it opens the markdown
+the html was made from, not the html, and saving replaces the text. A save that
+fails leaves what was written on screen rather than losing it.
+*Proven by:* `artwork-critic.component.spec.ts` "for the artist" (6 tests)
+
+### R29 — A reader sees an essay and nothing else · met
+No edit button, and no word about whether an essay has been edited. The page
+does not even ask the authenticated route, and the backend strips the flag from
+the public one, so it is absent rather than hidden.
+*Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
+`critics.controller.spec.ts` in the backend
+
 ### R24 — The photograph is visible while it is being corrected · met
 The opened photograph is shown as large as the window allows, with its four
 corners drawn over it, and each corner can be dragged. Each handle carries a

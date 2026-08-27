@@ -192,7 +192,15 @@
     "title": "Apariciones de la pieza en Internet"
   },
   "critic": {
-    "generating": "Generando la crítica"
+    "generating": "Generando la crítica",
+    "edited": "editada",
+    "notEdited": "sin editar",
+    "edit": "Editar este texto",
+    "editing": "El ensayo, en markdown. Se guarda tal cual.",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "saveFailed": "No se ha podido guardar. Lo que has escrito sigue aquí."
   },
   "seo": {
     "default": {
