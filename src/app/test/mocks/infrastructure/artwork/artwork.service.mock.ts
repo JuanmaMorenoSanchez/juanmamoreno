@@ -49,6 +49,14 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
   getArtPieceCritic(): Observable<ArtCritic | null> {
     return of(null);
   }
+
+  getArtPieceCriticWithEdits(): Observable<ArtCritic | null> {
+    return of(null);
+  }
+
+  editArtPieceCritic(): Observable<ArtCritic | null> {
+    return of(null);
+  }
 }
 
 export const mockArtworkInfraService: ArtworkPort = new MockArtworkInfraService();
