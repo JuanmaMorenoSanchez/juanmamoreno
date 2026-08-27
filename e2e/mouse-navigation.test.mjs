@@ -79,7 +79,15 @@ const DRAG_COUNT = 'e2e.dragStarts';
  * catalogue passed on the deployed build and failed on the same assertion an
  * hour later, on a commit that touched none of it.
  */
-const ARRIVAL = { timeout: 8000, waitUntil: 'commit' };
+/**
+ * Generous on purpose. A cold CI runner is far slower than a laptop, and this
+ * step has already blocked a deploy once by giving up on a navigation that was
+ * merely slow — a flaky gate on publishing is worse than no gate, because it
+ * teaches everyone to ignore it. What is being measured is whether a click
+ * navigates at all, never how quickly.
+ */
+const ARRIVAL = { timeout: 30_000, waitUntil: 'commit' };
+const READY = { timeout: 30_000 };
 
 let browser;
 /**
@@ -145,6 +153,11 @@ async function clickWithDriftingMouse(page, selector) {
 async function openPage(path) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, locale: 'en-US' });
   await page.goto(BASE_URL + path, { waitUntil: 'domcontentloaded' });
+  // The prerendered markup carries the tiles, but the router only intercepts a
+  // click once the page has hydrated. Clicking before that still navigates —
+  // they are real anchors — yet it makes the test measure a different thing on
+  // a fast machine than on a slow one, which is where flakiness comes from.
+  await page.waitForLoadState('load').catch(() => {});
   return page;
 }
 
@@ -180,7 +193,7 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage('/artworks');
-    await page.waitForSelector('mat-grid-tile a.tile-link');
+    await page.waitForSelector('mat-grid-tile a.tile-link', READY);
     const link = page.locator('mat-grid-tile a.tile-link').first();
     const href = await link.getAttribute('href');
 
@@ -194,7 +207,7 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage('/artworks');
-    await page.waitForSelector('mat-grid-tile a.tile-link');
+    await page.waitForSelector('mat-grid-tile a.tile-link', READY);
 
     const { href, landedOn, dragStarts } = await clickWithDriftingMouse(
       page,
@@ -210,7 +223,7 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage('/');
-    await page.waitForSelector('a.home-featured');
+    await page.waitForSelector('a.home-featured', READY);
 
     const { href, landedOn, dragStarts } = await clickWithDriftingMouse(page, 'a.home-featured');
 
