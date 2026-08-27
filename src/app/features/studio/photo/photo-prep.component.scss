@@ -13,8 +13,10 @@
   color: var(--catalog-ink);
 }
 
+// The three blocks of running prose, set to the same measure and colour.
 .prep-lead,
-.prep-note {
+.prep-note,
+.prep-report {
   max-width: 62ch;
   font-size: 0.82rem;
   line-height: 1.6;
@@ -23,8 +25,6 @@
 
 .prep-note {
   margin: tokens.$spacing-sm 0 0;
-  font-size: 0.75rem;
-  color: var(--catalog-faint);
 }
 
 .prep-drop {
@@ -47,10 +47,7 @@
   color: var(--catalog-ink);
 }
 
-.prep-drop-hint {
-  font-size: 0.75rem;
-  color: var(--catalog-faint);
-}
+
 
 .prep-problem {
   margin-top: tokens.$spacing-md;
@@ -64,14 +61,22 @@
   align-items: baseline;
   gap: tokens.$spacing-md;
   margin-top: tokens.$spacing-lg;
-  font-size: 0.78rem;
+}
+
+// Every small grey aside in one place: they differed only by a hundredth of a
+// rem, which nobody could see and every one of which cost bytes this sheet did
+// not have.
+.prep-note,
+.prep-drop-hint,
+.prep-hint,
+.prep-busy,
+.prep-file {
+  font-size: 0.76rem;
   color: var(--catalog-faint);
 }
 
 .prep-hint {
   margin: tokens.$spacing-xs 0 tokens.$spacing-sm;
-  font-size: 0.78rem;
-  color: var(--catalog-soft);
 }
 
 .prep-link {
@@ -136,41 +141,37 @@
   }
 }
 
-// The control points that bend a side: smaller than a corner, and joined to
-// the corner they belong to by the line below.
+// Corner handles and the control points that bend a side are the same object
+// with two jobs, so they are described once. Written apart, the pair put this
+// stylesheet over its budget and stopped the build — which was the right
+// complaint: the duplication was real.
+.prep-handle,
 .prep-bow {
   position: absolute;
+  // Sized from the component: the artist chooses how wide a ring to aim with,
+  // and the choice is remembered.
   padding: 0;
   border: 2px solid var(--catalog-accent);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
   transform: translate(-50%, -50%);
   cursor: grab;
   touch-action: none;
-
-  &:hover,
-  &:active {
-    background: rgba(255, 255, 255, 0.6);
-  }
 
   &:active {
     cursor: grabbing;
   }
 }
 
+// Barely tinted rather than opaque: the corner of the painting has to stay
+// visible underneath the thing being used to point at it. The control points
+// carry more, having no cross to be found by.
 .prep-handle {
-  position: absolute;
-  // Width and height are set from the component: the artist chooses how wide a
-  // ring to aim with, and the choice is remembered.
-  padding: 0;
-  border: 2px solid var(--catalog-accent);
-  border-radius: 50%;
-  // Barely tinted rather than opaque: the corner of the painting has to stay
-  // visible underneath the thing being used to point at it.
   background: rgba(255, 255, 255, 0.12);
-  transform: translate(-50%, -50%);
-  cursor: grab;
-  touch-action: none;
+
+  &:hover,
+  &:active {
+    background: rgba(255, 255, 255, 0.28);
+  }
 
   // The two strokes of the cross, meeting at the exact point the handle marks.
   // Diagonal on purpose: an upright cross would lie along the very edges being
@@ -193,14 +194,14 @@
   &::after {
     transform: rotate(-45deg);
   }
+}
+
+.prep-bow {
+  background: rgba(255, 255, 255, 0.35);
 
   &:hover,
   &:active {
-    background: rgba(255, 255, 255, 0.28);
-  }
-
-  &:active {
-    cursor: grabbing;
+    background: rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -273,10 +274,7 @@
   }
 }
 
-.prep-busy {
-  font-size: 0.78rem;
-  color: var(--catalog-faint);
-}
+
 
 .prep-result {
   margin-top: tokens.$spacing-xl;
@@ -293,12 +291,8 @@
 }
 
 .prep-report {
-  max-width: 62ch;
   margin: 0 0 tokens.$spacing-lg;
   padding-left: 1.1rem;
-  font-size: 0.82rem;
-  line-height: 1.7;
-  color: var(--catalog-soft);
 }
 
 .prep-preview {
