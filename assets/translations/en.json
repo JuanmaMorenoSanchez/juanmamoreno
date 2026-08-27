@@ -192,7 +192,15 @@
     "title": "Appearances of the artwork on the Internet"
   },
   "critic": {
-    "generating": "Generating critic"
+    "generating": "Generating critic",
+    "edited": "edited",
+    "notEdited": "not edited",
+    "edit": "Edit this text",
+    "editing": "The essay, in markdown. Saved as written.",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "saveFailed": "That could not be saved. What you wrote is still here."
   },
   "seo": {
     "default": {
