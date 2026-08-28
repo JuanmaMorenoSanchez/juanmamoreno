@@ -253,6 +253,31 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R31 — A rim along an edge is evened out · met
+A shadow or a bright band along any of the four edges is found one side at a
+time — read as the median across the length of that side, so a dark passage of
+paint reaching the edge cannot invent one — and lifted back towards the paint
+beside it, fading to nothing by the inner edge of the band. Clean edges are left
+alone and the report says which sides, if any, were touched.
+*Proven by:* `prepare-photo.spec.ts` "a rim of shadow or glare along an edge"
+(5 tests, including that the middle of the painting is untouched)
+
+### R32 — The size is never typed twice · met
+The width and height boxes arrive filled: with the last size given, or on a
+first visit with the proportions of the photograph itself, which keeps the
+button live from the start. Focusing a box selects it, so replacing a value is
+one gesture.
+*Proven by:* the studio probe (filled on a first visit, and the size given is
+offered back on the next photograph)
+
+### R33 — A corner is taken hold of, not moved · met
+Pressing a handle does not move the corner under it. The offset between pointer
+and corner is kept and added back on every move, so the corner travels exactly
+as far as the hand does — which is what lets a wide ring be grabbed by its edge
+while the point it marks stays visible.
+*Proven by:* the studio probe (the corner does not shift on press, and follows
+the pointer afterwards)
+
 ### R24 — The photograph is visible while it is being corrected · met
 The opened photograph is shown as large as the window allows, with its four
 corners drawn over it, and each corner can be dragged. Each handle carries a

@@ -9,6 +9,7 @@ import {
 } from '@domain/image/prepare-photo';
 import {
   EDGE_CORNERS,
+  distance,
   fullFrame,
   straightBows,
   type EdgeBows,
@@ -38,10 +39,14 @@ const DETECTION_LONG_SIDE = 720;
  */
 const JPEG_QUALITY = 0.95;
 
+/** Where the last size typed in is kept, so the next painting needs no typing. */
+const REMEMBERED_SIZE = 'juanmamoreno.paintingSize';
+
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
   lighting: 'Evening out the lighting',
   glare: 'Taking out the glare',
+  borders: 'Checking the edges',
   colour: 'Checking the colour',
   focus: 'Checking the focus',
 };
@@ -105,6 +110,8 @@ export class PhotoPrepComponent {
   private readonly photo = signal<ImageBitmap | null>(null);
   /** Either a corner by index, or one control point of one side. */
   private dragging: number | { edge: EdgeName; index: 0 | 1 } | null = null;
+  /** How far the point being dragged sat from the pointer when it was taken hold of. */
+  private grabbedAt: Point = { x: 0, y: 0 };
 
   constructor() {
     // The canvas is inside the block that `size` reveals, so at the moment the
@@ -198,6 +205,7 @@ export class PhotoPrepComponent {
   protected readonly realHeight = signal<number | null>(null);
   protected readonly evenLighting = signal(true);
   protected readonly takeOutGlare = signal(true);
+  protected readonly evenBorders = signal(true);
   protected readonly correctCast = signal(true);
   protected readonly openTones = signal(true);
   protected readonly busy = signal<PhotoStage | null>(null);
@@ -298,12 +306,70 @@ export class PhotoPrepComponent {
     return `${name}-flat.jpg`;
   });
 
+  /** "the left", or "the left and the right", or "the left, the top and the right". */
+  protected borderList(borders: string[]): string {
+    const named = borders.map((border) => `the ${border}`);
+    if (named.length < 2) return named.join('');
+    return `${named.slice(0, -1).join(', ')} and ${named[named.length - 1]}`;
+  }
+
   protected setWidth(event: Event): void {
     this.realWidth.set(numberIn(event));
+    this.remember();
   }
 
   protected setHeight(event: Event): void {
     this.realHeight.set(numberIn(event));
+    this.remember();
+  }
+
+  /**
+   * Fills the size in so the next painting needs no typing at all.
+   *
+   * The last size given is offered back, since paintings come in series and
+   * the one before this was very often the same. Failing that — the first time
+   * the studio is opened — the proportions are taken from the photograph, which
+   * keeps the button live and the result true to what was shot. Both are only a
+   * starting point, and the note under the boxes says so.
+   */
+  private prefillSize(quad: Quad): void {
+    const remembered = this.rememberedSize();
+    if (remembered) {
+      this.realWidth.set(remembered.width);
+      this.realHeight.set(remembered.height);
+      return;
+    }
+
+    const [tl, tr, br, bl] = quad;
+    const across = Math.max(distance(tl, tr), distance(bl, br));
+    const down = Math.max(distance(tl, bl), distance(tr, br));
+    if (!across || !down) return;
+
+    const longest = Math.max(across, down);
+    this.realWidth.set(Math.round((across / longest) * 100));
+    this.realHeight.set(Math.round((down / longest) * 100));
+  }
+
+  private rememberedSize(): { width: number; height: number } | null {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(REMEMBERED_SIZE) ?? 'null');
+      const width = Number(stored?.width);
+      const height = Number(stored?.height);
+      return width > 0 && height > 0 ? { width, height } : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private remember(): void {
+    const width = this.realWidth();
+    const height = this.realHeight();
+    if (!width || !height) return;
+    try {
+      window.localStorage.setItem(REMEMBERED_SIZE, JSON.stringify({ width, height }));
+    } catch {
+      // Private browsing. The size lasts as long as the tab, which is fair.
+    }
   }
 
   protected async onFile(event: Event): Promise<void> {
@@ -350,6 +416,7 @@ export class PhotoPrepComponent {
     // Straight to begin with: corner finding fits four sides, so a bow is
     // always something the artist adds after looking.
     this.bows.set(straightBows(quad));
+    this.prefillSize(quad);
   }
 
   /** Draws the photograph into a scratch canvas to read its pixels back out. */
@@ -370,13 +437,28 @@ export class PhotoPrepComponent {
     return { width, height, data: context.getImageData(0, 0, width, height).data };
   }
 
+  /**
+   * Takes hold of a corner without moving it.
+   *
+   * The offset between the pointer and the corner is kept and added back on
+   * every move, so the corner travels exactly as far as the hand does. Setting
+   * it to the pointer instead would snap it under the cursor the instant it was
+   * touched, which throws away the placing already made and puts the point
+   * being aimed at underneath the finger doing the aiming.
+   */
   protected grab(index: number, event: PointerEvent): void {
+    const at = this.pointIn(event);
+    const corner = this.corners()?.[index];
+    this.grabbedAt = at && corner ? { x: corner.x - at.x, y: corner.y - at.y } : { x: 0, y: 0 };
     this.dragging = index;
     (event.target as Element).setPointerCapture(event.pointerId);
     event.preventDefault();
   }
 
   protected grabBow(edge: EdgeName, index: 0 | 1, event: PointerEvent): void {
+    const at = this.pointIn(event);
+    const handle = this.bows()?.[edge][index];
+    this.grabbedAt = at && handle ? { x: handle.x - at.x, y: handle.y - at.y } : { x: 0, y: 0 };
     this.dragging = { edge, index };
     (event.target as Element).setPointerCapture(event.pointerId);
     event.preventDefault();
@@ -390,9 +472,11 @@ export class PhotoPrepComponent {
     const corners = this.corners();
     if (!at || !size || !corners) return;
 
+    // The offset the handle was taken hold of at, added back, so the point
+    // travels exactly as far as the hand does and stays where it was set.
     const clamped = {
-      x: Math.min(size.width, Math.max(0, at.x)),
-      y: Math.min(size.height, Math.max(0, at.y)),
+      x: Math.min(size.width, Math.max(0, at.x + this.grabbedAt.x)),
+      y: Math.min(size.height, Math.max(0, at.y + this.grabbedAt.y)),
     };
 
     if (typeof this.dragging !== 'number') {
@@ -458,11 +542,12 @@ export class PhotoPrepComponent {
     try {
       const { image, report } = await preparePhoto(this.rasterAt(), {
         quad: corners,
-      bows: this.bows() ?? undefined,
+        bows: this.bows() ?? undefined,
         realWidth,
         realHeight,
         equalizeLighting: this.evenLighting(),
         removeGlare: this.takeOutGlare(),
+        evenBorders: this.evenBorders(),
         correctCast: this.correctCast(),
         openTones: this.openTones(),
         onStage: async (stage) => {

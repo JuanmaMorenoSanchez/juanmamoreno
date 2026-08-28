@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.6.0
+
+- feat: a shadow or a bright rim along the edges of the painting — where a
+  canvas lifts off the ground, or the side facing the lamp — is found one side
+  at a time and evened out, fading to nothing before it reaches the paint
+- feat: the size boxes come filled in: with the last size given, or on a first
+  visit with the proportions of the photograph, so nothing has to be typed
+- fix: taking hold of a corner moved it to the cursor, throwing away the placing
+  already made and hiding the point being aimed at under the hand aiming it. The
+  offset it was grabbed at is kept, so the corner travels exactly as far as the
+  hand does. The same for the control points on a bowed side
+
 ## 1.5.2
 
 - fix: the home page mouse test failed about two runs in five and blocked the

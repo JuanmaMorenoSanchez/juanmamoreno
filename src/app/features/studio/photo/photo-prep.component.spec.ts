@@ -85,10 +85,13 @@ describe('PhotoPrepComponent — bending the sides', () => {
     component.grabBow('top', 1, pointerAt());
     // drag() reads the pointer through the stage element, which no test has;
     // setting the signal is the same state change with the plumbing removed.
-    const bows = { ...before, top: [before.top[0], { x: 500, y: 20 }] as [
-      { x: number; y: number },
-      { x: number; y: number },
-    ] };
+    const bows = {
+      ...before,
+      top: [before.top[0], { x: 500, y: 20 }] as [
+        { x: number; y: number },
+        { x: number; y: number },
+      ],
+    };
     component.bows.set(bows);
 
     expect(component.bows()?.top[1]).toEqual({ x: 500, y: 20 });

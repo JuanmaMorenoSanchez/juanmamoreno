@@ -4,9 +4,10 @@ import { equalizeIllumination, measureIllumination, type IlluminationReport } fr
 import { findSpecular, repairSpecular } from './specular';
 import { autoLevels, autoWhiteBalance, type CastReport, type LevelsReport } from './colour';
 import { checkFocus, type FocusReport } from './focus';
+import { evenOutBorders, type BorderReport } from './borders';
 import type { Raster, Size } from './raster';
 
-export type PhotoStage = 'straightening' | 'lighting' | 'glare' | 'colour' | 'focus';
+export type PhotoStage = 'straightening' | 'lighting' | 'glare' | 'borders' | 'colour' | 'focus';
 
 export interface PreparePhotoOptions {
   /** Where the painting's corners sit in the photograph. */
@@ -19,6 +20,7 @@ export interface PreparePhotoOptions {
   /** Each of these is permission, not instruction: none acts unless it is needed. */
   equalizeLighting: boolean;
   removeGlare: boolean;
+  evenBorders: boolean;
   correctCast: boolean;
   openTones: boolean;
   /**
@@ -36,6 +38,7 @@ export interface PreparePhotoReport {
   spotsRemoved: number;
   /** Share of the painting the glare repair touched, between 0 and 1. */
   glareCoverage: number;
+  borders: BorderReport;
   cast: CastReport;
   levels: LevelsReport;
   focus: FocusReport;
@@ -63,8 +66,10 @@ const NOT_ASKED_FOR_CAST: CastReport = {
  * judged against the paint around it and wants that paint evenly lit. Only
  * then the colour: a white flare and a bright corner would both pass for
  * something that ought to have been neutral, and the cast would be read off
- * them. Tones last, since it maps the whole range at once. Focus is measured
- * on the finished picture and changes nothing.
+ * them. The rims come next, since a dark line along one side would otherwise
+ * be read as part of the painting's tonal range. Tones last, since that maps
+ * the whole range at once. Focus is measured on the finished picture and
+ * changes nothing.
  */
 export async function preparePhoto(
   source: Raster,
@@ -85,6 +90,9 @@ export async function preparePhoto(
   const glare = options.removeGlare ? findSpecular(image) : null;
   if (glare) repairSpecular(image, glare);
 
+  await onStage?.('borders');
+  const borders = options.evenBorders ? evenOutBorders(image) : { corrected: [] };
+
   await onStage?.('colour');
   const cast = options.correctCast ? autoWhiteBalance(image) : NOT_ASKED_FOR_CAST;
   const levels = options.openTones ? autoLevels(image) : { applied: false, low: 0, high: 255 };
@@ -100,6 +108,7 @@ export async function preparePhoto(
       equalized,
       spotsRemoved: glare?.spots ?? 0,
       glareCoverage: glare?.coverage ?? 0,
+      borders,
       cast,
       levels,
       focus,

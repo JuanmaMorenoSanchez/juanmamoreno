@@ -6,6 +6,7 @@ import { equalizeIllumination, measureIllumination } from './illumination';
 import { findSpecular, repairSpecular } from './specular';
 import { autoLevels, autoWhiteBalance } from './colour';
 import { checkFocus } from './focus';
+import { evenOutBorders } from './borders';
 import { preparePhoto, type PhotoStage } from './prepare-photo';
 
 type Rgb = [number, number, number];
@@ -379,6 +380,7 @@ describe('preparePhoto', () => {
     realHeight: 80,
     equalizeLighting: true,
     removeGlare: true,
+    evenBorders: true,
     correctCast: true,
     openTones: true,
   };
@@ -399,7 +401,7 @@ describe('preparePhoto', () => {
       },
     });
 
-    expect(seen).toEqual(['straightening', 'lighting', 'glare', 'colour', 'focus']);
+    expect(seen).toEqual(['straightening', 'lighting', 'glare', 'borders', 'colour', 'focus']);
   });
 
   it('leaves evenly lit paint untouched rather than correcting it anyway', async () => {
@@ -576,5 +578,53 @@ describe('focus', () => {
   it('does not call flat paint out of focus', () => {
     // Nothing in a flat panel was lost, so there is nothing to report.
     expect(checkFocus(blank(360, 240, [130, 96, 70])).judged).toBe(false);
+  });
+});
+
+describe('a rim of shadow or glare along an edge', () => {
+  /** Even paint, with one side darkened as a canvas lifting off the ground darkens it. */
+  const withRim = (side: 'left' | 'top' | null, factor: number) => {
+    const raster = blank(200, 160, [140, 96, 74]);
+    const random = noise(5);
+    for (let y = 0; y < 160; y++) {
+      for (let x = 0; x < 200; x++) {
+        const grain = (random() - 0.5) * 10;
+        const depth = side === 'left' ? x : side === 'top' ? y : 999;
+        const rim = depth < 6 ? factor + ((1 - factor) * depth) / 6 : 1;
+        put(raster, x, y, [(140 + grain) * rim, (96 + grain) * rim, (74 + grain) * rim]);
+      }
+    }
+    return raster;
+  };
+
+  it('leaves clean edges alone', () => {
+    expect(evenOutBorders(withRim(null, 1)).corrected).toEqual([]);
+  });
+
+  it('finds a dark rim and names the side it was on', () => {
+    expect(evenOutBorders(withRim('left', 0.6)).corrected).toEqual(['left']);
+  });
+
+  it('finds a bright rim too', () => {
+    expect(evenOutBorders(withRim('top', 1.5)).corrected).toEqual(['top']);
+  });
+
+  it('lifts the darkened edge back towards the paint beside it', () => {
+    const raster = withRim('left', 0.6);
+    const before = pixel(raster, 1, 80)[0];
+    evenOutBorders(raster);
+    const after = pixel(raster, 1, 80)[0];
+    const inside = pixel(raster, 60, 80)[0];
+
+    expect(after).toBeGreaterThan(before);
+    expect(Math.abs(after - inside)).toBeLessThan(Math.abs(before - inside));
+  });
+
+  it('does not touch the middle of the painting', () => {
+    const raster = withRim('left', 0.6);
+    const before = pixel(raster, 120, 80);
+    evenOutBorders(raster);
+
+    expect(pixel(raster, 120, 80)).toEqual(before);
   });
 });

@@ -48,11 +48,7 @@
         >
           <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
           @for (bow of bowHandles(); track bow.edge + bow.index) {
-            <path
-              class="prep-tether"
-              [attr.d]="bow.tether"
-              vector-effect="non-scaling-stroke"
-            />
+            <path class="prep-tether" [attr.d]="bow.tether" vector-effect="non-scaling-stroke" />
           }
         </svg>
         @for (handle of handles(); track $index) {
@@ -113,16 +109,16 @@
           />
         </label>
         <p class="prep-hint">
-          Written into the file as exif and xmp, which costs nothing in quality.
-          Leave the name blank and the file goes out unattributed.
+          Written into the file as exif and xmp, which costs nothing in quality. Leave the name
+          blank and the file goes out unattributed.
         </p>
       </fieldset>
 
       <fieldset class="prep-field">
         <legend>Sides</legend>
         <p class="prep-hint">
-          Drag the small handles to follow a side that the lens has bent. Straight
-          sides change nothing.
+          Drag the small handles to follow a side that the lens has bent. Straight sides change
+          nothing.
         </p>
         <button type="button" class="prep-link" (click)="straightenSides()">
           Straighten the sides
@@ -148,17 +144,35 @@
         <legend>The painting itself</legend>
         <label>
           Width
-          <input type="number" min="1" step="0.1" inputmode="decimal" (input)="setWidth($event)" />
+          <input
+            type="number"
+            min="1"
+            step="0.1"
+            inputmode="decimal"
+            [value]="realWidth() ?? ''"
+            (focus)="$any($event.target).select()"
+            (input)="setWidth($event)"
+          />
           cm
         </label>
         <label>
           Height
-          <input type="number" min="1" step="0.1" inputmode="decimal" (input)="setHeight($event)" />
+          <input
+            type="number"
+            min="1"
+            step="0.1"
+            inputmode="decimal"
+            [value]="realHeight() ?? ''"
+            (focus)="$any($event.target).select()"
+            (input)="setHeight($event)"
+          />
           cm
         </label>
         <p class="prep-note">
           The result is given these proportions exactly. Only the ratio is read, so any unit will do
-          as long as both are in it.
+          as long as both are in it. Filled in with the last size you gave — or, the first time,
+          with the proportions of the photograph itself, which are a starting point and not a
+          measurement.
         </p>
       </fieldset>
 
@@ -179,6 +193,14 @@
             (change)="takeOutGlare.set($any($event.target).checked)"
           />
           Take out the glare off the varnish
+        </label>
+        <label class="prep-check">
+          <input
+            type="checkbox"
+            [checked]="evenBorders()"
+            (change)="evenBorders.set($any($event.target).checked)"
+          />
+          Even out a shadow or a bright rim along the edges
         </label>
         <label class="prep-check">
           <input
@@ -238,6 +260,13 @@
             covering {{ done.glareCoverage * 100 | number: '1.0-2' }}% of the surface.
           } @else {
             No glare was found.
+          }
+        </li>
+        <li>
+          @if (done.borders.corrected.length) {
+            A rim along {{ borderList(done.borders.corrected) }} was evened out.
+          } @else {
+            The edges carried no shadow or glare of their own.
           }
         </li>
         <li>
