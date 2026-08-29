@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.8.1
+
+- fix: the home page's featured painting was checked by driving a synthetic
+  mouse across it, which fails about a quarter of the time on that element and
+  never on a catalogue tile, at any drift from four pixels up. It blocked two
+  deploys for a fault nobody has ever met by hand. It is now checked for the
+  thing that was actually wrong with it — that the link and its images refuse to
+  be dragged — which is deterministic and still catches the regression that
+  happened
+
 ## 1.8.0
 
 - feat: an essay that cites another of the artist's paintings now shows it. The
