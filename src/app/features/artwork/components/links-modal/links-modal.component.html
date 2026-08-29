@@ -1,14 +1,41 @@
 <h2 mat-dialog-title>{{ 'links.view' | translate }}</h2>
 <div mat-dialog-content>
-  <mat-list>
-    @for (link of data.links; track link) {
-      <mat-list-item>
-        <a mat-line [href]="link" target="_blank" rel="noopener noreferrer">
-          {{ link.replace('https://', '').replace('http://', '').replace('www.', '') }}
-        </a>
-      </mat-list-item>
+  <ul class="link-groups">
+    @for (group of groups(); track group.domain) {
+      <li class="link-group">
+        @if (group.links.length === 1) {
+          <a
+            class="link-group-name"
+            [href]="group.links[0]"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ group.domain }}
+          </a>
+        } @else {
+          <button
+            type="button"
+            class="link-group-name link-group-toggle"
+            [attr.aria-expanded]="isOpen(group.domain)"
+            (click)="toggle(group.domain)"
+          >
+            {{ group.domain }}
+            <span class="link-group-count">{{ group.links.length }}</span>
+          </button>
+
+          @if (isOpen(group.domain)) {
+            <ul class="link-pages">
+              @for (link of group.links; track link) {
+                <li>
+                  <a [href]="link" target="_blank" rel="noopener noreferrer">{{ pathOf(link) }}</a>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </li>
     }
-  </mat-list>
+  </ul>
 </div>
 <div mat-dialog-actions>
   <button

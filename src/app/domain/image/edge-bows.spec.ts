@@ -55,12 +55,16 @@ describe('bowed sides', () => {
   // The property that makes this safe to add: a photograph whose sides are
   // straight has to come out exactly as it did before bows existed, or every
   // correction already made would shift the day this shipped.
+  // Two full warps and a comparison of every byte of both, which runs close
+  // enough to the default five seconds to fail on a loaded machine while
+  // passing on a quiet one. The work is the point of the test, so it is given
+  // room rather than made smaller.
   it('changes nothing at all when the sides are straight', () => {
     const withoutBows = warpPerspective(source, quad, size);
     const withStraightBows = warpPerspective(source, quad, size, straightBows(quad));
 
     expect(withStraightBows.data).toEqual(withoutBows.data);
-  });
+  }, 20000);
 
   it('leaves the corners where the perspective correction put them', () => {
     const plain = warpPerspective(source, quad, size);
@@ -117,25 +121,48 @@ describe('bowed sides', () => {
       for (let u = 0; u < CARD.width * 3; u++) {
         const tx = u / (CARD.width * 3 - 1);
         const top = bezierAt(photoQuad[0], photoBows.top[0], photoBows.top[1], photoQuad[1], tx);
-        const bottom = bezierAt(photoQuad[3], photoBows.bottom[0], photoBows.bottom[1], photoQuad[2], tx);
+        const bottom = bezierAt(
+          photoQuad[3],
+          photoBows.bottom[0],
+          photoBows.bottom[1],
+          photoQuad[2],
+          tx
+        );
         const left = bezierAt(photoQuad[0], photoBows.left[0], photoBows.left[1], photoQuad[3], ty);
-        const right = bezierAt(photoQuad[1], photoBows.right[0], photoBows.right[1], photoQuad[2], ty);
+        const right = bezierAt(
+          photoQuad[1],
+          photoBows.right[0],
+          photoBows.right[1],
+          photoQuad[2],
+          ty
+        );
         // Coons: the standard surface through four boundary curves.
         const x =
-          (1 - ty) * top.x + ty * bottom.x + (1 - tx) * left.x + tx * right.x -
-          ((1 - tx) * (1 - ty) * photoQuad[0].x + tx * (1 - ty) * photoQuad[1].x +
-            (1 - tx) * ty * photoQuad[3].x + tx * ty * photoQuad[2].x);
+          (1 - ty) * top.x +
+          ty * bottom.x +
+          (1 - tx) * left.x +
+          tx * right.x -
+          ((1 - tx) * (1 - ty) * photoQuad[0].x +
+            tx * (1 - ty) * photoQuad[1].x +
+            (1 - tx) * ty * photoQuad[3].x +
+            tx * ty * photoQuad[2].x);
         const y =
-          (1 - ty) * top.y + ty * bottom.y + (1 - tx) * left.y + tx * right.y -
-          ((1 - tx) * (1 - ty) * photoQuad[0].y + tx * (1 - ty) * photoQuad[1].y +
-            (1 - tx) * ty * photoQuad[3].y + tx * ty * photoQuad[2].y);
+          (1 - ty) * top.y +
+          ty * bottom.y +
+          (1 - tx) * left.y +
+          tx * right.y -
+          ((1 - tx) * (1 - ty) * photoQuad[0].y +
+            tx * (1 - ty) * photoQuad[1].y +
+            (1 - tx) * ty * photoQuad[3].y +
+            tx * ty * photoQuad[2].y);
 
         const px = Math.round(x);
         const py = Math.round(y);
         if (px < 0 || py < 0 || px >= PHOTO.width || py >= PHOTO.height) continue;
         const from =
           (Math.min(CARD.height - 1, Math.round(ty * (CARD.height - 1))) * CARD.width +
-            Math.min(CARD.width - 1, Math.round(tx * (CARD.width - 1)))) * 4;
+            Math.min(CARD.width - 1, Math.round(tx * (CARD.width - 1)))) *
+          4;
         const to = (py * PHOTO.width + px) * 4;
         photo.data[to] = flat.data[from];
         photo.data[to + 1] = flat.data[from + 1];

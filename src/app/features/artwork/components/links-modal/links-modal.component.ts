@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
@@ -7,10 +7,9 @@ import {
   MatDialogActions,
 } from '@angular/material/dialog';
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import { MatList, MatListItem } from '@angular/material/list';
-import { MatLine } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
+import { groupLinksByDomain, pathOf } from '@domain/artwork/link-groups';
 
 @Component({
   selector: 'app-links-modal',
@@ -20,9 +19,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatDialogTitle,
     CdkScrollable,
     MatDialogContent,
-    MatList,
-    MatListItem,
-    MatLine,
     MatDialogActions,
     MatButton,
     TranslatePipe,
@@ -31,6 +27,31 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class LinksModalComponent {
   public data = inject<{ links: Array<string> }>(MAT_DIALOG_DATA);
   private dialogRef = inject<MatDialogRef<LinksModalComponent>>(MatDialogRef);
+
+  /**
+   * By site rather than by page.
+   *
+   * A reverse image search answers with pages, and one site can be a great many
+   * of them — a painting used as a record sleeve appears once for every
+   * listener who saved it. Flat, that reads as fifty findings and buries the
+   * one new gallery among them.
+   */
+  protected readonly groups = computed(() => groupLinksByDomain(this.data.links ?? []));
+
+  /** Which sites the reader has asked to see the individual pages of. */
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
+
+  protected readonly pathOf = pathOf;
+
+  protected isOpen(domain: string): boolean {
+    return this.opened().has(domain);
+  }
+
+  protected toggle(domain: string): void {
+    const next = new Set(this.opened());
+    if (!next.delete(domain)) next.add(domain);
+    this.opened.set(next);
+  }
 
   close() {
     this.dialogRef.close();

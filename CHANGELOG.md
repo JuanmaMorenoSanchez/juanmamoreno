@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.7.0
+
+- feat: the list of places a painting has been found is grouped by site rather
+  than listed page by page. A painting used as a record sleeve turns up once for
+  every listener who saved it; flat, that reads as fifty findings and buries the
+  one new gallery among them. Each site shows how many pages it accounts for and
+  opens on click, busiest first
+- chore: the bowed-sides test that compares two full warps byte for byte is
+  given room. It ran within a quarter second of the default limit and failed on
+  a loaded machine while passing on a quiet one
+
 ## 1.6.0
 
 - feat: a shadow or a bright rim along the edges of the painting — where a

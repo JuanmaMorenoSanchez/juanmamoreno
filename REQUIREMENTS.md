@@ -253,6 +253,18 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R35 — Where a painting has been found is grouped by site · met
+The list of pages a painting appears on is gathered by site: one row per site,
+carrying how many pages it accounts for, opening on click. Sites with a single
+page stay a plain link. Ordered busiest first, ties broken by name so the list
+does not reshuffle between visits and look as though it changed.
+
+Grouping is the point: one place can be a great many pages — a painting used as
+a record sleeve appears once for every listener who saved it — and listed flat
+those bury the one genuinely new site among them.
+*Proven by:* `link-groups.spec.ts` (11 tests, including the record-sleeve case),
+and the browser probe against token 71, whose ten pages are all one site
+
 ### R31 — A rim along an edge is evened out · met
 A shadow or a bright band along any of the four edges is found one side at a
 time — read as the median across the length of that side, so a dark passage of
