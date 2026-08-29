@@ -36,7 +36,12 @@
           <p class="artwork-critic-problem">{{ problem() | translate }}</p>
         }
         <div class="artwork-critic-actions">
-          <button type="button" class="artwork-critic-save" [disabled]="!canSave()" (click)="save()">
+          <button
+            type="button"
+            class="artwork-critic-save"
+            [disabled]="!canSave()"
+            (click)="save()"
+          >
             {{ (saving() ? 'critic.saving' : 'critic.save') | translate }}
           </button>
           <button
@@ -50,7 +55,33 @@
         </div>
       </div>
     } @else {
-      <div class="artwork-critic-body" [innerHTML]="critic.html"></div>
+      <!--
+        Delegated, because the essay is html handed over whole: there are no
+        elements here to bind to, only whatever the text turned out to contain.
+      -->
+      <div
+        class="artwork-critic-body"
+        [innerHTML]="critic.html"
+        (pointerover)="showPeek($event)"
+        (pointermove)="movePeek($event)"
+        (pointerout)="hidePeek()"
+        (pointercancel)="hidePeek()"
+        (pointerup)="hidePeek()"
+      ></div>
+
+      @if (peek(); as preview) {
+        <figure
+          class="artwork-peek"
+          [style.left.px]="preview.left"
+          [style.top.px]="preview.top"
+          aria-hidden="true"
+        >
+          <img [src]="preview.src" alt="" decoding="async" />
+          @if (preview.name) {
+            <figcaption>{{ preview.name }}</figcaption>
+          }
+        </figure>
+      }
       @if (isArtist()) {
         <button type="button" class="artwork-critic-edit" (click)="startEditing()">
           {{ 'critic.edit' | translate }}

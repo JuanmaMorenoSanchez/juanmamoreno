@@ -147,7 +147,7 @@
   padding: tokens.$spacing-sm;
   border: 1px solid var(--catalog-faint);
   background: transparent;
-  font-family: ui-monospace, "SFMono-Regular", "Consolas", monospace;
+  font-family: ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
   font-size: 0.8rem;
   line-height: 1.65;
   color: inherit;
@@ -164,4 +164,39 @@
   margin: tokens.$spacing-sm 0 0;
   font-size: 0.78rem;
   color: var(--catalog-accent);
+}
+
+/**
+ * The painting a link in the essay points at, shown beside the pointer.
+ *
+ * Fixed to the viewport rather than placed in the flow: it is positioned from
+ * the pointer's own coordinates, and it must not be able to widen the column
+ * the essay is set in or push a single word of it around.
+ */
+.artwork-peek {
+  position: fixed;
+  z-index: 1000;
+  width: 180px;
+  margin: 0;
+  padding: 6px;
+  background: var(--catalog-frame-bg, #fff);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
+  // It follows the pointer, so it must never be under it.
+  pointer-events: none;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: contain;
+  }
+
+  figcaption {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--catalog-soft);
+  }
 }

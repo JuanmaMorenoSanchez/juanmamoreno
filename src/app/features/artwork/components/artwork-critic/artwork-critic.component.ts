@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { artworkTokenIdFrom } from '@domain/artwork/artwork-link';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtCritic } from '@domain/artwork/critic.entity';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,6 +15,12 @@ import { combineLatest, filter, of, startWith, switchMap, take, timer } from 'rx
 // Rather than give up on the first 404, keep asking until there is something to
 // print — the spinner stands in for the text meanwhile.
 const POLL_INTERVAL_MS = 30_000;
+
+/** How far from the pointer the preview sits, so it never hides what is under it. */
+const PEEK_OFFSET = 18;
+/** Its size on the page. It flips to the other side of the pointer near an edge. */
+const PEEK_WIDTH = 180;
+const PEEK_HEIGHT = 180;
 
 @Component({
   selector: 'app-artwork-critic',
@@ -28,6 +35,82 @@ export class ArtworkCriticComponent {
   protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly tokenId = input.required<string>();
+
+  /**
+   * The catalogue, already in hand.
+   *
+   * The essays cite other paintings, and a reader following one has no idea
+   * which painting is behind the words until it opens. Showing it costs nothing
+   * here: every artwork is already in the session, so the only thing fetched is
+   * the thumbnail, and only once the pointer has actually settled on the link.
+   */
+  private readonly artworks = toSignal(this.artworkService.getArtPiecesObservable(), {
+    initialValue: [],
+  });
+
+  protected readonly peek = signal<{
+    src: string;
+    name: string;
+    left: number;
+    top: number;
+  } | null>(null);
+
+  /** The link the preview belongs to, so a move within the same link does not refetch. */
+  private peekingAt: string | null = null;
+
+  protected showPeek(event: PointerEvent): void {
+    const anchor = (event.target as Element | null)?.closest?.('a');
+    const href = anchor?.getAttribute('href') ?? '';
+    const tokenId = artworkTokenIdFrom(href);
+
+    if (!tokenId) {
+      this.hidePeek();
+      return;
+    }
+    if (this.peekingAt === href) {
+      this.movePeek(event);
+      return;
+    }
+
+    const nft = this.artworks().find((candidate) => candidate.tokenId === tokenId);
+    // Only the thumbnail. A preview that arrives after the reader has moved on
+    // is not a preview, and the full painting is what the link itself is for.
+    const src = nft ? this.artworkService.getNftOptimalUrl(nft.image) : '';
+    if (!src) {
+      this.hidePeek();
+      return;
+    }
+
+    this.peekingAt = href;
+    this.peek.set({ src, name: nft?.name ?? '', ...this.placeNear(event) });
+  }
+
+  protected movePeek(event: PointerEvent): void {
+    const showing = this.peek();
+    if (!showing) return;
+    this.peek.set({ ...showing, ...this.placeNear(event) });
+  }
+
+  protected hidePeek(): void {
+    this.peekingAt = null;
+    this.peek.set(null);
+  }
+
+  /** Keeps the preview beside the pointer and wholly on the screen. */
+  private placeNear(event: PointerEvent): { left: number; top: number } {
+    const room = { width: window.innerWidth, height: window.innerHeight };
+    const overflowsRight = event.clientX + PEEK_OFFSET + PEEK_WIDTH > room.width;
+    const overflowsBottom = event.clientY + PEEK_OFFSET + PEEK_HEIGHT > room.height;
+
+    return {
+      left: overflowsRight
+        ? Math.max(PEEK_OFFSET, event.clientX - PEEK_OFFSET - PEEK_WIDTH)
+        : event.clientX + PEEK_OFFSET,
+      top: overflowsBottom
+        ? Math.max(PEEK_OFFSET, event.clientY - PEEK_OFFSET - PEEK_HEIGHT)
+        : event.clientY + PEEK_OFFSET,
+    };
+  }
 
   /** Only ever true for the artist, and only in a browser he has signed in on. */
   protected readonly isArtist = computed(() => this.auth.isAdmin());

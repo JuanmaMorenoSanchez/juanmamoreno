@@ -27,11 +27,26 @@ const CRITIC: ArtCritic = {
 /** The same essay as the backend returns it to an authenticated artist. */
 const asArtist = (edited: boolean): ArtCritic => ({ ...CRITIC, edited });
 
-async function setup(options: { signedIn: boolean; edited?: boolean }) {
+/** One painting in the catalogue, as the session already holds it. */
+const CATALOGUE = [
+  {
+    tokenId: '134',
+    name: 'Another painting',
+    image: { thumbnailUrl: 'https://cdn.test/thumb/134', originalUrl: 'https://cdn.test/full/134' },
+  },
+];
+
+async function setup(options: { signedIn: boolean; edited?: boolean; critic?: ArtCritic }) {
   const port = {
-    getArtPieceCritic: vi.fn().mockReturnValue(of(CRITIC)),
-    getArtPieceCriticWithEdits: vi.fn().mockReturnValue(of(asArtist(options.edited ?? false))),
+    getArtPieceCritic: vi.fn().mockReturnValue(of(options.critic ?? CRITIC)),
+    getArtPieceCriticWithEdits: vi
+      .fn()
+      .mockReturnValue(of({ ...(options.critic ?? CRITIC), edited: options.edited ?? false })),
     editArtPieceCritic: vi.fn().mockReturnValue(of(asArtist(true))),
+    getArtPiecesObservable: vi.fn().mockReturnValue(of(CATALOGUE)),
+    // Thumbnail first: the preview must never reach for the full painting.
+    getNftOptimalUrl: (image: { thumbnailUrl?: string; originalUrl?: string }) =>
+      image?.thumbnailUrl ?? image?.originalUrl ?? '',
   };
 
   const auth = {
@@ -198,5 +213,60 @@ describe('ArtworkCriticComponent — for the artist', () => {
     expect(after).not.toBeNull();
     expect(after.value).toBe('Something worth keeping.');
     expect(find(fixture, '.artwork-critic-problem')).not.toBeNull();
+  });
+});
+
+describe('ArtworkCriticComponent — previewing a painting the essay cites', () => {
+  /** An essay citing one of the artist's own paintings, as the generated ones do. */
+  const withOwnLink: ArtCritic = {
+    ...CRITIC,
+    translated: [
+      {
+        ...CRITIC.translated[0],
+        html:
+          '<p>Compare <a href="https://www.juanmamoreno.com/artwork/134">the other one</a> ' +
+          'and <a href="https://en.wikipedia.org/wiki/Blue">blue</a>.</p>',
+      },
+    ],
+  };
+
+  const pointerOn = (fixture: ComponentFixture<ArtworkCriticComponent>, selector: string) => {
+    const anchor = fixture.nativeElement.querySelector(selector) as HTMLElement;
+    anchor.dispatchEvent(
+      new PointerEvent('pointerover', { bubbles: true, clientX: 40, clientY: 40 })
+    );
+    fixture.detectChanges();
+  };
+
+  it('shows the painting when the pointer reaches a link to one', async () => {
+    const { fixture } = await setup({ signedIn: false, critic: withOwnLink });
+
+    pointerOn(fixture, 'a[href*="artwork/134"]');
+
+    const peek = fixture.nativeElement.querySelector('.artwork-peek');
+    expect(peek).toBeTruthy();
+    expect(peek.querySelector('img').getAttribute('src')).toBe('https://cdn.test/thumb/134');
+    expect(peek.textContent).toContain('Another painting');
+  });
+
+  it('shows nothing for a link to somebody else', async () => {
+    const { fixture } = await setup({ signedIn: false, critic: withOwnLink });
+
+    pointerOn(fixture, 'a[href*="wikipedia"]');
+
+    expect(fixture.nativeElement.querySelector('.artwork-peek')).toBeNull();
+  });
+
+  it('takes it away again when the pointer leaves', async () => {
+    const { fixture } = await setup({ signedIn: false, critic: withOwnLink });
+    pointerOn(fixture, 'a[href*="artwork/134"]');
+    expect(fixture.nativeElement.querySelector('.artwork-peek')).toBeTruthy();
+
+    fixture.nativeElement
+      .querySelector('.artwork-critic-body')
+      .dispatchEvent(new PointerEvent('pointerout', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.artwork-peek')).toBeNull();
   });
 });

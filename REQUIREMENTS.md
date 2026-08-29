@@ -253,6 +253,19 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R36 — A painting an essay cites can be seen without leaving · met
+The essays link to other paintings in the catalogue by their full public
+address. Resting the pointer on one of those links shows that painting beside
+the pointer, with its title, staying on screen and clear of the pointer itself,
+and going away when the pointer leaves. Links to anywhere else do nothing.
+
+Only the thumbnail is ever loaded, and only once the pointer has reached the
+link: the artwork itself is already in the session, so nothing else is fetched,
+and the full painting is what following the link is for.
+*Proven by:* `artwork-link.spec.ts` (10 tests, including that a host merely
+containing our name is not ours), `artwork-critic.component.spec.ts`
+("previewing a painting the essay cites", 3 tests)
+
 ### R35 — Where a painting has been found is grouped by site · met
 The list of pages a painting appears on is gathered by site: one row per site,
 carrying how many pages it accounts for, opening on click. Sites with a single

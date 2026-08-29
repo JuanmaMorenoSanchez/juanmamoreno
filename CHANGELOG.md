@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.8.0
+
+- feat: an essay that cites another of the artist's paintings now shows it. The
+  pointer resting on the link brings the painting up beside it, with its title,
+  and takes it away again on leaving. The thumbnail only — the full painting is
+  what the link itself is for — and nothing is fetched until the pointer has
+  actually reached the link
+
 ## 1.7.0
 
 - feat: the list of places a painting has been found is grouped by site rather
