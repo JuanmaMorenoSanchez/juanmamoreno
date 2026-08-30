@@ -58,9 +58,34 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.setCanonical(url);
     this.setLanguageAlternates(snapshot.url);
+    this.setLocale(snapshot.url);
+    // Every page is one of two, and the type is only ever raised above this by
+    // a page that knows it is something more particular.
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.setRobots(this.deepestData(snapshot.root, 'noindex') === true);
     // Belongs to whichever artwork page we just left, not to this one.
     this.clearArtworkStructuredData();
+  }
+
+  /**
+   * Which language this page is in, and which other one it exists in.
+   *
+   * Facebook, WhatsApp and the rest read this rather than the hreflang tags,
+   * so without it a Spanish page shared into a Spanish conversation was
+   * previewed with no language attached at all.
+   */
+  private setLocale(routerUrl: string): void {
+    const path = routerUrl
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/^\/+|\/+$/g, '');
+    const spanish = path === 'es' || path.startsWith('es/');
+
+    this.meta.updateTag({ property: 'og:locale', content: spanish ? 'es_ES' : 'en_GB' });
+    this.meta.updateTag({
+      property: 'og:locale:alternate',
+      content: spanish ? 'en_GB' : 'es_ES',
+    });
   }
 
   /**
@@ -73,7 +98,10 @@ export class SeoTitleStrategy extends TitleStrategy {
    * English page, which is the one to fall back to for any other language.
    */
   private setLanguageAlternates(routerUrl: string): void {
-    const path = routerUrl.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
+    const path = routerUrl
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/^\/+|\/+$/g, '');
     const bare = path === 'es' ? '' : path.replace(/^es\//, '');
     const alternates: [string, string][] = [
       ['en', this.absoluteUrl(bare)],
@@ -176,7 +204,7 @@ export class SeoTitleStrategy extends TitleStrategy {
    * individually titled rather than sharing a generic route title. Callers pass
    * already-resolved text, not translation keys.
    */
-  setPageTitle(title: string, description?: string, image?: string): void {
+  setPageTitle(title: string, description?: string, image?: string, type?: string): void {
     const pageTitle = `${title} · ${SITE_NAME}`;
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ property: 'og:title', content: pageTitle });
@@ -192,6 +220,10 @@ export class SeoTitleStrategy extends TitleStrategy {
       this.meta.updateTag({ property: 'og:image', content: image });
       this.meta.updateTag({ name: 'twitter:image', content: image });
     }
+    // A painting with an essay about it is not the site's front door, and
+    // saying "website" of all two hundred of them tells a reader's phone to
+    // preview them as if they were.
+    if (type) this.meta.updateTag({ property: 'og:type', content: type });
   }
 
   private deepestDescription(route: ActivatedRouteSnapshot): string | undefined {

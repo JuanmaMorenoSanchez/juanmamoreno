@@ -20,6 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { metaDescription } from '@domain/seo/meta-description';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
@@ -195,7 +196,10 @@ export class ArtPieceComponent {
       if (!nft?.name) return;
       const description = this.seoDescription(nft);
       const image = nft.image?.cachedUrl || nft.image?.thumbnailUrl;
-      this.seo.setPageTitle(nft.name, description, image);
+      // The tag gets what a search result has room for; the structured data
+      // below gets the whole thing, where there is no such limit and where a
+      // machine reading about the painting benefits from all of it.
+      this.seo.setPageTitle(nft.name, metaDescription(description), image, 'article');
       this.seo.setArtworkStructuredData({
         name: nft.name,
         url: `https://juanmamoreno.com/artwork/${nft.tokenId}/`,

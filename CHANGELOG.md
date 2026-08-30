@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.11.0
+
+- feat: the sitemap names the painting on each page, so the catalogue can be
+  found by the pictures rather than only by the words around them
+- fix: every artwork page was handing search engines a four to five hundred
+  character description, which is cut off around a hundred and fifty-five. They
+  now end where a sentence ends. The full text still goes into the structured
+  data, which has no such limit
+- fix: artwork pages described themselves as og:type website, and no page said
+  which language it was in. Sharing a Spanish page attached no language at all
+- fix: robots.txt did not disallow the Spanish addresses of the studio, which
+  redirect rather than 404
+
 ## 1.10.2
 
 - fix: Angular moved from 22.0.4 to 22.1.4, which closes a high-severity XSS in

@@ -2,7 +2,7 @@
 // hand-maintained list: every index.html in the build output is a real URL that
 // GitHub Pages will serve with a 200, and nothing else is. Run after `ng build`
 // (see the postbuild script), overwriting the placeholder copied from src/.
-import { readdir, stat, writeFile } from 'node:fs/promises';
+import { readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 const ORIGIN = 'https://juanmamoreno.com';
@@ -51,11 +51,39 @@ const lastmodOf = async (route) => {
   return mtime.toISOString().slice(0, 10);
 };
 
+/**
+ * The painting on the page, and what it is called.
+ *
+ * This is a catalogue of pictures, and a great deal of the way people arrive at
+ * one is by seeing it first — an image sitemap is how those pictures get into
+ * that index rather than waiting to be noticed inside the page. Read back out
+ * of the prerendered html so it can only ever name an image the page really
+ * shows, and taken from og:image, which is the one the page itself nominates.
+ */
+const imageOf = async (route) => {
+  const html = await readFile(join(OUTPUT_DIR, route, 'index.html'), 'utf8');
+  const loc = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+  if (!loc) return null;
+
+  const title = html.match(/<meta property="og:title" content="([^"]+)"/)?.[1] ?? '';
+  return { loc, title: title.split(' · ')[0] };
+};
+
+/** XML has five characters it cannot be handed raw, and titles carry them. */
+const xml = (text) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
 const body = (
   await Promise.all(
     sorted.map(async (route) => {
       const priority = PRIORITIES[route] ?? '0.7';
       const changefreq = route in PRIORITIES ? 'monthly' : 'yearly';
+      const image = await imageOf(route);
       return [
         '  <url>',
         // Trailing slash: that is the address Pages serves without a redirect,
@@ -64,6 +92,14 @@ const body = (
         `    <lastmod>${await lastmodOf(route)}</lastmod>`,
         `    <priority>${priority}</priority>`,
         `    <changefreq>${changefreq}</changefreq>`,
+        ...(image
+          ? [
+              '    <image:image>',
+              `      <image:loc>${xml(image.loc)}</image:loc>`,
+              ...(image.title ? [`      <image:title>${xml(image.title)}</image:title>`] : []),
+              '    </image:image>',
+            ]
+          : []),
         '  </url>',
       ].join('\n');
     }),
@@ -72,7 +108,7 @@ const body = (
 
 await writeFile(
   join(OUTPUT_DIR, 'sitemap.xml'),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${body}\n</urlset>\n`,
   'utf8',
 );
 

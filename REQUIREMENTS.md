@@ -253,6 +253,24 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R40 — A search result shows a whole sentence · met
+The description tag ends where a sentence ends, within the hundred and
+fifty-five characters a result has room for, rather than being cut mid-word by
+the search engine. Where no sentence ends early enough it stops at a word and
+says it was cut. The full written description still goes to the structured data,
+which has no such limit and where a machine reading about the painting benefits
+from all of it.
+*Proven by:* `meta-description.spec.ts` (9 tests), and the built pages, whose
+descriptions run 95 to 142 characters where they ran 408 to 539
+
+### R41 — The paintings are findable as pictures · met
+The sitemap carries the image on each page and what it is called, so the
+catalogue can be reached through an image search — which for a painter is a
+first way in, not a secondary one. Read back out of the prerendered html, so it
+can only ever name an image the page really shows.
+*Proven by:* the built sitemap, 388 urls each carrying an image, 163 of them
+distinct, with the image namespace declared and nothing left unescaped
+
 ### R38 — The studio session outlives Google's hour · met
 A Google identity token expires after an hour. It is renewed a few minutes
 before that, silently, so the studio does not stop recognising the artist in the
