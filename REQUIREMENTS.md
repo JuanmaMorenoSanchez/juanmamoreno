@@ -253,6 +253,26 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R38 — The studio session outlives Google's hour · met
+A Google identity token expires after an hour. It is renewed a few minutes
+before that, silently, so the studio does not stop recognising the artist in the
+middle of what he is doing. When Google will not answer without asking him
+something — several accounts signed in, or none — he is left signed out and the
+menu carries the way back in.
+
+Nothing is renewed, and Google's script is not so much as fetched, on a browser
+that has never signed in here. That is every reader of the catalogue.
+*Proven by:* `admin-auth.service.spec.ts` ("keeping the session alive", 5 tests,
+including that a reader loads nothing), and the browser probe
+
+### R39 — The way in and out is his alone · met
+The menu shows "Sign out" while he is signed in, and "Sign in" once the session
+has lapsed — but only on a browser that has signed in here before, so a reader
+is never offered a login to somewhere that is not theirs. The marker survives
+signing out, or signing out would take away the way back.
+*Proven by:* `admin-auth.service.spec.ts` (the marker outliving a sign-out), and
+the browser probe across all three states
+
 ### R37 — The artist can see which essays he has been over · met
 The catalogue can be narrowed to the artworks whose essay has been corrected by
 hand, or to the ones still waiting, with a count of how many are done. An

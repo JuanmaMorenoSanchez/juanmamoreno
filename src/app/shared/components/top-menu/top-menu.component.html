@@ -53,7 +53,11 @@
   <button [attr.aria-label]="'menu.texts' | translate" mat-button [routerLink]="lang.link('texts')">
     {{ 'menu.texts' | translate }}
   </button>
-  <button [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="lang.link('contact')">
+  <button
+    [attr.aria-label]="'menu.contact' | translate"
+    mat-button
+    [routerLink]="lang.link('contact')"
+  >
     {{ 'menu.contact' | translate }}
   </button>
   <button
@@ -68,8 +72,24 @@
   </button>
 </ng-template>
 
+<!--
+  Only ever on the artist's own browser: a reader has never signed in here, so
+  as far as this browser is concerned there is nobody to sign in or out.
+-->
+@if (knownHere()) {
+  @if (signedIn()) {
+    <button class="studio-session" mat-button type="button" (click)="signOut()">Sign out</button>
+  } @else {
+    <a class="studio-session" mat-button routerLink="/door">Sign in</a>
+  }
+}
+
 <mat-menu #paintingMenu="matMenu">
-  <button [attr.aria-label]="'menu.allPaintings' | translate" mat-menu-item [routerLink]="lang.link('artworks')">
+  <button
+    [attr.aria-label]="'menu.allPaintings' | translate"
+    mat-menu-item
+    [routerLink]="lang.link('artworks')"
+  >
     {{ 'menu.allPaintings' | translate }}
   </button>
   <button
@@ -96,7 +116,11 @@
 
 <mat-menu #generativeMenu="matMenu">
   @for (piece of generativePieces; track piece.id) {
-    <button [attr.aria-label]="piece.label" mat-menu-item [routerLink]="lang.link('generative/' + piece.id)">
+    <button
+      [attr.aria-label]="piece.label"
+      mat-menu-item
+      [routerLink]="lang.link('generative/' + piece.id)"
+    >
       {{ piece.label }}
     </button>
   }

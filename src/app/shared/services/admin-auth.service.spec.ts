@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from './admin-auth.service';
+import { GoogleIdentityService } from './google-identity.service';
 
 // One address gets in. These are the cases that must never open the door.
 describe('AdminAuthService', () => {
@@ -98,7 +99,10 @@ describe('AdminAuthService', () => {
 
   // A token planted directly in storage still has to pass every check.
   it('does not trust a stored token it would have refused', () => {
-    window.localStorage.setItem('juanmamoreno.adminToken', tokenFor({ email: 'someone@gmail.com' }));
+    window.localStorage.setItem(
+      'juanmamoreno.adminToken',
+      tokenFor({ email: 'someone@gmail.com' })
+    );
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({});
@@ -106,10 +110,133 @@ describe('AdminAuthService', () => {
   });
 
   it('treats a stored token that has since expired as signed out', () => {
-    window.localStorage.setItem('juanmamoreno.adminToken', tokenFor({ exp: Math.floor(Date.now() / 1000) - 1 }));
+    window.localStorage.setItem(
+      'juanmamoreno.adminToken',
+      tokenFor({ exp: Math.floor(Date.now() / 1000) - 1 })
+    );
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({});
     expect(TestBed.inject(AdminAuthService).isAdmin()).toBe(false);
+  });
+});
+
+/**
+ * A session that outlives Google's hour.
+ *
+ * The token expires after an hour and nothing renewed it, so the studio stopped
+ * recognising him wherever he stood — which looked like every release logging
+ * him out, a release being roughly how long he tends to be away.
+ */
+describe('AdminAuthService keeping the session alive', () => {
+  const clientId = 'test-client-id.apps.googleusercontent.com';
+
+  const tokenFor = (claims: Record<string, unknown>): string => {
+    const encode = (value: object) =>
+      btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return `${encode({ alg: 'RS256' })}.${encode({
+      iss: 'https://accounts.google.com',
+      aud: clientId,
+      email: 'morenosanchezjuanma@gmail.com',
+      email_verified: true,
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      ...claims,
+    })}.signature`;
+  };
+
+  /** Stands in for Google's script, and records whether it was ever asked for. */
+  function setup(options: { credential?: string } = {}) {
+    const google = {
+      loads: 0,
+      prompted: 0,
+      load() {
+        this.loads += 1;
+        return Promise.resolve({
+          accounts: {
+            id: {
+              initialize: (config: { callback: (r: { credential: string }) => void }) => {
+                this.onCredential = config.callback;
+              },
+              renderButton: () => undefined,
+              prompt: () => {
+                this.prompted += 1;
+                if (options.credential) this.onCredential?.({ credential: options.credential });
+              },
+            },
+          },
+        });
+      },
+      onCredential: undefined as ((r: { credential: string }) => void) | undefined,
+    };
+
+    TestBed.configureTestingModule({
+      providers: [{ provide: GoogleIdentityService, useValue: google }],
+    });
+    return { google, service: TestBed.inject(AdminAuthService) };
+  }
+
+  beforeEach(() => {
+    environment.googleClientId = clientId;
+    window.localStorage.clear();
+  });
+  afterEach(() => window.localStorage.clear());
+
+  it('does not so much as load Google for a browser that has never signed in', async () => {
+    // Every reader of the catalogue is such a browser.
+    const { google, service } = setup();
+
+    service.keepAlive();
+    await Promise.resolve();
+
+    expect(google.loads).toBe(0);
+    expect(google.prompted).toBe(0);
+  });
+
+  it('asks Google for a new token when the old one has run out', async () => {
+    window.localStorage.setItem('juanmamoreno.adminKnown', 'yes');
+    window.localStorage.setItem(
+      'juanmamoreno.adminToken',
+      tokenFor({ exp: Math.floor(Date.now() / 1000) - 60 })
+    );
+    const fresh = tokenFor({});
+    const { google, service } = setup({ credential: fresh });
+    expect(service.isAdmin()).toBe(false);
+
+    service.keepAlive();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(google.prompted).toBe(1);
+    expect(service.isAdmin()).toBe(true);
+  });
+
+  it('leaves him signed out when Google will not answer silently', async () => {
+    // He is then exactly where he was, which is what the menu control is for.
+    window.localStorage.setItem('juanmamoreno.adminKnown', 'yes');
+    const { service } = setup();
+
+    service.keepAlive();
+    await Promise.resolve();
+
+    expect(service.isAdmin()).toBe(false);
+  });
+
+  it('remembers the browser once he has signed in on it', () => {
+    const { service } = setup();
+    expect(service.knownHere()).toBe(false);
+
+    service.signIn(tokenFor({}));
+
+    expect(service.knownHere()).toBe(true);
+  });
+
+  it('keeps remembering after he signs out, or there would be no way back', () => {
+    const { service } = setup();
+    service.signIn(tokenFor({}));
+
+    service.signOut();
+
+    expect(service.isAdmin()).toBe(false);
+    expect(service.knownHere()).toBe(true);
   });
 });

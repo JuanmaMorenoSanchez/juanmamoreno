@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.10.0
+
+- feat: the studio session renews itself. Google's token lasts an hour and
+  nothing was replacing it, so the studio stopped recognising the artist
+  wherever he stood — which looked like every release signing him out, a release
+  being about how long he tends to be away. It is now renewed a few minutes
+  before it runs out, silently
+- feat: a way in and out of the studio in the menu bar, on the browser he has
+  signed in on and nowhere else. A reader is never shown it and never loads
+  Google's script at all
+- chore: the suite allows a test twenty seconds rather than five. Three tests
+  that warp photographs or render the whole catalogue had begun failing on time
+  alone, passing on a quiet machine and timing out on a busy one
+
 ## 1.9.0
 
 - feat: the catalogue can be narrowed to the essays gone over by hand, and to

@@ -6,6 +6,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CanonicalService } from '@shared/services/canonical.service';
 import translationsEN from '@translations/en.json';
 import translationsES from '@translations/es.json';
@@ -21,6 +22,7 @@ export class AppComponent {
   private translateService = inject(TranslateService);
   private canonicalService = inject(CanonicalService);
   private router = inject(Router);
+  private auth = inject(AdminAuthService);
 
   readonly hideBreadcrumb = signal(
     this.deepestHideBreadcrumb(this.router.routerState.snapshot.root)
@@ -28,6 +30,11 @@ export class AppComponent {
 
   constructor() {
     this.canonicalService.init();
+    // Google's token lasts an hour. Without this the studio quietly stopped
+    // recognising him wherever he was standing, and the only way back was to
+    // remember that /door exists. Does nothing for anyone who has never signed
+    // in here, and loads nothing either.
+    this.auth.keepAlive();
 
     this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
     this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);

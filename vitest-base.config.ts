@@ -25,4 +25,20 @@ process.stderr.write = ((chunk: unknown, ...rest: unknown[]) => {
   return (originalStderrWrite as (...a: unknown[]) => boolean)(chunk, ...rest);
 }) as typeof process.stderr.write;
 
-export default defineConfig({});
+export default defineConfig({
+  test: {
+    /**
+     * Vitest allows a test five seconds by default, which suits a suite that
+     * only wires components together. This one also warps whole photographs,
+     * fits perspective transforms and renders a catalogue of a hundred and
+     * eighty tiles, and three such tests have now failed on time alone —
+     * passing on a quiet machine and timing out on a busy one, which on a CI
+     * runner means a deploy blocked over nothing.
+     *
+     * The work is what those tests are for, so they are given room rather than
+     * made smaller. A test that has genuinely hung still fails; it takes longer
+     * to say so.
+     */
+    testTimeout: 20000,
+  },
+});

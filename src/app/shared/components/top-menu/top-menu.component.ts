@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SKETCH_LIST } from '@features/generative/sketches/registry';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES, storeLanguageChoice } from '@shared/constants/languages.constants';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ResponsiveService } from '@shared/services/responsive.service';
@@ -44,6 +45,21 @@ export class TopMenuComponent {
   // Public: the template builds every link through it, so a Spanish reader
   // clicking "About" lands on /es/about rather than back in English.
   protected lang = inject(LanguageUrlService);
+
+  /**
+   * The way in and out of the studio, for the one person it belongs to.
+   *
+   * Shown only on a browser that has signed in here before, so a reader is
+   * never offered a login to a place that is not theirs. The marker survives
+   * signing out on purpose: otherwise signing out would take away the way back.
+   */
+  private auth = inject(AdminAuthService);
+  protected readonly signedIn = computed(() => this.auth.isAdmin());
+  protected readonly knownHere = computed(() => this.auth.knownHere());
+
+  protected signOut(): void {
+    this.auth.signOut();
+  }
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 
@@ -90,7 +106,10 @@ export class TopMenuComponent {
       return;
     }
 
-    const path = this.router.url.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
+    const path = this.router.url
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/^\/+|\/+$/g, '');
     const bare = path === 'es' || path.startsWith('es/') ? path.replace(/^es\/?/, '') : path;
 
     // Remembered so the first-visit redirect stops second-guessing them: a
