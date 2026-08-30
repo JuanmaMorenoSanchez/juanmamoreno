@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.10.2
+
+- fix: Angular moved from 22.0.4 to 22.1.4, which closes a high-severity XSS in
+  the server-side rendering this whole site is built on, and a moderate one in a
+  dependency of the pdf export. The frontend now reports no known
+  vulnerabilities at all
+
 ## 1.10.1
 
 - fix: the studio's sign in and sign out sat outside the toolbar, loose under
