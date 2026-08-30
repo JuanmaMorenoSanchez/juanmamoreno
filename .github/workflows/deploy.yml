@@ -6,6 +6,16 @@ name: Deploy
 on:
   push:
     branches: [master]
+    # Nothing here reaches what is published: no markdown is served or built
+    # into anything (there is none under src at all), and the editor and agent
+    # settings are for whoever is working, not for the site. A commit touching
+    # only these used to spend the whole pipeline republishing a byte-identical
+    # result. A commit touching one of these *and* anything else still runs, and
+    # workflow_dispatch below always forces a run by hand.
+    paths-ignore:
+      - '**.md'
+      - '.vscode/**'
+      - '.claude/**'
   workflow_dispatch:
 
 concurrency:
