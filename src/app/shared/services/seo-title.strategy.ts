@@ -215,10 +215,10 @@ export class SeoTitleStrategy extends TitleStrategy {
    * exists nowhere else. `about` is what joins the two: this text is *about*
    * that painting, and a machine reading the page can follow it.
    *
-   * No author is claimed. The first draft is written by a model and the artist
-   * corrects them one at a time, so naming him would be false for the ones he
-   * has not reached and there is no honest single answer. The date it last
-   * changed is stated instead, which is true either way.
+   * The author is the artist. A model drafts, he corrects and he publishes
+   * under his own name on his own site, and he is clear that the writing is
+   * his — which is his to say about his own pages, and the answer search
+   * engines and readers are entitled to.
    */
   setEssayStructuredData(essay: EssayStructuredData): void {
     this.writeJsonLd(ESSAY_JSON_LD_ID, {
@@ -235,6 +235,7 @@ export class SeoTitleStrategy extends TitleStrategy {
         name: essay.artworkName,
         url: essay.url,
       },
+      author: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
       publisher: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
     });
 

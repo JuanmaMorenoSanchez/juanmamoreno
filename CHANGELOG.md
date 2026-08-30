@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.12.1
+
+- fix: the essays name their author. He is Juanma Moreno Sánchez, which he has
+  stated plainly; the previous reasoning for leaving it out was not his
+
 ## 1.12.0
 
 - feat: an artwork page now says that it carries writing *about* that painting,

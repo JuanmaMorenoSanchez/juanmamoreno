@@ -260,10 +260,9 @@ published and last changed. The catalogue entry already said what the painting
 is; this says the page also holds several hundred words written about that one
 work, which is the only thing on the site that exists nowhere else.
 
-No `author` is claimed. A model writes the first draft and the artist corrects
-them one at a time, so naming him would be false for the ones he has not reached
-and there is no honest single answer. The date is stated instead, which is true
-either way.
+The author is **Juanma Moreno Sánchez**. A model drafts and he corrects and
+publishes under his own name on his own site; whose the writing is, is his to
+say, and it is the answer a reader and a search engine are entitled to.
 *Proven by:* the built pages, which carry four structured-data blocks where they
 carried three
 
