@@ -50,6 +50,10 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return of(null);
   }
 
+  getEditedCritics(): Observable<Map<string, boolean>> {
+    return of(new Map<string, boolean>());
+  }
+
   getArtPieceCriticWithEdits(): Observable<ArtCritic | null> {
     return of(null);
   }

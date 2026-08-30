@@ -4,6 +4,29 @@
          above already names the page, but it gives the page the one h1 it
          should have instead of borrowing the site's name. -->
     <h1 class="visually-hidden">{{ 'seo.paintings.title' | translate }}</h1>
+
+    <!--
+      The artist's own view of his progress through two hundred essays, and his
+      alone: the backend refuses the flag to anyone else, so a reader gets an
+      empty answer and never sees this at all.
+    -->
+    @if (isArtist()) {
+      <div class="edited-filter" role="group" aria-label="Filter by edited essay">
+        @for (choice of criticFilters; track choice.value) {
+          <button
+            type="button"
+            class="edited-filter-choice"
+            [class.is-on]="criticFilter() === choice.value"
+            [attr.aria-pressed]="criticFilter() === choice.value"
+            (click)="setCriticFilter(choice.value)"
+          >
+            {{ choice.label }}
+          </button>
+        }
+        <span class="edited-filter-count">{{ editedCount() }} edited</span>
+      </div>
+    }
+
     <div class="sort-group">
       <mat-chip-set>
         @for (method of sortMethods; track methodTracking(method)) {
@@ -67,12 +90,12 @@
             (click)="handleArtPieceClick(artPiece.tokenId)"
           >
             <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
-            @if (isSelected(artPiece)) {
-              <div class="overlay">
-                <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
-              </div>
-            }
-            <!--
+              @if (isSelected(artPiece)) {
+                <div class="overlay">
+                  <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
+                </div>
+              }
+              <!--
               The artwork's own thumbnail url is the starting point rather than
               nothing: it needs no race to work out, so the tile carries a
               picture from the very first paint — in the prerendered html, and
@@ -80,19 +103,22 @@
               it instead of rebuilding an empty square. The progressive race
               then replaces it with something better.
             -->
-            @if (imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl; as thumbUrl) {
-              <img
-                class="front-image"
-                mat-card-image
-                decoding="async"
-                draggable="false"
-                [src]="thumbUrl"
-                [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
-              />
-            }
-            @if (isSold(artPiece)) {
-              <span class="sold-dot" aria-hidden="true"></span>
-            }
+              @if (
+                imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl;
+                as thumbUrl
+              ) {
+                <img
+                  class="front-image"
+                  mat-card-image
+                  decoding="async"
+                  draggable="false"
+                  [src]="thumbUrl"
+                  [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
+                />
+              }
+              @if (isSold(artPiece)) {
+                <span class="sold-dot" aria-hidden="true"></span>
+              }
             </mat-card>
           </a>
         </mat-grid-tile>

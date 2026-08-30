@@ -123,3 +123,34 @@ mat-card {
   z-index: 2;
   pointer-events: none;
 }
+
+// The artist's own progress control. Quiet on purpose: it is scaffolding for
+// one person, and it sits above a page whose subject is the paintings.
+.edited-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.edited-filter-choice {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  color: var(--catalog-soft);
+  cursor: pointer;
+
+  &.is-on {
+    border-color: var(--catalog-accent);
+    color: var(--catalog-accent);
+  }
+}
+
+.edited-filter-count {
+  margin-left: 0.2rem;
+  color: var(--catalog-faint);
+}

@@ -10,7 +10,7 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardImage } from '@angular/material/card';
 import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
@@ -21,6 +21,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
@@ -28,7 +29,7 @@ import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SortOrder } from '@shared/types/sort.type';
-import { map, Observable } from 'rxjs';
+import { Observable, map, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -62,8 +63,7 @@ export class ArtPiecesListComponent {
   public sortMethods = Object.values(SortMethod);
   // Read once: this component is rebuilt when the route changes, and a grid
   // never moves between languages without one.
-  private readonly inSpanish =
-    this.router.url === '/es' || this.router.url.startsWith('/es/');
+  private readonly inSpanish = this.router.url === '/es' || this.router.url.startsWith('/es/');
   // Token ids whose thumbnail race has already started — guards against a
   // duplicate race if loadImgThumbUrl is ever called twice for the same
   // tile; it does NOT filter emissions, since one race legitimately keeps
@@ -83,6 +83,47 @@ export class ArtPiecesListComponent {
     this.artworkService.getArtPiecesObservable()
   );
   public dataReady = computed(() => !!this.artPieces()?.length);
+
+  /**
+   * Which essays have been gone over by hand, and the filter over them.
+   *
+   * Two hundred essays were written by a model and are being corrected one at a
+   * time, over months. Without a way to see which have been done, the only way
+   * to find the next one is to open them until an unfamiliar one turns up.
+   *
+   * Only the artist ever sees this. The flag is his business and the backend
+   * refuses to hand it to anybody else, so an unauthenticated visitor gets an
+   * empty map and no control to go with it.
+   */
+  private auth = inject(AdminAuthService);
+  protected readonly isArtist = computed(() => this.auth.isAdmin());
+  protected readonly criticFilter = signal<'all' | 'edited' | 'untouched'>('all');
+
+  private readonly editedByToken = toSignal(
+    toObservable(computed(() => this.auth.bearerToken())).pipe(
+      switchMap((token) =>
+        token ? this.artworkService.getEditedCritics(token) : of(new Map<string, boolean>())
+      )
+    ),
+    { initialValue: new Map<string, boolean>() }
+  );
+
+  /** Written out rather than translated: nobody but the artist ever reads them. */
+  protected readonly criticFilters = [
+    { value: 'all' as const, label: 'All' },
+    { value: 'edited' as const, label: 'Edited' },
+    { value: 'untouched' as const, label: 'Not yet' },
+  ];
+
+  protected setCriticFilter(value: 'all' | 'edited' | 'untouched'): void {
+    this.criticFilter.set(value);
+  }
+
+  /** How many of the pieces on screen he has been over, to sit beside the control. */
+  protected readonly editedCount = computed(() => {
+    const edited = this.editedByToken();
+    return (this.artPieces() ?? []).filter((nft) => edited.get(nft.tokenId) === true).length;
+  });
   private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
     const yearsQueryParams = this.yearParamSignal();
@@ -90,11 +131,16 @@ export class ArtPiecesListComponent {
     // Years passed as input take precedence over the ones in the URL
     const years = yearsInput?.length ? yearsInput : (yearsQueryParams ?? []);
     const frontalViewByToken = this.frontalViewByToken();
+    const wanted = this.criticFilter();
+    const edited = this.editedByToken();
+
     return (artPieces ?? []).filter(
       (nft) =>
         !this.artworkService.isExcludedByYear(nft, years) &&
         !this.isExcludedById(nft) &&
-        (frontalViewByToken.get(nft.tokenId) ?? false)
+        (frontalViewByToken.get(nft.tokenId) ?? false) &&
+        // An artwork with no essay yet counts as untouched, because it is.
+        (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited'))
     );
   });
   // Classifies each piece against the list it belongs to (not the store),

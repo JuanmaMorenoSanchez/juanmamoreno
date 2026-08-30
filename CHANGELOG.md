@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.9.0
+
+- feat: the catalogue can be narrowed to the essays gone over by hand, and to
+  the ones still waiting, with a count beside it. Only the artist sees the
+  control, and only he can get the answer behind it
+
 ## 1.8.1
 
 - fix: the home page's featured painting was checked by driving a synthetic

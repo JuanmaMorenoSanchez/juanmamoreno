@@ -16,6 +16,8 @@ export interface ArtworkPort extends Artwork {
   saveNftsLocally(nfts: Array<Nft>): void;
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null>;
   getArtPieceCritic(tokenId: string): Observable<ArtCritic | null>;
+  /** Which artworks have had a hand over their essay. For the artist alone. */
+  getEditedCritics(token: string): Observable<Map<string, boolean>>;
   /** The same essay plus whether it has been edited, for an authenticated artist. */
   getArtPieceCriticWithEdits(tokenId: string, token: string): Observable<ArtCritic | null>;
   /** Replaces one language's text with the artist's own. */

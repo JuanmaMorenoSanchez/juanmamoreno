@@ -8,6 +8,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { provideTranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 import { afterAll, beforeAll, vi } from 'vitest';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { ArtPiecesListComponent } from './art-pieces-list.component';
 
 // jsdom has no IntersectionObserver. This stub reports every observed tile as
@@ -63,10 +64,23 @@ class MockArtworkService extends Artwork {
   getProgressiveImageUrls(nft: Nft) {
     return of(`https://example.test/${nft.tokenId}-preview.jpg`);
   }
+
+  edited = new Map<string, boolean>();
+
+  getEditedCritics() {
+    return of(this.edited);
+  }
 }
 
-function setup() {
+function setup(options: { signedIn?: boolean; edited?: Map<string, boolean> } = {}) {
   const artworkService = new MockArtworkService();
+  if (options.edited) artworkService.edited = options.edited;
+
+  const auth = {
+    isAdmin: () => options.signedIn === true,
+    bearerToken: () => (options.signedIn ? 'a-real-looking-token' : null),
+    identity: () => (options.signedIn ? { email: 'morenosanchezjuanma@gmail.com' } : null),
+  };
 
   TestBed.configureTestingModule({
     imports: [ArtPiecesListComponent],
@@ -74,6 +88,7 @@ function setup() {
       provideTranslateService(),
       provideAnimations(),
       { provide: ARTWORK_PORT, useValue: artworkService },
+      { provide: AdminAuthService, useValue: auth },
       { provide: ActivatedRoute, useValue: { queryParamMap: of(new Map()) } },
     ],
   });
@@ -128,9 +143,8 @@ describe('ArtPiecesListComponent', () => {
     artworkService.artPieces$.next([makeNft('7', 'First piece'), makeNft('12', 'Second piece')]);
     fixture.detectChanges();
 
-    const hrefs = Array.from(
-      fixture.nativeElement.querySelectorAll('a.tile-link'),
-      (link) => (link as HTMLAnchorElement).getAttribute('href')
+    const hrefs = Array.from(fixture.nativeElement.querySelectorAll('a.tile-link'), (link) =>
+      (link as HTMLAnchorElement).getAttribute('href')
     );
 
     expect(hrefs).toEqual(['/artwork/7', '/artwork/12']);
@@ -160,10 +174,98 @@ describe('ArtPiecesListComponent', () => {
     fixture.detectChanges();
 
     const tiles = fixture.nativeElement.querySelectorAll('mat-grid-tile');
-    const dotsPerTile = Array.from(tiles, (tile) =>
-      (tile as HTMLElement).querySelectorAll('.sold-dot').length
+    const dotsPerTile = Array.from(
+      tiles,
+      (tile) => (tile as HTMLElement).querySelectorAll('.sold-dot').length
     );
 
     expect(dotsPerTile).toEqual([1, 0]);
+  });
+});
+
+describe('ArtPiecesListComponent — seeing which essays have been gone over', () => {
+  beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+  afterAll(() => vi.unstubAllGlobals());
+  afterEach(() => TestBed.resetTestingModule());
+
+  /** Which artworks are on screen. The tile carries its name in aria-label, not in text. */
+  const shown = (fixture: { nativeElement: HTMLElement }) =>
+    Array.from(fixture.nativeElement.querySelectorAll('a.tile-link'), (link) =>
+      link.getAttribute('href')
+    );
+
+  it('shows a reader no such control', async () => {
+    // The flag is the artist's business. A reader is never offered the question,
+    // and the backend would not answer it for them anyway.
+    const { fixture, artworkService } = setup({ signedIn: false });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([makeNft('1', 'One'), makeNft('2', 'Two')]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.edited-filter')).toBeNull();
+  });
+
+  it('offers the artist the choice', async () => {
+    const { fixture, artworkService } = setup({ signedIn: true });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([makeNft('1', 'One')]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.edited-filter')).not.toBeNull();
+  });
+
+  it('shows only what has been gone over', async () => {
+    const { fixture, artworkService } = setup({
+      signedIn: true,
+      edited: new Map([
+        ['1', true],
+        ['2', false],
+      ]),
+    });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([
+      makeNft('1', 'One'),
+      makeNft('2', 'Two'),
+      makeNft('3', 'Three'),
+    ]);
+    fixture.detectChanges();
+
+    fixture.componentInstance['setCriticFilter']('edited');
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/1']);
+  });
+
+  it('counts an artwork with no essay at all as not yet done', async () => {
+    // Which is the truth, and the whole point: it is one of the ones left.
+    const { fixture, artworkService } = setup({
+      signedIn: true,
+      edited: new Map([['1', true]]),
+    });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([makeNft('1', 'One'), makeNft('3', 'Three')]);
+    fixture.detectChanges();
+
+    fixture.componentInstance['setCriticFilter']('untouched');
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/3']);
+  });
+
+  it('shows everything again when asked for all', async () => {
+    const { fixture, artworkService } = setup({
+      signedIn: true,
+      edited: new Map([['1', true]]),
+    });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([makeNft('1', 'One'), makeNft('2', 'Two')]);
+    fixture.detectChanges();
+
+    fixture.componentInstance['setCriticFilter']('edited');
+    fixture.detectChanges();
+    fixture.componentInstance['setCriticFilter']('all');
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/1', '/artwork/2']);
   });
 });

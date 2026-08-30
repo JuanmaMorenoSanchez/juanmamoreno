@@ -339,6 +339,26 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       );
   }
 
+  /**
+   * Which artworks have been gone over by hand, as one answer for the lot.
+   *
+   * A map rather than a list, because the catalogue asks the question of every
+   * tile it draws. An artwork with no essay at all is simply absent, which
+   * reads the same as not edited and is the truth.
+   */
+  getEditedCritics(token: string): Observable<Map<string, boolean>> {
+    return this.http
+      .get<ApiResponse<Array<{ tokenId: string; edited: boolean }>>>(
+        `${environment.backendUrl}critics/edits`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .pipe(
+        this.extractData<Array<{ tokenId: string; edited: boolean }>>([]),
+        map((entries) => new Map(entries.map((entry) => [entry.tokenId, entry.edited]))),
+        catchError(() => of(new Map<string, boolean>()))
+      );
+  }
+
   getAvailableYears(): Set<number> {
     return this.getYears(this.sessionQuery.selectArtPieces);
   }

@@ -253,6 +253,18 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R37 — The artist can see which essays he has been over · met
+The catalogue can be narrowed to the artworks whose essay has been corrected by
+hand, or to the ones still waiting, with a count of how many are done. An
+artwork with no essay at all counts as waiting, which is what it is.
+
+Only the artist sees the control, and it is not merely hidden from everyone
+else: the flag comes from a route behind his own account, so a reader who looks
+at the network gets nothing to hide. The whole catalogue is answered in one
+request rather than one per artwork.
+*Proven by:* `art-pieces-list.component.spec.ts` (5 tests, including that a
+reader is shown no control), `critics.service.spec.ts` (`editedByArtwork`)
+
 ### R36 — A painting an essay cites can be seen without leaving · met
 The essays link to other paintings in the catalogue by their full public
 address. Resting the pointer on one of those links shows that painting beside
