@@ -253,6 +253,29 @@ the public one, so it is absent rather than hidden.
 *Proven by:* `artwork-critic.component.spec.ts` "for a reader" (3 tests), and
 `critics.controller.spec.ts` in the backend
 
+### R42 — The writing is identifiable as writing about the painting · met
+An artwork page carries an `Article` whose `about` is the `VisualArtwork` on the
+same page, with the essay's own headline, its language, and when it was
+published and last changed. The catalogue entry already said what the painting
+is; this says the page also holds several hundred words written about that one
+work, which is the only thing on the site that exists nowhere else.
+
+No `author` is claimed. A model writes the first draft and the artist corrects
+them one at a time, so naming him would be false for the ones he has not reached
+and there is no honest single answer. The date is stated instead, which is true
+either way.
+*Proven by:* the built pages, which carry four structured-data blocks where they
+carried three
+
+### R43 — A changed essay is dated as changed · met
+A page carrying an essay states when that essay last changed, and the sitemap
+uses it. Before, all 388 entries carried the date of the last build, so every
+deploy announced that the whole catalogue had been rewritten — a signal always
+reading "just now" is worth nothing and is liable to be ignored. The dates now
+spread across the days the writing actually happened.
+*Proven by:* the built sitemap, whose lastmod values span eight distinct dates
+where they were previously one
+
 ### R40 — A search result shows a whole sentence · met
 The description tag ends where a sentence ends, within the hundred and
 fifty-five characters a result has room for, rather than being cut mid-word by

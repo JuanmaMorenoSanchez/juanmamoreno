@@ -46,7 +46,27 @@ const sorted = routes.sort((a, b) => {
 // When each page was written. Crawlers use it to decide what is worth
 // re-fetching — which is how a newly written essay gets noticed rather than
 // waiting for the whole catalogue to be crawled again.
-const lastmodOf = async (route) => {
+/**
+ * When the page last actually changed.
+ *
+ * The file's own timestamp is the moment of the last build, which is the same
+ * for all three hundred and eighty-eight of them and changes on every deploy —
+ * so the sitemap was telling crawlers the entire catalogue had been rewritten
+ * again, every time anything shipped. A signal that is always "just now" is
+ * worth nothing and is liable to be ignored altogether.
+ *
+ * A page carrying an essay states when that essay was last changed, so that is
+ * used where it exists, which is what makes a newly corrected one stand out
+ * from the two hundred that did not change. Everything else falls back to the
+ * build, which for a page whose content is its markup is honest enough.
+ */
+const lastmodOf = async (route, html) => {
+  const stated = html.match(/<meta property="article:modified_time" content="([^"]+)"/)?.[1];
+  if (stated) {
+    const when = new Date(stated);
+    if (!isNaN(when.getTime())) return when.toISOString().slice(0, 10);
+  }
+
   const { mtime } = await stat(join(OUTPUT_DIR, route, 'index.html'));
   return mtime.toISOString().slice(0, 10);
 };
@@ -60,8 +80,7 @@ const lastmodOf = async (route) => {
  * of the prerendered html so it can only ever name an image the page really
  * shows, and taken from og:image, which is the one the page itself nominates.
  */
-const imageOf = async (route) => {
-  const html = await readFile(join(OUTPUT_DIR, route, 'index.html'), 'utf8');
+const imageOf = (html) => {
   const loc = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
   if (!loc) return null;
 
@@ -83,13 +102,14 @@ const body = (
     sorted.map(async (route) => {
       const priority = PRIORITIES[route] ?? '0.7';
       const changefreq = route in PRIORITIES ? 'monthly' : 'yearly';
-      const image = await imageOf(route);
+      const html = await readFile(join(OUTPUT_DIR, route, 'index.html'), 'utf8');
+      const image = imageOf(html);
       return [
         '  <url>',
         // Trailing slash: that is the address Pages serves without a redirect,
         // and it is what the page declares as its canonical.
         `    <loc>${ORIGIN}/${route}${route ? '/' : ''}</loc>`,
-        `    <lastmod>${await lastmodOf(route)}</lastmod>`,
+        `    <lastmod>${await lastmodOf(route, html)}</lastmod>`,
         `    <priority>${priority}</priority>`,
         `    <changefreq>${changefreq}</changefreq>`,
         ...(image

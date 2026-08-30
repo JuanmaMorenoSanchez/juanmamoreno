@@ -10,6 +10,9 @@ export interface ArtCritic {
    * network tab any more than from the page.
    */
   edited?: boolean;
+  /** When the essay was first written, and when its text last changed. */
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TranslatedCritic {

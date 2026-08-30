@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.12.0
+
+- feat: an artwork page now says that it carries writing *about* that painting,
+  as an Article joined to the artwork by `about`. The catalogue entry said what
+  the painting is; nothing said several hundred words had been written on it,
+  which is the only thing here that exists nowhere else. No author is claimed,
+  because there is no honest single answer
+- fix: the sitemap dated all 388 pages to the last build, so every deploy told
+  crawlers the whole catalogue had been rewritten. Pages carrying an essay now
+  state when that essay last changed, and the dates spread across the days the
+  work actually happened
+
 ## 1.11.0
 
 - feat: the sitemap names the painting on each page, so the catalogue can be

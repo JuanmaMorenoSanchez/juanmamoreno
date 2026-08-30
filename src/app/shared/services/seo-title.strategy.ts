@@ -10,6 +10,18 @@ const SITE_URL = 'https://juanmamoreno.com';
 const DEFAULT_DESCRIPTION_KEY = 'seo.default.description';
 const ARTWORK_JSON_LD_ID = 'artwork-structured-data';
 const BREADCRUMB_JSON_LD_ID = 'breadcrumb-structured-data';
+const ESSAY_JSON_LD_ID = 'essay-structured-data';
+
+export interface EssayStructuredData {
+  /** The essay's own title, which is not the painting's name. */
+  headline: string;
+  /** The painting it is about, and where that painting lives. */
+  artworkName: string;
+  url: string;
+  language: string;
+  published?: string;
+  modified?: string;
+}
 
 export interface ArtworkStructuredData {
   name: string;
@@ -193,9 +205,56 @@ export class SeoTitleStrategy extends TitleStrategy {
     script.textContent = JSON.stringify(data);
   }
 
+  /**
+   * The essay as a piece of writing about the painting, rather than as part of
+   * the page it happens to sit on.
+   *
+   * The catalogue entry already says what the painting is: its medium, its
+   * size, the year. None of that says the page also carries several hundred
+   * words written about that one work, which is the only thing here that
+   * exists nowhere else. `about` is what joins the two: this text is *about*
+   * that painting, and a machine reading the page can follow it.
+   *
+   * No author is claimed. The first draft is written by a model and the artist
+   * corrects them one at a time, so naming him would be false for the ones he
+   * has not reached and there is no honest single answer. The date it last
+   * changed is stated instead, which is true either way.
+   */
+  setEssayStructuredData(essay: EssayStructuredData): void {
+    this.writeJsonLd(ESSAY_JSON_LD_ID, {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: essay.headline,
+      inLanguage: essay.language,
+      url: essay.url,
+      mainEntityOfPage: essay.url,
+      datePublished: essay.published || undefined,
+      dateModified: essay.modified || essay.published || undefined,
+      about: {
+        '@type': 'VisualArtwork',
+        name: essay.artworkName,
+        url: essay.url,
+      },
+      publisher: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
+    });
+
+    // Read back out of the built page by the sitemap, which has no other way of
+    // knowing when an essay changed and would otherwise date every page in the
+    // catalogue to the last deploy.
+    if (essay.modified) {
+      this.meta.updateTag({ property: 'article:modified_time', content: essay.modified });
+    }
+    if (essay.published) {
+      this.meta.updateTag({ property: 'article:published_time', content: essay.published });
+    }
+  }
+
   private clearArtworkStructuredData(): void {
     this.document.head.querySelector(`#${ARTWORK_JSON_LD_ID}`)?.remove();
     this.document.head.querySelector(`#${BREADCRUMB_JSON_LD_ID}`)?.remove();
+    this.document.head.querySelector(`#${ESSAY_JSON_LD_ID}`)?.remove();
+    this.meta.removeTag("property='article:modified_time'");
+    this.meta.removeTag("property='article:published_time'");
   }
 
   /**

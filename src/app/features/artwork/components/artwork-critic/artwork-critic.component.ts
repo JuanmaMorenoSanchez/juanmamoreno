@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
+import { Component, PLATFORM_ID, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { artworkTokenIdFrom } from '@domain/artwork/artwork-link';
@@ -8,6 +8,7 @@ import { ArtCritic } from '@domain/artwork/critic.entity';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
+import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { combineLatest, filter, of, startWith, switchMap, take, timer } from 'rxjs';
 
 // The essay is not written on demand: the backend writes it when the artwork is
@@ -15,6 +16,9 @@ import { combineLatest, filter, of, startWith, switchMap, take, timer } from 'rx
 // Rather than give up on the first 404, keep asking until there is something to
 // print — the spinner stands in for the text meanwhile.
 const POLL_INTERVAL_MS = 30_000;
+
+/** The public address the essay is published at, which is what it is cited by. */
+const SITE_URL = 'https://juanmamoreno.com';
 
 /** How far from the pointer the preview sits, so it never hides what is under it. */
 const PEEK_OFFSET = 18;
@@ -32,6 +36,7 @@ export class ArtworkCriticComponent {
   private artworkService = inject(ARTWORK_PORT);
   private language = inject(LanguageUrlService);
   private auth = inject(AdminAuthService);
+  private seo = inject(SeoTitleStrategy);
   protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly tokenId = input.required<string>();
@@ -171,6 +176,27 @@ export class ArtworkCriticComponent {
     const language = this.language.contentLanguage();
     return translations.find((entry) => entry.lang === language) ?? translations[0] ?? null;
   });
+
+  constructor() {
+    // Described from here because this is the only place that holds the essay.
+    // The page around it can say what the painting is; only this knows that
+    // several hundred words were written about that painting, and when they
+    // last changed.
+    effect(() => {
+      const essay = this.translated();
+      const critic = this.shown();
+      if (!essay || !critic) return;
+
+      this.seo.setEssayStructuredData({
+        headline: essay.title,
+        artworkName: critic.artworkName,
+        url: `${SITE_URL}${this.language.link(`artwork/${this.tokenId()}`)}/`,
+        language: essay.lang,
+        published: critic.createdAt,
+        modified: critic.updatedAt,
+      });
+    });
+  }
 
   /**
    * Whether a hand has been over this one — for the artist alone, and only when
