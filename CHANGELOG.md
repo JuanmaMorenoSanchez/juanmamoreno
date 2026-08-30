@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.10.1
+
+- fix: the studio's sign in and sign out sat outside the toolbar, loose under
+  the bar. It belongs with the other menu items, which also puts it in the
+  drawer on a narrow screen instead of leaving it stranded
+
 ## 1.10.0
 
 - feat: the studio session renews itself. Google's token lasts an hour and

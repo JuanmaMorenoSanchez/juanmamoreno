@@ -70,19 +70,22 @@
     {{ currentLangLabel }}
     <mat-icon>arrow_drop_down</mat-icon>
   </button>
-</ng-template>
 
-<!--
-  Only ever on the artist's own browser: a reader has never signed in here, so
-  as far as this browser is concerned there is nobody to sign in or out.
--->
-@if (knownHere()) {
-  @if (signedIn()) {
-    <button class="studio-session" mat-button type="button" (click)="signOut()">Sign out</button>
-  } @else {
-    <a class="studio-session" mat-button routerLink="/door">Sign in</a>
+  <!--
+    Only ever on the artist's own browser: a reader has never signed in here, so
+    as far as this browser is concerned there is nobody to sign in or out. It
+    lives in this template rather than beside the toolbar so that it travels
+    with the rest of the menu — into the drawer on a narrow screen, where every
+    other item goes.
+  -->
+  @if (knownHere()) {
+    @if (signedIn()) {
+      <button class="studio-session" mat-button type="button" (click)="signOut()">Sign out</button>
+    } @else {
+      <a class="studio-session" mat-button routerLink="/door">Sign in</a>
+    }
   }
-}
+</ng-template>
 
 <mat-menu #paintingMenu="matMenu">
   <button
