@@ -3,6 +3,7 @@
   "Oil on canvas": "Oil on canvas",
   "Watercolor on paper": "Watercolor on paper",
   "sold": "Art piece sold",
+  "soldLegend": "A red dot marks a piece that has been sold.",
   "moreOn": "More on",
   "selectYear": "Select a year",
   "paintings": "Paintings",
@@ -48,19 +49,6 @@
     "year": "Year",
     "size": "Size",
     "medium": "Medium"
-  },
-  "filter": {
-    "medium": "Medium",
-    "availability": "Availability",
-    "any": "All",
-    "available": "Available",
-    "sold": "Sold",
-    "soldLegend": "A red dot marks a piece that has been sold.",
-    "family": {
-      "oil": "Oil",
-      "watercolor": "Watercolour",
-      "drawing": "Drawing"
-    }
   },
   "theme": {
     "toDark": "Switch to dark",
