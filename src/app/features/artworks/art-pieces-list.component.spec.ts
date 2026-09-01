@@ -475,6 +475,56 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
    * counting every painting of that year. Filtering its contents would leave a
    * heading standing over an empty row.
    */
+  /**
+   * Narrowed to nothing, the page used to end after the controls — which reads
+   * as a catalogue that has broken rather than one the reader has narrowed.
+   */
+  it('says so when the narrowing leaves nothing', () => {
+    const { fixture, artworkService } = setup();
+    TestBed.inject(AvailabilityFilterService).set('sold');
+    // Not one of them is in SOLDCERTIFICATES.
+    artworkService.artPieces$.next([makeNft('999998', 'For sale'), makeNft('999999', 'Also')]);
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(0);
+    expect(fixture.nativeElement.querySelector('.nothing-matched')).not.toBeNull();
+  });
+
+  it('says nothing of the sort while there are paintings to show', () => {
+    const { fixture, artworkService } = setup();
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.nothing-matched')).toBeNull();
+  });
+
+  /**
+   * The spinner and the message answer different questions — "still loading"
+   * and "nothing matched" — and showing the second while the first is true
+   * would tell the reader their filters were at fault for a catalogue that had
+   * simply not arrived.
+   */
+  it('waits for the catalogue rather than blaming the filters for it', () => {
+    const { fixture } = setup();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.nothing-matched')).toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-progress-spinner')).not.toBeNull();
+  });
+
+  // The strip on an artwork page carries no controls, so it has nothing to say
+  // about them.
+  it('says nothing in the more-from-this-year grid', () => {
+    const { fixture, artworkService } = setup();
+    fixture.componentRef.setInput('viewAsWidget', true);
+    fixture.componentRef.setInput('nftFilters', { idsToExclude: ['23', '999998', '999999'] });
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(0);
+    expect(fixture.nativeElement.querySelector('.nothing-matched')).toBeNull();
+  });
+
   it('leaves the more-from-this-year grid showing everything', () => {
     const { fixture, artworkService } = setup();
     TestBed.inject(AvailabilityFilterService).set('sold');

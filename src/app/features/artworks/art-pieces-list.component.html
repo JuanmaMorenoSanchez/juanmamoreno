@@ -70,44 +70,51 @@
     }
   }
   @if (dataReady()) {
-    <mat-grid-list
-      appParallaxTilt
-      [cols]="numberOfCols()"
-      gutterSize="10"
-      rowHeight="1:1"
-      role="list"
-      aria-label="Art Pieces"
-    >
-      @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
-        <mat-grid-tile
-          (contextmenu)="toggleNftSelection($event, artPiece)"
-          role="listitem"
-          [animate.enter]="tileEnterClass(i)"
-          [style.animation-delay.ms]="tileEnterDelay(i)"
-        >
-          <!--
+    <!--
+      Not rendered at all when there is nothing in it. An empty mat-grid-list
+      does not collapse — it keeps the height it had when it was full, some
+      seventeen thousand pixels of it — which left the message below sitting
+      far under the fold on a page that looked simply blank.
+    -->
+    @if (sortedArtPieces().length) {
+      <mat-grid-list
+        appParallaxTilt
+        [cols]="numberOfCols()"
+        gutterSize="10"
+        rowHeight="1:1"
+        role="list"
+        aria-label="Art Pieces"
+      >
+        @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
+          <mat-grid-tile
+            (contextmenu)="toggleNftSelection($event, artPiece)"
+            role="listitem"
+            [animate.enter]="tileEnterClass(i)"
+            [style.animation-delay.ms]="tileEnterDelay(i)"
+          >
+            <!--
             A real anchor, not a click handler: this grid is the only route
             between the catalogue and the 186 artwork pages, and a page reached
             only through the sitemap reads as an orphan to anything crawling
             the site. It also restores what a link is supposed to do —
             middle-click, open in a new tab, focus with the keyboard.
           -->
-          <a
-            class="tile-link"
-            draggable="false"
-            [routerLink]="artworkLink(artPiece.tokenId)"
-            [attr.aria-label]="
-              isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
-            "
-            (click)="handleArtPieceClick(artPiece.tokenId)"
-          >
-            <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
-              @if (isSelected(artPiece)) {
-                <div class="overlay">
-                  <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
-                </div>
-              }
-              <!--
+            <a
+              class="tile-link"
+              draggable="false"
+              [routerLink]="artworkLink(artPiece.tokenId)"
+              [attr.aria-label]="
+                isSold(artPiece) ? artPiece.name + ', ' + ('sold' | translate) : artPiece.name
+              "
+              (click)="handleArtPieceClick(artPiece.tokenId)"
+            >
+              <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
+                @if (isSelected(artPiece)) {
+                  <div class="overlay">
+                    <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
+                  </div>
+                }
+                <!--
               The artwork's own thumbnail url is the starting point rather than
               nothing: it needs no race to work out, so the tile carries a
               picture from the very first paint — in the prerendered html, and
@@ -115,27 +122,39 @@
               it instead of rebuilding an empty square. The progressive race
               then replaces it with something better.
             -->
-              @if (
-                imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl;
-                as thumbUrl
-              ) {
-                <img
-                  class="front-image"
-                  mat-card-image
-                  decoding="async"
-                  draggable="false"
-                  [src]="thumbUrl"
-                  [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
-                />
-              }
-              @if (isSold(artPiece)) {
-                <span class="sold-dot" aria-hidden="true"></span>
-              }
-            </mat-card>
-          </a>
-        </mat-grid-tile>
-      }
-    </mat-grid-list>
+                @if (
+                  imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl;
+                  as thumbUrl
+                ) {
+                  <img
+                    class="front-image"
+                    mat-card-image
+                    decoding="async"
+                    draggable="false"
+                    [src]="thumbUrl"
+                    [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
+                  />
+                }
+                @if (isSold(artPiece)) {
+                  <span class="sold-dot" aria-hidden="true"></span>
+                }
+              </mat-card>
+            </a>
+          </mat-grid-tile>
+        }
+      </mat-grid-list>
+    } @else if (!viewAsWidget()) {
+      <!--
+        Nothing left after the narrowing. Without this the page simply ended
+        after the controls, which reads as a catalogue that has broken rather
+        than as one the reader has narrowed to nothing. Only on the catalogue
+        itself: the "more from this year" strip on an artwork page has no
+        controls of its own, so it has nothing to say about them.
+      -->
+      <p class="nothing-matched" role="status">
+        {{ 'nothingMatched' | translate }}
+      </p>
+    }
   } @else {
     <mat-progress-spinner
       diameter="48"

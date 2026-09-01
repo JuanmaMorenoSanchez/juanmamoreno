@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.18.0
+
+- feat: a catalogue narrowed to nothing says so, where before the page simply
+  ended after the controls and read as broken rather than as narrowed. The grid
+  is not rendered at all when it is empty: an empty mat-grid-list does not
+  collapse, it keeps the height it had when it was full, which would have left
+  the message some seventeen thousand pixels below the fold
+
 ## 1.17.1
 
 - fix: the row of controls above the catalogue did not line up. The chosen

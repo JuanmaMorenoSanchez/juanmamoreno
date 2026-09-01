@@ -9,7 +9,7 @@
  */
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
-import { ARRIVAL, READY, launchBrowser, openPage, visibleText } from './browser.mjs';
+import { ARRIVAL, BASE_URL, READY, launchBrowser, openPage, visibleText } from './browser.mjs';
 
 let browser;
 let cannotRun = null;
@@ -358,6 +358,98 @@ describe('the availability picker', () => {
     );
 
     await choose(page, 'All');
+    await page.close();
+  });
+});
+
+/**
+ * Narrowed down to nothing.
+ *
+ * Driven through the year in the address rather than through the availability
+ * picker: which paintings have sold changes as they sell, and a test that has
+ * to know would break on a good day. A year the catalogue has nothing in
+ * exercises the same path — every filter applied, nothing left — and is true
+ * whatever happens in the studio. The availability-driven case is covered in
+ * the unit tests, which can arrange it exactly.
+ */
+describe('a catalogue narrowed to nothing', () => {
+  it('says so, rather than ending after the controls', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks?years=1999');
+    await page.waitForSelector('.nothing-matched', READY);
+
+    assert.equal(await page.locator('a.tile-link').count(), 0, 'something matched after all');
+
+    /*
+     * Where the reader is actually looking, not merely somewhere in the
+     * document. An empty mat-grid-list keeps the height it had when it was
+     * full — seventeen thousand pixels of it — and the first version of this
+     * message sat below all of that, on a page that looked blank. "Is it in
+     * the DOM" would have passed.
+     */
+    const box = await page.locator('.nothing-matched').boundingBox();
+    assert.ok(box.y < 900, `the message is ${Math.round(box.y)}px down, well out of sight`);
+
+    const message = (await page.locator('.nothing-matched').innerText()).trim();
+    assert.match(
+      message,
+      /no paintings match/i,
+      `the empty catalogue says something unexpected: "${message}"`
+    );
+
+    await page.close();
+  });
+
+  it('says it in the language being read', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es/artworks?years=1999', 'es-ES');
+    await page.waitForSelector('.nothing-matched', READY);
+
+    const message = (await page.locator('.nothing-matched').innerText()).trim();
+    assert.match(message, /ninguna pieza/i, `not in Spanish: "${message}"`);
+
+    await page.close();
+  });
+
+  it('takes it away again once there is something to show', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks?years=1999');
+    await page.waitForSelector('.nothing-matched', READY);
+
+    // The chip's own remove button, which is how a reader undoes it.
+    await page.locator('mat-chip button[matchipremove]').first().click();
+    await page.waitForSelector('a.tile-link', READY);
+
+    assert.equal(
+      await page.locator('.nothing-matched').count(),
+      0,
+      'the message stayed up over a catalogue full of paintings'
+    );
+
+    await page.close();
+  });
+
+  // The spinner and the message answer different questions. Telling a reader
+  // their filters matched nothing, while the catalogue is merely still on its
+  // way, blames them for a wait.
+  it('does not blame the filters for a catalogue that has not arrived', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.route('**/nfts-snapshot**', () => {}); // never answers
+    await page.goto(`${BASE_URL}/artworks`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('app-top-menu', READY);
+
+    // Whatever it shows while waiting, it must not be the empty-filter line.
+    assert.equal(
+      await page.locator('.nothing-matched').count(),
+      0,
+      'said nothing matched while the catalogue was still loading'
+    );
+
     await page.close();
   });
 });

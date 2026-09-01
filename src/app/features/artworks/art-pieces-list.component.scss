@@ -184,3 +184,12 @@ mat-card {
   margin-left: 0.2rem;
   color: var(--catalog-faint);
 }
+
+// Where the paintings would have been, so the eye finds it in the same place
+// it was already looking.
+.nothing-matched {
+  margin: 3rem 0;
+  text-align: center;
+  color: var(--catalog-soft);
+  font-size: 0.9375rem;
+}

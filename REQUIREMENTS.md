@@ -464,6 +464,24 @@ until one has been chosen, after which the chips say which years.
 availability picker" (3 tests, which check the counts add back up to the whole
 catalogue)
 
+### R56 — A catalogue narrowed to nothing says so · met
+When no painting survives the year and availability the reader has chosen, the
+page says as much where the paintings would have been, in the language being
+read. It is told apart from a catalogue that has not arrived yet, which shows
+the spinner: saying "nothing matched" during a wait blames the reader's filters
+for it.
+
+The grid is not rendered at all when it is empty. An empty `mat-grid-list` does
+not collapse — it keeps the height it had when it was full, some seventeen
+thousand pixels — which put the message far below the fold on a page that
+looked simply blank.
+
+The "more from this year" strip on an artwork page says nothing, having no
+controls of its own to blame.
+*Proven by:* `art-pieces-list.component.spec.ts` (4 tests),
+`e2e/navigation.test.mjs` "a catalogue narrowed to nothing" (4 tests, one of
+which checks where on the page the message lands)
+
 ### R45 — The catalogue is remembered as the reader left it · met
 How it was sorted and in which direction, kept on the reader's own device and
 never sent anywhere. A stored value the site has no case for is ignored rather
