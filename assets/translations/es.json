@@ -218,6 +218,10 @@
       "title": "Generativo",
       "description": "Arte generativo interactivo de Juanma Moreno Sánchez, generado en el navegador."
     },
+    "latest": {
+      "title": "Lo último",
+      "description": "Las piezas más recientes publicadas por Juanma Moreno Sánchez, de la más nueva a la más antigua."
+    },
     "cv": {
       "title": "CV",
       "description": "Exposiciones, premios, residencias y biografía del artista Juanma Moreno Sánchez."
@@ -268,6 +272,12 @@
     "message": "¡Vaya! La página que buscas no existe. Prueba con una de estas:"
   },
   "texts": "Textos",
+  "latest": "Lo último",
+  "latestPage": {
+    "intro": "Las piezas más recientes publicadas en Instagram, de la más nueva a la más antigua. Cada una lleva a su propia página: las otras vistas, el tamaño, lo que se ha escrito sobre ella.",
+    "onInstagram": "Ver la publicación",
+    "nothingYet": "Todavía no se ha publicado nada."
+  },
   "textsPage": {
     "intro": "Textos sobre la obra, publicados en otros medios. Cada entrada enlaza al original: son de quienes los escribieron y de los medios que los publicaron.",
     "kind": {

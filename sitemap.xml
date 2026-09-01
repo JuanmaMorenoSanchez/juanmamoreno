@@ -3841,6 +3841,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/es/latest/</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://juanmamoreno.com/assets/images/abstract_landscape.jpg</image:loc>
+      <image:title>Lo último</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/es/privacy/</loc>
     <lastmod>2026-09-01</lastmod>
     <priority>0.7</priority>
@@ -3868,6 +3878,16 @@
     <image:image>
       <image:loc>https://juanmamoreno.com/assets/images/abstract_landscape.jpg</image:loc>
       <image:title>Textos</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/latest/</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://juanmamoreno.com/assets/images/abstract_landscape.jpg</image:loc>
+      <image:title>Latest</image:title>
     </image:image>
   </url>
   <url>
