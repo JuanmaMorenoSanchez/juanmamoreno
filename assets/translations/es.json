@@ -42,13 +42,31 @@
     "progreso": "En progreso",
     "detail": "Vista de detalle"
   },
-  "sortBy": "Ordenar por ",
+  "skipToContent": "Ir al contenido",
+  "sortBy": "Ordenar por",
   "sortMethod": {
     "year": "Año",
     "size": "Tamaño",
     "medium": "Técnica"
   },
-  "contact": {
+
+  "filter": {
+    "medium": "Técnica",
+    "availability": "Disponibilidad",
+    "any": "Todas",
+    "available": "Disponible",
+    "sold": "Vendida",
+    "soldLegend": "El punto rojo señala una pieza vendida.",
+    "family": {
+      "oil": "Óleo",
+      "watercolor": "Acuarela",
+      "drawing": "Dibujo"
+    }
+  },
+  "theme": {
+    "toDark": "Cambiar a modo oscuro",
+    "toLight": "Cambiar a modo claro"
+  },  "contact": {
     "title": "Contacto",
     "representedBy": "Representado por la <a href='https://galeriazunino.com/' target='_blank'>Galería Zunino </a> (Sevilla)",
     "contactText": "Si quieres contactar conmigo, usa el formulario debajo. También puedes seguirme en <a href='https://www.instagram.com/juanmamorenosanchez/' target='_blank'>Instagram</a>.",
@@ -73,7 +91,9 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "fullscreen": "Pantalla completa",
-    "exitFullscreen": "Salir de pantalla completa"
+    "exitFullscreen": "Salir de pantalla completa",
+    "hintArrows": "← → para pasar entre vistas",
+    "hintFullscreen": "Doble clic para pantalla completa, Esc para salir"
   },
   "dossier": {
     "title": "Opciones del dossier",

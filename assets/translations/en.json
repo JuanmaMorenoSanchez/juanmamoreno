@@ -42,11 +42,29 @@
     "progreso": "Work in progress",
     "detail": "Detail view"
   },
-  "sortBy": "Sort by ",
+  "skipToContent": "Skip to content",
+  "sortBy": "Sort by",
   "sortMethod": {
     "year": "Year",
     "size": "Size",
     "medium": "Medium"
+  },
+  "filter": {
+    "medium": "Medium",
+    "availability": "Availability",
+    "any": "All",
+    "available": "Available",
+    "sold": "Sold",
+    "soldLegend": "A red dot marks a piece that has been sold.",
+    "family": {
+      "oil": "Oil",
+      "watercolor": "Watercolour",
+      "drawing": "Drawing"
+    }
+  },
+  "theme": {
+    "toDark": "Switch to dark",
+    "toLight": "Switch to light"
   },
   "contact": {
     "title": "Contact",
@@ -73,7 +91,9 @@
     "previous": "Previous",
     "next": "Next",
     "fullscreen": "Fullscreen",
-    "exitFullscreen": "Exit fullscreen"
+    "exitFullscreen": "Exit fullscreen",
+    "hintArrows": "← → to move between views",
+    "hintFullscreen": "Double-click for fullscreen, Esc to leave"
   },
   "dossier": {
     "title": "Dossier options",
