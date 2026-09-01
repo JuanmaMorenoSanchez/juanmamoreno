@@ -6,6 +6,13 @@
   "soldLegend": "El punto rojo señala una pieza vendida.",
   "moreOn": "Más de",
   "selectYear": "Selecciona un año",
+  "availability": {
+    "label": "Disponibilidad",
+    "both": "Todas",
+    "sold": "Vendidas",
+    "available": "Disponibles",
+    "remove": "Quitar el filtro de disponibilidad"
+  },
   "paintings": "Pinturas",
   "submit": "Enviar",
   "close": "Cerrar",
