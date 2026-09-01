@@ -20,8 +20,6 @@ export const PREFERENCE_KEYS = {
   THEME: 'theme',
   SORT_METHOD: 'catalogue.sort',
   SORT_ORDER: 'catalogue.order',
-  MEDIUM: 'catalogue.medium',
-  AVAILABILITY: 'catalogue.availability',
 } as const;
 
 export function readPreference<T extends string>(key: string, allowed: readonly T[]): T | null {
@@ -30,22 +28,6 @@ export function readPreference<T extends string>(key: string, allowed: readonly 
     return allowed.includes(stored as T) ? (stored as T) : null;
   } catch {
     // Prerendering, or private browsing. No preference is the right answer.
-    return null;
-  }
-}
-
-/**
- * A preference whose valid values are not known until the catalogue has
- * loaded — the mediums, which come from the paintings themselves.
- *
- * Unvalidated here, so the caller must decide what an unrecognised value
- * means. For the medium chips it means "no such medium on offer", which falls
- * back to showing everything rather than to an empty grid.
- */
-export function readStoredText(key: string): string | null {
-  try {
-    return window.localStorage.getItem(PREFIX + key);
-  } catch {
     return null;
   }
 }

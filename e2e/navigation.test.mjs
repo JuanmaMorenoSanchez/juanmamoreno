@@ -204,34 +204,35 @@ describe('reading the site the way you like it', () => {
 
   /**
    * Sorting is remembered the same way. Checked through what the reader
-   * actually sees — which chip is marked — rather than through storage, so it
-   * proves the stored value is read back and applied, not merely written.
+   * actually sees — the arrow on the chip in force — rather than through
+   * storage, so it proves the stored value is read back and applied, not
+   * merely written.
    */
   it('comes back to the catalogue arranged the way it was left', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artworks');
-    await page.waitForSelector('mat-chip-set[aria-labelledby="sort-label"] mat-chip', READY);
+    await page.waitForSelector('.sort-group mat-chip', READY);
 
-    const sortChips = page.locator('mat-chip-set[aria-labelledby="sort-label"] mat-chip');
-    await sortChips.nth(1).click();
+    // The row reads: year, size, medium. Year is in force on arrival, so
+    // pressing size moves the arrow onto a different chip.
+    await page.locator('.sort-group mat-chip').nth(1).click();
     await page.waitForFunction(
-      () =>
-        document
-          .querySelectorAll('mat-chip-set[aria-labelledby="sort-label"] mat-chip')[1]
-          ?.getAttribute('aria-pressed') === 'true',
+      () => document.querySelectorAll('.sort-group mat-chip')[1]?.querySelectorAll('mat-icon').length === 2,
       undefined,
       READY
     );
 
     await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('mat-chip-set[aria-labelledby="sort-label"] mat-chip', READY);
+    await page.waitForSelector('.sort-group mat-chip', READY);
 
-    const pressed = await page
-      .locator('mat-chip-set[aria-labelledby="sort-label"] mat-chip')
+    // Two icons — the method and the direction — mark the one in force.
+    const marked = await page
+      .locator('.sort-group mat-chip')
       .nth(1)
-      .getAttribute('aria-pressed');
-    assert.equal(pressed, 'true', 'the catalogue forgot how it was arranged');
+      .locator('mat-icon')
+      .count();
+    assert.equal(marked, 2, 'the catalogue forgot how it was arranged');
 
     await page.close();
   });

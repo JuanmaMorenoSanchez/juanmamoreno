@@ -16,8 +16,9 @@ import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { SOLDCERTIFICATES, SortMethod, VALIDTRAITS } from '@domain/artwork/artwork.constants';
+import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
@@ -27,7 +28,6 @@ import { SORT } from '@shared/constants/order.constants';
 import {
   PREFERENCE_KEYS,
   readPreference,
-  readStoredText,
   writePreference,
 } from '@shared/constants/preferences.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
@@ -35,26 +35,6 @@ import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directiv
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { SortOrder } from '@shared/types/sort.type';
 import { Observable, map, of, switchMap } from 'rxjs';
-
-/** No narrowing at all — the value both new filters start from. */
-const ANY = 'any';
-
-/**
- * The material a painting is made with, apart from what it is made on.
- *
- * The catalogue records eight mediums, but three of them account for 176 of
- * the 186 paintings and the other five for one to four each. Offering all
- * eight put two rows of chips above a page whose subject is the paintings, and
- * five of those chips answered a question nobody asks: a reader wants the
- * oils, not "oil on canvas on cardboard". The support is still named in full
- * on each artwork's own page.
- *
- * The same distinction the domain already sorts by — see `sortByMedium`.
- */
-const MEDIUM_FAMILIES = ['drawing', 'oil', 'watercolor'] as const;
-
-const AVAILABILITY_CHOICES = ['any', 'available', 'sold'] as const;
-type Availability = (typeof AVAILABILITY_CHOICES)[number];
 
 @Component({
   selector: 'app-art-pieces-list',
@@ -65,6 +45,7 @@ type Availability = (typeof AVAILABILITY_CHOICES)[number];
     MatChipSet,
     MatChip,
     MatIcon,
+    MatTooltip,
     PdfButtonComponent,
     MatGridList,
     MatGridTile,
@@ -148,107 +129,31 @@ export class ArtPiecesListComponent {
     const edited = this.editedByToken();
     return (this.artPieces() ?? []).filter((nft) => edited.get(nft.tokenId) === true).length;
   });
-  /**
-   * Everything this grid is about, before the reader has narrowed it.
-   *
-   * Separated from the filters below so the medium chips can be built from it:
-   * the mediums offered have to be the ones actually present in the year being
-   * looked at, or the reader is handed a chip that empties the page.
-   */
-  private visiblePieces = computed(() => {
+  private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
     const yearsQueryParams = this.yearParamSignal();
     const yearsInput = this.nftFilters()?.years;
     // Years passed as input take precedence over the ones in the URL
     const years = yearsInput?.length ? yearsInput : (yearsQueryParams ?? []);
     const frontalViewByToken = this.frontalViewByToken();
+    const wanted = this.criticFilter();
+    const edited = this.editedByToken();
 
     return (artPieces ?? []).filter(
       (nft) =>
         !this.artworkService.isExcludedByYear(nft, years) &&
         !this.isExcludedById(nft) &&
-        (frontalViewByToken.get(nft.tokenId) ?? false)
+        (frontalViewByToken.get(nft.tokenId) ?? false) &&
+        // An artwork with no essay yet counts as untouched, because it is.
+        (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited'))
     );
-  });
-
-  /**
-   * What the reader is looking for, beyond the year.
-   *
-   * Year was the only filter, and it is the one thing about a painting that
-   * says least about whether someone wants to see it. Medium and availability
-   * are the two questions actually asked of a catalogue — the oils, the
-   * watercolours, what is still for sale — and both are already carried by
-   * every piece, so neither costs a request.
-   *
-   * Both are kept as local state rather than in the address, unlike year:
-   * they are a way of reading rather than a place, they are remembered on the
-   * reader's own device, and putting them in the url would give every page two
-   * addresses for the same 186 paintings, which the canonical tags would then
-   * have to argue about.
-   */
-  protected readonly ANY = ANY;
-  protected readonly availabilityChoices = AVAILABILITY_CHOICES;
-
-  private readonly mediumChoice = signal<string>(readStoredText(PREFERENCE_KEYS.MEDIUM) ?? ANY);
-  protected readonly availabilityFilter = signal<Availability>(
-    readPreference<Availability>(PREFERENCE_KEYS.AVAILABILITY, AVAILABILITY_CHOICES) ?? ANY
-  );
-
-  /**
-   * The medium actually being filtered on, which is not always the one chosen.
-   *
-   * A remembered medium can stop being on offer — the reader narrows to a year
-   * with no watercolours in it, or the catalogue changes under a preference
-   * saved months ago. Falling back to everything is the only sensible reading:
-   * the alternative is a grid that is empty for a reason the reader cannot see
-   * and a chip row with nothing marked in it.
-   */
-  protected readonly mediumFilter = computed(() =>
-    this.mediums().some((medium) => medium.value === this.mediumChoice())
-      ? this.mediumChoice()
-      : ANY
-  );
-
-  /**
-   * The mediums on offer, taken from the paintings themselves.
-   *
-   * Not a written-down list: nothing has to be remembered when the catalogue
-   * changes. A medium in none of the families keeps its own name and becomes
-   * its own chip, so a material the artist takes up is never simply missing
-   * from the filter.
-   */
-  protected readonly mediums = computed(() => {
-    const found = new Set<string>();
-    for (const nft of this.visiblePieces()) {
-      const family = this.mediumFamilyOf(nft);
-      if (family) found.add(family);
-    }
-    return [...found].sort().map((value) => ({ value, label: this.mediumLabel(value) }));
   });
 
   /** Whether the dot has anything to mark here, and so whether to explain it. */
   protected readonly hasSoldOnDisplay = computed(() =>
-    this.visiblePieces().some((nft) => this.isSold(nft))
+    this.filteredArtPieces().some((nft) => this.isSold(nft))
   );
 
-  private filteredArtPieces = computed(() => {
-    const wanted = this.criticFilter();
-    const edited = this.editedByToken();
-    // The "more from this year" grid on an artwork page carries no controls of
-    // its own, so the reader has no way to undo a filter applied to it. Their
-    // catalogue choices would only ever empty it.
-    const widget = this.viewAsWidget();
-    const medium = this.mediumFilter();
-    const availability = this.availabilityFilter();
-
-    return this.visiblePieces().filter(
-      (nft) =>
-        // An artwork with no essay yet counts as untouched, because it is.
-        (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited')) &&
-        (widget || medium === ANY || this.mediumFamilyOf(nft) === medium) &&
-        (widget || availability === ANY || this.isSold(nft) === (availability === 'sold'))
-    );
-  });
   // Classifies each piece against the list it belongs to (not the store),
   // recomputed whenever the list changes (fallback -> API data).
   private frontalViewByToken = computed(() => {
@@ -356,47 +261,6 @@ export class ArtPiecesListComponent {
       this.remember(PREFERENCE_KEYS.SORT_METHOD, method);
       this.remember(PREFERENCE_KEYS.SORT_ORDER, SORT.ASC);
     }
-  }
-
-  protected setMedium(medium: string): void {
-    this.mediumChoice.set(medium);
-    this.remember(PREFERENCE_KEYS.MEDIUM, medium);
-  }
-
-  protected setAvailability(availability: Availability): void {
-    this.availabilityFilter.set(availability);
-    this.remember(PREFERENCE_KEYS.AVAILABILITY, availability);
-  }
-
-  /**
-   * The medium as the artwork records it, or nothing.
-   *
-   * `getTraitValue` answers "Error getting medium" rather than an empty string
-   * for a piece whose metadata will not parse, and that string would otherwise
-   * become a chip of its own offering to filter the catalogue down to the
-   * broken ones.
-   */
-  private mediumOf(nft: Nft): string {
-    const medium = this.artworkService.getTraitValue(nft, VALIDTRAITS.MEDIUM);
-    return medium.startsWith('Error') ? '' : medium;
-  }
-
-  /** Which family a painting belongs to, or its own medium if it fits none. */
-  private mediumFamilyOf(nft: Nft): string {
-    const medium = this.mediumOf(nft);
-    const family = MEDIUM_FAMILIES.find((candidate) => medium.toLowerCase().includes(candidate));
-    return family ?? medium;
-  }
-
-  /**
-   * The key its chip is labelled by. A family has one of its own; anything
-   * else is its own key, since every medium the artist records is a key in
-   * both dictionaries.
-   */
-  private mediumLabel(family: string): string {
-    return (MEDIUM_FAMILIES as readonly string[]).includes(family)
-      ? `filter.family.${family}`
-      : family;
   }
 
   /**

@@ -3,6 +3,7 @@
   "Oil on canvas": "Óleo sobre tela",
   "Watercolor on paper": "Acuarela sobre papel",
   "sold": "Pieza vendida",
+  "soldLegend": "El punto rojo señala una pieza vendida.",
   "moreOn": "Más de",
   "selectYear": "Selecciona un año",
   "paintings": "Pinturas",
@@ -49,24 +50,11 @@
     "size": "Tamaño",
     "medium": "Técnica"
   },
-
-  "filter": {
-    "medium": "Técnica",
-    "availability": "Disponibilidad",
-    "any": "Todas",
-    "available": "Disponible",
-    "sold": "Vendida",
-    "soldLegend": "El punto rojo señala una pieza vendida.",
-    "family": {
-      "oil": "Óleo",
-      "watercolor": "Acuarela",
-      "drawing": "Dibujo"
-    }
-  },
   "theme": {
     "toDark": "Cambiar a modo oscuro",
     "toLight": "Cambiar a modo claro"
-  },  "contact": {
+  },
+  "contact": {
     "title": "Contacto",
     "representedBy": "Representado por la <a href='https://galeriazunino.com/' target='_blank'>Galería Zunino </a> (Sevilla)",
     "contactText": "Si quieres contactar conmigo, usa el formulario debajo. También puedes seguirme en <a href='https://www.instagram.com/juanmamorenosanchez/' target='_blank'>Instagram</a>.",

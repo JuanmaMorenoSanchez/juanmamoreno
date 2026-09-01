@@ -436,33 +436,17 @@ which reads the saved blob's type back
 
 ## Reading the site
 
-### R44 — The catalogue narrows by more than the year · met
-Material and availability, alongside the year that was the only filter there
-had ever been. Both are read off the paintings themselves, so neither costs a
-request and neither has a list to keep up to date.
-
-Material is grouped rather than listed. The catalogue records eight mediums,
-but three cover 176 of the 186 paintings and the other five one to four each;
-offering all eight put two rows of chips above a page whose subject is the
-paintings, and a reader wants the oils rather than "oil on canvas on
-cardboard". The support is still named in full on each artwork's own page, and
-a material in none of the families keeps its own name so nothing the artist
-takes up goes missing from the filter.
-
-The row is offered only when there is a choice in it, and a remembered material
-that is no longer on offer falls back to showing everything rather than to an
-empty grid.
-*Proven by:* `art-pieces-list.component.spec.ts` "narrowing the catalogue"
-(9 tests)
-
 ### R45 — The catalogue is remembered as the reader left it · met
-How it was sorted, in which direction, filtered to which medium and to what
-availability. Kept on the reader's own device and never sent anywhere. A stored
-value the site has no case for is ignored rather than obeyed, and the
-"more from this year" grid on an artwork page — which carries no controls of
-its own — neither applies these nor writes to them.
+How it was sorted and in which direction, kept on the reader's own device and
+never sent anywhere. A stored value the site has no case for is ignored rather
+than obeyed, and the "more from this year" grid on an artwork page — which
+carries no controls of its own — never writes to it.
+
+Filtering by material and by availability was tried and taken out again: it
+put rows of controls above a page whose subject is the paintings. Sorting is
+the whole of it, and the year filter it always had.
 *Proven by:* `art-pieces-list.component.spec.ts` "remembering how the reader
-likes it" (5 tests), `preferences.constants.spec.ts` (6 tests),
+likes it" (5 tests), `preferences.constants.spec.ts` (5 tests),
 `e2e/navigation.test.mjs` "comes back to the catalogue arranged the way it was
 left"
 
@@ -506,8 +490,7 @@ A key appears beneath the catalogue's controls whenever there is a sold piece
 on screen, and not otherwise. The dot was drawn and never explained: a screen
 reader was told "sold" by the tile's own label while anybody looking at it had
 no way to find out.
-*Proven by:* `art-pieces-list.component.spec.ts` "explains the dot when there is
-a sold piece on screen, and not otherwise"
+*Proven by:* `art-pieces-list.component.spec.ts` "explaining the dot"
 
 ### R51 — A first message is not cut off mid-thought · met
 The contact form accepts 2000 characters rather than 256, which was about three
@@ -540,6 +523,20 @@ visibly pixelated. A photograph with fewer pixels than the box is never
 upscaled to a sharpness it does not have.
 *Proven by:* `pdf-image.utils.spec.ts` (5 tests), and the generated sheet, whose
 embedded image measures 1724px across the 146mm it is drawn at
+
+### R54 — Back never leaves the site · met
+The back button on an artwork returns the reader to where they came from only
+when that was a page of this site. Most people arrive at a painting from
+outside — a link from Instagram, a search result — and the entry behind theirs
+belongs to somebody else; `window.history.length > 1` was true for every one of
+them, so the button quietly threw them off the site.
+
+It reads the number the router stamps on each entry it creates, which travels
+with the entry through back and forward, and falls back to the referrer on the
+entry the document was loaded into. It errs towards home: a reader sent home
+when they could have gone back has lost a step, one sent off the site has lost
+the site. Home means the home page in the language being read.
+*Proven by:* `back-button.component.spec.ts` (8 tests)
 
 ---
 

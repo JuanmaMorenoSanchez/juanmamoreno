@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.16.0
+
+- fix: back, on an artwork, no longer leaves the site. Most people arrive at a
+  painting from Instagram or a search result, and the history entry behind
+  theirs belongs to somebody else — the button only asked whether an entry
+  existed, which it always does. It now goes back only when the entry beneath
+  is one of ours, and otherwise home, in the language being read
+- feat: the catalogue keeps its sort chips as they were. Filtering by material
+  and by availability is gone: it put rows of controls above a page whose
+  subject is the paintings. What stays is the key to the red dot, and the fact
+  that the sort is remembered on the reader's own device
+
 ## 1.15.1
 
 - fix: the essay editor carried one painting's words to the next. Pressing next

@@ -1,10 +1,5 @@
 import { vi } from 'vitest';
-import {
-  PREFERENCE_KEYS,
-  readPreference,
-  readStoredText,
-  writePreference,
-} from './preferences.constants';
+import { PREFERENCE_KEYS, readPreference, writePreference } from './preferences.constants';
 
 describe('remembered preferences', () => {
   beforeEach(() => localStorage.clear());
@@ -36,14 +31,6 @@ describe('remembered preferences', () => {
     expect(localStorage.getItem('catalogue.sort')).toBeNull();
   });
 
-  // The mediums are not known until the catalogue has loaded, so this one
-  // cannot be validated on the way out.
-  it('hands back an unvalidated value for the preferences whose values it cannot know', () => {
-    writePreference(PREFERENCE_KEYS.MEDIUM, 'Watercolor on paper');
-
-    expect(readStoredText(PREFERENCE_KEYS.MEDIUM)).toBe('Watercolor on paper');
-  });
-
   /**
    * There is no `window` at all while the 388 pages are prerendered, and no
    * storage in a browser with it turned off. Either has to mean "no
@@ -59,6 +46,5 @@ describe('remembered preferences', () => {
 
     expect(() => writePreference(PREFERENCE_KEYS.THEME, 'dark')).not.toThrow();
     expect(readPreference(PREFERENCE_KEYS.THEME, ['light', 'dark'])).toBeNull();
-    expect(readStoredText(PREFERENCE_KEYS.THEME)).toBeNull();
   });
 });

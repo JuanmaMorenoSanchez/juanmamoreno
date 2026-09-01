@@ -86,39 +86,8 @@ mat-card {
   margin-top: 0;
 }
 
-.catalogue-controls {
+.sort-group {
   margin-bottom: 2em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.control-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-// Names the row rather than each chip in it, so "Sort by" is said once
-// instead of three times.
-.control-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  // soft, not faint: faint is 2.5:1 on white and 3.5:1 on the dark ground,
-  // and this is small text a reader has to read. soft clears 4.5:1 in both.
-  color: var(--catalog-soft);
-  min-width: 5.5rem;
-}
-
-// The one in force. A ring rather than a fill: these sit above the paintings
-// and a row of solid blocks would be the loudest thing on the page.
-mat-chip.is-on {
-  --mdc-chip-outline-color: var(--catalog-accent);
-  --mdc-chip-outline-width: 1px;
-  --mdc-chip-label-text-color: var(--catalog-accent);
-  --mdc-chip-with-icon-icon-color: var(--catalog-accent);
 }
 
 // The key to the dot on a sold tile, shown only when there is one on screen.
