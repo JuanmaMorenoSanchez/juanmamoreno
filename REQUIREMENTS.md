@@ -436,15 +436,38 @@ which reads the saved blob's type back
 
 ## Reading the site
 
+### R55 — The catalogue narrows to what has sold, or what has not · met
+A picker beside the year, offering all three answers and holding one at a time.
+Choosing puts a chip in the same row as the year chips, and taking the chip off
+shows everything again; "both" is the absence of a filter and shows no chip.
+
+Remembered on the reader's own device, and deliberately not in the address: the
+year says which paintings a link is about and belongs in a url that can be
+shared, while this says how somebody is looking, and putting it there would
+give the catalogue several addresses for the same paintings.
+
+The choice lives in a service because the two halves are nowhere near each
+other — the picker is in the breadcrumb at the top of every page, the grid that
+answers to it is the catalogue's own component, which is also rendered as the
+"more from this year" widget on each artwork page. That widget is left showing
+everything: the section around it decides whether to appear by counting every
+painting of the year, so narrowing its contents would leave a heading standing
+over an empty row.
+*Proven by:* `availability-filter.service.spec.ts` (5 tests),
+`breadcrumb.component.spec.ts` (8 tests), `art-pieces-list.component.spec.ts`
+"narrowing by availability" (6 tests), `e2e/navigation.test.mjs` "the
+availability picker" (3 tests, which check the counts add back up to the whole
+catalogue)
+
 ### R45 — The catalogue is remembered as the reader left it · met
 How it was sorted and in which direction, kept on the reader's own device and
 never sent anywhere. A stored value the site has no case for is ignored rather
 than obeyed, and the "more from this year" grid on an artwork page — which
 carries no controls of its own — never writes to it.
 
-Filtering by material and by availability was tried and taken out again: it
-put rows of controls above a page whose subject is the paintings. Sorting is
-the whole of it, and the year filter it always had.
+Filtering by material was tried and taken out again: it put rows of controls
+above a page whose subject is the paintings. Availability came back as a picker
+beside the year instead — see R55, which is remembered the same way.
 *Proven by:* `art-pieces-list.component.spec.ts` "remembering how the reader
 likes it" (5 tests), `preferences.constants.spec.ts` (5 tests),
 `e2e/navigation.test.mjs` "comes back to the catalogue arranged the way it was

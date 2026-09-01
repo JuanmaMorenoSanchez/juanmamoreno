@@ -22,6 +22,7 @@ import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants'
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
@@ -129,6 +130,16 @@ export class ArtPiecesListComponent {
     const edited = this.editedByToken();
     return (this.artPieces() ?? []).filter((nft) => edited.get(nft.tokenId) === true).length;
   });
+  /**
+   * Sold, available or both, chosen from the picker in the breadcrumb.
+   *
+   * Not applied to the "more from this year" grid on an artwork page. That
+   * strip is a suggestion rather than the catalogue, and the section around it
+   * decides whether to appear by counting every painting of the year, so
+   * filtering its contents would leave a heading over an empty row.
+   */
+  private readonly availability = inject(AvailabilityFilterService).availability;
+
   private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
     const yearsQueryParams = this.yearParamSignal();
@@ -138,6 +149,7 @@ export class ArtPiecesListComponent {
     const frontalViewByToken = this.frontalViewByToken();
     const wanted = this.criticFilter();
     const edited = this.editedByToken();
+    const availability = this.viewAsWidget() ? 'both' : this.availability();
 
     return (artPieces ?? []).filter(
       (nft) =>
@@ -145,7 +157,8 @@ export class ArtPiecesListComponent {
         !this.isExcludedById(nft) &&
         (frontalViewByToken.get(nft.tokenId) ?? false) &&
         // An artwork with no essay yet counts as untouched, because it is.
-        (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited'))
+        (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited')) &&
+        (availability === 'both' || this.isSold(nft) === (availability === 'sold'))
     );
   });
 

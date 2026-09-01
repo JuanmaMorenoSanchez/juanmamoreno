@@ -36,6 +36,26 @@
           }
         </mat-select>
       </mat-form-field>
+      <!--
+        Beside the year, and read the same way: pick one and it becomes a chip
+        in the row. A select rather than a pair of buttons because the three
+        answers are exclusive — everything, only what has sold, only what has
+        not — and a select can only ever hold one of them.
+      -->
+      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'availability.label' | translate }}</mat-label>
+        <mat-select
+          [value]="availability()"
+          (selectionChange)="setAvailability($event.value)"
+          aria-label="Select availability"
+        >
+          @for (choice of availabilityChoices; track choice) {
+            <mat-option [value]="choice">
+              {{ 'availability.' + choice | translate }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
         <mat-chip
           color="primary"
@@ -55,6 +75,24 @@
             {{ breadcrumb.label }}
           </a>
           <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+      <!--
+        Only when it is narrowing something. "Both" is the absence of a filter,
+        and a chip saying so would be a chip that means nothing.
+      -->
+      @if (availability() !== 'both') {
+        <mat-chip
+          color="primary"
+          [removable]="true"
+          (removed)="clearAvailability()"
+          animate.enter="year-chip-enter"
+          animate.leave="year-chip-leave"
+        >
+          <span class="link-as-text">{{ 'availability.' + availability() | translate }}</span>
+          <button matChipRemove [attr.aria-label]="'availability.remove' | translate">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>

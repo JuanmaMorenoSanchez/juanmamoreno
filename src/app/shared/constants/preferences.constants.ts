@@ -20,6 +20,7 @@ export const PREFERENCE_KEYS = {
   THEME: 'theme',
   SORT_METHOD: 'catalogue.sort',
   SORT_ORDER: 'catalogue.order',
+  AVAILABILITY: 'catalogue.availability',
 } as const;
 
 export function readPreference<T extends string>(key: string, allowed: readonly T[]): T | null {

@@ -218,7 +218,9 @@ describe('reading the site the way you like it', () => {
     // pressing size moves the arrow onto a different chip.
     await page.locator('.sort-group mat-chip').nth(1).click();
     await page.waitForFunction(
-      () => document.querySelectorAll('.sort-group mat-chip')[1]?.querySelectorAll('mat-icon').length === 2,
+      () =>
+        document.querySelectorAll('.sort-group mat-chip')[1]?.querySelectorAll('mat-icon')
+          .length === 2,
       undefined,
       READY
     );
@@ -227,13 +229,135 @@ describe('reading the site the way you like it', () => {
     await page.waitForSelector('.sort-group mat-chip', READY);
 
     // Two icons — the method and the direction — mark the one in force.
-    const marked = await page
-      .locator('.sort-group mat-chip')
-      .nth(1)
-      .locator('mat-icon')
-      .count();
+    const marked = await page.locator('.sort-group mat-chip').nth(1).locator('mat-icon').count();
     assert.equal(marked, 2, 'the catalogue forgot how it was arranged');
 
+    await page.close();
+  });
+});
+
+/**
+ * Narrowing the catalogue to what has sold, or to what has not.
+ *
+ * The picker sits in the breadcrumb, beside the year, and the grid it narrows
+ * is a separate component further down the page. Nothing but a real browser
+ * shows whether a choice made in one reaches the other, and whether it is
+ * still in force on the next visit.
+ */
+describe('the availability picker', () => {
+  const AVAILABILITY = 'mat-select[aria-label="Select availability"]';
+
+  /** Opens the picker and takes one of its three answers. */
+  async function choose(page, label) {
+    await page.locator(AVAILABILITY).click();
+    await page.getByRole('option', { name: label, exact: true }).click();
+    // The overlay closes on its own; waiting for its backdrop to go keeps the
+    // next click from landing on something still covering the page.
+    await page
+      .locator('.cdk-overlay-backdrop')
+      .waitFor({ state: 'detached', timeout: 10_000 })
+      .catch(() => {});
+  }
+
+  const tileCount = (page) => page.locator('a.tile-link').count();
+
+  it('narrows the catalogue to what has sold, and back again', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('a.tile-link', READY);
+    const everything = await tileCount(page);
+    assert.ok(everything > 40, `only ${everything} paintings on the catalogue to begin with`);
+
+    await choose(page, 'Sold');
+    await page.waitForFunction(
+      (before) => document.querySelectorAll('a.tile-link').length < before,
+      everything,
+      READY
+    );
+
+    const sold = await tileCount(page);
+    assert.ok(sold > 0, 'narrowing to sold left nothing at all');
+    assert.ok(sold < everything, `sold (${sold}) is not fewer than everything (${everything})`);
+
+    // The chip that says so, alongside the year chips.
+    const chips = await page.locator('mat-chip').allInnerTexts();
+    assert.ok(
+      chips.some((chip) => chip.includes('Sold')),
+      `no chip naming the filter: ${JSON.stringify(chips)}`
+    );
+
+    await choose(page, 'Available');
+    await page.waitForFunction(
+      (soldCount) => document.querySelectorAll('a.tile-link').length !== soldCount,
+      sold,
+      READY
+    );
+    const available = await tileCount(page);
+    assert.equal(
+      sold + available,
+      everything,
+      `sold (${sold}) and available (${available}) do not add up to everything (${everything})`
+    );
+
+    await page.close();
+  });
+
+  it('is still in force on the next visit', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('a.tile-link', READY);
+    const everything = await tileCount(page);
+
+    await choose(page, 'Sold');
+    await page.waitForFunction(
+      (before) => document.querySelectorAll('a.tile-link').length < before,
+      everything,
+      READY
+    );
+    const sold = await tileCount(page);
+
+    await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('a.tile-link', READY);
+    await page.waitForFunction(
+      (soldCount) => document.querySelectorAll('a.tile-link').length === soldCount,
+      sold,
+      READY
+    );
+
+    const chips = await page.locator('mat-chip').allInnerTexts();
+    assert.ok(
+      chips.some((chip) => chip.includes('Sold')),
+      `the chip did not come back: ${JSON.stringify(chips)}`
+    );
+
+    // Left as we found it, so the suite does not depend on its own order.
+    await choose(page, 'All');
+    await page.close();
+  });
+
+  // A way of looking, not a place: the year says which paintings a link is
+  // about and belongs in an address that can be shared, this does not.
+  it('keeps itself out of the address', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('a.tile-link', READY);
+
+    await choose(page, 'Sold');
+    await page.waitForFunction(
+      () => document.querySelectorAll('mat-chip').length > 0,
+      undefined,
+      READY
+    );
+
+    assert.ok(
+      !page.url().includes('availability'),
+      `the filter reached the address: ${page.url()}`
+    );
+
+    await choose(page, 'All');
     await page.close();
   });
 });

@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.17.0
+
+- feat: a picker beside the year, for showing everything, only what has sold,
+  or only what has not. It reads the way the year does — pick one and it
+  becomes a chip in the row, take the chip off and it is gone — but it holds a
+  single answer rather than collecting them, and it is remembered on the
+  reader's own device instead of going into the address, because it says how
+  somebody is looking rather than which paintings a link is about
+
 ## 1.16.0
 
 - fix: back, on an artwork, no longer leaves the site. Most people arrive at a

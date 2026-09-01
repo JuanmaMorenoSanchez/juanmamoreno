@@ -6,6 +6,13 @@
   "soldLegend": "A red dot marks a piece that has been sold.",
   "moreOn": "More on",
   "selectYear": "Select a year",
+  "availability": {
+    "label": "Availability",
+    "both": "All",
+    "sold": "Sold",
+    "available": "Available",
+    "remove": "Remove the availability filter"
+  },
   "paintings": "Paintings",
   "submit": "Submit",
   "close": "Close",

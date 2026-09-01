@@ -9,6 +9,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 import { afterAll, beforeAll, vi } from 'vitest';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
 import { ArtPiecesListComponent } from './art-pieces-list.component';
 
 // jsdom has no IntersectionObserver. This stub reports every observed tile as
@@ -360,5 +361,102 @@ describe('ArtPiecesListComponent — remembering how the reader likes it', () =>
     fixture.componentInstance.changeSortMethod('size');
 
     expect(localStorage.getItem('juanmamoreno.catalogue.sort')).toBeNull();
+  });
+});
+
+/**
+ * The grid answering the picker in the breadcrumb.
+ *
+ * The two are nowhere near each other in the page, which is the whole reason
+ * the choice lives in a service: this component is also rendered as the
+ * "more from this year" widget on every artwork page.
+ */
+describe('ArtPiecesListComponent — narrowing by availability', () => {
+  beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+  afterAll(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    TestBed.resetTestingModule();
+    localStorage.clear();
+  });
+
+  const shown = (fixture: { nativeElement: HTMLElement }) =>
+    Array.from(fixture.nativeElement.querySelectorAll('a.tile-link'), (link) =>
+      link.getAttribute('href')
+    );
+
+  // '23' is in SOLDCERTIFICATES; the other two are not.
+  const mixed = () => [
+    makeNft('23', 'A sold one'),
+    makeNft('999998', 'For sale'),
+    makeNft('999999', 'Also for sale'),
+  ];
+
+  it('shows everything until the reader narrows it', () => {
+    const { fixture, artworkService } = setup();
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(3);
+  });
+
+  it('shows only what has sold', () => {
+    const { fixture, artworkService } = setup();
+    TestBed.inject(AvailabilityFilterService).set('sold');
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/23']);
+  });
+
+  it('shows only what has not', () => {
+    const { fixture, artworkService } = setup();
+    TestBed.inject(AvailabilityFilterService).set('available');
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/999998', '/artwork/999999']);
+  });
+
+  // The picker is in the breadcrumb, above the grid: changing it has to reach
+  // the paintings without the page being rebuilt.
+  it('follows the picker while the reader is looking at the grid', () => {
+    const { fixture, artworkService } = setup();
+    const availability = TestBed.inject(AvailabilityFilterService);
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    availability.set('sold');
+    fixture.detectChanges();
+    expect(shown(fixture)).toEqual(['/artwork/23']);
+
+    availability.clear();
+    fixture.detectChanges();
+    expect(shown(fixture)).toHaveLength(3);
+  });
+
+  it('starts narrowed for a reader who left the chip on', () => {
+    localStorage.setItem('juanmamoreno.catalogue.availability', 'sold');
+
+    const { fixture, artworkService } = setup();
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/23']);
+  });
+
+  /**
+   * The "more from this year" strip on an artwork page is a suggestion rather
+   * than the catalogue, and the section around it decides whether to appear by
+   * counting every painting of that year. Filtering its contents would leave a
+   * heading standing over an empty row.
+   */
+  it('leaves the more-from-this-year grid showing everything', () => {
+    const { fixture, artworkService } = setup();
+    TestBed.inject(AvailabilityFilterService).set('sold');
+    fixture.componentRef.setInput('viewAsWidget', true);
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(3);
   });
 });

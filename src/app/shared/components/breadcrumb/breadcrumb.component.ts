@@ -14,6 +14,11 @@ import {
 } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  Availability,
+  AVAILABILITY_CHOICES,
+  AvailabilityFilterService,
+} from '@shared/services/availability-filter.service';
 import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
 import { BreadCrumb } from './breadcrumbs.entity';
@@ -63,6 +68,27 @@ export class BreadcrumbComponent implements OnInit {
 
   private readonly yearPickerModel = signal<YearPickerModel>({ newYear: null });
   public readonly yearPickerForm = form(this.yearPickerModel);
+
+  /**
+   * Sold, available, or both — beside the year, and shown as a chip like one.
+   *
+   * A plain bound select rather than the year's signal form: the year clears
+   * itself after each pick, because a year becomes a chip and stops being on
+   * offer, while this one keeps whatever was chosen and has to go on showing
+   * it. The state itself lives in a service, since the grid that answers to it
+   * is nowhere near this component.
+   */
+  private readonly availabilityFilter = inject(AvailabilityFilterService);
+  public readonly availabilityChoices = AVAILABILITY_CHOICES;
+  public readonly availability = this.availabilityFilter.availability;
+
+  public setAvailability(value: Availability): void {
+    this.availabilityFilter.set(value);
+  }
+
+  public clearAvailability(): void {
+    this.availabilityFilter.clear();
+  }
 
   constructor() {
     this.breadcrumbs = signal(this.buildBreadCrumb(this.activatedRoute.root));
