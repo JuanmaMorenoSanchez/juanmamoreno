@@ -39,7 +39,7 @@ describe('language', () => {
 
   // Menu links were absolute, so About, CV and Contact threw a Spanish reader
   // back into English halfway through the site.
-  ['Acerca de', 'Contacto'].forEach((label) => {
+  ['Statement', 'Contacto'].forEach((label) => {
     it(`keeps the reader in Spanish when following "${label}"`, () => {
       cy.visit('/es/artworks');
       cy.get('app-top-menu').contains('button', label).click();
