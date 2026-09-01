@@ -23,6 +23,11 @@
   "cancel": "Cancel",
   "back": "Back",
   "next": "Next",
+  "footer": {
+    "label": "Elsewhere and small print",
+    "gallery": "Zunino Gallery",
+    "terms": "Terms"
+  },
   "generative": {
     "notFound": "This generative piece was not found."
   },
@@ -85,6 +90,11 @@
     "messageLabel": "Message (optional)",
     "messagePlaceholder": "Anything you'd like to add...",
     "success": "Thanks! I'll get back to you soon."
+  },
+  "share": {
+    "share": "Share this painting",
+    "copyLink": "Copy link to this painting",
+    "copied": "Link copied"
   },
   "viewer": {
     "previous": "Previous",

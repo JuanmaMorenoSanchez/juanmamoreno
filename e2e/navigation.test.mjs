@@ -453,3 +453,103 @@ describe('a catalogue narrowed to nothing', () => {
     await page.close();
   });
 });
+
+/**
+ * The way out of the site, and the way a painting gets passed on.
+ *
+ * Between them these are the whole of the traffic between this site and
+ * Instagram, so it matters that they are on the pages people actually land on
+ * — which is every artwork page, reached from a post.
+ */
+describe('the foot of the page', () => {
+  for (const path of ['/', '/artworks', '/artwork/5', '/cv']) {
+    it(`offers Instagram from ${path}`, async (t) => {
+      if (cannotRun) return t.skip(cannotRun);
+
+      const page = await openPage(browser, path);
+      await page.waitForSelector('app-footer', READY);
+
+      const href = await page
+        .locator('app-footer a[href*="instagram.com"]')
+        .first()
+        .getAttribute('href');
+      assert.equal(href, 'https://www.instagram.com/juanmamorenosanchez/');
+
+      await page.close();
+    });
+  }
+
+  // Four prerendered pages that were linked from nowhere at all.
+  it('gives Privacy and Terms a way in, in the language being read', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es/artworks', 'es-ES');
+    await page.waitForSelector('app-footer', READY);
+
+    const internal = await page
+      .locator('app-footer a[href^="/"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    assert.deepEqual(internal, ['/es/contact', '/es/privacy', '/es/terms']);
+
+    await page.close();
+  });
+
+  /**
+   * The privacy page promises no third-party anything. A follow widget would
+   * make that untrue on all 388 pages at once, so the footer is links only.
+   */
+  it('brings nothing of Instagram onto the page but a link to it', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('app-footer', READY);
+
+    // el.src, not the attribute: the attribute is relative for our own
+    // bundles, and the resolved property is what says where a file is really
+    // coming from.
+    const foreign = await page.evaluate(() =>
+      [...document.querySelectorAll('script[src], iframe[src]')]
+        .map((el) => el.src)
+        .filter((src) => src && new URL(src).origin !== location.origin)
+    );
+    assert.deepEqual(foreign, [], `something is loaded from elsewhere: ${JSON.stringify(foreign)}`);
+
+    await page.close();
+  });
+});
+
+describe('passing a painting on', () => {
+  // It used to be a fixed blue circle at z-index 9999, over the first painting
+  // in the grid on every page, sharing the words "Contemporary Art" whatever
+  // was on screen.
+  it('is no longer a button floating over the paintings', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('a.tile-link', READY);
+
+    assert.equal(
+      await page.locator('body > app-root > app-share-button').count(),
+      0,
+      'the floating share button is still there'
+    );
+
+    await page.close();
+  });
+
+  it('sits with the other things that can be done with the painting', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/5');
+    await page.waitForSelector('.viewer-toolbar', READY);
+
+    const share = page.locator('.viewer-toolbar app-share-button button');
+    assert.equal(await share.count(), 1, 'no share control in the artwork toolbar');
+
+    // Present whatever the browser can do: it falls back to copying the link
+    // rather than hiding itself where navigator.share is missing.
+    assert.ok(await share.isVisible(), 'the share control is not visible');
+
+    await page.close();
+  });
+});

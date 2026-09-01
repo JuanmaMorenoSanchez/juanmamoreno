@@ -1,6 +1,4 @@
-.share-button {
-  position: fixed;
-  bottom: 1.25rem;
-  left: 0.25rem;
-  z-index: 9999;
-}
+// Nothing of its own any more. It used to be a fixed blue circle at
+// z-index 9999, sitting over the first painting in the grid on every page;
+// now it is one of the artwork toolbar's buttons and looks like its
+// neighbours.

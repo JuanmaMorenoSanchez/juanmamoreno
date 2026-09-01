@@ -9,6 +9,7 @@
     @if (nft()) {
       <ng-container viewer-actions>
         <app-quote-button [tokenId]="tokenId()" [artworkName]="nft().name"></app-quote-button>
+        <app-share-button [artworkName]="nft().name" [details]="technicalLine()"></app-share-button>
         <app-download-button [links]="qualityUrls()" [name]="nft().name"></app-download-button>
         @if (frontalViewNft()) {
           <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>

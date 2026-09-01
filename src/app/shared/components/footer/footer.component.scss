@@ -1,0 +1,28 @@
+// Quiet, and the same on every page. It is a way out of the site, not a
+// second menu — the paintings are what the page is for.
+.site-footer {
+  margin-top: 4rem;
+  padding: 2rem 2vw 2.5rem;
+  border-top: 1px solid var(--catalog-frame-bg);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  // The row gap matters as much as the column one: wrapped onto two lines on a
+  // narrow screen these would otherwise sit on top of each other.
+  gap: 0.5rem 1.5rem;
+}
+
+.footer-link {
+  color: var(--catalog-soft);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--catalog-ink);
+  }
+}

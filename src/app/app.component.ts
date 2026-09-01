@@ -3,11 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
+import { FooterComponent } from '@shared/components/footer/footer.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CanonicalService } from '@shared/services/canonical.service';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import translationsEN from '@translations/en.json';
 import translationsES from '@translations/es.json';
 import { filter } from 'rxjs';
@@ -16,19 +17,16 @@ import { filter } from 'rxjs';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [
-    TopMenuComponent,
-    ShareButtonComponent,
-    BreadcrumbComponent,
-    RouterOutlet,
-    TranslatePipe,
-  ],
+  imports: [TopMenuComponent, FooterComponent, BreadcrumbComponent, RouterOutlet, TranslatePipe],
 })
 export class AppComponent {
   private translateService = inject(TranslateService);
   private canonicalService = inject(CanonicalService);
   private router = inject(Router);
   private auth = inject(AdminAuthService);
+  // Public: the shell asks it whether this page belongs to a language tree,
+  // which is what decides the footer.
+  protected lang = inject(LanguageUrlService);
 
   readonly hideBreadcrumb = signal(
     this.deepestHideBreadcrumb(this.router.routerState.snapshot.root)

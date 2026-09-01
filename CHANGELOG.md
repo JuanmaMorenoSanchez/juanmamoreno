@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.19.0
+
+- feat: a footer, on every page. The site had none — pages simply stopped — and
+  the only link to Instagram anywhere on it was one sentence on the contact
+  page, the least-visited page there is. Privacy and Terms are in it too: four
+  prerendered pages that were linked from nowhere at all. Plain links, no
+  follow widget: the privacy page promises no third-party anything, and an
+  embed would make that untrue on all 388 pages at once
+- feat: the share button shares the painting. It floated over every page at
+  z-index 9999, on top of the first tile in the grid, and handed the operating
+  system the same three lines wherever it was pressed — the artist's name, the
+  words "Contemporary Art", and whatever address was showing. It now sits in
+  the artwork's own toolbar and passes on the title and the technical sheet.
+  Where the browser has no share sheet it copies the link instead of hiding
+  itself
+
 ## 1.18.0
 
 - feat: a catalogue narrowed to nothing says so, where before the page simply

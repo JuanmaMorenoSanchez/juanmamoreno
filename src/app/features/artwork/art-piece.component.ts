@@ -26,6 +26,7 @@ import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { ArtPiecesListComponent } from '@features/artworks/art-pieces-list.component';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
+import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
@@ -61,6 +62,7 @@ const NO_DESCRIPTION = 'No description available';
     TranslatePipe,
     TraitPipe,
     BackButtonComponent,
+    ShareButtonComponent,
     ArtworkCriticComponent,
   ],
 })
@@ -127,6 +129,25 @@ export class ArtPieceComponent {
 
     return currentNft.tokenId === this.frontalViewNft()?.tokenId ? '' : `(${VIEW_TYPES.PROGRESS})`;
   });
+  /**
+   * The painting in one line — year, medium, size — as the page prints it
+   * under the title. Handed to the share button, so passing a painting on
+   * says what it is rather than only where it lives.
+   */
+  readonly technicalLine: Signal<string> = computed(() => {
+    const nft = this.nft();
+    if (!nft) return '';
+    const year = this.getTraitValue(nft, VALIDTRAITS.YEAR);
+    const medium = this.translateService.instant(this.getTraitValue(nft, VALIDTRAITS.MEDIUM));
+    const height = this.getTraitValue(nft, VALIDTRAITS.HEIGHT);
+    const width = this.getTraitValue(nft, VALIDTRAITS.WIDTH);
+    const unit = this.getTraitValue(nft, VALIDTRAITS.UNIT);
+    // Both sides are needed for a measurement to say anything; the unit is
+    // not, and its absence beats a wrong guess at one.
+    const size = height && width ? `${height} x ${width}${unit ? ` ${unit}` : ''}` : '';
+    return [year, medium, size].filter(Boolean).join(', ');
+  });
+
   readonly qualityUrls: Signal<string[]> = computed(() => {
     const nft = this.nft();
     return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];

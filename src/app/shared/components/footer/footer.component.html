@@ -1,0 +1,18 @@
+<footer class="site-footer" role="contentinfo">
+  <nav class="footer-links" [attr.aria-label]="'footer.label' | translate">
+    <!--
+      rel="me" as well as the usual noopener: it is how the rest of the web is
+      told that this account and this site are the same person, which is the
+      whole point of the link being here.
+    -->
+    <a class="footer-link" [href]="instagram" target="_blank" rel="me noopener noreferrer">
+      Instagram
+    </a>
+    <a class="footer-link" [href]="gallery" target="_blank" rel="noopener noreferrer">
+      {{ 'footer.gallery' | translate }}
+    </a>
+    <a class="footer-link" [routerLink]="lang.link('contact')">{{ 'menu.contact' | translate }}</a>
+    <a class="footer-link" [routerLink]="lang.link('privacy')">{{ 'privacy.title' | translate }}</a>
+    <a class="footer-link" [routerLink]="lang.link('terms')">{{ 'footer.terms' | translate }}</a>
+  </nav>
+</footer>

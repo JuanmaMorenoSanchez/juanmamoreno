@@ -23,6 +23,11 @@
   "cancel": "Cancelar",
   "back": "Volver",
   "next": "Siguiente",
+  "footer": {
+    "label": "En otros sitios y letra pequeña",
+    "gallery": "Galería Zunino",
+    "terms": "Términos"
+  },
   "generative": {
     "notFound": "No se encontró esta pieza generativa."
   },
@@ -85,6 +90,11 @@
     "messageLabel": "Mensaje (opcional)",
     "messagePlaceholder": "Lo que quieras añadir...",
     "success": "¡Gracias! Te responderé pronto."
+  },
+  "share": {
+    "share": "Compartir esta pieza",
+    "copyLink": "Copiar el enlace a esta pieza",
+    "copied": "Enlace copiado"
   },
   "viewer": {
     "previous": "Anterior",

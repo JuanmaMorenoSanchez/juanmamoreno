@@ -8,8 +8,6 @@
   {{ 'skipToContent' | translate }}
 </a>
 
-<app-share-button></app-share-button>
-
 <header role="banner">
   <app-top-menu></app-top-menu>
 </header>
@@ -20,3 +18,12 @@
   }
   <router-outlet></router-outlet>
 </main>
+
+<!--
+  Not on the studio or its door. Those are the artist's own workshop, they
+  exist at one address rather than two, and a way out to Instagram is not what
+  they are for — the same thing `carriesLanguage` already tells the switcher.
+-->
+@if (lang.carriesLanguage()) {
+  <app-footer></app-footer>
+}

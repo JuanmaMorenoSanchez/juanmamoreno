@@ -584,6 +584,31 @@ when they could have gone back has lost a step, one sent off the site has lost
 the site. Home means the home page in the language being read.
 *Proven by:* `back-button.component.spec.ts` (8 tests)
 
+### R57 — Every page offers a way to the rest of the work · met
+A footer on all 388 pages carrying Instagram, the gallery, contact, and the
+Privacy and Terms pages, in the language being read. Before it there was no
+footer at all and the only Instagram link on the site was a sentence on the
+contact page; Privacy and Terms were prerendered in both languages and linked
+from nowhere.
+
+Plain links. No Instagram embed or follow widget: the privacy page promises no
+third-party anything, and one would make that untrue on every page at once.
+*Proven by:* `footer.component.spec.ts` (5 tests), `e2e/navigation.test.mjs`
+"the foot of the page" (6 tests, one of which checks that nothing at all is
+loaded from another origin)
+
+### R58 — A painting can be passed on as itself · met
+The share control names the painting: its title, and the year, medium and size
+printed under it. It used to float over every page and share the artist's name
+and the words "Contemporary Art" whatever was on screen, so passing on a
+particular painting produced a message that did not name it.
+
+It lives in the artwork toolbar with the other things that can be done with
+that painting, and where `navigator.share` does not exist — Firefox has never
+had it — it copies the address rather than hiding itself.
+*Proven by:* `share-button.component.spec.ts` (5 tests),
+`e2e/navigation.test.mjs` "passing a painting on" (2 tests)
+
 ---
 
 ## Versions
