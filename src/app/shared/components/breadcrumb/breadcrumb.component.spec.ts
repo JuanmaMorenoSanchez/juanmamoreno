@@ -15,7 +15,7 @@ import { BreadcrumbComponent } from './breadcrumb.component';
  * nowhere near it, which is why the choice lives in a service rather than in
  * either of them.
  */
-async function setup() {
+async function setup(at = '/artworks') {
   TestBed.configureTestingModule({
     imports: [BreadcrumbComponent],
     providers: [
@@ -35,7 +35,7 @@ async function setup() {
     ],
   });
 
-  await TestBed.inject(Router).navigateByUrl('/artworks');
+  await TestBed.inject(Router).navigateByUrl(at);
   const fixture = TestBed.createComponent(BreadcrumbComponent);
   fixture.detectChanges();
   return { fixture, filter: TestBed.inject(AvailabilityFilterService) };
@@ -49,6 +49,57 @@ const chipText = (fixture: { nativeElement: HTMLElement }) =>
   Array.from(fixture.nativeElement.querySelectorAll('mat-chip .link-as-text'), (label) =>
     (label.textContent ?? '').replace(/\s+/g, ' ').trim()
   );
+
+/**
+ * The two pickers read as one pair of controls, or they read as a mistake.
+ * Both carry their name above the box; the value underneath sits on the same
+ * line as the words in the chips beside them.
+ */
+describe('BreadcrumbComponent — the year and availability pickers together', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => TestBed.resetTestingModule());
+
+  const fields = (fixture: { nativeElement: HTMLElement }) =>
+    Array.from(fixture.nativeElement.querySelectorAll('mat-form-field'));
+
+  it('names both of them above the box', async () => {
+    const { fixture } = await setup();
+
+    const labels = fields(fixture).map((field) =>
+      (field.querySelector('mat-label')?.textContent ?? '').trim()
+    );
+    expect(labels).toEqual(['year.label', 'availability.label']);
+  });
+
+  /**
+   * The year picker empties itself after every pick — the year it took has
+   * become a chip — so without this its label would drop into the middle of
+   * the box as a placeholder and the two controls would look like different
+   * kinds of thing.
+   */
+  it('keeps the year label up even though the picker is always empty', async () => {
+    const { fixture } = await setup();
+
+    expect(fields(fixture)[0].getAttribute('floatlabel')).toBe('always');
+  });
+
+  it('says "all" under the year until a year has been chosen', async () => {
+    const { fixture } = await setup();
+
+    expect(
+      fixture.nativeElement.querySelector('mat-select[aria-label="Select year"]')?.textContent
+    ).toContain('year.all');
+  });
+
+  // From then on the chips say which years, so repeating "all" would be false.
+  it('says nothing under the year once one has been chosen', async () => {
+    const { fixture } = await setup('/artworks?years=2024');
+
+    expect(
+      fixture.nativeElement.querySelector('mat-select[aria-label="Select year"]')?.textContent
+    ).not.toContain('year.all');
+  });
+});
 
 describe('BreadcrumbComponent — narrowing by availability', () => {
   beforeEach(() => localStorage.clear());

@@ -206,6 +206,31 @@ describe('ArtPiecesListComponent — seeing which essays have been gone over', (
     expect(fixture.nativeElement.querySelector('.edited-filter')).toBeNull();
   });
 
+  /**
+   * Last on the page, after everything a reader is offered. It is scaffolding
+   * for one person under a page whose subject is the paintings, and sitting
+   * above the sort chips it read as one of them.
+   */
+  it('puts the artist controls after everything else, not among them', async () => {
+    const { fixture, artworkService } = setup({ signedIn: true });
+    fixture.detectChanges();
+    artworkService.artPieces$.next([makeNft('23', 'Sold piece')]);
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const sort = page.querySelector('.sort-group')!;
+    const legend = page.querySelector('.sold-legend')!;
+    const artistControls = page.querySelector('.edited-filter')!;
+
+    // Node.DOCUMENT_POSITION_FOLLOWING: the artist controls come after both.
+    expect(
+      sort.compareDocumentPosition(artistControls) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      legend.compareDocumentPosition(artistControls) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
   it('offers the artist the choice', async () => {
     const { fixture, artworkService } = setup({ signedIn: true });
     fixture.detectChanges();

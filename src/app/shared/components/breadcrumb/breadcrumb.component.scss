@@ -1,7 +1,13 @@
+// Wide enough for the longest label either language has — "Disponibilidad" —
+// and no wider. These sit between chips that are as wide as their words, and
+// two boxes half full of nothing read as a form rather than as a filter.
 .small-input {
-  width: 10.8rem;
+  width: 8.75rem;
   margin-left: 0.8rem;
   align-self: flex-start;
+  // Drops the box onto the same line as the chips, which carry a margin of
+  // their own. Paired with the centred infix in theme.scss: together they put
+  // the chosen value on the chips' own baseline rather than 4px above it.
   margin-top: 0.25rem;
 }
 

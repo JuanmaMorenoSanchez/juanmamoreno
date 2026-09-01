@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.17.1
+
+- fix: the row of controls above the catalogue did not line up. The chosen
+  value in each select sat 4px above the words in the chips beside it — the
+  infix is a block, so its line rested at the top of the box instead of in the
+  middle — and the year picker showed its label as a placeholder while the
+  availability picker showed its own above the box, so the two read as
+  different kinds of thing. The year now says "Year" above it like its
+  neighbour, and "All" underneath until a year is chosen. Both boxes are
+  narrower: they were half full of nothing between chips as wide as their words
+- chore: the artist's edited-essay controls sit after everything a reader is
+  offered, with room around them, instead of above the sort chips
+
 ## 1.17.0
 
 - feat: a picker beside the year, for showing everything, only what has sold,

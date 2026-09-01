@@ -152,11 +152,15 @@ mat-card {
 
 // The artist's own progress control. Quiet on purpose: it is scaffolding for
 // one person, and it sits above a page whose subject is the paintings.
+// Last, and set apart. It is scaffolding for one person, sitting under a page
+// whose subject is the paintings, and pressed up against the controls above it
+// it read as one of them.
 .edited-filter {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
+  margin-top: 1.5rem;
   margin-bottom: 0.75rem;
   font-size: 0.75rem;
 }

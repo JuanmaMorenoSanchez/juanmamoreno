@@ -5,28 +5,6 @@
          should have instead of borrowing the site's name. -->
     <h1 class="visually-hidden">{{ 'seo.paintings.title' | translate }}</h1>
 
-    <!--
-      The artist's own view of his progress through two hundred essays, and his
-      alone: the backend refuses the flag to anyone else, so a reader gets an
-      empty answer and never sees this at all.
-    -->
-    @if (isArtist()) {
-      <div class="edited-filter" role="group" aria-label="Filter by edited essay">
-        @for (choice of criticFilters; track choice.value) {
-          <button
-            type="button"
-            class="edited-filter-choice"
-            [class.is-on]="criticFilter() === choice.value"
-            [attr.aria-pressed]="criticFilter() === choice.value"
-            (click)="setCriticFilter(choice.value)"
-          >
-            {{ choice.label }}
-          </button>
-        }
-        <span class="edited-filter-count">{{ editedCount() }} edited</span>
-      </div>
-    }
-
     <div class="sort-group">
       <mat-chip-set>
         @for (method of sortMethods; track methodTracking(method)) {
@@ -67,6 +45,28 @@
         <span class="legend-dot" aria-hidden="true"></span>
         {{ 'soldLegend' | translate }}
       </p>
+    }
+
+    <!--
+      The artist's own view of his progress through two hundred essays, and his
+      alone: the backend refuses the flag to anyone else, so a reader gets an
+      empty answer and never sees this at all.
+    -->
+    @if (isArtist()) {
+      <div class="edited-filter" role="group" aria-label="Filter by edited essay">
+        @for (choice of criticFilters; track choice.value) {
+          <button
+            type="button"
+            class="edited-filter-choice"
+            [class.is-on]="criticFilter() === choice.value"
+            [attr.aria-pressed]="criticFilter() === choice.value"
+            (click)="setCriticFilter(choice.value)"
+          >
+            {{ choice.label }}
+          </button>
+        }
+        <span class="edited-filter-count">{{ editedCount() }} edited</span>
+      </div>
     }
   }
   @if (dataReady()) {

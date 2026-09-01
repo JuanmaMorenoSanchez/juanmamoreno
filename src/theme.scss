@@ -63,11 +63,27 @@ html[data-theme='dark'] {
 // property are needed — global/unencapsulated on purpose, since a component
 // stylesheet can't reach mat-form-field's internal DOM without ::ng-deep.
 .small-input {
-  @include mat.form-field-density(mat.define-theme((density: (scale: -5))));
+  @include mat.form-field-density(
+    mat.define-theme(
+      (
+        density: (
+          scale: -5,
+        ),
+      )
+    )
+  );
   --mat-form-field-container-height: 2rem; // 32px, matches the chip row
   --mat-form-field-container-vertical-padding: 0px;
 
   --mat-select-trigger-text-size: 0.875rem;
   --mat-form-field-container-text-size: 0.875rem;
   --mat-form-field-outlined-label-text-size: 0.875rem;
+
+  // The chosen value sat 4px above the words in the chips beside it: the infix
+  // is a block, so its 24px line rested at the top of the 32px box instead of
+  // in the middle of it. Centring it puts every word in this row on one line.
+  .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+  }
 }

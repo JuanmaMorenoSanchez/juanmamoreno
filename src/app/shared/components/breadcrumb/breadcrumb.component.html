@@ -26,9 +26,26 @@
           </a>
         </mat-chip>
       }
-      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'selectYear' | translate }}</mat-label>
-        <mat-select [formField]="yearPickerForm.newYear" aria-label="Select year">
+      <!--
+        The label stays up whatever happens, like the one beside it. This
+        select empties itself after every pick — the year it took has become a
+        chip — so left to itself the label would sit in the middle as a
+        placeholder and the two controls would read as different kinds of
+        thing. What shows underneath is "All" until a year has been chosen, and
+        nothing after that, because from then on the chips say which years.
+      -->
+      <mat-form-field
+        class="small-input"
+        appearance="outline"
+        subscriptSizing="dynamic"
+        floatLabel="always"
+      >
+        <mat-label>{{ 'year.label' | translate }}</mat-label>
+        <mat-select
+          [formField]="yearPickerForm.newYear"
+          [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
+          aria-label="Select year"
+        >
           @for (year of validYears; track year) {
             <mat-option [value]="year">
               {{ year }}

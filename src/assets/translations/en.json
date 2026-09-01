@@ -5,7 +5,10 @@
   "sold": "Art piece sold",
   "soldLegend": "A red dot marks a piece that has been sold.",
   "moreOn": "More on",
-  "selectYear": "Select a year",
+  "year": {
+    "label": "Year",
+    "all": "All"
+  },
   "availability": {
     "label": "Availability",
     "both": "All",

@@ -453,8 +453,13 @@ answers to it is the catalogue's own component, which is also rendered as the
 everything: the section around it decides whether to appear by counting every
 painting of the year, so narrowing its contents would leave a heading standing
 over an empty row.
+The two pickers read as one pair: both name themselves above the box, and the
+value underneath sits on the same line as the words in the chips beside them.
+The year keeps its label up although it is always empty — it clears itself
+after each pick, the year having become a chip — and says "all" underneath
+until one has been chosen, after which the chips say which years.
 *Proven by:* `availability-filter.service.spec.ts` (5 tests),
-`breadcrumb.component.spec.ts` (8 tests), `art-pieces-list.component.spec.ts`
+`breadcrumb.component.spec.ts` (12 tests), `art-pieces-list.component.spec.ts`
 "narrowing by availability" (6 tests), `e2e/navigation.test.mjs` "the
 availability picker" (3 tests, which check the counts add back up to the whole
 catalogue)
