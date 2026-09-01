@@ -31,5 +31,4 @@ export class FooterComponent {
   protected lang = inject(LanguageUrlService);
 
   protected readonly instagram = 'https://www.instagram.com/juanmamorenosanchez/';
-  protected readonly gallery = 'https://galeriazunino.com/';
 }

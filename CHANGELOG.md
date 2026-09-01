@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.20.1
+
+- chore: the gallery link is out of the footer. It is still on the contact page
+  and in the cv, where it belongs to something being said
+
 ## 1.20.0
 
 - feat: a page at /latest showing the paintings most recently put on Instagram,

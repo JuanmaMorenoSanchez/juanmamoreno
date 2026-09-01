@@ -585,8 +585,8 @@ the site. Home means the home page in the language being read.
 *Proven by:* `back-button.component.spec.ts` (8 tests)
 
 ### R57 — Every page offers a way to the rest of the work · met
-A footer on all 388 pages carrying Instagram, the gallery, contact, and the
-Privacy and Terms pages, in the language being read. Before it there was no
+A footer on every page carrying Instagram, contact, and the Privacy and Terms
+pages, in the language being read. Before it there was no
 footer at all and the only Instagram link on the site was a sentence on the
 contact page; Privacy and Terms were prerendered in both languages and linked
 from nowhere.
