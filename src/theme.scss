@@ -20,7 +20,43 @@ $jm-theme: mat.define-theme(
   )
 );
 
+// The same palettes on the other ground. Only the colour half is emitted for
+// it below — typography and density are identical, and repeating them would
+// ship the whole of Material's css twice.
+$jm-dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$green-palette,
+    ),
+    typography: (
+      plain-family: tokens.$font-family-base,
+      brand-family: tokens.$font-family-base,
+    ),
+  )
+);
+
 @include mat.all-component-themes($jm-theme);
+
+@mixin jm-dark-colors {
+  @include mat.all-component-colors($jm-dark-theme);
+}
+
+// An explicit choice, stamped on the document by index.html before first paint
+// and by ThemeService thereafter. It wins in both directions, so a reader who
+// has asked for light on a dark system gets light.
+html[data-theme='dark'] {
+  @include jm-dark-colors;
+}
+
+// No choice made: follow the system. Guarded against the light stamp so the
+// rule above is not undone by the reader's operating system.
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    @include jm-dark-colors;
+  }
+}
 
 // Shrinks the breadcrumb year-selector to match its 32px-tall neighboring
 // chips. Both the density mixin (height floor) and the padding custom

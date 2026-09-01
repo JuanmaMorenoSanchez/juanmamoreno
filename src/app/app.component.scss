@@ -6,3 +6,28 @@ main {
     padding-bottom: 0;
   }
 }
+
+// Off-screen rather than display:none, so it stays in the tab order and is
+// reachable by exactly one Tab from the top of any page.
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: -100vw;
+  z-index: 1001;
+  padding: 0.65rem 1.1rem;
+  background-color: var(--catalog-ink);
+  color: var(--catalog-bg);
+  font-size: 0.875rem;
+  text-decoration: none;
+
+  &:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+}
+
+// Focused only by the skip link, and only programmatically. The ring belongs
+// on the control that was used, not on the whole page it landed in.
+main:focus {
+  outline: none;
+}

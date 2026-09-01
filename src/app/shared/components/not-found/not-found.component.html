@@ -1,39 +1,31 @@
 <div class="container center">
   <h2 class="catalog-heading">{{ 'notFound.title' | translate }}</h2>
   <p>{{ 'notFound.message' | translate }}</p>
+  <!--
+    Real links, built for the language the reader is in. As buttons calling
+    router.navigate('/artworks') these were the site's own way of dropping a
+    Spanish reader into English — and they were reached, by definition, by
+    someone who had already gone wrong once. Anchors also restore
+    middle-click, open-in-new-tab and the keyboard.
+  -->
   <mat-list role="list">
     <mat-list-item>
-      <button
-        [attr.aria-label]="'paintings' | translate"
-        mat-button
-        color="primary"
-        (click)="navigateTo('/artworks')"
-      >
+      <a mat-button color="primary" [routerLink]="lang.link('artworks')">
         {{ 'paintings' | translate }}
-      </button>
+      </a>
     </mat-list-item>
     <mat-list-item>
-      <button
-        [attr.aria-label]="'statement.title' | translate"
-        mat-button
-        color="primary"
-        (click)="navigateTo('/about')"
-      >
+      <a mat-button color="primary" [routerLink]="lang.link('about')">
         {{ 'statement.title' | translate }}
-      </button>
+      </a>
     </mat-list-item>
     <mat-list-item>
-      <button aria-label="cv" mat-button color="primary" (click)="navigateTo('/cv')">CV</button>
+      <a mat-button color="primary" [routerLink]="lang.link('cv')">CV</a>
     </mat-list-item>
     <mat-list-item>
-      <button
-        [attr.aria-label]="'menu.contact' | translate"
-        mat-button
-        color="primary"
-        (click)="navigateTo('/contact')"
-      >
+      <a mat-button color="primary" [routerLink]="lang.link('contact')">
         {{ 'menu.contact' | translate }}
-      </button>
+      </a>
     </mat-list-item>
   </mat-list>
 </div>

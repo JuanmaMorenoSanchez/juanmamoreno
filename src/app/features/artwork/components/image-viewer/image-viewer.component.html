@@ -56,6 +56,8 @@
     tabindex="0"
     role="region"
     aria-label="Artwork viewer"
+    aria-describedby="viewer-hints"
+    [attr.aria-keyshortcuts]="displayArrows() ? 'ArrowLeft ArrowRight' : null"
     (dblclick)="toggleFullScreen()"
     (keydown.arrowLeft)="nextNft(-1)"
     (keydown.arrowRight)="nextNft(1)"
@@ -108,4 +110,17 @@
       }
     </div>
   </div>
+
+  <!--
+    The viewer has always answered to a double-click and to the arrow keys, and
+    has never said so. Hidden on a touch screen, where none of the three
+    gestures exists — but named in the accessibility tree either way, since the
+    container points at it with aria-describedby.
+  -->
+  <p class="viewer-hints" id="viewer-hints">
+    @if (displayArrows()) {
+      <span>{{ 'viewer.hintArrows' | translate }}</span>
+    }
+    <span>{{ 'viewer.hintFullscreen' | translate }}</span>
+  </p>
 </div>

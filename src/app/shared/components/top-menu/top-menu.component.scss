@@ -55,4 +55,11 @@ mat-toolbar-row {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
+
+  // Everything else in the drawer is a full-width row; the lone icon button
+  // would otherwise sit centred in a column of left-aligned words.
+  .theme-toggle {
+    align-self: flex-start;
+    margin-left: 0.9rem;
+  }
 }

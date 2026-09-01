@@ -60,6 +60,21 @@
   >
     {{ 'menu.contact' | translate }}
   </button>
+  <!--
+    Which ground the site is read on. An icon rather than a word because it
+    sits in a bar of words and is the only control there that changes how the
+    page looks rather than where it goes.
+  -->
+  <button
+    class="theme-toggle"
+    mat-icon-button
+    type="button"
+    (click)="theme.toggle()"
+    [attr.aria-label]="(theme.isDark() ? 'theme.toLight' : 'theme.toDark') | translate"
+    [attr.aria-pressed]="theme.isDark()"
+  >
+    <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
   <button
     aria-label="Language switcher"
     mat-button

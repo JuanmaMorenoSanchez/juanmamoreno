@@ -55,13 +55,20 @@ A tile that has shown a painting never returns to blank.
 *Proven by:* `scripts/verify-render.mjs`, 194 pages each
 
 ### R8 — Links keep the reader's language · met
-Menu, breadcrumb and artwork links carry the `/es` prefix when in Spanish.
-*Proven by:* `language.cy.js`, `language-url.service.spec.ts`
+Menu, breadcrumb, catalogue and artwork links carry the `/es` prefix when in
+Spanish — and so do the two that did not: the featured painting on the landing
+page, which was the most prominent link on the site, and the four ways out of
+the 404, which are reached by someone who has already gone wrong once.
+*Proven by:* `language-url.service.spec.ts`, `not-found.component.spec.ts`
+(3 tests), `e2e/navigation.test.mjs` ("keeps a Spanish reader in Spanish when
+following ...", "keeps a Spanish reader in Spanish through the featured
+painting")
 
 ### R9 — The switcher moves between the two trees · met
 Switching changes the address, not just the words, and the choice is remembered
 and beats the browser's own language.
-*Proven by:* `language.cy.js`
+*Proven by:* `top-menu.component.spec.ts` "goes to the Spanish address and
+remembers the choice"
 
 ### R9b — The switcher works on every page · met
 Including the studio and the door, which exist at one address only and so have
@@ -424,6 +431,115 @@ The corrected painting is offered as JPEG at quality 95, which discards far less
 than the camera already did in making the file it came from.
 *Proven by:* `photo-prep.component.ts` (`toJpegUrl`), and the studio probe,
 which reads the saved blob's type back
+
+---
+
+## Reading the site
+
+### R44 — The catalogue narrows by more than the year · met
+Material and availability, alongside the year that was the only filter there
+had ever been. Both are read off the paintings themselves, so neither costs a
+request and neither has a list to keep up to date.
+
+Material is grouped rather than listed. The catalogue records eight mediums,
+but three cover 176 of the 186 paintings and the other five one to four each;
+offering all eight put two rows of chips above a page whose subject is the
+paintings, and a reader wants the oils rather than "oil on canvas on
+cardboard". The support is still named in full on each artwork's own page, and
+a material in none of the families keeps its own name so nothing the artist
+takes up goes missing from the filter.
+
+The row is offered only when there is a choice in it, and a remembered material
+that is no longer on offer falls back to showing everything rather than to an
+empty grid.
+*Proven by:* `art-pieces-list.component.spec.ts` "narrowing the catalogue"
+(9 tests)
+
+### R45 — The catalogue is remembered as the reader left it · met
+How it was sorted, in which direction, filtered to which medium and to what
+availability. Kept on the reader's own device and never sent anywhere. A stored
+value the site has no case for is ignored rather than obeyed, and the
+"more from this year" grid on an artwork page — which carries no controls of
+its own — neither applies these nor writes to them.
+*Proven by:* `art-pieces-list.component.spec.ts` "remembering how the reader
+likes it" (5 tests), `preferences.constants.spec.ts` (6 tests),
+`e2e/navigation.test.mjs` "comes back to the catalogue arranged the way it was
+left"
+
+### R46 — The site can be read on a dark ground · met
+Following the system until the reader says otherwise, and then following the
+reader — in both directions, so light on a dark system is honoured. The choice
+is stamped on the document by a few inline lines in `index.html` before the
+first paint, so the page never appears light and then turns dark. With no
+choice made nothing is stamped and the stylesheet's `prefers-color-scheme`
+rules decide, which is also what happens with javascript switched off.
+*Proven by:* `theme.service.spec.ts` (7 tests), `e2e/navigation.test.mjs` "is
+still dark on the next page after asking for dark"
+
+### R47 — Nothing moves for a reader who asked for less movement · met
+The tiles' entrance, the route cross-fade, the viewer's slide and the parallax
+under the pointer all stop under `prefers-reduced-motion`. The parallax is
+handled in the directive rather than in css: with only the transition removed
+it would snap to the pointer instead of gliding with it, which is more movement
+rather than less.
+*Proven by:* the reduced-motion block in `styles.scss` and the guard in
+`parallax-tilt.directive.ts`
+
+### R48 — A keyboard reaches the page in one step · met
+A skip link, first in the tab order and visible once focused, moves focus into
+`<main>` — past a toolbar and its menus that otherwise had to be tabbed through
+on every page. Everything focusable draws a visible ring, including the plain
+anchors and buttons Material draws nothing for: the catalogue tiles, the
+essay's own controls, the filter chips.
+*Proven by:* `app.component.html`, the `:focus-visible` rule in `styles.scss`
+
+### R49 — The viewer says what it answers to · met
+Double-click for fullscreen, Escape to leave, and the arrow keys to move
+between views of the same painting. All three had always worked and none had
+ever been mentioned. Hidden on a touch screen, where no such gesture exists,
+but named in the accessibility tree either way.
+*Proven by:* `image-viewer.component.html`, and the prerendered pages, which
+carry the text
+
+### R50 — The dot on a sold painting is explained · met
+A key appears beneath the catalogue's controls whenever there is a sold piece
+on screen, and not otherwise. The dot was drawn and never explained: a screen
+reader was told "sold" by the tile's own label while anybody looking at it had
+no way to find out.
+*Proven by:* `art-pieces-list.component.spec.ts` "explains the dot when there is
+a sold piece on screen, and not otherwise"
+
+### R51 — A first message is not cut off mid-thought · met
+The contact form accepts 2000 characters rather than 256, which was about three
+sentences. The backend had always accepted 5000; this was the page's own limit.
+Going over it now says so, where before it blocked the form and showed an empty
+error.
+*Proven by:* `contact.component.ts` (`MESSAGE_MAX_LENGTH`, `getMessageError`)
+
+### R52 — The page is about the painting on it · met
+Pressing "next" does not rebuild the artwork page: the route is the same
+`/artwork/:id`, so Angular keeps the components and changes the parameter, and
+anything held in a plain signal survives the move.
+
+What has been saved names the painting it belongs to, so one painting's essay
+can never appear under another's title — not even for a frame. The editor closes
+when the reader moves on, because saving what was left in it would write one
+painting's words onto another. The description is dropped rather than left
+standing, since it is the picture's alt text and the page's description for
+search. And an answer that arrives after the reader has gone is filed under the
+painting it was asked about, not the one now on screen.
+*Proven by:* `artwork-critic.component.spec.ts` "moving to the next painting"
+(6 tests), `art-piece.component.spec.ts` (4 tests) — all of which fail against
+the code as it was
+
+### R53 — An artwork prints at print resolution · met
+Images in a generated pdf are drawn at 300 dpi. They were drawn at 4 pixels per
+millimetre, which is 101.6 dpi: a square painting came out 584 pixels wide from
+a source 3000 pixels square, and a technical sheet meant for a submission was
+visibly pixelated. A photograph with fewer pixels than the box is never
+upscaled to a sharpness it does not have.
+*Proven by:* `pdf-image.utils.spec.ts` (5 tests), and the generated sheet, whose
+embedded image measures 1724px across the 146mm it is drawn at
 
 ---
 

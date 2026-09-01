@@ -1,5 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  PLATFORM_ID,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { artworkTokenIdFrom } from '@domain/artwork/artwork-link';
@@ -165,10 +174,24 @@ export class ArtworkCriticComponent {
     { initialValue: null }
   );
 
-  /** Set once an edit has been saved, so the page shows it without refetching. */
-  private readonly justSaved = signal<ArtCritic | null>(null);
+  /**
+   * Set once an edit has been saved, so the page shows it without refetching.
+   *
+   * Carries the artwork it belongs to. This component is not rebuilt when the
+   * reader moves to the next painting — the route is the same, only the input
+   * changes — so a saved essay left lying here was still being shown, and still
+   * being handed to the editor, several paintings later. Naming the artwork
+   * makes that impossible to read wrongly rather than merely unlikely: there is
+   * no moment, however brief, when one painting's essay can appear under
+   * another's title.
+   */
+  private readonly justSaved = signal<{ tokenId: string; critic: ArtCritic } | null>(null);
 
-  private readonly shown = computed(() => this.justSaved() ?? this.asArtist() ?? this.critic());
+  private readonly shown = computed(() => {
+    const saved = this.justSaved();
+    const mine = saved?.tokenId === this.tokenId() ? saved.critic : null;
+    return mine ?? this.asArtist() ?? this.critic();
+  });
 
   // Falls back to whichever translation exists rather than showing nothing.
   readonly translated = computed(() => {
@@ -178,6 +201,21 @@ export class ArtworkCriticComponent {
   });
 
   constructor() {
+    // Nothing written about one painting survives into the next.
+    //
+    // The editor is the part that matters: left open across a move it showed
+    // the previous painting's words, and saving would have written them onto
+    // the painting now on screen.
+    effect(() => {
+      this.tokenId();
+      untracked(() => {
+        this.justSaved.set(null);
+        this.editing.set(false);
+        this.draft.set('');
+        this.problem.set('');
+      });
+    });
+
     // Described from here because this is the only place that holds the essay.
     // The page around it can say what the painting is; only this knows that
     // several hundred words were written about that painting, and when they
@@ -240,10 +278,16 @@ export class ArtworkCriticComponent {
     const token = this.auth.bearerToken();
     if (!current || !token || !this.canSave()) return;
 
+    // Held for the length of the request. The reader can move to the next
+    // painting while it is in flight, and the answer must be filed under the
+    // painting it was written for rather than under whichever one is on screen
+    // when it arrives.
+    const savedFor = this.tokenId();
+
     this.saving.set(true);
     this.problem.set('');
     this.artworkService
-      .editArtPieceCritic(this.tokenId(), current.lang, this.draft().trim(), token)
+      .editArtPieceCritic(savedFor, current.lang, this.draft().trim(), token)
       .subscribe({
         next: (updated) => {
           this.saving.set(false);
@@ -251,7 +295,7 @@ export class ArtworkCriticComponent {
             this.problem.set('critic.saveFailed');
             return;
           }
-          this.justSaved.set(updated);
+          this.justSaved.set({ tokenId: savedFor, critic: updated });
           this.editing.set(false);
         },
         error: () => {

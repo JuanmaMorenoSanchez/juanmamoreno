@@ -11,6 +11,16 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
 import { MailService } from '@shared/services/mail/mail.service';
 import { ApiResponse } from '@shared/types/api-response.type';
 
+/**
+ * How long a first message may be.
+ *
+ * 256 characters is about three sentences: long enough to be cut off
+ * mid-thought by a gallery or a collector writing for the first time, which
+ * reads as a site that would rather not hear from them. The backend has always
+ * accepted 5000; this was the frontend's own limit and nothing else's.
+ */
+const MESSAGE_MAX_LENGTH = 2000;
+
 interface ContactFormModel {
   name: string;
   email: string;
@@ -40,6 +50,7 @@ export class ContactComponent {
 
   public submitted = false;
   public isLoading = signal(false);
+  public readonly messageMaxLength = MESSAGE_MAX_LENGTH;
 
   private readonly model = signal<ContactFormModel>({ ...EMPTY_CONTACT_FORM });
 
@@ -48,7 +59,7 @@ export class ContactComponent {
     required(path.email);
     email(path.email);
     required(path.message);
-    maxLength(path.message, 256);
+    maxLength(path.message, MESSAGE_MAX_LENGTH);
     disabled(path, { when: () => this.isLoading() });
   });
 
@@ -114,8 +125,16 @@ export class ContactComponent {
       : this.hasError(this.contactForm.email, 'email') && this.translateService.instant('error.invalidEmail');
   }
 
+  // Both of the message's rules, not just the first. With only 'required'
+  // handled, going over the limit blocked the form and showed an empty error,
+  // which is a form that has stopped working for no stated reason.
   getMessageError() {
-    return this.hasError(this.contactForm.message, 'required') && this.translateService.instant('error.noValue');
+    if (this.hasError(this.contactForm.message, 'required')) {
+      return this.translateService.instant('error.noValue');
+    }
+    return this.hasError(this.contactForm.message, 'maxLength')
+      ? this.translateService.instant('error.tooLong')
+      : '';
   }
 
   get messageLength(): number {

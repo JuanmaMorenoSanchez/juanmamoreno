@@ -135,3 +135,104 @@ describe('hydration', () => {
     await page.close();
   });
 });
+
+describe('the Spanish landing page', () => {
+  /**
+   * The featured painting is most of the Spanish landing page and was the most
+   * prominent link on the site. It was written `['/artwork', tokenId]` — an
+   * absolute English path — while the catalogue grid beside it had always
+   * built its links for the language being read.
+   */
+  it('keeps a Spanish reader in Spanish through the featured painting', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es', 'es-ES');
+    await page.waitForSelector('a.home-featured', READY);
+
+    const href = await page.locator('a.home-featured').first().getAttribute('href');
+    assert.match(href, /^\/es\/artwork\//, `the hero leaves the Spanish tree: ${href}`);
+
+    await page.locator('a.home-featured').first().click();
+    await page.waitForURL((url) => url.pathname.includes('/artwork/'), ARRIVAL).catch(() => {});
+
+    const landed = new URL(page.url()).pathname;
+    assert.match(landed, /^\/es\//, `the featured painting landed on ${landed}`);
+
+    await page.close();
+  });
+});
+
+/*
+ * The 404 page's own links are proven by not-found.component.spec.ts instead
+ * of here. In production GitHub Pages answers an unknown path with the
+ * 404.html that angular-cli-ghpages writes from index.html, and the router
+ * shows the page once the app boots. serve-dist.mjs deliberately does not do
+ * that — it serves files and nothing else, so that a page missing from the
+ * build fails these tests rather than being quietly replaced by the
+ * application. Teaching it a fallback to reach this one page would blind every
+ * other test in this file.
+ */
+
+describe('reading the site the way you like it', () => {
+  /**
+   * The whole point of writing the choice down. Asked across a reload rather
+   * than in memory, because a preference that does not survive the visit is
+   * not one.
+   */
+  it('is still dark on the next page after asking for dark', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('app-top-menu', READY);
+
+    await page.locator('app-top-menu button.theme-toggle:visible').first().click();
+    await page.waitForFunction(
+      () => document.documentElement.dataset.theme === 'dark',
+      undefined,
+      READY
+    );
+
+    await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
+
+    // Stamped by the inline script in index.html, before the application has
+    // booted — which is what stops the page painting light and then swapping.
+    const stamped = await page.evaluate(() => document.documentElement.dataset.theme);
+    assert.equal(stamped, 'dark', 'the theme was not remembered across a reload');
+
+    await page.close();
+  });
+
+  /**
+   * Sorting is remembered the same way. Checked through what the reader
+   * actually sees — which chip is marked — rather than through storage, so it
+   * proves the stored value is read back and applied, not merely written.
+   */
+  it('comes back to the catalogue arranged the way it was left', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks');
+    await page.waitForSelector('mat-chip-set[aria-labelledby="sort-label"] mat-chip', READY);
+
+    const sortChips = page.locator('mat-chip-set[aria-labelledby="sort-label"] mat-chip');
+    await sortChips.nth(1).click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelectorAll('mat-chip-set[aria-labelledby="sort-label"] mat-chip')[1]
+          ?.getAttribute('aria-pressed') === 'true',
+      undefined,
+      READY
+    );
+
+    await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('mat-chip-set[aria-labelledby="sort-label"] mat-chip', READY);
+
+    const pressed = await page
+      .locator('mat-chip-set[aria-labelledby="sort-label"] mat-chip')
+      .nth(1)
+      .getAttribute('aria-pressed');
+    assert.equal(pressed, 'true', 'the catalogue forgot how it was arranged');
+
+    await page.close();
+  });
+});

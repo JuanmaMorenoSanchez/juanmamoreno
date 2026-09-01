@@ -15,6 +15,7 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ResponsiveService } from '@shared/services/responsive.service';
+import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -60,6 +61,9 @@ export class TopMenuComponent {
   protected signOut(): void {
     this.auth.signOut();
   }
+
+  // Public: the toolbar reads and toggles it directly.
+  protected theme = inject(ThemeService);
 
   public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 

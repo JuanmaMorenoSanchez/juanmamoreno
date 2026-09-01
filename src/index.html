@@ -5,6 +5,26 @@
     <script>
       window.global = window;
     </script>
+    <!--
+      The reader's theme, applied before the first pixel is painted. Inline and
+      blocking on purpose: anything asynchronous means the page paints on one
+      ground and then swaps to the other, which is the thing a stored
+      preference exists to avoid. Only an explicit choice is stamped — with
+      none, the stylesheet's prefers-color-scheme rules decide, which is also
+      what happens with javascript switched off entirely.
+    -->
+    <script>
+      (function () {
+        try {
+          var chosen = localStorage.getItem('juanmamoreno.theme');
+          if (chosen === 'dark' || chosen === 'light') {
+            document.documentElement.dataset.theme = chosen;
+          }
+        } catch (e) {
+          /* private browsing: the system preference decides */
+        }
+      })();
+    </script>
     <title>Juanma Moreno Sánchez, artist.</title>
     <meta
       name="description"

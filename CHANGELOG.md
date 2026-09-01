@@ -5,6 +5,57 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.15.1
+
+- fix: the essay editor carried one painting's words to the next. Pressing next
+  does not rebuild the page — the route is the same and only the parameter
+  changes — so a saved essay stayed behind and was handed to the editor several
+  paintings later, ready to be saved over the wrong one. What has been saved
+  now names the painting it belongs to, the editor closes when the reader moves
+  on, and an answer that arrives late is filed under the painting it was
+  written for
+- fix: the description went with it, quietly. Left standing while the next one
+  was fetched, it was the previous painting's — and it is the picture's alt
+  text and the page's description for search, so it misled exactly the readers
+  who cannot see the painting
+- fix: the technical sheet printed a pixelated painting. Images were drawn at 4
+  pixels per millimetre — 101.6 dpi, a screen density — so a square painting
+  was 584 pixels wide out of a 3000-pixel source. Now 300 dpi, which is 1724
+  pixels over the same 146mm, and it never upscales a photograph that has
+  fewer
+
+## 1.15.0
+
+- fix: the featured painting on the Spanish landing page led into the English
+  artwork page, and every way out of the 404 led into English too. Both were
+  written as absolute paths while the catalogue beside them had always built
+  links for the language being read. The 404's four buttons are links now, so
+  they can also be middle-clicked and opened in a new tab
+- feat: the catalogue narrows by material and by availability, not only by year,
+  and remembers how it was left — sorted, ordered, filtered — on the reader's
+  own device. Material is grouped: the catalogue records eight mediums, three of
+  which cover 176 of the 186 paintings, so it offers Oil, Watercolour and
+  Drawing rather than two rows of chips distinguishing board from cardboard. A
+  remembered material no longer on offer shows everything rather than nothing
+- feat: the site can be read dark. It follows the system until asked otherwise
+  and then follows the reader, stamped before the first paint so no page starts
+  light and turns
+- feat: nothing moves for a reader whose system asks for less movement — the
+  tiles' entrance, the route cross-fade, the viewer's slide, and the parallax,
+  which had to be stopped in the directive rather than in css
+- feat: a skip link past the toolbar, and a visible focus ring on everything
+  Material draws none for. The sort chips say Year, Size and Medium instead of
+  three icons whose meaning lived in a tooltip that does not exist on a touch
+  screen — and they can now be operated from the keyboard
+- feat: the viewer says what it has always answered to: double-click for
+  fullscreen, Esc to leave, arrow keys between views
+- feat: the red dot on a sold painting is explained, whenever there is one on
+  screen. It was drawn and never named — a screen reader was told while anyone
+  looking at it was not
+- feat: the contact form takes 2000 characters instead of 256, and says so when
+  a message is too long instead of blocking the form with an empty error
+- chore: REQUIREMENTS R8 and R9 cited Cypress specs deleted in 1.14.0
+
 ## 1.14.0
 
 - feat: the browser suite covers the artwork page, the language a menu link

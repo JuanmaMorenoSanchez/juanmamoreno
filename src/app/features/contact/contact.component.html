@@ -33,7 +33,7 @@
         [formField]="contactForm.message"
         [placeholder]="'contact.messagePlaceholder' | translate"
       ></textarea>
-      <mat-hint>{{ messageLength }}/256</mat-hint>
+      <mat-hint>{{ messageLength }}/{{ messageMaxLength }}</mat-hint>
       @if (contactForm.message().invalid()) {
         <mat-error>{{ getMessageError() }}</mat-error>
       }

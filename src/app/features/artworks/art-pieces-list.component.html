@@ -27,34 +27,112 @@
       </div>
     }
 
-    <div class="sort-group">
-      <mat-chip-set>
-        @for (method of sortMethods; track methodTracking(method)) {
-          <mat-chip
-            color="primary"
-            role="button"
-            (click)="changeSortMethod(method)"
-            [matTooltip]="`${('sortBy' | translate)} ${method}`"
-          >
-            <span class="visually-hidden">{{ 'sortBy' | translate }} {{ method }}</span>
-            <mat-icon>
-              {{
-                method === 'year' ? 'calendar_today' : method === 'medium' ? 'palette' : 'crop_free'
-              }}
-            </mat-icon>
-            @if (activeSortMethod() === method) {
-              <mat-icon>
-                {{ sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
-              </mat-icon>
+    <div class="catalogue-controls">
+      <!--
+        Words, not three abstract glyphs. A calendar, a palette and a crop
+        icon told a reader nothing they could act on, and the tooltip that
+        carried their meaning does not exist on a touch screen at all. The
+        arrow appears only on the one in force, which is the only place a
+        direction means anything.
+      -->
+      <div class="control-row">
+        <span class="control-label" id="sort-label">{{ 'sortBy' | translate }}</span>
+        <mat-chip-set aria-labelledby="sort-label">
+          @for (method of sortMethods; track methodTracking(method)) {
+            <mat-chip
+              color="primary"
+              role="button"
+              tabindex="0"
+              [class.is-on]="activeSortMethod() === method"
+              [attr.aria-pressed]="activeSortMethod() === method"
+              (click)="changeSortMethod(method)"
+              (keydown.enter)="changeSortMethod(method)"
+              (keydown.space)="$event.preventDefault(); changeSortMethod(method)"
+            >
+              {{ 'sortMethod.' + method | translate }}
+              @if (activeSortMethod() === method) {
+                <mat-icon>
+                  {{ sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                </mat-icon>
+              }
+            </mat-chip>
+          }
+          @if (selectedNfts().length) {
+            <mat-chip>
+              <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
+            </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+
+      <!--
+        Only worth offering when there is a choice to make: narrowed to a year
+        painted entirely in oil, a row of one chip is furniture.
+      -->
+      @if (mediums().length > 1) {
+        <div class="control-row">
+          <span class="control-label" id="medium-label">{{ 'filter.medium' | translate }}</span>
+          <mat-chip-set aria-labelledby="medium-label">
+            <mat-chip
+              role="button"
+              tabindex="0"
+              [class.is-on]="mediumFilter() === ANY"
+              [attr.aria-pressed]="mediumFilter() === ANY"
+              (click)="setMedium(ANY)"
+              (keydown.enter)="setMedium(ANY)"
+              (keydown.space)="$event.preventDefault(); setMedium(ANY)"
+            >
+              {{ 'filter.any' | translate }}
+            </mat-chip>
+            @for (medium of mediums(); track medium.value) {
+              <mat-chip
+                role="button"
+                tabindex="0"
+                [class.is-on]="mediumFilter() === medium.value"
+                [attr.aria-pressed]="mediumFilter() === medium.value"
+                (click)="setMedium(medium.value)"
+                (keydown.enter)="setMedium(medium.value)"
+                (keydown.space)="$event.preventDefault(); setMedium(medium.value)"
+              >
+                {{ medium.label | translate }}
+              </mat-chip>
             }
-          </mat-chip>
-        }
-        @if (selectedNfts().length) {
-          <mat-chip>
-            <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
-          </mat-chip>
-        }
-      </mat-chip-set>
+          </mat-chip-set>
+        </div>
+      }
+
+      <div class="control-row">
+        <span class="control-label" id="availability-label">
+          {{ 'filter.availability' | translate }}
+        </span>
+        <mat-chip-set aria-labelledby="availability-label">
+          @for (choice of availabilityChoices; track choice) {
+            <mat-chip
+              role="button"
+              tabindex="0"
+              [class.is-on]="availabilityFilter() === choice"
+              [attr.aria-pressed]="availabilityFilter() === choice"
+              (click)="setAvailability(choice)"
+              (keydown.enter)="setAvailability(choice)"
+              (keydown.space)="$event.preventDefault(); setAvailability(choice)"
+            >
+              {{ 'filter.' + choice | translate }}
+            </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+
+      <!--
+        What the dot on a tile means. It was drawn and never explained: a
+        screen reader was told "sold" by the link's own label while anyone
+        looking at it had no way to find out at all.
+      -->
+      @if (hasSoldOnDisplay()) {
+        <p class="sold-legend">
+          <span class="legend-dot" aria-hidden="true"></span>
+          {{ 'filter.soldLegend' | translate }}
+        </p>
+      }
     </div>
   }
   @if (dataReady()) {

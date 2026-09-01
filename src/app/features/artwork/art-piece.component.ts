@@ -5,6 +5,7 @@ import {
   inject,
   signal,
   Signal,
+  untracked,
   viewChild,
   WritableSignal,
 } from '@angular/core';
@@ -178,12 +179,18 @@ export class ArtPieceComponent {
 
     effect(() => {
       const token = this.tokenId();
+      // Dropped before the next is asked for. This component is reused as the
+      // reader moves between paintings, so a description left standing is the
+      // previous painting's — and it is what the viewer announces as the
+      // image's alt text and what the page offers search as its description.
+      untracked(() => this.descriptions.set(null));
       // Undefined until the artwork has loaded. Asking anyway fetched
       // /descriptions/undefined, which the backend answers with a 500 — once
       // per page view, and once per prerendered page at build time.
       if (!token) return;
       this.artworkService.getArtPieceDescriptions(token).subscribe((data) => {
-        this.descriptions.set(data);
+        // A slow answer for the painting before this one must not land on it.
+        if (this.tokenId() === token) this.descriptions.set(data);
       });
     });
 

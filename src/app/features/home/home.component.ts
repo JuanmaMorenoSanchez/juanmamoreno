@@ -17,6 +17,7 @@ import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SORT } from '@shared/constants/order.constants';
 import { HeroTitleService } from '@shared/services/hero-title.service';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subscription, takeLast } from 'rxjs';
 
@@ -44,6 +45,19 @@ export class HomeComponent implements AfterViewInit {
 
   private artworkService = inject(ARTWORK_PORT);
   private heroTitle = inject(HeroTitleService);
+  private lang = inject(LanguageUrlService);
+
+  /**
+   * The featured painting, at the address for the language being read.
+   *
+   * Written as "/artwork/5" this was the one link on the site that moved a
+   * Spanish reader into English — and the most prominent one there is, since
+   * it is most of the landing page. The catalogue grid has always built its
+   * links this way; the hero did not.
+   */
+  protected artworkLink(tokenId: string): string {
+    return this.lang.link(`artwork/${tokenId}`);
+  }
 
   @ViewChild('heroTitle') private heroTitleRef!: ElementRef<HTMLElement>;
   private observer?: IntersectionObserver;

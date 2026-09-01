@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { TopMenuComponent } from '@shared/components/top-menu/top-menu.component';
@@ -16,7 +16,13 @@ import { filter } from 'rxjs';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [TopMenuComponent, ShareButtonComponent, BreadcrumbComponent, RouterOutlet],
+  imports: [
+    TopMenuComponent,
+    ShareButtonComponent,
+    BreadcrumbComponent,
+    RouterOutlet,
+    TranslatePipe,
+  ],
 })
 export class AppComponent {
   private translateService = inject(TranslateService);
@@ -51,6 +57,19 @@ export class AppComponent {
       .subscribe(() => {
         this.hideBreadcrumb.set(this.deepestHideBreadcrumb(this.router.routerState.snapshot.root));
       });
+  }
+
+  /**
+   * Past the toolbar and into the page, for a reader using a keyboard.
+   *
+   * The default is followed rather than allowed: an unhandled `#main-content`
+   * is a router navigation to a route that does not exist. Moving focus by
+   * hand also puts the caret where the reader expects it, which a fragment
+   * jump on its own does not do.
+   */
+  protected skipToContent(event: Event): void {
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
   }
 
   private deepestHideBreadcrumb(route: ActivatedRouteSnapshot): boolean {

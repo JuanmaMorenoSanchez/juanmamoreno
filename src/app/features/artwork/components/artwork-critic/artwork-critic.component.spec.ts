@@ -270,3 +270,170 @@ describe('ArtworkCriticComponent — previewing a painting the essay cites', () 
     expect(fixture.nativeElement.querySelector('.artwork-peek')).toBeNull();
   });
 });
+
+/**
+ * Moving from one painting to the next.
+ *
+ * This component is not rebuilt when the reader does that: the route is the
+ * same `/artwork/:id`, so Angular keeps the instance and only the input
+ * changes. Anything held in a plain signal therefore survives the move, and
+ * every one of these tests failed before that was dealt with.
+ *
+ * The reported fault: edit a painting's essay, save it, press next, press edit
+ * — and the previous painting's words were in the box, ready to be saved over
+ * the new one. It only shows itself once something has been saved, which is
+ * why every test here goes through the editor rather than just reading.
+ */
+describe('ArtworkCriticComponent — moving to the next painting', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  const OTHER: ArtCritic = {
+    tokenId: '9',
+    artworkName: 'A different painting',
+    translated: [
+      {
+        lang: 'en',
+        title: 'Somewhere else entirely',
+        html: '<p>Nothing here is blue.</p>',
+        body: 'Nothing here is blue.',
+      },
+    ],
+  };
+
+  /** What the reader does: the next button changes the input, nothing else. */
+  async function goTo(
+    fixture: ComponentFixture<ArtworkCriticComponent>,
+    tokenId: string
+  ): Promise<void> {
+    fixture.componentRef.setInput('tokenId', tokenId);
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+  }
+
+  /** Opens the editor, replaces the text and saves it. */
+  function rewrite(fixture: ComponentFixture<ArtworkCriticComponent>, text: string): void {
+    (find(fixture, '.artwork-critic-edit') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    const draft = find(fixture, '.artwork-critic-draft') as HTMLTextAreaElement;
+    draft.value = text;
+    draft.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    (find(fixture, '.artwork-critic-save') as HTMLButtonElement).click();
+    fixture.detectChanges();
+  }
+
+  // The bug as it was reported, start to finish.
+  it('offers the new painting its own words to edit, not the last one it saved', async () => {
+    const { fixture, port } = await setup({ signedIn: true });
+
+    rewrite(fixture, 'Written again, by hand.');
+
+    port.getArtPieceCritic.mockReturnValue(of(OTHER));
+    port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
+    await goTo(fixture, '9');
+
+    (find(fixture, '.artwork-critic-edit') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const draft = find(fixture, '.artwork-critic-draft') as HTMLTextAreaElement;
+    expect(draft.value).toBe('Nothing here is blue.');
+  });
+
+  // The same staleness, seen by a reader who never touches the editor: the
+  // essay on the page was the one that had just been saved elsewhere.
+  it('shows the new painting its own essay after one has been saved', async () => {
+    const { fixture, port } = await setup({ signedIn: true });
+
+    rewrite(fixture, 'Written again, by hand.');
+
+    port.getArtPieceCritic.mockReturnValue(of(OTHER));
+    port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
+    await goTo(fixture, '9');
+
+    expect(text(fixture)).toContain('Somewhere else entirely');
+    expect(text(fixture)).not.toContain('A room that will not settle');
+  });
+
+  // Leaving the editor open and moving on: the box must not travel with the
+  // reader, because saving it would write one painting's essay onto another.
+  it('closes an editor left open rather than carrying it to the next painting', async () => {
+    const { fixture, port } = await setup({ signedIn: true });
+
+    (find(fixture, '.artwork-critic-edit') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(find(fixture, '.artwork-critic-draft')).not.toBeNull();
+
+    port.getArtPieceCritic.mockReturnValue(of(OTHER));
+    port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
+    await goTo(fixture, '9');
+
+    expect(find(fixture, '.artwork-critic-draft')).toBeNull();
+  });
+
+  // Whether the essay has been gone over is the artist's note to himself about
+  // this painting, and was being answered about the last one.
+  it('reports edited-ness for the painting on screen', async () => {
+    const { fixture, port } = await setup({ signedIn: true, edited: true });
+    expect(find(fixture, '.artwork-critic-state--untouched')).toBeNull();
+
+    rewrite(fixture, 'Written again, by hand.');
+
+    port.getArtPieceCritic.mockReturnValue(of(OTHER));
+    port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
+    await goTo(fixture, '9');
+
+    expect(find(fixture, '.artwork-critic-state--untouched')).not.toBeNull();
+  });
+
+  /**
+   * The save is a request, and the reader can move on while it is in flight.
+   * Its answer has to be filed under the painting it was written for, not
+   * under whichever one happens to be on screen when it lands.
+   */
+  it('does not let a save that lands late overwrite the painting now on screen', async () => {
+    const { fixture, port } = await setup({ signedIn: true });
+
+    let deliver: ((critic: ArtCritic) => void) | null = null;
+    port.editArtPieceCritic.mockReturnValue({
+      subscribe: (handlers: { next: (critic: ArtCritic) => void }) => {
+        deliver = handlers.next;
+        return { unsubscribe: () => undefined };
+      },
+    });
+
+    (find(fixture, '.artwork-critic-edit') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    const draft = find(fixture, '.artwork-critic-draft') as HTMLTextAreaElement;
+    draft.value = 'Written again, by hand.';
+    draft.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    (find(fixture, '.artwork-critic-save') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    // Away to the next painting before the answer arrives.
+    port.getArtPieceCritic.mockReturnValue(of(OTHER));
+    port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
+    await goTo(fixture, '9');
+
+    deliver!({
+      ...CRITIC,
+      translated: [{ ...CRITIC.translated[0], title: 'The saved one' }],
+    });
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Somewhere else entirely');
+    expect(text(fixture)).not.toContain('The saved one');
+  });
+
+  // It is still the same painting's essay when the artist stays put.
+  it('keeps showing what was saved while the reader stays on the painting', async () => {
+    const { fixture } = await setup({ signedIn: true });
+
+    rewrite(fixture, 'Written again, by hand.');
+
+    // editArtPieceCritic answers with asArtist(true) — the same essay, marked.
+    expect(text(fixture)).toContain('A room that will not settle');
+    expect(find(fixture, '.artwork-critic-state--untouched')).toBeNull();
+  });
+});

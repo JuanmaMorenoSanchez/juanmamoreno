@@ -43,6 +43,12 @@ export class ParallaxTiltDirective implements OnDestroy {
     // Nothing points at anything while the pages are being prerendered, and
     // there is no document to listen on.
     if (typeof document === 'undefined') return;
+    // The one movement on the site that css cannot quiet on its own. The
+    // reduced-motion rule in styles.scss collapses the transition, which would
+    // leave the thumbnails snapping to the pointer rather than gliding with it
+    // — more movement, not less. So the listener is never attached: no
+    // custom property is written, and every image sits still at its default.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     document.addEventListener('pointermove', this.onPointerMove, { passive: true });
   }
 

@@ -127,6 +127,27 @@
     }
   }
 
+  // Only where the gestures it names exist. A touch screen has no double
+  // click, no arrow keys and no Escape, so on one this is three pieces of
+  // advice that cannot be followed.
+  .viewer-hints {
+    display: none;
+
+    @media (hover: hover) and (pointer: fine) {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.25rem;
+      margin: 0.6rem 0 0;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      // See the note in art-pieces-list.component.scss: faint does not carry
+      // small text at either ground.
+      color: var(--catalog-soft);
+      text-align: center;
+    }
+  }
+
   // Controls row: same plain mat-icon-button look as app-back-button — no
   // pill background, always visible. Sits above the artwork in normal page
   // flow (not overlaid on the image).

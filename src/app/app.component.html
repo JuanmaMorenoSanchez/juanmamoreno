@@ -1,10 +1,20 @@
+<!--
+  First in the tab order and invisible until it has focus. Without it the only
+  way to the paintings with a keyboard was through the whole toolbar and its
+  menus, on every page. Focus is moved rather than navigated: `href="#..."`
+  alone would hand the fragment to the router, which has no route for it.
+-->
+<a class="skip-link" href="#main-content" (click)="skipToContent($event)">
+  {{ 'skipToContent' | translate }}
+</a>
+
 <app-share-button></app-share-button>
 
 <header role="banner">
   <app-top-menu></app-top-menu>
 </header>
 
-<main role="main" [class.no-chrome]="hideBreadcrumb()">
+<main id="main-content" tabindex="-1" role="main" [class.no-chrome]="hideBreadcrumb()">
   @if (!hideBreadcrumb()) {
     <app-breadcrumb></app-breadcrumb>
   }

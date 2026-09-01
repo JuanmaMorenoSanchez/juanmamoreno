@@ -8,7 +8,7 @@
     <a
       class="home-featured"
       draggable="false"
-      [routerLink]="['/artwork', nft.tokenId]"
+      [routerLink]="artworkLink(nft.tokenId)"
       [attr.aria-label]="nft.name"
     >
       <span
