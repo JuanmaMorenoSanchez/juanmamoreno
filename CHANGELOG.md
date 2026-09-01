@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.13.0
+
+- feat: the statement is rewritten, in his words. Four parts instead of five,
+  and the "constants and variables" scheme is gone — it split one account, of
+  images found on the internet and then generated and then broken on purpose,
+  across two headings that were telling the same story. The declamations went
+  with it, and so did a newspaper's compliment about him that he had been
+  quoting back at himself
+
 ## 1.12.1
 
 - fix: the essays name their author. He is Juanma Moreno Sánchez, which he has

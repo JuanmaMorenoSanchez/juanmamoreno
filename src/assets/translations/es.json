@@ -129,51 +129,22 @@
   "statement": {
     "title": "Statement",
     "introduction": {
-      "content": "Mi obra artística es profundamente analógica, si bien la creación suele tener su origen en lo digital. Esta es la gran contradicción de <a href='https://www.plataformadeartecontemporaneo.com/pac/juanma-moreno-lo-peor-y-lo-mejor-de-la-selfie-generation/' target='_blank' rel='noopener noreferrer'>la generación milenial, a la que pertenezco</a>. Somos la última generación que se ha formado usando papel y lápiz que ha tenido que buscarse la vida en un ambiente digital. Es la intersección entre dos mundos, una colisión que no intento disimular. De hecho, divido mi fuerza de trabajo entre la producción artística que necesito para ser feliz y la programación de software que necesito para poder comer."
+      "content": "Casi todas mis pinturas empiezan en una pantalla y terminan en un lienzo, por algo soy de la última generación (la milenial) que estudió sin pantallas, con papel y bolígrafo, aunque luego haya tenido que buscarse la vida en un entorno digital. Esta dualidad también se da en lo laboral; reparto el tiempo entre la artesanía del arte y el diseño y desarrollo de software, la más etérea de las artesanías."
     },
     "painting": {
-      "title": "Pintura",
-      "distance": "En la pintura es donde, a lo largo de toda mi vida, he encontrado refugio. La pintura es importante. La pintura es útil. La pintura es casa.",
-      "outOfNoise": "Esta distancia implica pasar tiempo fuera del automatismo de la rutina, una condición necesaria para poder observar, analizar y finalmente construir.",
-      "anacronism": "La pintura es un oficio ancestral que permite trabajar en una superficie tanto o tan poco como el artista quiera, teniendo como únicos límites el espacio y el tiempo. <strong>La pintura es un anacronismo precioso.</strong> Al mismo tiempo, la pintura es siempre relevante porque es un campo infinito de conocimiento. Cada artista, a lo largo de los años, va descubriendo pequeños hallazgos, que en su conjunto acaban por formar algo único e irrepetible."
+      "title": "La pintura",
+      "limits": "La pintura es una práctica tan vieja como la propia humanidad. Y un pintor puede trabajar una superficie tanto como quiera; los únicos límites de la pintura son el espacio y el tiempo. Estos son recursos infinitos en teoría pero finitos desde el punto de vista humano (el espacio que podemos abarcar y el tiempo de una vida).",
+      "recontextualising": "Dedicar tiempo y espacio a una imagen que originalmente no lo tiene (un scroll no es un lugar físico, y el tiempo que se le dedica es mínimo) cambia su significado por completo. Al darle ese tiempo, esa importancia, estás recontextualizando la imagen, dando la oportunidad de encontrar nuevos significados. La propia artesanía hace ese mismo trabajo: un momento casual fijado al óleo toma otra dimensión.",
+      "rule": "Como norma general, cuanto más grande la obra y más tiempo se le dedique, tanto mejor."
     },
-    "art": {
-      "title": "Arte",
-      "arts": "Mi refugio en la pintura, la escultura, el arte generativo o el arte digital ha dado frutos diferentes a lo largo del tiempo. Hay frutos que nunca han sido documentados, y también los hay que ni siquiera han sido vistos por otra persona más que yo mismo. En cualquier caso, hay peculiaridades en mi arte que son constantes y atraviesan la producción, y hay otras que son variables; obsesiones que van y vienen con el tiempo:"
+    "images": {
+      "title": "Las imágenes descontextualizadas",
+      "found": "Durante años las encontraba por casualidad en internet, que ya era un mundo visual prácticamente infinito antes de que llegaran las IAs generativas. Entre 2019 y 2023 empecé a usar redes neuronales (StyleGAN, BigBiGAN) cuando todavía “fallaban” considerablemente. Ese margen de error, el llamado “loss”, producía monstruos que no se le podrían haber ocurrido a ningún humano. Fruto de esa fascinación viene mi interés por pintarlas. Hoy esas herramientas han alcanzado una suficiencia formal que me interesa bastante menos: porque aciertan demasiado. La IA desde 2023 es aburrida por lo predecible, del mismo modo que es aburrida una conversación predecible o un libro predecible. Cuanto mejor, peor. El llamado “AI slop” inunda nuestra vida diaria de imágenes uniformes y carentes de toda personalidad.",
+      "accident": "“No mistakes, just happy accidents”, que decía Bob Ross. Lo que sirve al artista es el accidente, lo singular. El software que deforma una imagen hasta que aberra. El fallo es material de trabajo."
     },
-    "constants": {
-      "title": "Constantes",
-      "items": {
-        "first": {
-          "title": "Internet",
-          "content": "Representar a la tecnología en la pintura y crear tecnología artesanalmente son formas de intentar reconciliar nuestro yo físico y nuestro avatar.La mayoría de las imágenes que uso en mi proceso creativo provienen de Internet, específicamente de encuentros fortuitos con imágenes aleatorias. Incluso antes de la aparición de las IA, Internet ya era un mundo visual virtualmente infinito."
-        },
-        "second": {
-          "title": "Elemento inquietante",
-          "content": "En una pintura hipotética, un personaje mira o interactúa con algo. Pero no sabemos quién es, qué está haciendo o por qué lo está haciendo. Incluso si es algo indeterminado, la acción introduce una narrativa e invita a pasar tiempo contemplando la imagen. La idea es que la imagen proponga una premisa abierta, algo más allá de la pose, y que el espectador la complete. Lo inquietante como punto de partida."
-        },
-        "third": {
-          "title": "Tradición",
-          "content": "El patrimonio cultural está en el ADN de cualquier identidad. Los grandes autores y los grandes temas de la historia del arte han tenido, tienen y tendrán un efecto tremendamente gravitacional. Velázquez, Goya, Menzel, Rego, Hopper, Rauch, etc., han creado grandes obras maestras en las que se han desarrollado los grandes temas de la historia del arte, ayer y hoy. Temas intrínsecamente humanos, transversales y universales: el amor, la muerte, el miedo..."
-        },
-        "fourth": {
-          "title": "El fracaso como una de las Bellas Artes",
-          "content": "'He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.' Esta cita del polifacético Pepín Tre ilustra perfectamente la razón de la multidisciplinariedad. El genio, la iluminación divina o la inspiración no son más que clichés mitológicos. La realidad, como siempre, es mucho más prosaica: es el fracaso (real o percibido) lo que mueve a un artista a investigar, probar nuevas técnicas, nuevas formas de llegar al público, etc. Por el contrario, estoy convencido de que el éxito (real o percibido) tiene una capacidad paralizante y termina produciendo artistas aburridos de su propio arte y por tanto de sí mismos. El fracaso frustra, pero también estimula, o eso quiero creer yo."
-        }
-      }
-    },
-    "variables": {
-      "title": "Variables",
-      "items": {
-        "first": {
-          "title": "Inteligencia Artificial",
-          "content": "<a href='https://www.abc.es/cultura/cultural/javier-villuendas-trienio-aberrante-arte-pocos-vieron-venir-20230915102255-nt.html' target='_blank' rel='noopener noreferrer'><em>En 2019, una mínima vanguardia de creadores, como Juanma Moreno, ya experimentaba con la vieja Inteligencia Artificial de esa época</em></a>, como dice Javier Villuendas en su columna en ABC Cultural. En 2019, pocos intuíamos el potencial creativo de la IA de entonces. Las viejas redes neuronales como StyleGan o Bigbigan estimulaban nuestra imaginación creando monstruos muy interesantes. Hoy en día, el arte generado por IA es algo común y ha alcanzado nuevos niveles de suficiencia formal. Pero en aquel entonces, el margen de error (la pérdida) era mucho mayor, y los accidentes producían monstruos inauditos y altamente interesantes. De 2019 a 2023, la principal fuente de inspiración para mi trabajo pasó de ser imágenes encontradas en Internet a imágenes que las Inteligencias Artificiales son capaces de generar."
-        },
-        "second": {
-          "title": "Software",
-          "content": "El software no tiene que ser una solución ultra-racional y eficiente a un problema de ingeniería. El software también puede satisfacer la curiosidad de un artista, ser flexible, orgánico, mutar, ser aleatorio, desordenado e impredecible. Una vez más, debemos valorar el error. Es en la pincelada que va ligeramente más allá del contorno, en el accidente que hace que el software distorsione una imagen hasta aberrarla, donde reside el valor y la originalidad."
-        }
-      }
+    "failure": {
+      "title": "El fracaso",
+      "content": "«He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.» La cita es del polifacético Pepín Tre y explica bastante bien por qué acabo metido en técnicas y registros tan distintos. El genio y la inspiración son clichés cómodos y caducadísimos; lo que de verdad empuja a probar otra cosa es que la anterior fracase. El éxito, real o percibido, paraliza. O eso quiero creer yo."
     }
   },
   "download": {
