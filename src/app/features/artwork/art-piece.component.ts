@@ -30,6 +30,7 @@ import { ShareButtonComponent } from '@shared/components/share-button/share-butt
 import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
+import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
@@ -104,6 +105,17 @@ export class ArtPieceComponent {
 
   readonly nft: Signal<Nft> = computed(() => this.nfts()[this.displayingIndex()]);
   readonly tokenId = computed(() => this.nft()?.tokenId);
+
+  /**
+   * Where this painting can be seen on Instagram, if it has been posted.
+   *
+   * The other half of the traffic: the post cannot link here, because an
+   * Instagram caption is dead text, so the page links there instead. Null for
+   * most of the catalogue — most of it has never been posted, and anything
+   * posted before the address of a post was kept has none recorded.
+   */
+  private readonly postedArtworks = inject(PostedArtworksService);
+  readonly instagramPost = signal<string | null>(null);
 
   readonly descriptions = signal<Descriptions | null>(null);
   readonly description = computed(() => {
@@ -196,6 +208,17 @@ export class ArtPieceComponent {
       this.displayingIndex(); // read to scroll back up when the view changes
       if (typeof window === 'undefined') return; // nothing to scroll in a build
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    effect(() => {
+      const token = this.tokenId();
+      // The same rule as the description below: what belongs to the painting
+      // before this one must not be left standing over this one.
+      untracked(() => this.instagramPost.set(null));
+      if (!token) return;
+      this.postedArtworks.getInstagramPermalink(token).subscribe((permalink) => {
+        if (this.tokenId() === token) this.instagramPost.set(permalink);
+      });
     });
 
     effect(() => {

@@ -1,0 +1,63 @@
+.latest-intro {
+  max-width: 34rem;
+  color: var(--catalog-soft);
+  font-size: 0.9375rem;
+}
+
+// A grid rather than the catalogue's own: this is a dozen paintings somebody
+// is scanning for one they half remember, not two hundred to browse.
+.latest-list {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1.5rem 1rem;
+}
+
+.latest-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  // Same reason as the catalogue tiles: a link is draggable by default and a
+  // started drag eats the click. See the note on `a img` in styles.scss.
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+.latest-frame {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background-color: var(--catalog-frame-bg);
+}
+
+.latest-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.latest-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.latest-source {
+  display: inline-block;
+  margin-top: 0.15rem;
+  color: var(--catalog-faint);
+  font-size: 0.75rem;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--catalog-soft);
+  }
+}
+
+.latest-empty {
+  margin: 3rem 0;
+  color: var(--catalog-soft);
+}

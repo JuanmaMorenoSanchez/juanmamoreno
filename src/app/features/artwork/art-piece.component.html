@@ -53,6 +53,17 @@
           }
         </small>
       </h3>
+      <!--
+        Back to the post this painting came from, for a reader who arrived from
+        it. Absent for most of the catalogue, which has never been posted.
+      -->
+      @if (instagramPost(); as post) {
+        <p class="artwork-instagram">
+          <a [href]="post" target="_blank" rel="noopener noreferrer">
+            {{ 'latestPage.onInstagram' | translate }}
+          </a>
+        </p>
+      }
     </div>
     <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
   }

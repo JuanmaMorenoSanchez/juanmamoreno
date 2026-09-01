@@ -218,6 +218,10 @@
       "title": "Generative",
       "description": "Interactive generative artwork by Juanma Moreno Sánchez, drawn live in the browser."
     },
+    "latest": {
+      "title": "Latest",
+      "description": "The paintings most recently posted by Juanma Moreno Sánchez, newest first."
+    },
     "cv": {
       "title": "CV",
       "description": "Exhibitions, awards, residencies and biography of the artist Juanma Moreno Sánchez."
@@ -268,6 +272,12 @@
     "message": "Oops! The page you are looking for does not exist. Try one of these instead:"
   },
   "texts": "Texts",
+  "latest": "Latest",
+  "latestPage": {
+    "intro": "The paintings most recently shown on Instagram, newest first. Each one leads to its own page — the other views of it, its size, what has been written about it.",
+    "onInstagram": "See the post",
+    "nothingYet": "Nothing has been posted yet."
+  },
   "textsPage": {
     "intro": "Writing about the work, published elsewhere. Each entry links to the original: these pieces belong to the people who wrote them and the outlets that ran them.",
     "kind": {

@@ -553,3 +553,48 @@ describe('passing a painting on', () => {
     await page.close();
   });
 });
+
+/**
+ * Where the link in the Instagram profile lands.
+ *
+ * The list itself is filled from the backend, which refuses this origin, so
+ * what is checked here is that the page exists in both languages and that the
+ * site offers a way to it — the contents are covered by the unit tests, which
+ * can arrange them.
+ */
+describe('where the profile link lands', () => {
+  it('is a page of its own, in both languages', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    for (const [path, locale, heading] of [
+      ['/latest', 'en-US', /latest/i],
+      ['/es/latest', 'es-ES', /lo último/i],
+    ]) {
+      const page = await openPage(browser, path, locale);
+      await page.waitForSelector('h1', READY);
+
+      const title = (await page.locator('h1').first().innerText()).trim();
+      assert.match(title, heading, `${path} is headed "${title}"`);
+
+      await page.close();
+    }
+  });
+
+  it('is offered from the menu, and keeps a Spanish reader in Spanish', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es/artworks', 'es-ES');
+    await page.waitForSelector('app-top-menu', READY);
+
+    await page
+      .locator('app-top-menu button:visible', { hasText: /^\s*Pinturas\s*$/ })
+      .first()
+      .click();
+    await page.getByRole('menuitem', { name: 'Lo último', exact: true }).click();
+    await page.waitForURL((url) => url.pathname.includes('latest'), ARRIVAL).catch(() => {});
+
+    assert.match(new URL(page.url()).pathname, /^\/es\/latest/, `landed on ${page.url()}`);
+
+    await page.close();
+  });
+});

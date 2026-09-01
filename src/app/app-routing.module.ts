@@ -45,6 +45,21 @@ const contentRoutes: Routes = [
     data: { description: 'seo.generative.description', hideBreadcrumb: true },
   },
   {
+    /**
+     * Where the link in the Instagram profile lands.
+     *
+     * The account gets one clickable link and a caption cannot carry another,
+     * so this is the whole of the route from a painting somebody has just
+     * scrolled past to the page about it. Indexable, and in the sitemap: a
+     * page of the newest work, each entry linking to its own page, is worth
+     * something to a reader arriving any other way too.
+     */
+    path: 'latest',
+    loadComponent: () => import('@features/latest/latest.component').then((m) => m.LatestComponent),
+    title: 'seo.latest.title',
+    data: { breadcrumb: 'Latest', description: 'seo.latest.description' },
+  },
+  {
     path: 'cv',
     loadComponent: () => import('@features/cv/cv.component').then((m) => m.CvComponent),
     title: 'seo.cv.title',

@@ -609,6 +609,36 @@ had it — it copies the address rather than hiding itself.
 *Proven by:* `share-button.component.spec.ts` (5 tests),
 `e2e/navigation.test.mjs` "passing a painting on" (2 tests)
 
+### R59 — There is a way from Instagram to a painting's page · met
+`/latest` shows the paintings most recently put on Instagram, newest first,
+each linking to its own page. The account gets one clickable link and a caption
+cannot carry another, so this is the whole of the route from a painting
+somebody has just scrolled past to the page about it.
+
+The order comes from what was actually posted rather than from the catalogue,
+so it is the sequence the reader has just seen — which is what makes a painting
+findable, since they are looking for the one from a moment ago. The page is
+prerendered in both languages and readable with javascript switched off, then
+refreshed in the browser so it does not go stale between deploys.
+
+A failed request is told apart from an empty account: the page says nothing has
+been posted only when that is what was answered. Answering a failure the same
+way would put a claim that there are no paintings over a page that had twelve.
+*Proven by:* `latest.component.spec.ts` (8 tests, including the failed request),
+`e2e/navigation.test.mjs` "where the profile link lands" (2 tests)
+
+### R60 — A painting points back at the post about it · met
+Each artwork page carries a link to its own Instagram post, which is the
+direction an Instagram caption cannot carry. Absent for most of the catalogue,
+which has never been posted, and for anything posted before the address of a
+post was kept.
+
+Held to the same rule as everything else on that page: it belongs to the
+painting on screen. Moving to the next one drops it, and an answer arriving
+after the reader has moved on is ignored rather than pointing them at a post
+about a different painting.
+*Proven by:* `art-piece.component.spec.ts` (2 tests)
+
 ---
 
 ## Versions

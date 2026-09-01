@@ -28,3 +28,19 @@
 .separator {
   margin-bottom: 1em;
 }
+
+// Under the technical sheet, at the weight of a footnote: it is a way back for
+// somebody who came from the post, not an advertisement for the account.
+.artwork-instagram {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+
+  a {
+    color: var(--catalog-soft);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--catalog-ink);
+    }
+  }
+}

@@ -45,8 +45,11 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(
       withHttpTransferCacheOptions({
         filter: ({ url }) =>
-          !['nfts-snapshot', 'nft-thumbnails', 'critics'].some((path) => url.includes(path)) &&
-          !url.endsWith('/version'),
+          //   posts           what has lately been posted changes daily, and the
+          //                   build's answer is as old as the build
+          !['nfts-snapshot', 'nft-thumbnails', 'critics', 'posts/'].some((path) =>
+            url.includes(path)
+          ) && !url.endsWith('/version'),
       })
     ),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),

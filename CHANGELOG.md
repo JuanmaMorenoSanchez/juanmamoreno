@@ -5,6 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.20.0
+
+- feat: a page at /latest showing the paintings most recently put on Instagram,
+  newest first, each leading to its own page. This is where the link in the
+  Instagram profile can point: the account gets one clickable link and a
+  caption cannot carry another, so until now a follower who had just seen a
+  painting had no route to the page about it. The order is read from what was
+  actually posted, so it matches what somebody scrolling has just seen, and it
+  stays current without anyone editing it. On the artist's own domain, with no
+  tracking and nothing that can start charging
+- feat: each artwork page links to the Instagram post about it, when there is
+  one — the direction a caption cannot carry. Absent for the rest of the
+  catalogue, which has never been posted
+- fix: a failed request no longer reads as an empty account. The list told
+  apart "nothing has been posted" from "could not ask", because answering one
+  with the other puts a claim that there are no paintings over a page that had
+  twelve
+
 ## 1.19.0
 
 - feat: a footer, on every page. The site had none — pages simply stopped — and

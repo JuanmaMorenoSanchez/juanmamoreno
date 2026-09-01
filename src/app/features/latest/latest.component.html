@@ -1,0 +1,44 @@
+<div class="container margin-top">
+  <h1 class="catalog-heading">{{ 'latest' | translate }}</h1>
+  <p class="latest-intro">{{ 'latestPage.intro' | translate }}</p>
+
+  @if (shown().length) {
+    <ol class="latest-list">
+      @for (entry of shown(); track entry.tokenId) {
+        <li class="latest-entry">
+          <a class="latest-link" [routerLink]="entry.href" draggable="false">
+            <span class="latest-frame">
+              @if (entry.thumbnail) {
+                <img
+                  class="latest-image"
+                  [src]="entry.thumbnail"
+                  [alt]="entry.title + ' — painting by Juanma Moreno Sánchez'"
+                  decoding="async"
+                  draggable="false"
+                />
+              }
+            </span>
+            <span class="latest-name catalog-caption">{{ entry.title }}</span>
+          </a>
+          <!--
+            Straight to the post it came from, for a reader who wants to go
+            back to where they were. Absent for anything posted before the
+            address of a post was kept.
+          -->
+          @if (entry.permalink) {
+            <a
+              class="latest-source"
+              [href]="entry.permalink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ 'latestPage.onInstagram' | translate }}
+            </a>
+          }
+        </li>
+      }
+    </ol>
+  } @else if (nothingPosted()) {
+    <p class="latest-empty" role="status">{{ 'latestPage.nothingYet' | translate }}</p>
+  }
+</div>

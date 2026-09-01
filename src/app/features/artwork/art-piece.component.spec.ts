@@ -6,6 +6,7 @@ import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { provideTranslateService } from '@ngx-translate/core';
+import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { ArtPieceComponent } from './art-piece.component';
@@ -64,6 +65,17 @@ function setup() {
     return created;
   };
 
+  // Where each painting can be seen on Instagram, answered per painting so a
+  // late answer for one can be delivered while another is on screen.
+  const instagramChannels = new Map<string, Subject<string | null>>();
+  const instagramFor = (tokenId: string) => {
+    const existing = instagramChannels.get(tokenId);
+    if (existing) return existing;
+    const created = new Subject<string | null>();
+    instagramChannels.set(tokenId, created);
+    return created;
+  };
+
   const port = {
     getArtworkViewsObservable: vi.fn((id: string) => of([makeNft(id, `Painting ${id}`)])),
     getArtPiecesObservable: vi.fn().mockReturnValue(of([])),
@@ -87,6 +99,10 @@ function setup() {
       provideRouter([]),
       { provide: ARTWORK_PORT, useValue: port },
       {
+        provide: PostedArtworksService,
+        useValue: { getInstagramPermalink: (tokenId: string) => instagramFor(tokenId) },
+      },
+      {
         provide: ActivatedRoute,
         useValue: { paramMap: paramMap.asObservable(), snapshot: { paramMap: new Map() } },
       },
@@ -103,7 +119,13 @@ function setup() {
     fixture.detectChanges();
   };
 
-  return { fixture, port, paramMap, answerAbout };
+  /** Instagram answering about one painting, whenever the test chooses. */
+  const instagramAnswers = (tokenId: string, permalink: string | null) => {
+    instagramFor(tokenId).next(permalink);
+    fixture.detectChanges();
+  };
+
+  return { fixture, port, paramMap, answerAbout, instagramAnswers };
 }
 
 /**
@@ -163,6 +185,31 @@ describe('ArtPieceComponent — moving to the next painting', () => {
    * answer for the painting the reader has already left must not land on the
    * one they are looking at.
    */
+  /**
+   * The link to the post about this painting is the same kind of thing as the
+   * description: it belongs to one painting, and left standing it points the
+   * reader at a post about a different one.
+   */
+  it('drops the link to Instagram rather than pointing at the wrong post', () => {
+    const { fixture, paramMap, instagramAnswers } = setup();
+
+    instagramAnswers('5', 'https://www.instagram.com/p/five/');
+    expect(fixture.componentInstance.instagramPost()).toBe('https://www.instagram.com/p/five/');
+
+    goTo(paramMap, fixture, '9');
+
+    expect(fixture.componentInstance.instagramPost()).toBeNull();
+  });
+
+  it('ignores an Instagram answer that arrives after the reader has moved on', () => {
+    const { fixture, paramMap, instagramAnswers } = setup();
+
+    goTo(paramMap, fixture, '9');
+    instagramAnswers('5', 'https://www.instagram.com/p/five/');
+
+    expect(fixture.componentInstance.instagramPost()).toBeNull();
+  });
+
   it('ignores a description that arrives after the reader has moved on', () => {
     const { fixture, paramMap, answerAbout } = setup();
 

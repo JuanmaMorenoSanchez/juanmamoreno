@@ -117,6 +117,9 @@
   >
     {{ 'menu.byYear' | translate }}
   </button>
+  <button [attr.aria-label]="'latest' | translate" mat-menu-item [routerLink]="lang.link('latest')">
+    {{ 'latest' | translate }}
+  </button>
 </mat-menu>
 
 <mat-menu #yearsMenu="matMenu">
