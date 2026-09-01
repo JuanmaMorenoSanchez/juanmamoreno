@@ -129,51 +129,22 @@
   "statement": {
     "title": "Statement",
     "introduction": {
-      "content": "My artistic work is profoundly analog, even though its creation usually originates in the digital. This is the great contradiction of <a href='https://www.plataformadeartecontemporaneo.com/pac/juanma-moreno-lo-peor-y-lo-mejor-de-la-selfie-generation/' target='_blank' rel='noopener noreferrer'>the millennial generation, to which I belong</a>. We are the last generation to have been educated using pen and paper that has had to navigate life in a digital environment. It is the intersection between two worlds, a collision I do not try to hide. In fact, I split my labor between the artistic production I need to be happy and the software development I need in order to eat."
+      "content": "Nearly all my paintings begin on a screen and end on canvas. There is a reason for that: I belong to the last generation, the millennials, that studied without screens, with paper and pen, and then had to make its way in a digital environment. The same doubleness runs through my working life. I divide my time between the craft of art and the design and development of software, the most ethereal of the crafts."
     },
     "painting": {
       "title": "Painting",
-      "distance": "In painting is where, throughout my entire life, I have found refuge. Painting is important. Painting is useful. Painting is home.",
-      "outOfNoise": "This distance involves spending time outside the automatism of routine, a necessary condition to be able to observe, analyze, and finally build.",
-      "anacronism": "Painting is an ancient craft that allows working on a surface as much or as little as the artist wishes, with the only limits being space and time. <strong>Painting is a precious anachronism.</strong> Simultaneously, painting is always relevant because it is an infinite field of knowledge. Each artist, over the years, gradually discovers small findings that together end up forming something unique and unrepeatable."
+      "limits": "Painting is a practice as old as humanity itself. And a painter can work a surface as much as he wants; painting’s only limits are space and time. In theory those are infinite resources, but from a human point of view they are finite: the space we can take in, and the time of one life.",
+      "recontextualising": "Giving time and space to an image that originally had neither (a scroll is not a physical place, and the time given to an image there is minimal) changes its meaning completely. In giving it that time, that importance, you recontextualise the image, and open up the chance of finding new meanings in it. The craft itself does the same work: a casual moment fixed in oil takes on another dimension.",
+      "rule": "As a general rule, the larger the work and the more time given to it, the better."
     },
-    "art": {
-      "title": "Art",
-      "arts": "My refuge in painting, sculpture, generative art, or digital art has yielded different fruits over time. There are fruits that have never been documented, and there are also those that have not even been seen by anyone other than myself. In any case, there are peculiarities in my art that are constant and cut across production, and there are others that are variable; obsessions that come and go over time:"
+    "images": {
+      "title": "Decontextualised images",
+      "found": "For years I found them by chance on the internet, which was already a more or less infinite visual world before generative AI arrived. Between 2019 and 2023 I began using neural networks (StyleGAN, BigBiGAN) while they still “failed” considerably. That margin of error, the so-called “loss”, produced monsters no human could have come up with. My interest in painting them comes out of that fascination. Those tools have since reached a formal competence that interests me a good deal less: because they get it right too often. AI since 2023 is boring for being predictable, in the same way a predictable conversation or a predictable book is boring. The better it gets, the worse. The so-called “AI slop” floods our daily lives with images that are all alike and have no character whatsoever.",
+      "accident": "“No mistakes, just happy accidents”, as Bob Ross used to say. What serves an artist is the accident, the singular. The software that deforms an image until it aberrates. Failure is working material."
     },
-    "constants": {
-      "title": "Constants",
-      "items": {
-        "first": {
-          "title": "Internet",
-          "content": "Representing technology artistically in painting and making technology by hand are ways of trying to reconcile our physical self and our avatar. Most of the images I use in my creative process originate from the Internet, specifically from chance encounters with random images. Even before the emergence of AIs, the Internet was already a virtually infinite visual world."
-        },
-        "second": {
-          "title": "Disturbing Element",
-          "content": "In a hypothetical painting, a character looks at or interacts with something. But we don't know who they are, what they are doing, or why they are doing it. Even if it's something indeterminate, the action introduces narrative and invites spending time contemplating the image. The idea is for the image to propose an open premise, something beyond the pose, and for the viewer to complete it. The disturbing as a starting point."
-        },
-        "third": {
-          "title": "Tradition",
-          "content": "Cultural heritage is the DNA of any cultural identity. Great authors and the great themes of art history have had, have, and will have a tremendously gravitational effect. Velázquez, Goya, Menzel, Rego, Hopper, Rauch, etc., have created great masterpieces in which the great themes of the history of art have been developed yesterday and today. Themes that are inherently human and are transversal and universal: love, death, fear..."
-        },
-        "fourth": {
-          "title": "Failure as one of the Fine Arts",
-          "content": "'I have done many things because I have failed at all of them. I start from failure as one of the Fine Arts.' This quote from the multifaceted Pepín Tre perfectly illustrates the reason for multidisciplinarity. Genius, divine enlightenment, or inspiration are nothing but mythological clichés. Reality, as always, is much more prosaic: it is failure (real or perceived) that moves an artist to investigate, try new techniques, new ways of reaching the public, etc. On the contrary, I am convinced that success (real or perceived) has a paralyzing capacity and ends up producing artists bored with their own art and therefore with themselves. Failure frustrates, but it also stimulates, or so I want to believe."
-        }
-      }
-    },
-    "variables": {
-      "title": "Variables",
-      "items": {
-        "first": {
-          "title": "Artificial Intelligence",
-          "content": "<a href='https://www.abc.es/cultura/cultural/javier-villuendas-trienio-aberrante-arte-pocos-vieron-venir-20230915102255-nt.html' target='_blank' rel='noopener noreferrer'><em>In 2019, a minimal advance guard of creators, like Juanma Moreno, already experimented with the old Artificial Intelligence of that time</em></a>, as Javier Villuendas says in his column in ABC Cultural. In 2019, few of us intuited the creative potential of the AI of the time. Old neural networks like StyleGan or Bigbigan stimulated our imagination by creating very interesting monsters. Nowadays, AI-generated art is commonplace and has reached new levels of formal sufficiency. But at that time, the margin of error (loss) was much wider, and accidents produced unheard-of and highly interesting monsters. From 2019 to 2023, the primary source of inspiration for my work shifted from images found on the internet to images that Artificial Intelligences are capable of generating."
-        },
-        "second": {
-          "title": "Software",
-          "content": "Software doesn't have to be an ultra-rational and efficient solution to an engineering problem. Software can also satisfy an artist's curiosity, be flexible, organic, mutate, be random, disorganized, and unpredictable. Once again, we must value error. It is in the brushstroke that goes slightly beyond the contour, the accident that causes software to distort an image until it aberrates, where the value and originality lie."
-        }
-      }
+    "failure": {
+      "title": "Failure",
+      "content": "“I have done many things because I have failed at all of them. I start from failure as one of the Fine Arts.” The line is from the multifaceted Pepín Tre, and it explains fairly well why I end up in such different techniques and registers. Genius and inspiration are comfortable clichés long past their sell-by date; what actually pushes you to try something else is the last thing having failed. Success, real or perceived, is paralysing. Or so I want to believe."
     }
   },
   "download": {
