@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.13.1
+
+- chore: the menu calls the page Statement, in both languages, which is what the
+  page has called itself all along. The photographs at the head of the statement
+  and the cv are gone: neither said anything the text below it did not
+
 ## 1.13.0
 
 - feat: the statement is rewritten, in his words. Four parts instead of five,

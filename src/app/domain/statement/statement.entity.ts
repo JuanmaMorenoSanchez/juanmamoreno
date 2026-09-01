@@ -1,9 +1,5 @@
 export interface Statement {
   introduction: {
-    image: {
-      src: string;
-      alt: string;
-    };
     content: string;
   };
   sections: Section[];

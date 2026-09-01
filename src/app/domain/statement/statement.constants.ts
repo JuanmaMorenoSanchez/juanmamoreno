@@ -11,10 +11,6 @@ import { Statement } from './statement.entity';
  */
 export const STATEMENT_OBJECT: Statement = {
   introduction: {
-    image: {
-      src: 'assets/images/abstract_landscape.jpg',
-      alt: 'Juanma Moreno Sánchez detail of a landscape painting',
-    },
     content: 'statement.introduction.content',
   },
   sections: [
