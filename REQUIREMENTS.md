@@ -16,7 +16,8 @@ Status: **met** means there is a check that would fail if it broke.
 ### R1 — Every artwork has its own page · met
 `/artwork/{tokenId}` shows the piece, its year, medium and dimensions, and the
 other views of the same painting.
-*Proven by:* `cypress/e2e/juanmamoreno/art-piece.cy.js`
+*Proven by:* `e2e/navigation.test.mjs` ("shows the painting, its year, its
+medium and its size", "offers the other views of the same painting")
 
 ### R2 — The grid links to the artworks · met
 The catalogue tiles are real anchors, so the artwork pages have inbound links

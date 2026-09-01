@@ -2,70 +2,24 @@
  * The catalogue grid, clicked the way a hand clicks it.
  *
  * These exist because of a fault no other test here could have seen. Every tile
- * had a correct href and a correct routerLink, the unit tests passed, the
- * Cypress suite passed, and on a desktop the tiles still refused to open: an
- * <a> and an <img> are both draggable by default, so pressing a tile and
- * letting the mouse drift about four pixels before releasing started a native
- * drag, and a browser that has started a drag fires no click at all. Touch has
- * no drag gesture, so phones were fine. Display scaling shrinks that threshold
- * in css pixels, so on some machines it was near-permanent.
+ * had a correct href and a correct routerLink, the unit tests passed, and on a
+ * desktop the tiles still refused to open: an <a> and an <img> are both
+ * draggable by default, so pressing a tile and letting the mouse drift about
+ * four pixels before releasing started a native drag, and a browser that has
+ * started a drag fires no click at all. Touch has no drag gesture, so phones
+ * were fine. Display scaling shrinks that threshold in css pixels, so on some
+ * machines it was near-permanent.
  *
- * Reproducing it needs a real pointer — mousedown, a few mousemoves, mouseup —
- * driven at the browser level. Cypress dispatches synthetic events, which the
- * drag machinery ignores, so a Cypress test of this passes whether the bug is
- * present or not. Playwright drives the browser's own input, which is the only
- * reason these tests can fail.
- *
- * Run against a server you started yourself:
- *   npm start                 # in one terminal
- *   npm run test:e2e:mouse    # in another
- * E2E_BASE_URL points it somewhere else (the deployed site, a preview build),
- * CHROME_PATH at a Chrome the script could not find on its own.
+ * Reproducing it needs a real pointer, mousedown, a few mousemoves, mouseup,
+ * driven at the browser level. A framework that dispatches synthetic events
+ * cannot: the drag machinery ignores those, so such a test passes whether the
+ * bug is present or not. Playwright drives the browser's own input, which is
+ * the only reason these tests can fail.
  */
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
 import { after, before, describe, it } from 'node:test';
-import { chromium } from 'playwright-core';
+import { ARRIVAL, READY, launchBrowser, openPage } from './browser.mjs';
 
-const BASE_URL = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:4201';
-
-// playwright-core ships no browser of its own, on purpose: this suite is about
-// what Chrome does, so it runs the Chrome that is installed.
-const CHROME_CANDIDATES = [
-  process.env.CHROME_PATH,
-  'C:/Program Files/Google/Chrome/Application/chrome.exe',
-  'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/usr/bin/google-chrome',
-  '/usr/bin/google-chrome-stable',
-  '/opt/google/chrome/chrome',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-function findChrome() {
-  return CHROME_CANDIDATES.find((path) => existsSync(path)) ?? null;
-}
-
-/**
- * Sandboxing is what a browser does to isolate a page from the machine. On a
- * throwaway CI container there is nothing to isolate it from and the kernel
- * features it needs are often not there, so Chrome refuses to start at all.
- */
-const LAUNCH_ARGS = process.env.CI
-  ? ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
-  : [];
-
-async function requireServer() {
-  const response = await fetch(BASE_URL, { signal: AbortSignal.timeout(10_000) }).catch(() => null);
-  if (!response?.ok) {
-    throw new Error(`Nothing answering at ${BASE_URL}. Start it with \`npm start\`.`);
-  }
-}
-
-/**
- * How far the pointer wanders between press and release. Four is enough.
- */
 const DRIFT_PX = 12;
 
 /** Where the drag count is kept. See {@link clickWithDriftingMouse}. */
@@ -81,24 +35,7 @@ const DRAG_COUNT = 'e2e.dragStarts';
  * catalogue passed on the deployed build and failed on the same assertion an
  * hour later, on a commit that touched none of it.
  */
-/**
- * Generous on purpose. A cold CI runner is far slower than a laptop, and this
- * step has already blocked a deploy once by giving up on a navigation that was
- * merely slow — a flaky gate on publishing is worse than no gate, because it
- * teaches everyone to ignore it. What is being measured is whether a click
- * navigates at all, never how quickly.
- */
-const ARRIVAL = { timeout: 30_000, waitUntil: 'commit' };
-const READY = { timeout: 30_000 };
-
 let browser;
-/**
- * Set when this machine cannot run a browser at all, as opposed to running one
- * and finding the catalogue broken. The difference matters: a missing Chrome is
- * a fact about the runner, and failing the deploy over it would stop the site
- * being published because of something that says nothing about the site. A real
- * regression still fails, which is the whole point of the suite.
- */
 let cannotRun = null;
 
 /**
@@ -152,39 +89,9 @@ async function clickWithDriftingMouse(page, selector) {
   };
 }
 
-async function openPage(path) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, locale: 'en-US' });
-  await page.goto(BASE_URL + path, { waitUntil: 'domcontentloaded' });
-  // The prerendered markup carries the tiles, but the router only intercepts a
-  // click once the page has hydrated. Clicking before that still navigates —
-  // they are real anchors — yet it makes the test measure a different thing on
-  // a fast machine than on a slow one, which is where flakiness comes from.
-  await page.waitForLoadState('load').catch(() => {});
-  return page;
-}
-
 describe('opening an artwork with a mouse', () => {
   before(async () => {
-    await requireServer();
-
-    const chrome = findChrome();
-    if (!chrome) {
-      cannotRun = `no Chrome on this machine. Looked in:\n  ${CHROME_CANDIDATES.join('\n  ')}`;
-      console.log(`Skipping: ${cannotRun}`);
-      return;
-    }
-
-    try {
-      browser = await chromium.launch({
-        executablePath: chrome,
-        headless: true,
-        args: LAUNCH_ARGS,
-      });
-      console.log(`Driving ${chrome}${LAUNCH_ARGS.length ? ' (sandbox off)' : ''}`);
-    } catch (error) {
-      cannotRun = `${chrome} would not start: ${error.message.split('\n')[0]}`;
-      console.log(`Skipping: ${cannotRun}`);
-    }
+    ({ browser, cannotRun } = await launchBrowser());
   });
 
   after(async () => {
@@ -194,7 +101,7 @@ describe('opening an artwork with a mouse', () => {
   it('opens the artwork when a catalogue tile is clicked', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
-    const page = await openPage('/artworks');
+    const page = await openPage(browser, '/artworks');
     await page.waitForSelector('mat-grid-tile a.tile-link', READY);
     const link = page.locator('mat-grid-tile a.tile-link').first();
     const href = await link.getAttribute('href');
@@ -208,7 +115,7 @@ describe('opening an artwork with a mouse', () => {
   it('still opens it when the mouse drifts between press and release', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
-    const page = await openPage('/artworks');
+    const page = await openPage(browser, '/artworks');
     await page.waitForSelector('mat-grid-tile a.tile-link', READY);
 
     const { href, landedOn, dragStarts } = await clickWithDriftingMouse(
@@ -242,7 +149,7 @@ describe('opening an artwork with a mouse', () => {
   it('keeps the featured painting undraggable, which is what lets it open', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
-    const page = await openPage('/');
+    const page = await openPage(browser, '/');
     await page.waitForSelector('a.home-featured', READY);
 
     const parts = await page.evaluate(() => {

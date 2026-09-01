@@ -65,23 +65,32 @@ npx ng test --no-watch --include="src/app/domain/artwork/artwork.spec.ts"
 
 ## End-to-end tests
 
-Cypress, against a running dev server:
+A real browser, against a server you start yourself:
 
 ```bash
-npm start              # in one terminal
-npm run test:e2e       # headless
-npm run test:e2e:open  # the interactive runner
+npm start            # in one terminal
+npm run test:e2e     # in another
 ```
 
-Specs live in `cypress/e2e/juanmamoreno`. They stub the backend through
-`cypress/support/backend.js` — the critics endpoint above all, because browsing
-an artwork page against the live API makes the backend write an essay for any
-piece that has none.
+Suites live in `e2e/`, driven by playwright-core through node's own test runner.
+`playwright-core` deliberately ships no browser: these tests are about what
+Chrome does, so they run the Chrome already installed, and skip with a reason
+rather than fail when there is none.
+
+They cover what nothing else can see. The unit tests examine components in
+isolation and `verify-render` reads the built html without running a line of the
+application; between them sits everything that only breaks once the page is
+alive — hydration, the router taking over from plain anchors, the language a
+link lands you in, and a click made by a hand rather than by a script.
+
+`E2E_BASE_URL` points them at something else, the deployed site or a preview
+build. CI points them at the files about to be published, served from `dist` by
+`e2e/serve-dist.mjs`.
 
 ## Deploy
 
 **A push to `master` publishes the site.** `.github/workflows/deploy.yml` runs
-lint, the unit tests and the build, then pushes `dist/juanmamoreno/browser` to
+lint, the unit tests, the build and the browser suite, then pushes `dist/juanmamoreno/browser` to
 the `gh-pages` branch. Because the build verifies its own output, a page that
 renders wrong fails the workflow instead of reaching visitors.
 

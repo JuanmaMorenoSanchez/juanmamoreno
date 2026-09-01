@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.14.0
+
+- feat: the browser suite covers the artwork page, the language a menu link
+  lands you in, the Spanish front door with a trailing slash, and whether the
+  page hydrated at all — ten tests where there were three, all of them in CI
+- chore: Cypress is gone. Ten specs that CI never ran and whose binary would not
+  start on the machine, one of them cited in REQUIREMENTS as proof and one
+  broken by a menu rename nobody would have noticed
+
 ## 1.13.1
 
 - chore: the menu calls the page Statement, in both languages, which is what the

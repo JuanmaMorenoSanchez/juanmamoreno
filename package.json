@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4201",
@@ -8,14 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:watch": "ng test --watch",
-    "test:e2e": "cypress run --spec \"cypress/e2e/juanmamoreno/**/*.cy.js\"",
-    "test:e2e:mouse": "node --test e2e/*.test.mjs",
+    "test:e2e": "node --test e2e/*.test.mjs",
     "pretty": "prettier --write .",
     "predeploy": "npm run lint && npm test",
     "deploy": "npm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
     "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs",
-    "test:e2e:open": "cypress open",
     "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs"
   },
   "private": true,
@@ -44,7 +42,6 @@
     "@angular/compiler-cli": "22.1.4",
     "angular-cli-ghpages": "3.1.0",
     "angular-eslint": "22.0.0",
-    "cypress": "15.18.0",
     "eslint": "10.6.0",
     "jsdom": "29.1.1",
     "ngx-sitemap": "1.0.0",

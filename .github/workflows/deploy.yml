@@ -55,7 +55,7 @@ jobs:
       # still would not open, because a link is draggable and a browser that has
       # started a drag fires no click. Nothing but a real pointer can see that,
       # so this drives Chrome against the files about to be published.
-      - name: Catalogue opens with a mouse
+      - name: End-to-end, in a real browser
         run: |
           echo "chrome: $(command -v google-chrome || echo 'not on PATH')"
           google-chrome --version || true
@@ -65,7 +65,7 @@ jobs:
             sleep 1
           done
           curl -sf -o /dev/null http://127.0.0.1:4300 || { echo "the built site would not serve"; exit 1; }
-          E2E_BASE_URL=http://127.0.0.1:4300 npm run test:e2e:mouse
+          E2E_BASE_URL=http://127.0.0.1:4300 npm run test:e2e
 
       - name: Publish to gh-pages
         run: |

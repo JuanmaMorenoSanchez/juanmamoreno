@@ -82,7 +82,7 @@ Angular 22 portfolio site for the artist Juanma Moreno Sánchez, **prerendered t
 - **Run one spec file:** `npx ng test --no-watch --include="src/app/domain/artwork/artwork.spec.ts"`
 - **Filter by test name:** add `--filter="<name substring>"`
 - **Lint:** `npm run lint` · **Format:** `npm run pretty` (Prettier)
-- **E2E:** `npm run test:e2e` (Cypress, headless, against a running `npm start`) · `npm run test:e2e:open` for the interactive runner
+- **E2E:** `npm run test:e2e` (node's test runner driving the installed Chrome through playwright-core, against a running `npm start`). Suites live in `e2e/`; they skip with a reason rather than fail when there is no Chrome. `E2E_BASE_URL` points them elsewhere.
 - **Deploy:** a push to `master` deploys via `.github/workflows/deploy.yml`. `npm run deploy` does the same locally, for when CI is unavailable.
 
 Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma. `ng test` sometimes fails on the first invocation with a "Timeout waiting for worker to respond" / "Failed to start forks worker" error; this is an environment flake, **just re-run it**.
