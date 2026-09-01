@@ -5,7 +5,10 @@
   "sold": "Pieza vendida",
   "soldLegend": "El punto rojo señala una pieza vendida.",
   "moreOn": "Más de",
-  "selectYear": "Selecciona un año",
+  "year": {
+    "label": "Año",
+    "all": "Todos"
+  },
   "availability": {
     "label": "Disponibilidad",
     "both": "Todas",
