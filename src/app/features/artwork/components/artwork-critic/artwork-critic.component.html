@@ -19,6 +19,20 @@
 
     @if (editing()) {
       <div class="artwork-critic-editor">
+        <label class="artwork-critic-editor-label" for="critic-title">
+          {{ 'critic.editingTitle' | translate }}
+        </label>
+        <input
+          id="critic-title"
+          class="artwork-critic-title-field"
+          type="text"
+          spellcheck="true"
+          [value]="titleDraft()"
+          [attr.lang]="critic.lang"
+          [disabled]="saving()"
+          (input)="setTitleDraft($event)"
+        />
+
         <label class="artwork-critic-editor-label" for="critic-draft">
           {{ 'critic.editing' | translate }}
         </label>

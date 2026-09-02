@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.22.0
+
+- feat: the essay's heading can be changed from the page it is on. It was the
+  one part of an essay that could not be, so retitling meant editing Firestore
+  by hand. The heading is sent only when it has actually been changed, so an
+  edit to the prose alone asks for exactly what it always did
+  (needs backend 1.17.0)
+
 ## 1.21.0
 
 - feat: the build checks REQUIREMENTS.md the way it already checks the rendered

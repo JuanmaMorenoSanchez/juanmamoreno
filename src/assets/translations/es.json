@@ -195,6 +195,7 @@
     "edited": "editada",
     "notEdited": "sin editar",
     "edit": "Editar este texto",
+    "editingTitle": "El título, tal y como aparece sobre el texto.",
     "editing": "El ensayo, en markdown. Se guarda tal cual.",
     "save": "Guardar",
     "saving": "Guardando…",

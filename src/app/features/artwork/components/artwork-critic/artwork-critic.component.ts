@@ -212,6 +212,7 @@ export class ArtworkCriticComponent {
         this.justSaved.set(null);
         this.editing.set(false);
         this.draft.set('');
+        this.titleDraft.set('');
         this.problem.set('');
       });
     });
@@ -249,10 +250,14 @@ export class ArtworkCriticComponent {
 
   protected readonly editing = signal(false);
   protected readonly draft = signal('');
+  /** The heading, which used to be the one part of an essay he could not change. */
+  protected readonly titleDraft = signal('');
   protected readonly saving = signal(false);
   protected readonly problem = signal('');
 
-  protected readonly canSave = computed(() => this.draft().trim().length > 0 && !this.saving());
+  protected readonly canSave = computed(
+    () => this.draft().trim().length > 0 && this.titleDraft().trim().length > 0 && !this.saving()
+  );
 
   protected startEditing(): void {
     const current = this.translated();
@@ -260,6 +265,7 @@ export class ArtworkCriticComponent {
     // The markdown, not the html: the markdown is the original and the html is
     // made from it, so editing the html would be editing the copy.
     this.draft.set(current.body ?? '');
+    this.titleDraft.set(current.title ?? '');
     this.problem.set('');
     this.editing.set(true);
   }
@@ -271,6 +277,10 @@ export class ArtworkCriticComponent {
 
   protected setDraft(event: Event): void {
     this.draft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected setTitleDraft(event: Event): void {
+    this.titleDraft.set((event.target as HTMLInputElement).value);
   }
 
   protected save(): void {
@@ -287,7 +297,16 @@ export class ArtworkCriticComponent {
     this.saving.set(true);
     this.problem.set('');
     this.artworkService
-      .editArtPieceCritic(savedFor, current.lang, this.draft().trim(), token)
+      // The heading only travels when it is not the one already stored: an
+      // untouched title is not an edit to it, and the backend leaves out what
+      // it is not sent.
+      .editArtPieceCritic(
+        savedFor,
+        current.lang,
+        this.draft().trim(),
+        this.titleDraft().trim() === (current.title ?? '').trim() ? '' : this.titleDraft().trim(),
+        token
+      )
       .subscribe({
         next: (updated) => {
           this.saving.set(false);

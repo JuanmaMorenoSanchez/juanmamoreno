@@ -195,6 +195,7 @@
     "edited": "edited",
     "notEdited": "not edited",
     "edit": "Edit this text",
+    "editingTitle": "The heading, as it appears above the essay.",
     "editing": "The essay, in markdown. Saved as written.",
     "save": "Save",
     "saving": "Saving…",
