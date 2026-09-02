@@ -25,7 +25,6 @@ export interface ArtworkPort extends Artwork {
     tokenId: string,
     lang: string,
     body: string,
-    title: string,
     token: string
   ): Observable<ArtCritic | null>;
 }

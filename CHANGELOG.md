@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.23.0
+
+- feat: the essay no longer carries a heading. It sits under the painting's
+  name, which the page gives directly above it, so a second title said the same
+  thing twice. The editor loses its title field one release after gaining it,
+  and the line that held the heading is drawn only when it has something to say
+  — for a reader it is not there at all rather than standing empty above the
+  text (needs backend 1.18.0)
+
 ## 1.22.0
 
 - feat: the essay's heading can be changed from the page it is on. It was the

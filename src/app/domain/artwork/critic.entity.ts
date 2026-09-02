@@ -17,7 +17,6 @@ export interface ArtCritic {
 
 export interface TranslatedCritic {
   lang: string;
-  title: string;
   // The essay already rendered to HTML by the backend, links included.
   html: string;
   /**

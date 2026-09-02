@@ -643,17 +643,17 @@ after the reader has moved on is ignored rather than pointing them at a post
 about a different painting.
 *Proven by:* `art-piece.component.spec.ts` (2 tests)
 
-### R67 — The essay's heading can be rewritten too · met
-The editor opens with the heading the essay has and lets it be changed, beside
-the markdown. It was the one part of an essay that could not be changed from
-the page it is on.
+### R67 — The essay has no heading · met
+It is read under the painting's name, which the page gives directly above it,
+so a heading of its own was a second title saying the same thing.
 
-The heading is sent only when it differs from the stored one: an untouched
-title is not an edit to it, and the backend keeps what it is not sent rather
-than translating a title into the other language for no reason. An emptied
-heading will not save, as an emptied essay will not.
-*Proven by:* `artwork-critic.component.spec.ts` "changing the heading" (5
-tests), and `critics.service.spec.ts` in the backend
+What is left on that line is the artist's own note about whether he has been
+over the text, and it is drawn only when there is a note to make: a reader is
+never sent the flag at all, so for a reader the line does not exist rather than
+standing empty above the essay.
+*Proven by:* `artwork-critic.component.spec.ts` "shows the essay with no way to
+change it", "never says whether an essay has been edited", and
+`critics.service.spec.ts` in the backend
 
 ### R66 — This document still describes the code · met
 `scripts/verify-requirements.mjs` runs in the build and fails it when a

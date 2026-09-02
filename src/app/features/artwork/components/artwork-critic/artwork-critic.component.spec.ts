@@ -17,7 +17,6 @@ const CRITIC: ArtCritic = {
   translated: [
     {
       lang: 'en',
-      title: 'A room that will not settle',
       html: '<p>The blue arrives first.</p>',
       body: 'The blue arrives first.',
     },
@@ -94,7 +93,7 @@ describe('ArtworkCriticComponent — for a reader', () => {
   it('shows the essay with no way to change it', async () => {
     const { fixture } = await setup({ signedIn: false });
 
-    expect(text(fixture)).toContain('A room that will not settle');
+    expect(text(fixture)).toContain('The blue arrives first.');
     expect(find(fixture, '.artwork-critic-edit')).toBeNull();
     expect(find(fixture, '.artwork-critic-draft')).toBeNull();
   });
@@ -165,8 +164,6 @@ describe('ArtworkCriticComponent — for the artist', () => {
       '5',
       'en',
       'Written again, by hand.',
-      // The heading was not touched, so none is sent and the stored one stays.
-      '',
       'a-real-looking-token'
     );
     // Back to reading, showing what came back rather than what was typed.
@@ -295,7 +292,6 @@ describe('ArtworkCriticComponent — moving to the next painting', () => {
     translated: [
       {
         lang: 'en',
-        title: 'Somewhere else entirely',
         html: '<p>Nothing here is blue.</p>',
         body: 'Nothing here is blue.',
       },
@@ -353,8 +349,8 @@ describe('ArtworkCriticComponent — moving to the next painting', () => {
     port.getArtPieceCriticWithEdits.mockReturnValue(of({ ...OTHER, edited: false }));
     await goTo(fixture, '9');
 
-    expect(text(fixture)).toContain('Somewhere else entirely');
-    expect(text(fixture)).not.toContain('A room that will not settle');
+    expect(text(fixture)).toContain('Nothing here is blue.');
+    expect(text(fixture)).not.toContain('The blue arrives first.');
   });
 
   // Leaving the editor open and moving on: the box must not travel with the
@@ -420,11 +416,11 @@ describe('ArtworkCriticComponent — moving to the next painting', () => {
 
     deliver!({
       ...CRITIC,
-      translated: [{ ...CRITIC.translated[0], title: 'The saved one' }],
+      translated: [{ ...CRITIC.translated[0], html: '<p>The saved one.</p>' }],
     });
     fixture.detectChanges();
 
-    expect(text(fixture)).toContain('Somewhere else entirely');
+    expect(text(fixture)).toContain('Nothing here is blue');
     expect(text(fixture)).not.toContain('The saved one');
   });
 
@@ -435,124 +431,7 @@ describe('ArtworkCriticComponent — moving to the next painting', () => {
     rewrite(fixture, 'Written again, by hand.');
 
     // editArtPieceCritic answers with asArtist(true) — the same essay, marked.
-    expect(text(fixture)).toContain('A room that will not settle');
+    expect(text(fixture)).toContain('The blue arrives first.');
     expect(find(fixture, '.artwork-critic-state--untouched')).toBeNull();
-  });
-});
-
-/**
- * The heading, which used to be the one part of an essay he could not change
- * from the page it is on — retitling meant editing Firestore by hand.
- */
-describe('ArtworkCriticComponent — changing the heading', () => {
-  afterEach(() => TestBed.resetTestingModule());
-
-  const openEditor = (fixture: ComponentFixture<ArtworkCriticComponent>) => {
-    (find(fixture, '.artwork-critic-edit') as HTMLButtonElement).click();
-    fixture.detectChanges();
-  };
-
-  const typeIn = (
-    fixture: ComponentFixture<ArtworkCriticComponent>,
-    selector: string,
-    value: string
-  ) => {
-    const field = find(fixture, selector) as HTMLInputElement | HTMLTextAreaElement;
-    field.value = value;
-    field.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-  };
-
-  const save = (fixture: ComponentFixture<ArtworkCriticComponent>) => {
-    (find(fixture, '.artwork-critic-save') as HTMLButtonElement).click();
-    fixture.detectChanges();
-  };
-
-  it('opens with the heading the essay already has', async () => {
-    const { fixture } = await setup({ signedIn: true });
-
-    openEditor(fixture);
-
-    expect((find(fixture, '.artwork-critic-title-field') as HTMLInputElement).value).toBe(
-      'A room that will not settle'
-    );
-  });
-
-  it('sends a heading that has been changed', async () => {
-    const { fixture, port } = await setup({ signedIn: true });
-    openEditor(fixture);
-
-    typeIn(fixture, '.artwork-critic-title-field', 'Something else entirely');
-    save(fixture);
-
-    expect(port.editArtPieceCritic).toHaveBeenCalledWith(
-      '5',
-      'en',
-      'The blue arrives first.',
-      'Something else entirely',
-      'a-real-looking-token'
-    );
-  });
-
-  /**
-   * Most edits are to the prose. An untouched heading is not an edit to it, and
-   * sending it back would have the backend translate a title into the other
-   * language for no reason.
-   */
-  it('sends no heading when it was left alone', async () => {
-    const { fixture, port } = await setup({ signedIn: true });
-    openEditor(fixture);
-
-    typeIn(fixture, '.artwork-critic-draft', 'Written again, by hand.');
-    save(fixture);
-
-    expect(port.editArtPieceCritic).toHaveBeenCalledWith(
-      '5',
-      'en',
-      'Written again, by hand.',
-      '',
-      'a-real-looking-token'
-    );
-  });
-
-  // An essay with no heading is not an essay he meant to save.
-  it('refuses to save an essay with its heading emptied', async () => {
-    const { fixture, port } = await setup({ signedIn: true });
-    openEditor(fixture);
-
-    typeIn(fixture, '.artwork-critic-title-field', '   ');
-
-    expect((find(fixture, '.artwork-critic-save') as HTMLButtonElement).disabled).toBe(true);
-    save(fixture);
-    expect(port.editArtPieceCritic).not.toHaveBeenCalled();
-  });
-
-  // The same rule as everything else here: it belongs to the painting on
-  // screen, and must not travel to the next one.
-  it('does not carry a half-typed heading to the next painting', async () => {
-    const { fixture, port } = await setup({ signedIn: true });
-    openEditor(fixture);
-    typeIn(fixture, '.artwork-critic-title-field', 'Half a thought');
-
-    port.getArtPieceCritic.mockReturnValue(
-      of({
-        tokenId: '9',
-        artworkName: 'Another',
-        translated: [
-          { lang: 'en', title: 'Its own heading', html: '<p>x</p>', body: 'Nothing here is blue.' },
-        ],
-      })
-    );
-    port.getArtPieceCriticWithEdits.mockReturnValue(of(null));
-    fixture.componentRef.setInput('tokenId', '9');
-    fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    fixture.detectChanges();
-
-    openEditor(fixture);
-
-    expect((find(fixture, '.artwork-critic-title-field') as HTMLInputElement).value).toBe(
-      'Its own heading'
-    );
   });
 });

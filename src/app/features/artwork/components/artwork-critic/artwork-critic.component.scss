@@ -13,7 +13,7 @@
   font-size: bp.fluid-size(0.875rem, 0.9375rem);
 }
 
-.artwork-critic-title {
+.artwork-critic-state-line {
   margin: 0 0 tokens.$spacing-xl;
   font-size: 1em;
   font-weight: 400;
@@ -198,26 +198,5 @@
     line-height: 1.3;
     text-align: center;
     color: var(--catalog-soft);
-  }
-}
-
-// The heading, edited as the heading: same italic, same weight, same colour as
-// the title it replaces, so what is being typed looks like what will be read.
-.artwork-critic-title-field {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: tokens.$spacing-md;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--catalog-faint);
-  border-radius: 2px;
-  background: transparent;
-  color: var(--catalog-soft);
-  font: inherit;
-  font-style: italic;
-  letter-spacing: 0.02em;
-  text-align: center;
-
-  &:focus-visible {
-    border-color: var(--catalog-accent);
   }
 }

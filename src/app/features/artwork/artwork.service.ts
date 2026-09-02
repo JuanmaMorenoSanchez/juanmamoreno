@@ -194,16 +194,12 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     tokenId: string,
     lang: string,
     body: string,
-    title: string,
     token: string
   ): Observable<ArtCritic | null> {
     return this.http
       .patch<ApiResponse<ArtCritic>>(
         `${environment.backendUrl}critics/${tokenId}`,
-        // The title is sent only when it has actually been changed. The
-        // backend keeps the one it has when the field is absent, and its
-        // validation refuses a title that is present but empty.
-        { lang, body, ...(title ? { title } : {}) },
+        { lang, body },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .pipe(this.extractData<ArtCritic | null>(null));
