@@ -105,7 +105,21 @@ Note: the test runner is **Vitest** (via `@angular/build:unit-test`), not Karma.
 
 **The language is part of the address.** Every route exists twice, at `/about` and `/es/about`, as one route table mounted under both an English and a Spanish parent whose guards set the language before anything renders (`shared/guards/language.guard.ts`). Build links with `LanguageUrlService.link()` rather than writing `/about` — an absolute link drops a Spanish reader back into English. Watch two traps: the router reads `/es/` as the segments `["es", ""]` and matches nothing, and a breadcrumb label is looked up as a translation key, so a root key of that name must be a string and not an object.
 
-**The build verifies itself.** `npm run build` prerenders, writes the sitemap, then runs `scripts/verify-render.mjs` over every page: own canonical, own title, the hreflang triple, real content, in-language navigation, no `[object Object]`, no unresolved translation keys. It fails the build, so it also fails CI. Point it at a directory to test it: `node scripts/verify-render.mjs some/fixture`.
+**The build verifies itself, twice.** `npm run build` prerenders, writes the sitemap, then runs `scripts/verify-render.mjs` over every page: own canonical, own title, the hreflang triple, real content, in-language navigation, no `[object Object]`, no unresolved translation keys. It fails the build, so it also fails CI. Point it at a directory to test it: `node scripts/verify-render.mjs some/fixture`.
+
+Then `scripts/verify-requirements.mjs` reads `REQUIREMENTS.md` and checks it still
+describes this repository: no requirement number used twice, none without a
+`Proven by:`, no proof naming a file that has been deleted, no proof quoting a
+test that has been renamed. It also **reports** — without failing — the
+requirements whose only proof is prose, which are the ones nothing would notice
+the loss of. Point it at a file to test it:
+`node scripts/verify-requirements.mjs scripts/fixtures/requirements-with-every-fault.md`,
+which contains one of each fault and must exit 1.
+
+It exists because four requirements spent fifteen releases marked "met · proven
+by" Cypress specs deleted in 1.14.0, and five numbers were used twice. A
+changelog is a record of the past and cannot become false; a requirements
+document is a claim about the present, and only fails if something checks it.
 
 ## Conventions
 

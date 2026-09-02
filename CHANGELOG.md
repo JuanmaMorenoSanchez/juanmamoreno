@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.21.0
+
+- feat: the build checks REQUIREMENTS.md the way it already checks the rendered
+  pages. A requirement number used twice, a requirement with nothing said about
+  what proves it, a proof naming a file that has been deleted, or a proof
+  quoting a test that has been renamed — any of them fails the build. It also
+  reports, without failing, the requirements whose only proof is prose: 19 of
+  the 64, which is the honest number
+- fix: four requirements had been marked "met · proven by" three Cypress specs
+  deleted in 1.14.0, and five numbers were used twice for unrelated things.
+  Nobody had been careless; there was simply nothing checking
+
 ## 1.20.1
 
 - chore: the gallery link is out of the footer. It is still on the contact page

@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "1.20.1",
+  "version": "1.21.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4201",
@@ -13,8 +13,9 @@
     "predeploy": "npm run lint && npm test",
     "deploy": "npm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
-    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs",
-    "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs"
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs && node scripts/verify-requirements.mjs",
+    "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs",
+    "verify:requirements": "node scripts/verify-requirements.mjs"
   },
   "private": true,
   "dependencies": {

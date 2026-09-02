@@ -22,7 +22,8 @@ medium and its size", "offers the other views of the same painting")
 ### R2 — The grid links to the artworks · met
 The catalogue tiles are real anchors, so the artwork pages have inbound links
 and can be opened in a new tab.
-*Proven by:* `rendering.cy.js` "links to artworks with real anchors"
+*Proven by:* `art-pieces-list.component.spec.ts` "links every tile to its own
+artwork page"
 
 ### R3 — The catalogue opens with a mouse · met
 Clicking a tile navigates. A link is draggable and a browser that has begun a
@@ -35,7 +36,8 @@ drag fires no click, which a synthetic click cannot detect.
 
 ### R4 — Full-resolution download · met
 The original file, untouched.
-*Proven by:* `art-piece.cy.js`, and a measured download in review
+*Proven by:* `download-button.component.ts` (`downloadFull`), and a measured
+download in review. Nothing automated would notice if this stopped working.
 
 ### R5 — Medium-resolution download · met
 At least **2500 px** on the shorter side and at most **5 MB**. Never enlarges an
@@ -60,9 +62,8 @@ Spanish — and so do the two that did not: the featured painting on the landing
 page, which was the most prominent link on the site, and the four ways out of
 the 404, which are reached by someone who has already gone wrong once.
 *Proven by:* `language-url.service.spec.ts`, `not-found.component.spec.ts`
-(3 tests), `e2e/navigation.test.mjs` ("keeps a Spanish reader in Spanish when
-following ...", "keeps a Spanish reader in Spanish through the featured
-painting")
+(3 tests), `e2e/navigation.test.mjs` "the language a link lands you in",
+"keeps a Spanish reader in Spanish through the featured painting"
 
 ### R9 — The switcher moves between the two trees · met
 Switching changes the address, not just the words, and the choice is remembered
@@ -85,7 +86,8 @@ language" (2 tests)
 ### R10 — Each artwork may carry an essay · met
 Shown after the technical details, in the reader's language, as HTML from the
 backend, links opening in a new tab.
-*Proven by:* `art-piece.cy.js`, and the prerendered essay text in `verify-render`
+*Proven by:* `artwork-critic.component.spec.ts` "shows the essay with no way to
+change it", and the prerendered essay text in `scripts/verify-render.mjs`
 
 ### R11 — A build never commissions an essay · met
 Prerendering asks with `?generate=false`. Without it, every build would pay for
@@ -103,7 +105,8 @@ pair.
 
 ### R13 — Artwork pages carry structured data · met
 `VisualArtwork` and `BreadcrumbList`, plus `Person` site-wide.
-*Proven by:* `seo-title.strategy.spec.ts`, `seo.cy.js`
+*Proven by:* `seo-title.strategy.spec.ts` "describes the artwork and who made
+it", "places the artwork in a trail from the home page"
 
 ### R14 — The sitemap lists what exists · met
 Generated from the prerendered output, with `lastmod`.
@@ -116,7 +119,8 @@ Generated from the prerendered output, with `lastmod`.
 ### R15 — Published writing is referenced, not copied · met
 `/texts` links to each piece with publication, author and date. Nothing is
 reproduced: the texts belong to the outlets that ran them.
-*Proven by:* `texts.component.spec.ts`, `rendering.cy.js`
+*Proven by:* `texts.component.spec.ts` "renders one entry per published text",
+"links out to every source in a new tab"
 
 ---
 
@@ -331,7 +335,7 @@ else: the flag comes from a route behind his own account, so a reader who looks
 at the network gets nothing to hide. The whole catalogue is answered in one
 request rather than one per artwork.
 *Proven by:* `art-pieces-list.component.spec.ts` (5 tests, including that a
-reader is shown no control), `critics.service.spec.ts` (`editedByArtwork`)
+reader is shown no control), `critics.service.spec.ts` (`editedByArtwork`) in the backend
 
 ### R36 — A painting an essay cites can be seen without leaving · met
 The essays link to other paintings in the catalogue by their full public
@@ -391,7 +395,7 @@ This is what makes a mis-found outline recoverable rather than fatal.
 *Proven by:* the studio probe (the preview canvas is painted and fills the
 window; each handle has both strokes)
 
-### R25 — The tones are opened out only when they are shut, and only partly · met
+### R61 — The tones are opened out only when they are shut, and only partly · met
 When the photograph never reached either end of the range, it is stretched back
 out — per channel rather than by luminance, never onto pure black or pure white,
 at no more than half the full correction and no steeper than a third. The
@@ -401,26 +405,26 @@ used its range, nothing is done.
 *Proven by:* `prepare-photo.spec.ts` "auto levels" (4 tests, including that a
 midtone stays where it was)
 
-### R26 — A colour cast is judged only where there is evidence · met
+### R62 — A colour cast is judged only where there is evidence · met
 A blue or yellow cast is measured from the pale, near-colourless parts of the
 painting and corrected by at most 14% per channel. A painting with nothing pale
 in it is left exactly as photographed and the report says why — a mostly
 terracotta painting must never be averaged towards grey.
 *Proven by:* `prepare-photo.spec.ts` "colour temperature" (4 tests)
 
-### R27 — Softness is reported, never repaired · met
+### R63 — Softness is reported, never repaired · met
 Parts of the painting that came out soft are named. Blur is told from flat paint
 by the ratio of fine detail to coarse: flat paint has neither and is not judged.
 Nothing is sharpened — the report says the photograph wants taking again.
 *Proven by:* `prepare-photo.spec.ts` "focus" (3 tests)
 
-### R28 — Every correction reports what it did · met
+### R64 — Every correction reports what it did · met
 Each of the five passes says whether it acted and why: the lighting, the glare,
 the colour temperature, the tones, and the focus. A pass that found nothing
 wrong says so rather than staying silent.
 *Proven by:* the studio probe, which reads all five lines back
 
-### R29 — The studio has no Spanish twin, and does not 404 · met
+### R65 — The studio has no Spanish twin, and does not 404 · met
 `/es/studio` and `/es/door` lead to the English pages rather than the 404. The
 studio is one person's workshop and is written in one language, but the language
 switcher builds its target from the address alone.
@@ -638,6 +642,25 @@ painting on screen. Moving to the next one drops it, and an answer arriving
 after the reader has moved on is ignored rather than pointing them at a post
 about a different painting.
 *Proven by:* `art-piece.component.spec.ts` (2 tests)
+
+### R66 — This document still describes the code · met
+`scripts/verify-requirements.mjs` runs in the build and fails it when a
+requirement number is used twice, when a requirement says nothing about what
+proves it, when a proof names a file that is not in the repository, or when a
+proof quotes a test that is in none of the files it names.
+
+It also reports, without failing, the requirements whose only proof is prose —
+the ones nothing automated would notice the loss of. That list is meant to be
+uncomfortable rather than empty.
+
+The reason it exists: four requirements spent fifteen releases marked "met ·
+proven by" three Cypress specs deleted in 1.14.0, and five numbers were used
+twice for unrelated things. A changelog is a record of the past and cannot
+become false. A requirements document is a claim about the present, and goes
+false quietly, one feature at a time, unless something checks it.
+*Proven by:* `scripts/verify-requirements.mjs` run against
+`scripts/fixtures/requirements-with-every-fault.md`, which contains one of each
+fault and must exit 1
 
 ---
 
