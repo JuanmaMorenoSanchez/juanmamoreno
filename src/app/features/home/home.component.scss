@@ -71,45 +71,68 @@
 
 // Full-resolution image, stacked over the preview and faded in once decoded.
 //
-// It never quite settles. The same movement the reels are built from — a slow
-// push in and across a painting — done here in a transform on the image the
-// page was already loading, so it costs no bytes, no video and no request. A
-// canvas would have meant giving up the prerendered <img>, which is what makes
-// this page readable with javascript off and what the link previews use.
+// It moves, and how depends on what is pointing at it. Where there is a
+// pointer the painting answers it; where there is not, it drifts on its own.
+// Never both: a picture that is already wandering cannot also be seen to lean
+// towards anything.
 //
-// The wander is bounded by the scale: at 1.06 there is 3% of overhang on each
-// side, and nothing here travels further than that, so the frame is always
-// full of painting. It returns exactly where it started, so the loop has no
-// seam — and the resting position is the neutral one, which is where a reader
-// who has asked for less movement finds it, the global reduced-motion rule
-// having collapsed the animation to nothing.
+// Either way the movement is a transform on the image the page was already
+// loading — no video, no second request, nothing beyond the painting itself,
+// on the one page every visitor sees first. A canvas would have cost the
+// prerendered <img>, which is what makes this page readable with javascript
+// off and what a link preview shows.
 .home-featured-image--full {
   object-fit: contain;
   opacity: 0;
-  transition: opacity 0.5s ease-in;
-  transform: scale(1.06);
-  animation: home-featured-drift 34s ease-in-out infinite;
+  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(var(--hero-scale, 1));
+  transition:
+    opacity 0.5s ease-in,
+    transform 0.35s ease-out;
+  // The drift is the default, so a phone gets it without asking. A pointer
+  // turns it off below.
+  animation: home-featured-drift 22s ease-in-out infinite;
 
   &.loaded {
     opacity: 1;
   }
 }
 
+// Nothing to point with: the painting wanders by itself. Bounded by its own
+// scale, so the frame stays full, and it returns exactly where it began so the
+// loop has no seam. The smallest scale here is 1.05, which is 2.5% of overhang
+// on each side against a 2.2% wander.
 @keyframes home-featured-drift {
   0% {
-    transform: translate(0%, 0%) scale(1.06);
+    transform: translate(0%, 0%) scale(1.05);
   }
   25% {
-    transform: translate(1.3%, -1%) scale(1.075);
+    transform: translate(2.2%, -1.6%) scale(1.09);
   }
   50% {
-    transform: translate(0.4%, 1.2%) scale(1.065);
+    transform: translate(0.6%, 2.1%) scale(1.06);
   }
   75% {
-    transform: translate(-1.3%, -0.4%) scale(1.075);
+    transform: translate(-2.1%, -0.7%) scale(1.09);
   }
   100% {
-    transform: translate(0%, 0%) scale(1.06);
+    transform: translate(0%, 0%) scale(1.05);
+  }
+}
+
+// A pointer, so the painting can answer it instead — which reads far more
+// strongly than any drift, because the reader caused it.
+//
+// At rest it is drawn at its own size: the landing page shows the whole work,
+// uncropped, until somebody approaches it. Only then does it grow enough to
+// have somewhere to lean — 1.09 is 4.5% of overhang on each side against the
+// 4% the directive is allowed.
+@media (hover: hover) and (pointer: fine) {
+  .home-featured-image--full {
+    animation: none;
+  }
+
+  .home-featured-frame:hover {
+    --hero-scale: 1.09;
   }
 }
 

@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
 import { VersionService } from '@shared/services/version.service';
 import { APP_VERSION } from '../../../version';
 import { Nft } from '@domain/artwork/artwork.entity';
@@ -35,7 +36,7 @@ import { Subscription, takeLast } from 'rxjs';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe, ParallaxTiltDirective],
 })
 export class HomeComponent implements AfterViewInit {
   // Printed small at the foot of the page: this build, and the build of the

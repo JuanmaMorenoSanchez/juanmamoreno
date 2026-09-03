@@ -11,7 +11,15 @@
       [routerLink]="artworkLink(nft.tokenId)"
       [attr.aria-label]="nft.name"
     >
+      <!--
+        The painting leans towards the pointer, the same way the catalogue tiles
+        do — the directive finds its tile from the event, and here the frame is
+        the only tile there is.
+      -->
       <span
+        appParallaxTilt
+        tiltSelector=".home-featured-frame"
+        [maxShiftPercent]="4"
         class="home-featured-frame"
         [style.aspect-ratio]="featuredAspect()"
         [style.width]="frameWidth()"

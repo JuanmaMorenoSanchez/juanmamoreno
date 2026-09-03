@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.26.0
+
+- feat: the painting on the landing page leans towards the pointer, the way the
+  catalogue tiles do — 17 to 21 pixels of it, where the drift it replaces moved
+  about five and could not be seen. At rest it is drawn at its own size, so the
+  page shows the whole work uncropped until somebody approaches it. Where there
+  is no pointer the drift stays, and is twice what it was; never both at once,
+  since a picture already wandering cannot be seen to lean towards anything
+
 ## 1.25.0
 
 - feat: the painting on the landing page never quite settles. The same movement

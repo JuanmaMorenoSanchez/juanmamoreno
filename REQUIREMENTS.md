@@ -673,22 +673,29 @@ hundred of them.
 *Proven by:* `parallax-tilt.directive.spec.ts` (7 tests, four of which fail
 against the whole-grid version)
 
-### R69 — The landing page never quite settles · met
-The featured painting drifts, slowly and without end: the same movement the
-reels are built from, done as a transform on the image the page was already
-loading. No video, no second request, no bytes beyond the painting itself —
-which matters on the one page every visitor sees first.
+### R69 — The landing page moves, and how depends on what is pointing at it · met
+Where there is a pointer the painting answers it, leaning towards it as the
+catalogue tiles do. Where there is not, it drifts by itself. Never both: a
+picture already wandering cannot be seen to lean towards anything.
 
-A transform rather than a canvas, so the prerendered `<img>` survives: it is
-what makes the landing page readable with javascript off, and what a link
+With a pointer it is drawn at its own size until somebody approaches, so the
+page shows the whole work uncropped and only grows enough to have somewhere to
+lean once it is being looked at. Measured in a browser, that is 17 to 21 pixels
+of movement against the five the drift alone managed — which is the difference
+between an effect and one nobody notices.
+
+Either way it is a transform on the image the page was already loading: no
+video, no second request, no bytes beyond the painting itself, on the one page
+every visitor sees first. A canvas would have cost the prerendered `<img>`,
+which is what makes this page readable with javascript off and what a link
 preview shows.
 
-The wander is bounded by the scale, so the frame is always full of painting,
-and it returns exactly where it began, so the loop has no seam. It rests at the
-neutral position, which is where a reader who has asked for less movement finds
-it.
-*Proven by:* the drift, the frame staying covered and the stillness under
-reduced motion, all measured in a browser against the built page
+Both movements are bounded by their own scale, so the frame is always full of
+painting, and the drift returns exactly where it began so the loop has no seam.
+Under reduced motion nothing moves and the painting sits whole.
+*Proven by:* the lean, the drift, the frame staying covered through both, and
+the stillness under reduced motion, all measured in a browser against the built
+page
 
 ### R66 — This document still describes the code · met
 `scripts/verify-requirements.mjs` runs in the build and fails it when a
