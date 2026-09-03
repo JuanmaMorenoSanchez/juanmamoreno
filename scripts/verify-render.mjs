@@ -99,7 +99,20 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   //    shape /artworks had when its data never arrived at build time.
   if (text.length < 120) fail(route, `only ${text.length} characters of text`);
 
-  // 7. The navigation is in the page's own language.
+  // 7. Nothing in the page shows the build asked the reverse image search.
+  //
+  //    Angular carries the answers a build fetched into the markup, so a page
+  //    that asked says so. This looks for that, because the cost of asking is
+  //    not paid here: while that endpoint re-ran the search when its answer
+  //    had aged, a build of 186 artwork pages was 186 billed Google calls, and
+  //    a few days of building came to about ninety euros before anyone read
+  //    the meter. The endpoint no longer searches — and this stays, because a
+  //    build must not be able to make that mistake affordable again by
+  //    accident.
+  if (/vision\/search/.test(html))
+    fail(route, 'the build asked the reverse image search; that belongs in the browser');
+
+  // 8. The navigation is in the page's own language.
   if (spanish && / Paintings | Contact | About /.test(` ${text} `))
     fail(route, 'English navigation on a Spanish page');
   if (!spanish && / Pinturas | Contacto | Acerca de /.test(` ${text} `))

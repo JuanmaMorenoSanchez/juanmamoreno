@@ -330,7 +330,25 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     });
   }
 
+  /**
+   * Where this painting has been found on the internet — asked for from a
+   * browser and never from a build.
+   *
+   * A build renders 186 artwork pages, and this used to be asked once for each
+   * of them. While the endpoint behind it re-ran the reverse image search when
+   * its answer had aged, that made every build 186 billed Google calls, and
+   * several days of building ran up a bill of about ninety euros before anyone
+   * looked at the meter.
+   *
+   * The endpoint no longer searches, so this is cheap again — and it is still
+   * refused here, because "the endpoint is cheap today" is a fact about today.
+   * Nothing a build does can put a cost on that path if a build never takes
+   * it. The list is not in the prerendered page either way: it lives behind a
+   * button, in a dialog, which nothing without javascript can open.
+   */
   getLinks(tokenId: string): Observable<string[]> {
+    if (!this.isBrowser) return of([]);
+
     return this.http
       .get<ApiResponse<string[]>>(environment.backendUrl + 'vision/search/' + tokenId)
       .pipe(

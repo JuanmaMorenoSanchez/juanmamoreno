@@ -697,6 +697,33 @@ Under reduced motion nothing moves and the painting sits whole.
 the stillness under reduced motion, all measured in a browser against the built
 page
 
+### R70 — A build never asks the reverse image search · met
+Nothing the prerender does may reach `/vision/search`, in any circumstance. A
+build renders 186 artwork pages and used to ask once for each of them; while
+that endpoint re-ran the search when its answer had aged, every build was 186
+billed Google calls, and a few days of building came to about ninety euros
+before anyone read the meter.
+
+Three things hold it, and any one of them would do:
+
+- `getLinks` returns an empty list when it is not running in a browser, so the
+  request is never made from a build at all.
+- The answer is kept out of the transfer cache, so an empty build-time answer
+  cannot be carried into the browser and stop it asking properly.
+- `scripts/verify-render.mjs` fails the build if any prerendered page shows
+  that it asked. That is the one that matters: the first two are code anyone
+  could undo, and this refuses to publish the result.
+
+The backend not searching on read (B-side) is a fourth, and is deliberately not
+relied upon here. "The endpoint is cheap today" is a fact about today; a build
+that never takes the path cannot be made expensive by anything that changes at
+the other end.
+
+Nothing is lost from the page: the list lives behind a button, in a dialog,
+which nothing without javascript can open.
+*Proven by:* `scripts/verify-render.mjs` check 7, which was confirmed to fail
+against a page carrying the request, and 390 prerendered pages carrying none
+
 ### R66 — This document still describes the code · met
 `scripts/verify-requirements.mjs` runs in the build and fails it when a
 requirement number is used twice, when a requirement says nothing about what

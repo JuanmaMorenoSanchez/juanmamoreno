@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.27.0
+
+- fix: a build never asks the reverse image search. It rendered 186 artwork
+  pages and asked once for each, and while that endpoint re-ran the search when
+  its answer had aged, every build was 186 billed Google calls — a few days of
+  building came to about ninety euros. `getLinks` now refuses outside a
+  browser, the answer is kept out of the transfer cache so an empty build-time
+  one cannot silence the browser, and `verify-render` fails the build if any
+  page shows that it asked. Nothing is lost from the page: the list lives
+  behind a button, in a dialog, which nothing without javascript can open
+
 ## 1.26.0
 
 - feat: the painting on the landing page leans towards the pointer, the way the
