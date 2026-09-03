@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.24.0
+
+- feat: only the tile under the pointer leans, and it leans twice as far. The
+  effect measured from the centre of the viewport and was written once on the
+  grid, so all two hundred tiles moved together — the page appearing to slide
+  rather than answering the pointer, and small because two hundred things
+  moving at once has to be. Confined to one tile it can be 6% instead of 3% and
+  still be quieter overall. The image is drawn 1.14 rather than 1.1 to keep the
+  slack the bigger lean needs
+
 ## 1.23.0
 
 - feat: the essay no longer carries a heading. It sits under the painting's

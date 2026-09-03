@@ -75,10 +75,12 @@ mat-card {
 // it has been downloaded off-screen (see getProgressiveImageUrls), so there is
 // nothing to hide anyway: the image paints as soon as it is bound.
 .front-image {
-  // Oversized by the same margin appParallaxTilt is allowed to shift (see
-  // parallax-tilt.directive.ts's default), so it always has slack to pan
-  // within its frame and never shows a gap at the edge.
-  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
+  // Oversized by more than appParallaxTilt is allowed to shift, so it always
+  // has slack to lean within its frame and never shows a gap at the edge.
+  // 1.14 leaves 7% of overhang on each side against a 6% shift; the two are
+  // one number and moving either alone pulls the edge of the picture into
+  // view. See DEFAULT_MAX_SHIFT_PERCENT in parallax-tilt.directive.ts.
+  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.14);
   transition: transform 0.2s ease-out;
 }
 

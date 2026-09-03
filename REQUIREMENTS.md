@@ -655,6 +655,22 @@ standing empty above the essay.
 change it", "never says whether an essay has been edited", and
 `critics.service.spec.ts` in the backend
 
+### R68 — The catalogue answers the pointer, one tile at a time · met
+The tile under the pointer leans towards the corner the pointer is in; every
+other tile stays where it is, and the one being left is put back before the
+next one leans. It used to measure from the centre of the viewport and write
+the answer once on the grid, so all two hundred tiles leaned together — which
+reads as the page sliding rather than as an answer to the pointer.
+
+Still one listener however long the grid is: the tile is found from the event
+rather than by giving each tile a listener of its own.
+
+The lean and the image's oversize are one number. At `scale(1.14)` there is 7%
+of overhang on each side against a 6% lean, and moving either alone pulls the
+edge of the picture into the frame.
+*Proven by:* `parallax-tilt.directive.spec.ts` (7 tests, four of which fail
+against the whole-grid version)
+
 ### R66 — This document still describes the code · met
 `scripts/verify-requirements.mjs` runs in the build and fails it when a
 requirement number is used twice, when a requirement says nothing about what
