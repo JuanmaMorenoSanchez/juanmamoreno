@@ -77,10 +77,13 @@ mat-card {
 .front-image {
   // Oversized by more than appParallaxTilt is allowed to shift, so it always
   // has slack to lean within its frame and never shows a gap at the edge.
-  // 1.14 leaves 7% of overhang on each side against a 6% shift; the two are
+  // 1.1 leaves 5% of overhang on each side against a 4.5% lean; the two are
   // one number and moving either alone pulls the edge of the picture into
   // view. See DEFAULT_MAX_SHIFT_PERCENT in parallax-tilt.directive.ts.
-  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.14);
+  //
+  // Kept at 1.1 rather than raised: every extra bit of scale is another bit of
+  // the painting cropped away, on two hundred of them.
+  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
   transition: transform 0.2s ease-out;
 }
 

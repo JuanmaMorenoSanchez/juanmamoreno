@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.25.0
+
+- feat: the painting on the landing page never quite settles. The same movement
+  the reels are built from — a slow push in and across the work — done as a
+  transform on the image the page was already loading, so it costs no bytes, no
+  video and no request. It returns exactly where it began, so the loop has no
+  seam, and it holds still for a reader who has asked for less movement
+- chore: the catalogue's lean is 4.5% rather than 6%. Still half again what it
+  was when the whole grid moved together, and the image goes back to being
+  drawn at 1.1 instead of 1.14 — every bit of extra scale is another bit of the
+  painting cropped away, on two hundred of them
+
 ## 1.24.0
 
 - feat: only the tile under the pointer leans, and it leans twice as far. The

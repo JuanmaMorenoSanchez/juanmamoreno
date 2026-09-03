@@ -665,11 +665,30 @@ reads as the page sliding rather than as an answer to the pointer.
 Still one listener however long the grid is: the tile is found from the event
 rather than by giving each tile a listener of its own.
 
-The lean and the image's oversize are one number. At `scale(1.14)` there is 7%
-of overhang on each side against a 6% lean, and moving either alone pulls the
-edge of the picture into the frame.
+The lean and the image's oversize are one number. At `scale(1.1)` there is 5%
+of overhang on each side against a 4.5% lean, and moving either alone pulls the
+edge of the picture into the frame. The scale is kept as low as the lean allows:
+every extra bit of it is another bit of the painting cropped away, on two
+hundred of them.
 *Proven by:* `parallax-tilt.directive.spec.ts` (7 tests, four of which fail
 against the whole-grid version)
+
+### R69 — The landing page never quite settles · met
+The featured painting drifts, slowly and without end: the same movement the
+reels are built from, done as a transform on the image the page was already
+loading. No video, no second request, no bytes beyond the painting itself —
+which matters on the one page every visitor sees first.
+
+A transform rather than a canvas, so the prerendered `<img>` survives: it is
+what makes the landing page readable with javascript off, and what a link
+preview shows.
+
+The wander is bounded by the scale, so the frame is always full of painting,
+and it returns exactly where it began, so the loop has no seam. It rests at the
+neutral position, which is where a reader who has asked for less movement finds
+it.
+*Proven by:* the drift, the frame staying covered and the stillness under
+reduced motion, all measured in a browser against the built page
 
 ### R66 — This document still describes the code · met
 `scripts/verify-requirements.mjs` runs in the build and fails it when a

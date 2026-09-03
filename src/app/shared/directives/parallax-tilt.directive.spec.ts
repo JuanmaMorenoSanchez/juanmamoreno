@@ -88,7 +88,7 @@ describe('ParallaxTiltDirective', () => {
     // Bottom-right corner of a 100×100 tile: fully leaned both ways.
     point(host, '#first img', 100, 100);
 
-    expect(lean(host, 'first')).toEqual(['6.00%', '6.00%']);
+    expect(lean(host, 'first')).toEqual(['4.50%', '4.50%']);
   });
 
   it('leans towards the corner the pointer is in', () => {
@@ -96,7 +96,7 @@ describe('ParallaxTiltDirective', () => {
 
     point(host, '#first img', 0, 0);
 
-    expect(lean(host, 'first')).toEqual(['-6.00%', '-6.00%']);
+    expect(lean(host, 'first')).toEqual(['-4.50%', '-4.50%']);
   });
 
   it('leaves a tile flat when the pointer is at its middle', () => {
@@ -123,7 +123,7 @@ describe('ParallaxTiltDirective', () => {
     point(host, '#second img', 0, 0);
 
     expect(lean(host, 'first')).toEqual(['', '']);
-    expect(lean(host, 'second')).toEqual(['-6.00%', '-6.00%']);
+    expect(lean(host, 'second')).toEqual(['-4.50%', '-4.50%']);
   });
 
   it('puts the tile back when the pointer leaves the grid', () => {

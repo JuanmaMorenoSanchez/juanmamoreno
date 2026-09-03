@@ -7,8 +7,12 @@ import { Directive, ElementRef, inject, input, OnDestroy } from '@angular/core';
  * there is 5% of overhang on each side, and a shift past that pulls the edge of
  * the picture into view. The two numbers move together — see `.front-image` in
  * art-pieces-list.component.scss.
+ *
+ * Twice what it was when the whole grid leaned at once, and less than the 6%
+ * it was first tried at: confined to one tile, the movement reads as larger
+ * than the number suggests, because it is the only thing moving.
  */
-const DEFAULT_MAX_SHIFT_PERCENT = 6;
+const DEFAULT_MAX_SHIFT_PERCENT = 4.5;
 
 /**
  * The tile under the pointer leans; the rest of the grid stays where it is.
@@ -26,7 +30,7 @@ const DEFAULT_MAX_SHIFT_PERCENT = 6;
  * time. That reads as the whole page sliding — wallpaper rather than an answer
  * to where the pointer is — and it meant the movement had to stay small,
  * because two hundred things moving at once is a lot of movement. Confined to
- * one tile it can be twice the size and still be quieter overall.
+ * one tile it can be half again as far and still be quieter overall.
  *
  * Still one listener however long the grid is: the tile is found from the event
  * rather than by giving every tile a listener of its own, and only two elements
