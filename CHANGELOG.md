@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.28.0
+
+- **feat** — the button that puts a generative sketch full screen is no longer
+  drawn once it is: nothing is left over the drawing, and Escape brings it
+  back.
+
 ## 1.27.0
 
 - fix: a build never asks the reverse image search. It rendered 186 artwork

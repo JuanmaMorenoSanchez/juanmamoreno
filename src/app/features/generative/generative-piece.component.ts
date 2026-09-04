@@ -61,9 +61,12 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.destroyRef.onDestroy(() => this.teardown());
   }
 
-  // Fullscreens the sketch container. The Fullscreen API exits on Esc natively,
-  // firing 'fullscreenchange' which keeps the button's icon in sync. The
-  // ResizeObserver on the canvas handles the resulting resize automatically.
+  // Fullscreens the sketch container. The button is not drawn while it is
+  // fullscreen — the drawing is meant to be the only thing on the screen — so
+  // this only ever enters from a click; Escape is what leaves, which the
+  // Fullscreen API handles itself. 'fullscreenchange' fires either way and
+  // brings the button back. The ResizeObserver on the canvas handles the
+  // resulting resize automatically.
   toggleFullscreen(): void {
     if (this.fullscreenElement) {
       this.exitFullscreen();

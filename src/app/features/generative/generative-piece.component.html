@@ -1,15 +1,24 @@
 <div #container class="generative">
   <canvas #canvas class="sketch-canvas" [class.hidden]="notFound()"></canvas>
   <div class="vignette" aria-hidden="true"></div>
-  @if (!notFound()) {
+  <!--
+    Gone once the sketch is fullscreen. The whole point of the state is that
+    there is nothing on the screen but the drawing, and a button floating over
+    it is the one thing still in the way.
+
+    Nothing is lost by taking it away: the Fullscreen API exits on Escape by
+    itself, and the browser says so when it enters. `fullscreenchange` brings
+    the button back — including when Escape is what ended it.
+  -->
+  @if (!notFound() && !isFullScreen()) {
     <button
       type="button"
       mat-icon-button
       class="fullscreen-btn"
-      [attr.aria-label]="(isFullScreen() ? 'viewer.exitFullscreen' : 'viewer.fullscreen') | translate"
+      [attr.aria-label]="'viewer.fullscreen' | translate"
       (click)="toggleFullscreen()"
     >
-      <mat-icon>{{ isFullScreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      <mat-icon>fullscreen</mat-icon>
     </button>
   }
   @if (notFound()) {

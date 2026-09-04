@@ -535,6 +535,19 @@ but named in the accessibility tree either way.
 *Proven by:* `image-viewer.component.html`, and the prerendered pages, which
 carry the text
 
+### R71 — A sketch full screen has nothing over it · met
+The button that puts a generative piece full screen is not drawn once it has.
+The whole point of the state is that there is nothing on the screen but the
+drawing, and a button floating over it was the one thing still in the way.
+
+Nothing is lost by taking it away. The Fullscreen API leaves on Escape by
+itself, and the browser says so on the way in; `fullscreenchange` is what
+brings the button back, which is the same event Escape causes, so the way in
+is there again the moment the sketch stops being full screen.
+*Proven by:* `generative-piece.component.spec.ts` "takes the button away once
+the sketch is full screen" and "brings it back when the sketch stops being full
+screen", and a browser driven in and out of the state twice
+
 ### R50 — The dot on a sold painting is explained · met
 A key appears beneath the catalogue's controls whenever there is a sold piece
 on screen, and not otherwise. The dot was drawn and never explained: a screen
