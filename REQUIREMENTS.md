@@ -90,9 +90,34 @@ backend, links opening in a new tab.
 change it", and the prerendered essay text in `scripts/verify-render.mjs`
 
 ### R11 — A build never commissions an essay · met
-Prerendering asks with `?generate=false`. Without it, every build would pay for
-an essay for every artwork that lacks one.
-*Proven by:* backend `critics.controller.spec.ts`
+Nothing does any more, on any request a reader or a build can make: the route
+that used to write one when asked for a missing essay no longer writes at all
+(backend B5). The `?generate=false` the build used to pass went with it — there
+is no longer a behaviour to ask it not to perform.
+*Proven by:* backend `critics.controller.spec.ts` "never writes an essay for a
+reader who asks for one"
+
+### R72 — Only an essay the artist has read is on the page · met
+A model writes the first draft and nothing about that makes it publishable. On
+a page it is published whether or not anyone meant it to be: read, quoted,
+indexed, and attributed to him. So an essay reaches a reader only once he has
+been over it, and the twenty he has been over are the twenty that ship — the
+rest of the catalogue's pages carry the painting, its details and its images,
+and no text.
+
+The gate is the backend's (B4), which is the only place it can be: the page
+cannot hide what a reader can ask the API for directly. What is here is the
+page not asking for what it cannot have and not announcing what it is missing.
+The spinner that used to say an essay was being written is gone with the
+writing: it would have promised something never coming, and on an artwork whose
+draft exists but is unreviewed it would have announced the draft. The thirty
+second poll went with it — a question already answered, re-asked by every
+reader on a hundred and fifty pages for as long as the tab stayed open.
+
+The artist reads everything, through the authenticated route he already used to
+learn whether an essay had been edited.
+*Proven by:* `artwork-critic.component.spec.ts` "when there is no essay to
+read" (4 tests), and backend B4
 
 ---
 

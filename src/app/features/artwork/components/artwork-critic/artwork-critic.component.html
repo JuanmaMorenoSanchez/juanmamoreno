@@ -94,19 +94,14 @@
       }
     }
   </article>
-} @else if (isBrowser) {
-  <!--
-    Only in the browser. A prerendered page has nothing pending: if there is no
-    essay for this artwork yet the page simply ships without one, rather than
-    telling a crawler that something is "generating" that never will be.
-  -->
-  <div class="artwork-critic-loading" role="status">
-    <mat-progress-spinner
-      class="artwork-critic-spinner"
-      diameter="18"
-      mode="indeterminate"
-      aria-hidden="true"
-    ></mat-progress-spinner>
-    <span>{{ 'critic.generating' | translate }}</span>
-  </div>
 }
+<!--
+  Nothing at all when there is no essay to read.
+
+  There used to be a spinner here saying the essay was being written, which was
+  true: opening the page is what commissioned it. Nothing is written on a
+  reader's request now, so the spinner would have promised something that was
+  never coming — and on an artwork whose draft is written but not yet reviewed,
+  it would have said so, which is exactly what is being kept private. The
+  painting, its details and its images are the page either way.
+-->

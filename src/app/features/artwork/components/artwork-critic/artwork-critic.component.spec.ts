@@ -35,9 +35,16 @@ const CATALOGUE = [
   },
 ];
 
-async function setup(options: { signedIn: boolean; edited?: boolean; critic?: ArtCritic }) {
+async function setup(options: {
+  signedIn: boolean;
+  edited?: boolean;
+  critic?: ArtCritic;
+  /** What the public route answers with. Null is "there is none to read". */
+  published?: ArtCritic | null;
+}) {
+  const published = 'published' in options ? options.published : (options.critic ?? CRITIC);
   const port = {
-    getArtPieceCritic: vi.fn().mockReturnValue(of(options.critic ?? CRITIC)),
+    getArtPieceCritic: vi.fn().mockReturnValue(of(published)),
     getArtPieceCriticWithEdits: vi
       .fn()
       .mockReturnValue(of({ ...(options.critic ?? CRITIC), edited: options.edited ?? false })),
@@ -70,12 +77,9 @@ async function setup(options: { signedIn: boolean; edited?: boolean; critic?: Ar
   const fixture = TestBed.createComponent(ArtworkCriticComponent);
   fixture.componentRef.setInput('tokenId', '5');
   fixture.detectChanges();
-  // The public fetch is polled through a timer, so its first answer lands on
-  // the next macrotask — and the poll never completes, so waiting for stability
-  // would wait for ever. Without this the reader's tests would assert the
-  // absence of an edit button on a page that had not rendered an essay at all,
-  // passing while proving nothing.
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  // One request, answered synchronously, so the essay is on screen by the time
+  // the first change detection is over. It used to be polled through a timer
+  // and the first answer landed a macrotask later; nothing is waited for now.
   fixture.detectChanges();
   return { fixture, port };
 }
@@ -110,6 +114,68 @@ describe('ArtworkCriticComponent — for a reader', () => {
     const { port } = await setup({ signedIn: false });
 
     expect(port.getArtPieceCriticWithEdits).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * What a reader gets when the essay is not theirs to read yet.
+ *
+ * The backend answers the same 404 for an essay still in draft as for one never
+ * written, so the page cannot tell the two apart and must not try: either way
+ * there is no essay, and the painting is the page.
+ */
+describe('ArtworkCriticComponent — when there is no essay to read', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    TestBed.resetTestingModule();
+  });
+
+  it('shows nothing rather than an empty frame', async () => {
+    const { fixture } = await setup({ signedIn: false, published: null });
+
+    expect(find(fixture, '.artwork-critic')).toBeNull();
+    expect(find(fixture, '.artwork-critic-body')).toBeNull();
+  });
+
+  /**
+   * There used to be a spinner saying the essay was being written, and it was
+   * true — opening the page is what commissioned it. Nothing is written on a
+   * reader's request now, so the same spinner would promise something that is
+   * never coming; on an artwork whose draft exists but has not been reviewed it
+   * would also be announcing the draft, which is the thing being kept private.
+   */
+  it('does not claim an essay is on its way', async () => {
+    const { fixture } = await setup({ signedIn: false, published: null });
+
+    expect(find(fixture, 'mat-progress-spinner')).toBeNull();
+    expect(text(fixture).trim()).toBe('');
+  });
+
+  /**
+   * The reason the poll had to go with the generating. Asked every thirty
+   * seconds, a question already answered would be re-asked by every reader on
+   * a hundred and thirty-odd pages for as long as the tab stayed open.
+   */
+  it('asks once and does not keep asking', async () => {
+    // Installed before the component exists, so a timer it starts is one of
+    // these. Advancing after the fact would leave a real poll ticking off in
+    // the background and the test would pass with the poll still in place.
+    vi.useFakeTimers();
+
+    const { port } = await setup({ signedIn: false, published: null });
+    await vi.advanceTimersByTimeAsync(5 * 60_000);
+
+    expect(port.getArtPieceCritic).toHaveBeenCalledTimes(1);
+  });
+
+  // The artist reads his own drafts: a second request, with his token, on the
+  // route that answers it. That is the whole of the difference between them.
+  it('still shows the artist the draft a reader cannot have', async () => {
+    const { fixture, port } = await setup({ signedIn: true, published: null });
+
+    expect(port.getArtPieceCriticWithEdits).toHaveBeenCalled();
+    expect(text(fixture)).toContain('The blue arrives first.');
+    expect(find(fixture, '.artwork-critic-edit')).not.toBeNull();
   });
 });
 

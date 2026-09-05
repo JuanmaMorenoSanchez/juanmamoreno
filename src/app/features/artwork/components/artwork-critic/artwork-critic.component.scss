@@ -77,23 +77,6 @@
   }
 }
 
-.artwork-critic-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: tokens.$spacing-sm;
-  padding-bottom: tokens.$spacing-xl;
-  font-size: bp.fluid-size(0.8125rem, 0.875rem);
-  font-style: italic;
-  letter-spacing: 0.02em;
-  color: var(--catalog-soft);
-
-  // Same weight as the text it sits beside, rather than the theme's accent.
-  .artwork-critic-spinner {
-    --mdc-circular-progress-active-indicator-color: var(--catalog-faint);
-  }
-}
-
 // Everything below belongs to the artist and is never rendered for a reader:
 // the flag that drives it is stripped from the public route, so an
 // unauthenticated page has nothing to show even if it tried.

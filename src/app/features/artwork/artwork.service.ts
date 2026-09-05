@@ -154,16 +154,21 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       );
   }
 
-  // Null until the essay has been written: the backend answers 404 for an
-  // artwork it has not written about yet.
-  //
-  // A visitor asking for a missing one has the backend write it. A build must
-  // not: it prerenders a page for every artwork in the catalogue, so it asks
-  // read-only and ships whatever essay already exists.
+  /**
+   * The artwork's published essay, or null when there is not one to read.
+   *
+   * Null covers two cases the public route deliberately does not tell apart:
+   * no essay has been written, and the one written is still a draft the artist
+   * has not been over. Both answer 404, and neither is anything a reader is
+   * waiting on — so this asks once and takes the answer.
+   *
+   * The build asks exactly the same question. There used to be a `generate`
+   * parameter here to stop a build commissioning 186 essays; the route writes
+   * nothing for anybody now, so there is nothing left to ask it not to do.
+   */
   getArtPieceCritic(tokenId: string): Observable<ArtCritic | null> {
-    const options = this.isBrowser ? {} : { params: { generate: 'false' } };
     return this.http
-      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`, options)
+      .get<ApiResponse<ArtCritic>>(`${environment.backendUrl}critics/${tokenId}`)
       .pipe(
         this.extractData<ArtCritic | null>(null),
         this.giveUpDuringBuild(),

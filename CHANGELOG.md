@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.29.0
+
+- **feat** — an essay appears on an artwork page only once the artist has been
+  over it. Unreviewed drafts are no longer shown, announced, or waited for.
+
 ## 1.28.0
 
 - **feat** — the button that puts a generative sketch full screen is no longer

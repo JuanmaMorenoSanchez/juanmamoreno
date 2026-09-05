@@ -10,7 +10,6 @@ import {
   untracked,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { artworkTokenIdFrom } from '@domain/artwork/artwork-link';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtCritic } from '@domain/artwork/critic.entity';
@@ -18,13 +17,12 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
-import { combineLatest, filter, of, startWith, switchMap, take, timer } from 'rxjs';
+import { combineLatest, of, startWith, switchMap } from 'rxjs';
 
 // The essay is not written on demand: the backend writes it when the artwork is
 // published to social, so a piece can be on the page before its text exists.
 // Rather than give up on the first 404, keep asking until there is something to
 // print — the spinner stands in for the text meanwhile.
-const POLL_INTERVAL_MS = 30_000;
 
 /** The public address the essay is published at, which is what it is cited by. */
 const SITE_URL = 'https://juanmamoreno.com';
@@ -39,7 +37,7 @@ const PEEK_HEIGHT = 180;
   selector: 'app-artwork-critic',
   templateUrl: './artwork-critic.component.html',
   styleUrl: './artwork-critic.component.scss',
-  imports: [MatProgressSpinner, TranslatePipe],
+  imports: [TranslatePipe],
 })
 export class ArtworkCriticComponent {
   private artworkService = inject(ARTWORK_PORT);
@@ -129,25 +127,24 @@ export class ArtworkCriticComponent {
   /** Only ever true for the artist, and only in a browser he has signed in on. */
   protected readonly isArtist = computed(() => this.auth.isAdmin());
 
+  /**
+   * The published essay, asked for once.
+   *
+   * It used to poll every thirty seconds. That was right while the first visit
+   * to a page commissioned the essay and the reader was genuinely waiting for
+   * one to arrive; now nothing is written on a reader's request, so an artwork
+   * without a published essay will not have one by the next poll, or the
+   * hundredth. Left in, it would have been every reader on a hundred and
+   * thirty-odd pages asking a question already answered, forever.
+   */
   private readonly critic = toSignal(
     toObservable(this.tokenId).pipe(
-      switchMap((tokenId) => {
-        const fetch$ = this.artworkService.getArtPieceCritic(tokenId);
-        // A build cannot sit in a polling loop waiting for an essay to be
-        // written: it asks once, and the page it emits carries the essay only
-        // if there already is one. In the browser it keeps asking as before.
-        const source$ = this.isBrowser
-          ? timer(0, POLL_INTERVAL_MS).pipe(switchMap(() => fetch$))
-          : fetch$;
-
-        return source$.pipe(
-          filter((critic): critic is ArtCritic => !!critic),
-          // Once the essay is there it never changes under the reader's feet.
-          take(1),
+      switchMap((tokenId) =>
+        this.artworkService.getArtPieceCritic(tokenId).pipe(
           // Clears the previous artwork's essay while the new one is fetched.
           startWith(null)
-        );
-      })
+        )
+      )
     ),
     { initialValue: null }
   );
