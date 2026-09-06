@@ -58,17 +58,41 @@
   color: var(--catalog-soft);
 }
 
+.publish-caption-label {
+  display: block;
+  margin-bottom: tokens.$spacing-xs;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--catalog-soft);
+}
+
 .publish-caption {
-  margin: 0 0 tokens.$spacing-md;
-  max-height: 16rem;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  // The caption is what Instagram will show, so it is shown in the page's own
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: tokens.$spacing-sm;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--catalog-rule, rgb(0 0 0 / 15%));
+  border-radius: 2px;
+  background: transparent;
+  // The caption is what Instagram will show, so it is set in the page's own
   // reading face rather than a monospace that would misrepresent its length.
   font-family: inherit;
   font-size: bp.fluid-size(0.8125rem, 0.875rem);
   line-height: 1.6;
   color: var(--catalog-ink);
+}
+
+.publish-count {
+  margin: tokens.$spacing-xs 0 tokens.$spacing-md;
+  font-size: 0.75rem;
+  color: var(--catalog-soft);
+}
+
+.publish-count--over {
+  color: var(--catalog-sold, #b3261e);
 }
 
 .publish-actions {

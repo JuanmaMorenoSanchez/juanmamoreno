@@ -37,14 +37,36 @@
         <h2 class="publish-name">{{ reel.name }}</h2>
         <p class="publish-made">Made {{ reel.renderedAt | slice: 0 : 10 }}</p>
 
-        <!-- The caption exactly as it will go out, so it is read before it does. -->
-        <pre class="publish-caption">{{ reel.caption }}</pre>
+        <!--
+          The caption as it will go out, and his to change first. What the run
+          wrote is a draft like the essay it was built from — a technical sheet
+          and prose trimmed at a sentence to fit — so this is a textarea rather
+          than something to read.
+        -->
+        <label class="publish-caption-label" [attr.for]="'caption-' + reel.tokenId">
+          Caption
+        </label>
+        <textarea
+          class="publish-caption"
+          [id]="'caption-' + reel.tokenId"
+          rows="8"
+          spellcheck="true"
+          [value]="captionOf(reel)"
+          [disabled]="busy() !== null"
+          (input)="editCaption(reel, $event)"
+        ></textarea>
+        <p class="publish-count" [class.publish-count--over]="tooLong(reel)">
+          {{ captionOf(reel).length }} / {{ captionLimit }}
+          @if (tooLong(reel)) {
+            <span> — Instagram will refuse this</span>
+          }
+        </p>
 
         <div class="publish-actions">
           <button
             type="button"
             class="publish-go"
-            [disabled]="busy() !== null"
+            [disabled]="busy() !== null || tooLong(reel)"
             (click)="publish(reel)"
           >
             {{ busy() === reel.tokenId ? 'Publishing…' : 'Publish to Instagram' }}

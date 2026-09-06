@@ -192,9 +192,14 @@ draft and edit it in the app later" to build. Downloading the file and posting i
 from the phone is the way to edit one, which is why the page offers the file: the
 video is at a public url in the bucket, which is how Instagram fetches it anyway.
 
-The caption is shown in full and unwrapped, because it is the thing being
-checked — it was written when the video was made and is published unchanged, so
-this page is the only place it is read before it goes out under his name.
+**The caption is his to rewrite before it goes out.** What the run wrote is a
+draft in the same sense the essay is — a technical sheet and a model's prose
+trimmed at a sentence to fit — so it is a textarea rather than something to
+read, and what is on screen when he presses publish is what is sent, recorded
+and published. Each reel keeps its own edit, and a count against Instagram's
+2200-character ceiling sits under it; past that the publish button will not go,
+because Instagram reports a caption that is too long by refusing the whole
+publication after the video has been uploaded.
 
 **An empty queue and a server that did not answer are told apart.** Both leave
 the page with nothing on it and only one of them means everything is working;
@@ -208,11 +213,13 @@ has gone cannot be published twice from a stale page.
 and its button sits beside the one that publishes; the first press arms it and
 says "Really discard?", the second does it. Reaching for publish disarms it
 rather than counting as the confirmation.
-*Proven by:* `publish.component.spec.ts` (10 tests, including "shows the caption
-it would go out with, in full", "tells an empty queue apart from a server that
-did not answer", "asks again once one has been dealt with", "asks before
-throwing one away", "forgets an armed discard when the other button is used"),
-and backend B26
+*Proven by:* `publish.component.spec.ts` (14 tests, including "offers the caption
+it would go out with, to edit", "publishes what he rewrote, not what was
+drafted", "will not publish a caption Instagram would refuse", "keeps each
+caption to its own reel", "tells an empty queue apart from a server that did not
+answer", "asks again once one has been dealt with", "asks before throwing one
+away", "forgets an armed discard when the other button is used"), and backend
+B26 and B29
 
 ---
 

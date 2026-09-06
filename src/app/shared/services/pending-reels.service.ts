@@ -52,12 +52,18 @@ export class PendingReelsService {
       );
   }
 
-  /** Publishes one as it stands. Answers false rather than throwing. */
-  publish(tokenId: string, token: string): Observable<boolean> {
+  /**
+   * Publishes one, with the caption as it now reads on the page.
+   *
+   * The caption is sent rather than assumed: it was drafted when the video was
+   * made and he can rewrite it before it goes out, so what is on screen is what
+   * should be published. Answers false rather than throwing.
+   */
+  publish(tokenId: string, caption: string, token: string): Observable<boolean> {
     return this.http
       .post<ApiResponse<unknown>>(
         `${environment.backendUrl}reels/${tokenId}/publish`,
-        {},
+        { caption },
         this.authorised(token)
       )
       .pipe(

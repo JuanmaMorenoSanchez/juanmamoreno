@@ -65,14 +65,16 @@ describe('PublishComponent', () => {
   });
 
   /**
-   * The caption is the thing being checked. It is written when the video is
-   * made and published unchanged, so this page is the only place it is read
-   * before it goes out under his name.
+   * The caption is the thing being checked, and his to change. What the run
+   * wrote is a draft like the essay it was built from, so this is a textarea
+   * rather than something to read.
    */
-  it('shows the caption it would go out with, in full', () => {
+  it('offers the caption it would go out with, to edit', () => {
     const { fixture } = setup();
+    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement | null;
 
-    expect(find(fixture, '.publish-caption')?.textContent).toBe(REEL.caption);
+    expect(box?.tagName).toBe('TEXTAREA');
+    expect(box?.value).toBe(REEL.caption);
   });
 
   it('publishes the one whose button was pressed', () => {
@@ -80,7 +82,47 @@ describe('PublishComponent', () => {
 
     find(fixture, '.publish-go')?.click();
 
-    expect(reels.publish).toHaveBeenCalledWith('10', 'a-real-looking-token');
+    expect(reels.publish).toHaveBeenCalledWith('10', REEL.caption, 'a-real-looking-token');
+  });
+
+  // The whole point of making it editable.
+  it('publishes what he rewrote, not what was drafted', () => {
+    const { fixture, reels } = setup();
+    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement;
+
+    box.value = 'His own words about the painting';
+    box.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    find(fixture, '.publish-go')?.click();
+
+    expect(reels.publish).toHaveBeenCalledWith(
+      '10',
+      'His own words about the painting',
+      'a-real-looking-token',
+    );
+  });
+
+  /**
+   * Instagram refuses a caption past its ceiling by rejecting the whole
+   * publication, after the video has been uploaded. Better to say so here.
+   */
+  it('will not publish a caption Instagram would refuse', () => {
+    const { fixture, reels } = setup();
+    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement;
+
+    box.value = 'x'.repeat(2201);
+    box.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    find(fixture, '.publish-go')?.click();
+
+    expect(reels.publish).not.toHaveBeenCalled();
+    expect(text(fixture)).toContain('Instagram will refuse this');
+  });
+
+  it('counts the characters against the limit', () => {
+    const { fixture } = setup();
+
+    expect(find(fixture, '.publish-count')?.textContent).toContain(String(REEL.caption.length));
   });
 
   /**
@@ -130,6 +172,19 @@ describe('PublishComponent', () => {
     fixture.detectChanges();
 
     expect(reels.pending).toHaveBeenCalledTimes(2);
+  });
+
+  // An edit to one reel is not an edit to the next one down the page.
+  it('keeps each caption to its own reel', () => {
+    const second: PendingReel = { ...REEL, tokenId: '20', name: 'Stalker', caption: 'Stalker' };
+    const { fixture } = setup({ waiting: [REEL, second] });
+    const boxes = (fixture.nativeElement as HTMLElement).querySelectorAll('textarea');
+
+    (boxes[0] as HTMLTextAreaElement).value = 'Only the first';
+    boxes[0].dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    expect((boxes[1] as HTMLTextAreaElement).value).toBe('Stalker');
   });
 
   /**

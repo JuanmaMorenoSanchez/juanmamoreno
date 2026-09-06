@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.32.0
+
+- **feat** — the caption on `/publish` can be rewritten before the reel is
+  published, with a count against Instagram's limit.
+
 ## 1.31.1
 
 - **chore** — the menu item holding the private pages is called Admin rather

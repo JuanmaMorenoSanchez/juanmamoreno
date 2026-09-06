@@ -53,6 +53,31 @@ export class PublishComponent {
   protected readonly problem = signal<string | null>(null);
 
   /**
+   * The captions as they now read, keyed by artwork.
+   *
+   * Held here rather than read off the textarea at the moment of publishing, so
+   * that what is sent is what the page has, and an edit survives the other
+   * reels on the page being dealt with.
+   */
+  private readonly edits = signal<Record<string, string>>({});
+
+  protected captionOf(reel: PendingReel): string {
+    return this.edits()[reel.tokenId] ?? reel.caption;
+  }
+
+  protected editCaption(reel: PendingReel, event: Event): void {
+    const text = (event.target as HTMLTextAreaElement).value;
+    this.edits.update((all) => ({ ...all, [reel.tokenId]: text }));
+  }
+
+  /** Instagram's own ceiling. Past it the publication is refused, not trimmed. */
+  protected readonly captionLimit = 2200;
+
+  protected tooLong(reel: PendingReel): boolean {
+    return this.captionOf(reel).length > this.captionLimit;
+  }
+
+  /**
    * The reel whose discard button has been pressed once.
    *
    * Discarding deletes a video that took minutes of ffmpeg to make, and it sits
@@ -62,8 +87,10 @@ export class PublishComponent {
   protected readonly confirming = signal<string | null>(null);
 
   protected publish(reel: PendingReel): void {
+    if (this.tooLong(reel)) return;
     this.confirming.set(null);
-    this.act(reel, (token) => this.reels.publish(reel.tokenId, token), 'publish');
+    const caption = this.captionOf(reel);
+    this.act(reel, (token) => this.reels.publish(reel.tokenId, caption, token), 'publish');
   }
 
   protected discard(reel: PendingReel): void {
