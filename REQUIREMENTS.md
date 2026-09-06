@@ -383,12 +383,31 @@ that has never signed in here. That is every reader of the catalogue.
 including that a reader loads nothing), and the browser probe
 
 ### R39 — The way in and out is his alone · met
-The menu shows "Sign out" while he is signed in, and "Sign in" once the session
-has lapsed — but only on a browser that has signed in here before, so a reader
-is never offered a login to somewhere that is not theirs. The marker survives
-signing out, or signing out would take away the way back.
-*Proven by:* `admin-auth.service.spec.ts` (the marker outliving a sign-out), and
-the browser probe across all three states
+Signed in, the menu carries one extra item — **Workshop** — and every address
+behind the guard hangs off it: the studio, the reels waiting to be published,
+and the way out. One place to add the next private page, and one item a reader
+can be certain does not appear for them. It sits in the same template as the
+rest of the menu, so on a narrow screen it travels into the drawer with
+everything else.
+
+Two different questions decide what is shown. Being signed in decides whether
+Workshop is drawn at all. Having signed in *at some point* is the weaker one,
+and all it does is offer "Sign in" once a session has lapsed — but only on a
+browser that has signed in here before, so a reader is never offered a login to
+somewhere that is not theirs. That marker survives signing out, or signing out
+would take away the way back.
+
+Not translated, alone among the menus: these pages exist at one address rather
+than two and are written in one language, so a Spanish label would promise a
+Spanish page that is not there.
+
+None of it is a security boundary — the guard on each route decides what is
+drawn and the backend decides what happens. This decides only what is offered.
+*Proven by:* `top-menu.component.spec.ts` "is not there for a reader", "gathers
+the private pages and the way out", "links each of them to its own address",
+"signs out from inside it", "offers the way back in, and nothing else, once the
+session has lapsed"; `admin-auth.service.spec.ts` (the marker outliving a
+sign-out), and the browser probe across all three states
 
 ### R37 — The artist can see which essays he has been over · met
 The catalogue can be narrowed to the artworks whose essay has been corrected by

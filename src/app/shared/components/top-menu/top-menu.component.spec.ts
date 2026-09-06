@@ -7,6 +7,7 @@ import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { vi } from 'vitest';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { TopMenuComponent } from './top-menu.component';
 
 describe('TopMenuComponent language switcher', () => {
@@ -95,5 +96,123 @@ describe('TopMenuComponent language switcher', () => {
     component.selectLanguage(ALLOWED_LANGUAGES.ENGLISH);
 
     expect(navigate).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * The one menu item that is not for the reader.
+ *
+ * Every address behind the guard hangs off it — the studio, the reels waiting
+ * to be published, and the way out — so there is one place to add the next one
+ * and one place a reader can be certain does not appear for them.
+ */
+describe('TopMenuComponent workshop menu', () => {
+  /** Opens the menu if it is there, and returns what it offers. */
+  async function setup(session: { signedIn: boolean; knownHere: boolean }) {
+    localStorage.clear();
+    TestBed.resetTestingModule();
+    const signOut = vi.fn();
+
+    await TestBed.configureTestingModule({
+      imports: [TopMenuComponent],
+      providers: [
+        provideTranslateService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimations(),
+        provideRouter([
+          { path: 'studio', children: [] },
+          { path: 'publish', children: [] },
+          { path: 'door', children: [] },
+        ]),
+        { provide: ARTWORK_PORT, useValue: { getAvailableYears: () => new Set<number>() } },
+        {
+          provide: AdminAuthService,
+          useValue: {
+            isAdmin: () => session.signedIn,
+            knownHere: () => session.knownHere,
+            bearerToken: () => (session.signedIn ? 'a-real-looking-token' : null),
+            identity: () => (session.signedIn ? { email: 'him@example.test' } : null),
+            signOut,
+          },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(TopMenuComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const trigger = host.querySelector<HTMLElement>('.studio-session');
+    return { fixture, host, trigger, signOut };
+  }
+
+  /** What the opened menu offers, by visible text. */
+  const itemsOf = (trigger: HTMLElement | null) => {
+    trigger?.click();
+    return [...document.querySelectorAll('.mat-mdc-menu-item')].map((item) =>
+      (item.textContent ?? '').trim(),
+    );
+  };
+
+  afterEach(() => TestBed.resetTestingModule());
+
+  /**
+   * The whole point. A reader has never signed in here, so as far as this
+   * browser is concerned there is nobody — and none of these addresses is
+   * offered to them.
+   */
+  it('is not there for a reader', async () => {
+    const { trigger, host } = await setup({ signedIn: false, knownHere: false });
+
+    expect(trigger).toBeNull();
+    expect(host.textContent).not.toContain('Workshop');
+    expect(host.textContent).not.toContain('Studio');
+    expect(host.textContent).not.toContain('Reels');
+  });
+
+  // Signed in: one item, holding everything that is his.
+  it('gathers the private pages and the way out', async () => {
+    const { trigger } = await setup({ signedIn: true, knownHere: true });
+
+    expect(trigger?.textContent).toContain('Workshop');
+    expect(itemsOf(trigger)).toEqual(['Studio', 'Reels waiting', 'Sign out']);
+  });
+
+  it('links each of them to its own address', async () => {
+    const { trigger } = await setup({ signedIn: true, knownHere: true });
+    trigger?.click();
+
+    const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
+      a.getAttribute('href'),
+    );
+    expect(links).toEqual(['/studio', '/publish']);
+  });
+
+  it('signs out from inside it', async () => {
+    const { trigger, signOut } = await setup({ signedIn: true, knownHere: true });
+    trigger?.click();
+
+    const out = [...document.querySelectorAll('.mat-mdc-menu-item')].find((item) =>
+      (item.textContent ?? '').includes('Sign out'),
+    );
+    (out as HTMLElement)?.click();
+
+    expect(signOut).toHaveBeenCalled();
+  });
+
+  /**
+   * A lapsed session on his own browser. The menu goes with the session — the
+   * pages behind it would refuse him anyway — but the way back in stays, or
+   * signing out would take away the way back.
+   */
+  it('offers the way back in, and nothing else, once the session has lapsed', async () => {
+    const { trigger, host } = await setup({ signedIn: false, knownHere: true });
+
+    expect(trigger?.textContent).toContain('Sign in');
+    expect(trigger?.getAttribute('href')).toBe('/door');
+    expect(host.textContent).not.toContain('Workshop');
   });
 });

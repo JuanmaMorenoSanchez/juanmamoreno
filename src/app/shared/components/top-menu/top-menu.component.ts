@@ -50,9 +50,15 @@ export class TopMenuComponent {
   /**
    * The way in and out of the studio, for the one person it belongs to.
    *
-   * Shown only on a browser that has signed in here before, so a reader is
-   * never offered a login to a place that is not theirs. The marker survives
-   * signing out on purpose: otherwise signing out would take away the way back.
+   * Two different questions. `signedIn` decides whether the workshop menu is
+   * drawn at all — every private address in the site hangs off it, so a reader
+   * is never shown one. `knownHere` is the weaker one: this browser has signed
+   * in at some point, which is what offers the way back after a session lapses.
+   * The marker survives signing out on purpose, or signing out would take away
+   * the way back in.
+   *
+   * Neither is a security boundary. The guard on each route decides what is
+   * drawn and the backend decides what happens; this decides what is offered.
    */
   private auth = inject(AdminAuthService);
   protected readonly signedIn = computed(() => this.auth.isAdmin());

@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.31.0
+
+- **feat** — a Workshop item appears in the menu when he is signed in, holding
+  every private address — the studio, the reels waiting, and signing out. A
+  reader never sees it.
+
 ## 1.30.0
 
 - **feat** — `/publish`, behind his own account: the reels made overnight, with
