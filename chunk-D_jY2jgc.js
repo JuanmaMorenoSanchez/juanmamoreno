@@ -1,0 +1,3 @@
+import{Br as ue,Qr as y$1}from"./chunk-DUENG5To.js";import{s as St}from"./chunk-Cze0NXrc.js";import{b as e}from"./main-47MFR5IS.js";var y=(()=>{class t{constructor(){this.http=y$1(St)}sendContactMessage(e$1){return this.http.post(`${e.backendUrl}contact`,e$1)}sendQuoteRequest({email:e,message:n,artworkName:o,tokenId:r,mode:p}){let i=p===`info`?`Availability enquiry`:`Price request`,f=`${i}: ${o} (#${r})`,d=`${i} for "${o}" (id ${r}).
+
+${n.trim()?n.trim():`(no additional message)`}`;return this.sendContactMessage({name:f,email:e,message:d})}static{this.ɵfac=function(n){return new(n||t)}}static{this.ɵprov=ue({token:t,factory:t.ɵfac,providedIn:`root`})}}return t})();export{y as t};
