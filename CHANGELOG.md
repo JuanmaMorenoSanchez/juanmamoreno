@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.33.0
+
+- **fix** — sixty artwork pages were being published with no painting on them:
+  the catalogue is now fetched once per build instead of once per page, and the
+  build refuses to publish a page like that again.
+- **feat** — the second photograph of a painting names the painting's own page
+  as its canonical, and the sitemap lists only pages that stand for themselves.
+
 ## 1.32.0
 
 - **feat** — the caption on `/publish` can be rewritten before the reel is

@@ -25,6 +25,7 @@ import {
   of,
   OperatorFunction,
   scan,
+  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -56,6 +57,23 @@ const ART_PIECES_KEY = makeStateKey<Nft[]>('artPieces');
  * down. A page without its essay is worth having; a failed deploy is not.
  */
 const PRERENDER_FETCH_TIMEOUT_MS = 8000;
+
+/**
+ * The catalogue, fetched once for a whole build.
+ *
+ * Every artwork page needs the whole catalogue, and each one used to ask for it
+ * again: three hundred and ninety requests for the same 430 kB document, over
+ * one deploy. Most arrived. Sixty did not, and a page whose catalogue never came
+ * fell back to an empty store and was written out with no painting on it at all
+ * — no title, no image, nothing but the chrome. Google found them, could not
+ * tell thirty-four of them apart, and chose its own canonical for one.
+ *
+ * Prerendering runs in one process, so one request answers all of them. It is
+ * kept here rather than in the service because the service is built per page.
+ * Browsers never touch it: there the catalogue arrives in the page itself,
+ * through the transfer state.
+ */
+let catalogueForThisBuild: Observable<Nft[]> | null = null;
 
 export class ArtworkInfraService extends Artwork implements ArtworkPort {
   private http = inject(HttpClient);
@@ -96,8 +114,14 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     // — which is how the built /artworks came to contain a spinner and no
     // artworks at all. The build has the network and wants the real catalogue
     // anyway; the bundled fallback exists to give a browser something instant.
+    //
+    // Asked for once and shared by every page of the build. `shareReplay` keeps
+    // the answer rather than the request, so pages rendered later read it
+    // without going near the network — and, more to the point, without the
+    // chance of being the one request that times out.
     if (!this.isBrowser) {
-      return apiCall$;
+      catalogueForThisBuild ??= apiCall$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      return catalogueForThisBuild;
     }
 
     if (this.sessionQuery.selectArtPieces.length) {

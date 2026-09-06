@@ -89,6 +89,49 @@ backend, links opening in a new tab.
 *Proven by:* `artwork-critic.component.spec.ts` "shows the essay with no way to
 change it", and the prerendered essay text in `scripts/verify-render.mjs`
 
+### R74 — Every artwork page has its artwork on it · met
+A page under `/artwork/:id` carries the painting's name in its title and
+advertises its picture. The build refuses to publish one that does not.
+
+It exists because sixty of them shipped without either. Each page fetched the
+whole 430 kB catalogue for itself — three hundred and ninety requests for one
+document over a deploy — and sixty of those did not arrive inside the eight
+seconds a prerendered route is given. A page whose catalogue never came fell
+back to an empty store and was written out with nothing on it: no name, no
+picture, nothing but the menu and the footer. They passed every check there
+was, because three hundred characters of navigation clears the hundred and
+twenty the content check asks for.
+
+Google found them. It filed thirty-four English pages as duplicates of each
+other, declined to index sixty-six, and chose its own canonical for
+`/es/artwork/153/`, which was one of the empty ones.
+
+Both halves are fixed: the catalogue is fetched once for a whole build and
+shared by every page, so there are no longer three hundred and ninety chances
+to be the request that fails; and the check above means a page like that cannot
+be published again even if some other cause produces one.
+*Proven by:* `scripts/verify-render.mjs` check 6b, confirmed to fail — and to
+exit 1 — against a page of the exact shape the sixty had
+
+### R75 — One painting, one address · met
+Some paintings were photographed more than once and each photograph has its own
+certificate, so several token ids open the same page: same name, same picture,
+same essay, differing only in the address at the top. Twenty-four of the
+hundred and eighty-six are copies in that sense.
+
+Each of those names the painting's own page — the frontal view the catalogue
+puts a tile on — as its canonical, and its hreflang pair moves with it, because
+a canonical and an hreflang that disagree are worse than neither. The sitemap
+lists only pages that stand for themselves, since submitting a page the site
+itself calls a copy is how a sitemap comes to contradict the pages it lists.
+
+The build checks that a page naming another as the original names one that was
+actually built, in the same language, and that the original is not itself a
+copy.
+*Proven by:* `seo-title.strategy.spec.ts` "a page that is a second photograph of
+a painting" (4 tests), `scripts/verify-render.mjs` check 1, and the sitemap,
+which lists 342 of the 390 pages
+
 ### R11 — A build never commissions an essay · met
 Nothing does any more, on any request a reader or a build can make: the route
 that used to write one when asked for a missing essay no longer writes at all

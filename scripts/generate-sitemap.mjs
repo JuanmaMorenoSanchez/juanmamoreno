@@ -37,7 +37,27 @@ async function prerenderedRoutes(dir, base = dir) {
   return routes;
 }
 
-const routes = await prerenderedRoutes(OUTPUT_DIR);
+/**
+ * Only the pages that stand for themselves.
+ *
+ * Some paintings were photographed more than once and each photograph has its
+ * own token, so several addresses open the same page; those name the painting's
+ * own address as canonical. Submitting them here as well would be asking search
+ * to index pages the site itself says are copies — which is how a sitemap comes
+ * to disagree with the pages it lists.
+ */
+async function namesItself(route) {
+  const html = await readFile(join(OUTPUT_DIR, route, 'index.html'), 'utf8');
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+  const own = route ? `${ORIGIN}/${route}/` : `${ORIGIN}/`;
+  return !canonical || canonical === own;
+}
+
+const allRoutes = await prerenderedRoutes(OUTPUT_DIR);
+const keep = await Promise.all(allRoutes.map(namesItself));
+const copies = allRoutes.filter((_, i) => !keep[i]).length;
+const routes = allRoutes.filter((_, i) => keep[i]);
+if (copies) console.log(`sitemap: leaving out ${copies} page(s) that name another as the original`);
 const sorted = routes.sort((a, b) => {
   const known = (route) => (route in PRIORITIES ? 0 : 1);
   return known(a) - known(b) || a.localeCompare(b);

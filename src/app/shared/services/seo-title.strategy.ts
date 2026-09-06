@@ -298,6 +298,29 @@ export class SeoTitleStrategy extends TitleStrategy {
   }
 
   /**
+   * Points this page at another one as the original it is a copy of.
+   *
+   * Some paintings were photographed more than once and each photograph has its
+   * own certificate, so the same painting has several token ids — and the page
+   * each of them opens is the same page: same name, same picture, same essay,
+   * differing only in the address at the top. Twenty-four of the hundred and
+   * eighty-six are copies in that sense.
+   *
+   * Left alone, that is two dozen duplicates for search to sort out, which it
+   * does by picking one itself and saying so. Naming the painting's own page as
+   * the canonical answers the question instead of leaving it open, and the
+   * hreflang pair moves with it: a canonical and an hreflang that disagree are
+   * worse than neither.
+   */
+  pointCanonicalAt(route: string): void {
+    const bare = route.replace(/^\/+|\/+$/g, '');
+    const url = this.absoluteUrl(bare);
+    this.meta.updateTag({ property: 'og:url', content: url });
+    this.setCanonical(url);
+    this.setLanguageAlternates(bare);
+  }
+
+  /**
    * The URL exactly as GitHub Pages serves it.
    *
    * Prerendering writes each route as `<route>/index.html`, and Pages answers

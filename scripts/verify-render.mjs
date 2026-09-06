@@ -62,6 +62,8 @@ const textOf = (html) => {
 };
 
 const checked = [];
+/** Pages that name another page as the original they are a copy of. */
+const pointsElsewhere = [];
 for (const { file, route } of await pages(OUTPUT_DIR)) {
   const html = await readFile(file, 'utf8');
   const text = textOf(html);
@@ -69,9 +71,29 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   const url = route ? `${ORIGIN}/${route}/` : `${ORIGIN}/`;
   checked.push(route);
 
-  // 1. The page says it is itself. Every route once claimed to be the home page.
+  // 1. The page says which page it is. Every route once claimed to be the home
+  //    page, so this used to insist on the page's own address — but some
+  //    paintings were photographed more than once and each photograph has its
+  //    own token, so several addresses open one page. Those name the painting's
+  //    own address instead of their own, which is what rel=canonical is for.
+  //
+  //    What is still checked is that the answer is a page that exists, in the
+  //    same language, and that it is only an artwork page ever saying it.
   const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
-  if (canonical !== url) fail(route, `canonical is ${canonical ?? 'missing'}, expected ${url}`);
+  const canonicalRoute = (canonical ?? '').replace(`${ORIGIN}/`, '').replace(/\/$/, '');
+  if (!canonical) {
+    fail(route, 'no canonical');
+  } else if (canonical !== url) {
+    if (!/^(es\/)?artwork\/\d+$/.test(route)) {
+      fail(route, `canonical is ${canonical}, expected ${url}`);
+    } else if (!/^(es\/)?artwork\/\d+$/.test(canonicalRoute)) {
+      fail(route, `canonical points outside the catalogue: ${canonical}`);
+    } else if (canonicalRoute.startsWith('es/') !== spanish) {
+      fail(route, `canonical points at the other language: ${canonical}`);
+    } else {
+      pointsElsewhere.push([route, canonicalRoute]);
+    }
+  }
 
   // 2. A title of its own, not the shell's default.
   const title = html.match(/<title>([^<]*)<\/title>/)?.[1]?.trim();
@@ -81,7 +103,7 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   // 3. Both languages declared, pointing at each other.
   const alternates = [...html.matchAll(/hreflang="([^"]+)" href="([^"]+)"/g)];
   if (alternates.length !== 3) fail(route, `${alternates.length} hreflang tags, expected 3`);
-  const bare = route.replace(/^es\/?/, '');
+  const bare = (canonicalRoute || route).replace(/^es\/?/, '');
   const expectedEn = bare ? `${ORIGIN}/${bare}/` : `${ORIGIN}/`;
   const en = alternates.find(([, lang]) => lang === 'en')?.[2];
   if (en && en !== expectedEn) fail(route, `hreflang en points at ${en}, expected ${expectedEn}`);
@@ -98,6 +120,29 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   // 6. Something actually rendered. A page of chrome and no content is the
   //    shape /artworks had when its data never arrived at build time.
   if (text.length < 120) fail(route, `only ${text.length} characters of text`);
+
+  // 6b. An artwork page has an artwork on it.
+  //
+  //     A hundred and twenty characters of chrome was not a high enough bar.
+  //     Sixty of these pages once shipped with no painting at all — no name, no
+  //     image, nothing but the menu and the footer — because each page fetched
+  //     the catalogue separately and those sixty requests did not arrive. They
+  //     passed every check above: they had a canonical, a title, hreflang and
+  //     three hundred characters of navigation. Google found them, could not
+  //     tell thirty-four of them apart, and picked its own canonical for one.
+  //
+  //     So an artwork page is asked for the two things that make it that
+  //     artwork's page: the painting's name in the title, and its picture.
+  if (/^(es\/)?artwork\/\d+$/.test(route)) {
+    if (/^(Artwork|Obra) · /.test(title ?? ''))
+      fail(route, 'no artwork on it: the title never got the painting\'s name');
+    // The painting itself is not an <img> in the served markup — the viewer
+    // draws it once the page is running — so what is checked is the picture the
+    // page advertises, which comes from the same artwork and is empty without
+    // it.
+    if (!/property="og:image" content="https?:\/\//.test(html))
+      fail(route, 'no artwork on it: no picture is advertised');
+  }
 
   // 7. Nothing in the page shows the build asked the reverse image search.
   //
@@ -119,8 +164,21 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
     fail(route, 'Spanish navigation on an English page');
 }
 
+// Every page a copy names must itself be a page, or the copies point nowhere.
+const built = new Set(checked);
+for (const [route, target] of pointsElsewhere) {
+  if (!built.has(target)) fail(route, `names ${target} as the original, which was not built`);
+  else if (pointsElsewhere.some(([from]) => from === target))
+    fail(route, `names ${target} as the original, which is itself a copy`);
+}
+
 const english = checked.filter((r) => !(r === 'es' || r.startsWith('es/'))).length;
 console.log(`verify-render: ${checked.length} pages (${english} en / ${checked.length - english} es)`);
+if (pointsElsewhere.length)
+  console.log(
+    `verify-render: ${pointsElsewhere.length} of them are second photographs of a painting ` +
+      `already listed, and name it as the original.`,
+  );
 
 if (failures.length) {
   const shown = failures.slice(0, 25);

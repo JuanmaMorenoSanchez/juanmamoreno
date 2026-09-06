@@ -85,6 +85,51 @@ describe('SeoTitleStrategy', () => {
     expect(document.head.querySelectorAll('link[rel="alternate"][hreflang]').length).toBe(3);
   });
 
+  /**
+   * Some paintings were photographed more than once and each photograph has its
+   * own certificate, so several addresses open one page: same name, same
+   * picture, same essay. Twenty-four of the hundred and eighty-six are copies in
+   * that sense, and search, left to decide for itself, picked one and said so.
+   */
+  describe('a page that is a second photograph of a painting', () => {
+    it('names the painting own page as the original', async () => {
+      await navigateTo('/about');
+
+      strategy.pointCanonicalAt('/artwork/193');
+
+      expect(linkHref('link[rel="canonical"]')).toBe('https://juanmamoreno.com/artwork/193/');
+    });
+
+    // A canonical and an hreflang that disagree are worse than neither: the
+    // pair has to move with it.
+    it('pairs the languages of the original, not of itself', async () => {
+      await navigateTo('/about');
+
+      strategy.pointCanonicalAt('/artwork/193');
+
+      expect(linkHref('link[hreflang="en"]')).toBe('https://juanmamoreno.com/artwork/193/');
+      expect(linkHref('link[hreflang="es"]')).toBe('https://juanmamoreno.com/es/artwork/193/');
+    });
+
+    it('keeps the trailing slash, so the original is not itself a redirect', async () => {
+      await navigateTo('/about');
+
+      strategy.pointCanonicalAt('/es/artwork/193');
+
+      expect(linkHref('link[rel="canonical"]')).toBe('https://juanmamoreno.com/es/artwork/193/');
+    });
+
+    it('leaves one canonical and one set of alternates behind', async () => {
+      await navigateTo('/about');
+
+      strategy.pointCanonicalAt('/artwork/193');
+      strategy.pointCanonicalAt('/artwork/193');
+
+      expect(document.head.querySelectorAll('link[rel="canonical"]').length).toBe(1);
+      expect(document.head.querySelectorAll('link[rel="alternate"][hreflang]').length).toBe(3);
+    });
+  });
+
   describe('artwork structured data', () => {
     const artwork = {
       name: 'Secuestro en la rave',

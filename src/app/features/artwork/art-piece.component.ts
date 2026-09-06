@@ -199,6 +199,22 @@ export class ArtPieceComponent {
     () => this.orderedFrontalPieces().length > 1
   );
 
+  /**
+   * The token whose page stands for this painting.
+   *
+   * The frontal view of the group sharing this name — the same one the
+   * catalogue puts a tile on — so the page search keeps is the page a reader
+   * arrives at from anywhere else on the site. Falls back to the artwork itself
+   * while the catalogue has not loaded, which is the honest answer: with
+   * nothing to compare against, this page is all there is.
+   */
+  private canonicalTokenFor(nft: Nft): string {
+    const sameName = this.nfts().filter((piece) => piece.name === nft.name);
+    if (sameName.length < 2) return nft.tokenId;
+    const frontal = sameName.find((piece) => this.artworkService.isFrontalView(piece, sameName));
+    return frontal?.tokenId ?? nft.tokenId;
+  }
+
   constructor() {
     effect(() => {
       this.displayingIndex.set(this.defaultDisplayIndex() || 0);
@@ -251,6 +267,14 @@ export class ArtPieceComponent {
       // below gets the whole thing, where there is no such limit and where a
       // machine reading about the painting benefits from all of it.
       this.seo.setPageTitle(nft.name, metaDescription(description), image, 'article');
+      // Several photographs of one painting mean several token ids opening the
+      // same page. Whichever is asked for, the painting's own page is named as
+      // the original, so search has one address for one work rather than up to
+      // seven that it must choose between.
+      const original = this.canonicalTokenFor(nft);
+      this.seo.pointCanonicalAt(
+        this.language.link(`artwork/${original}`)
+      );
       this.seo.setArtworkStructuredData({
         name: nft.name,
         url: `https://juanmamoreno.com/artwork/${nft.tokenId}/`,
