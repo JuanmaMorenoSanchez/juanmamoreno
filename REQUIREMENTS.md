@@ -163,16 +163,56 @@ prompt.
 *Proven by:* `admin-auth.service.spec.ts` "remembers the session"
 
 ### R18 — The studio is not public · met
-`/studio` and `/door` are never prerendered, are excluded from the sitemap, are
-disallowed in robots.txt and carry `noindex`.
-*Proven by:* `app.routes.server.ts`, `robots.txt`, `verify-render` (neither
+`/studio`, `/door` and `/publish` are never prerendered, are excluded from the
+sitemap, are disallowed in robots.txt and carry `noindex`.
+*Proven by:* `app.routes.server.ts`, `robots.txt`, `verify-render` (none of them
 appears among the built pages)
 
 > **Not a security boundary.** The site is static: the bundle is public and
 > localStorage belongs to the reader, so the guard decides what the interface
-> shows and nothing more. Anything the studio is ever given to hold must be
+> shows and nothing more. Anything these pages are given to hold must be
 > protected by the backend verifying this token — signature included — on every
-> request. Until then, `/studio` is empty and there is nothing to take.
+> request.
+>
+> `/publish` is the first page where that matters rather than being
+> hypothetical, and it is why every route behind it is guarded on the backend
+> too: the guard here decides whether the page is drawn, and the backend decides
+> whether anything happens. Reaching the page without the account gets an empty
+> list, because the requests it makes are refused.
+
+### R73 — Reels are watched before they go out · met
+A page of his own at `/publish` lists the reels the nightly run has made and not
+published: the video, the caption it would go out with, and the date it was
+made. Each can be published as it stands, thrown away, or downloaded.
+
+**Instagram has no draft an API can write to.** Publishing is a media container
+followed by a `media_publish` call, and a container left unpublished is invisible
+in the app, cannot be edited, and expires in a day. So there is no "save it as a
+draft and edit it in the app later" to build. Downloading the file and posting it
+from the phone is the way to edit one, which is why the page offers the file: the
+video is at a public url in the bucket, which is how Instagram fetches it anyway.
+
+The caption is shown in full and unwrapped, because it is the thing being
+checked — it was written when the video was made and is published unchanged, so
+this page is the only place it is read before it goes out under his name.
+
+**An empty queue and a server that did not answer are told apart.** Both leave
+the page with nothing on it and only one of them means everything is working;
+saying "nothing is waiting" when the request failed is the reassuring answer and
+the wrong one.
+
+After publishing or discarding one the list is asked for again, so a reel that
+has gone cannot be published twice from a stale page.
+
+**Discard asks twice.** It deletes a video that took minutes of ffmpeg to make
+and its button sits beside the one that publishes; the first press arms it and
+says "Really discard?", the second does it. Reaching for publish disarms it
+rather than counting as the confirmation.
+*Proven by:* `publish.component.spec.ts` (10 tests, including "shows the caption
+it would go out with, in full", "tells an empty queue apart from a server that
+did not answer", "asks again once one has been dealt with", "asks before
+throwing one away", "forgets an armed discard when the other button is used"),
+and backend B26
 
 ---
 

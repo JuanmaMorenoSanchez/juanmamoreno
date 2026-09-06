@@ -1,0 +1,106 @@
+@use '../../../styles/tokens';
+@use '../../../styles/breakpoints' as bp;
+
+.publish {
+  min-height: 40vh;
+  padding-bottom: tokens.$spacing-xl;
+}
+
+.publish-note,
+.publish-problem {
+  margin-top: tokens.$spacing-lg;
+  font-size: bp.fluid-size(0.8125rem, 0.875rem);
+  color: var(--catalog-soft);
+}
+
+.publish-problem {
+  color: var(--catalog-sold, #b3261e);
+}
+
+.publish-reel {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-lg;
+  margin-top: tokens.$spacing-xl;
+  padding-bottom: tokens.$spacing-xl;
+  border-bottom: 1px solid var(--catalog-rule, rgb(0 0 0 / 8%));
+
+  // The video is 1080x1920. Stacked there is no room to read the caption
+  // beside it, and the caption is the thing being checked.
+  @include bp.respond-above(tokens.$breakpoint-md) {
+    flex-direction: row;
+  }
+}
+
+.publish-video {
+  flex: 0 0 auto;
+  width: 240px;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  border-radius: 4px;
+}
+
+.publish-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.publish-name {
+  margin: 0;
+  font-size: bp.fluid-size(1rem, 1.25rem);
+  font-weight: 400;
+}
+
+.publish-made {
+  margin: tokens.$spacing-xs 0 tokens.$spacing-md;
+  font-size: 0.75rem;
+  color: var(--catalog-soft);
+}
+
+.publish-caption {
+  margin: 0 0 tokens.$spacing-md;
+  max-height: 16rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  // The caption is what Instagram will show, so it is shown in the page's own
+  // reading face rather than a monospace that would misrepresent its length.
+  font-family: inherit;
+  font-size: bp.fluid-size(0.8125rem, 0.875rem);
+  line-height: 1.6;
+  color: var(--catalog-ink);
+}
+
+.publish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-md;
+}
+
+.publish-go,
+.publish-discard,
+.publish-download {
+  padding: 0.5rem 1rem;
+  border: 1px solid currentcolor;
+  border-radius: 2px;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  color: var(--catalog-ink);
+  text-decoration: none;
+}
+
+.publish-go[disabled],
+.publish-discard[disabled] {
+  cursor: default;
+  opacity: 0.4;
+}
+
+// Not greyed: it is a live button sitting beside the one that publishes, and
+// the lighter it was drawn the more it read as already disabled.
+.publish-discard--armed {
+  border-color: var(--catalog-sold, #b3261e);
+  color: var(--catalog-sold, #b3261e);
+}

@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.30.0
+
+- **feat** — `/publish`, behind his own account: the reels made overnight, with
+  the caption each would go out with, to publish, discard or download. Instagram
+  has no draft an API can write to, so the video waits in the bucket instead.
+
 ## 1.29.0
 
 - **feat** — an essay appears on an artwork page only once the artist has been

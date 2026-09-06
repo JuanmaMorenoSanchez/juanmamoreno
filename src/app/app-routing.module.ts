@@ -111,6 +111,7 @@ export const routes: Routes = [
   // parent, which would otherwise claim the prefix and fail on the child.
   { path: 'es/studio', redirectTo: '/studio' },
   { path: 'es/door', redirectTo: '/door' },
+  { path: 'es/publish', redirectTo: '/publish' },
   // Outside the language trees: these are not pages anyone reads, so they need
   // no Spanish twin, no hreflang pair and no place in the sitemap.
   {
@@ -124,6 +125,15 @@ export const routes: Routes = [
     canActivate: [readerLanguage, adminOnly],
     loadComponent: () => import('@features/studio/studio.component').then((m) => m.StudioComponent),
     data: { title: 'Studio', hideBreadcrumb: true, noindex: true },
+  },
+  // Reels made overnight and waiting to be looked at. Alongside the studio and
+  // for the same reasons: his, unreadable to anyone else, and not a page.
+  {
+    path: 'publish',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/publish/publish.component').then((m) => m.PublishComponent),
+    data: { title: 'Publish', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },

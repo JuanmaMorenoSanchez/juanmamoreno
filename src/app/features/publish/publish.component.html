@@ -1,0 +1,72 @@
+<div class="container margin-top publish">
+  <h1 class="catalog-heading">Reels waiting</h1>
+
+  <!--
+    English only, and no translation keys. This page is not read by anybody but
+    him, which is also why it has no Spanish twin and no place in the sitemap.
+  -->
+  @if (couldNotAsk()) {
+    <p class="publish-note">Could not reach the server. Nothing has been published.</p>
+  } @else if (nothingWaiting()) {
+    <p class="publish-note">
+      Nothing is waiting. The next reel is made on the next even day, if a painting is ready for
+      one.
+    </p>
+  }
+
+  @if (problem(); as message) {
+    <p class="publish-problem" role="alert">{{ message }}</p>
+  }
+
+  @for (reel of waiting(); track reel.tokenId) {
+    <article class="publish-reel">
+      <!--
+        Muted and not autoplaying: several of these on a page, all talking at
+        once, on a page whose whole purpose is watching one at a time.
+      -->
+      <video
+        class="publish-video"
+        [src]="reel.video"
+        controls
+        muted
+        playsinline
+        preload="metadata"
+      ></video>
+
+      <div class="publish-detail">
+        <h2 class="publish-name">{{ reel.name }}</h2>
+        <p class="publish-made">Made {{ reel.renderedAt | slice: 0 : 10 }}</p>
+
+        <!-- The caption exactly as it will go out, so it is read before it does. -->
+        <pre class="publish-caption">{{ reel.caption }}</pre>
+
+        <div class="publish-actions">
+          <button
+            type="button"
+            class="publish-go"
+            [disabled]="busy() !== null"
+            (click)="publish(reel)"
+          >
+            {{ busy() === reel.tokenId ? 'Publishing…' : 'Publish to Instagram' }}
+          </button>
+          <button
+            type="button"
+            class="publish-discard"
+            [class.publish-discard--armed]="confirming() === reel.tokenId"
+            [disabled]="busy() !== null"
+            (click)="discard(reel)"
+          >
+            {{ confirming() === reel.tokenId ? 'Really discard?' : 'Discard' }}
+          </button>
+          <!--
+            The way to edit one. Instagram cannot be given a draft, so editing
+            means downloading the file and posting it from the app by hand.
+          -->
+          <a class="publish-download" [href]="reel.video" download target="_blank" rel="noopener">
+            Download
+          </a>
+        </div>
+      </div>
+    </article>
+  }
+</div>
