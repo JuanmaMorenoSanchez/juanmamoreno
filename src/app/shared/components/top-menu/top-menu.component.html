@@ -99,8 +99,8 @@
     does not appear for them.
   -->
   @if (signedIn()) {
-    <button class="studio-session" mat-button [matMenuTriggerFor]="workshopMenu">
-      Workshop
+    <button class="studio-session" mat-button [matMenuTriggerFor]="adminMenu">
+      Admin
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
   } @else if (knownHere()) {
@@ -113,7 +113,7 @@
   address rather than two and are written in one language, so a Spanish label
   would promise a Spanish page that is not there.
 -->
-<mat-menu #workshopMenu="matMenu">
+<mat-menu #adminMenu="matMenu">
   <a mat-menu-item routerLink="/studio">Studio</a>
   <a mat-menu-item routerLink="/publish">Reels waiting</a>
   <button mat-menu-item type="button" (click)="signOut()">Sign out</button>

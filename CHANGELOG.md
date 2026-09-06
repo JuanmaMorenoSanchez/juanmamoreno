@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.31.1
+
+- **chore** — the menu item holding the private pages is called Admin rather
+  than Workshop.
+
 ## 1.31.0
 
 - **feat** — a Workshop item appears in the menu when he is signed in, holding

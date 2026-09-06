@@ -168,7 +168,7 @@ describe('TopMenuComponent workshop menu', () => {
     const { trigger, host } = await setup({ signedIn: false, knownHere: false });
 
     expect(trigger).toBeNull();
-    expect(host.textContent).not.toContain('Workshop');
+    expect(host.textContent).not.toContain('Admin');
     expect(host.textContent).not.toContain('Studio');
     expect(host.textContent).not.toContain('Reels');
   });
@@ -177,7 +177,7 @@ describe('TopMenuComponent workshop menu', () => {
   it('gathers the private pages and the way out', async () => {
     const { trigger } = await setup({ signedIn: true, knownHere: true });
 
-    expect(trigger?.textContent).toContain('Workshop');
+    expect(trigger?.textContent).toContain('Admin');
     expect(itemsOf(trigger)).toEqual(['Studio', 'Reels waiting', 'Sign out']);
   });
 
@@ -213,6 +213,6 @@ describe('TopMenuComponent workshop menu', () => {
 
     expect(trigger?.textContent).toContain('Sign in');
     expect(trigger?.getAttribute('href')).toBe('/door');
-    expect(host.textContent).not.toContain('Workshop');
+    expect(host.textContent).not.toContain('Admin');
   });
 });

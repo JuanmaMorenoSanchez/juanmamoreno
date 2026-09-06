@@ -383,7 +383,7 @@ that has never signed in here. That is every reader of the catalogue.
 including that a reader loads nothing), and the browser probe
 
 ### R39 — The way in and out is his alone · met
-Signed in, the menu carries one extra item — **Workshop** — and every address
+Signed in, the menu carries one extra item — **Admin** — and every address
 behind the guard hangs off it: the studio, the reels waiting to be published,
 and the way out. One place to add the next private page, and one item a reader
 can be certain does not appear for them. It sits in the same template as the
@@ -391,7 +391,7 @@ rest of the menu, so on a narrow screen it travels into the drawer with
 everything else.
 
 Two different questions decide what is shown. Being signed in decides whether
-Workshop is drawn at all. Having signed in *at some point* is the weaker one,
+Admin is drawn at all. Having signed in *at some point* is the weaker one,
 and all it does is offer "Sign in" once a session has lapsed — but only on a
 browser that has signed in here before, so a reader is never offered a login to
 somewhere that is not theirs. That marker survives signing out, or signing out
