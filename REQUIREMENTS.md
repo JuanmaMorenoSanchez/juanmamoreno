@@ -235,14 +235,26 @@ draft and edit it in the app later" to build. Downloading the file and posting i
 from the phone is the way to edit one, which is why the page offers the file: the
 video is at a public url in the bucket, which is how Instagram fetches it anyway.
 
-**The caption is his to rewrite before it goes out.** What the run wrote is a
-draft in the same sense the essay is — a technical sheet and a model's prose
-trimmed at a sentence to fit — so it is a textarea rather than something to
-read, and what is on screen when he presses publish is what is sent, recorded
-and published. Each reel keeps its own edit, and a count against Instagram's
-2200-character ceiling sits under it; past that the publish button will not go,
-because Instagram reports a caption that is too long by refusing the whole
-publication after the video has been uploaded.
+**The caption is his to rewrite before it goes out, in two halves.** The
+technical sheet in one box and the critic in another, because they are two
+different things: one is generated from the catalogue and the other is his
+writing. What is on screen when he presses publish is what is sent, recorded
+and published, saved or not. Each reel keeps its own edits.
+
+**The critic box holds the essay's own markdown, and can be saved.** A second
+button, *Update critic*, writes it back over the essay through the same route
+the artwork page uses — so a correction made here is a correction everywhere the
+essay is read, not just on one video. The two are deliberately separate acts:
+publishing changes nothing about the essay, and saving publishes nothing.
+
+That box has to hold the markdown rather than the caption's copy of it. The
+copy has been flattened and trimmed to fit Instagram, and saving it back would
+truncate the essay, drop its links, and have the truncation translated into the
+other language. The caption is composed from the body on the way out instead.
+
+A count sits under the pair, warning rather than blocking: past 2200 characters
+the backend trims the essay at a sentence, which is what it has always done, so
+nothing is lost by pressing publish.
 
 **An empty queue and a server that did not answer are told apart.** Both leave
 the page with nothing on it and only one of them means everything is working;
@@ -256,9 +268,10 @@ has gone cannot be published twice from a stale page.
 and its button sits beside the one that publishes; the first press arms it and
 says "Really discard?", the second does it. Reaching for publish disarms it
 rather than counting as the confirmation.
-*Proven by:* `publish.component.spec.ts` (14 tests, including "offers the caption
-it would go out with, to edit", "publishes what he rewrote, not what was
-drafted", "will not publish a caption Instagram would refuse", "keeps each
+*Proven by:* `publish.component.spec.ts` (20 tests, including "offers the sheet
+and the critic separately, to edit", "publishes what he rewrote, not what was
+drafted", "updating the critic" (5 tests, including "publishes nothing"),
+"warns that a long caption will be trimmed, and still publishes", "keeps each
 caption to its own reel", "tells an empty queue apart from a server that did not
 answer", "asks again once one has been dealt with", "asks before throwing one
 away", "forgets an armed discard when the other button is used"), and backend

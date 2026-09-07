@@ -4,6 +4,12 @@ import { environment } from '@environments/environment';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { catchError, map, Observable, of } from 'rxjs';
 
+/** What a reel is published with: either half, or neither. */
+export interface ReelCaptionParts {
+  sheet?: string;
+  essay?: string;
+}
+
 /** One reel that has been made and not published. */
 export interface PendingReel {
   tokenId: string;
@@ -13,6 +19,17 @@ export interface PendingReel {
   video: string;
   /** The caption it would go out with, as it read when the video was made. */
   caption: string;
+  /**
+   * The two halves the caption is made of.
+   *
+   * `essay` is the critic's markdown body rather than the flattened, trimmed
+   * text the caption shows — which is what makes it something that can be saved
+   * back over the essay instead of truncating it. `lang` says which language it
+   * is, since only one of the two is his own writing.
+   */
+  sheet: string;
+  essay: string;
+  lang: string;
   /** ISO 8601. */
   renderedAt: string;
 }
@@ -53,17 +70,39 @@ export class PendingReelsService {
   }
 
   /**
-   * Publishes one, with the caption as it now reads on the page.
+   * Publishes one, with both halves as they now read on the page.
    *
-   * The caption is sent rather than assumed: it was drafted when the video was
-   * made and he can rewrite it before it goes out, so what is on screen is what
-   * should be published. Answers false rather than throwing.
+   * They are sent rather than assumed: both were drafted when the video was
+   * made and he can rewrite either before it goes out, saved or not. The
+   * backend joins them and trims the result, under the same rule the caption
+   * was written with. Answers false rather than throwing.
    */
-  publish(tokenId: string, caption: string, token: string): Observable<boolean> {
+  publish(tokenId: string, parts: ReelCaptionParts, token: string): Observable<boolean> {
     return this.http
       .post<ApiResponse<unknown>>(
         `${environment.backendUrl}reels/${tokenId}/publish`,
-        { caption },
+        parts,
+        this.authorised(token)
+      )
+      .pipe(
+        map((response) => response?.success === true),
+        catchError(() => of(false))
+      );
+  }
+
+  /**
+   * Saves the essay over the critic itself, everywhere it is read.
+   *
+   * The same route the artwork page uses, because it is the same act: this
+   * replaces the stored essay in one language and has the other rewritten from
+   * it. Publishing is separate and does not touch the critic — one changes the
+   * work, the other announces it.
+   */
+  updateCritic(tokenId: string, lang: string, body: string, token: string): Observable<boolean> {
+    return this.http
+      .patch<ApiResponse<unknown>>(
+        `${environment.backendUrl}critics/${tokenId}`,
+        { lang, body },
         this.authorised(token)
       )
       .pipe(

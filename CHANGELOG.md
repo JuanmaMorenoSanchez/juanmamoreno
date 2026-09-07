@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.34.0
+
+- **feat** — `/publish` edits the technical sheet and the critic in separate
+  boxes, and a new *Update critic* button saves the essay everywhere it is read
+  rather than only on the video being published.
+
 ## 1.33.0
 
 - **fix** — sixty artwork pages were being published with no painting on them:

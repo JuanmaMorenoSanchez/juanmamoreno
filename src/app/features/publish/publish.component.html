@@ -43,30 +43,66 @@
           and prose trimmed at a sentence to fit — so this is a textarea rather
           than something to read.
         -->
-        <label class="publish-caption-label" [attr.for]="'caption-' + reel.tokenId">
-          Caption
+        <label class="publish-caption-label" [attr.for]="'sheet-' + reel.tokenId">
+          Technical sheet
         </label>
         <textarea
-          class="publish-caption"
-          [id]="'caption-' + reel.tokenId"
-          rows="8"
+          class="publish-caption publish-sheet"
+          [id]="'sheet-' + reel.tokenId"
+          rows="4"
           spellcheck="true"
-          [value]="captionOf(reel)"
+          [value]="sheetOf(reel)"
           [disabled]="busy() !== null"
-          (input)="editCaption(reel, $event)"
+          (input)="edit(reel, 'sheet', $event)"
         ></textarea>
-        <p class="publish-count" [class.publish-count--over]="tooLong(reel)">
-          {{ captionOf(reel).length }} / {{ captionLimit }}
-          @if (tooLong(reel)) {
-            <span> — Instagram will refuse this</span>
+
+        <!--
+          The critic's own markdown, not the flattened copy the caption shows —
+          which is what lets it be saved back over the essay rather than
+          truncating it. The links and emphasis are stripped on the way to
+          Instagram, where they would render literally.
+        -->
+        <label class="publish-caption-label" [attr.for]="'essay-' + reel.tokenId">
+          Critic <span class="publish-lang">{{ reel.lang }}</span>
+        </label>
+        <textarea
+          class="publish-caption publish-essay"
+          [id]="'essay-' + reel.tokenId"
+          rows="10"
+          spellcheck="true"
+          [value]="essayOf(reel)"
+          [disabled]="busy() !== null"
+          (input)="edit(reel, 'essay', $event)"
+        ></textarea>
+        <p class="publish-count" [class.publish-count--over]="willBeTrimmed(reel)">
+          about {{ captionLength(reel) }} / {{ captionLimit }} characters
+          @if (willBeTrimmed(reel)) {
+            <span> — the essay will be trimmed at a sentence</span>
           }
         </p>
+        @if (saved() === reel.tokenId) {
+          <p class="publish-saved" role="status">
+            Critic updated — it now reads this way on the artwork's page too.
+          </p>
+        }
 
         <div class="publish-actions">
+          <!--
+            Two separate acts. This one changes the essay wherever it is read,
+            the artwork's own page included, and publishes nothing.
+          -->
+          <button
+            type="button"
+            class="publish-save"
+            [disabled]="busy() !== null || !essayOf(reel).trim()"
+            (click)="updateCritic(reel)"
+          >
+            Update critic
+          </button>
           <button
             type="button"
             class="publish-go"
-            [disabled]="busy() !== null || tooLong(reel)"
+            [disabled]="busy() !== null"
             (click)="publish(reel)"
           >
             {{ busy() === reel.tokenId ? 'Publishing…' : 'Publish to Instagram' }}

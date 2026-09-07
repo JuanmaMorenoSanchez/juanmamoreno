@@ -85,6 +85,27 @@
   color: var(--catalog-ink);
 }
 
+// The essay is the long one and the sheet is four lines; both grow if he wants.
+.publish-sheet,
+.publish-essay {
+  margin-bottom: tokens.$spacing-sm;
+}
+
+.publish-lang {
+  margin-left: tokens.$spacing-xs;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--catalog-rule, rgb(0 0 0 / 20%));
+  border-radius: 2px;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+}
+
+.publish-saved {
+  margin: 0 0 tokens.$spacing-md;
+  font-size: 0.75rem;
+  color: var(--catalog-soft);
+}
+
 .publish-count {
   margin: tokens.$spacing-xs 0 tokens.$spacing-md;
   font-size: 0.75rem;
@@ -103,6 +124,7 @@
 }
 
 .publish-go,
+.publish-save,
 .publish-discard,
 .publish-download {
   padding: 0.5rem 1rem;
@@ -117,6 +139,7 @@
 }
 
 .publish-go[disabled],
+.publish-save[disabled],
 .publish-discard[disabled] {
   cursor: default;
   opacity: 0.4;

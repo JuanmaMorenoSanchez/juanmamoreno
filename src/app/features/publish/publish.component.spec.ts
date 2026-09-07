@@ -18,7 +18,10 @@ const REEL: PendingReel = {
   tokenIds: ['10', '11'],
   name: 'Siesta',
   video: 'https://storage.googleapis.com/bucket/reels/10.mp4',
-  caption: 'Siesta\nJuanma Moreno Sánchez, 2019',
+  caption: 'Siesta\nJuanma Moreno Sánchez, 2019\n\nThe blue arrives first.',
+  sheet: 'Siesta\nJuanma Moreno Sánchez, 2019',
+  essay: 'The **blue** arrives first.',
+  lang: 'es',
   renderedAt: '2026-09-06T10:00:00.000Z',
 };
 
@@ -27,6 +30,7 @@ function setup(options: { waiting?: PendingReel[] | undefined; signedIn?: boolea
     pending: vi.fn().mockReturnValue(of('waiting' in options ? options.waiting : [REEL])),
     publish: vi.fn().mockReturnValue(of(true)),
     discard: vi.fn().mockReturnValue(of(true)),
+    updateCritic: vi.fn().mockReturnValue(of(true)),
   };
   const auth = {
     isAdmin: () => options.signedIn !== false,
@@ -65,64 +69,143 @@ describe('PublishComponent', () => {
   });
 
   /**
-   * The caption is the thing being checked, and his to change. What the run
-   * wrote is a draft like the essay it was built from, so this is a textarea
-   * rather than something to read.
+   * Two boxes rather than one, so the essay half can be the critic's own
+   * markdown — which is what makes it something that can be saved back over the
+   * essay instead of a flattened, trimmed copy that would truncate it.
    */
-  it('offers the caption it would go out with, to edit', () => {
+  it('offers the sheet and the critic separately, to edit', () => {
     const { fixture } = setup();
-    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement | null;
+    const sheet = find(fixture, '.publish-sheet') as HTMLTextAreaElement | null;
+    const essay = find(fixture, '.publish-essay') as HTMLTextAreaElement | null;
 
-    expect(box?.tagName).toBe('TEXTAREA');
-    expect(box?.value).toBe(REEL.caption);
+    expect(sheet?.tagName).toBe('TEXTAREA');
+    expect(sheet?.value).toBe(REEL.sheet);
+    expect(essay?.value).toBe(REEL.essay);
   });
 
-  it('publishes the one whose button was pressed', () => {
+  // Only one of the two languages is his own writing, so the page says which.
+  it('says which language the critic is in', () => {
+    const { fixture } = setup();
+
+    expect(find(fixture, '.publish-lang')?.textContent?.trim()).toBe('es');
+  });
+
+  it('publishes both halves of the one whose button was pressed', () => {
     const { fixture, reels } = setup();
 
     find(fixture, '.publish-go')?.click();
 
-    expect(reels.publish).toHaveBeenCalledWith('10', REEL.caption, 'a-real-looking-token');
+    expect(reels.publish).toHaveBeenCalledWith(
+      '10',
+      { sheet: REEL.sheet, essay: REEL.essay },
+      'a-real-looking-token',
+    );
   });
 
-  // The whole point of making it editable.
+  // The whole point of making them editable.
   it('publishes what he rewrote, not what was drafted', () => {
     const { fixture, reels } = setup();
-    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement;
+    const essay = find(fixture, '.publish-essay') as HTMLTextAreaElement;
 
-    box.value = 'His own words about the painting';
-    box.dispatchEvent(new Event('input'));
+    essay.value = 'His own words about the painting';
+    essay.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     find(fixture, '.publish-go')?.click();
 
     expect(reels.publish).toHaveBeenCalledWith(
       '10',
-      'His own words about the painting',
+      { sheet: REEL.sheet, essay: 'His own words about the painting' },
       'a-real-looking-token',
     );
   });
 
   /**
-   * Instagram refuses a caption past its ceiling by rejecting the whole
-   * publication, after the video has been uploaded. Better to say so here.
+   * The second of the two acts, and the one that lasts: this changes the essay
+   * wherever it is read rather than only the words on one video.
    */
-  it('will not publish a caption Instagram would refuse', () => {
-    const { fixture, reels } = setup();
-    const box = find(fixture, '.publish-caption') as HTMLTextAreaElement;
+  describe('updating the critic', () => {
+    it('saves the essay against the language it is in', () => {
+      const { fixture, reels } = setup();
+      const essay = find(fixture, '.publish-essay') as HTMLTextAreaElement;
 
-    box.value = 'x'.repeat(2201);
-    box.dispatchEvent(new Event('input'));
+      essay.value = 'A better sentence.';
+      essay.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      find(fixture, '.publish-save')?.click();
+
+      expect(reels.updateCritic).toHaveBeenCalledWith(
+        '10',
+        'es',
+        'A better sentence.',
+        'a-real-looking-token',
+      );
+    });
+
+    // Two separate acts: saving must not put anything on Instagram.
+    it('publishes nothing', () => {
+      const { fixture, reels } = setup();
+
+      find(fixture, '.publish-save')?.click();
+
+      expect(reels.publish).not.toHaveBeenCalled();
+    });
+
+    it('says so once it is saved', () => {
+      const { fixture } = setup();
+
+      find(fixture, '.publish-save')?.click();
+      fixture.detectChanges();
+
+      expect(text(fixture)).toContain('Critic updated');
+    });
+
+    it('will not save an empty essay over a real one', () => {
+      const { fixture, reels } = setup();
+      const essay = find(fixture, '.publish-essay') as HTMLTextAreaElement;
+
+      essay.value = '   ';
+      essay.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      find(fixture, '.publish-save')?.click();
+
+      expect(reels.updateCritic).not.toHaveBeenCalled();
+    });
+
+    it('says so when the save fails rather than looking as though it worked', () => {
+      const { fixture, reels } = setup();
+      reels.updateCritic.mockReturnValue(of(false));
+
+      find(fixture, '.publish-save')?.click();
+      fixture.detectChanges();
+
+      expect(text(fixture)).toContain('Could not update the critic');
+      expect(text(fixture)).not.toContain('Critic updated');
+    });
+  });
+
+  /**
+   * Past the limit the backend trims the essay at a sentence, which is what it
+   * has always done — so this warns rather than blocks. Publishing loses
+   * nothing but the tail.
+   */
+  it('warns that a long caption will be trimmed, and still publishes', () => {
+    const { fixture, reels } = setup();
+    const essay = find(fixture, '.publish-essay') as HTMLTextAreaElement;
+
+    essay.value = 'x'.repeat(2300);
+    essay.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     find(fixture, '.publish-go')?.click();
 
-    expect(reels.publish).not.toHaveBeenCalled();
-    expect(text(fixture)).toContain('Instagram will refuse this');
+    expect(text(fixture)).toContain('trimmed at a sentence');
+    expect(reels.publish).toHaveBeenCalled();
   });
 
-  it('counts the characters against the limit', () => {
+  it('counts what the caption will come to', () => {
     const { fixture } = setup();
 
-    expect(find(fixture, '.publish-count')?.textContent).toContain(String(REEL.caption.length));
+    const expected = `${REEL.sheet}\n\n${REEL.essay}`.trim().length;
+    expect(find(fixture, '.publish-count')?.textContent).toContain(String(expected));
   });
 
   /**
@@ -176,15 +259,15 @@ describe('PublishComponent', () => {
 
   // An edit to one reel is not an edit to the next one down the page.
   it('keeps each caption to its own reel', () => {
-    const second: PendingReel = { ...REEL, tokenId: '20', name: 'Stalker', caption: 'Stalker' };
+    const second: PendingReel = { ...REEL, tokenId: '20', name: 'Stalker', essay: 'Stalker' };
     const { fixture } = setup({ waiting: [REEL, second] });
-    const boxes = (fixture.nativeElement as HTMLElement).querySelectorAll('textarea');
+    const essays = (fixture.nativeElement as HTMLElement).querySelectorAll('.publish-essay');
 
-    (boxes[0] as HTMLTextAreaElement).value = 'Only the first';
-    boxes[0].dispatchEvent(new Event('input'));
+    (essays[0] as HTMLTextAreaElement).value = 'Only the first';
+    essays[0].dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    expect((boxes[1] as HTMLTextAreaElement).value).toBe('Stalker');
+    expect((essays[1] as HTMLTextAreaElement).value).toBe('Stalker');
   });
 
   /**
