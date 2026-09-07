@@ -89,6 +89,23 @@ backend, links opening in a new tab.
 *Proven by:* `artwork-critic.component.spec.ts` "shows the essay with no way to
 change it", and the prerendered essay text in `scripts/verify-render.mjs`
 
+### R76 — A push runs the checks it is about to fail · met
+`.githooks/pre-push` runs lint and the type check before a push leaves the
+machine, and refuses it if either fails. `npm install` points git at that
+directory through the `prepare` script, so it installs itself.
+
+It is here because the backend had two deploys fail on formatting alone, each
+costing six minutes to be told something eslint says in ten seconds — and both
+times the checks had been run locally, one of them read wrongly, because
+`npm run lint | tail -1` prints a blank line when everything passes. A check
+whose result has to be read can be misread; an exit code cannot.
+
+Only the fast half. The 427 tests, the prerender and its two verifiers stay in
+CI, where taking minutes costs nothing. `git push --no-verify` goes past it,
+deliberately.
+*Proven by:* `.githooks/pre-push`, confirmed to exit 1 against an unformatted
+file and 0 once it was formatted
+
 ### R74 — Every artwork page has its artwork on it · met
 A page under `/artwork/:id` carries the painting's name in its title and
 advertises its picture. The build refuses to publish one that does not.

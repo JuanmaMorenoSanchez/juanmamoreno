@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "1.34.0",
+  "version": "1.34.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4201",
@@ -15,7 +15,8 @@
     "lint": "ng lint",
     "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs && node scripts/verify-requirements.mjs",
     "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs",
-    "verify:requirements": "node scripts/verify-requirements.mjs"
+    "verify:requirements": "node scripts/verify-requirements.mjs",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "private": true,
   "dependencies": {

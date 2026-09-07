@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.34.1
+
+- **chore** — a pre-push hook runs lint and the type check, so formatting cannot
+  reach a deploy and fail it there.
+
 ## 1.34.0
 
 - **feat** — `/publish` edits the technical sheet and the critic in separate
