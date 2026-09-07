@@ -120,6 +120,55 @@ describe('PublishComponent', () => {
   });
 
   /**
+   * A reel made before the caption was kept in two parts.
+   *
+   * Those carry only the composed caption, and this page drew two empty boxes
+   * for them — which is what he opened the page and saw. The backend fills them
+   * in now; this checks the page copes on its own as well, because an empty box
+   * on a page whose whole purpose is editing text is the worst thing it can do.
+   */
+  describe('a reel that arrives without its halves', () => {
+    const older = {
+      ...REEL,
+      sheet: undefined,
+      essay: undefined,
+      caption: 'Siesta\nJuanma Moreno Sánchez, 2019\n\nThe blue arrives first.',
+    } as unknown as PendingReel;
+
+    it('never shows an empty box', () => {
+      const { fixture } = setup({ waiting: [older] });
+      const boxes = (fixture.nativeElement as HTMLElement).querySelectorAll('textarea');
+
+      for (const box of boxes) {
+        expect((box as HTMLTextAreaElement).value.trim().length).toBeGreaterThan(0);
+      }
+    });
+
+    it('puts the technical part in the sheet and the rest in the critic', () => {
+      const { fixture } = setup({ waiting: [older] });
+
+      expect((find(fixture, '.publish-sheet') as HTMLTextAreaElement).value).toBe(
+        'Siesta\nJuanma Moreno Sánchez, 2019',
+      );
+      expect((find(fixture, '.publish-essay') as HTMLTextAreaElement).value).toBe(
+        'The blue arrives first.',
+      );
+    });
+
+    it('publishes what it recovered rather than nothing', () => {
+      const { fixture, reels } = setup({ waiting: [older] });
+
+      find(fixture, '.publish-go')?.click();
+
+      expect(reels.publish).toHaveBeenCalledWith(
+        '10',
+        { sheet: 'Siesta\nJuanma Moreno Sánchez, 2019', essay: 'The blue arrives first.' },
+        'a-real-looking-token',
+      );
+    });
+  });
+
+  /**
    * The second of the two acts, and the one that lasts: this changes the essay
    * wherever it is read rather than only the words on one video.
    */

@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.34.2
+
+- **fix** — `/publish` showed two empty boxes for reels made before the caption
+  was kept in halves; it recovers them from the caption when they are missing.
+
 ## 1.34.1
 
 - **chore** — a pre-push hook runs lint and the type check, so formatting cannot

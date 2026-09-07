@@ -269,6 +269,13 @@ copy has been flattened and trimmed to fit Instagram, and saving it back would
 truncate the essay, drop its links, and have the truncation translated into the
 other language. The caption is composed from the body on the way out instead.
 
+**Neither box is ever empty.** A reel made before the caption was kept in two
+parts carries only the composed text, and the page drew two blank boxes for it —
+which is what he opened it and found. The backend fills the halves in now, and
+the page splits the caption itself if they are still missing, so an old reel, an
+old backend or an oddly written document all give him something to edit rather
+than nothing.
+
 A count sits under the pair, warning rather than blocking: past 2200 characters
 the backend trims the essay at a sentence, which is what it has always done, so
 nothing is lost by pressing publish.
@@ -287,7 +294,7 @@ says "Really discard?", the second does it. Reaching for publish disarms it
 rather than counting as the confirmation.
 *Proven by:* `publish.component.spec.ts` (20 tests, including "offers the sheet
 and the critic separately, to edit", "publishes what he rewrote, not what was
-drafted", "updating the critic" (5 tests, including "publishes nothing"),
+drafted", "updating the critic" (5 tests, including "publishes nothing"), "a reel that arrives without its halves" (3 tests, including "never shows an empty box"),
 "warns that a long caption will be trimmed, and still publishes", "keeps each
 caption to its own reel", "tells an empty queue apart from a server that did not
 answer", "asks again once one has been dealt with", "asks before throwing one

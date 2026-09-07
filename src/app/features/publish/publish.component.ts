@@ -62,11 +62,28 @@ export class PublishComponent {
   private readonly edits = signal<Record<string, { sheet?: string; essay?: string }>>({});
 
   protected sheetOf(reel: PendingReel): string {
-    return this.edits()[reel.tokenId]?.sheet ?? reel.sheet ?? '';
+    return this.edits()[reel.tokenId]?.sheet ?? reel.sheet ?? this.halvesOfCaption(reel).sheet;
   }
 
   protected essayOf(reel: PendingReel): string {
-    return this.edits()[reel.tokenId]?.essay ?? reel.essay ?? '';
+    return this.edits()[reel.tokenId]?.essay ?? reel.essay ?? this.halvesOfCaption(reel).essay;
+  }
+
+  /**
+   * The caption split back into halves, for a reel that has none.
+   *
+   * Reels made before the caption was kept in two parts have only the composed
+   * text, and this page drew two empty boxes for them — which is exactly what
+   * happened. The backend fills them in now; this is the same answer arrived at
+   * independently, so an old reel, an old backend or a document written oddly
+   * still gives him something to edit rather than nothing.
+   *
+   * The caption joins its parts with a blank line, so the first block is the
+   * sheet and the rest is the essay.
+   */
+  private halvesOfCaption(reel: PendingReel): { sheet: string; essay: string } {
+    const [sheet, ...rest] = (reel.caption ?? '').split('\n\n');
+    return { sheet: (sheet ?? '').trim(), essay: rest.join('\n\n').trim() };
   }
 
   protected edit(reel: PendingReel, half: 'sheet' | 'essay', event: Event): void {
