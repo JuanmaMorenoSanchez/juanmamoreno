@@ -1,0 +1,1 @@
+import"./chunk-BG1S0eb7.js";import"./chunk-Dw4Agz1y.js";import"./chunk-GsKAdGdc.js";import"./chunk-CNYZOm9e.js";import"./chunk-5D1riOem.js";import"./main-WGCWEW7A.js";import"./chunk-DYsVYk0Z.js";import"./chunk-COWlUKuu.js";import"./chunk-C0yH5ZZ_.js";import"./chunk-3KHkX6UY.js";import{t as Be}from"./chunk-CQ3zqRnU.js";export{Be as ArtPiecesListComponent};
