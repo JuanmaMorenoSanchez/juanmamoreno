@@ -100,6 +100,13 @@
   letter-spacing: 0.06em;
 }
 
+.publish-remaking {
+  margin: 0 0 tokens.$spacing-md;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--catalog-soft);
+}
+
 .publish-saved {
   margin: 0 0 tokens.$spacing-md;
   font-size: 0.75rem;
@@ -125,6 +132,7 @@
 
 .publish-go,
 .publish-save,
+.publish-remake,
 .publish-discard,
 .publish-download {
   padding: 0.5rem 1rem;
@@ -140,6 +148,7 @@
 
 .publish-go[disabled],
 .publish-save[disabled],
+.publish-remake[disabled],
 .publish-discard[disabled] {
   cursor: default;
   opacity: 0.4;

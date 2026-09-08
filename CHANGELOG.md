@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.35.0
+
+- **feat** — a *Regenerate* button on each waiting reel makes the video again
+  with whatever the render does now; it takes minutes, so the page watches for
+  the new one rather than waiting on the request.
+
 ## 1.34.2
 
 - **fix** — `/publish` showed two empty boxes for reels made before the caption

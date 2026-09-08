@@ -6,6 +6,14 @@ import { PendingReel, PendingReelsService } from '@shared/services/pending-reels
 import { of, switchMap } from 'rxjs';
 
 /**
+ * How often the page asks whether a reel being made again has arrived.
+ *
+ * A render is minutes, so this is not a race — it is a slow check on something
+ * slow, and asking oftener would only be asking oftener.
+ */
+const REMAKE_POLL_MS = 15_000;
+
+/**
  * The reels that have been made and are waiting to go out.
  *
  * Instagram has no draft an API can write to: a container created and left
@@ -37,7 +45,26 @@ export class PublishComponent {
   );
 
   /** The reels waiting, or an empty list. */
-  protected readonly waiting = computed<PendingReel[]>(() => this.loaded() ?? []);
+  protected readonly waiting = computed<PendingReel[]>(() => {
+    const reels = this.loaded() ?? [];
+    // A reel being made again, whose date has moved, is one that has arrived.
+    // Its edits are dropped with it: they belonged to a video that no longer
+    // exists, and the caption has been rebuilt from the essay as it now reads.
+    for (const [tokenId, asked] of Object.entries(this.remaking())) {
+      const arrived = reels.find((reel) => reel.tokenId === tokenId);
+      if (arrived && arrived.renderedAt !== asked) {
+        queueMicrotask(() => {
+          this.stopRemaking(tokenId);
+          this.edits.update((all) => {
+            const rest = { ...all };
+            delete rest[tokenId];
+            return rest;
+          });
+        });
+      }
+    }
+    return reels;
+  });
 
   /**
    * True only once an answer has come back and it was that nothing is waiting.
@@ -116,6 +143,20 @@ export class PublishComponent {
   protected readonly saved = signal<string | null>(null);
 
   /**
+   * The reels being made again, and the date each had when it was asked for.
+   *
+   * A render takes minutes, and the request that starts it is not what tells us
+   * it finished — the page watches the list instead, and a reel whose date has
+   * moved is a reel that has been made again. That survives a reload, a dropped
+   * connection and a closed tab, none of which stop the render.
+   */
+  private readonly remaking = signal<Record<string, string>>({});
+
+  protected isRemaking(reel: PendingReel): boolean {
+    return reel.tokenId in this.remaking();
+  }
+
+  /**
    * The reel whose discard button has been pressed once.
    *
    * Discarding deletes a video that took minutes of ffmpeg to make, and it sits
@@ -132,6 +173,56 @@ export class PublishComponent {
     this.confirming.set(null);
     const parts = { sheet: this.sheetOf(reel), essay: this.essayOf(reel) };
     this.act(reel, (token) => this.reels.publish(reel.tokenId, parts, token), 'publish');
+  }
+
+  /**
+   * Asks for the video to be made again and watches for it to arrive.
+   *
+   * The request is deliberately not awaited for the sake of the interface: it
+   * takes minutes, and what marks the reel as done is its date changing in the
+   * list, not the response coming back. So the page polls, and the answer to
+   * the request only matters if it says outright that it failed.
+   */
+  protected regenerate(reel: PendingReel): void {
+    const token = this.auth.bearerToken();
+    if (!token || this.isRemaking(reel)) return;
+
+    this.problem.set(null);
+    this.remaking.update((all) => ({ ...all, [reel.tokenId]: reel.renderedAt }));
+    this.watchForNewVideo();
+
+    this.reels.regenerate(reel.tokenId, token).subscribe({
+      next: (started) => {
+        if (!started) this.stopRemaking(reel.tokenId, `Could not make “${reel.name}” again.`);
+      },
+      // A render outlives the request that asked for it, so a dropped
+      // connection is not a failure. The polling is what decides.
+      error: () => undefined,
+    });
+  }
+
+  /** Asks the list for the reels every so often while any is being made again. */
+  private watchForNewVideo(): void {
+    if (this.watching) return;
+    this.watching = window.setInterval(() => {
+      if (!Object.keys(this.remaking()).length) {
+        window.clearInterval(this.watching);
+        this.watching = 0;
+        return;
+      }
+      this.reload.update((n) => n + 1);
+    }, REMAKE_POLL_MS);
+  }
+
+  private watching = 0;
+
+  private stopRemaking(tokenId: string, why?: string): void {
+    this.remaking.update((all) => {
+      const rest = { ...all };
+      delete rest[tokenId];
+      return rest;
+    });
+    if (why) this.problem.set(why);
   }
 
   /**

@@ -80,6 +80,12 @@
             <span> — the essay will be trimmed at a sentence</span>
           }
         </p>
+        @if (isRemaking(reel)) {
+          <p class="publish-remaking" role="status">
+            Making the video again — several minutes. You can leave this page; it carries on
+            without you, and the new one appears here when it is done.
+          </p>
+        }
         @if (saved() === reel.tokenId) {
           <p class="publish-saved" role="status">
             Critic updated — it now reads this way on the artwork's page too.
@@ -123,6 +129,18 @@
           <a class="publish-download" [href]="reel.video" download target="_blank" rel="noopener">
             Download
           </a>
+          <!--
+            Minutes rather than seconds. The page does not wait on the request —
+            it watches the list, and the reel arrives when its date moves.
+          -->
+          <button
+            type="button"
+            class="publish-remake"
+            [disabled]="busy() !== null || isRemaking(reel)"
+            (click)="regenerate(reel)"
+          >
+            {{ isRemaking(reel) ? 'Making it again…' : 'Regenerate' }}
+          </button>
         </div>
       </div>
     </article>

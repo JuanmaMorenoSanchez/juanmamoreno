@@ -31,6 +31,7 @@ function setup(options: { waiting?: PendingReel[] | undefined; signedIn?: boolea
     publish: vi.fn().mockReturnValue(of(true)),
     discard: vi.fn().mockReturnValue(of(true)),
     updateCritic: vi.fn().mockReturnValue(of(true)),
+    regenerate: vi.fn().mockReturnValue(of(true)),
   };
   const auth = {
     isAdmin: () => options.signedIn !== false,
@@ -117,6 +118,89 @@ describe('PublishComponent', () => {
       { sheet: REEL.sheet, essay: 'His own words about the painting' },
       'a-real-looking-token',
     );
+  });
+
+  /**
+   * Making the video again, which takes minutes.
+   *
+   * The request that starts it is not what says it finished — the page watches
+   * the list, and a reel whose date has moved is one that has arrived. That
+   * survives a reload and a dropped connection, neither of which stops a render
+   * already running on the server.
+   */
+  describe('making a video again', () => {
+    afterEach(() => vi.useRealTimers());
+
+    it('asks for the one whose button was pressed', () => {
+      const { fixture, reels } = setup();
+
+      find(fixture, '.publish-remake')?.click();
+
+      expect(reels.regenerate).toHaveBeenCalledWith('10', 'a-real-looking-token');
+    });
+
+    // It takes minutes, so the page has to say so rather than look stuck.
+    it('says it is under way, and for how long roughly', () => {
+      const { fixture } = setup();
+
+      find(fixture, '.publish-remake')?.click();
+      fixture.detectChanges();
+
+      expect(text(fixture)).toContain('several minutes');
+      expect(find(fixture, '.publish-remake')?.textContent).toContain('Making it again');
+    });
+
+    it('will not ask twice for the same one', () => {
+      const { fixture, reels } = setup();
+
+      find(fixture, '.publish-remake')?.click();
+      fixture.detectChanges();
+      find(fixture, '.publish-remake')?.click();
+
+      expect(reels.regenerate).toHaveBeenCalledTimes(1);
+    });
+
+    /**
+     * The one that decides whether the wait ever ends: the page keeps asking
+     * the list, because nothing else will tell it.
+     */
+    it('keeps asking the list while it waits', async () => {
+      vi.useFakeTimers();
+      const { fixture, reels } = setup();
+      const asked = reels.pending.mock.calls.length;
+
+      find(fixture, '.publish-remake')?.click();
+      await vi.advanceTimersByTimeAsync(46_000);
+      fixture.detectChanges();
+
+      expect(reels.pending.mock.calls.length).toBeGreaterThan(asked);
+    });
+
+    it('stops saying so once the new one has arrived', async () => {
+      vi.useFakeTimers();
+      const { fixture, reels } = setup();
+
+      find(fixture, '.publish-remake')?.click();
+      // The same reel, with a later date: the render finished.
+      reels.pending.mockReturnValue(of([{ ...REEL, renderedAt: '2026-09-08T10:00:00.000Z' }]));
+      await vi.advanceTimersByTimeAsync(46_000);
+      fixture.detectChanges();
+
+      expect(text(fixture)).not.toContain('several minutes');
+    });
+
+    // A render outlives the request that started it, so a dropped connection is
+    // not a failure — only an outright refusal is.
+    it('says so when it could not even be started', () => {
+      const { fixture, reels } = setup();
+      reels.regenerate.mockReturnValue(of(false));
+
+      find(fixture, '.publish-remake')?.click();
+      fixture.detectChanges();
+
+      expect(text(fixture)).toContain('Could not make');
+      expect(text(fixture)).not.toContain('several minutes');
+    });
   });
 
   /**

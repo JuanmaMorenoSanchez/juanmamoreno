@@ -111,6 +111,27 @@ export class PendingReelsService {
       );
   }
 
+  /**
+   * Asks for the video to be made again, with whatever the render does now.
+   *
+   * Minutes, not seconds. Nothing waits on the answer: the page starts it and
+   * then watches the list until the reel comes back with a new date, so a
+   * closed tab or a dropped connection costs the reader nothing and the render
+   * carries on regardless.
+   */
+  regenerate(tokenId: string, token: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<unknown>>(
+        `${environment.backendUrl}reels/${tokenId}/regenerate`,
+        {},
+        this.authorised(token)
+      )
+      .pipe(
+        map((response) => response?.success === true),
+        catchError(() => of(false))
+      );
+  }
+
   /** Throws one away, video and all, so a new one is made for that painting. */
   discard(tokenId: string, token: string): Observable<boolean> {
     return this.http

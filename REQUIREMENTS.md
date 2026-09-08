@@ -106,6 +106,30 @@ deliberately.
 *Proven by:* `.githooks/pre-push`, confirmed to exit 1 against an unformatted
 file and 0 once it was formatted
 
+### R77 — A reel can be made again from the page it waits on · met
+A *Regenerate* button on each waiting reel asks for the video to be made afresh,
+with whatever the render does now. It exists because how a reel is framed, where
+its shots are pointed and how the camera moves are all read from the painting,
+and all of that changes as the way of reading it improves — without this, seeing
+a change on a reel already made meant discarding it and waiting weeks for the
+queue to come round again.
+
+**It takes minutes, and the page does not wait on the request.** What marks it
+done is the reel coming back with a later date, so the page asks the list every
+fifteen seconds until it does. That is deliberate rather than convenient: a
+render outlives the request that started it, so a dropped connection, a reload or
+a closed tab costs nothing and the video still arrives. Only an outright refusal
+to start is reported as a failure.
+
+While it runs the button says so and cannot be pressed twice, and the card
+carries a line saying roughly how long and that leaving the page is safe. When
+the new one arrives, any unsaved edits to that reel's boxes go with the old
+video: they belonged to a caption that has since been rebuilt from the essay as
+it now reads.
+*Proven by:* `publish.component.spec.ts` "making a video again" (6 tests,
+including "keeps asking the list while it waits", "stops saying so once the new
+one has arrived", "will not ask twice for the same one"), and backend B31
+
 ### R74 — Every artwork page has its artwork on it · met
 A page under `/artwork/:id` carries the painting's name in its title and
 advertises its picture. The build refuses to publish one that does not.
