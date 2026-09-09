@@ -106,6 +106,29 @@ deliberately.
 *Proven by:* `.githooks/pre-push`, confirmed to exit 1 against an unformatted
 file and 0 once it was formatted
 
+### R78 — The years menu is a menu, not a page · met
+Paintings → By Year lists every year the artist has worked in — nineteen of
+them, and one more every year. As a plain Material menu it measured exactly the
+height of the window at every size tried: 800px on a desktop, 700 on a laptop,
+844 on a phone. Material caps a panel at the viewport less forty-eight pixels,
+which for a list this long is no cap at all, so opening it replaced the page
+rather than covering part of it.
+
+It now shows about seven years at a time and scrolls to the rest — `min(22rem,
+60vh)`, so a short window gets a shorter menu rather than one that overflows it.
+Every year stays reachable, which matters more than the height: a menu that hid
+the early work and could not be scrolled to it would be the worse fault.
+
+The rule lives in the global stylesheet rather than the component's, because a
+menu panel is drawn in an overlay outside the component that declares it, and
+is reached by the class the panel carries.
+*Proven by:* `e2e/years-menu.test.mjs` (5 tests, including "leaves most of the
+page visible behind it", "scrolls to the years it cannot show at once", "gets
+shorter on a short window rather than overflowing it"), three of which were
+confirmed to fail with the cap removed. It is an end-to-end test because nothing
+below a real browser can see the effect: jsdom applies no stylesheet, and the
+panel is not inside the component under test.
+
 ### R77 — A reel can be made again from the page it waits on · met
 A *Regenerate* button on each waiting reel asks for the video to be made afresh,
 with whatever the render does now. It exists because how a reel is framed, where

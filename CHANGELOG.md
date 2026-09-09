@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.35.1
+
+- **fix** — the years menu took the whole height of the window; it now shows
+  about seven at a time and scrolls to the rest.
+
 ## 1.35.0
 
 - **feat** — a *Regenerate* button on each waiting reel makes the video again

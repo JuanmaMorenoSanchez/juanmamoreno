@@ -139,7 +139,13 @@
   </button>
 </mat-menu>
 
-<mat-menu #yearsMenu="matMenu">
+<!--
+  Nineteen years and counting, which as a plain menu was exactly as tall as the
+  window at every size — pinned top to bottom with nothing else visible. The
+  class caps it and lets it scroll; it is on the panel rather than in this
+  component's styles because the panel is drawn in an overlay outside it.
+-->
+<mat-menu #yearsMenu="matMenu" class="years-menu">
   @for (year of years; track year) {
     <button
       [attr.aria-label]="year"

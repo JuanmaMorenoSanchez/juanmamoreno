@@ -205,3 +205,17 @@ a img {
   -webkit-user-drag: none;
   user-drag: none;
 }
+
+// The years menu, which grows by one every year.
+//
+// A menu of nineteen was the height of the window at every size — 800px on a
+// desktop, 844 on a phone — so opening it replaced the page rather than
+// covering part of it. Material caps a panel at the viewport less 48px, which
+// for a list this long is no cap at all.
+//
+// About seven years at a time, and less on a short window, so it always reads
+// as a list with more below it rather than as a page of its own. The panel
+// scrolls itself; Material already gives it `overflow: auto`.
+.years-menu.mat-mdc-menu-panel {
+  max-height: min(22rem, 60vh);
+}
