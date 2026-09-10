@@ -1,0 +1,204 @@
+.mint {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.mint-heading {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.mint-intro {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  max-width: 46ch;
+}
+
+.mint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.9rem 1rem;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+// The title and the description are the long ones; the measurements are short
+// enough that a full column would only make them look like something else.
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.field-narrow {
+  max-width: 9rem;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.field-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+  opacity: 0.8;
+  margin-left: 0.4rem;
+}
+
+.field input,
+.field select {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(128, 128, 128, 0.45);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  min-width: 0;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.mint-button:focus-visible,
+.waiting-discard:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.file-field input {
+  border: none;
+  padding-left: 0;
+}
+
+.file-chosen {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.mint-artist {
+  margin: 1.1rem 0 0;
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+
+.mint-error {
+  margin: 0.8rem 0 0;
+  font-size: 0.85rem;
+  color: #b3261e;
+}
+
+.mint-button {
+  margin-top: 1.2rem;
+  font: inherit;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mint-button[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.prepared,
+.waiting {
+  margin-top: 2rem;
+}
+
+.prepared h3,
+.waiting h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+// Shown at four times its real size on purpose: this is the image that will be
+// inside the token forever, and it should be looked at before it is signed for.
+.prepared-thumb {
+  display: block;
+  width: 448px;
+  max-width: 100%;
+  image-rendering: auto;
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.prepared-desc {
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+}
+
+.prepared-note {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  max-width: 52ch;
+}
+
+.prepared-command {
+  display: block;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 3px;
+  font-size: 0.82rem;
+  overflow-x: auto;
+}
+
+.waiting-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.waiting-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.waiting-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  flex: 0 0 auto;
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.waiting-what {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.88rem;
+  min-width: 0;
+}
+
+.waiting-what em {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.waiting-discard {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  display: flex;
+}
+
+.waiting-discard:hover {
+  opacity: 1;
+}
