@@ -34,9 +34,18 @@ import {
 
 // Relative quality of each preview source, used to only ever upgrade the
 // displayed image while the sources race each other.
+// Smallest first, because the race only ever replaces what is on screen with
+// something better. The order changed when the certificates moved on chain:
+// `thumbnailUrl` used to be Alchemy's cached thumbnail and is now the two
+// kilobytes carried inside the token itself, roughly 112px — the smallest image
+// there is, rather than a middling one. Left where it was, it outranked the
+// backend's 360px thumbnail and the page visibly got worse as it loaded.
 enum PreviewQuality {
-  BACKEND_THUMBNAIL = 1,
-  NFT_THUMBNAIL = 2,
+  /** ~112px, inside the token. No request: it is already in the page. */
+  NFT_THUMBNAIL = 1,
+  /** ~360px, from the api, inlined into the prerendered html. */
+  BACKEND_THUMBNAIL = 2,
+  /** ~1000px, on Arweave. */
   NFT_CACHED = 3,
 }
 
@@ -306,8 +315,10 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     );
     const sources = [backendThumbnail$, nftThumbnail$];
     if (!thumbnailOnly) {
-      // cachedUrl is Alchemy's full-resolution image (several MB); callers that
-      // only need a quick preview (thumbnailOnly) skip it and add it themselves.
+      // cachedUrl is the web-sized copy on Arweave, under a hundred kilobytes;
+      // callers wanting only a quick preview (thumbnailOnly) skip it. The
+      // full-resolution original is still not in the race — the viewer's <img>
+      // fetches it in parallel and it lands last, which is what should happen.
       const nftCached$ = this.preloadImage(nft.image?.cachedUrl).pipe(
         map((url) => ({ url, quality: PreviewQuality.NFT_CACHED }))
       );
