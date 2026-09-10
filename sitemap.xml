@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://juanmamoreno.com/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>1.0</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -12,7 +12,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/about/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/artworks/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.9</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -32,7 +32,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/contact/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.6</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -42,7 +42,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/cv/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -52,7 +52,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/privacy/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.3</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/terms/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.3</priority>
     <changefreq>monthly</changefreq>
     <image:image>
@@ -72,201 +72,201 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/10/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1</image:loc>
+      <image:loc>https://arweave.net/eXYAW9WunEfCVyuMNDH6m4_IyIoK4p3MHQcsH6Ss_PQ</image:loc>
       <image:title>Monstruo del espacio latente (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/100/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684</image:loc>
+      <image:loc>https://arweave.net/7x3gtt8j3UEM8IbG0ciTwbm5JV7XXnSCbkF4BTL2Wwc</image:loc>
       <image:title>Ángel I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/101/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c4327f72d792631bbb58746bae15c285</image:loc>
+      <image:loc>https://arweave.net/3giDtUNBU9BBV-pvz6eAqCAqZ6RPlxfW6MgS60IWswA</image:loc>
       <image:title>Ángel II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/102/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242</image:loc>
+      <image:loc>https://arweave.net/iRQWfmkj3hgSdnyiSD0vqGlU06IYQVM4YSM_oFcSVQU</image:loc>
       <image:title>Ángel III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/106/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667</image:loc>
+      <image:loc>https://arweave.net/ginbXklXFIpGiiYt_dUWiD_YIadZFiEyvJMBi-TK8O0</image:loc>
       <image:title>Apunte de muchacha</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/107/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3</image:loc>
+      <image:loc>https://arweave.net/Vvd0ewjZ6bRwlJ_aeKjkm9PTu16TiziNibjBJ2Mcn4g</image:loc>
       <image:title>Verano sombrío I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/108/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab</image:loc>
+      <image:loc>https://arweave.net/aSA0ZYTu2tbPZzsCI1pShIHTETb55aN46FZ8vb0NHLM</image:loc>
       <image:title>El putón que fuimos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/109/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2de86b758f2718f126c89b92aa631865</image:loc>
+      <image:loc>https://arweave.net/i4jMIFtXtF9Z7l7GG40yIfv0n-o8BN6oricTI2llDpo</image:loc>
       <image:title>Estudio de Julio Romero de Torres I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/11/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c71f7674622e776491706d6023d8171d</image:loc>
+      <image:loc>https://arweave.net/_jqdrkQ36Fpze0j743OC_C0vtw7XGydpw46SP7ZKbyM</image:loc>
       <image:title>Monstruo del espacio latente (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/110/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29</image:loc>
+      <image:loc>https://arweave.net/L6HpRh__GmSxexXHAeCqLfuFZMAgQ0ngt42xqSfzEE8</image:loc>
       <image:title>Trenza de Patri</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/111/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0</image:loc>
+      <image:loc>https://arweave.net/UMeWXDfSVyiKWB8htS-FQd2T6o69F4u1_7-XHPiRj2A</image:loc>
       <image:title>Mareo en el hidropedal</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/112/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602</image:loc>
+      <image:loc>https://arweave.net/sm3gwbyLRQuI38Svfe2q_kO_qks-gN1s07yrDFE-1lE</image:loc>
       <image:title>Verano luminoso I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/113/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4a482d546b8c27940da4716f08f84317</image:loc>
+      <image:loc>https://arweave.net/_hsaGjiixrF2l4_yjfjRk3DE4fvQbxvw0XFxjVG1UFk</image:loc>
       <image:title>Verano sombrío II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/114/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7</image:loc>
+      <image:loc>https://arweave.net/W3VdemUErUcQ_394z0GpFznXQ9fmPBbA-Z-ffC96V-s</image:loc>
       <image:title>Verano luminoso II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/115/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d</image:loc>
+      <image:loc>https://arweave.net/IsqNAvRiSbXZ0dzWWnDXGYovl-3qHJQ0ys7CPD8Goa8</image:loc>
       <image:title>Verano luminoso III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/117/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752</image:loc>
+      <image:loc>https://arweave.net/QvMHCnosjAM9y-IltUd8QQkH30sjAT4Tq75U1tnDWAo</image:loc>
       <image:title>Verano luminoso IV</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/118/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/db0723a1e7f23c3202f948176546e86d</image:loc>
+      <image:loc>https://arweave.net/Too9S6POOMeMWB7VyqlM1kcqLKjtuJAmNlEazoUQHXM</image:loc>
       <image:title>Verano luminoso V</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/119/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae</image:loc>
+      <image:loc>https://arweave.net/nJXQtqvUmrsiRVZWiGy6OPR7rk4cL6Jz3RqRqldGngU</image:loc>
       <image:title>Verano luminoso VI</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/12/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8</image:loc>
+      <image:loc>https://arweave.net/zzZkV7kd9gtmYSfcwVXSPszmu_lqCYLcsXBYQl9u_J8</image:loc>
       <image:title>Samanta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/120/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c2cda1ad8344e93f209186957ad14365</image:loc>
+      <image:loc>https://arweave.net/yuvxWosPoss9zbv_wFXzBhQx5aFGqVH106vV-04Uilw</image:loc>
       <image:title>Verano luminoso VII</image:title>
     </image:image>
   </url>
@@ -276,7 +276,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/02d4f6f55c34470786ef46881b05b70b</image:loc>
+      <image:loc>https://arweave.net/scTBotaQXxgiyUZBaY693uxILccKuJcsfMNXxD2uo_k</image:loc>
       <image:title>A friend</image:title>
     </image:image>
   </url>
@@ -286,7 +286,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/17f7a7a68646a05846f303dddddcb96d</image:loc>
+      <image:loc>https://arweave.net/TQStKakwp_Bm7EDVk2qzXWWPJq7Q6F98_mhRg-jK8zc</image:loc>
       <image:title>Carnaval en la periferia</image:title>
     </image:image>
   </url>
@@ -296,7 +296,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e</image:loc>
+      <image:loc>https://arweave.net/z135Prlnn_NgWeXAl0Mf5PtQ8FMo3KyUzZJbZp4PK7c</image:loc>
       <image:title>La cigarra</image:title>
     </image:image>
   </url>
@@ -306,287 +306,287 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9df19c9b36c15f412114db67e4efddb2</image:loc>
+      <image:loc>https://arweave.net/a5exCxJO3eEa-7dCkC2gXbCRpEreuJ3Ixvj2x_58ZJg</image:loc>
       <image:title>Voyeur</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/126/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34</image:loc>
+      <image:loc>https://arweave.net/ahSoHjmBGlWxtvXQXDtlnryFVUqxPl9kFivplBYBHzA</image:loc>
       <image:title>El fin del mundo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/127/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/eeffd462116904de6abac6c6219741c3</image:loc>
+      <image:loc>https://arweave.net/CrncpA5ozKy_Exk8SLgNrD7-OyUzpJpr5RJOyrFOT1Y</image:loc>
       <image:title>Multiverso</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/128/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d</image:loc>
+      <image:loc>https://arweave.net/jdHyL4dMv4ESzrkmRXSuZjU8NhyG-cILjPs-IN-kdGc</image:loc>
       <image:title>Chatting</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/129/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/647f885ea549c683942c6469bb57fe1a</image:loc>
+      <image:loc>https://arweave.net/tPf6J7fDy8UMEWGj2wyFmbI-izbF_1DEGAvnsZtZYBE</image:loc>
       <image:title>El templo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/13/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1</image:loc>
+      <image:loc>https://arweave.net/5-bz0k0AGEtoV5I1gkBNqffFf-qHHgqGXKi9Ajd2A3w</image:loc>
       <image:title>Siesta en el brasero</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/130/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9</image:loc>
+      <image:loc>https://arweave.net/nDmdFCIyHJvowQTDrslmj3UdzK7E-UyymRP9C1XHMI4</image:loc>
       <image:title>La hora del té</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/131/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9</image:loc>
+      <image:loc>https://arweave.net/iKGjbJr770Cmu6LFzTjVwGp3t3_MeO-GxYTx2jc7Y5I</image:loc>
       <image:title>Iluminando al mundo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/132/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b</image:loc>
+      <image:loc>https://arweave.net/DJF7sM-AC8tPD_SbrggL_pDs4PN_2VvTHsePyBOopz8</image:loc>
       <image:title>Hijos de puta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/133/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d</image:loc>
+      <image:loc>https://arweave.net/z-C68-z_CGBxG31NUR9RI0keL5aom6Zjig33GMKCpDw</image:loc>
       <image:title>Pantallas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/134/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6f66e6181222c192694a932fedc89e6d</image:loc>
+      <image:loc>https://arweave.net/CQfiTGvWKF_leLrboKHEMakM1YvET3Mk8IgiTYFBnIc</image:loc>
       <image:title>Recuerdo feliz</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/136/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f</image:loc>
-      <image:title>El artista excéntrico </image:title>
+      <image:loc>https://arweave.net/FUvCwq_3KgYcTzGGdD26MzdmC6nMANc5zY49NWTqNHo</image:loc>
+      <image:title>El artista excéntrico</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/137/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e</image:loc>
+      <image:loc>https://arweave.net/k5fKOuTzKuDQmAi3mcabrX6KBUCp7LgdPo6KMUSv_3g</image:loc>
       <image:title>Piso de estudiantes I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/138/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0</image:loc>
+      <image:loc>https://arweave.net/TPDKvejl6dAHO2lWCLvPgVXHi9JTzCFVf3yyhAvM2-Q</image:loc>
       <image:title>Piso de estudiantes II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/139/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b71a38b44dce0116395de851b46b01ec</image:loc>
+      <image:loc>https://arweave.net/4CHsAVuG6HXC0GGzdIwJHhx3azOl3xybCvEk6QYo810</image:loc>
       <image:title>Piso de estudiantes III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/14/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f5db77233fecd005f46ce37befeaa30f</image:loc>
+      <image:loc>https://arweave.net/pvVK759fymZzixrhvVgpFNDQy3X1GRUWxDvmYloVw_I</image:loc>
       <image:title>Monstruo del espacio latente (IV)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/140/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c</image:loc>
+      <image:loc>https://arweave.net/koUqan3FKw_V4Mu-rMR3nmJv2aD7Ohomcf832B7sPU4</image:loc>
       <image:title>Paisaje con ángeles</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/141/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7</image:loc>
+      <image:loc>https://arweave.net/-6-hzKup1-4J_sgHnQmZFnQKFT5wE9iTo3KDs5Gscdo</image:loc>
       <image:title>El punk</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/143/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dcd3bf14450f376668e0db397eb386da</image:loc>
+      <image:loc>https://arweave.net/V7G5zuOyr2ceOTMDHXmnkyRdECNljUvs54bkD8gMpg8</image:loc>
       <image:title>Bodegón</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/144/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/439003066d5365a783644795cd472735</image:loc>
+      <image:loc>https://arweave.net/UEe9wWW3Iy7-NqMWFK649LyxWv3_eqD6kj5pVnlVqlM</image:loc>
       <image:title>Me duele el flúor I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/145/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/66d296397015c4cb98b75bf74947000a</image:loc>
+      <image:loc>https://arweave.net/YazepDufo2LLtuQJu60fGVFfkbH2og_vdWbDR-rV4c4</image:loc>
       <image:title>Me duele el flúor II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/146/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/774c69e0690f85b0476708137dc6bfc7</image:loc>
+      <image:loc>https://arweave.net/eTTMvaBc04J6An3VZpt2MKketVgMYTBwg2b8S80y_RQ</image:loc>
       <image:title>Catástrofe en el bosque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/15/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9</image:loc>
+      <image:loc>https://arweave.net/1H-JxMM82iLroN3RJJ8JlVnHZ4a1ya3B41JjonkuX14</image:loc>
       <image:title>Siesta en el camping</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/150/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a</image:loc>
+      <image:loc>https://arweave.net/JYmZb6YlBjcvh4KEAUUrG_s-EO3UXFCJ5euLIzcywRY</image:loc>
       <image:title>Señoras en el tren</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/152/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25</image:loc>
+      <image:loc>https://arweave.net/Ypx-RY-2uhmHZqmXqpnxghy-Ij4qKMBkC3IxBVXQ_GE</image:loc>
       <image:title>Secuestro en la rave</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/153/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d</image:loc>
+      <image:loc>https://arweave.net/NmVyJ3wVKsOpxRwCtR3mdIIo7akPFKLQ59LFZl-wKPw</image:loc>
       <image:title>Chapoteo en una noche de verano</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/156/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c</image:loc>
+      <image:loc>https://arweave.net/6oO2C8we1EEzzkKFDTKSja8Ro2b3WBjtR5lv8lWTKXI</image:loc>
       <image:title>Entierro al atardecer</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/159/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1</image:loc>
+      <image:loc>https://arweave.net/O-pS4RkJvJKWg0iynNAC5yAYBXovboDw48_9Bu36LWI</image:loc>
       <image:title>Paisaje nostálgico</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/16/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881</image:loc>
+      <image:loc>https://arweave.net/_cpm0SeTn727K-Q3k0jA9emd71INKpmz4DgsJny3csU</image:loc>
       <image:title>Asunción y descenso</image:title>
     </image:image>
   </url>
@@ -596,67 +596,67 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d</image:loc>
+      <image:loc>https://arweave.net/rqhiY6vGGq_8yEoAqmNwv8Iis-SzTnk67bZJGLB122g</image:loc>
       <image:title>Festival de influencers</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/161/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd</image:loc>
+      <image:loc>https://arweave.net/3O_yhc9vFLyEQD_DXGIPZSACCWGxpJLvG1oBop4jpD0</image:loc>
       <image:title>Domingo por la tarde en el parque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/162/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e</image:loc>
+      <image:loc>https://arweave.net/gvbCLHXv7JotuMk3zbUHBxr1DA19oR1XZgmOcmpFTsw</image:loc>
       <image:title>Dont buy conceptual crap</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/163/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5</image:loc>
+      <image:loc>https://arweave.net/QnC9ATCNhf6674LN1rORyxFlH5lQGLM2LV3P9eG5evM</image:loc>
       <image:title>Fotógrafa</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/164/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d</image:loc>
+      <image:loc>https://arweave.net/1X_KdFWurop8Cp0pq2pw_qolP7-KRXIA8QHFAGGFPZw</image:loc>
       <image:title>Stolen pic I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/165/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/95f63d5565733e468472be3cf661b228</image:loc>
+      <image:loc>https://arweave.net/OK59H3wgAKHuaKvZcDKK8cssOFAF_wu6Cucd_FByXpE</image:loc>
       <image:title>Stolen pic II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/166/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff</image:loc>
+      <image:loc>https://arweave.net/QRxm9lymmaIVRpe15w8T07iO5UQXYDweTEEZc9_sqdI</image:loc>
       <image:title>Stolen pic III</image:title>
     </image:image>
   </url>
@@ -666,7 +666,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2af4f2c08207e8694b40f5f032174a08</image:loc>
+      <image:loc>https://arweave.net/PBgpZxSQ1sU4ziPlyXnT4XQiC6XVN5IhaHod7C_OBqc</image:loc>
       <image:title>Transeúntes</image:title>
     </image:image>
   </url>
@@ -676,8 +676,8 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7</image:loc>
-      <image:title>After a bigger spash</image:title>
+      <image:loc>https://arweave.net/U976shFrnxFw21B65G4TbAx0bSag_3Qxi2JhMaDSJ8E</image:loc>
+      <image:title>After a bigger splash</image:title>
     </image:image>
   </url>
   <url>
@@ -686,27 +686,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7f055059a88ae3714bc72a836daa8736</image:loc>
+      <image:loc>https://arweave.net/OKVk02kQP54MUJYKIVsgDKaJ3vifE8P2lLU_5qiAqQQ</image:loc>
       <image:title>Un buen día</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/17/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283</image:loc>
+      <image:loc>https://arweave.net/o3XEVnuENCvldmqhZEuL_OVAMzRenJlndWl4Dgn85fY</image:loc>
       <image:title>Stalker (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/170/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e01bd64f58e696214d12bd754773dc37</image:loc>
+      <image:loc>https://arweave.net/M0qEKRoCr0wZv7VQVlNJlQqzHXDNymR4KzoB63SqD-s</image:loc>
       <image:title>Veinteañeros en la Feria de San Mateo</image:title>
     </image:image>
   </url>
@@ -716,17 +716,17 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b7d577eda8e3fa7add2d708592682aed</image:loc>
+      <image:loc>https://arweave.net/w4BlzfyY0603e64CSoXWv91hdCXCuMvH4g-pwUzEWz0</image:loc>
       <image:title>Abuelo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/172/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/95983e30b735782b86100d4890f94b4d</image:loc>
+      <image:loc>https://arweave.net/qevmipmRNoK37ian66p-ZdcvM-4wY1qqu8L0XQtwLp0</image:loc>
       <image:title>Crucifijo</image:title>
     </image:image>
   </url>
@@ -736,27 +736,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c</image:loc>
+      <image:loc>https://arweave.net/7pjjNOqbbJNu9_lkZueHYvMFfXlDVa6iNdhjsZdYiXw</image:loc>
       <image:title>Comedor de gambas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/174/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/766b487c802c16d90a692c741b342174</image:loc>
+      <image:loc>https://arweave.net/3RwT2Tld9DjlK_OG5YU0EMbKKn1nn4KldvE_GMVJ0Ts</image:loc>
       <image:title>Botellón en el pueblo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/18/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc</image:loc>
+      <image:loc>https://arweave.net/c3IZJa25cRm6SG3PK7h74jWxQTnFPBoqGJfuUwtbSVc</image:loc>
       <image:title>Stalker (III)</image:title>
     </image:image>
   </url>
@@ -766,7 +766,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6</image:loc>
+      <image:loc>https://arweave.net/NHYRsgZbFJi2srxc9oBm-IFJ-rVPrk_lZ4EHN3W6Rc0</image:loc>
       <image:title>Un altar antiguo</image:title>
     </image:image>
   </url>
@@ -776,7 +776,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a</image:loc>
+      <image:loc>https://arweave.net/eopLKZ3X4isFkq_YaE-x9XwW1PlK-h3ESWUSC86Mj0w</image:loc>
       <image:title>Estatuas en el jardín</image:title>
     </image:image>
   </url>
@@ -786,7 +786,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e08949ac044c9d63fc3948e347acd21c</image:loc>
+      <image:loc>https://arweave.net/lhS4iLmgOFtT67lZea4MMYSsdBxxnYPumMK2pNdGSSk</image:loc>
       <image:title>El auge de la ultraderecha</image:title>
     </image:image>
   </url>
@@ -796,27 +796,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300</image:loc>
-      <image:title>EL apocalipsis se parece a un camping</image:title>
+      <image:loc>https://arweave.net/VQgdNAOTWjkwPKNufrtgkzp-hHQPn_OfXfabMj44OeU</image:loc>
+      <image:title>El apocalipsis se parece a un camping</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/187/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6</image:loc>
+      <image:loc>https://arweave.net/axfTIbZctSyvsYHNux-PTaeoRCzZMy_6Gr-W_Hjnj2w</image:loc>
       <image:title>Realidad virtual</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/19/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698</image:loc>
+      <image:loc>https://arweave.net/YwhbDkX4GqqC0yG7V0p30WYhQ2usOVRpk8lWEDzelUM</image:loc>
       <image:title>Cruzando la meseta</image:title>
     </image:image>
   </url>
@@ -826,7 +826,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178</image:loc>
+      <image:loc>https://arweave.net/nCA15kWA77ejIl9xfGSdw0fWKfvzGD7brSJZR_m-Na4</image:loc>
       <image:title>Primer día con Iris en casa</image:title>
     </image:image>
   </url>
@@ -836,7 +836,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9</image:loc>
+      <image:loc>https://arweave.net/euCqiGdnj0KEKA80oTgPkpjvKxbr_p0DyrolrrfSwo0</image:loc>
       <image:title>Piso de estudiantes</image:title>
     </image:image>
   </url>
@@ -846,7 +846,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e</image:loc>
+      <image:loc>https://arweave.net/CwI44eqTk8G6KWgoczU7WFdsj9ZCTx6_xGSI1s0e8N4</image:loc>
       <image:title>Rockets win I</image:title>
     </image:image>
   </url>
@@ -856,37 +856,37 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c</image:loc>
+      <image:loc>https://arweave.net/95W8phjj9z7PftYqMUfHi5iKjl6NUqJESLsSFP3hLnw</image:loc>
       <image:title>Rockets win II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/2/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/74c4399be3c6b29643951ea6ec310e75</image:loc>
+      <image:loc>https://arweave.net/E2149JjWraPh3dfZ1Q2zXrBEmBy-SzoRuiapuygnjAE</image:loc>
       <image:title>Cuando éramos felices</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/20/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d</image:loc>
+      <image:loc>https://arweave.net/q5FsXMT5i9O_SO2VjXo6wNEOosPi41pwQ-BzJ8QWRxo</image:loc>
       <image:title>33. El desengaño</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/21/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a</image:loc>
+      <image:loc>https://arweave.net/93Gspw8z519NJYH6ngjP84ZbqfC9zwG0PvG1T90A4Y8</image:loc>
       <image:title>Juego absurdo</image:title>
     </image:image>
   </url>
@@ -896,277 +896,277 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f9f062d7991159eb3803c22e51272068</image:loc>
+      <image:loc>https://arweave.net/vw3kYLgOP41LDUr_sTdD7ezgtt_WyyyPoDYKd1GADx0</image:loc>
       <image:title>Madonna (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/23/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7</image:loc>
+      <image:loc>https://arweave.net/a-B6DGFCoXqDbxkp-zWrbPmpiY0mbQ9pS4Hn2FdK29Y</image:loc>
       <image:title>Autorretrato con Puri (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/24/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c</image:loc>
+      <image:loc>https://arweave.net/OWX_L1Yj_LuTgzje4BXGk10sXXmdI8biLJn0ucB7pys</image:loc>
       <image:title>Autorretrato con Puri (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/25/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7decace872ed74510ccd31ff06f736a0</image:loc>
+      <image:loc>https://arweave.net/SPAEan_GxJIB-ZTl4IWPpskTAiXR61y_-a36_uJXkCY</image:loc>
       <image:title>Autorretrato con Puri (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/26/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b</image:loc>
+      <image:loc>https://arweave.net/ypVW7GlW5_-Xmew4bpz01c0RtqpeCtuPkJJUiO4aVw8</image:loc>
       <image:title>Autorretrato con Puri (IV)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/27/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2</image:loc>
+      <image:loc>https://arweave.net/uimvjtEVl3BmfquiB7nnAKZj_UL5sowHitu1lhB7X7A</image:loc>
       <image:title>El perro</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/28/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66</image:loc>
+      <image:loc>https://arweave.net/m0Gbm4uYNSVIuGFQLWxVpZmiWg__DwOW3ekvkjiST0E</image:loc>
       <image:title>Botellón en el parque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/29/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1183926ba3b8333eea4626fcc479ed81</image:loc>
+      <image:loc>https://arweave.net/A6_8zH-1WaVkfk1NWK3XwLRHUqImYooPRGGn5GsxTSQ</image:loc>
       <image:title>The house of the rising sun karaoke version</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/30/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b21fed290eb20a775503c67ae0ab191b</image:loc>
+      <image:loc>https://arweave.net/irYO6UmP-d9QueNc9yFEQRXfyXzp-4JUKR0qM0K0bxw</image:loc>
       <image:title>Dub</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/31/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf</image:loc>
+      <image:loc>https://arweave.net/2OzVWfHSv-iQAgAvvGSD6TMQ-6Zmyaaw38KqDMLY4_Q</image:loc>
       <image:title>Reina</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/32/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789</image:loc>
+      <image:loc>https://arweave.net/cqtCzCl6AMCUHjP44CpAL-84V63KiDdRtnP8XPfvQ_I</image:loc>
       <image:title>Crimen en el olivar</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/34/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32</image:loc>
+      <image:loc>https://arweave.net/PbQZByFJBMAUwyPdpuzu1tJRhbftRv2uXUesYh_VK_E</image:loc>
       <image:title>Easter bunny</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/35/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d</image:loc>
+      <image:loc>https://arweave.net/EdujOraCHv8wk7b-repCzKQy1iIZPE5EN7SOSbNQYCk</image:loc>
       <image:title>Sexy mal (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/36/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf</image:loc>
+      <image:loc>https://arweave.net/C_T-KUr2y23HbfQsiMffHym-Ytv89_nOiLwRsaG1Lhk</image:loc>
       <image:title>Sexy mal (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/37/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48c3898443a58dfb528d65db53cbd71e</image:loc>
+      <image:loc>https://arweave.net/ti1x87so2_cmaeyCMbI3WvtJFvJoBv50FH1DLgtiODU</image:loc>
       <image:title>Blessed</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/38/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ac728505c99a0810d3e771c0c8197e66</image:loc>
+      <image:loc>https://arweave.net/BMD0bwpvPUedRdFurpxPVLfl6bvNDXA0wI7vxckWTA0</image:loc>
       <image:title>Fiesta en el parking (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/39/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/66909476028044f320522ef698297959</image:loc>
+      <image:loc>https://arweave.net/XJde6KhDL7c4k9FobNyLuexFWSLY961CDgbIYrOrUTU</image:loc>
       <image:title>Fiesta en el parking (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/4/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f</image:loc>
+      <image:loc>https://arweave.net/mE_Vbt8DYVfeyo4pxCljwKDMQTcmeMOoRO_t6-bQR3g</image:loc>
       <image:title>Stalker</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/40/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48094a780190c7a20060cf23997bf0f0</image:loc>
+      <image:loc>https://arweave.net/cNrUmt91W5belP5cYRuu-CArrcj2tk4lQA_SzpT80vU</image:loc>
       <image:title>Fiesta en el parking (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/41/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5a1316c26b386301ae14a259afb25d58</image:loc>
+      <image:loc>https://arweave.net/Q91OqB3pqhB0r2pwMJI4YatcVOmgVSTMxzjplMwC1zk</image:loc>
       <image:title>El ataque de las palomas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/42/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b0b997438aec7b94aea074435f1661df</image:loc>
+      <image:loc>https://arweave.net/i8hKNQ4Pf8ZkYSs4wdFb-tL-wiEwxzcN0PjPWlfcIDE</image:loc>
       <image:title>Noche caótica</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/43/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/448fd7add46d8ea60abef7379010aee3</image:loc>
+      <image:loc>https://arweave.net/kor6VAPIFLzCw2wtf0SdSfkv-xCTKmrSqtzJciDcPsY</image:loc>
       <image:title>Fuck you, Juanma Moreno</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/44/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/51697c339b213304b839b5504c3fca6f</image:loc>
+      <image:loc>https://arweave.net/qncKKPnI0zBc86vbZNszzQUMOagjc60bEVpGcJwDirs</image:loc>
       <image:title>Aullido</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/45/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/993df381cfda7c2083aff16cc5f3050c</image:loc>
+      <image:loc>https://arweave.net/leHldPn6dpJRP9KLm4obSSZRj9YnNkK12bQzpcqWOUE</image:loc>
       <image:title>Vodka con fanta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/46/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab</image:loc>
+      <image:loc>https://arweave.net/AXyyFhMVRt0jB28380CHiFQwv2Z6YRsG2WB33QMSazE</image:loc>
       <image:title>0% battery</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/47/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/962b2a71133bf408e1486f2a9f98127d</image:loc>
+      <image:loc>https://arweave.net/jUqB4PxIGFq28y5d0aVlD2auyJKgUPTOpMA94pJ9Gkk</image:loc>
       <image:title>La noche (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/48/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/45f841445f919ca273266e8a0cedf6c2</image:loc>
+      <image:loc>https://arweave.net/IZhNOCdiPWOq6sW0zApFcQNL4wFYWkxHaX9O6DR-9cQ</image:loc>
       <image:title>Festival</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/49/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c</image:loc>
+      <image:loc>https://arweave.net/IL_wvc_jnR7z_4qPPpkYBA59Bn1_A6WJ_gd7Q_IM91E</image:loc>
       <image:title>Saltar la verja</image:title>
     </image:image>
   </url>
@@ -1176,523 +1176,523 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cf77b37f8f36966ab201233b607bc71d</image:loc>
+      <image:loc>https://arweave.net/8YX7bps5OQP2p_IQG49zAchcY0BtMu03MY-IoE7hh7A</image:loc>
       <image:title>Partido de beisbol triturado</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/50/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a</image:loc>
+      <image:loc>https://arweave.net/OHTeT25lg8Fvu_9lvRaUkK3khP5gQNKzCDfHmPriwek</image:loc>
       <image:title>La noche (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/51/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18</image:loc>
+      <image:loc>https://arweave.net/50BRWm3dWYIvFo_8OjOWI_sYUKvSltXfCKQMPqs4bAY</image:loc>
       <image:title>Monstruo del pantano</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/52/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d4bc0fb71dae55046056b7c127d72331</image:loc>
+      <image:loc>https://arweave.net/FTDuGvnlClqzg49GNo-ewWzJeoNcC_9RvF8CmZYse4k</image:loc>
       <image:title>Limbo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/53/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed</image:loc>
+      <image:loc>https://arweave.net/DYr6MJMgA-x2ngoVSs9kPD5faaugrXwVU_rfaL0Qlno</image:loc>
       <image:title>Abrazo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/54/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/df919eb17420bc535220d38384b7ca88</image:loc>
+      <image:loc>https://arweave.net/P8-HpgSZr_woJQyvU9tCDcW0RDmj8RG3rnMg3ZIODsw</image:loc>
       <image:title>Piernas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/56/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4dec7e754f47fac8a044b93950e0717a</image:loc>
+      <image:loc>https://arweave.net/DxI-3GmiZE-BAP2BhAcK2hv5XTlWxU1hBskikX1BDNQ</image:loc>
       <image:title>Botellón</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/57/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1391679376c50a26382c38907169f564</image:loc>
+      <image:loc>https://arweave.net/bnUxssYTkqP1Qvg8c1UrZvALJWcAaK0oD5DKagOIdKs</image:loc>
       <image:title>Say cheese</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/58/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f</image:loc>
+      <image:loc>https://arweave.net/6ik-NwgjhFQdr7VZ-bXIuN5Qd6fyW2OASDfOrWhnEVo</image:loc>
       <image:title>Asunción</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/59/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788</image:loc>
+      <image:loc>https://arweave.net/y55A0fV-dXrhjSru77cLHVAyxWsrYZJytWAXDo4iUTI</image:loc>
       <image:title>Supersticiosos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/6/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3</image:loc>
+      <image:loc>https://arweave.net/HHON2TjP0ExzJetri1N4dmBjYCC0waQisOD1zrIWJzg</image:loc>
       <image:title>Reflejo de luz de iPad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/60/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0</image:loc>
+      <image:loc>https://arweave.net/PBswYTP9a71xhhikjTLhpvX3XAwC3Qvbrybf0vJbcm8</image:loc>
       <image:title>Piedad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/61/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3adc2274530081851673ba91ca3b1f60</image:loc>
+      <image:loc>https://arweave.net/7t49Q3Nvqq451jCQFgndC_nnCkzAB1rg123pudhQkQA</image:loc>
       <image:title>Bandeja de entrada</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/62/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902</image:loc>
+      <image:loc>https://arweave.net/1DoHrR1B4DFOzNRNF4qqTy3HBeWx19skgE7o0kPcZjs</image:loc>
       <image:title>Urinario</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/63/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/715d899aa154683e202bcf83b41e7a87</image:loc>
+      <image:loc>https://arweave.net/NB6tELH11JWWp5JYOWp9Kdw9mMY0DTMhKSbmvwNflh8</image:loc>
       <image:title>Mirando reels</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/64/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/59cbca75b73c7ad148420251871c7c91</image:loc>
+      <image:loc>https://arweave.net/hmXppXr-_nuJanM8BTLmFZEhAVjCkp3Ggf9Ha_u5d2Y</image:loc>
       <image:title>Cotilleo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/65/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74</image:loc>
+      <image:loc>https://arweave.net/tYOcwnrY9yRoNSf3oPEMLNdcaaCpMwlTL0FJCFIpzHs</image:loc>
       <image:title>Una rosa pa tu pelo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/66/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c</image:loc>
+      <image:loc>https://arweave.net/X0Qza2O4ueDCNr9KfecA_BvzqA6XeqW3B_CLYPwI_yM</image:loc>
       <image:title>Cautivo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/67/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f27986c97a8a26ce8645282c07e59227</image:loc>
+      <image:loc>https://arweave.net/D_TdHgBqKts3AqrciiC8VFYoRvQ0bLKE8v3jE0LFGwQ</image:loc>
       <image:title>Otro puto selfie</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/68/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f</image:loc>
+      <image:loc>https://arweave.net/-gV26N7-7Gr9Lha91ah0AQ8jx8Ao2q7bSfyhZPcb8i0</image:loc>
       <image:title>Hacer la croqueta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/69/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44</image:loc>
+      <image:loc>https://arweave.net/fkXXeL91gBIUrQmrOu9rsF-ZowTD9UtM85A2DBLMPPs</image:loc>
       <image:title>Aparición mariana</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/7/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8</image:loc>
+      <image:loc>https://arweave.net/ktlKyWDY7TodkV4i8EP76t1sp2E1BLW3cK_rXEhnNY8</image:loc>
       <image:title>Mañaneo I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/70/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e</image:loc>
+      <image:loc>https://arweave.net/cWsCQx-TmLhcqwgwdZBnzwU5YEIzC3TZQFH3OVtHxsk</image:loc>
       <image:title>Abrazo de dinosaurio</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/71/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67</image:loc>
+      <image:loc>https://arweave.net/qeHTtnO3tZlFNjVdLE49-1NGoq0oOuK8GdCo81q35RA</image:loc>
       <image:title>Niño-dios aprieta pero no ahoga</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/72/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e</image:loc>
+      <image:loc>https://arweave.net/S675g4ukNfLFA9x2txOQTtwKBZ57HRZZFPpo2zmM51Y</image:loc>
       <image:title>Dálmatas y vacas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/73/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0</image:loc>
+      <image:loc>https://arweave.net/G7zn948ve_Bfs2w8Y15na1ghH5_cL-k0dCsQ9inCK30</image:loc>
       <image:title>Carne</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/74/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1</image:loc>
+      <image:loc>https://arweave.net/a4BhXJHmwqdVvpf_mQALhcJa-1tyvRVKcjjKxKCRZ5U</image:loc>
       <image:title>El silencio (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/75/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8d47f4f152ca94891898b483c2698f56</image:loc>
+      <image:loc>https://arweave.net/uLox0fQQ8-QKEN-fpb1xkFJahnNdavqUJzdyaLxxbpI</image:loc>
       <image:title>El silencio (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/76/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f</image:loc>
+      <image:loc>https://arweave.net/8e2T0JQKQAIAkle3C6PfnqzNvS6R7xbkAh6EMU7yP_g</image:loc>
       <image:title>La belleza</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/77/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1</image:loc>
+      <image:loc>https://arweave.net/42uYrgJdXOv_J2VgfZhl7v4WmNwrdWB4nXFtnKBRphk</image:loc>
       <image:title>Búsqueda eterna</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/78/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6160683af3b681180123e4b2670479d6</image:loc>
+      <image:loc>https://arweave.net/hBkKiMDFBQn845qnaNimUt87TvN2ao1HqmJtzC8UxkU</image:loc>
       <image:title>Guarros</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/79/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f</image:loc>
+      <image:loc>https://arweave.net/qaK4eDU32h6EFylfyHwxVL_ap-X2gI4RXe-Vkattx3k</image:loc>
       <image:title>Despedida</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/8/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/01d8c63a623a81f09bab60c161497426</image:loc>
+      <image:loc>https://arweave.net/jFugJsc0eRMciOrXOy_uSvhg79XTVw4qyJifkWyCNDo</image:loc>
       <image:title>Mañaneo II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/80/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3</image:loc>
+      <image:loc>https://arweave.net/_6ghrKBV6ewvxkktugH95wi1XeWcrV_5jyWmC5NH9jQ</image:loc>
       <image:title>Los carcamales que seremos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/81/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb</image:loc>
+      <image:loc>https://arweave.net/MSSZgZ0LRvigvthWpryiqapgP6fvleTdT0vGkPowTKk</image:loc>
       <image:title>La estudiante Erasmus</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/82/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/599490b89e969920beb21008af3e969c</image:loc>
+      <image:loc>https://arweave.net/YJVlpiVcmAPDyJj3j4OZUsma5gd9T58qXUG4HSEFAss</image:loc>
       <image:title>Madonna (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/83/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e</image:loc>
+      <image:loc>https://arweave.net/5f52Lg0jVUXjV0PzF6Yb_4Ly0QPQqJWbnbWXJisiHls</image:loc>
       <image:title>Fin de curso</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/84/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/339b4f06e879fd32ceff026363b8cead</image:loc>
+      <image:loc>https://arweave.net/sxe9lhp4LnIqh61r81o1BZh3y-IHDBo_1K-tWmzYYrE</image:loc>
       <image:title>Jardín triturado</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/86/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/921d7041201b3fd7b278049090c94333</image:loc>
+      <image:loc>https://arweave.net/MRLPOC-6yVhcyl2diRWQ8chkZ4ciJ09dSvhAT3kdD9w</image:loc>
       <image:title>El funeral del influencer</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/87/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6</image:loc>
+      <image:loc>https://arweave.net/Qc-5elNaKLYvzg8gWPj62LhczwG3r1DPWsYBp-7oICA</image:loc>
       <image:title>Maternidad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/88/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc</image:loc>
+      <image:loc>https://arweave.net/PS6Zbe-nbTj7Ho9sInF3ZRMMNKgr8A1fiTncCVIeb4k</image:loc>
       <image:title>Musa online</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/89/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b</image:loc>
+      <image:loc>https://arweave.net/m8nnqi-b-cn4E8dHoXItfaLKYqZLB6vK0hNPb9MJhkE</image:loc>
       <image:title>Cuarentena</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/9/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6</image:loc>
+      <image:loc>https://arweave.net/xmy1ri7mYXMecu5Bn6IZLLq4GHLtSsezahjHkqBU_YA</image:loc>
       <image:title>Monstruo del espacio latente (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/90/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33</image:loc>
+      <image:loc>https://arweave.net/6Svu1kF8ShseT7RJb7e5D3EOZJ783hZuzuF58pWzHm8</image:loc>
       <image:title>Romero de Torres y las señoras aburridas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/91/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4</image:loc>
+      <image:loc>https://arweave.net/Qt4HgM6cxDUCSp9gY7d_ALwWq3PoCHW635hE7CejBfM</image:loc>
       <image:title>Polvo en el cementerio</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/92/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/96723b18d225fb0901feedbf0afcd62e</image:loc>
+      <image:loc>https://arweave.net/nDNDttrumURHFp8VBD7NSiK2NDV74F3lptprC6k1HPo</image:loc>
       <image:title>Chat GPT soñando con sentir cosas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/93/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5</image:loc>
+      <image:loc>https://arweave.net/WOA_30-In3BytIeEYFp_nkiqmL1mGF_RbySnuBdKIII</image:loc>
       <image:title>Alegoría del amor</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/94/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623</image:loc>
+      <image:loc>https://arweave.net/CXrWSgtmK-fumZd1z-8ee4LmtEcKJ5JDdqiJHfsq89A</image:loc>
       <image:title>Splash</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/95/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9f0019740220d125df2a92f57bc344d6</image:loc>
+      <image:loc>https://arweave.net/kLZNfmWvKMsBFw3MntRCoqTeGvYxt43zzcyObYLroVU</image:loc>
       <image:title>La búsqueda del dios</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/97/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3438148e9008a52cbd1244056fbea5e0</image:loc>
+      <image:loc>https://arweave.net/pYnZo3OmNP6hLD3WN6nd52QTGaMo3M6Ljoq8VDfYDvs</image:loc>
       <image:title>Usuario</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/98/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/919f3d93999d63e714c44dae3706b80b</image:loc>
+      <image:loc>https://arweave.net/gahBOS5KzMLeI2ZmsZXLX0Bz8bNz8CMQyglUOZIL2IE</image:loc>
       <image:title>Confusión</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/artwork/99/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/896db43c2683cd0bac4241e3797c57e6</image:loc>
+      <image:loc>https://arweave.net/74uBTSsgPjM7c2-q39VgVkw-9o1neku_XZoKR3de1tQ</image:loc>
       <image:title>Artista aplicando</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -1702,7 +1702,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/about/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -1712,201 +1712,201 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/10/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b70d5a275d4f8418fd1d12272cf359b1</image:loc>
+      <image:loc>https://arweave.net/eXYAW9WunEfCVyuMNDH6m4_IyIoK4p3MHQcsH6Ss_PQ</image:loc>
       <image:title>Monstruo del espacio latente (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/100/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c8e9c1e4d646845603775f9dd34d0684</image:loc>
+      <image:loc>https://arweave.net/7x3gtt8j3UEM8IbG0ciTwbm5JV7XXnSCbkF4BTL2Wwc</image:loc>
       <image:title>Ángel I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/101/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c4327f72d792631bbb58746bae15c285</image:loc>
+      <image:loc>https://arweave.net/3giDtUNBU9BBV-pvz6eAqCAqZ6RPlxfW6MgS60IWswA</image:loc>
       <image:title>Ángel II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/102/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7c3d6c33243c83dd4e867fc2c9e3e242</image:loc>
+      <image:loc>https://arweave.net/iRQWfmkj3hgSdnyiSD0vqGlU06IYQVM4YSM_oFcSVQU</image:loc>
       <image:title>Ángel III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/106/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0b669e2dedb7ebd019bdf39a1dd7c667</image:loc>
+      <image:loc>https://arweave.net/ginbXklXFIpGiiYt_dUWiD_YIadZFiEyvJMBi-TK8O0</image:loc>
       <image:title>Apunte de muchacha</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/107/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6b4fcc9866d3071fd915a1902c5bb9b3</image:loc>
+      <image:loc>https://arweave.net/Vvd0ewjZ6bRwlJ_aeKjkm9PTu16TiziNibjBJ2Mcn4g</image:loc>
       <image:title>Verano sombrío I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/108/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d3cea17a2a0537ee66027a5bdfd22eab</image:loc>
+      <image:loc>https://arweave.net/aSA0ZYTu2tbPZzsCI1pShIHTETb55aN46FZ8vb0NHLM</image:loc>
       <image:title>El putón que fuimos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/109/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2de86b758f2718f126c89b92aa631865</image:loc>
+      <image:loc>https://arweave.net/i4jMIFtXtF9Z7l7GG40yIfv0n-o8BN6oricTI2llDpo</image:loc>
       <image:title>Estudio de Julio Romero de Torres I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/11/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c71f7674622e776491706d6023d8171d</image:loc>
+      <image:loc>https://arweave.net/_jqdrkQ36Fpze0j743OC_C0vtw7XGydpw46SP7ZKbyM</image:loc>
       <image:title>Monstruo del espacio latente (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/110/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fecdd7b6bf38abe3cc6c7df3fb8d5f29</image:loc>
+      <image:loc>https://arweave.net/L6HpRh__GmSxexXHAeCqLfuFZMAgQ0ngt42xqSfzEE8</image:loc>
       <image:title>Trenza de Patri</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/111/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8c15d2a925e69a5462dc16d74ea5edb0</image:loc>
+      <image:loc>https://arweave.net/UMeWXDfSVyiKWB8htS-FQd2T6o69F4u1_7-XHPiRj2A</image:loc>
       <image:title>Mareo en el hidropedal</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/112/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/154b9e39f0b99cbe84069d4cf6e4d602</image:loc>
+      <image:loc>https://arweave.net/sm3gwbyLRQuI38Svfe2q_kO_qks-gN1s07yrDFE-1lE</image:loc>
       <image:title>Verano luminoso I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/113/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4a482d546b8c27940da4716f08f84317</image:loc>
+      <image:loc>https://arweave.net/_hsaGjiixrF2l4_yjfjRk3DE4fvQbxvw0XFxjVG1UFk</image:loc>
       <image:title>Verano sombrío II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/114/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6c3ae7bf5ad18f0ad486d5e88e46d5e7</image:loc>
+      <image:loc>https://arweave.net/W3VdemUErUcQ_394z0GpFznXQ9fmPBbA-Z-ffC96V-s</image:loc>
       <image:title>Verano luminoso II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/115/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f611e82c3c1cdeefecd6d76a0a94427d</image:loc>
+      <image:loc>https://arweave.net/IsqNAvRiSbXZ0dzWWnDXGYovl-3qHJQ0ys7CPD8Goa8</image:loc>
       <image:title>Verano luminoso III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/117/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/98ab2e7f37a3363cc0d5407b0a37f752</image:loc>
+      <image:loc>https://arweave.net/QvMHCnosjAM9y-IltUd8QQkH30sjAT4Tq75U1tnDWAo</image:loc>
       <image:title>Verano luminoso IV</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/118/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/db0723a1e7f23c3202f948176546e86d</image:loc>
+      <image:loc>https://arweave.net/Too9S6POOMeMWB7VyqlM1kcqLKjtuJAmNlEazoUQHXM</image:loc>
       <image:title>Verano luminoso V</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/119/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a2db0a069c38e4643c2eccd87e7ee9ae</image:loc>
+      <image:loc>https://arweave.net/nJXQtqvUmrsiRVZWiGy6OPR7rk4cL6Jz3RqRqldGngU</image:loc>
       <image:title>Verano luminoso VI</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/12/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1de9ba13d652c9106c31e6fbeb1b4fb8</image:loc>
+      <image:loc>https://arweave.net/zzZkV7kd9gtmYSfcwVXSPszmu_lqCYLcsXBYQl9u_J8</image:loc>
       <image:title>Samanta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/120/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c2cda1ad8344e93f209186957ad14365</image:loc>
+      <image:loc>https://arweave.net/yuvxWosPoss9zbv_wFXzBhQx5aFGqVH106vV-04Uilw</image:loc>
       <image:title>Verano luminoso VII</image:title>
     </image:image>
   </url>
@@ -1916,7 +1916,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/02d4f6f55c34470786ef46881b05b70b</image:loc>
+      <image:loc>https://arweave.net/scTBotaQXxgiyUZBaY693uxILccKuJcsfMNXxD2uo_k</image:loc>
       <image:title>A friend</image:title>
     </image:image>
   </url>
@@ -1926,7 +1926,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/17f7a7a68646a05846f303dddddcb96d</image:loc>
+      <image:loc>https://arweave.net/TQStKakwp_Bm7EDVk2qzXWWPJq7Q6F98_mhRg-jK8zc</image:loc>
       <image:title>Carnaval en la periferia</image:title>
     </image:image>
   </url>
@@ -1936,7 +1936,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d56e7ec16716c0efed0fccaab7995b4e</image:loc>
+      <image:loc>https://arweave.net/z135Prlnn_NgWeXAl0Mf5PtQ8FMo3KyUzZJbZp4PK7c</image:loc>
       <image:title>La cigarra</image:title>
     </image:image>
   </url>
@@ -1946,287 +1946,287 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9df19c9b36c15f412114db67e4efddb2</image:loc>
+      <image:loc>https://arweave.net/a5exCxJO3eEa-7dCkC2gXbCRpEreuJ3Ixvj2x_58ZJg</image:loc>
       <image:title>Voyeur</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/126/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d5592ef6093da4bc34d0f8d65825ca34</image:loc>
+      <image:loc>https://arweave.net/ahSoHjmBGlWxtvXQXDtlnryFVUqxPl9kFivplBYBHzA</image:loc>
       <image:title>El fin del mundo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/127/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/eeffd462116904de6abac6c6219741c3</image:loc>
+      <image:loc>https://arweave.net/CrncpA5ozKy_Exk8SLgNrD7-OyUzpJpr5RJOyrFOT1Y</image:loc>
       <image:title>Multiverso</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/128/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0bb13475fdf89bc8e5cca54843f2587d</image:loc>
+      <image:loc>https://arweave.net/jdHyL4dMv4ESzrkmRXSuZjU8NhyG-cILjPs-IN-kdGc</image:loc>
       <image:title>Chatting</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/129/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/647f885ea549c683942c6469bb57fe1a</image:loc>
+      <image:loc>https://arweave.net/tPf6J7fDy8UMEWGj2wyFmbI-izbF_1DEGAvnsZtZYBE</image:loc>
       <image:title>El templo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/13/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/eed49f94b51c1410f8c4b526d7afbec1</image:loc>
+      <image:loc>https://arweave.net/5-bz0k0AGEtoV5I1gkBNqffFf-qHHgqGXKi9Ajd2A3w</image:loc>
       <image:title>Siesta en el brasero</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/130/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ff2e73c7b81dc9bcdccff712d32849c9</image:loc>
+      <image:loc>https://arweave.net/nDmdFCIyHJvowQTDrslmj3UdzK7E-UyymRP9C1XHMI4</image:loc>
       <image:title>La hora del té</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/131/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/967d2634081eeec21340cd0c2fcd25f9</image:loc>
+      <image:loc>https://arweave.net/iKGjbJr770Cmu6LFzTjVwGp3t3_MeO-GxYTx2jc7Y5I</image:loc>
       <image:title>Iluminando al mundo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/132/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6a6b2b46377e469e1997fa4dd851977b</image:loc>
+      <image:loc>https://arweave.net/DJF7sM-AC8tPD_SbrggL_pDs4PN_2VvTHsePyBOopz8</image:loc>
       <image:title>Hijos de puta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/133/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/56bff412c49b4cc8818d8d4176d9ab2d</image:loc>
+      <image:loc>https://arweave.net/z-C68-z_CGBxG31NUR9RI0keL5aom6Zjig33GMKCpDw</image:loc>
       <image:title>Pantallas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/134/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6f66e6181222c192694a932fedc89e6d</image:loc>
+      <image:loc>https://arweave.net/CQfiTGvWKF_leLrboKHEMakM1YvET3Mk8IgiTYFBnIc</image:loc>
       <image:title>Recuerdo feliz</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/136/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/facb55acc1714b377bd2e7f52b5a286f</image:loc>
-      <image:title>El artista excéntrico </image:title>
+      <image:loc>https://arweave.net/FUvCwq_3KgYcTzGGdD26MzdmC6nMANc5zY49NWTqNHo</image:loc>
+      <image:title>El artista excéntrico</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/137/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0c64a898da8f9d2099f8b531ff9b334e</image:loc>
+      <image:loc>https://arweave.net/k5fKOuTzKuDQmAi3mcabrX6KBUCp7LgdPo6KMUSv_3g</image:loc>
       <image:title>Piso de estudiantes I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/138/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9f91be13b1c16e95ad9fdffbea6e0dc0</image:loc>
+      <image:loc>https://arweave.net/TPDKvejl6dAHO2lWCLvPgVXHi9JTzCFVf3yyhAvM2-Q</image:loc>
       <image:title>Piso de estudiantes II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/139/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b71a38b44dce0116395de851b46b01ec</image:loc>
+      <image:loc>https://arweave.net/4CHsAVuG6HXC0GGzdIwJHhx3azOl3xybCvEk6QYo810</image:loc>
       <image:title>Piso de estudiantes III</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/14/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f5db77233fecd005f46ce37befeaa30f</image:loc>
+      <image:loc>https://arweave.net/pvVK759fymZzixrhvVgpFNDQy3X1GRUWxDvmYloVw_I</image:loc>
       <image:title>Monstruo del espacio latente (IV)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/140/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/014008d8a32ae5c42fbaad174227eb0c</image:loc>
+      <image:loc>https://arweave.net/koUqan3FKw_V4Mu-rMR3nmJv2aD7Ohomcf832B7sPU4</image:loc>
       <image:title>Paisaje con ángeles</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/141/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5227a06d391bd1df7a14abc0f49cdab7</image:loc>
+      <image:loc>https://arweave.net/-6-hzKup1-4J_sgHnQmZFnQKFT5wE9iTo3KDs5Gscdo</image:loc>
       <image:title>El punk</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/143/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dcd3bf14450f376668e0db397eb386da</image:loc>
+      <image:loc>https://arweave.net/V7G5zuOyr2ceOTMDHXmnkyRdECNljUvs54bkD8gMpg8</image:loc>
       <image:title>Bodegón</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/144/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/439003066d5365a783644795cd472735</image:loc>
+      <image:loc>https://arweave.net/UEe9wWW3Iy7-NqMWFK649LyxWv3_eqD6kj5pVnlVqlM</image:loc>
       <image:title>Me duele el flúor I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/145/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/66d296397015c4cb98b75bf74947000a</image:loc>
+      <image:loc>https://arweave.net/YazepDufo2LLtuQJu60fGVFfkbH2og_vdWbDR-rV4c4</image:loc>
       <image:title>Me duele el flúor II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/146/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/774c69e0690f85b0476708137dc6bfc7</image:loc>
+      <image:loc>https://arweave.net/eTTMvaBc04J6An3VZpt2MKketVgMYTBwg2b8S80y_RQ</image:loc>
       <image:title>Catástrofe en el bosque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/15/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4ebfa2e54c2060559790b418d6a7bfd9</image:loc>
+      <image:loc>https://arweave.net/1H-JxMM82iLroN3RJJ8JlVnHZ4a1ya3B41JjonkuX14</image:loc>
       <image:title>Siesta en el camping</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/150/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/68b6f852a485a9f1041a2ed51a93a37a</image:loc>
+      <image:loc>https://arweave.net/JYmZb6YlBjcvh4KEAUUrG_s-EO3UXFCJ5euLIzcywRY</image:loc>
       <image:title>Señoras en el tren</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/152/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/86ce20c6c968035c6a6b503aa6100e25</image:loc>
+      <image:loc>https://arweave.net/Ypx-RY-2uhmHZqmXqpnxghy-Ij4qKMBkC3IxBVXQ_GE</image:loc>
       <image:title>Secuestro en la rave</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/153/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cf70ed0bd01aef01073edff3e435e76d</image:loc>
+      <image:loc>https://arweave.net/NmVyJ3wVKsOpxRwCtR3mdIIo7akPFKLQ59LFZl-wKPw</image:loc>
       <image:title>Chapoteo en una noche de verano</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/156/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/93dfe790c6d34ad0b7f2bdf7dc7a610c</image:loc>
+      <image:loc>https://arweave.net/6oO2C8we1EEzzkKFDTKSja8Ro2b3WBjtR5lv8lWTKXI</image:loc>
       <image:title>Entierro al atardecer</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/159/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e6f38504eb3efaaf8fcb98c5fe9232b1</image:loc>
+      <image:loc>https://arweave.net/O-pS4RkJvJKWg0iynNAC5yAYBXovboDw48_9Bu36LWI</image:loc>
       <image:title>Paisaje nostálgico</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/16/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9d22cf65119f834f8f9b96ec3f58e881</image:loc>
+      <image:loc>https://arweave.net/_cpm0SeTn727K-Q3k0jA9emd71INKpmz4DgsJny3csU</image:loc>
       <image:title>Asunción y descenso</image:title>
     </image:image>
   </url>
@@ -2236,67 +2236,67 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8a606b46593ef9243fc4d380f2dba00d</image:loc>
+      <image:loc>https://arweave.net/rqhiY6vGGq_8yEoAqmNwv8Iis-SzTnk67bZJGLB122g</image:loc>
       <image:title>Festival de influencers</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/161/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2bd72b56fee50011824c81fee6bf48bd</image:loc>
+      <image:loc>https://arweave.net/3O_yhc9vFLyEQD_DXGIPZSACCWGxpJLvG1oBop4jpD0</image:loc>
       <image:title>Domingo por la tarde en el parque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/162/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b3a01f566c4dcf022a074beaf9bf917e</image:loc>
+      <image:loc>https://arweave.net/gvbCLHXv7JotuMk3zbUHBxr1DA19oR1XZgmOcmpFTsw</image:loc>
       <image:title>Dont buy conceptual crap</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/163/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c905506b2e5af7206daea5eccfe9afc5</image:loc>
+      <image:loc>https://arweave.net/QnC9ATCNhf6674LN1rORyxFlH5lQGLM2LV3P9eG5evM</image:loc>
       <image:title>Fotógrafa</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/164/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6ae44a42e4942cce7db8b3abdb506e6d</image:loc>
+      <image:loc>https://arweave.net/1X_KdFWurop8Cp0pq2pw_qolP7-KRXIA8QHFAGGFPZw</image:loc>
       <image:title>Stolen pic I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/165/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/95f63d5565733e468472be3cf661b228</image:loc>
+      <image:loc>https://arweave.net/OK59H3wgAKHuaKvZcDKK8cssOFAF_wu6Cucd_FByXpE</image:loc>
       <image:title>Stolen pic II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/166/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/08f194aca3cef28e9a415bc68844b5ff</image:loc>
+      <image:loc>https://arweave.net/QRxm9lymmaIVRpe15w8T07iO5UQXYDweTEEZc9_sqdI</image:loc>
       <image:title>Stolen pic III</image:title>
     </image:image>
   </url>
@@ -2306,7 +2306,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/2af4f2c08207e8694b40f5f032174a08</image:loc>
+      <image:loc>https://arweave.net/PBgpZxSQ1sU4ziPlyXnT4XQiC6XVN5IhaHod7C_OBqc</image:loc>
       <image:title>Transeúntes</image:title>
     </image:image>
   </url>
@@ -2316,8 +2316,8 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6da11c3f082f9a2ca73278d9efaa0ac7</image:loc>
-      <image:title>After a bigger spash</image:title>
+      <image:loc>https://arweave.net/U976shFrnxFw21B65G4TbAx0bSag_3Qxi2JhMaDSJ8E</image:loc>
+      <image:title>After a bigger splash</image:title>
     </image:image>
   </url>
   <url>
@@ -2326,27 +2326,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7f055059a88ae3714bc72a836daa8736</image:loc>
+      <image:loc>https://arweave.net/OKVk02kQP54MUJYKIVsgDKaJ3vifE8P2lLU_5qiAqQQ</image:loc>
       <image:title>Un buen día</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/17/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3ff6a5ff0cc1a65c39f5e6048c7f0283</image:loc>
+      <image:loc>https://arweave.net/o3XEVnuENCvldmqhZEuL_OVAMzRenJlndWl4Dgn85fY</image:loc>
       <image:title>Stalker (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/170/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e01bd64f58e696214d12bd754773dc37</image:loc>
+      <image:loc>https://arweave.net/M0qEKRoCr0wZv7VQVlNJlQqzHXDNymR4KzoB63SqD-s</image:loc>
       <image:title>Veinteañeros en la Feria de San Mateo</image:title>
     </image:image>
   </url>
@@ -2356,17 +2356,17 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b7d577eda8e3fa7add2d708592682aed</image:loc>
+      <image:loc>https://arweave.net/w4BlzfyY0603e64CSoXWv91hdCXCuMvH4g-pwUzEWz0</image:loc>
       <image:title>Abuelo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/172/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/95983e30b735782b86100d4890f94b4d</image:loc>
+      <image:loc>https://arweave.net/qevmipmRNoK37ian66p-ZdcvM-4wY1qqu8L0XQtwLp0</image:loc>
       <image:title>Crucifijo</image:title>
     </image:image>
   </url>
@@ -2376,27 +2376,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/141cc18c38bac6e7d51de7a2c6df3c1c</image:loc>
+      <image:loc>https://arweave.net/7pjjNOqbbJNu9_lkZueHYvMFfXlDVa6iNdhjsZdYiXw</image:loc>
       <image:title>Comedor de gambas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/174/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/766b487c802c16d90a692c741b342174</image:loc>
+      <image:loc>https://arweave.net/3RwT2Tld9DjlK_OG5YU0EMbKKn1nn4KldvE_GMVJ0Ts</image:loc>
       <image:title>Botellón en el pueblo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/18/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d46914a2bd2d4f3d4541223e90d65cfc</image:loc>
+      <image:loc>https://arweave.net/c3IZJa25cRm6SG3PK7h74jWxQTnFPBoqGJfuUwtbSVc</image:loc>
       <image:title>Stalker (III)</image:title>
     </image:image>
   </url>
@@ -2406,7 +2406,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5646bbe6c78f4f7557c7f692253a34a6</image:loc>
+      <image:loc>https://arweave.net/NHYRsgZbFJi2srxc9oBm-IFJ-rVPrk_lZ4EHN3W6Rc0</image:loc>
       <image:title>Un altar antiguo</image:title>
     </image:image>
   </url>
@@ -2416,7 +2416,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7553554bb5b8809e741ddd6db17aa40a</image:loc>
+      <image:loc>https://arweave.net/eopLKZ3X4isFkq_YaE-x9XwW1PlK-h3ESWUSC86Mj0w</image:loc>
       <image:title>Estatuas en el jardín</image:title>
     </image:image>
   </url>
@@ -2426,7 +2426,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e08949ac044c9d63fc3948e347acd21c</image:loc>
+      <image:loc>https://arweave.net/lhS4iLmgOFtT67lZea4MMYSsdBxxnYPumMK2pNdGSSk</image:loc>
       <image:title>El auge de la ultraderecha</image:title>
     </image:image>
   </url>
@@ -2436,27 +2436,27 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b0acc8e37e7f83acb5299cedb0538300</image:loc>
-      <image:title>EL apocalipsis se parece a un camping</image:title>
+      <image:loc>https://arweave.net/VQgdNAOTWjkwPKNufrtgkzp-hHQPn_OfXfabMj44OeU</image:loc>
+      <image:title>El apocalipsis se parece a un camping</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/187/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0e97dedaaa978f17e4e40e49339fa6b6</image:loc>
+      <image:loc>https://arweave.net/axfTIbZctSyvsYHNux-PTaeoRCzZMy_6Gr-W_Hjnj2w</image:loc>
       <image:title>Realidad virtual</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/19/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/63b4dfcd4809efd7db6850ffec9dd698</image:loc>
+      <image:loc>https://arweave.net/YwhbDkX4GqqC0yG7V0p30WYhQ2usOVRpk8lWEDzelUM</image:loc>
       <image:title>Cruzando la meseta</image:title>
     </image:image>
   </url>
@@ -2466,7 +2466,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48c9f0ae598fd6fe78b7bf8661a53178</image:loc>
+      <image:loc>https://arweave.net/nCA15kWA77ejIl9xfGSdw0fWKfvzGD7brSJZR_m-Na4</image:loc>
       <image:title>Primer día con Iris en casa</image:title>
     </image:image>
   </url>
@@ -2476,7 +2476,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e2f63c2ba1f70fabbe0e9dbac7b6f3a9</image:loc>
+      <image:loc>https://arweave.net/euCqiGdnj0KEKA80oTgPkpjvKxbr_p0DyrolrrfSwo0</image:loc>
       <image:title>Piso de estudiantes</image:title>
     </image:image>
   </url>
@@ -2486,7 +2486,7 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6c1140b08635a74853c1b4f5ef03e463_4a69984e</image:loc>
+      <image:loc>https://arweave.net/CwI44eqTk8G6KWgoczU7WFdsj9ZCTx6_xGSI1s0e8N4</image:loc>
       <image:title>Rockets win I</image:title>
     </image:image>
   </url>
@@ -2496,37 +2496,37 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4c7df23db3fdd728dc0a4fac22d12e1b_94b3565c</image:loc>
+      <image:loc>https://arweave.net/95W8phjj9z7PftYqMUfHi5iKjl6NUqJESLsSFP3hLnw</image:loc>
       <image:title>Rockets win II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/2/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/74c4399be3c6b29643951ea6ec310e75</image:loc>
+      <image:loc>https://arweave.net/E2149JjWraPh3dfZ1Q2zXrBEmBy-SzoRuiapuygnjAE</image:loc>
       <image:title>Cuando éramos felices</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/20/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ecdc642b99329c5732c6adb22a3e0b7d</image:loc>
+      <image:loc>https://arweave.net/q5FsXMT5i9O_SO2VjXo6wNEOosPi41pwQ-BzJ8QWRxo</image:loc>
       <image:title>33. El desengaño</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/21/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6ffd9241f756a62c2e50eee2bec5729a</image:loc>
+      <image:loc>https://arweave.net/93Gspw8z519NJYH6ngjP84ZbqfC9zwG0PvG1T90A4Y8</image:loc>
       <image:title>Juego absurdo</image:title>
     </image:image>
   </url>
@@ -2536,277 +2536,277 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f9f062d7991159eb3803c22e51272068</image:loc>
+      <image:loc>https://arweave.net/vw3kYLgOP41LDUr_sTdD7ezgtt_WyyyPoDYKd1GADx0</image:loc>
       <image:title>Madonna (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/23/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8cb4e46eeb8ef69a2a51a9edb22a2fa7</image:loc>
+      <image:loc>https://arweave.net/a-B6DGFCoXqDbxkp-zWrbPmpiY0mbQ9pS4Hn2FdK29Y</image:loc>
       <image:title>Autorretrato con Puri (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/24/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3ac10b668689a0f1961ae60b4583c39c</image:loc>
+      <image:loc>https://arweave.net/OWX_L1Yj_LuTgzje4BXGk10sXXmdI8biLJn0ucB7pys</image:loc>
       <image:title>Autorretrato con Puri (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/25/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/7decace872ed74510ccd31ff06f736a0</image:loc>
+      <image:loc>https://arweave.net/SPAEan_GxJIB-ZTl4IWPpskTAiXR61y_-a36_uJXkCY</image:loc>
       <image:title>Autorretrato con Puri (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/26/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b4a16ccf6d2ab9795fd0f5a9dc8f7c9b</image:loc>
+      <image:loc>https://arweave.net/ypVW7GlW5_-Xmew4bpz01c0RtqpeCtuPkJJUiO4aVw8</image:loc>
       <image:title>Autorretrato con Puri (IV)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/27/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cfc3e985bffb2b312fd8588a072dc2f2</image:loc>
+      <image:loc>https://arweave.net/uimvjtEVl3BmfquiB7nnAKZj_UL5sowHitu1lhB7X7A</image:loc>
       <image:title>El perro</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/28/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/25bd5a48d5e568032f6ddd4c0fca9f66</image:loc>
+      <image:loc>https://arweave.net/m0Gbm4uYNSVIuGFQLWxVpZmiWg__DwOW3ekvkjiST0E</image:loc>
       <image:title>Botellón en el parque</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/29/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1183926ba3b8333eea4626fcc479ed81</image:loc>
+      <image:loc>https://arweave.net/A6_8zH-1WaVkfk1NWK3XwLRHUqImYooPRGGn5GsxTSQ</image:loc>
       <image:title>The house of the rising sun karaoke version</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/30/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b21fed290eb20a775503c67ae0ab191b</image:loc>
+      <image:loc>https://arweave.net/irYO6UmP-d9QueNc9yFEQRXfyXzp-4JUKR0qM0K0bxw</image:loc>
       <image:title>Dub</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/31/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a6952c4b5f019af5d86ae5aba6741cbf</image:loc>
+      <image:loc>https://arweave.net/2OzVWfHSv-iQAgAvvGSD6TMQ-6Zmyaaw38KqDMLY4_Q</image:loc>
       <image:title>Reina</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/32/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dcb5e75e10b1dc56a3b78af91eaa0789</image:loc>
+      <image:loc>https://arweave.net/cqtCzCl6AMCUHjP44CpAL-84V63KiDdRtnP8XPfvQ_I</image:loc>
       <image:title>Crimen en el olivar</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/34/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f78439ccb3b2ee8ec663dc877c906c32</image:loc>
+      <image:loc>https://arweave.net/PbQZByFJBMAUwyPdpuzu1tJRhbftRv2uXUesYh_VK_E</image:loc>
       <image:title>Easter bunny</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/35/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/40d3320b71222f15fbc51e6ab9c9794d</image:loc>
+      <image:loc>https://arweave.net/EdujOraCHv8wk7b-repCzKQy1iIZPE5EN7SOSbNQYCk</image:loc>
       <image:title>Sexy mal (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/36/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d5ead8269ac70f8710f71a11bea284cf</image:loc>
+      <image:loc>https://arweave.net/C_T-KUr2y23HbfQsiMffHym-Ytv89_nOiLwRsaG1Lhk</image:loc>
       <image:title>Sexy mal (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/37/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48c3898443a58dfb528d65db53cbd71e</image:loc>
+      <image:loc>https://arweave.net/ti1x87so2_cmaeyCMbI3WvtJFvJoBv50FH1DLgtiODU</image:loc>
       <image:title>Blessed</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/38/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ac728505c99a0810d3e771c0c8197e66</image:loc>
+      <image:loc>https://arweave.net/BMD0bwpvPUedRdFurpxPVLfl6bvNDXA0wI7vxckWTA0</image:loc>
       <image:title>Fiesta en el parking (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/39/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/66909476028044f320522ef698297959</image:loc>
+      <image:loc>https://arweave.net/XJde6KhDL7c4k9FobNyLuexFWSLY961CDgbIYrOrUTU</image:loc>
       <image:title>Fiesta en el parking (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/4/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0f9a9b2f3ab9d18e389d04c47a94252f</image:loc>
+      <image:loc>https://arweave.net/mE_Vbt8DYVfeyo4pxCljwKDMQTcmeMOoRO_t6-bQR3g</image:loc>
       <image:title>Stalker</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/40/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/48094a780190c7a20060cf23997bf0f0</image:loc>
+      <image:loc>https://arweave.net/cNrUmt91W5belP5cYRuu-CArrcj2tk4lQA_SzpT80vU</image:loc>
       <image:title>Fiesta en el parking (III)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/41/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/5a1316c26b386301ae14a259afb25d58</image:loc>
+      <image:loc>https://arweave.net/Q91OqB3pqhB0r2pwMJI4YatcVOmgVSTMxzjplMwC1zk</image:loc>
       <image:title>El ataque de las palomas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/42/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b0b997438aec7b94aea074435f1661df</image:loc>
+      <image:loc>https://arweave.net/i8hKNQ4Pf8ZkYSs4wdFb-tL-wiEwxzcN0PjPWlfcIDE</image:loc>
       <image:title>Noche caótica</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/43/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/448fd7add46d8ea60abef7379010aee3</image:loc>
+      <image:loc>https://arweave.net/kor6VAPIFLzCw2wtf0SdSfkv-xCTKmrSqtzJciDcPsY</image:loc>
       <image:title>Fuck you, Juanma Moreno</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/44/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/51697c339b213304b839b5504c3fca6f</image:loc>
+      <image:loc>https://arweave.net/qncKKPnI0zBc86vbZNszzQUMOagjc60bEVpGcJwDirs</image:loc>
       <image:title>Aullido</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/45/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/993df381cfda7c2083aff16cc5f3050c</image:loc>
+      <image:loc>https://arweave.net/leHldPn6dpJRP9KLm4obSSZRj9YnNkK12bQzpcqWOUE</image:loc>
       <image:title>Vodka con fanta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/46/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d2d57e90613a7f4a8e2d682ea97109ab</image:loc>
+      <image:loc>https://arweave.net/AXyyFhMVRt0jB28380CHiFQwv2Z6YRsG2WB33QMSazE</image:loc>
       <image:title>0% battery</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/47/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/962b2a71133bf408e1486f2a9f98127d</image:loc>
+      <image:loc>https://arweave.net/jUqB4PxIGFq28y5d0aVlD2auyJKgUPTOpMA94pJ9Gkk</image:loc>
       <image:title>La noche (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/48/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/45f841445f919ca273266e8a0cedf6c2</image:loc>
+      <image:loc>https://arweave.net/IZhNOCdiPWOq6sW0zApFcQNL4wFYWkxHaX9O6DR-9cQ</image:loc>
       <image:title>Festival</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/49/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/78f13d4dd1da4be6ea2f780b2cfaad4c</image:loc>
+      <image:loc>https://arweave.net/IL_wvc_jnR7z_4qPPpkYBA59Bn1_A6WJ_gd7Q_IM91E</image:loc>
       <image:title>Saltar la verja</image:title>
     </image:image>
   </url>
@@ -2816,523 +2816,523 @@
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/cf77b37f8f36966ab201233b607bc71d</image:loc>
+      <image:loc>https://arweave.net/8YX7bps5OQP2p_IQG49zAchcY0BtMu03MY-IoE7hh7A</image:loc>
       <image:title>Partido de beisbol triturado</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/50/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9df65e9b6f576a33a2e6d8bf2e29ca5a</image:loc>
+      <image:loc>https://arweave.net/OHTeT25lg8Fvu_9lvRaUkK3khP5gQNKzCDfHmPriwek</image:loc>
       <image:title>La noche (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/51/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/98a6f2d48951c176e2a8a1a992497c18</image:loc>
+      <image:loc>https://arweave.net/50BRWm3dWYIvFo_8OjOWI_sYUKvSltXfCKQMPqs4bAY</image:loc>
       <image:title>Monstruo del pantano</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/52/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d4bc0fb71dae55046056b7c127d72331</image:loc>
+      <image:loc>https://arweave.net/FTDuGvnlClqzg49GNo-ewWzJeoNcC_9RvF8CmZYse4k</image:loc>
       <image:title>Limbo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/53/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/aaa7806dbf2661081b17cdb44730a4ed</image:loc>
+      <image:loc>https://arweave.net/DYr6MJMgA-x2ngoVSs9kPD5faaugrXwVU_rfaL0Qlno</image:loc>
       <image:title>Abrazo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/54/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/df919eb17420bc535220d38384b7ca88</image:loc>
+      <image:loc>https://arweave.net/P8-HpgSZr_woJQyvU9tCDcW0RDmj8RG3rnMg3ZIODsw</image:loc>
       <image:title>Piernas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/56/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4dec7e754f47fac8a044b93950e0717a</image:loc>
+      <image:loc>https://arweave.net/DxI-3GmiZE-BAP2BhAcK2hv5XTlWxU1hBskikX1BDNQ</image:loc>
       <image:title>Botellón</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/57/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1391679376c50a26382c38907169f564</image:loc>
+      <image:loc>https://arweave.net/bnUxssYTkqP1Qvg8c1UrZvALJWcAaK0oD5DKagOIdKs</image:loc>
       <image:title>Say cheese</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/58/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9b483626856f8b02a13cc74c4d283b1f</image:loc>
+      <image:loc>https://arweave.net/6ik-NwgjhFQdr7VZ-bXIuN5Qd6fyW2OASDfOrWhnEVo</image:loc>
       <image:title>Asunción</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/59/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/aaa34acc38e7b3b0ff8a40c4cf6cc788</image:loc>
+      <image:loc>https://arweave.net/y55A0fV-dXrhjSru77cLHVAyxWsrYZJytWAXDo4iUTI</image:loc>
       <image:title>Supersticiosos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/6/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3a8c63a82fb491d82baf71c90bd24ac3</image:loc>
+      <image:loc>https://arweave.net/HHON2TjP0ExzJetri1N4dmBjYCC0waQisOD1zrIWJzg</image:loc>
       <image:title>Reflejo de luz de iPad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/60/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b1c5e0c466a3790892521f25ac2e7fc0</image:loc>
+      <image:loc>https://arweave.net/PBswYTP9a71xhhikjTLhpvX3XAwC3Qvbrybf0vJbcm8</image:loc>
       <image:title>Piedad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/61/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3adc2274530081851673ba91ca3b1f60</image:loc>
+      <image:loc>https://arweave.net/7t49Q3Nvqq451jCQFgndC_nnCkzAB1rg123pudhQkQA</image:loc>
       <image:title>Bandeja de entrada</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/62/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/d092e78b5b48878b23fe7061bd3ca902</image:loc>
+      <image:loc>https://arweave.net/1DoHrR1B4DFOzNRNF4qqTy3HBeWx19skgE7o0kPcZjs</image:loc>
       <image:title>Urinario</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/63/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/715d899aa154683e202bcf83b41e7a87</image:loc>
+      <image:loc>https://arweave.net/NB6tELH11JWWp5JYOWp9Kdw9mMY0DTMhKSbmvwNflh8</image:loc>
       <image:title>Mirando reels</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/64/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/59cbca75b73c7ad148420251871c7c91</image:loc>
+      <image:loc>https://arweave.net/hmXppXr-_nuJanM8BTLmFZEhAVjCkp3Ggf9Ha_u5d2Y</image:loc>
       <image:title>Cotilleo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/65/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/a2f8ccf4ab1e0d82118147ec151daa74</image:loc>
+      <image:loc>https://arweave.net/tYOcwnrY9yRoNSf3oPEMLNdcaaCpMwlTL0FJCFIpzHs</image:loc>
       <image:title>Una rosa pa tu pelo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/66/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fe07b9c0dc82ba5aecc2de72a563fd7c</image:loc>
+      <image:loc>https://arweave.net/X0Qza2O4ueDCNr9KfecA_BvzqA6XeqW3B_CLYPwI_yM</image:loc>
       <image:title>Cautivo</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/67/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f27986c97a8a26ce8645282c07e59227</image:loc>
+      <image:loc>https://arweave.net/D_TdHgBqKts3AqrciiC8VFYoRvQ0bLKE8v3jE0LFGwQ</image:loc>
       <image:title>Otro puto selfie</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/68/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b05a7d3e439d20cdb65ee9060381c36f</image:loc>
+      <image:loc>https://arweave.net/-gV26N7-7Gr9Lha91ah0AQ8jx8Ao2q7bSfyhZPcb8i0</image:loc>
       <image:title>Hacer la croqueta</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/69/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/f1ce5b5f514f20295ea00e11ab210b44</image:loc>
+      <image:loc>https://arweave.net/fkXXeL91gBIUrQmrOu9rsF-ZowTD9UtM85A2DBLMPPs</image:loc>
       <image:title>Aparición mariana</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/7/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6f98289565bafabf6ef8d21cbe7cb4b8</image:loc>
+      <image:loc>https://arweave.net/ktlKyWDY7TodkV4i8EP76t1sp2E1BLW3cK_rXEhnNY8</image:loc>
       <image:title>Mañaneo I</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/70/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/40b1de7c9102c0873fa280356bc8a88e</image:loc>
+      <image:loc>https://arweave.net/cWsCQx-TmLhcqwgwdZBnzwU5YEIzC3TZQFH3OVtHxsk</image:loc>
       <image:title>Abrazo de dinosaurio</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/71/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/1d0f3cc040a3b453f7d70efca44d6c67</image:loc>
+      <image:loc>https://arweave.net/qeHTtnO3tZlFNjVdLE49-1NGoq0oOuK8GdCo81q35RA</image:loc>
       <image:title>Niño-dios aprieta pero no ahoga</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/72/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/bdd73eb2128942cf0eda0d7a86def57e</image:loc>
+      <image:loc>https://arweave.net/S675g4ukNfLFA9x2txOQTtwKBZ57HRZZFPpo2zmM51Y</image:loc>
       <image:title>Dálmatas y vacas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/73/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/0ecbc9facdf00c46342fed63c50fcde0</image:loc>
+      <image:loc>https://arweave.net/G7zn948ve_Bfs2w8Y15na1ghH5_cL-k0dCsQ9inCK30</image:loc>
       <image:title>Carne</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/74/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/4bd80e60a5d04b54b1f315cb593783f1</image:loc>
+      <image:loc>https://arweave.net/a4BhXJHmwqdVvpf_mQALhcJa-1tyvRVKcjjKxKCRZ5U</image:loc>
       <image:title>El silencio (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/75/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/8d47f4f152ca94891898b483c2698f56</image:loc>
+      <image:loc>https://arweave.net/uLox0fQQ8-QKEN-fpb1xkFJahnNdavqUJzdyaLxxbpI</image:loc>
       <image:title>El silencio (II)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/76/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/94a1fd4b2dedd04d273c7ca71e9cb36f</image:loc>
+      <image:loc>https://arweave.net/8e2T0JQKQAIAkle3C6PfnqzNvS6R7xbkAh6EMU7yP_g</image:loc>
       <image:title>La belleza</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/77/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/43321a537e7741701cf4a9d8b1403ac1</image:loc>
+      <image:loc>https://arweave.net/42uYrgJdXOv_J2VgfZhl7v4WmNwrdWB4nXFtnKBRphk</image:loc>
       <image:title>Búsqueda eterna</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/78/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6160683af3b681180123e4b2670479d6</image:loc>
+      <image:loc>https://arweave.net/hBkKiMDFBQn845qnaNimUt87TvN2ao1HqmJtzC8UxkU</image:loc>
       <image:title>Guarros</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/79/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/c6ce5df3a5033bf1984fdb1f179a9f2f</image:loc>
+      <image:loc>https://arweave.net/qaK4eDU32h6EFylfyHwxVL_ap-X2gI4RXe-Vkattx3k</image:loc>
       <image:title>Despedida</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/8/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/01d8c63a623a81f09bab60c161497426</image:loc>
+      <image:loc>https://arweave.net/jFugJsc0eRMciOrXOy_uSvhg79XTVw4qyJifkWyCNDo</image:loc>
       <image:title>Mañaneo II</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/80/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/11f70aae5de1722db816c4e1926a8fc3</image:loc>
+      <image:loc>https://arweave.net/_6ghrKBV6ewvxkktugH95wi1XeWcrV_5jyWmC5NH9jQ</image:loc>
       <image:title>Los carcamales que seremos</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/81/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/ec98070f405108e9fb495051a2f8a6eb</image:loc>
+      <image:loc>https://arweave.net/MSSZgZ0LRvigvthWpryiqapgP6fvleTdT0vGkPowTKk</image:loc>
       <image:title>La estudiante Erasmus</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/82/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/599490b89e969920beb21008af3e969c</image:loc>
+      <image:loc>https://arweave.net/YJVlpiVcmAPDyJj3j4OZUsma5gd9T58qXUG4HSEFAss</image:loc>
       <image:title>Madonna (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/83/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/b1ad7a1384e871919e43fd4692dddf2e</image:loc>
+      <image:loc>https://arweave.net/5f52Lg0jVUXjV0PzF6Yb_4Ly0QPQqJWbnbWXJisiHls</image:loc>
       <image:title>Fin de curso</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/84/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/339b4f06e879fd32ceff026363b8cead</image:loc>
+      <image:loc>https://arweave.net/sxe9lhp4LnIqh61r81o1BZh3y-IHDBo_1K-tWmzYYrE</image:loc>
       <image:title>Jardín triturado</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/86/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/921d7041201b3fd7b278049090c94333</image:loc>
+      <image:loc>https://arweave.net/MRLPOC-6yVhcyl2diRWQ8chkZ4ciJ09dSvhAT3kdD9w</image:loc>
       <image:title>El funeral del influencer</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/87/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/dbe904431a6aaf4947610d058b22a9a6</image:loc>
+      <image:loc>https://arweave.net/Qc-5elNaKLYvzg8gWPj62LhczwG3r1DPWsYBp-7oICA</image:loc>
       <image:title>Maternidad</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/88/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/6b734aa5e452a441ccb7ccb9e2e393dc</image:loc>
+      <image:loc>https://arweave.net/PS6Zbe-nbTj7Ho9sInF3ZRMMNKgr8A1fiTncCVIeb4k</image:loc>
       <image:title>Musa online</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/89/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/e39b4a3f5bd6098873675e7f83bbc71b</image:loc>
+      <image:loc>https://arweave.net/m8nnqi-b-cn4E8dHoXItfaLKYqZLB6vK0hNPb9MJhkE</image:loc>
       <image:title>Cuarentena</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/9/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9d1f88c8afa19d6ce5d31188e4f527b6</image:loc>
+      <image:loc>https://arweave.net/xmy1ri7mYXMecu5Bn6IZLLq4GHLtSsezahjHkqBU_YA</image:loc>
       <image:title>Monstruo del espacio latente (I)</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/90/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/945ead3a5f1cf5d5af857b3bfda67b33</image:loc>
+      <image:loc>https://arweave.net/6Svu1kF8ShseT7RJb7e5D3EOZJ783hZuzuF58pWzHm8</image:loc>
       <image:title>Romero de Torres y las señoras aburridas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/91/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9a614aeaaaadc19183ba058ca41137b4</image:loc>
+      <image:loc>https://arweave.net/Qt4HgM6cxDUCSp9gY7d_ALwWq3PoCHW635hE7CejBfM</image:loc>
       <image:title>Polvo en el cementerio</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/92/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/96723b18d225fb0901feedbf0afcd62e</image:loc>
+      <image:loc>https://arweave.net/nDNDttrumURHFp8VBD7NSiK2NDV74F3lptprC6k1HPo</image:loc>
       <image:title>Chat GPT soñando con sentir cosas</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/93/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/12697f673f6a49f54e2401be6e1ee6b5</image:loc>
+      <image:loc>https://arweave.net/WOA_30-In3BytIeEYFp_nkiqmL1mGF_RbySnuBdKIII</image:loc>
       <image:title>Alegoría del amor</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/94/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/fe5ab8c8569c756e828d75fb9c17e623</image:loc>
+      <image:loc>https://arweave.net/CXrWSgtmK-fumZd1z-8ee4LmtEcKJ5JDdqiJHfsq89A</image:loc>
       <image:title>Splash</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/95/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/9f0019740220d125df2a92f57bc344d6</image:loc>
+      <image:loc>https://arweave.net/kLZNfmWvKMsBFw3MntRCoqTeGvYxt43zzcyObYLroVU</image:loc>
       <image:title>La búsqueda del dios</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/97/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/3438148e9008a52cbd1244056fbea5e0</image:loc>
+      <image:loc>https://arweave.net/pYnZo3OmNP6hLD3WN6nd52QTGaMo3M6Ljoq8VDfYDvs</image:loc>
       <image:title>Usuario</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/98/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/919f3d93999d63e714c44dae3706b80b</image:loc>
+      <image:loc>https://arweave.net/gahBOS5KzMLeI2ZmsZXLX0Bz8bNz8CMQyglUOZIL2IE</image:loc>
       <image:title>Confusión</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artwork/99/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
-      <image:loc>https://nft2-cdn.alchemy.com/matic-mainnet/896db43c2683cd0bac4241e3797c57e6</image:loc>
+      <image:loc>https://arweave.net/74uBTSsgPjM7c2-q39VgVkw-9o1neku_XZoKR3de1tQ</image:loc>
       <image:title>Artista aplicando</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/artworks/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3342,7 +3342,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/contact/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3352,7 +3352,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/cv/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3362,7 +3362,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/latest/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3372,7 +3372,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/privacy/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3382,7 +3382,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/terms/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3392,7 +3392,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/es/texts/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3402,7 +3402,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/latest/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
@@ -3412,7 +3412,7 @@
   </url>
   <url>
     <loc>https://juanmamoreno.com/texts/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <priority>0.7</priority>
     <changefreq>yearly</changefreq>
     <image:image>
