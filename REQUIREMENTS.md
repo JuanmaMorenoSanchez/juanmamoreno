@@ -982,3 +982,40 @@ fault and must exit 1
 The foot of the home page reads `v1.1.1 · api 1.0.2`, the backend's read live
 rather than from build time.
 *Proven by:* `GET /version`, and the footer in the deployed page
+
+### R79 — The paintings arrive smallest first, and the original always arrives · met
+Each artwork now has four sizes: about 112px carried inside the certificate as a
+data uri, ~360px from the api, ~1000px on Arweave, and the full-resolution
+original in cloud storage. The artwork page shows the original, as it always has
+— the others exist so that something is on screen while it arrives.
+
+The order they are raced in had to change with them. `thumbnailUrl` used to be
+Alchemy's cached copy, a middling size, and was ranked above the api's
+thumbnail; it is now the two kilobytes inside the token, the smallest image
+there is. Left where it was, the page showed the 360px thumbnail and then
+visibly got worse. The same move nearly cost more than looks: the reel renderer
+and the vision search both take "the source image", which was the cached copy,
+and would have been handed 95KB instead of several megabytes.
+*Proven by:* `preview-quality.spec.ts` (3 tests) and `artwork.spec.ts` "goes smallest to largest" for the ordering,
+and in the api `nft-image.util` puts the original first for anything that
+processes a painting rather than displays it.
+
+### R80 — A new painting is described from a fixed vocabulary · met
+The studio offers the medium, the unit, the year and the kind of photograph as
+choices taken from the 186 certificates already written, and does not ask for
+the artist at all. Only the title, the two measurements and an optional
+description are typed.
+
+This is not tidiness. An audit of the collection before it moved found two
+certificates spelling the artist "Juan Manuel Moreno Sánchez", one with no unit
+at all, a title ending in a space and another reading "spash" — every one of
+them a typed field. On the new contract a certificate can be frozen, and after
+that nothing can correct it.
+
+A measurement typed with a dot becomes a comma as it is typed, because the
+collection writes decimals with a comma and one written both ways can never be
+sorted or matched cleanly.
+*Proven by:* `mint-vocabulary.spec.ts` (13 tests, including "offers the artist
+under the one spelling the collection uses", "rewrites a dot as a comma rather
+than refusing it" and "takes a half-typed decimal as the whole number it
+already is")

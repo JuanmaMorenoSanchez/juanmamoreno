@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.36.0
+
+- **feat** — the catalogue comes from the certificates on Ethereum, which carry
+  their own metadata and a small image of the painting inside the token itself.
+- **fix** — images load smallest first again. The token's own thumbnail used to
+  be the middling one and is now the smallest there is, so ranking it where it
+  had always been made the page visibly worse as it loaded.
+- **feat** — the studio describes a new painting from a fixed vocabulary and
+  prepares its certificate, leaving the signing to a wallet.
+
 ## 1.35.1
 
 - **fix** — the years menu took the whole height of the window; it now shows

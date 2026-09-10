@@ -32,15 +32,13 @@ import {
   timeout,
 } from 'rxjs';
 
-// Relative quality of each preview source, used to only ever upgrade the
-// displayed image while the sources race each other.
 // Smallest first, because the race only ever replaces what is on screen with
 // something better. The order changed when the certificates moved on chain:
 // `thumbnailUrl` used to be Alchemy's cached thumbnail and is now the two
 // kilobytes carried inside the token itself, roughly 112px — the smallest image
 // there is, rather than a middling one. Left where it was, it outranked the
 // backend's 360px thumbnail and the page visibly got worse as it loaded.
-enum PreviewQuality {
+export enum PreviewQuality {
   /** ~112px, inside the token. No request: it is already in the page. */
   NFT_THUMBNAIL = 1,
   /** ~360px, from the api, inlined into the prerendered html. */
