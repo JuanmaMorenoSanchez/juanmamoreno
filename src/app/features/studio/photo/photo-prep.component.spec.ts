@@ -20,6 +20,11 @@ type Internals = {
   straightenSides(): void;
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
+  artist: () => string;
+  notice: () => string;
+  webStatement: () => string;
+  noticePreview: () => string;
+  rights: () => { artist: string; notice?: string; webStatement?: string } | null;
 };
 
 const QUAD: Quad = [
@@ -138,5 +143,63 @@ describe('PhotoPrepComponent — aiming', () => {
 
     component.setHandleSize({ target: { value: '900' } } as unknown as Event);
     expect(component.handleSize()).toBeLessThanOrEqual(110);
+  });
+});
+
+/**
+ * The rights fields answer themselves.
+ *
+ * They used to be empty with the answer sitting in the placeholder, which meant
+ * typing out the same name and the same link for every painting — and a
+ * photograph that went out unattributed whenever that was skipped.
+ */
+describe('PhotoPrepComponent — who the photograph belongs to', () => {
+  it('fills in the name and the terms page before anything is typed', () => {
+    localStorage.clear();
+    const { component } = setup();
+
+    expect(component.artist()).toBe('Juanma Moreno Sánchez');
+    expect(component.webStatement()).toBe('https://www.juanmamoreno.com/terms');
+  });
+
+  it('writes the rights into the file without being asked', () => {
+    localStorage.clear();
+    const { component } = setup();
+
+    // Previously null until the name was typed, which is what let a photograph
+    // leave with no author attached to it.
+    expect(component.rights()).toMatchObject({
+      artist: 'Juanma Moreno Sánchez',
+      webStatement: 'https://www.juanmamoreno.com/terms',
+    });
+  });
+
+  it('leaves the notice to build itself, so the year is never stale', () => {
+    localStorage.clear();
+    const { component } = setup();
+
+    // Empty on purpose: the notice is generated from the name and the current
+    // year, and a literal written in would still say 2026 in 2027.
+    expect(component.notice()).toBe('');
+    expect(component.noticePreview()).toBe(
+      `© ${new Date().getFullYear()} Juanma Moreno Sánchez. All rights reserved.`,
+    );
+  });
+
+  it('keeps what was typed over the default', () => {
+    localStorage.setItem('juanmamoreno.studio.artist', 'Someone Else');
+    const { component } = setup();
+
+    expect(component.artist()).toBe('Someone Else');
+  });
+
+  it('can still be emptied, and stays empty', () => {
+    // A field that filled itself in again on the next visit could never be
+    // cleared. Absent and deliberately-empty are different things.
+    localStorage.setItem('juanmamoreno.studio.artist', '');
+    const { component } = setup();
+
+    expect(component.artist()).toBe('');
+    expect(component.rights()).toBeNull();
   });
 });

@@ -66,11 +66,34 @@ const ARTIST_KEY = 'juanmamoreno.studio.artist';
 const NOTICE_KEY = 'juanmamoreno.studio.notice';
 const STATEMENT_KEY = 'juanmamoreno.studio.webStatement';
 
-function remembered(key: string): string {
+/**
+ * What the rights fields say before anybody types in them.
+ *
+ * These were placeholders, which meant the answer was right there on screen and
+ * still had to be typed out every time — and a photograph left the studio
+ * unattributed if it was not. They are the same every time, so they are the
+ * values now.
+ *
+ * The notice is deliberately not among them. It is generated from the artist
+ * and the current year when this is left blank, so writing one out here would
+ * freeze the year and quietly start stamping the wrong one every January.
+ */
+const DEFAULT_ARTIST = 'Juanma Moreno Sánchez';
+const DEFAULT_STATEMENT = 'https://www.juanmamoreno.com/terms';
+
+/**
+ * What was typed here last time, or the default when nothing ever was.
+ *
+ * Absent and empty are kept apart: `getItem` answers null for a key that was
+ * never written and '' for one deliberately cleared. Treating them alike would
+ * mean a field could not be emptied — it would fill itself in again on the next
+ * visit, which is its own kind of wrong.
+ */
+function remembered(key: string, fallback = ''): string {
   try {
-    return window.localStorage.getItem(key) ?? '';
+    return window.localStorage.getItem(key) ?? fallback;
   } catch {
-    return '';
+    return fallback;
   }
 }
 
@@ -135,9 +158,9 @@ export class PhotoPrepComponent {
    * arrives somewhere with nobody attached to it. Remembered between sessions,
    * because it is the same answer every time.
    */
-  protected readonly artist = signal(remembered(ARTIST_KEY));
+  protected readonly artist = signal(remembered(ARTIST_KEY, DEFAULT_ARTIST));
   protected readonly notice = signal(remembered(NOTICE_KEY));
-  protected readonly webStatement = signal(remembered(STATEMENT_KEY));
+  protected readonly webStatement = signal(remembered(STATEMENT_KEY, DEFAULT_STATEMENT));
 
   protected readonly noticePreview = computed(() =>
     this.artist().trim() ? copyrightNotice(this.rights() as Rights) : ''

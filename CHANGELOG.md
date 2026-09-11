@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.37.1
+
+- **fix** — the studio's rights fields come filled in with the artist's name and
+  the terms page, instead of holding the answer in a placeholder and letting a
+  photograph go out unattributed when it was not typed again.
+
 ## 1.37.0
 
 - **feat** — the theme, the language and the artist's own way in are gathered
