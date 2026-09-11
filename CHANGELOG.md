@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.37.2
+
+- **fix** — the end-to-end theme test reaches the toggle through the More menu,
+  where it now lives. Two deploys failed on it.
+- **chore** — height is asked for before width, in the studio and in the mint
+  form, which is the order the collection is written in.
+
 ## 1.37.1
 
 - **fix** — the studio's rights fields come filled in with the artist's name and

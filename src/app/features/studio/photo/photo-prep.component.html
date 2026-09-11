@@ -144,19 +144,6 @@
       <fieldset class="prep-field">
         <legend>The painting itself</legend>
         <label>
-          Width
-          <input
-            type="number"
-            min="1"
-            step="0.1"
-            inputmode="decimal"
-            [value]="realWidth() ?? ''"
-            (focus)="$any($event.target).select()"
-            (input)="setWidth($event)"
-          />
-          cm
-        </label>
-        <label>
           Height
           <input
             type="number"
@@ -166,6 +153,19 @@
             [value]="realHeight() ?? ''"
             (focus)="$any($event.target).select()"
             (input)="setHeight($event)"
+          />
+          cm
+        </label>
+        <label>
+          Width
+          <input
+            type="number"
+            min="1"
+            step="0.1"
+            inputmode="decimal"
+            [value]="realWidth() ?? ''"
+            (focus)="$any($event.target).select()"
+            (input)="setWidth($event)"
           />
           cm
         </label>
@@ -233,7 +233,7 @@
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
       } @else if (!measured()) {
-        <span class="prep-busy">Give the painting's width and height first.</span>
+        <span class="prep-busy">Give the painting's height and width first.</span>
       }
     </p>
   }
