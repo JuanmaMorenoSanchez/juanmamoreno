@@ -39,7 +39,9 @@
     "about": "Statement",
     "contact": "Contact",
     "byYear": "By Year",
-    "texts": "Texts"
+    "texts": "Texts",
+    "more": "More",
+    "language": "Language"
   },
   "traits": {
     "medium": "Medium",
@@ -67,7 +69,9 @@
   },
   "theme": {
     "toDark": "Switch to dark",
-    "toLight": "Switch to light"
+    "toLight": "Switch to light",
+    "light": "Light",
+    "dark": "Dark"
   },
   "contact": {
     "title": "Contact",

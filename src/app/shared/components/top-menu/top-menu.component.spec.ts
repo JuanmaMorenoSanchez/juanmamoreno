@@ -145,14 +145,35 @@ describe('TopMenuComponent workshop menu', () => {
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
-    const trigger = host.querySelector<HTMLElement>('.studio-session');
-    return { fixture, host, trigger, signOut };
+
+    /**
+     * Opens "More" and hands back what is inside it.
+     *
+     * The settings live a level down now — the bar had grown to eight items and
+     * three of them were not places to go. So the admin entry is only in the
+     * document once "More" has been opened, which is what this does.
+     */
+    const openMore = (): HTMLElement | null => {
+      host.querySelector<HTMLElement>('.more-menu')?.click();
+      fixture.detectChanges();
+      return document.querySelector<HTMLElement>('.studio-session');
+    };
+
+    return { fixture, host, openMore, signOut };
   }
 
-  /** What the opened menu offers, by visible text. */
+  /**
+   * What the menu this trigger opens offers, by visible text.
+   *
+   * Scoped to the last panel rather than the whole document: the settings sit
+   * one level down now, so opening the admin menu leaves "More" open behind it
+   * and a document-wide query returns both.
+   */
   const itemsOf = (trigger: HTMLElement | null) => {
     trigger?.click();
-    return [...document.querySelectorAll('.mat-mdc-menu-item')].map((item) =>
+    const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
+    const opened = panels[panels.length - 1];
+    return [...(opened?.querySelectorAll('.mat-mdc-menu-item') ?? [])].map((item) =>
       (item.textContent ?? '').trim(),
     );
   };
@@ -165,24 +186,28 @@ describe('TopMenuComponent workshop menu', () => {
    * offered to them.
    */
   it('is not there for a reader', async () => {
-    const { trigger, host } = await setup({ signedIn: false, knownHere: false });
+    const { openMore, host } = await setup({ signedIn: false, knownHere: false });
+    const trigger = openMore();
 
     expect(trigger).toBeNull();
     expect(host.textContent).not.toContain('Admin');
+    expect(document.body.textContent).not.toContain('Studio');
     expect(host.textContent).not.toContain('Studio');
     expect(host.textContent).not.toContain('Reels');
   });
 
   // Signed in: one item, holding everything that is his.
   it('gathers the private pages and the way out', async () => {
-    const { trigger } = await setup({ signedIn: true, knownHere: true });
+    const { openMore } = await setup({ signedIn: true, knownHere: true });
+    const trigger = openMore();
 
     expect(trigger?.textContent).toContain('Admin');
     expect(itemsOf(trigger)).toEqual(['Studio', 'Reels waiting', 'Sign out']);
   });
 
   it('links each of them to its own address', async () => {
-    const { trigger } = await setup({ signedIn: true, knownHere: true });
+    const { openMore } = await setup({ signedIn: true, knownHere: true });
+    const trigger = openMore();
     trigger?.click();
 
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
@@ -192,7 +217,8 @@ describe('TopMenuComponent workshop menu', () => {
   });
 
   it('signs out from inside it', async () => {
-    const { trigger, signOut } = await setup({ signedIn: true, knownHere: true });
+    const { openMore, signOut } = await setup({ signedIn: true, knownHere: true });
+    const trigger = openMore();
     trigger?.click();
 
     const out = [...document.querySelectorAll('.mat-mdc-menu-item')].find((item) =>
@@ -209,10 +235,118 @@ describe('TopMenuComponent workshop menu', () => {
    * signing out would take away the way back.
    */
   it('offers the way back in, and nothing else, once the session has lapsed', async () => {
-    const { trigger, host } = await setup({ signedIn: false, knownHere: true });
+    const { openMore, host } = await setup({ signedIn: false, knownHere: true });
+    const trigger = openMore();
 
     expect(trigger?.textContent).toContain('Sign in');
     expect(trigger?.getAttribute('href')).toBe('/door');
     expect(host.textContent).not.toContain('Admin');
+  });
+});
+
+/**
+ * The bar is a list of places; everything else is one level down.
+ *
+ * It had grown to eight items, three of which were settings rather than pages —
+ * which ground the site is read on, which language it is read in, and the
+ * artist's own way into his workshop. They now live behind "More", and these
+ * assertions are what stops them drifting back into the bar one at a time.
+ */
+describe('TopMenuComponent more menu', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  async function setup() {
+    localStorage.clear();
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [TopMenuComponent],
+      providers: [
+        provideTranslateService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimations(),
+        provideRouter([{ path: 'door', children: [] }]),
+        { provide: ARTWORK_PORT, useValue: { getAvailableYears: () => new Set<number>() } },
+        {
+          provide: AdminAuthService,
+          useValue: {
+            isAdmin: () => false,
+            knownHere: () => false,
+            bearerToken: () => null,
+            identity: () => null,
+            signOut: () => {},
+          },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(TopMenuComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return { fixture, host: fixture.nativeElement as HTMLElement };
+  }
+
+  const openMore = (host: HTMLElement, fixture: { detectChanges(): void }) => {
+    host.querySelector<HTMLElement>('.more-menu')?.click();
+    fixture.detectChanges();
+  };
+
+  it('keeps the settings out of the bar itself', async () => {
+    const { host } = await setup();
+
+    expect(host.querySelector('.more-menu')).toBeTruthy();
+    // None of the three is in the toolbar any more.
+    expect(host.querySelector('.theme-toggle')).toBeNull();
+    expect(host.querySelector('.language-menu')).toBeNull();
+    expect(host.querySelector('.studio-session')).toBeNull();
+  });
+
+  it('gathers the theme and the language behind it', async () => {
+    const { host, fixture } = await setup();
+    openMore(host, fixture);
+
+    expect(document.querySelector('.theme-toggle')).toBeTruthy();
+    expect(document.querySelector('.language-menu')).toBeTruthy();
+  });
+
+  it('names the theme it will switch to, not the one already showing', async () => {
+    // The icon and the word have to agree, or the item reads as a label for the
+    // current state and clicking it does the opposite of what it says.
+    const { host, fixture } = await setup();
+    openMore(host, fixture);
+
+    const item = document.querySelector('.theme-toggle');
+    const icon = item?.querySelector('mat-icon')?.textContent?.trim();
+    const word = item?.querySelector('span')?.textContent?.trim();
+
+    // Light ground by default, so it offers the dark one.
+    expect(icon).toBe('dark_mode');
+    expect(word).toBe('theme.dark');
+  });
+
+  it('opens the languages as a submenu rather than listing them in the bar', async () => {
+    const { host, fixture } = await setup();
+    openMore(host, fixture);
+
+    const language = document.querySelector<HTMLElement>('.language-menu');
+    expect(language?.getAttribute('aria-haspopup')).toBe('menu');
+
+    language?.click();
+    fixture.detectChanges();
+
+    const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
+    const opened = panels[panels.length - 1];
+    const offered = [...opened.querySelectorAll('.mat-mdc-menu-item')].map((i) =>
+      (i.textContent ?? '').trim(),
+    );
+    // Compared against what the component actually offers rather than a list
+    // written here: the labels and their order belong to the language
+    // constants, and duplicating them would only test the duplicate.
+    const expected = fixture.componentInstance['languages'].map(
+      (language: { label: string }) => language.label,
+    );
+    expect(offered).toEqual(expected);
+    expect(offered.length).toBe(2);
   });
 });

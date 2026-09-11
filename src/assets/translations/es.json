@@ -39,7 +39,9 @@
     "about": "Statement",
     "contact": "Contacto",
     "byYear": "Por año",
-    "texts": "Textos"
+    "texts": "Textos",
+    "more": "Más",
+    "language": "Idioma"
   },
   "traits": {
     "medium": "Técnica",
@@ -67,7 +69,9 @@
   },
   "theme": {
     "toDark": "Cambiar a modo oscuro",
-    "toLight": "Cambiar a modo claro"
+    "toLight": "Cambiar a modo claro",
+    "light": "Claro",
+    "dark": "Oscuro"
   },
   "contact": {
     "title": "Contacto",

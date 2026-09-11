@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.37.0
+
+- **feat** — the theme, the language and the artist's own way in are gathered
+  behind a "More" menu. The bar had grown to eight items, three of which were
+  settings rather than places, and the language now opens as a submenu.
+
 ## 1.36.1
 
 - **fix** — the grid softens a tile while it is still showing the picture the
