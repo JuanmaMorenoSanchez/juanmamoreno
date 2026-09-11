@@ -7,7 +7,7 @@ import {
   type PhotoStage,
   type PreparePhotoReport,
 } from '@domain/image/prepare-photo';
-import { isUnchanged, type Adjustments } from '@domain/image/adjustments';
+import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
 import {
   createSelection,
   clearSelection,
@@ -30,7 +30,7 @@ import {
   type Point,
   type Quad,
 } from '@domain/image/quad';
-import type { Raster } from '@domain/image/raster';
+import { sampleBilinear, type Raster } from '@domain/image/raster';
 
 /** A slider's position, as a fraction from -1 to 1. */
 function sliderValue(event: Event): number {
@@ -185,6 +185,20 @@ export class PhotoPrepComponent {
       const canvas = this.previewCanvas()?.nativeElement;
       const photo = this.photo();
       if (canvas && photo) drawInto(canvas, photo);
+      this.pristine = null;
+    });
+
+    // The preview shows what the sliders are doing, as they are moved. Reading
+    // them here is what subscribes this to them: a control whose effect can only
+    // be seen by pressing the button and waiting is one you cannot judge.
+    effect(() => {
+      const canvas = this.previewCanvas()?.nativeElement;
+      const photo = this.photo();
+      const adjustments = this.adjustments();
+      const selection = this.previewSelection();
+      const showing = this.selecting() || this.hasArea();
+      if (!canvas || !photo) return;
+      this.repaint(canvas, adjustments, selection, showing);
     });
   }
 
@@ -608,6 +622,92 @@ export class PhotoPrepComponent {
     this.brushing = false;
   }
 
+  // --- showing what the controls are doing -------------------------------
+
+  /** The preview as it came off the photograph, kept so each repaint starts clean. */
+  private pristine: ImageData | null = null;
+
+  /**
+   * The selection, mapped back into the photograph's own coordinates.
+   *
+   * The mask is kept in the straightened rectangle's space, because that is
+   * where the adjustment is finally applied. The preview shows the photograph
+   * before it is straightened, so to tint the right pixels the mask has to come
+   * back the other way — through the inverse of the same homography.
+   */
+  private readonly previewSelection = computed<Selection | null>(() => {
+    this.selectionVersion();
+    const selection = this.selection();
+    const corners = this.corners();
+    const size = this.size();
+    const realWidth = this.realWidth();
+    const realHeight = this.realHeight();
+    if (!selection || !corners || !size || !realWidth || !realHeight) return null;
+    if (!hasSelection(selection)) return null;
+
+    const target = correctedSize(corners, realWidth, realHeight);
+    const rectangle: Quad = [
+      { x: 0, y: 0 },
+      { x: target.width, y: 0 },
+      { x: target.width, y: target.height },
+      { x: 0, y: target.height },
+    ];
+    const toRectangle = solveHomography(corners, rectangle);
+
+    const inPhoto = createSelection(size.width, size.height);
+    for (let y = 0; y < inPhoto.height; y += 1) {
+      for (let x = 0; x < inPhoto.width; x += 1) {
+        const here = {
+          x: ((x + 0.5) / inPhoto.width) * size.width,
+          y: ((y + 0.5) / inPhoto.height) * size.height,
+        };
+        const there = mapThrough(toRectangle, here);
+        const u = (there.x / target.width) * selection.width - 0.5;
+        const v = (there.y / target.height) * selection.height - 0.5;
+        if (u < -1 || v < -1 || u > selection.width || v > selection.height) continue;
+        inPhoto.values[y * inPhoto.width + x] = sampleBilinear(
+          selection.values,
+          selection.width,
+          selection.height,
+          u,
+          v
+        );
+      }
+    }
+    return inPhoto;
+  });
+
+  /**
+   * Redraws the preview with the sliders applied, and the selection shown.
+   *
+   * The selection is tinted rather than outlined: a soft brush has no outline to
+   * draw, and how strongly an area is selected is the thing that needs to be
+   * seen — an edge would say it is either in or out, which is exactly what it is
+   * not.
+   */
+  private repaint(
+    canvas: HTMLCanvasElement,
+    adjustments: Adjustments,
+    selection: Selection | null,
+    showSelection: boolean
+  ): void {
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context || !canvas.width || !canvas.height) return;
+
+    this.pristine ??= context.getImageData(0, 0, canvas.width, canvas.height);
+    const frame = new ImageData(
+      new Uint8ClampedArray(this.pristine.data),
+      this.pristine.width,
+      this.pristine.height
+    );
+    const raster: Raster = { width: frame.width, height: frame.height, data: frame.data };
+
+    applyAdjustments(raster, adjustments, selection);
+    if (showSelection && selection) tintSelected(raster, selection);
+
+    context.putImageData(frame, 0, 0);
+  }
+
   // --- the sliders -------------------------------------------------------
 
   protected setBrightness(event: Event): void {
@@ -812,6 +912,34 @@ function textIn(event: Event): string {
 function numberIn(event: Event): number | null {
   const value = Number.parseFloat((event.target as HTMLInputElement).value);
   return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+/**
+ * Lays a wash over what the brush has selected.
+ *
+ * Tinted rather than outlined, and by how much each place is selected rather
+ * than whether: a soft brush has no outline to draw, and the fade is the whole
+ * point of it. Blue because nothing in a photograph of a painting on a wall is
+ * reliably neutral, but a blue wash still reads as "not part of the picture".
+ */
+function tintSelected(raster: Raster, selection: Selection): void {
+  const { data, width, height } = raster;
+  for (let y = 0; y < height; y += 1) {
+    const v = ((y + 0.5) / height) * selection.height - 0.5;
+    for (let x = 0; x < width; x += 1) {
+      const u = ((x + 0.5) / width) * selection.width - 0.5;
+      const covered = sampleBilinear(selection.values, selection.width, selection.height, u, v);
+      if (covered <= 0.002) continue;
+
+      // Half strength at most, so the painting underneath stays judgeable while
+      // the wash is on it.
+      const wash = covered * 0.45;
+      const i = (y * width + x) * 4;
+      data[i] = data[i] * (1 - wash) + 64 * wash;
+      data[i + 1] = data[i + 1] * (1 - wash) + 132 * wash;
+      data[i + 2] = data[i + 2] * (1 - wash) + 245 * wash;
+    }
+  }
 }
 
 function drawInto(canvas: HTMLCanvasElement, photo: ImageBitmap): void {

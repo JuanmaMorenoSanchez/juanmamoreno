@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.38.1
+
+- **feat** — the preview changes as the sliders move, and the brushed area is
+  washed in blue on the photograph so it can be seen. "Unselect all" is always
+  there rather than appearing once something is selected.
+
 ## 1.38.0
 
 - **feat** — the photograph is corrected by hand: brightness, temperature and

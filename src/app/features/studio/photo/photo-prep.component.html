@@ -231,23 +231,28 @@
           </p>
         }
         <p class="prep-note">
-          {{ hasArea() ? 'The sliders apply to the brushed area only.' : 'Nothing brushed, so the sliders apply to the whole photograph.' }}
-          @if (hasArea()) {
-            <button type="button" class="prep-link" (click)="clearArea()">Select nothing</button>
-          }
+          {{
+            hasArea()
+              ? 'Shown in blue on the photograph. The sliders apply there only.'
+              : 'Nothing brushed, so the sliders apply to the whole photograph.'
+          }}
         </p>
+        <button type="button" class="prep-link" [disabled]="!hasArea()" (click)="clearArea()">
+          Unselect all
+        </button>
       </fieldset>
     </div>
 
     <p class="prep-actions">
       <!--
-        Straightens the perspective, applies whatever the sliders were set to,
-        and hands the result on. It used to say "Flatten it" and end there, with
-        the only way onward being to download the file and upload it again to
-        the form below.
+        Still needed, even though the sliders now show their work as they move.
+        What is on the stage is a preview: the photograph at two thousand pixels
+        with the adjustments over it, and still in perspective. This is where the
+        painting is actually lifted out of the photograph, at full size, and
+        encoded — none of which can happen forty times a second under a slider.
       -->
       <button type="button" class="prep-go" [disabled]="!canProcess()" (click)="process()">
-        Prepare it
+        Straighten and finish
       </button>
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
