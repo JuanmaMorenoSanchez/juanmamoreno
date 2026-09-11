@@ -55,6 +55,7 @@
             [style.left.%]="cursor.x"
             [style.top.%]="cursor.y"
             [style.width.%]="cursor.size"
+            [class.prep-brush-erasing]="brushMode() === 'erase'"
           ></span>
         }
         <svg
@@ -172,22 +173,49 @@
           Brush an area
         </label>
         @if (selecting()) {
+          <!--
+            Two tools rather than a key held down. Pulling an edge back is most
+            of what selecting an area is, and it used to be on shift alone,
+            which is to say nowhere a person would find it.
+          -->
+          <div class="prep-tools" role="group" aria-label="Brush">
+            <button
+              type="button"
+              class="prep-tool"
+              [class.prep-tool-on]="brushMode() === 'add'"
+              [attr.aria-pressed]="brushMode() === 'add'"
+              (click)="useBrush('add')"
+            >
+              Select
+            </button>
+            <button
+              type="button"
+              class="prep-tool"
+              [class.prep-tool-on]="brushMode() === 'erase'"
+              [attr.aria-pressed]="brushMode() === 'erase'"
+              (click)="useBrush('erase')"
+            >
+              Erase
+            </button>
+          </div>
           <label class="prep-slider">
             <span>Brush size <em>{{ brushRadius() }}%</em></span>
-            <input type="range" min="4" max="60" step="1" [value]="brushRadius()" (input)="setBrushRadius($event)" />
+            <input type="range" min="1" max="60" step="1" [value]="brushRadius()" (input)="setBrushRadius($event)" />
           </label>
           <label class="prep-slider">
             <span>Edge <em>{{ brushSoftness() === 0 ? 'hard' : brushSoftness() + '% soft' }}</em></span>
             <input type="range" min="0" max="100" step="1" [value]="brushSoftness()" (input)="setBrushSoftness($event)" />
           </label>
           <p class="prep-note">
-            Drag on the photograph to select. Hold shift to take a selection back.
+            Drag on the photograph to
+            {{ brushMode() === 'erase' ? 'erase' : 'select' }}. Hold shift for the
+            other one, and take the size down for an edge.
           </p>
         }
         <p class="prep-note">
           {{
             hasArea()
-              ? 'Shown in blue on the photograph. The sliders apply there only.'
+              ? 'Outlined on the photograph. The sliders apply inside it only.'
               : 'Nothing brushed, so the sliders apply to the whole photograph.'
           }}
         </p>

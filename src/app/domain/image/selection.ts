@@ -72,7 +72,13 @@ export function paintDab(
   const scale = selection.width / photo.width;
   const cx = dab.x * scale;
   const cy = dab.y * scale;
-  const radius = Math.max(1e-6, dab.radius * scale);
+  // The mask is 128 across however large the photograph is, so a fine brush can
+  // be smaller than one of its cells — and a dab that falls between four cell
+  // centres then reaches none of them and paints nothing at all, silently. Any
+  // point is within half a diagonal (0.708) of a centre, so a floor just above
+  // that always reaches one. It only bites on a brush finer than the mask can
+  // hold, which is the case that would otherwise do nothing.
+  const radius = Math.max(0.75, dab.radius * scale);
   const softness = Math.min(1, Math.max(0, dab.softness));
   const solid = radius * (1 - softness);
 

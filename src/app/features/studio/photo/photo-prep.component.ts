@@ -331,6 +331,15 @@ export class PhotoPrepComponent {
   /** Where the sliders apply. Empty means everywhere, which is the usual case. */
   protected readonly selection = signal<Selection | null>(null);
   protected readonly selecting = signal(false);
+  /**
+   * Which way the brush goes.
+   *
+   * Taking a selection back was only ever on shift, which is a thing nobody
+   * finds and nobody is told — and pulling an edge back is most of what
+   * selecting an area actually is. So it is a tool of its own, named, with
+   * shift still reversing whichever is chosen for the odd stroke the other way.
+   */
+  protected readonly brushMode = signal<'add' | 'erase'>('add');
   protected readonly brushRadius = signal(rememberedNumber(BRUSH_RADIUS_KEY, 22));
   protected readonly brushSoftness = signal(rememberedNumber(BRUSH_SOFTNESS_KEY, 80));
   protected readonly hasArea = computed(() => this.selectionVersion() > 0 && hasSelection(this.selection()));
@@ -801,8 +810,23 @@ export class PhotoPrepComponent {
     this.selecting.update((on) => !on);
   }
 
+  protected useBrush(mode: 'add' | 'erase'): void {
+    this.selecting.set(true);
+    this.brushMode.set(mode);
+  }
+
+  /**
+   * Which way one dab goes: the chosen tool, reversed while shift is held.
+   *
+   * Reversing rather than always erasing, so the shortcut means the same thing
+   * from either tool — the other one, for as long as the key is down.
+   */
+  private erases(reversed: boolean): boolean {
+    return this.brushMode() === 'erase' ? !reversed : reversed;
+  }
+
   protected setBrushRadius(event: Event): void {
-    const value = Math.min(60, Math.max(4, Number((event.target as HTMLInputElement).value)));
+    const value = Math.min(60, Math.max(1, Number((event.target as HTMLInputElement).value)));
     this.brushRadius.set(value);
     remember(BRUSH_RADIUS_KEY, String(value));
   }
@@ -873,12 +897,12 @@ export class PhotoPrepComponent {
   protected startBrush(event: PointerEvent): void {
     if (!this.selecting()) return;
     this.brushing = true;
-    this.brush(event, event.shiftKey || event.button === 2);
+    this.brush(event, this.erases(event.shiftKey || event.button === 2));
   }
 
   protected brushMove(event: PointerEvent): void {
     if (!this.brushing) return;
-    this.brush(event, event.shiftKey);
+    this.brush(event, this.erases(event.shiftKey));
   }
 
   /** Turns a pointer position into a position in the photograph's own pixels. */

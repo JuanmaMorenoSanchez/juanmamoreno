@@ -27,7 +27,9 @@ type Internals = {
   rights: () => { artist: string; notice?: string; webStatement?: string } | null;
   realWidth: { set(v: number): void };
   realHeight: { set(v: number): void };
-  selecting: { set(v: boolean): void };
+  selecting: { (): boolean; set(v: boolean): void };
+  brushMode: { (): 'add' | 'erase'; set(v: 'add' | 'erase'): void };
+  useBrush(mode: 'add' | 'erase'): void;
   brushAt(at: { x: number; y: number }, erase?: boolean): void;
   hasArea: () => boolean;
   previewSelection: () => { values: Float32Array } | null;
@@ -224,5 +226,36 @@ describe('PhotoPrepComponent — brushing an area', () => {
     expect(shown).not.toBeNull();
     const anyCovered = shown ? [...shown.values].some((v) => v > 0.1) : false;
     expect(anyCovered).toBe(true);
+  });
+
+  it('takes the same area back again with the erasing brush', () => {
+    // The half of selecting that had no tool: an edge is pulled back far more
+    // often than it is laid down in one stroke.
+    const { component } = setup();
+    component.size.set({ width: 400, height: 300 });
+    component.corners.set(QUAD);
+    component.realWidth.set(100);
+    component.realHeight.set(80);
+    component.selecting.set(true);
+    component.brushAt({ x: 200, y: 150 });
+    expect(component.hasArea()).toBe(true);
+
+    component.useBrush('erase');
+    // Wider than it was laid down, since a soft dab fades rather than stopping.
+    component.brushAt({ x: 200, y: 150 }, true);
+    component.brushAt({ x: 200, y: 150 }, true);
+
+    expect(component.hasArea()).toBe(false);
+  });
+
+  it('reaches for the erasing brush without leaving the selecting one on', () => {
+    const { component } = setup();
+
+    component.useBrush('erase');
+
+    expect(component.brushMode()).toBe('erase');
+    // Choosing a brush turns brushing on: choosing one and then finding the
+    // photograph does not answer is a fault with nothing to show for it.
+    expect(component.selecting()).toBe(true);
   });
 });

@@ -64,6 +64,22 @@ describe('selecting part of a photograph', () => {
     for (const value of selection.values) expect(value).toBeGreaterThanOrEqual(0);
   });
 
+  it('paints something however fine the brush is', () => {
+    // The failure this guards against is the quiet one: a brush finer than a
+    // mask cell falling between four centres, reaching none, and reporting
+    // nothing wrong. Nothing selected and nothing said looks exactly like a
+    // brush that is not working at all.
+    const selection = createSelection(4000, 3000);
+    paintDab(selection, { width: 4000, height: 3000 }, {
+      x: 1234.5,
+      y: 987.5,
+      radius: 1,
+      softness: 0,
+    });
+
+    expect(hasSelection(selection)).toBe(true);
+  });
+
   it('clears everything at once', () => {
     const selection = createSelection(photo.width, photo.height);
     paintDab(selection, photo, { x: 100, y: 100, radius: 90, softness: 0.5 });

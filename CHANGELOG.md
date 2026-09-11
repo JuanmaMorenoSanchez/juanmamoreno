@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.39.1
+
+- **feat** — the brush erases as well as selects. Taking a selection back was
+  only ever on shift, which is nowhere a person would find it, and pulling an
+  edge back is most of what selecting an area is. Shift now reverses whichever
+  tool is in hand, and the ring under the pointer goes dashed while erasing.
+- **fix** — a brush finer than one of the mask's cells could fall between four
+  of them, reach none and paint nothing at all, silently. The smallest brush is
+  now 1% rather than 4%, and a dab always reaches at least the cell it is in.
+- **fix** — "Save for later" sat lower than "Mint now": it kept a top margin
+  from when it stood alone under the form.
+- **fix** — the selection has been drawn as a dashed outline since 1.38.3, but
+  the note beside it still said it was shown in blue.
+
 ## 1.39.0
 
 - **feat** — the price of gas is shown beside every mint button and refreshed

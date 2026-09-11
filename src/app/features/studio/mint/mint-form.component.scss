@@ -96,8 +96,12 @@
   color: #b3261e;
 }
 
+/*
+  No margin of its own: it used to stand alone under the form, and now it stands
+  in a row beside the gated one, which has none. The row supplies the space, and
+  a margin here would have sat this button lower than the one next to it.
+*/
 .mint-button {
-  margin-top: 1.2rem;
   font: inherit;
   padding: 0.6rem 1.4rem;
   border: 1px solid currentColor;

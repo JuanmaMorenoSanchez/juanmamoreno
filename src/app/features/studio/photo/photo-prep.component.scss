@@ -357,6 +357,31 @@
 
 // The brush, shown where it is and at the width it would take. Two rings in
 // opposite colours, so it stays visible over a dark painting and a light one.
+/* Two small buttons rather than a select: which tool is in hand should be
+   readable without opening anything. */
+.prep-tools {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.prep-tool {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.prep-tool-on {
+  opacity: 1;
+  font-weight: 600;
+}
+
 .prep-brush-ring {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -365,4 +390,11 @@
   pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.9);
   outline: 1px solid rgba(0, 0, 0, 0.65);
+}
+
+/* Dashed, so which way the next stroke goes is visible under the hand rather
+   than only in the controls above. */
+.prep-brush-erasing {
+  border-style: dashed;
+  outline-style: dashed;
 }

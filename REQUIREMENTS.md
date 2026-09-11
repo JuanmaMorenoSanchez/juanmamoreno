@@ -1038,10 +1038,24 @@ The brush is mapped through the same homography as the pixels, because it is
 used on the photograph while the adjustment lands on the straightened rectangle:
 a mask in the photograph's own coordinates would sit crooked on the result, and
 worst at the corners, which is where a brush is most often wanted.
+
+It erases as well as selects, as a named tool rather than a held key: pulling an
+edge back is most of what selecting an area is, and it was reachable only on
+shift, which is to say by nobody. Shift still reverses whichever tool is in hand,
+and the ring under the pointer goes dashed while erasing, so which way the next
+stroke goes is readable without looking away from the photograph.
+
+The finest brush is one percent of the long side, and no brush can paint nothing.
+The mask is 128 cells across however large the photograph is, so a fine enough
+dab can fall between four cell centres, reach none of them and report nothing
+wrong — which looks exactly like a brush that is broken.
 *Proven by:* `adjustments.spec.ts` (13 tests, including "keeps the colour while
 changing the light", "leaves green alone, so a warm shift does not become a
 tint", and "fades the adjustment out with the brush, rather than ending it at a
-line") and `selection.spec.ts` (8 tests)
+line"); `selection.spec.ts` (9 tests, including "takes a selection back rather
+than making it start again" and "paints something however fine the brush is",
+which fails without the floor); and `photo-prep.component.spec.ts` — "takes the
+same area back again with the erasing brush"
 
 ### R82 — A corrected photograph reaches the certificate without a round trip · met
 The corrector hands the finished JPEG and the size it was corrected at straight
