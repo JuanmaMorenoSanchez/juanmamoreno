@@ -7,7 +7,20 @@ import {
   type PhotoStage,
   type PreparePhotoReport,
 } from '@domain/image/prepare-photo';
+import { isUnchanged, type Adjustments } from '@domain/image/adjustments';
 import {
+  createSelection,
+  clearSelection,
+  hasSelection,
+  paintDab,
+  type Selection,
+} from '@domain/image/selection';
+import { solveHomography } from '@domain/image/perspective';
+import { inject } from '@angular/core';
+import { StudioHandoffService } from '../studio-handoff.service';
+
+import {
+  correctedSize,
   EDGE_CORNERS,
   distance,
   fullFrame,
@@ -18,6 +31,23 @@ import {
   type Quad,
 } from '@domain/image/quad';
 import type { Raster } from '@domain/image/raster';
+
+/** A slider's position, as a fraction from -1 to 1. */
+function sliderValue(event: Event): number {
+  const raw = Number((event.target as HTMLInputElement).value);
+  if (!Number.isFinite(raw)) return 0;
+  return Math.min(1, Math.max(-1, raw / 100));
+}
+
+/** A point put through a homography. */
+function mapThrough(h: Float64Array, point: { x: number; y: number }): { x: number; y: number } {
+  const w = h[6] * point.x + h[7] * point.y + h[8];
+  const safe = w === 0 ? 1e-9 : w;
+  return {
+    x: (h[0] * point.x + h[1] * point.y + h[2]) / safe,
+    y: (h[3] * point.x + h[4] * point.y + h[5]) / safe,
+  };
+}
 
 /**
  * The photograph is shown no larger than this. Corners are kept in its own
@@ -44,10 +74,7 @@ const REMEMBERED_SIZE = 'juanmamoreno.paintingSize';
 
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
-  lighting: 'Evening out the lighting',
-  glare: 'Taking out the glare',
-  borders: 'Checking the edges',
-  colour: 'Checking the colour',
+  adjusting: 'Applying the adjustments',
   focus: 'Checking the focus',
 };
 
@@ -102,6 +129,19 @@ function remember(key: string, value: string): void {
     window.localStorage.setItem(key, value);
   } catch {
     // Storage off. The field holds for this session, which is enough.
+  }
+}
+
+const BRUSH_RADIUS_KEY = 'juanmamoreno.studio.brushRadius';
+const BRUSH_SOFTNESS_KEY = 'juanmamoreno.studio.brushSoftness';
+
+/** A remembered number, or the default when there is none or it is nonsense. */
+function rememberedNumber(key: string, fallback: number): number {
+  try {
+    const stored = Number(window.localStorage.getItem(key));
+    return Number.isFinite(stored) && stored > 0 ? stored : fallback;
+  } catch {
+    return fallback;
   }
 }
 
@@ -226,14 +266,42 @@ export class PhotoPrepComponent {
   /** In centimetres, though only the ratio between them is ever read. */
   protected readonly realWidth = signal<number | null>(null);
   protected readonly realHeight = signal<number | null>(null);
-  protected readonly evenLighting = signal(true);
-  protected readonly takeOutGlare = signal(true);
-  protected readonly evenBorders = signal(true);
-  protected readonly correctCast = signal(true);
-  protected readonly openTones = signal(true);
+  /**
+   * The three sliders, each nought at the photograph as it arrived.
+   *
+   * These replaced five checkboxes that measured the photograph and decided for
+   * themselves. Each was trying to answer a question it could not — whether a
+   * dark corner is a lamp that fell off or paint that is dark — and was kept
+   * deliberately too weak because of the doubt. The person looking at the
+   * painting knows, so they say.
+   */
+  protected readonly brightness = signal(0);
+  protected readonly temperature = signal(0);
+  protected readonly range = signal(0);
+
+  protected readonly adjustments = computed<Adjustments>(() => ({
+    brightness: this.brightness(),
+    temperature: this.temperature(),
+    range: this.range(),
+  }));
+
+  protected readonly anyAdjustment = computed(() => !isUnchanged(this.adjustments()));
+
+  /** Where the sliders apply. Empty means everywhere, which is the usual case. */
+  protected readonly selection = signal<Selection | null>(null);
+  protected readonly selecting = signal(false);
+  protected readonly brushRadius = signal(rememberedNumber(BRUSH_RADIUS_KEY, 22));
+  protected readonly brushSoftness = signal(rememberedNumber(BRUSH_SOFTNESS_KEY, 80));
+  protected readonly hasArea = computed(() => this.selectionVersion() > 0 && hasSelection(this.selection()));
+  /** Bumped on every dab, since a Float32Array mutated in place is not a new value. */
+  private readonly selectionVersion = signal(0);
   protected readonly busy = signal<PhotoStage | null>(null);
   protected readonly report = signal<PreparePhotoReport | null>(null);
   protected readonly resultUrl = signal<string | null>(null);
+  /** Kept as well as the url, so the result can be handed on without a round trip through disk. */
+  private readonly resultBlob = signal<Blob | null>(null);
+  private readonly handoff = inject(StudioHandoffService);
+  protected readonly handedOver = signal(false);
   protected readonly problem = signal('');
 
   protected readonly busyLabel = computed(() => {
@@ -537,6 +605,111 @@ export class PhotoPrepComponent {
 
   protected release(): void {
     this.dragging = null;
+    this.brushing = false;
+  }
+
+  // --- the sliders -------------------------------------------------------
+
+  protected setBrightness(event: Event): void {
+    this.brightness.set(sliderValue(event));
+  }
+
+  protected setTemperature(event: Event): void {
+    this.temperature.set(sliderValue(event));
+  }
+
+  protected setRange(event: Event): void {
+    this.range.set(sliderValue(event));
+  }
+
+  protected resetAdjustments(): void {
+    this.brightness.set(0);
+    this.temperature.set(0);
+    this.range.set(0);
+  }
+
+  // --- the brush ---------------------------------------------------------
+
+  /** True while the pointer is down and painting rather than moving a corner. */
+  private brushing = false;
+
+  protected toggleSelecting(): void {
+    this.selecting.update((on) => !on);
+  }
+
+  protected setBrushRadius(event: Event): void {
+    const value = Math.min(60, Math.max(4, Number((event.target as HTMLInputElement).value)));
+    this.brushRadius.set(value);
+    remember(BRUSH_RADIUS_KEY, String(value));
+  }
+
+  protected setBrushSoftness(event: Event): void {
+    const value = Math.min(100, Math.max(0, Number((event.target as HTMLInputElement).value)));
+    this.brushSoftness.set(value);
+    remember(BRUSH_SOFTNESS_KEY, String(value));
+  }
+
+  protected clearArea(): void {
+    const selection = this.selection();
+    if (!selection) return;
+    clearSelection(selection);
+    this.selectionVersion.update((n) => n + 1);
+  }
+
+  /**
+   * Paints where the pointer is, in the straightened picture's coordinates.
+   *
+   * The brush is used on the photograph, but the adjustment lands on the
+   * rectangle the photograph becomes. A mask painted in the photograph's own
+   * coordinates would sit crooked on the result — worst at the corners, which
+   * is exactly where a brush is usually wanted — so each dab is mapped through
+   * the same homography the pixels go through.
+   */
+  protected brush(event: PointerEvent, erase = false): void {
+    const at = this.pointIn(event);
+    const corners = this.corners();
+    const size = this.size();
+    const realWidth = this.realWidth();
+    const realHeight = this.realHeight();
+    if (!at || !corners || !size || !realWidth || !realHeight) return;
+
+    const target = correctedSize(corners, realWidth, realHeight);
+    let selection = this.selection();
+    if (!selection || selection.width < 2) {
+      selection = createSelection(target.width, target.height);
+      this.selection.set(selection);
+    }
+
+    const rectangle: Quad = [
+      { x: 0, y: 0 },
+      { x: target.width, y: 0 },
+      { x: target.width, y: target.height },
+      { x: 0, y: target.height },
+    ];
+    const mapped = mapThrough(solveHomography(corners, rectangle), at);
+
+    // The radius is given as a percentage of the picture, so a brush set on one
+    // photograph means the same thing on the next whatever size it came in.
+    const radius = (this.brushRadius() / 100) * Math.max(target.width, target.height);
+    paintDab(selection, target, {
+      x: mapped.x,
+      y: mapped.y,
+      radius,
+      softness: this.brushSoftness() / 100,
+      erase,
+    });
+    this.selectionVersion.update((n) => n + 1);
+  }
+
+  protected startBrush(event: PointerEvent): void {
+    if (!this.selecting()) return;
+    this.brushing = true;
+    this.brush(event, event.shiftKey || event.button === 2);
+  }
+
+  protected brushMove(event: PointerEvent): void {
+    if (!this.brushing) return;
+    this.brush(event, event.shiftKey);
   }
 
   /** Turns a pointer position into a position in the photograph's own pixels. */
@@ -568,11 +741,8 @@ export class PhotoPrepComponent {
         bows: this.bows() ?? undefined,
         realWidth,
         realHeight,
-        equalizeLighting: this.evenLighting(),
-        removeGlare: this.takeOutGlare(),
-        evenBorders: this.evenBorders(),
-        correctCast: this.correctCast(),
-        openTones: this.openTones(),
+        adjustments: this.adjustments(),
+        selection: this.hasArea() ? this.selection() : null,
         onStage: async (stage) => {
           this.busy.set(stage);
           await breathe();
@@ -580,7 +750,9 @@ export class PhotoPrepComponent {
       });
 
       this.report.set(report);
-      this.resultUrl.set(await toJpegUrl(image, this.rights()));
+      const blob = await toJpegBlob(image, this.rights());
+      this.resultBlob.set(blob);
+      this.resultUrl.set(URL.createObjectURL(blob));
     } catch {
       this.problem.set(
         'The photograph was too large for this browser to hold. Try a smaller copy.'
@@ -588,6 +760,30 @@ export class PhotoPrepComponent {
     } finally {
       this.busy.set(null);
     }
+  }
+
+  /**
+   * Hands the finished photograph to the form below, with the size it was given.
+   *
+   * The alternative was downloading a JPEG and choosing it again from disk: the
+   * same file out of the browser and back into it, and a second chance to type
+   * the dimensions differently from the ones the straightening already used.
+   */
+  protected useBelow(): void {
+    const blob = this.resultBlob();
+    const height = this.realHeight();
+    const width = this.realWidth();
+    if (!blob || !height || !width) return;
+
+    this.handoff.handOver({
+      file: new File([blob], this.downloadName(), { type: 'image/jpeg' }),
+      // Written the way the collection writes a measurement, comma and all,
+      // so the form receives it in the notation it expects rather than one it
+      // has to correct.
+      height: String(height).replace('.', ','),
+      width: String(width).replace('.', ','),
+    });
+    this.handedOver.set(true);
   }
 
   protected reset(): void {
@@ -630,7 +826,7 @@ function breathe(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 }
 
-async function toJpegUrl(image: Raster, rights: Rights | null): Promise<string> {
+async function toJpegBlob(image: Raster, rights: Rights | null): Promise<Blob> {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
   canvas.height = image.height;
@@ -641,10 +837,10 @@ async function toJpegUrl(image: Raster, rights: Rights | null): Promise<string> 
     canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
   );
   if (!blob) throw new Error('The corrected image could not be encoded');
-  if (!rights) return URL.createObjectURL(blob);
+  if (!rights) return blob;
 
   // Header segments only, ahead of the compressed image, so nothing that was
   // just corrected is touched to add them.
   const stamped = withRights(new Uint8Array(await blob.arrayBuffer()), rights);
-  return URL.createObjectURL(new Blob([stamped.buffer as ArrayBuffer], { type: 'image/jpeg' }));
+  return new Blob([stamped.buffer as ArrayBuffer], { type: 'image/jpeg' });
 }

@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { environment } from '@environments/environment';
+import { StudioHandoffService } from '../studio-handoff.service';
 import {
   ARTIST,
   IMAGE_TYPES,
@@ -48,6 +49,7 @@ export interface PendingMint {
 })
 export class MintFormComponent {
   private readonly http = inject(HttpClient);
+  private readonly handoff = inject(StudioHandoffService);
 
   protected readonly mediums = MEDIUMS;
   protected readonly imageTypes = IMAGE_TYPES;
@@ -89,6 +91,18 @@ export class MintFormComponent {
 
   constructor() {
     this.loadWaiting();
+
+    // A photograph corrected above arrives here with the size it was corrected
+    // at, so neither the file nor the measurements are given twice.
+    effect(() => {
+      if (!this.handoff.waiting()) return;
+      const prepared = this.handoff.take();
+      if (!prepared) return;
+      this.photo.set(prepared.file);
+      this.photoName.set(prepared.file.name);
+      this.height.set(prepared.height);
+      this.width.set(prepared.width);
+    });
   }
 
   protected set(which: 'name' | 'description', event: Event): void {

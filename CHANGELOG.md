@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.38.0
+
+- **feat** — the photograph is corrected by hand: brightness, temperature and
+  range, each starting at the photograph as it arrived, with a brush to say
+  where they apply. Nothing brushed means everywhere.
+- **feat** — a corrected photograph and its size go straight to the certificate
+  form, instead of being downloaded and chosen again from disk. Downloading is
+  still there.
+- **chore** — the five automatic corrections are gone. Each measured the
+  photograph and decided for itself, and none could tell a lamp that fell off
+  from paint that is dark.
+
 ## 1.37.2
 
 - **fix** — the end-to-end theme test reaches the toggle through the More menu,

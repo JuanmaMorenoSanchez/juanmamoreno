@@ -1019,3 +1019,39 @@ sorted or matched cleanly.
 under the one spelling the collection uses", "rewrites a dot as a comma rather
 than refusing it" and "takes a half-typed decimal as the whole number it
 already is")
+
+### R81 — The photograph is corrected by hand, not by guesswork · met
+Three sliders — brightness, temperature, range — each sitting at nought on the
+photograph as it arrived, so the starting point is the middle of every one
+rather than an end of it. A brush selects where they apply; nothing selected
+means everywhere, which is the usual case and needs no brushwork at all.
+
+This replaced five checkboxes that each measured the photograph and decided for
+themselves whether to act: the lighting, the glare, the rims, the cast and the
+tonal range. They were removed rather than improved. Every one was trying to
+answer a question it could not — whether a dark corner is a lamp that fell off
+or paint that is dark — and the lighting pass said so in its own comment, and
+was deliberately kept too weak because of the doubt. On a real photograph its
+dark corner needed lifting by about half again and it gave a tenth.
+
+The brush is mapped through the same homography as the pixels, because it is
+used on the photograph while the adjustment lands on the straightened rectangle:
+a mask in the photograph's own coordinates would sit crooked on the result, and
+worst at the corners, which is where a brush is most often wanted.
+*Proven by:* `adjustments.spec.ts` (13 tests, including "keeps the colour while
+changing the light", "leaves green alone, so a warm shift does not become a
+tint", and "fades the adjustment out with the brush, rather than ending it at a
+line") and `selection.spec.ts` (8 tests)
+
+### R82 — A corrected photograph reaches the certificate without a round trip · met
+The corrector hands the finished JPEG and the size it was corrected at straight
+to the form below it. The only way across used to be downloading the file and
+choosing it again from disk — the same bytes out of the browser and back in —
+and retyping the height and width that the straightening had already been given,
+which is one more chance to type them differently.
+
+Downloading is still offered beside it, since a photograph is often wanted for
+something other than a certificate.
+*Proven by:* `studio-handoff.service.ts` and its use in both halves; the size
+travels in the notation the collection writes, comma and all, so the form
+receives what it expects rather than something it has to correct.

@@ -323,3 +323,34 @@
   font-size: 0.78rem;
   color: var(--catalog-faint);
 }
+
+// A slider and the word for where it currently sits. A word rather than a
+// number wherever one is clearer: "warmer" means something on sight, where
+// "+34" has to be read against a scale nobody has been shown.
+.prep-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: tokens.$spacing-sm;
+
+  > span {
+    display: flex;
+    justify-content: space-between;
+    gap: tokens.$spacing-md;
+  }
+
+  em {
+    font-style: normal;
+    opacity: 0.65;
+  }
+
+  input {
+    width: 100%;
+  }
+}
+
+// While the brush is on, the stage is for painting rather than for moving
+// corners, and the cursor should say so before anything is dragged.
+.prep-stage.prep-selecting {
+  cursor: crosshair;
+}

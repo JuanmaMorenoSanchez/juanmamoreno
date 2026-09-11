@@ -35,7 +35,9 @@
       <div
         #stage
         class="prep-stage"
-        (pointermove)="drag($event)"
+        [class.prep-selecting]="selecting()"
+        (pointerdown)="startBrush($event)"
+        (pointermove)="drag($event); brushMove($event)"
         (pointerup)="release()"
         (pointercancel)="release()"
       >
@@ -178,57 +180,74 @@
       </fieldset>
 
       <fieldset class="prep-field">
-        <legend>Also</legend>
-        <label class="prep-check">
-          <input
-            type="checkbox"
-            [checked]="evenLighting()"
-            (change)="evenLighting.set($any($event.target).checked)"
-          />
-          Even out the lighting, if it is uneven
+        <legend>Light and colour</legend>
+        <!--
+          Three sliders, each sitting at nought on the photograph as it arrived.
+          They replaced five checkboxes that measured the photograph and decided
+          for themselves whether to act — and were kept deliberately too weak,
+          because none of them could tell a lamp that fell off from paint that is
+          dark. Whoever is looking at the painting can.
+        -->
+        <label class="prep-slider">
+          <span>Brightness <em>{{ brightness() > 0 ? '+' : '' }}{{ brightness() * 100 | number: '1.0-0' }}</em></span>
+          <input type="range" min="-100" max="100" step="1" [value]="brightness() * 100" (input)="setBrightness($event)" />
         </label>
-        <label class="prep-check">
-          <input
-            type="checkbox"
-            [checked]="takeOutGlare()"
-            (change)="takeOutGlare.set($any($event.target).checked)"
-          />
-          Take out the glare off the varnish
+        <label class="prep-slider">
+          <span>Temperature <em>{{ temperature() < 0 ? 'bluer' : temperature() > 0 ? 'warmer' : 'as shot' }}</em></span>
+          <input type="range" min="-100" max="100" step="1" [value]="temperature() * 100" (input)="setTemperature($event)" />
         </label>
-        <label class="prep-check">
-          <input
-            type="checkbox"
-            [checked]="evenBorders()"
-            (change)="evenBorders.set($any($event.target).checked)"
-          />
-          Even out a shadow or a bright rim along the edges
+        <label class="prep-slider">
+          <span>Range <em>{{ range() < 0 ? 'flatter' : range() > 0 ? 'deeper' : 'as shot' }}</em></span>
+          <input type="range" min="-100" max="100" step="1" [value]="range() * 100" (input)="setRange($event)" />
         </label>
+        @if (anyAdjustment()) {
+          <button type="button" class="prep-link" (click)="resetAdjustments()">Back to as shot</button>
+        }
+      </fieldset>
+
+      <fieldset class="prep-field">
+        <legend>Where they apply</legend>
+        <!--
+          The brush selects and nothing else. Nothing selected is not an empty
+          selection but the absence of one: the sliders then apply everywhere,
+          because a photograph that is too warm is usually too warm all over and
+          painting over the whole of it first would be a chore with no purpose.
+        -->
         <label class="prep-check">
-          <input
-            type="checkbox"
-            [checked]="correctCast()"
-            (change)="correctCast.set($any($event.target).checked)"
-          />
-          Correct the colour temperature, if it is off
+          <input type="checkbox" [checked]="selecting()" (change)="toggleSelecting()" />
+          Brush an area
         </label>
-        <label class="prep-check">
-          <input
-            type="checkbox"
-            [checked]="openTones()"
-            (change)="openTones.set($any($event.target).checked)"
-          />
-          Open the tones back out, if they are flat
-        </label>
+        @if (selecting()) {
+          <label class="prep-slider">
+            <span>Brush size <em>{{ brushRadius() }}%</em></span>
+            <input type="range" min="4" max="60" step="1" [value]="brushRadius()" (input)="setBrushRadius($event)" />
+          </label>
+          <label class="prep-slider">
+            <span>Edge <em>{{ brushSoftness() === 0 ? 'hard' : brushSoftness() + '% soft' }}</em></span>
+            <input type="range" min="0" max="100" step="1" [value]="brushSoftness()" (input)="setBrushSoftness($event)" />
+          </label>
+          <p class="prep-note">
+            Drag on the photograph to select. Hold shift to take a selection back.
+          </p>
+        }
         <p class="prep-note">
-          Each of these is permission rather than instruction: every one measures first and leaves
-          the photograph alone when it is already right. What was done is listed afterwards.
+          {{ hasArea() ? 'The sliders apply to the brushed area only.' : 'Nothing brushed, so the sliders apply to the whole photograph.' }}
+          @if (hasArea()) {
+            <button type="button" class="prep-link" (click)="clearArea()">Select nothing</button>
+          }
         </p>
       </fieldset>
     </div>
 
     <p class="prep-actions">
+      <!--
+        Straightens the perspective, applies whatever the sliders were set to,
+        and hands the result on. It used to say "Flatten it" and end there, with
+        the only way onward being to download the file and upload it again to
+        the form below.
+      -->
       <button type="button" class="prep-go" [disabled]="!canProcess()" (click)="process()">
-        Flatten it
+        Prepare it
       </button>
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
@@ -246,47 +265,16 @@
           {{ done.size.width }} × {{ done.size.height }} px, at the painting's own proportions.
         </li>
         <li>
-          @if (done.equalized) {
-            The lighting fell off by {{ done.illumination.variation * 100 | number: '1.0-0' }}%
-            across the canvas and has been flattened.
-          } @else if (done.illumination.uniform) {
-            The lighting was already even, so it was left alone.
+          <!--
+            What was asked for, rather than what was measured. The five passes
+            that used to report here each decided for themselves whether to act,
+            and the list was an account of those decisions; there are no
+            decisions left to report, only settings.
+          -->
+          @if (done.adjusted) {
+            Adjusted as set{{ hasArea() ? ', over the brushed area' : '' }}.
           } @else {
-            The lighting is uneven, but you asked for it to be left alone.
-          }
-        </li>
-        <li>
-          @if (done.spotsRemoved) {
-            {{ done.spotsRemoved }} bright spot{{ done.spotsRemoved === 1 ? '' : 's' }} filled in,
-            covering {{ done.glareCoverage * 100 | number: '1.0-2' }}% of the surface.
-          } @else {
-            No glare was found.
-          }
-        </li>
-        <li>
-          @if (done.borders.corrected.length) {
-            A rim along {{ borderList(done.borders.corrected) }} was evened out.
-          } @else {
-            The edges carried no shadow or glare of their own.
-          }
-        </li>
-        <li>
-          @if (done.cast.applied) {
-            The photograph leaned {{ done.cast.cast }} by
-            {{ done.cast.strength * 100 | number: '1.0-0' }}%, and has been brought back to neutral.
-          } @else if (done.cast.judged) {
-            The colour temperature was already neutral.
-          } @else {
-            Nothing in the painting is pale enough to judge the colour temperature by, so it was
-            left as photographed.
-          }
-        </li>
-        <li>
-          @if (done.levels.applied) {
-            The tones only reached {{ done.levels.low }} to {{ done.levels.high }} of 255, and have
-            been opened back out.
-          } @else {
-            The tones were already using the range they had.
+            No adjustment asked for, so the colour is exactly as photographed.
           }
         </li>
       </ul>
@@ -302,7 +290,12 @@
 
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
-        <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
+        <p class="prep-actions">
+          <button type="button" class="prep-go" (click)="useBelow()" [disabled]="handedOver()">
+            {{ handedOver() ? 'Sent to the form below' : 'Use it for a certificate' }}
+          </button>
+          <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
+        </p>
         <p class="prep-note">
           JPEG at 95, which discards far less than the camera already did making the file you
           started from.

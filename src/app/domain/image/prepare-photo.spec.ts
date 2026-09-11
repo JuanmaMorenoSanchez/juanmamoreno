@@ -378,11 +378,7 @@ describe('preparePhoto', () => {
     quad: askew,
     realWidth: 100,
     realHeight: 80,
-    equalizeLighting: true,
-    removeGlare: true,
-    evenBorders: true,
-    correctCast: true,
-    openTones: true,
+    adjustments: { brightness: 0, temperature: 0, range: 0 },
   };
 
   it('gives back the painting at its own proportions', async () => {
@@ -401,23 +397,47 @@ describe('preparePhoto', () => {
       },
     });
 
-    expect(seen).toEqual(['straightening', 'lighting', 'glare', 'borders', 'colour', 'focus']);
+    expect(seen).toEqual(['straightening', 'adjusting', 'focus']);
   });
 
-  it('leaves evenly lit paint untouched rather than correcting it anyway', async () => {
-    const { report } = await preparePhoto(photographedPainting(askew), options);
-
-    expect(report.illumination.uniform).toBe(true);
-    expect(report.equalized).toBe(false);
-  });
-
-  it('does not go near the glare when told not to', async () => {
+  /**
+   * The five automatic passes that used to live here were removed rather than
+   * fixed: each measured the photograph and decided for itself whether to act,
+   * and none could tell a lamp that fell off from paint that is dark. What
+   * replaced them does exactly what it is told and nothing when told nothing.
+   */
+  it('changes no colour at all when the sliders are at nought', async () => {
     const source = photographedPainting(askew);
-    disc(source, 200, 150, 4, [255, 255, 255]);
-    const { report } = await preparePhoto(source, { ...options, removeGlare: false });
+    const { image: untouched } = await preparePhoto(source, options);
+    const { image: again } = await preparePhoto(photographedPainting(askew), options);
 
-    expect(report.spotsRemoved).toBe(0);
-    expect(report.glareCoverage).toBe(0);
+    expect(again.data).toEqual(untouched.data);
+  });
+
+  it('says whether anything was asked for', async () => {
+    const plain = await preparePhoto(photographedPainting(askew), options);
+    expect(plain.report.adjusted).toBe(false);
+
+    const lifted = await preparePhoto(photographedPainting(askew), {
+      ...options,
+      adjustments: { brightness: 0.5, temperature: 0, range: 0 },
+    });
+    expect(lifted.report.adjusted).toBe(true);
+  });
+
+  it('lifts the picture when the brightness is raised', async () => {
+    const before = await preparePhoto(photographedPainting(askew), options);
+    const after = await preparePhoto(photographedPainting(askew), {
+      ...options,
+      adjustments: { brightness: 0.6, temperature: 0, range: 0 },
+    });
+
+    const mean = (r: { data: Uint8ClampedArray }) => {
+      let sum = 0;
+      for (let i = 0; i < r.data.length; i += 4) sum += r.data[i];
+      return sum / (r.data.length / 4);
+    };
+    expect(mean(after.image)).toBeGreaterThan(mean(before.image));
   });
 
   it('never enlarges the photograph it was given', async () => {
