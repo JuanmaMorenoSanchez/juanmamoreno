@@ -67,15 +67,21 @@ const PREVIEW_LONG_SIDE = 2000;
 /** Corner finding works on a copy this size, which is all the detail an outline needs. */
 const DETECTION_LONG_SIDE = 720;
 /**
- * JPEG quality for the saved file.
+ * JPEG quality for the saved file. As high as the format goes.
  *
- * The photograph arrived as a camera JPEG and has already been through this
- * once; at ninety-five the second pass throws away far less than the first did,
- * which is the sense in which nothing is lost against the original. PNG would
- * be exactly lossless but writes a couple of hundred megabytes for a forty
- * megapixel painting, and preserves a fidelity the source never had.
+ * It was 0.95, which sounds close to lossless and is not. Measured against the
+ * straightened pixels on a real painting, ninety-five strayed by 1.53 levels on
+ * average and 19 at the worst pixel, and turned a 2.35 MB photograph into 0.50
+ * MB. At maximum the same image is 2.09 MB and strays 0.48 on average, 4 at
+ * worst — below what an eye can find on a flat area.
+ *
+ * Most of that difference is chroma subsampling rather than the quality number:
+ * at 0.95 the encoder throws away half the colour resolution, which on a
+ * painting is exactly the wrong economy. A canvas gives no way to ask for 4:4:4
+ * directly, but encoders stop subsampling at the top of the scale, which is the
+ * other reason to be here rather than a step below it.
  */
-const JPEG_QUALITY = 0.95;
+const JPEG_QUALITY = 1;
 
 /** Where the last size typed in is kept, so the next painting needs no typing. */
 const REMEMBERED_SIZE = 'juanmamoreno.paintingSize';
@@ -724,9 +730,13 @@ export class PhotoPrepComponent {
     const raster: Raster = { width: frame.width, height: frame.height, data: frame.data };
 
     applyAdjustments(raster, adjustments, selection);
-    if (showSelection && selection) tintSelected(raster, selection);
-
     context.putImageData(frame, 0, 0);
+
+    // Drawn on top of the pixels rather than into them, so the next repaint
+    // starts from a photograph with no marquee baked into it.
+    if (showSelection && selection) {
+      outlineSelection(context, selection, canvas.width, canvas.height);
+    }
   }
 
   // --- the sliders -------------------------------------------------------
@@ -753,6 +763,39 @@ export class PhotoPrepComponent {
 
   /** True while the pointer is down and painting rather than moving a corner. */
   private brushing = false;
+
+  /**
+   * Where the brush is and how wide, in percentages of the stage.
+   *
+   * Shown as a ring under the pointer, because the size slider is a number and
+   * a number does not say how much of this painting it covers. Null when the
+   * pointer is not over the stage, so no ring is left behind when it leaves.
+   */
+  protected readonly brushCursor = signal<{ x: number; y: number; size: number } | null>(null);
+
+  protected trackBrush(event: PointerEvent): void {
+    if (!this.selecting()) {
+      this.brushCursor.set(null);
+      return;
+    }
+    const stage = this.stage()?.nativeElement;
+    if (!stage) return;
+    const box = stage.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+
+    // The radius is a share of the picture's long side, and the stage is the
+    // picture, so the same share of the stage's long side draws it true.
+    const longSide = Math.max(box.width, box.height);
+    this.brushCursor.set({
+      x: ((event.clientX - box.left) / box.width) * 100,
+      y: ((event.clientY - box.top) / box.height) * 100,
+      size: ((this.brushRadius() / 100) * longSide * 2) / box.width * 100,
+    });
+  }
+
+  protected leaveBrush(): void {
+    this.brushCursor.set(null);
+  }
 
   protected toggleSelecting(): void {
     this.selecting.update((on) => !on);
@@ -945,29 +988,47 @@ function numberIn(event: Event): number | null {
 }
 
 /**
- * Lays a wash over what the brush has selected.
+ * Marks the edge of the selection, rather than colouring what is inside it.
  *
- * Tinted rather than outlined, and by how much each place is selected rather
- * than whether: a soft brush has no outline to draw, and the fade is the whole
- * point of it. Blue because nothing in a photograph of a painting on a wall is
- * reliably neutral, but a blue wash still reads as "not part of the picture".
+ * A wash over the selected area said clearly enough where it was, and made the
+ * one thing being judged — how the colours look — impossible to judge under it.
+ * So the area is left exactly as it is and only its boundary is drawn.
+ *
+ * The boundary is where coverage passes a half. A soft brush has no edge of its
+ * own, so this is a contour rather than an outline, and it is dashed both
+ * because a broken line reads as a marquee rather than as part of the painting,
+ * and because alternating light and dark keeps it visible on any ground.
  */
-function tintSelected(raster: Raster, selection: Selection): void {
-  const { data, width, height } = raster;
-  for (let y = 0; y < height; y += 1) {
-    const v = ((y + 0.5) / height) * selection.height - 0.5;
-    for (let x = 0; x < width; x += 1) {
-      const u = ((x + 0.5) / width) * selection.width - 0.5;
-      const covered = sampleBilinear(selection.values, selection.width, selection.height, u, v);
-      if (covered <= 0.002) continue;
+function outlineSelection(
+  context: CanvasRenderingContext2D,
+  selection: Selection,
+  width: number,
+  height: number
+): void {
+  const cellW = width / selection.width;
+  const cellH = height / selection.height;
+  const at = (x: number, y: number) =>
+    x < 0 || y < 0 || x >= selection.width || y >= selection.height
+      ? 0
+      : selection.values[y * selection.width + x];
 
-      // Half strength at most, so the painting underneath stays judgeable while
-      // the wash is on it.
-      const wash = covered * 0.45;
-      const i = (y * width + x) * 4;
-      data[i] = data[i] * (1 - wash) + 64 * wash;
-      data[i + 1] = data[i + 1] * (1 - wash) + 132 * wash;
-      data[i + 2] = data[i + 2] * (1 - wash) + 245 * wash;
+  let step = 0;
+  for (let y = 0; y < selection.height; y += 1) {
+    for (let x = 0; x < selection.width; x += 1) {
+      const here = at(x, y) >= 0.5;
+      // Only the cells where the contour actually passes, which is where a
+      // neighbour sits on the other side of a half.
+      const edge =
+        here !== at(x + 1, y) >= 0.5 ||
+        here !== at(x, y + 1) >= 0.5 ||
+        here !== at(x - 1, y) >= 0.5 ||
+        here !== at(x, y - 1) >= 0.5;
+      if (!edge) continue;
+
+      step += 1;
+      if (step % 5 === 0 || step % 5 === 1) continue; // the gaps in the dashes
+      context.fillStyle = step % 10 < 5 ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)';
+      context.fillRect(Math.round(x * cellW), Math.round(y * cellH), Math.max(2, cellW), Math.max(2, cellH));
     }
   }
 }

@@ -354,3 +354,15 @@
 .prep-stage.prep-selecting {
   cursor: crosshair;
 }
+
+// The brush, shown where it is and at the width it would take. Two rings in
+// opposite colours, so it stays visible over a dark painting and a light one.
+.prep-brush-ring {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  outline: 1px solid rgba(0, 0, 0, 0.65);
+}

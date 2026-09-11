@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.38.3
+
+- **fix** — the saved JPEG was encoded at 0.95, which turned a 2.35 MB
+  photograph into 0.50 MB and strayed up to 19 levels from the straightened
+  pixels. At maximum the same image is 2.09 MB and strays 4 at worst.
+- **feat** — the selection is drawn as a dashed contour rather than a blue wash,
+  so the colours underneath can still be judged, and the brush shows a ring at
+  the width it would cover.
+
 ## 1.38.2
 
 - **fix** — the brush selected nothing at all. Every dab was mapped through a

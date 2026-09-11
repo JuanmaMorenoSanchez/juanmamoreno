@@ -37,11 +37,26 @@
         class="prep-stage"
         [class.prep-selecting]="selecting()"
         (pointerdown)="startBrush($event)"
-        (pointermove)="drag($event); brushMove($event)"
+        (pointermove)="drag($event); brushMove($event); trackBrush($event)"
+        (pointerleave)="leaveBrush()"
         (pointerup)="release()"
         (pointercancel)="release()"
       >
         <canvas #preview class="prep-canvas"></canvas>
+        <!--
+          The brush, drawn where it is and at the width it would cover. The size
+          slider gives a number, and a number cannot say how much of this
+          painting it takes.
+        -->
+        @if (brushCursor(); as cursor) {
+          <span
+            class="prep-brush-ring"
+            aria-hidden="true"
+            [style.left.%]="cursor.x"
+            [style.top.%]="cursor.y"
+            [style.width.%]="cursor.size"
+          ></span>
+        }
         <svg
           class="prep-outline"
           [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
