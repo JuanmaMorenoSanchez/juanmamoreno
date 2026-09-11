@@ -25,6 +25,12 @@ type Internals = {
   webStatement: () => string;
   noticePreview: () => string;
   rights: () => { artist: string; notice?: string; webStatement?: string } | null;
+  realWidth: { set(v: number): void };
+  realHeight: { set(v: number): void };
+  selecting: { set(v: boolean): void };
+  brushAt(at: { x: number; y: number }, erase?: boolean): void;
+  hasArea: () => boolean;
+  previewSelection: () => { values: Float32Array } | null;
 };
 
 const QUAD: Quad = [
@@ -174,16 +180,13 @@ describe('PhotoPrepComponent — who the photograph belongs to', () => {
     });
   });
 
-  it('leaves the notice to build itself, so the year is never stale', () => {
+  it('fills the notice in with this year, not the year it was written', () => {
     localStorage.clear();
     const { component } = setup();
 
-    // Empty on purpose: the notice is generated from the name and the current
-    // year, and a literal written in would still say 2026 in 2027.
-    expect(component.notice()).toBe('');
-    expect(component.noticePreview()).toBe(
-      `© ${new Date().getFullYear()} Juanma Moreno Sánchez. All rights reserved.`,
-    );
+    // Worked out at load rather than baked into the source, and never stored
+    // unless it is typed in — so it still says the right year next January.
+    expect(component.notice()).toBe(`© ${new Date().getFullYear()} Juanma Moreno Sánchez`);
   });
 
   it('keeps what was typed over the default', () => {
@@ -201,5 +204,25 @@ describe('PhotoPrepComponent — who the photograph belongs to', () => {
 
     expect(component.artist()).toBe('');
     expect(component.rights()).toBeNull();
+  });
+});
+
+describe('PhotoPrepComponent — brushing an area', () => {
+  it('marks an area as selected, and shows it back in the photograph', () => {
+    const { component } = setup();
+    component.size.set({ width: 400, height: 300 });
+    component.corners.set(QUAD);
+    component.realWidth.set(100);
+    component.realHeight.set(80);
+    component.selecting.set(true);
+
+    // A dab in the middle of the photograph, as a pointer at the centre gives.
+    component.brushAt({ x: 200, y: 150 });
+
+    expect(component.hasArea()).toBe(true);
+    const shown = component.previewSelection();
+    expect(shown).not.toBeNull();
+    const anyCovered = shown ? [...shown.values].some((v) => v > 0.1) : false;
+    expect(anyCovered).toBe(true);
   });
 });

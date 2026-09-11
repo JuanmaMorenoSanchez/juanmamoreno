@@ -39,9 +39,17 @@ function sliderValue(event: Event): number {
   return Math.min(1, Math.max(-1, raw / 100));
 }
 
-/** A point put through a homography. */
+/**
+ * A point put through a homography.
+ *
+ * The solver returns eight numbers, not nine: the ninth is fixed at one, which
+ * is what makes the other eight solvable at all. Reading a `h[8]` that is not
+ * there gives undefined, and every point then maps to NaN — which is not a
+ * visible failure but a silent one, because a dab at NaN simply paints nothing.
+ * `warpPerspective` writes the same `+ 1` a few lines away.
+ */
 function mapThrough(h: Float64Array, point: { x: number; y: number }): { x: number; y: number } {
-  const w = h[6] * point.x + h[7] * point.y + h[8];
+  const w = h[6] * point.x + h[7] * point.y + 1;
   const safe = w === 0 ? 1e-9 : w;
   return {
     x: (h[0] * point.x + h[1] * point.y + h[2]) / safe,
@@ -101,12 +109,25 @@ const STATEMENT_KEY = 'juanmamoreno.studio.webStatement';
  * unattributed if it was not. They are the same every time, so they are the
  * values now.
  *
- * The notice is deliberately not among them. It is generated from the artist
- * and the current year when this is left blank, so writing one out here would
- * freeze the year and quietly start stamping the wrong one every January.
+ * The notice is among them too, and its year is worked out when the page loads
+ * rather than written into the source. Left alone it is never stored, so it
+ * still says the right year next January instead of the one it first appeared
+ * in.
  */
 const DEFAULT_ARTIST = 'Juanma Moreno Sánchez';
 const DEFAULT_STATEMENT = 'https://www.juanmamoreno.com/terms';
+
+/**
+ * The notice, written out rather than derived.
+ *
+ * Worked out when the page loads rather than written into the source, so the
+ * year is this year. It is only ever stored if it is typed in, so a field left
+ * alone goes on saying the right year next January instead of the one it was
+ * first shown in.
+ */
+function defaultNotice(): string {
+  return `© ${new Date().getFullYear()} ${DEFAULT_ARTIST}`;
+}
 
 /**
  * What was typed here last time, or the default when nothing ever was.
@@ -213,7 +234,7 @@ export class PhotoPrepComponent {
    * because it is the same answer every time.
    */
   protected readonly artist = signal(remembered(ARTIST_KEY, DEFAULT_ARTIST));
-  protected readonly notice = signal(remembered(NOTICE_KEY));
+  protected readonly notice = signal(remembered(NOTICE_KEY, defaultNotice()));
   protected readonly webStatement = signal(remembered(STATEMENT_KEY, DEFAULT_STATEMENT));
 
   protected readonly noticePreview = computed(() =>
@@ -767,6 +788,11 @@ export class PhotoPrepComponent {
    */
   protected brush(event: PointerEvent, erase = false): void {
     const at = this.pointIn(event);
+    if (at) this.brushAt(at, erase);
+  }
+
+  /** The same, from a position in the photograph rather than from a pointer. */
+  protected brushAt(at: Point, erase = false): void {
     const corners = this.corners();
     const size = this.size();
     const realWidth = this.realWidth();
@@ -853,6 +879,10 @@ export class PhotoPrepComponent {
       const blob = await toJpegBlob(image, this.rights());
       this.resultBlob.set(blob);
       this.resultUrl.set(URL.createObjectURL(blob));
+      // Straight into the form below, in the same press. Two buttons meant the
+      // second was the one easily forgotten, and forgetting it meant going back
+      // through a download and a file picker for a file already in hand.
+      this.useBelow();
     } catch {
       this.problem.set(
         'The photograph was too large for this browser to hold. Try a smaller copy.'

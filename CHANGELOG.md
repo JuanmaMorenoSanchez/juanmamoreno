@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.38.2
+
+- **fix** — the brush selected nothing at all. Every dab was mapped through a
+  homography read as nine numbers when the solver returns eight, so each landed
+  at NaN and painted silently outside the picture.
+- **chore** — the corner size and straighten-the-sides controls are gone, the
+  rights fields sit below the image controls rather than between them, and the
+  notice comes filled in with this year.
+
 ## 1.38.1
 
 - **feat** — the preview changes as the sliders move, and the brushed area is

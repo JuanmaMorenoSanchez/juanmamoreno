@@ -81,67 +81,6 @@
     </div>
 
     <div class="prep-controls">
-      <fieldset class="prep-field">
-        <legend>Whose it is</legend>
-        <label>
-          Name
-          <input
-            type="text"
-            [value]="artist()"
-            placeholder="Juanma Moreno Sánchez"
-            (input)="setArtist($event)"
-          />
-        </label>
-        <label>
-          Notice
-          <input
-            type="text"
-            [value]="notice()"
-            [placeholder]="noticePreview() || '© year name. All rights reserved.'"
-            (input)="setNotice($event)"
-          />
-        </label>
-        <label>
-          Terms page
-          <input
-            type="text"
-            [value]="webStatement()"
-            placeholder="https://www.juanmamoreno.com/terms"
-            (input)="setWebStatement($event)"
-          />
-        </label>
-        <p class="prep-hint">
-          Written into the file as exif and xmp, which costs nothing in quality. Filled in already
-          — the notice is built from the name and the current year, so leaving it empty keeps it
-          right. Clearing the name sends the photograph out unattributed.
-        </p>
-      </fieldset>
-
-      <fieldset class="prep-field">
-        <legend>Sides</legend>
-        <p class="prep-hint">
-          Drag the small handles to follow a side that the lens has bent. Straight sides change
-          nothing.
-        </p>
-        <button type="button" class="prep-link" (click)="straightenSides()">
-          Straighten the sides
-        </button>
-      </fieldset>
-
-      <fieldset class="prep-field">
-        <legend>Aiming</legend>
-        <label>
-          Corner size
-          <input
-            type="range"
-            [min]="minHandleSize"
-            [max]="maxHandleSize"
-            [value]="handleSize()"
-            (input)="setHandleSize($event)"
-          />
-          {{ handleSize() }} px
-        </label>
-      </fieldset>
 
       <fieldset class="prep-field">
         <legend>The painting itself</legend>
@@ -241,6 +180,42 @@
           Unselect all
         </button>
       </fieldset>
+
+      <fieldset class="prep-field">
+        <legend>Whose it is</legend>
+        <label>
+          Name
+          <input
+            type="text"
+            [value]="artist()"
+            placeholder="Juanma Moreno Sánchez"
+            (input)="setArtist($event)"
+          />
+        </label>
+        <label>
+          Notice
+          <input
+            type="text"
+            [value]="notice()"
+            [placeholder]="noticePreview() || '© year name. All rights reserved.'"
+            (input)="setNotice($event)"
+          />
+        </label>
+        <label>
+          Terms page
+          <input
+            type="text"
+            [value]="webStatement()"
+            placeholder="https://www.juanmamoreno.com/terms"
+            (input)="setWebStatement($event)"
+          />
+        </label>
+        <p class="prep-hint">
+          Written into the file as exif and xmp, which costs nothing in quality. Filled in already
+          — the notice is built from the name and the current year, so leaving it empty keeps it
+          right. Clearing the name sends the photograph out unattributed.
+        </p>
+      </fieldset>
     </div>
 
     <p class="prep-actions">
@@ -252,7 +227,7 @@
         encoded — none of which can happen forty times a second under a slider.
       -->
       <button type="button" class="prep-go" [disabled]="!canProcess()" (click)="process()">
-        Straighten and finish
+        Preview and prepopulate
       </button>
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
@@ -296,9 +271,9 @@
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
         <p class="prep-actions">
-          <button type="button" class="prep-go" (click)="useBelow()" [disabled]="handedOver()">
-            {{ handedOver() ? 'Sent to the form below' : 'Use it for a certificate' }}
-          </button>
+          @if (handedOver()) {
+            <span class="prep-sharp">Ready in the certificate form below.</span>
+          }
           <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
         </p>
         <p class="prep-note">
