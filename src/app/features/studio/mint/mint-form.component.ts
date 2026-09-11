@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { environment } from '@environments/environment';
 import { StudioHandoffService } from '../studio-handoff.service';
 import {
@@ -42,7 +43,7 @@ export interface PendingMint {
  */
 @Component({
   selector: 'app-mint-form',
-  imports: [MatIcon],
+  imports: [RouterLink, MintGateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mint-form.component.html',
   styleUrl: './mint-form.component.scss',
@@ -136,7 +137,15 @@ export class MintFormComponent {
     this.photoName.set(file?.name ?? '');
   }
 
-  protected async prepare(): Promise<void> {
+  /**
+   * Prepares the certificate, and either leaves it waiting or writes it now.
+   *
+   * Preparing is the same either way — the images are made and stored and the
+   * metadata written down — so the only difference is whether the chain is asked
+   * afterwards. Saving is the ordinary case: gas is the whole of what a
+   * certificate costs, and nothing about a finished painting is urgent.
+   */
+  protected async prepare(mintNow = false): Promise<void> {
     const file = this.photo();
     if (!file || !this.ready()) return;
 
@@ -160,6 +169,21 @@ export class MintFormComponent {
       this.prepared.set(result ?? null);
       this.reset();
       this.loadWaiting();
+
+      if (mintNow) {
+        const written = await this.http
+          .post<{ minted: number[]; skipped: string }>(
+            `${environment.backendUrl}/mint/pending/mint`,
+            {}
+          )
+          .toPromise();
+        if (!written?.minted.length) {
+          this.error.set(
+            `Prepared and waiting, but not written${written?.skipped ? ` — ${written.skipped}` : ''}.`
+          );
+        }
+        this.loadWaiting();
+      }
     } catch (failure: unknown) {
       const message = (failure as { error?: { message?: string } })?.error?.message;
       this.error.set(message ?? 'The api could not prepare that. Nothing was stored.');

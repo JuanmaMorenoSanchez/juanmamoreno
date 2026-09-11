@@ -1,8 +1,9 @@
 <section class="mint">
   <h2 class="mint-heading">New certificate</h2>
   <p class="mint-intro">
-    Everything here is prepared on the server and signed from your wallet. Nothing
-    is written to the chain from this page.
+    The images and the metadata are prepared on the server either way. Saving
+    leaves the certificate for the night's work to write on the first cheap
+    morning; minting asks the chain now.
   </p>
 
   <div class="mint-grid">
@@ -113,13 +114,23 @@
     <p class="mint-error">{{ error() }}</p>
   }
 
-  <button type="button" class="mint-button" [disabled]="!ready()" (click)="prepare()">
-    @if (busy()) {
-      Preparing…
-    } @else {
-      Prepare certificate
-    }
-  </button>
+  <!--
+    Two ways out, and the difference is only when. Saving puts the certificate on
+    the list the night's work writes from as soon as gas is cheap; minting does
+    it now, and is refused while gas is dear because the price is the whole of
+    what a certificate costs.
+  -->
+  <div class="mint-choices">
+    <button type="button" class="mint-button" [disabled]="!ready()" (click)="prepare(false)">
+      @if (busy()) {
+        Saving…
+      } @else {
+        Save for later
+      }
+    </button>
+
+    <app-mint-gate label="Mint now" [disabled]="!ready()" (mint)="prepare(true)" />
+  </div>
 
   @if (prepared(); as done) {
     <div class="prepared">
@@ -131,39 +142,15 @@
       />
       <p class="prepared-desc">{{ done.description }}</p>
       <p class="prepared-note">
-        Prepared and stored. It is written to the chain by running the mint script,
-        which signs with your wallet:
+        Prepared and stored. It is written when gas is cheap — tonight on its own,
+        or now from <a routerLink="/pendingmint">the waiting list</a>.
       </p>
-      <code class="prepared-command">npm run mint --prefix ../juanmamoreno-contracts</code>
     </div>
   }
 
   @if (waiting().length) {
-    <div class="waiting">
-      <h3>Waiting to be signed ({{ waiting().length }})</h3>
-      <ul class="waiting-list">
-        @for (mint of waiting(); track mint.tokenId) {
-          <li class="waiting-item">
-            <img
-              class="waiting-thumb"
-              [src]="'data:image/jpeg;base64,' + mint.thumbnailBase64"
-              [alt]="mint.name"
-            />
-            <span class="waiting-what">
-              <strong>{{ mint.tokenId }}</strong> {{ mint.name }}
-              <em>{{ mint.description }}</em>
-            </span>
-            <button
-              type="button"
-              class="waiting-discard"
-              (click)="discard(mint.tokenId)"
-              [attr.aria-label]="'Discard ' + mint.name"
-            >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </li>
-        }
-      </ul>
-    </div>
+    <p class="mint-intro">
+      <a routerLink="/pendingmint">{{ waiting().length }} waiting to be written</a>
+    </p>
   }
 </section>

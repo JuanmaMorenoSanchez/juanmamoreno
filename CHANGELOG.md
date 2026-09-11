@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.39.0
+
+- **feat** — the price of gas is shown beside every mint button and refreshed
+  every fifteen seconds. Above 0.7 gwei it says **Too expensive!** and the
+  button will not press: writing a certificate is about three quarters of a
+  million gas, so the price of gas is the whole of what one costs.
+- **feat** — a certificate can be saved for later instead of written now. The
+  night's work writes whatever is waiting, and only while gas is under the same
+  0.7 gwei.
+- **feat** — `/pendingmint`, behind the admin guard, lists what is waiting with
+  the live price at the top, a button to write them all, and a way to discard
+  one. Written certificates leave the list.
+
 ## 1.38.3
 
 - **fix** — the saved JPEG was encoded at 0.95, which turned a 2.35 MB

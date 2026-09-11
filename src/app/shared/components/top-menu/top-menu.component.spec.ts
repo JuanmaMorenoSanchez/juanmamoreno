@@ -202,7 +202,12 @@ describe('TopMenuComponent workshop menu', () => {
     const trigger = openMore();
 
     expect(trigger?.textContent).toContain('Admin');
-    expect(itemsOf(trigger)).toEqual(['Studio', 'Reels waiting', 'Sign out']);
+    expect(itemsOf(trigger)).toEqual([
+      'Studio',
+      'Reels waiting',
+      'Certificates waiting',
+      'Sign out',
+    ]);
   });
 
   it('links each of them to its own address', async () => {
@@ -213,7 +218,7 @@ describe('TopMenuComponent workshop menu', () => {
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
       a.getAttribute('href'),
     );
-    expect(links).toEqual(['/studio', '/publish']);
+    expect(links).toEqual(['/studio', '/publish', '/pendingmint']);
   });
 
   it('signs out from inside it', async () => {

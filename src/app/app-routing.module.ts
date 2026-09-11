@@ -135,6 +135,16 @@ export const routes: Routes = [
       import('@features/publish/publish.component').then((m) => m.PublishComponent),
     data: { title: 'Publish', hideBreadcrumb: true, noindex: true },
   },
+  // The certificates that are ready and not yet written. His, like the studio
+  // and the reels: not a page, and never offered to a reader.
+  {
+    path: 'pendingmint',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/pending-mint/pending-mint.component').then((m) => m.PendingMintComponent),
+    data: { title: 'Pending mints', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/pendingmint', redirectTo: '/pendingmint' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

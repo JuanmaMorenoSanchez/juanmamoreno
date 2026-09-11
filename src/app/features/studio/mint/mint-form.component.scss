@@ -202,3 +202,13 @@
 .waiting-discard:hover {
   opacity: 1;
 }
+
+// Save and mint, side by side: the same preparation either way, differing only
+// in whether the chain is asked now or on the first cheap morning.
+.mint-choices {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+}

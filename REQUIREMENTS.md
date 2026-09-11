@@ -1055,3 +1055,33 @@ something other than a certificate.
 *Proven by:* `studio-handoff.service.ts` and its use in both halves; the size
 travels in the notation the collection writes, comma and all, so the form
 receives what it expects rather than something it has to correct.
+
+### R83 — A certificate is never written while gas is expensive · met
+The price of gas is read every fifteen seconds and shown beside the button that
+would spend it. Above 0.7 gwei the button says **Too expensive!** and refuses,
+and so does the night's work, which checks again before each certificate rather
+than once at the start — gas rose ninefold in the middle of the original
+migration, which is exactly the case a single check at the start cannot catch.
+
+The button also refuses before the first price has arrived: not knowing the
+price is not the same as the price being low.
+*Proven by:* `mint-gate.component.spec.ts` (9 tests, including "says so plainly
+and refuses when gas is dear", "refuses at anything above the limit, not merely
+far above it", "allows exactly the limit" and "refuses before the first price has
+arrived"). The night's work enforces the same number in the backend, as B34
+there.
+
+### R84 — A certificate can wait for a cheap morning · met
+Preparing and writing are separate. **Save for later** stores the prepared
+certificate, images and all, and the last step of every cron run writes whatever
+is waiting while gas is cheap. `/pendingmint` is the same list by hand, behind
+the admin guard: what is waiting, the live price, one button to write them, and
+a way to discard one that was a mistake.
+
+A certificate leaves the list only once its transaction has landed. Removed any
+earlier it would be gone from both places at once.
+*Proven by:* `pending-mint.component.ts`, reached only through `adminOnly` in
+`app-routing.module.ts` and, like the studio, listed in `app.routes.server.ts` as
+client-rendered so no copy of it is ever written into the published site. The
+waiting and the writing are the backend's B34.
+

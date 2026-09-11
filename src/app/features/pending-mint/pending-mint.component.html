@@ -1,0 +1,56 @@
+<div class="container margin-top pending">
+  <h1 class="catalog-heading">Waiting to be written</h1>
+
+  <!--
+    The price sits beside the button because it is the whole of what this costs:
+    the same certificate is a few pence on a quiet morning and several pounds on
+    a busy afternoon. The night's work makes the same judgement on its own.
+  -->
+  <app-mint-gate
+    label="Write them now"
+    [disabled]="busy() || !waiting().length"
+    (mint)="mintAll()"
+  />
+
+  @if (busy()) {
+    <p class="pending-note">Writing…</p>
+  }
+  @if (outcome()) {
+    <p class="pending-note">{{ outcome() }}</p>
+  }
+  @if (problem()) {
+    <p class="pending-problem" role="alert">{{ problem() }}</p>
+  }
+
+  @if (waiting().length) {
+    <ul class="pending-list">
+      @for (mint of waiting(); track mint.tokenId) {
+        <li class="pending-item">
+          <img
+            class="pending-thumb"
+            [src]="'data:image/jpeg;base64,' + mint.thumbnailBase64"
+            [alt]="mint.name"
+          />
+          <span class="pending-what">
+            <strong>{{ mint.tokenId }} · {{ mint.name }}</strong>
+            <em>{{ mint.description }}</em>
+            <small>
+              {{ trait(mint, 'Medium') }} · {{ trait(mint, 'Height') }} ×
+              {{ trait(mint, 'Width') }} {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
+            </small>
+          </span>
+          <button
+            type="button"
+            class="pending-discard"
+            (click)="discard(mint.tokenId)"
+            [attr.aria-label]="'Discard ' + mint.name"
+          >
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="pending-note">Nothing is waiting. Prepare a certificate in the studio.</p>
+  }
+</div>
