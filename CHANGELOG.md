@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.36.1
+
+- **fix** — the grid softens a tile while it is still showing the picture the
+  certificate carries. That image is about 112px, so at tile size it was sharp
+  and pixelated, which reads as a bad photograph rather than as one loading.
+
 ## 1.36.0
 
 - **feat** — the catalogue comes from the certificates on Ethereum, which carry

@@ -84,7 +84,28 @@ mat-card {
   // Kept at 1.1 rather than raised: every extra bit of scale is another bit of
   // the painting cropped away, on two hundred of them.
   transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
-  transition: transform 0.2s ease-out;
+  transition:
+    transform 0.2s ease-out,
+    filter 0.45s ease;
+}
+
+// While the tile is still showing the image carried inside the certificate —
+// about 112px, and free, which is why it paints first — it is softened rather
+// than shown sharp and pixelated. The existing scale(1.1) and the card's
+// overflow already hide the edges a blur pulls in, so no extra scale is needed.
+//
+// The transition is on .front-image above rather than here, so removing the
+// class fades the blur away instead of snapping it off.
+.front-image.awaiting-sharper {
+  filter: blur(6px);
+}
+
+// A reader who has asked for less movement is asking about motion, not focus:
+// the blur is a state, not an animation, so it stays. Only the fade goes.
+@media (prefers-reduced-motion: reduce) {
+  .front-image {
+    transition: none;
+  }
 }
 
 .container {

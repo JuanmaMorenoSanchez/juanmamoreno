@@ -126,11 +126,20 @@
                   imgThumbUrls().get(artPiece.tokenId) ?? artPiece.image.thumbnailUrl;
                   as thumbUrl
                 ) {
+                  <!--
+                  Blurred while the picture on screen is still the one carried
+                  inside the certificate. That image is about 112 pixels wide —
+                  it costs no request at all, which is why it is the first
+                  paint, but at tile size it is visibly pixelated. Softening it
+                  reads as an image still arriving rather than a bad photograph,
+                  and it sharpens the moment the race produces anything better.
+                -->
                   <img
                     class="front-image"
                     mat-card-image
                     decoding="async"
                     draggable="false"
+                    [class.awaiting-sharper]="thumbUrl === artPiece.image.thumbnailUrl"
                     [src]="thumbUrl"
                     [alt]="artPiece.name + ' — painting by Juanma Moreno Sánchez'"
                   />

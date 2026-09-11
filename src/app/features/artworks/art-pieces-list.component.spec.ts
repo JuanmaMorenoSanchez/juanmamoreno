@@ -6,7 +6,7 @@ import { VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { provideTranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, EMPTY, of } from 'rxjs';
 import { afterAll, beforeAll, vi } from 'vitest';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
@@ -533,5 +533,48 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
     fixture.detectChanges();
 
     expect(shown(fixture)).toHaveLength(3);
+  });
+});
+
+/**
+ * The tile softens the picture it starts with, and sharpens when a better one
+ * arrives.
+ *
+ * The image carried inside the certificate is about 112 pixels wide. It costs
+ * no request at all, which is why it is the first thing on screen, but at tile
+ * size it is plainly pixelated — and a pixelated painting reads as a bad
+ * photograph rather than as one still loading. Blurring it says "arriving".
+ */
+describe('while the tile is still showing the smallest picture', () => {
+  // The tiles only load their image once the lazy-load directive reports them
+  // visible, and that needs the same stub the suite above installs.
+  beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+  afterAll(() => vi.unstubAllGlobals());
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('softens the image the certificate carries', () => {
+    const { fixture, artworkService } = setup();
+    // The race produces nothing, so the tile keeps its starting picture.
+    artworkService.getProgressiveImageUrls = () => EMPTY;
+
+    artworkService.artPieces$.next([makeNft('1', 'First piece')]);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img.front-image');
+    expect(img).toBeTruthy();
+    expect(img.getAttribute('src')).toBe('https://example.test/1-thumb.jpg');
+    expect(img.classList.contains('awaiting-sharper')).toBe(true);
+  });
+
+  it('sharpens as soon as the race produces anything better', () => {
+    const { fixture, artworkService } = setup();
+
+    artworkService.artPieces$.next([makeNft('1', 'First piece')]);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img.front-image');
+    // The default stub emits a larger copy immediately.
+    expect(img.getAttribute('src')).toBe('https://example.test/1-preview.jpg');
+    expect(img.classList.contains('awaiting-sharper')).toBe(false);
   });
 });
