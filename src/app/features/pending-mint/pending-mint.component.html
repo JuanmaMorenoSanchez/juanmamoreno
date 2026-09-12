@@ -19,8 +19,9 @@
   -->
   @if (!wallet.available()) {
     <p class="pending-note">
-      To sign a certificate yourself, open this page inside your wallet app’s
-      browser. The button appears once there is a wallet on the page.
+      To sign a certificate yourself, open this page where your wallet is —
+      <a [href]="inBaseApp" rel="noopener">open it in the Base app</a> — and a Sign button appears
+      beside each one.
     </p>
   }
 
@@ -47,8 +48,8 @@
             <strong>{{ mint.tokenId }} · {{ mint.name }}</strong>
             <em>{{ mint.description }}</em>
             <small>
-              {{ trait(mint, 'Medium') }} · {{ trait(mint, 'Height') }} ×
-              {{ trait(mint, 'Width') }} {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
+              {{ trait(mint, 'Medium') }} · {{ trait(mint, 'Height') }} × {{ trait(mint, 'Width') }}
+              {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
             </small>
           </span>
           @if (wallet.available()) {

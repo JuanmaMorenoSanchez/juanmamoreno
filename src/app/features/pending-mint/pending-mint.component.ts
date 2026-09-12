@@ -24,6 +24,16 @@ export class PendingMintComponent {
   private readonly api = inject(MintApiService);
   protected readonly wallet = inject(WalletService);
 
+  /**
+   * Opens this page inside the Base app's own browser, where the wallet is.
+   *
+   * A plain link rather than a connector library: the app registers this
+   * address and hands whatever follows to its browser, which puts the wallet on
+   * the page. Nothing is installed and nobody's relay is involved.
+   */
+  protected readonly inBaseApp =
+    'https://go.cb-w.com/dapp?cb_url=' + encodeURIComponent('https://juanmamoreno.com/pendingmint');
+
   protected readonly waiting = signal<PendingMint[]>([]);
   protected readonly busy = signal(false);
   protected readonly outcome = signal('');

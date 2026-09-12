@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.41.1
+
+- **feat** — a link that opens the waiting list inside the Base app's own
+  browser, where the wallet is. A plain link the app registers, so nothing is
+  installed and no relay is involved.
+
 ## 1.41.0
 
 - **feat** — a certificate can be signed from the phone. Opened inside a wallet
