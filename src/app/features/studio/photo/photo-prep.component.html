@@ -163,6 +163,16 @@
           <span>Range <em>{{ range() < 0 ? 'flatter' : range() > 0 ? 'deeper' : 'as shot' }}</em></span>
           <input type="range" min="-100" max="100" step="1" [value]="range() * 100" (input)="setRange($event)" />
         </label>
+        @if (keptCount()) {
+          <!--
+            Said out loud because it is the thing that was surprising: a change
+            is kept where it was made, and the sliders start again, so the next
+            selection gets its own.
+          -->
+          <em class="prep-kept">
+            {{ keptCount() }} earlier change{{ keptCount() === 1 ? '' : 's' }} kept where it was made
+          </em>
+        }
         @if (anyAdjustment()) {
           <button type="button" class="prep-link" (click)="resetAdjustments()">Back to as shot</button>
         }

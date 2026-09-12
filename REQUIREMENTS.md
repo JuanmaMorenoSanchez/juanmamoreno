@@ -1004,7 +1004,18 @@ The finest brush is one percent of the long side, and no brush can paint nothing
 The mask is 128 cells across however large the photograph is, so a fine enough
 dab can fall between four cell centres, reach none of them and report nothing
 wrong — which looks exactly like a brush that is broken.
-*Proven by:* `adjustments.spec.ts` (13 tests, including "keeps the colour while
+Each change is kept where it was made. The sliders describe one change to
+whatever is selected now, and that alone meant a correction followed the brush:
+brightening one corner and then selecting another carried the brightening across
+and left the first as it was. A change is committed the moment the selection is
+about to differ — at the start of a stroke, never during one, so extending a
+selection in a single movement goes on refining the same change — and the
+sliders start again from nothing. The preview shows them stacked, as the saved
+file will.
+*Proven by:* `prepare-photo.spec.ts` — "keeps an earlier change where it was
+made when a later one is made elsewhere", which lifts opposite corners in turn
+and finds both lifted; it fails when the changes are collapsed back into one.
+Also `adjustments.spec.ts` (13 tests, including "keeps the colour while
 changing the light", "leaves green alone, so a warm shift does not become a
 tint", and "fades the adjustment out with the brush, rather than ending it at a
 line"); `selection.spec.ts` (9 tests, including "takes a selection back rather

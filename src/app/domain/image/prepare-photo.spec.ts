@@ -3,6 +3,7 @@ import { correctedSize, type Point, type Quad } from './quad';
 import { detectQuad } from './detect-corners';
 import { solveHomography, warpPerspective } from './perspective';
 import { checkFocus } from './focus';
+import { createSelection, paintDab } from './selection';
 import { preparePhoto, type PhotoStage } from './prepare-photo';
 
 type Rgb = [number, number, number];
@@ -184,7 +185,7 @@ describe('preparePhoto', () => {
     quad: askew,
     realWidth: 100,
     realHeight: 80,
-    adjustments: { brightness: 0, temperature: 0, range: 0 },
+    edits: [],
   };
 
   it('gives back the painting at its own proportions', async () => {
@@ -226,7 +227,7 @@ describe('preparePhoto', () => {
 
     const lifted = await preparePhoto(photographedPainting(askew), {
       ...options,
-      adjustments: { brightness: 0.5, temperature: 0, range: 0 },
+      edits: [{ adjustments: { brightness: 0.5, temperature: 0, range: 0 }, selection: null }],
     });
     expect(lifted.report.adjusted).toBe(true);
   });
@@ -235,7 +236,7 @@ describe('preparePhoto', () => {
     const before = await preparePhoto(photographedPainting(askew), options);
     const after = await preparePhoto(photographedPainting(askew), {
       ...options,
-      adjustments: { brightness: 0.6, temperature: 0, range: 0 },
+      edits: [{ adjustments: { brightness: 0.6, temperature: 0, range: 0 }, selection: null }],
     });
 
     const mean = (r: { data: Uint8ClampedArray }) => {
@@ -244,6 +245,36 @@ describe('preparePhoto', () => {
       return sum / (r.data.length / 4);
     };
     expect(mean(after.image)).toBeGreaterThan(mean(before.image));
+  });
+
+  it('keeps an earlier change where it was made when a later one is made elsewhere', async () => {
+    // The fault this replaces: the sliders described one change to whatever was
+    // selected at that moment, so brightening one corner and then selecting
+    // another carried the brightening across and left the first as it was. The
+    // correction followed the brush around instead of staying put.
+    const left = createSelection(100, 80);
+    paintDab(left, { width: 100, height: 80 }, { x: 12, y: 40, radius: 12, softness: 0 });
+    const right = createSelection(100, 80);
+    paintDab(right, { width: 100, height: 80 }, { x: 88, y: 40, radius: 12, softness: 0 });
+
+    const { image } = await preparePhoto(photographedPainting(askew), {
+      ...options,
+      edits: [
+        { adjustments: { brightness: 0.8, temperature: 0, range: 0 }, selection: left },
+        { adjustments: { brightness: 0.8, temperature: 0, range: 0 }, selection: right },
+      ],
+    });
+    const { image: plain } = await preparePhoto(photographedPainting(askew), options);
+
+    const brightnessAt = (r: { data: Uint8ClampedArray; width: number }, xShare: number) => {
+      const y = Math.floor(r.data.length / 4 / r.width / 2);
+      const x = Math.floor(r.width * xShare);
+      return r.data[(y * r.width + x) * 4];
+    };
+
+    // Both ends lifted, not just the one selected last.
+    expect(brightnessAt(image, 0.08)).toBeGreaterThan(brightnessAt(plain, 0.08));
+    expect(brightnessAt(image, 0.92)).toBeGreaterThan(brightnessAt(plain, 0.92));
   });
 
   it('never enlarges the photograph it was given', async () => {

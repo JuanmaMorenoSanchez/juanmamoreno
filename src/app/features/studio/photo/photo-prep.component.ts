@@ -6,6 +6,7 @@ import {
   preparePhoto,
   type PhotoStage,
   type PreparePhotoReport,
+  type PhotoEdit,
 } from '@domain/image/prepare-photo';
 import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
 import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-source';
@@ -152,11 +153,11 @@ export class PhotoPrepComponent {
     effect(() => {
       const canvas = this.previewCanvas()?.nativeElement;
       const photo = this.photo();
-      const adjustments = this.adjustments();
+      const edits = this.previewEdits();
       const selection = this.previewSelection();
       const showing = this.selecting() || this.hasArea();
       if (!canvas || !photo) return;
-      this.repaint(canvas, adjustments, selection, showing);
+      this.repaint(canvas, edits, selection, showing);
     });
   }
 
@@ -264,7 +265,64 @@ export class PhotoPrepComponent {
     range: this.range(),
   }));
 
-  protected readonly anyAdjustment = computed(() => !isUnchanged(this.adjustments()));
+  /**
+   * The changes already made and kept, oldest first.
+   *
+   * The sliders describe one change to whatever is selected now. That alone
+   * meant a correction followed the brush: brighten one corner, select another,
+   * and the brightening moved with the selection and left the first corner as
+   * it was. So a change is committed here the moment the selection is about to
+   * differ, and the sliders start again from nothing.
+   */
+  private readonly edits = signal<PhotoEdit[]>([]);
+
+  /** How many changes are already kept, so the page can say so. */
+  protected readonly keptCount = computed(() => this.edits().length);
+
+  protected readonly anyAdjustment = computed(
+    () => this.edits().length > 0 || !isUnchanged(this.adjustments())
+  );
+
+  /**
+   * Everything done so far, with whatever the sliders are showing last.
+   *
+   * The pending one is not committed until the selection changes, so that
+   * moving a slider back and forth refines it rather than piling up a change
+   * for every pixel of travel.
+   */
+  private readonly allEdits = computed<PhotoEdit[]>(() => {
+    const pending = this.adjustments();
+    const kept = this.edits();
+    if (isUnchanged(pending)) return kept;
+    return [...kept, { adjustments: pending, selection: this.hasArea() ? this.selection() : null }];
+  });
+
+  /**
+   * Keeps what the sliders currently say, and starts them again.
+   *
+   * Called just before the selection changes — nothing is committed while a
+   * stroke is still being drawn, so extending a selection in one movement goes
+   * on refining the same change rather than splitting it in two.
+   */
+  private commitPending(): void {
+    if (isUnchanged(this.adjustments())) return;
+    const selection = this.hasArea() ? this.selection() : null;
+    this.edits.update((kept) => [
+      ...kept,
+      {
+        adjustments: this.adjustments(),
+        // Copied, because the brush goes on painting into the live one.
+        selection: selection
+          ? {
+              values: new Float32Array(selection.values),
+              width: selection.width,
+              height: selection.height,
+            }
+          : null,
+      },
+    ]);
+    this.zeroSliders();
+  }
 
   /**
    * Everything about selecting an area, kept in one object of its own.
@@ -621,9 +679,15 @@ export class PhotoPrepComponent {
    * before it is straightened, so to tint the right pixels the mask has to come
    * back the other way — through the inverse of the same homography.
    */
-  private readonly previewSelection = computed<Selection | null>(() => {
-    this.brushTool.version();
-    const selection = this.selection();
+  /**
+   * A selection painted on the straightened rectangle, drawn where it belongs on
+   * the photograph.
+   *
+   * The brush paints into the rectangle the photograph becomes, because that is
+   * where the adjustment lands. The preview shows the photograph itself, so the
+   * mask has to come back through the same homography to be drawn on it.
+   */
+  private inPhotoSpace(selection: Selection | null): Selection | null {
     const corners = this.corners();
     const size = this.size();
     const realWidth = this.realWidth();
@@ -661,7 +725,24 @@ export class PhotoPrepComponent {
       }
     }
     return inPhoto;
+  }
+
+  /** The current selection, ready to be drawn on the preview. */
+  private readonly previewSelection = computed<Selection | null>(() => {
+    this.brushTool.version();
+    return this.inPhotoSpace(this.selection());
   });
+
+  /**
+   * Every change so far, with each one's selection put back where it belongs on
+   * the photograph, so the preview can show them stacked as the file will.
+   */
+  private readonly previewEdits = computed<PhotoEdit[]>(() =>
+    this.allEdits().map((edit) => ({
+      adjustments: edit.adjustments,
+      selection: this.inPhotoSpace(edit.selection),
+    }))
+  );
 
   /**
    * Redraws the preview with the sliders applied, and the selection shown.
@@ -673,7 +754,7 @@ export class PhotoPrepComponent {
    */
   private repaint(
     canvas: HTMLCanvasElement,
-    adjustments: Adjustments,
+    edits: PhotoEdit[],
     selection: Selection | null,
     showSelection: boolean
   ): void {
@@ -688,7 +769,10 @@ export class PhotoPrepComponent {
     );
     const raster: Raster = { width: frame.width, height: frame.height, data: frame.data };
 
-    applyAdjustments(raster, adjustments, selection);
+    // Every change so far, in order, each onto the result of the last — so the
+    // preview shows what the finished file will show rather than only the
+    // change being made at this moment.
+    for (const edit of edits) applyAdjustments(raster, edit.adjustments, edit.selection);
     context.putImageData(frame, 0, 0);
 
     // Drawn on top of the pixels rather than into them, so the next repaint
@@ -712,7 +796,19 @@ export class PhotoPrepComponent {
     this.range.set(sliderValue(event));
   }
 
+  /**
+   * Back to the photograph as it arrived.
+   *
+   * Everything, not only the sliders as they stand: changes are kept as the
+   * selection moves, so a button promising the photograph as shot has to
+   * discard those too or it would be promising something it does not do.
+   */
   protected resetAdjustments(): void {
+    this.edits.set([]);
+    this.zeroSliders();
+  }
+
+  private zeroSliders(): void {
     this.brightness.set(0);
     this.temperature.set(0);
     this.range.set(0);
@@ -764,6 +860,7 @@ export class PhotoPrepComponent {
   }
 
   protected clearArea(): void {
+    this.commitPending();
     this.brushTool.clear();
   }
 
@@ -801,6 +898,9 @@ export class PhotoPrepComponent {
 
   protected startBrush(event: PointerEvent): void {
     if (!this.selecting()) return;
+    // The selection is about to differ, so whatever the sliders say belongs to
+    // the selection as it is now, not as it is about to become.
+    this.commitPending();
     this.brushing = true;
     this.brush(event, this.brushTool.erases(event.shiftKey || event.button === 2));
   }
@@ -839,8 +939,7 @@ export class PhotoPrepComponent {
         bows: this.bows() ?? undefined,
         realWidth,
         realHeight,
-        adjustments: this.adjustments(),
-        selection: this.hasArea() ? this.selection() : null,
+        edits: this.allEdits(),
         onStage: async (stage) => {
           this.busy.set(stage);
           await breathe();
@@ -897,6 +996,12 @@ export class PhotoPrepComponent {
     this.corners.set(null);
     this.problem.set('');
     this.busy.set(null);
+    this.source.set(null);
+    // Changes belong to the photograph they were made to, and the brush's mask
+    // is measured in that photograph's straightened rectangle. Carried into the
+    // next one they would land somewhere arbitrary.
+    this.resetAdjustments();
+    this.brushTool.clear();
   }
 
   private releaseResult(): void {

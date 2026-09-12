@@ -7,6 +7,13 @@ import type { Raster, Size } from './raster';
 
 export type PhotoStage = 'straightening' | 'adjusting' | 'focus';
 
+/** One change, and the part of the picture it was made to. */
+export interface PhotoEdit {
+  adjustments: Adjustments;
+  /** Where it applies. Null means the whole picture. */
+  selection: Selection | null;
+}
+
 export interface PreparePhotoOptions {
   /** Where the painting's corners sit in the photograph. */
   quad: Quad;
@@ -15,10 +22,19 @@ export interface PreparePhotoOptions {
   /** The painting itself, in whatever unit — only the ratio between them is read. */
   realWidth: number;
   realHeight: number;
-  /** How far each slider was moved. Zero everywhere leaves the picture alone. */
-  adjustments: Adjustments;
-  /** Where they apply. Absent means everywhere. */
-  selection?: Selection | null;
+  /**
+   * The changes made, in the order they were made.
+   *
+   * A list rather than one set of slider positions, because the sliders apply
+   * to whatever is selected and the selection moves. Held as a single change,
+   * brightening one corner and then selecting another would carry the
+   * brightening across to the second and undo it on the first — the correction
+   * followed the brush around instead of staying where it was put.
+   *
+   * Each is applied to the result of the one before, so they accumulate the way
+   * the person making them expects: what was done stays done.
+   */
+  edits: PhotoEdit[];
   /**
    * Awaited between stages. A forty megapixel photograph takes long enough that
    * without this the tab would sit frozen with nothing on screen to say why.
@@ -60,7 +76,7 @@ export async function preparePhoto(
   source: Raster,
   options: PreparePhotoOptions
 ): Promise<PreparedPhoto> {
-  const { quad, bows, realWidth, realHeight, adjustments, selection, onStage } = options;
+  const { quad, bows, realWidth, realHeight, edits, onStage } = options;
 
   await onStage?.('straightening');
   const size = correctedSize(quad, realWidth, realHeight);
@@ -71,8 +87,9 @@ export async function preparePhoto(
   // A mask painted on the photograph would sit crooked on the straightened
   // picture — most visibly at the corners, which is where the brush is usually
   // wanted — so the dabs are mapped through the same homography as the pixels.
-  const adjusted = !isUnchanged(adjustments);
-  applyAdjustments(image, adjustments, selection);
+  const adjusted = edits.some((edit) => !isUnchanged(edit.adjustments));
+  // In the order they were made, each onto the result of the last.
+  for (const edit of edits) applyAdjustments(image, edit.adjustments, edit.selection);
 
   await onStage?.('focus');
   const focus = checkFocus(image);

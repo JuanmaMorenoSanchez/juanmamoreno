@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.43.0
+
+- **fix** — a change now stays where it was made. The sliders described one
+  change to whatever was selected at that moment, so brightening one corner and
+  then selecting another carried the brightening across and undid it on the
+  first: the correction followed the brush around. Changes are kept the moment
+  the selection is about to differ, and the sliders start again, so successive
+  edits accumulate.
+- **feat** — the preview shows all of them stacked, as the saved file will, and
+  the page says how many are kept. "Back to as shot" discards every one.
+
 ## 1.42.0
 
 - **feat** — the corrected photograph is written back the way it arrived. The
