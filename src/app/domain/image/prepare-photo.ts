@@ -23,6 +23,14 @@ export interface PreparePhotoOptions {
   realWidth: number;
   realHeight: number;
   /**
+   * Whether to square the picture up to those measurements. Default true.
+   *
+   * False for a detail or a work in progress, where the measurements describe
+   * the painting but the photograph shows only part of it — squaring one to the
+   * other would stretch it.
+   */
+  adaptToSize?: boolean;
+  /**
    * The changes made, in the order they were made.
    *
    * A list rather than one set of slider positions, because the sliders apply
@@ -77,9 +85,10 @@ export async function preparePhoto(
   options: PreparePhotoOptions
 ): Promise<PreparedPhoto> {
   const { quad, bows, realWidth, realHeight, edits, onStage } = options;
+  const adaptToSize = options.adaptToSize ?? true;
 
   await onStage?.('straightening');
-  const size = correctedSize(quad, realWidth, realHeight);
+  const size = correctedSize(quad, realWidth, realHeight, adaptToSize);
   const image = warpPerspective(source, quad, size, bows);
 
   await onStage?.('adjusting');

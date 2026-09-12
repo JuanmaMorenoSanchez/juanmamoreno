@@ -244,6 +244,20 @@ export class PhotoPrepComponent {
   protected readonly edgeNames = Object.keys(EDGE_CORNERS) as EdgeName[];
   protected readonly foundEdges = signal(true);
   /** In centimetres, though only the ratio between them is ever read. */
+  /**
+   * Whether the picture is squared up to the measurements typed below it.
+   *
+   * On, because it is right for a photograph of a whole canvas, which is nearly
+   * all of them. Off for a detail or a canvas caught half-finished: the
+   * measurements still describe the painting, but the photograph is not of the
+   * whole of it, and squaring one to the other stretches what is there.
+   *
+   * Not remembered between photographs. The exception should have to be asked
+   * for each time, because a stretched painting is easy to leave switched on and
+   * hard to notice afterwards.
+   */
+  protected readonly adaptToSize = signal(true);
+
   protected readonly realWidth = signal<number | null>(null);
   protected readonly realHeight = signal<number | null>(null);
   /**
@@ -695,7 +709,7 @@ export class PhotoPrepComponent {
     if (!selection || !corners || !size || !realWidth || !realHeight) return null;
     if (!hasSelection(selection)) return null;
 
-    const target = correctedSize(corners, realWidth, realHeight);
+    const target = correctedSize(corners, realWidth, realHeight, this.adaptToSize());
     const rectangle: Quad = [
       { x: 0, y: 0 },
       { x: target.width, y: 0 },
@@ -843,6 +857,10 @@ export class PhotoPrepComponent {
     this.brushTool.cursor.set(null);
   }
 
+  protected toggleAdaptToSize(): void {
+    this.adaptToSize.update((on) => !on);
+  }
+
   protected toggleSelecting(): void {
     this.brushTool.toggle();
   }
@@ -885,7 +903,7 @@ export class PhotoPrepComponent {
     const realHeight = this.realHeight();
     if (!at || !corners || !size || !realWidth || !realHeight) return;
 
-    const target = correctedSize(corners, realWidth, realHeight);
+    const target = correctedSize(corners, realWidth, realHeight, this.adaptToSize());
     const rectangle: Quad = [
       { x: 0, y: 0 },
       { x: target.width, y: 0 },
@@ -939,6 +957,7 @@ export class PhotoPrepComponent {
         bows: this.bows() ?? undefined,
         realWidth,
         realHeight,
+        adaptToSize: this.adaptToSize(),
         edits: this.allEdits(),
         onStage: async (stage) => {
           this.busy.set(stage);
@@ -997,6 +1016,7 @@ export class PhotoPrepComponent {
     this.problem.set('');
     this.busy.set(null);
     this.source.set(null);
+    this.adaptToSize.set(true);
     // Changes belong to the photograph they were made to, and the brush's mask
     // is measured in that photograph's straightened rectangle. Carried into the
     // next one they would land somewhere arbitrary.

@@ -161,11 +161,28 @@ export function fullFrame({ width, height }: Size): Quad {
  * photographed: one axis lands exactly on its measured length and the other
  * comes in under, which loses the least while enlarging nothing.
  */
-export function correctedSize(quad: Quad, realWidth: number, realHeight: number): Size {
+export function correctedSize(
+  quad: Quad,
+  realWidth: number,
+  realHeight: number,
+  /**
+   * Whether the result should take the painting's own proportions.
+   *
+   * Usually it should: a photograph of a canvas is a photograph of a rectangle
+   * whose shape is known, and squaring it up to that shape is most of what
+   * straightening is for.
+   *
+   * Not always, though. A detail, or a canvas photographed half-finished, is not
+   * the whole painting — the measurements belong to the work and not to what was
+   * photographed, and forcing the picture into them stretches it. Then the four
+   * corners are still squared up, but the result keeps the shape they describe.
+   */
+  adapt = true,
+): Size {
   const [tl, tr, br, bl] = quad;
   const widest = Math.max(distance(tl, tr), distance(bl, br));
   const tallest = Math.max(distance(tl, bl), distance(tr, br));
-  const ratio = realWidth / realHeight;
+  const ratio = adapt ? realWidth / realHeight : widest / tallest;
 
   const width = Math.min(widest, tallest * ratio);
   return {

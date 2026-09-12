@@ -277,6 +277,22 @@ describe('preparePhoto', () => {
     expect(brightnessAt(image, 0.92)).toBeGreaterThan(brightnessAt(plain, 0.92));
   });
 
+  it('does not stretch the picture to the measurements when told not to', async () => {
+    // A detail, or a canvas caught half-finished: the measurements belong to the
+    // painting and the photograph shows part of it.
+    const squared = await preparePhoto(photographedPainting(askew), options);
+    const asShot = await preparePhoto(photographedPainting(askew), {
+      ...options,
+      adaptToSize: false,
+    });
+
+    expect(squared.image.width / squared.image.height).toBeCloseTo(1.25, 1);
+    // The corners still squared up, but into the shape they describe.
+    expect(asShot.image.width / asShot.image.height).not.toBeCloseTo(1.25, 1);
+    expect(asShot.image.width).toBeGreaterThan(1);
+    expect(asShot.image.height).toBeGreaterThan(1);
+  });
+
   it('never enlarges the photograph it was given', async () => {
     const { image } = await preparePhoto(photographedPainting(askew), {
       ...options,

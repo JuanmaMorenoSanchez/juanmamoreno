@@ -1128,3 +1128,25 @@ rather than hand-written bytes, including "recovers a high quality closely,
 which is the range that matters", "tells a full-colour file from one that halved
 its colour" and "does not inflate one whose colour was already halved").
 
+### R88 — A photograph of part of a painting is not stretched to the whole · met
+Straightening squares the four corners up to the painting's own proportions,
+which is right for a photograph of a whole canvas and wrong for a detail or a
+canvas caught half-finished: there the measurements describe the work and the
+photograph shows part of it, so squaring one to the other stretches what is
+there.
+
+A switch beside the measurements, on by default, because most photographs are of
+a whole canvas and the exception should be asked for rather than assumed. It is
+not remembered between photographs — a stretched painting is easy to leave
+switched on and hard to notice afterwards. The measurements still go on the
+certificate either way; only the geometry changes.
+
+The switch reaches the brush as well as the pixels. Both are measured in the
+straightened rectangle, and a mask built to one shape while the picture was
+built to another would put every selection in the wrong place.
+*Proven by:* `quad.spec.ts` — "keeps the shape the corners describe when not",
+"squares up by default, since most photographs are of a whole canvas" and "still
+straightens when it is not reshaping"; and through the whole pipeline in
+`prepare-photo.spec.ts` — "does not stretch the picture to the measurements when
+told not to".
+

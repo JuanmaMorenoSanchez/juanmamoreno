@@ -106,4 +106,43 @@ describe('correctedSize', () => {
     const size = correctedSize(photographed(200, 200), 30, 30);
     expect(size).toEqual({ width: 200, height: 200 });
   });
+
+  describe('when the photograph is not of the whole painting', () => {
+    // A canvas photographed at a slight angle, squarish on the sensor.
+    const shot: Quad = [
+      { x: 10, y: 10 },
+      { x: 210, y: 20 },
+      { x: 208, y: 170 },
+      { x: 12, y: 160 },
+    ];
+
+    it('takes the proportions of the painting when asked to', () => {
+      const size = correctedSize(shot, 100, 50);
+
+      expect(size.width / size.height).toBeCloseTo(2, 1);
+    });
+
+    it('keeps the shape the corners describe when not', () => {
+      // A detail, or a painting caught half-finished: the measurements are of
+      // the work and the photograph is of part of it, so squaring one to the
+      // other would stretch what is there.
+      const size = correctedSize(shot, 100, 50, false);
+
+      expect(size.width / size.height).toBeCloseTo(200 / 152, 1);
+      // Nothing like the 2:1 the measurements would have forced.
+      expect(size.width / size.height).toBeLessThan(1.6);
+    });
+
+    it('squares up by default, since most photographs are of a whole canvas', () => {
+      expect(correctedSize(shot, 100, 50)).toEqual(correctedSize(shot, 100, 50, true));
+    });
+
+    it('still straightens when it is not reshaping', () => {
+      // The corners are the crop either way; only the proportions differ.
+      const size = correctedSize(shot, 100, 50, false);
+
+      expect(size.width).toBeGreaterThan(150);
+      expect(size.height).toBeGreaterThan(100);
+    });
+  });
 });

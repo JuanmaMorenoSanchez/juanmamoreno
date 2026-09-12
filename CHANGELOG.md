@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.44.0
+
+- **feat** — "Square the picture up to these", beside the measurements and on by
+  default. Off, the corners are still straightened but the result keeps the
+  shape they describe rather than being stretched to the painting's
+  measurements — for a detail, or a canvas photographed half-finished, where the
+  measurements belong to the work and the photograph shows part of it. The
+  measurements still go on the certificate either way.
+- **chore** — the switch reaches the brush as well as the picture. Both are
+  measured in the straightened rectangle, and a mask built to one shape while
+  the pixels were built to another would land in the wrong place.
+
 ## 1.43.0
 
 - **fix** — a change now stays where it was made. The sliders described one
