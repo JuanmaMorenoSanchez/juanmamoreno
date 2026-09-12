@@ -1094,3 +1094,26 @@ the wallet will not leave the wrong chain", "sends exactly what it was given, an
 builds nothing itself" and "says where to find a wallet rather than failing
 silently"). The transaction itself is the backend's B39.
 
+### R87 — A photograph is written back the way it arrived · met
+Straightening moves every pixel, so the picture has to be encoded again and one
+generation of loss cannot be avoided. How large that generation is, and how
+large the file is, are decided from the chosen file's own header rather than by
+a constant: both the quality it was written at and whether it kept every pixel's
+colour are read out of it.
+
+The browser makes the choice sharper than it looks. Measured in Chrome,
+`canvas.toBlob` writes 4:2:0 — half the colour detail in each direction — at
+every quality up to 0.99, and 4:4:4 only from 0.995. There is nothing in
+between. So a photograph that arrived in full colour can only keep it at the top
+of the scale, and is larger than the original as a result: maximum quality
+records the grain and the original's own compression faithfully, and neither is
+extra detail. One whose colour was already halved has nothing left to protect
+and comes back at the quality it came in at, about the size it was.
+
+The page says what it read, because a file larger than the one chosen is
+otherwise unexplained.
+*Proven by:* `jpeg-source.spec.ts` (9 tests, read from real encoder output
+rather than hand-written bytes, including "recovers a high quality closely,
+which is the range that matters", "tells a full-colour file from one that halved
+its colour" and "does not inflate one whose colour was already halved").
+

@@ -8,6 +8,7 @@ import {
   type PreparePhotoReport,
 } from '@domain/image/prepare-photo';
 import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
+import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-source';
 import { PhotoBrush } from './photo-brush';
 import { PhotoRights } from './photo-rights';
 import { createSelection, hasSelection, type Selection } from '@domain/image/selection';
@@ -63,21 +64,24 @@ const PREVIEW_LONG_SIDE = 2000;
 /** Corner finding works on a copy this size, which is all the detail an outline needs. */
 const DETECTION_LONG_SIDE = 720;
 /**
- * JPEG quality for the saved file. As high as the format goes.
+ * How the corrected photograph is written back out.
  *
- * It was 0.95, which sounds close to lossless and is not. Measured against the
- * straightened pixels on a real painting, ninety-five strayed by 1.53 levels on
- * average and 19 at the worst pixel, and turned a 2.35 MB photograph into 0.50
- * MB. At maximum the same image is 2.09 MB and strays 0.48 on average, 4 at
- * worst — below what an eye can find on a flat area.
+ * Straightening moves every pixel, so the picture must be encoded again and one
+ * generation of loss is unavoidable. What is avoidable is making that
+ * generation worse than it needs to be, or the file larger than it needs to be,
+ * and those pull in opposite directions — so the answer is taken from the file
+ * that arrived rather than fixed here.
  *
- * Most of that difference is chroma subsampling rather than the quality number:
- * at 0.95 the encoder throws away half the colour resolution, which on a
- * painting is exactly the wrong economy. A canvas gives no way to ask for 4:4:4
- * directly, but encoders stop subsampling at the top of the scale, which is the
- * other reason to be here rather than a step below it.
+ * Measured in the browser this runs in: `canvas.toBlob` writes 4:2:0 at every
+ * quality up to 0.99 and 4:4:4 only from 0.995. There is no setting in between.
+ * So a photograph that arrived in full colour can only keep it at the top of the
+ * scale, which is larger than the original — maximum quality faithfully records
+ * the grain and the original's own compression, and neither is extra detail.
+ * One whose colour was already halved has nothing left to protect and comes back
+ * at the quality it came in at, about the size it was.
+ *
+ * See `domain/image/jpeg-source.ts`, which reads both facts out of the header.
  */
-const JPEG_QUALITY = 1;
 
 /** Where the last size typed in is kept, so the next painting needs no typing. */
 const REMEMBERED_SIZE = 'juanmamoreno.paintingSize';
@@ -204,6 +208,26 @@ export class PhotoPrepComponent {
   }
 
   protected readonly fileName = signal('');
+
+  /** How the chosen photograph was written, which decides how it is written back. */
+  protected readonly source = signal<JpegSource | null>(null);
+
+  /** Said plainly under the file, because a bigger file than the original is a surprise. */
+  /** The number handed to the encoder, taken from what arrived. */
+  protected readonly encodeQuality = computed(() => {
+    const source = this.source();
+    return source ? qualityFor(source) : 1;
+  });
+
+  protected readonly sourceNote = computed(() => {
+    const source = this.source();
+    if (!source) return '';
+    const colour = source.fullColour ? 'full colour' : 'half colour';
+    const quality = source.quality ? `quality ${source.quality}` : 'quality unknown';
+    return source.fullColour
+      ? `${quality}, ${colour} — saved back at the top of the scale, the only setting that keeps it`
+      : `${quality}, ${colour} — saved back at the same quality it arrived`;
+  });
   protected readonly size = signal<{ width: number; height: number } | null>(null);
   protected readonly corners = signal<Quad | null>(null);
   /**
@@ -457,6 +481,15 @@ export class PhotoPrepComponent {
     } catch {
       this.problem.set('That file could not be read as an image.');
       return;
+    }
+
+    // What arrived, so what leaves can match it. Read from the file's own
+    // header rather than assumed: straightening forces one re-encode, and this
+    // decides how large that one costs.
+    try {
+      this.source.set(readJpegSource(new Uint8Array(await file.arrayBuffer())));
+    } catch {
+      this.source.set(null);
     }
 
     const { width, height } = photo;
@@ -815,7 +848,7 @@ export class PhotoPrepComponent {
       });
 
       this.report.set(report);
-      const blob = await toJpegBlob(image, this.rights());
+      const blob = await toJpegBlob(image, this.rights(), this.encodeQuality());
       this.resultBlob.set(blob);
       this.resultUrl.set(URL.createObjectURL(blob));
       // Straight into the form below, in the same press. Two buttons meant the
@@ -946,7 +979,7 @@ function breathe(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 }
 
-async function toJpegBlob(image: Raster, rights: Rights | null): Promise<Blob> {
+async function toJpegBlob(image: Raster, rights: Rights | null, quality: number): Promise<Blob> {
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
   canvas.height = image.height;
@@ -954,7 +987,7 @@ async function toJpegBlob(image: Raster, rights: Rights | null): Promise<Blob> {
   context.putImageData(new ImageData(image.data, image.width, image.height), 0, 0);
 
   const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
+    canvas.toBlob(resolve, 'image/jpeg', quality)
   );
   if (!blob) throw new Error('The corrected image could not be encoded');
   if (!rights) return blob;

@@ -20,6 +20,14 @@
   @if (size(); as photo) {
     <p class="prep-file">
       {{ fileName() }} — {{ photo.width }} × {{ photo.height }} px
+      @if (sourceNote()) {
+        <!--
+          Said out loud because the size of what comes back is otherwise a
+          mystery: a photograph saved at the top of the scale is larger than the
+          one that arrived, and that is not extra detail.
+        -->
+        <em class="prep-source">{{ sourceNote() }}</em>
+      }
       <button type="button" class="prep-link" (click)="reset()">Choose another</button>
     </p>
 

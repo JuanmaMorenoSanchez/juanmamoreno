@@ -393,3 +393,11 @@
   border-style: dashed;
   outline-style: dashed;
 }
+
+/* Under the file's name and size: what it was, and so what it will be. */
+.prep-source {
+  display: block;
+  font-style: normal;
+  font-size: 0.78rem;
+  opacity: 0.65;
+}

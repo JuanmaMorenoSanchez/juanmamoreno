@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.42.0
+
+- **feat** — the corrected photograph is written back the way it arrived. The
+  quality and the colour sampling are read out of the chosen file's own header,
+  and the encoder is given a number rather than a constant: a full-colour
+  photograph is saved at the top of the scale, one whose colour was already
+  halved comes back at the quality it came in at instead of being inflated.
+- **feat** — the page says what it read — "quality 98, full colour" — under the
+  file's name, because a saved file larger than the original is otherwise a
+  mystery. It is not extra detail; maximum quality faithfully records the grain
+  and the original's own compression.
+
 ## 1.41.1
 
 - **feat** — a link that opens the waiting list inside the Base app's own
