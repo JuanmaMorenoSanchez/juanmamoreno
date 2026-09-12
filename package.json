@@ -1,6 +1,7 @@
 {
   "name": "juanmamoreno",
-  "version": "1.39.2",
+  "version": "1.40.0",
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4201",
@@ -10,8 +11,8 @@
     "test:watch": "ng test --watch",
     "test:e2e": "node --test e2e/*.test.mjs",
     "pretty": "prettier --write .",
-    "predeploy": "npm run lint && npm test",
-    "deploy": "npm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
+    "predeploy": "pnpm run lint && pnpm test",
+    "deploy": "pnpm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
     "postbuild": "node scripts/generate-sitemap.mjs && node scripts/verify-render.mjs && node scripts/verify-requirements.mjs",
     "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs",
@@ -42,6 +43,7 @@
     "@angular/build": "22.1.4",
     "@angular/cli": "22.1.4",
     "@angular/compiler-cli": "22.1.4",
+    "@types/node": "^22.20.1",
     "angular-cli-ghpages": "3.1.0",
     "angular-eslint": "22.0.0",
     "eslint": "10.6.0",

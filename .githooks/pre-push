@@ -6,22 +6,29 @@
 # The backend has had two deploys fail on formatting alone, each costing a round
 # trip of six minutes to find out something eslint says in ten seconds. Both
 # times the checks had been run locally; once the result was read wrongly,
-# because `npm run lint | tail -1` prints a blank line when everything passes,
+# because `pnpm run lint | tail -1` prints a blank line when everything passes,
 # and a blank line is easy to read as nothing being wrong.
 #
 # So it is checked here, where the answer is an exit code rather than something
 # to read. Lint and the type check only: they take seconds. The tests, the
 # prerender and its two verifiers stay in CI, where taking minutes is free.
 #
-# Installed by `npm install` through the prepare script, which points git at
+# Installed by `pnpm install` through the prepare script, which points git at
 # this directory. To push past it deliberately: git push --no-verify
 
 set -e
 
+# `corepack pnpm` rather than `pnpm`: corepack ships with Node and is always on
+# the path, while the pnpm shim only exists once `corepack enable` has been run.
+# A hook that fails because of how the tool was installed teaches people to push
+# with --no-verify, which is the opposite of what it is for.
+PNPM="pnpm"
+command -v pnpm >/dev/null 2>&1 || PNPM="corepack pnpm"
+
 echo "pre-push: lint"
-npm run lint
+$PNPM run lint
 
 echo "pre-push: types"
-npx tsc --noEmit -p tsconfig.app.json
+$PNPM exec tsc --noEmit -p tsconfig.app.json
 
 echo "pre-push: ok"

@@ -1054,3 +1054,23 @@ earlier it would be gone from both places at once.
 client-rendered so no copy of it is ever written into the published site. The
 waiting and the writing are the backend's B34.
 
+### R85 — A dependency cannot arrive unwatched · met
+Two rules, both enforced by pnpm on every install rather than only when
+resolving. A version must have been on the registry thirty days before it can be
+installed here, which is the window in which a compromised release is normally
+noticed and pulled; and a dependency may not run install or postinstall scripts,
+which is how a compromised package usually does its damage.
+
+Neither is silent. pnpm names every package it holds back and every script it
+refuses, and fails the install rather than continuing — so a refusal is
+something read, not something missed. `esbuild` is the one exception, because
+Angular's bundler is a binary it downloads; the packages deliberately refused
+are listed alongside it with their reasons.
+
+The versions already installed when the rule came in are carried over at their
+exact versions rather than by name, so each exemption ends the moment that
+package is updated.
+*Proven by:* `pnpm-workspace.yaml`, and the deploy workflow, which installs with
+`--frozen-lockfile` — the policy is checked there too, so a lockfile that
+bypassed it locally fails in CI.
+

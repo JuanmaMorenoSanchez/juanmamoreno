@@ -1,0 +1,82 @@
+# How dependencies are allowed to arrive here.
+#
+# npm was replaced after it rewrote both lockfiles wholesale for a no-op install
+# — 2,210 lines deleted from a file it simultaneously called up to date — and
+# produced one that `npm ci` then refused outright. These two settings are the
+# reason for choosing pnpm rather than merely a working npm.
+
+# Thirty days, in minutes. A version published today cannot be installed here
+# until it has been on the registry a month, which is the window in which a
+# compromised release is normally noticed and pulled. It applies to every
+# package in the tree, not only the ones named in package.json, and pnpm checks
+# it on every install rather than only when resolving — so a young package
+# cannot arrive by way of a lockfile either.
+minimumReleaseAge: 43200
+
+# The versions that were already installed, running and deployed when this rule
+# came in, listed at the exact version rather than by name: they were adopted
+# before the policy existed and downgrading a framework to satisfy a rule about
+# new arrivals would be the rule wearing the project rather than protecting it.
+#
+# Pinned to the version, so the exemption expires by itself. Angular 22.1.5,
+# whenever it comes, waits its month like everything else. All of these mature
+# by late September 2026, after which this list can simply be deleted.
+minimumReleaseAgeExclude:
+  - "@angular-devkit/architect@0.2201.4"
+  - "@angular-devkit/core@22.1.4"
+  - "@angular-devkit/schematics@22.1.4"
+  - "@angular/animations@22.1.4"
+  - "@angular/build@22.1.4"
+  - "@angular/cdk@22.1.4"
+  - "@angular/cli@22.1.4"
+  - "@angular/common@22.1.4"
+  - "@angular/compiler-cli@22.1.4"
+  - "@angular/compiler@22.1.4"
+  - "@angular/core@22.1.4"
+  - "@angular/forms@22.1.4"
+  - "@angular/material@22.1.4"
+  - "@angular/platform-browser@22.1.4"
+  - "@angular/platform-server@22.1.4"
+  - "@angular/router@22.1.4"
+  - "@angular/ssr@22.1.4"
+  - "@hono/node-server@2.1.1"
+  - "@inquirer/checkbox@5.2.3"
+  - "@inquirer/core@12.0.1"
+  - "@inquirer/editor@5.3.1"
+  - "@inquirer/expand@5.1.3"
+  - "@inquirer/external-editor@3.0.4"
+  - "@inquirer/figures@2.0.8"
+  - "@inquirer/input@5.1.4"
+  - "@inquirer/number@4.2.1"
+  - "@inquirer/password@5.2.0"
+  - "@inquirer/rawlist@5.3.3"
+  - "@inquirer/search@4.3.1"
+  - "@inquirer/select@5.2.3"
+  - "@inquirer/type@4.1.0"
+  - "@schematics/angular@22.1.4"
+  - "dompurify@3.4.14"
+  - "fast-uri@3.1.6"
+  - "hono@4.13.5"
+  - "ip-address@10.7.0"
+
+# Every package's install and postinstall scripts are refused unless it is
+# named here. Arbitrary code from a dependency runs before anything has been
+# read, which is how a compromised package usually does its damage. pnpm blocks
+# them all by default and fails the install naming what it blocked, so nothing
+# is ever skipped quietly — including the refusals below, which are decisions
+# rather than oversights.
+allowBuilds:
+  # Downloads the platform's esbuild binary. Angular's bundler is esbuild, so
+  # without this there is no build at all.
+  esbuild: true
+
+  # Prints a funding notice. Nothing depends on it having run.
+  core-js: false
+
+  # Native file-watching for `ng serve`, and the disk cache the CLI keeps
+  # between builds. All three ship prebuilt binaries for this platform and fall
+  # back to slower pure-JS paths when they are absent, so refusing to compile
+  # them costs a little speed in the studio and nothing in what is published.
+  '@parcel/watcher': false
+  lmdb: false
+  msgpackr-extract: false

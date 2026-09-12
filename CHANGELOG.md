@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.40.0
+
+- **feat** — pnpm replaces npm, pinned by the `packageManager` field and
+  installed by corepack, which ships with Node. `yarn.lock` is gone; nothing
+  referenced it.
+- **feat** — a package must have been on the registry **thirty days** before it
+  can be installed, checked on every install and not only when resolving, so a
+  young package cannot arrive by way of a lockfile either. The 36 versions
+  already running when the rule came in are carried over at their exact
+  versions, so the exemption expires by itself.
+- **feat** — dependency install scripts are refused. Only `esbuild` is allowed
+  one, because Angular's bundler is a binary it downloads; the four refusals are
+  written down as decisions rather than left silent.
+- **fix** — `@types/node` is declared. `tsconfig.spec.json` has always asked for
+  it and npm's hoisting supplied it by accident.
+
 ## 1.39.2
 
 - **chore** — deleted 795 lines of image code nothing called: the lighting,
