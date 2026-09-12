@@ -1,18 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { environment } from '@environments/environment';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
-
-/** A certificate prepared and waiting for a cheap morning. */
-export interface PendingMint {
-  tokenId: number;
-  name: string;
-  description: string;
-  attributes: Array<{ trait_type: string; value: string }>;
-  thumbnailBase64: string;
-  preparedAt: string;
-}
+import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 
 /**
  * The certificates that are ready and not yet written.
@@ -31,7 +20,7 @@ export interface PendingMint {
   styleUrl: './pending-mint.component.scss',
 })
 export class PendingMintComponent {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(MintApiService);
 
   protected readonly waiting = signal<PendingMint[]>([]);
   protected readonly busy = signal(false);
@@ -51,20 +40,15 @@ export class PendingMintComponent {
     this.outcome.set('');
     this.problem.set('');
     try {
-      const result = await this.http
-        .post<{ minted: number[]; skipped: string }>(
-          `${environment.backendUrl}/mint/pending/mint`,
-          {}
-        )
-        .toPromise();
+      const result = await this.api.mintWaiting();
 
-      const minted = result?.minted ?? [];
+      const minted = result.minted;
       // Said separately, because "none written" and "none waiting" look the
       // same from here and mean very different things.
       this.outcome.set(
         minted.length
-          ? `Written: ${minted.join(', ')}.${result?.skipped ? ` Then stopped — ${result.skipped}.` : ''}`
-          : `Nothing was written${result?.skipped ? ` — ${result.skipped}` : ''}.`
+          ? `Written: ${minted.join(', ')}.${result.skipped ? ` Then stopped — ${result.skipped}.` : ''}`
+          : `Nothing was written${result.skipped ? ` — ${result.skipped}` : ''}.`
       );
       this.load();
     } catch {
@@ -75,17 +59,14 @@ export class PendingMintComponent {
   }
 
   protected async discard(tokenId: number): Promise<void> {
-    await this.http
-      .delete(`${environment.backendUrl}/mint/pending/${tokenId}`)
-      .toPromise()
-      .catch(() => undefined);
+    await this.api.discard(tokenId).catch(() => undefined);
     this.load();
   }
 
   private load(): void {
-    this.http.get<PendingMint[]>(`${environment.backendUrl}/mint/pending`).subscribe({
-      next: (list) => this.waiting.set([...list].sort((a, b) => a.tokenId - b.tokenId)),
-      error: () => this.waiting.set([]),
-    });
+    this.api
+      .waiting()
+      .then((list) => this.waiting.set(list))
+      .catch(() => this.waiting.set([]));
   }
 }

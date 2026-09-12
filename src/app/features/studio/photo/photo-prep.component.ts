@@ -1,20 +1,16 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { detectQuad } from '@domain/image/detect-corners';
-import { copyrightNotice, withRights, type Rights } from '@domain/image/jpeg-rights';
+import { withRights, type Rights } from '@domain/image/jpeg-rights';
 import {
   preparePhoto,
   type PhotoStage,
   type PreparePhotoReport,
 } from '@domain/image/prepare-photo';
 import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
-import {
-  createSelection,
-  clearSelection,
-  hasSelection,
-  paintDab,
-  type Selection,
-} from '@domain/image/selection';
+import { PhotoBrush } from './photo-brush';
+import { PhotoRights } from './photo-rights';
+import { createSelection, hasSelection, type Selection } from '@domain/image/selection';
 import { solveHomography } from '@domain/image/perspective';
 import { inject } from '@angular/core';
 import { StudioHandoffService } from '../studio-handoff.service';
@@ -103,75 +99,6 @@ const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
  * anywhere along its edge, so the hand can stay clear of the point it is
  * setting. The cross keeps marking the exact pixel however wide the ring gets.
  */
-const ARTIST_KEY = 'juanmamoreno.studio.artist';
-const NOTICE_KEY = 'juanmamoreno.studio.notice';
-const STATEMENT_KEY = 'juanmamoreno.studio.webStatement';
-
-/**
- * What the rights fields say before anybody types in them.
- *
- * These were placeholders, which meant the answer was right there on screen and
- * still had to be typed out every time — and a photograph left the studio
- * unattributed if it was not. They are the same every time, so they are the
- * values now.
- *
- * The notice is among them too, and its year is worked out when the page loads
- * rather than written into the source. Left alone it is never stored, so it
- * still says the right year next January instead of the one it first appeared
- * in.
- */
-const DEFAULT_ARTIST = 'Juanma Moreno Sánchez';
-const DEFAULT_STATEMENT = 'https://www.juanmamoreno.com/terms';
-
-/**
- * The notice, written out rather than derived.
- *
- * Worked out when the page loads rather than written into the source, so the
- * year is this year. It is only ever stored if it is typed in, so a field left
- * alone goes on saying the right year next January instead of the one it was
- * first shown in.
- */
-function defaultNotice(): string {
-  return `© ${new Date().getFullYear()} ${DEFAULT_ARTIST}`;
-}
-
-/**
- * What was typed here last time, or the default when nothing ever was.
- *
- * Absent and empty are kept apart: `getItem` answers null for a key that was
- * never written and '' for one deliberately cleared. Treating them alike would
- * mean a field could not be emptied — it would fill itself in again on the next
- * visit, which is its own kind of wrong.
- */
-function remembered(key: string, fallback = ''): string {
-  try {
-    return window.localStorage.getItem(key) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function remember(key: string, value: string): void {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // Storage off. The field holds for this session, which is enough.
-  }
-}
-
-const BRUSH_RADIUS_KEY = 'juanmamoreno.studio.brushRadius';
-const BRUSH_SOFTNESS_KEY = 'juanmamoreno.studio.brushSoftness';
-
-/** A remembered number, or the default when there is none or it is nonsense. */
-function rememberedNumber(key: string, fallback: number): number {
-  try {
-    const stored = Number(window.localStorage.getItem(key));
-    return Number.isFinite(stored) && stored > 0 ? stored : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 const HANDLE_SIZE_KEY = 'juanmamoreno.studio.handleSize';
 const DEFAULT_HANDLE_SIZE = 46;
 const MIN_HANDLE_SIZE = 20;
@@ -239,37 +166,24 @@ export class PhotoPrepComponent {
    * arrives somewhere with nobody attached to it. Remembered between sessions,
    * because it is the same answer every time.
    */
-  protected readonly artist = signal(remembered(ARTIST_KEY, DEFAULT_ARTIST));
-  protected readonly notice = signal(remembered(NOTICE_KEY, defaultNotice()));
-  protected readonly webStatement = signal(remembered(STATEMENT_KEY, DEFAULT_STATEMENT));
+  private readonly rightsPanel = new PhotoRights();
 
-  protected readonly noticePreview = computed(() =>
-    this.artist().trim() ? copyrightNotice(this.rights() as Rights) : ''
-  );
-
-  protected readonly rights = computed<Rights | null>(() => {
-    const artist = this.artist().trim();
-    if (!artist) return null;
-    return {
-      artist,
-      notice: this.notice().trim() || undefined,
-      webStatement: this.webStatement().trim() || undefined,
-    };
-  });
+  protected readonly artist = this.rightsPanel.artist;
+  protected readonly notice = this.rightsPanel.notice;
+  protected readonly webStatement = this.rightsPanel.webStatement;
+  protected readonly noticePreview = this.rightsPanel.noticePreview;
+  protected readonly rights = this.rightsPanel.rights;
 
   protected setArtist(event: Event): void {
-    this.artist.set(textIn(event));
-    remember(ARTIST_KEY, this.artist());
+    this.rightsPanel.setArtist(textIn(event));
   }
 
   protected setNotice(event: Event): void {
-    this.notice.set(textIn(event));
-    remember(NOTICE_KEY, this.notice());
+    this.rightsPanel.setNotice(textIn(event));
   }
 
   protected setWebStatement(event: Event): void {
-    this.webStatement.set(textIn(event));
-    remember(STATEMENT_KEY, this.webStatement());
+    this.rightsPanel.setWebStatement(textIn(event));
   }
 
   protected readonly minHandleSize = MIN_HANDLE_SIZE;
@@ -328,23 +242,26 @@ export class PhotoPrepComponent {
 
   protected readonly anyAdjustment = computed(() => !isUnchanged(this.adjustments()));
 
-  /** Where the sliders apply. Empty means everywhere, which is the usual case. */
-  protected readonly selection = signal<Selection | null>(null);
-  protected readonly selecting = signal(false);
   /**
-   * Which way the brush goes.
+   * Everything about selecting an area, kept in one object of its own.
    *
-   * Taking a selection back was only ever on shift, which is a thing nobody
-   * finds and nobody is told — and pulling an edge back is most of what
-   * selecting an area actually is. So it is a tool of its own, named, with
-   * shift still reversing whichever is chosen for the odd stroke the other way.
+   * The component still owns the geometry, because the brush is used on the
+   * photograph while the adjustment lands on the straightened rectangle: each
+   * dab is mapped through the same homography as the pixels before it is
+   * painted. What is left here is that mapping and the pointer; the mask, the
+   * settings and the tool live in PhotoBrush.
    */
-  protected readonly brushMode = signal<'add' | 'erase'>('add');
-  protected readonly brushRadius = signal(rememberedNumber(BRUSH_RADIUS_KEY, 22));
-  protected readonly brushSoftness = signal(rememberedNumber(BRUSH_SOFTNESS_KEY, 80));
-  protected readonly hasArea = computed(() => this.selectionVersion() > 0 && hasSelection(this.selection()));
-  /** Bumped on every dab, since a Float32Array mutated in place is not a new value. */
-  private readonly selectionVersion = signal(0);
+  protected readonly brushTool = new PhotoBrush();
+
+  protected readonly selecting = this.brushTool.selecting;
+  protected readonly brushMode = this.brushTool.mode;
+  protected readonly brushRadius = this.brushTool.radius;
+  protected readonly brushSoftness = this.brushTool.softness;
+  protected readonly brushCursor = this.brushTool.cursor;
+
+  /** Where the sliders apply. Empty means everywhere, which is the usual case. */
+  protected readonly selection = this.brushTool.selection;
+  protected readonly hasArea = this.brushTool.hasArea;
   protected readonly busy = signal<PhotoStage | null>(null);
   protected readonly report = signal<PreparePhotoReport | null>(null);
   protected readonly resultUrl = signal<string | null>(null);
@@ -672,7 +589,7 @@ export class PhotoPrepComponent {
    * back the other way — through the inverse of the same homography.
    */
   private readonly previewSelection = computed<Selection | null>(() => {
-    this.selectionVersion();
+    this.brushTool.version();
     const selection = this.selection();
     const corners = this.corners();
     const size = this.size();
@@ -773,18 +690,9 @@ export class PhotoPrepComponent {
   /** True while the pointer is down and painting rather than moving a corner. */
   private brushing = false;
 
-  /**
-   * Where the brush is and how wide, in percentages of the stage.
-   *
-   * Shown as a ring under the pointer, because the size slider is a number and
-   * a number does not say how much of this painting it covers. Null when the
-   * pointer is not over the stage, so no ring is left behind when it leaves.
-   */
-  protected readonly brushCursor = signal<{ x: number; y: number; size: number } | null>(null);
-
   protected trackBrush(event: PointerEvent): void {
     if (!this.selecting()) {
-      this.brushCursor.set(null);
+      this.brushTool.cursor.set(null);
       return;
     }
     const stage = this.stage()?.nativeElement;
@@ -795,53 +703,40 @@ export class PhotoPrepComponent {
     // The radius is a share of the picture's long side, and the stage is the
     // picture, so the same share of the stage's long side draws it true.
     const longSide = Math.max(box.width, box.height);
-    this.brushCursor.set({
+    this.brushTool.cursor.set({
       x: ((event.clientX - box.left) / box.width) * 100,
       y: ((event.clientY - box.top) / box.height) * 100,
-      size: ((this.brushRadius() / 100) * longSide * 2) / box.width * 100,
+      size: (((this.brushRadius() / 100) * longSide * 2) / box.width) * 100,
     });
   }
 
   protected leaveBrush(): void {
-    this.brushCursor.set(null);
+    this.brushTool.cursor.set(null);
   }
 
   protected toggleSelecting(): void {
-    this.selecting.update((on) => !on);
+    this.brushTool.toggle();
   }
 
   protected useBrush(mode: 'add' | 'erase'): void {
-    this.selecting.set(true);
-    this.brushMode.set(mode);
-  }
-
-  /**
-   * Which way one dab goes: the chosen tool, reversed while shift is held.
-   *
-   * Reversing rather than always erasing, so the shortcut means the same thing
-   * from either tool — the other one, for as long as the key is down.
-   */
-  private erases(reversed: boolean): boolean {
-    return this.brushMode() === 'erase' ? !reversed : reversed;
+    this.brushTool.use(mode);
   }
 
   protected setBrushRadius(event: Event): void {
-    const value = Math.min(60, Math.max(1, Number((event.target as HTMLInputElement).value)));
-    this.brushRadius.set(value);
-    remember(BRUSH_RADIUS_KEY, String(value));
+    this.brushTool.setRadius(Number((event.target as HTMLInputElement).value));
   }
 
   protected setBrushSoftness(event: Event): void {
-    const value = Math.min(100, Math.max(0, Number((event.target as HTMLInputElement).value)));
-    this.brushSoftness.set(value);
-    remember(BRUSH_SOFTNESS_KEY, String(value));
+    this.brushTool.setSoftness(Number((event.target as HTMLInputElement).value));
   }
 
   protected clearArea(): void {
-    const selection = this.selection();
-    if (!selection) return;
-    clearSelection(selection);
-    this.selectionVersion.update((n) => n + 1);
+    this.brushTool.clear();
+  }
+
+  protected brush(event: PointerEvent, erase = false): void {
+    const at = this.pointIn(event);
+    if (at) this.brushAt(at, erase);
   }
 
   /**
@@ -853,12 +748,6 @@ export class PhotoPrepComponent {
    * is exactly where a brush is usually wanted — so each dab is mapped through
    * the same homography the pixels go through.
    */
-  protected brush(event: PointerEvent, erase = false): void {
-    const at = this.pointIn(event);
-    if (at) this.brushAt(at, erase);
-  }
-
-  /** The same, from a position in the photograph rather than from a pointer. */
   protected brushAt(at: Point, erase = false): void {
     const corners = this.corners();
     const size = this.size();
@@ -867,42 +756,25 @@ export class PhotoPrepComponent {
     if (!at || !corners || !size || !realWidth || !realHeight) return;
 
     const target = correctedSize(corners, realWidth, realHeight);
-    let selection = this.selection();
-    if (!selection || selection.width < 2) {
-      selection = createSelection(target.width, target.height);
-      this.selection.set(selection);
-    }
-
     const rectangle: Quad = [
       { x: 0, y: 0 },
       { x: target.width, y: 0 },
       { x: target.width, y: target.height },
       { x: 0, y: target.height },
     ];
-    const mapped = mapThrough(solveHomography(corners, rectangle), at);
 
-    // The radius is given as a percentage of the picture, so a brush set on one
-    // photograph means the same thing on the next whatever size it came in.
-    const radius = (this.brushRadius() / 100) * Math.max(target.width, target.height);
-    paintDab(selection, target, {
-      x: mapped.x,
-      y: mapped.y,
-      radius,
-      softness: this.brushSoftness() / 100,
-      erase,
-    });
-    this.selectionVersion.update((n) => n + 1);
+    this.brushTool.dab(mapThrough(solveHomography(corners, rectangle), at), target, erase);
   }
 
   protected startBrush(event: PointerEvent): void {
     if (!this.selecting()) return;
     this.brushing = true;
-    this.brush(event, this.erases(event.shiftKey || event.button === 2));
+    this.brush(event, this.brushTool.erases(event.shiftKey || event.button === 2));
   }
 
   protected brushMove(event: PointerEvent): void {
     if (!this.brushing) return;
-    this.brush(event, this.erases(event.shiftKey));
+    this.brush(event, this.brushTool.erases(event.shiftKey));
   }
 
   /** Turns a pointer position into a position in the photograph's own pixels. */
@@ -1052,7 +924,12 @@ function outlineSelection(
       step += 1;
       if (step % 5 === 0 || step % 5 === 1) continue; // the gaps in the dashes
       context.fillStyle = step % 10 < 5 ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)';
-      context.fillRect(Math.round(x * cellW), Math.round(y * cellH), Math.max(2, cellW), Math.max(2, cellH));
+      context.fillRect(
+        Math.round(x * cellW),
+        Math.round(y * cellH),
+        Math.max(2, cellW),
+        Math.max(2, cellH)
+      );
     }
   }
 }

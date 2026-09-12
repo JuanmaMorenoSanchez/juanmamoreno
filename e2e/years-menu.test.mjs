@@ -28,6 +28,26 @@ async function openYears(page) {
   return page.locator('.years-menu').last();
 }
 
+/**
+ * The panel's box, once it has one.
+ *
+ * A menu is drawn in an overlay and arrives with an animation, so for its first
+ * frames it is on the page without being laid out anywhere — and Playwright
+ * answers null for the box of an element in that state. Asked once, immediately,
+ * this passed when run alone and failed in the full suite, where the machine is
+ * busy enough for those frames to matter: a deploy blocked by the measurement
+ * being taken a moment early rather than by anything being wrong.
+ */
+async function boxOf(panel, timeout = 5000) {
+  const until = Date.now() + timeout;
+  for (;;) {
+    const measured = await panel.boundingBox();
+    if (measured && measured.height > 0) return measured;
+    if (Date.now() > until) return measured;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+}
+
 describe('the years menu', () => {
   before(async () => {
     ({ browser, cannotRun } = await launchBrowser());
@@ -48,11 +68,11 @@ describe('the years menu', () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     const panel = await openYears(page);
 
-    const box = await panel.boundingBox();
+    const box = await boxOf(panel);
     assert.ok(box, 'the years panel has no box on screen');
     assert.ok(
       box.height < 800 * 0.6,
-      `the years panel is ${Math.round(box.height)}px of an 800px window`,
+      `the years panel is ${Math.round(box.height)}px of an 800px window`
     );
     await page.close();
   });
@@ -62,8 +82,9 @@ describe('the years menu', () => {
 
     const page = await openPage(browser, '/');
     await page.setViewportSize({ width: 1280, height: 800 });
-    const box = await (await openYears(page)).boundingBox();
+    const box = await boxOf(await openYears(page));
 
+    assert.ok(box, 'the years panel has no box on screen');
     assert.ok(box.y >= 0, `the panel starts at y=${Math.round(box.y)}`);
     assert.ok(box.y + box.height <= 800, 'the panel runs past the bottom of the window');
     await page.close();
@@ -100,9 +121,12 @@ describe('the years menu', () => {
 
     const page = await openPage(browser, '/');
     await page.setViewportSize({ width: 1280, height: 500 });
-    const box = await (await openYears(page)).boundingBox();
+    const box = await boxOf(await openYears(page));
 
-    assert.ok(box.height <= 500 * 0.62, `the panel is ${Math.round(box.height)}px of a 500px window`);
+    assert.ok(
+      box.height <= 500 * 0.62,
+      `the panel is ${Math.round(box.height)}px of a 500px window`
+    );
     assert.ok(box.y + box.height <= 500, 'the panel runs past the bottom of a short window');
     await page.close();
   });

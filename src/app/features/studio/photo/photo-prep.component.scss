@@ -1,3 +1,5 @@
+@use '../../../../styles/controls';
+
 @use '../../../../styles/tokens';
 
 .prep {
@@ -366,15 +368,8 @@
 }
 
 .prep-tool {
-  font: inherit;
-  font-size: 0.8rem;
-  padding: 0.25rem 0.7rem;
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  background: transparent;
-  color: inherit;
+  @include controls.plain-button(0.25rem 0.7rem, 0.8rem);
   opacity: 0.55;
-  cursor: pointer;
 }
 
 .prep-tool-on {

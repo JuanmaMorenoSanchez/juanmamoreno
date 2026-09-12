@@ -1,0 +1,26 @@
+// Controls that are drawn rather than filled in.
+//
+// The studio's buttons are outlines: they sit on a photograph or beside one and
+// must not compete with it for the eye. The recipe was written out three times —
+// the mint button, the gated one beside it, and the brush tools — which is three
+// places to change and two to forget.
+
+/// An outlined button that takes its colour from whatever it sits on.
+///
+/// No margin of its own: these sit in rows beside each other, and a margin here
+/// puts one lower than the next. Spacing belongs to the row.
+@mixin plain-button($padding: 0.6rem 1.4rem, $size: inherit) {
+  font: inherit;
+  font-size: $size;
+  padding: $padding;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

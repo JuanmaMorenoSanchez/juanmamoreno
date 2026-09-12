@@ -48,47 +48,7 @@ import { GasPriceService } from '@shared/services/gas-price.service';
       }
     </div>
   `,
-  styles: `
-    .gate {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .gate-go {
-      font: inherit;
-      padding: 0.6rem 1.4rem;
-      border: 1px solid currentColor;
-      border-radius: 3px;
-      background: transparent;
-      color: inherit;
-      cursor: pointer;
-    }
-
-    .gate-go[disabled] {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .gate-price {
-      font-size: 0.85rem;
-      opacity: 0.75;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* The one thing here that has to be noticed rather than read. */
-    .gate-dear {
-      opacity: 1;
-      color: #b3261e;
-      font-weight: 600;
-    }
-
-    .gate-price em {
-      font-style: normal;
-      opacity: 0.7;
-    }
-  `,
+  styleUrl: './mint-gate.component.scss',
 })
 export class MintGateComponent {
   protected readonly gas = inject(GasPriceService);
@@ -98,9 +58,7 @@ export class MintGateComponent {
   readonly disabled = input(false);
   readonly mint = output<void>();
 
-  protected readonly tooDear = computed(
-    () => this.gas.price() !== null && !this.gas.affordable()
-  );
+  protected readonly tooDear = computed(() => this.gas.price() !== null && !this.gas.affordable());
 
   /**
    * Also stopped before the first price arrives.

@@ -1,0 +1,30 @@
+@use '../../../../styles/controls';
+
+.gate {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.gate-go {
+  @include controls.plain-button;
+}
+
+.gate-price {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The one thing here that has to be noticed rather than read. */
+.gate-dear {
+  opacity: 1;
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.gate-price em {
+  font-style: normal;
+  opacity: 0.7;
+}

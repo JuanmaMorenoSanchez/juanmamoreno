@@ -1,3 +1,5 @@
+@use '../../../../styles/controls';
+
 .mint {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
@@ -102,18 +104,7 @@
   a margin here would have sat this button lower than the one next to it.
 */
 .mint-button {
-  font: inherit;
-  padding: 0.6rem 1.4rem;
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-.mint-button[disabled] {
-  opacity: 0.45;
-  cursor: default;
+  @include controls.plain-button;
 }
 
 .prepared,

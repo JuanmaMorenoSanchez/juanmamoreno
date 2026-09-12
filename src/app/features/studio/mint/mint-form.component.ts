@@ -1,8 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
-import { environment } from '@environments/environment';
+import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
 import {
   ARTIST,
@@ -13,19 +19,6 @@ import {
   mintableYears,
   normaliseMeasurement,
 } from '@domain/artwork/mint-vocabulary';
-
-/** A certificate the api has prepared and that is waiting to be signed. */
-export interface PendingMint {
-  tokenId: number;
-  name: string;
-  description: string;
-  external_url: string;
-  attributes: Array<{ trait_type: string; value: string }>;
-  thumbnailBase64: string;
-  webUrl: string;
-  originalUrl: string;
-  preparedAt: string;
-}
 
 /**
  * Describes a new painting, and stops before signing for it.
@@ -49,7 +42,7 @@ export interface PendingMint {
   styleUrl: './mint-form.component.scss',
 })
 export class MintFormComponent {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(MintApiService);
   private readonly handoff = inject(StudioHandoffService);
 
   protected readonly mediums = MEDIUMS;
@@ -83,11 +76,11 @@ export class MintFormComponent {
   });
 
   protected readonly measurementsOk = computed(
-    () => isMeasurement(this.height()) && isMeasurement(this.width()),
+    () => isMeasurement(this.height()) && isMeasurement(this.width())
   );
 
   protected readonly ready = computed(
-    () => !!this.name().trim() && this.measurementsOk() && !!this.photo() && !this.busy(),
+    () => !!this.name().trim() && this.measurementsOk() && !!this.photo() && !this.busy()
   );
 
   constructor() {
@@ -163,23 +156,16 @@ export class MintFormComponent {
     if (this.description().trim()) body.append('description', this.description().trim());
 
     try {
-      const result = await this.http
-        .post<PendingMint>(`${environment.backendUrl}/mint/prepare`, body)
-        .toPromise();
+      const result = await this.api.prepare(body);
       this.prepared.set(result ?? null);
       this.reset();
       this.loadWaiting();
 
       if (mintNow) {
-        const written = await this.http
-          .post<{ minted: number[]; skipped: string }>(
-            `${environment.backendUrl}/mint/pending/mint`,
-            {}
-          )
-          .toPromise();
-        if (!written?.minted.length) {
+        const written = await this.api.mintWaiting();
+        if (!written.minted.length) {
           this.error.set(
-            `Prepared and waiting, but not written${written?.skipped ? ` — ${written.skipped}` : ''}.`
+            `Prepared and waiting, but not written${written.skipped ? ` — ${written.skipped}` : ''}.`
           );
         }
         this.loadWaiting();
@@ -193,10 +179,7 @@ export class MintFormComponent {
   }
 
   protected async discard(tokenId: number): Promise<void> {
-    await this.http
-      .delete(`${environment.backendUrl}/mint/pending/${tokenId}`)
-      .toPromise()
-      .catch(() => undefined);
+    await this.api.discard(tokenId).catch(() => undefined);
     this.loadWaiting();
   }
 
@@ -210,11 +193,9 @@ export class MintFormComponent {
   }
 
   private loadWaiting(): void {
-    this.http
-      .get<PendingMint[]>(`${environment.backendUrl}/mint/pending`)
-      .subscribe({
-        next: (list) => this.waiting.set([...list].sort((a, b) => a.tokenId - b.tokenId)),
-        error: () => this.waiting.set([]),
-      });
+    this.api
+      .waiting()
+      .then((list) => this.waiting.set(list))
+      .catch(() => this.waiting.set([]));
   }
 }

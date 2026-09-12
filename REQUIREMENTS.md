@@ -384,34 +384,6 @@ the photograph, never synthesised by a model.
 *Proven by:* `quad.spec.ts` "never enlarges either axis", `prepare-photo.spec.ts`
 "never enlarges the photograph it was given"
 
-### R22 — Uneven lighting is evened out, gently · met
-Lighting is measured; if it is already even it is left alone. When it is not, a
-flat-field division lifts the dim side without touching the colour of the paint,
-clamped so it cannot flatten a composition it has misread.
-
-The light is fitted as a **plane**, discarding what disagrees with it, and never
-read off a blurred copy of the painting. A blurred copy cannot tell light from
-paint — a pale passage is bright at every scale — so a white garment came back
-as a lamp and was shaded to put it out. A plane can only say that one side got
-more light than the other, which is the common fault and one a garment cannot
-fake. Anything richer regains the freedom to sit down over the garment and call
-it light.
-*Proven by:* `prepare-photo.spec.ts` "illumination" (6 tests, including a white
-garment under even light being left untouched while a real lamp is still found
-on a canvas that has one)
-
-### R23 — Glare is filled in, white paint is not · met
-Small, near-white, desaturated spots that are brighter than the paint around
-them are filled from their surroundings. A broad passage of white paint is too
-large to qualify and is left untouched — and so is a passage of white paint cut
-into pieces by dark marks, which size alone does not protect, since every piece
-is small and pale and brighter than the marks beside it. Candidates are joined
-up on a coarse grid first: real flare stays sparse, a patterned garment becomes
-one region and is left alone entire.
-*Proven by:* `prepare-photo.spec.ts` "specular highlights" (6 tests, including a
-marked white garment left untouched while a real flare on the same canvas is
-still found)
-
 ### R25 — A side that the lens bent can be described as a curve · met
 Four corners describe a painting seen at an angle and nothing more: a lens bows
 the long sides, and a stretcher that has taken a bow bows them for real. Each
@@ -580,15 +552,6 @@ those bury the one genuinely new site among them.
 *Proven by:* `link-groups.spec.ts` (11 tests, including the record-sleeve case),
 and the browser probe against token 71, whose ten pages are all one site
 
-### R31 — A rim along an edge is evened out · met
-A shadow or a bright band along any of the four edges is found one side at a
-time — read as the median across the length of that side, so a dark passage of
-paint reaching the edge cannot invent one — and lifted back towards the paint
-beside it, fading to nothing by the inner edge of the band. Clean edges are left
-alone and the report says which sides, if any, were touched.
-*Proven by:* `prepare-photo.spec.ts` "a rim of shadow or glare along an edge"
-(5 tests, including that the middle of the painting is untouched)
-
 ### R32 — The size is never typed twice · met
 The width and height boxes arrive filled: with the last size given, or on a
 first visit with the proportions of the photograph itself, which keeps the
@@ -612,23 +575,6 @@ cross so the corner is placed on a point rather than somewhere under a circle.
 This is what makes a mis-found outline recoverable rather than fatal.
 *Proven by:* the studio probe (the preview canvas is painted and fills the
 window; each handle has both strokes)
-
-### R61 — The tones are opened out only when they are shut, and only partly · met
-When the photograph never reached either end of the range, it is stretched back
-out — per channel rather than by luminance, never onto pure black or pure white,
-at no more than half the full correction and no steeper than a third. The
-correction is scaled as one thing: capping the steepness alone while pinning the
-dark end to black drags every midtone down with it. When the photograph already
-used its range, nothing is done.
-*Proven by:* `prepare-photo.spec.ts` "auto levels" (4 tests, including that a
-midtone stays where it was)
-
-### R62 — A colour cast is judged only where there is evidence · met
-A blue or yellow cast is measured from the pale, near-colourless parts of the
-painting and corrected by at most 14% per channel. A painting with nothing pale
-in it is left exactly as photographed and the report says why — a mostly
-terracotta painting must never be averaged towards grey.
-*Proven by:* `prepare-photo.spec.ts` "colour temperature" (4 tests)
 
 ### R63 — Softness is reported, never repaired · met
 Parts of the painting that came out soft are named. Blur is told from flat paint
@@ -1019,6 +965,15 @@ sorted or matched cleanly.
 under the one spelling the collection uses", "rewrites a dot as a comma rather
 than refusing it" and "takes a half-typed decimal as the whole number it
 already is")
+
+<!--
+  R22, R23, R31, R61 and R62 described the five passes that measured the
+  photograph and decided for themselves whether to act — the lighting, the
+  glare, the rims, the tonal range and the cast. They were removed in 1.38.0 in
+  favour of the three sliders described below, and their code was deleted in
+  1.39.2. A requirements document is a claim about the present, so they are gone
+  rather than marked unmet.
+-->
 
 ### R81 — The photograph is corrected by hand, not by guesswork · met
 Three sliders — brightness, temperature, range — each sitting at nought on the

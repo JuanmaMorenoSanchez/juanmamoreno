@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.39.2
+
+- **chore** — deleted 795 lines of image code nothing called: the lighting,
+  glare, rim and colour passes removed in 1.38.0, still carrying tests that
+  proved code no page could reach. R22, R23, R31, R61 and R62 went with them.
+- **chore** — one `MintApiService` instead of two components holding their own
+  copy of the same four calls and their own `PendingMint`, which disagreed.
+- **chore** — the photograph corrector is 966 lines rather than 1,089: the brush
+  and the rights panel are objects of their own, each with its own tests, and
+  neither has anything to do with correcting a photograph.
+- **chore** — the outlined-button recipe was written out three times; it is a
+  mixin now, and the gate's styles moved out of the component into a file like
+  every other component's.
+- **fix** — the years-menu test measured an overlay before it had been laid out
+  and failed only under the load of the full suite. It waits for the box now.
+
 ## 1.39.1
 
 - **feat** — the brush erases as well as selects. Taking a selection back was
