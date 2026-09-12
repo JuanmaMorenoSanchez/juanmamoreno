@@ -1074,3 +1074,23 @@ package is updated.
 `--frozen-lockfile` — the policy is checked there too, so a lockfile that
 bypassed it locally fails in CI.
 
+### R86 — The artist signs his own certificates, from his own phone · met
+The contract's minter is his own wallet, so he is the one who can add a
+certificate — and a wallet app's browser puts that wallet on the page. Opened
+there, the waiting list offers **Sign** on each certificate: the api assembles
+what it will say and encodes the call, the wallet signs it as him, and no
+minting key exists anywhere for anyone to steal.
+
+Nothing is built in the browser. The bytes arrive already encoded, because what
+a certificate says is decided in one place, and the page's only jobs are to ask
+which wallet is signing and to hand the bytes over.
+
+The chain is checked before a signature is asked for. A wallet pointed at
+another network would sign something meaningless and report success, and the
+certificate would look written when nothing had happened. The list is shortened
+only once the chain has been asked whether the token is really there.
+*Proven by:* `wallet.service.spec.ts` (7 tests, including "refuses to go on when
+the wallet will not leave the wrong chain", "sends exactly what it was given, and
+builds nothing itself" and "says where to find a wallet rather than failing
+silently"). The transaction itself is the backend's B39.
+

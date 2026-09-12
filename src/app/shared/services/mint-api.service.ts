@@ -58,6 +58,31 @@ export class MintApiService {
     return firstValueFrom(this.http.post<MintOutcome>(`${this.base}/pending/mint`, {}));
   }
 
+  /**
+   * The transaction that writes one certificate, for a wallet to sign.
+   *
+   * Assembled by the api, because what a certificate says is decided in one
+   * place. Nothing here builds metadata or encodes a call.
+   */
+  public signable(
+    tokenId: number,
+    to: string
+  ): Promise<{ to: string; data: string; chainId: number; tokenId: number }> {
+    return firstValueFrom(
+      this.http.get<{ to: string; data: string; chainId: number; tokenId: number }>(
+        `${this.base}/pending/${tokenId}/transaction`,
+        { params: { to } }
+      )
+    );
+  }
+
+  /** Asks the api to check the chain, and to take it off the list if it is there. */
+  public confirmWritten(tokenId: number): Promise<{ written: boolean }> {
+    return firstValueFrom(
+      this.http.post<{ written: boolean }>(`${this.base}/pending/${tokenId}/written`, {})
+    );
+  }
+
   /** Takes one off the list. It was never on the chain, so nothing is lost. */
   public discard(tokenId: number): Promise<unknown> {
     return firstValueFrom(this.http.delete(`${this.base}/pending/${tokenId}`));

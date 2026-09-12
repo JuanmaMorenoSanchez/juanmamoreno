@@ -1,3 +1,5 @@
+@use '../../../styles/controls';
+
 .pending {
   max-width: 46rem;
 }
@@ -67,4 +69,11 @@
 .pending-discard:hover,
 .pending-discard:focus-visible {
   opacity: 1;
+}
+
+/* The one button here that spends money, so it reads as a button rather than an
+   icon: pressing it opens a wallet and asks for a signature. */
+.pending-sign {
+  @include controls.plain-button(0.35rem 0.9rem, 0.85rem);
+  align-self: center;
 }

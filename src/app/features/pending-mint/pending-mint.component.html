@@ -12,6 +12,18 @@
     (mint)="mintAll()"
   />
 
+  <!--
+    The other way of writing one, and the only one that needs no key anywhere:
+    the wallet on this device signs it. Shown only where there is a wallet to
+    sign with, which on a desktop browser there usually is not.
+  -->
+  @if (!wallet.available()) {
+    <p class="pending-note">
+      To sign a certificate yourself, open this page inside your wallet app’s
+      browser. The button appears once there is a wallet on the page.
+    </p>
+  }
+
   @if (busy()) {
     <p class="pending-note">Writing…</p>
   }
@@ -39,6 +51,17 @@
               {{ trait(mint, 'Width') }} {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
             </small>
           </span>
+          @if (wallet.available()) {
+            <button
+              type="button"
+              class="pending-sign"
+              [disabled]="busy()"
+              (click)="signHere(mint)"
+              [attr.aria-label]="'Sign ' + mint.name + ' with this wallet'"
+            >
+              Sign
+            </button>
+          }
           <button
             type="button"
             class="pending-discard"

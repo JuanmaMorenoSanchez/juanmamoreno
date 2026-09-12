@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.41.0
+
+- **feat** — a certificate can be signed from the phone. Opened inside a wallet
+  app's browser, `/pendingmint` offers **Sign** on each waiting certificate: the
+  api assembles it and encodes the call, the wallet signs as the artist, and the
+  list clears only once the chain says the token is there.
+- **feat** — the wallet is reached through the page's own provider. No connector
+  library, no project id and no new dependency: the site already talks to a node
+  over plain fetch, and this is the same idea.
+- **fix** — the chain is checked before anything is signed. A wallet on another
+  network would otherwise sign something meaningless and report success.
+
 ## 1.40.0
 
 - **feat** — pnpm replaces npm, pinned by the `packageManager` field and
