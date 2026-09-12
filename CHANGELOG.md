@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.44.1
+
+- **fix** — every call to the mint api now carries the artist's token. None of
+  them did, so all six were refused with "Forbidden resource": preparing a
+  certificate stored nothing and minting stopped before a wallet was ever
+  opened. This application has no interceptor — each service attaches its own —
+  and these had never been given one.
+
 ## 1.44.0
 
 - **feat** — "Square the picture up to these", beside the measurements and on by

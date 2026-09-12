@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '@environments/environment';
+import { AdminAuthService } from './admin-auth.service';
 
 /**
  * A certificate prepared and waiting for a cheap morning.
@@ -40,22 +41,45 @@ export interface MintOutcome {
 @Injectable({ providedIn: 'root' })
 export class MintApiService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AdminAuthService);
   private readonly base = `${environment.backendUrl}/mint`;
+
+  /**
+   * The artist's token, on every request.
+   *
+   * There is no interceptor in this application — each service that asks
+   * something only he may ask attaches this itself — and these did not, so every
+   * one of them was refused with "Forbidden resource": preparing a certificate
+   * stored nothing, and minting stopped before a wallet was ever opened.
+   *
+   * An expired token is never sent: `bearerToken` gives null once the hour is
+   * up, and the call is refused exactly as it would have been anyway.
+   */
+  private authorised(): { headers: Record<string, string> } {
+    const token = this.auth.bearerToken();
+    return { headers: token ? { Authorization: `Bearer ${token}` } : {} };
+  }
 
   /** The certificates prepared and not yet written, lowest token first. */
   public async waiting(): Promise<PendingMint[]> {
-    const list = await firstValueFrom(this.http.get<PendingMint[]>(`${this.base}/pending`));
+    const list = await firstValueFrom(
+      this.http.get<PendingMint[]>(`${this.base}/pending`, this.authorised())
+    );
     return [...list].sort((a, b) => a.tokenId - b.tokenId);
   }
 
   /** Prepares one from the studio form: images, metadata, a token id. */
   public prepare(form: FormData): Promise<PendingMint> {
-    return firstValueFrom(this.http.post<PendingMint>(`${this.base}/prepare`, form));
+    return firstValueFrom(
+      this.http.post<PendingMint>(`${this.base}/prepare`, form, this.authorised())
+    );
   }
 
   /** Asks for everything waiting to be written, which it may decline to do. */
   public mintWaiting(): Promise<MintOutcome> {
-    return firstValueFrom(this.http.post<MintOutcome>(`${this.base}/pending/mint`, {}));
+    return firstValueFrom(
+      this.http.post<MintOutcome>(`${this.base}/pending/mint`, {}, this.authorised())
+    );
   }
 
   /**
@@ -71,7 +95,7 @@ export class MintApiService {
     return firstValueFrom(
       this.http.get<{ to: string; data: string; chainId: number; tokenId: number }>(
         `${this.base}/pending/${tokenId}/transaction`,
-        { params: { to } }
+        { params: { to }, ...this.authorised() }
       )
     );
   }
@@ -79,12 +103,16 @@ export class MintApiService {
   /** Asks the api to check the chain, and to take it off the list if it is there. */
   public confirmWritten(tokenId: number): Promise<{ written: boolean }> {
     return firstValueFrom(
-      this.http.post<{ written: boolean }>(`${this.base}/pending/${tokenId}/written`, {})
+      this.http.post<{ written: boolean }>(
+        `${this.base}/pending/${tokenId}/written`,
+        {},
+        this.authorised()
+      )
     );
   }
 
   /** Takes one off the list. It was never on the chain, so nothing is lost. */
   public discard(tokenId: number): Promise<unknown> {
-    return firstValueFrom(this.http.delete(`${this.base}/pending/${tokenId}`));
+    return firstValueFrom(this.http.delete(`${this.base}/pending/${tokenId}`, this.authorised()));
   }
 }

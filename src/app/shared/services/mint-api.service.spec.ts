@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '@environments/environment';
+import { AdminAuthService } from './admin-auth.service';
 import { MintApiService, type PendingMint } from './mint-api.service';
 
 /**
@@ -27,7 +28,11 @@ describe('MintApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'his-token' } },
+      ],
     });
     api = TestBed.inject(MintApiService);
     http = TestBed.inject(HttpTestingController);
@@ -75,5 +80,45 @@ describe('MintApiService', () => {
     request.flush({});
 
     await promise;
+  });
+
+  /**
+   * Every one of these asks something only the artist may ask, and this
+   * application has no interceptor — each service attaches its own token. These
+   * did not, so all six were refused with "Forbidden resource": nothing was
+   * stored when a certificate was prepared, and minting stopped before a wallet
+   * was ever opened.
+   */
+  describe('the artist’s token', () => {
+    it('goes with every request', async () => {
+      const calls: Array<[() => void, string, string]> = [
+        [() => void api.waiting(), 'GET', `${base}/pending`],
+        [() => void api.prepare(new FormData()), 'POST', `${base}/prepare`],
+        [() => void api.mintWaiting(), 'POST', `${base}/pending/mint`],
+        [() => void api.confirmWritten(197), 'POST', `${base}/pending/197/written`],
+        [() => void api.discard(197), 'DELETE', `${base}/pending/197`],
+      ];
+
+      for (const [call, method, url] of calls) {
+        call();
+        const request = http.expectOne((candidate) => candidate.url === url);
+        expect(request.request.method).toBe(method);
+        expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
+        request.flush([]);
+      }
+    });
+
+    it('goes with the one that carries a query as well', async () => {
+      // The easiest to get wrong: the options object already had something in
+      // it, so the headers had to join it rather than replace it.
+      void api.signable(197, '0xD7D0');
+      const request = http.expectOne((candidate) =>
+        candidate.url.endsWith('/pending/197/transaction')
+      );
+
+      expect(request.request.params.get('to')).toBe('0xD7D0');
+      expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
+      request.flush({});
+    });
   });
 });
