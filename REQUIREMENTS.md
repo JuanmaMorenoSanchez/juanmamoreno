@@ -1179,3 +1179,19 @@ ask that cannot be met, rather than leaving it waiting" and "answers every ask,
 not just the first"), which is the contract that lets the form offer its buttons
 before anything has been rendered.
 
+### R90 — A title that would collide is mentioned before it is written · met
+Titles carry meaning here: certificates sharing one are the same painting
+photographed more than once, and the site groups them on that basis — twenty-four
+of the first hundred and eighty-six are grouped that way. So a repeated title
+joins that painting's group, which is right for another view of it and wrong for
+a different painting; and a title one letter out splits a painting from its own
+other photographs, silently.
+
+Both are said before the certificate is prepared, with links to what was found,
+and neither stops anything: the first is often exactly what was meant. Compared
+the way a person reads a title — case, accents and punctuation are ways of
+writing one name, not different names.
+*Proven by:* `title-check.spec.ts` (8 tests, including "finds the painting a
+repeated title would join", "catches the near miss, which is the dangerous one"
+and "reads accents, case and punctuation as ways of writing one name").
+

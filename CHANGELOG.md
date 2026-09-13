@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.48.0
+
+- **feat** — the studio says when a title is already used, or nearly. Sharing a
+  title is how a second photograph of one painting is grouped with the first, so
+  an exact match is often right; a title one letter out is how a painting gets
+  quietly split from its own other photographs, which nothing else would
+  mention. Both link to what they found, and neither stops anything.
+
 ## 1.47.1
 
 - **fix** — the viewer no longer shows a band of empty frame while the blurred

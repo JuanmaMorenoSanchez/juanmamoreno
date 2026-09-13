@@ -63,6 +63,42 @@
   </div>
 
   <!--
+    A word about the title, never a refusal. Sharing one is how a second
+    photograph of a painting is grouped with the first, so an exact match is
+    often exactly right — and a title one letter out is how a painting gets
+    quietly split from its own other photographs, which nothing else would
+    mention. Both link to what they found, so it can be checked.
+  -->
+  @if (sameTitle().length) {
+    <aside class="mint-notice" role="status">
+      <strong>That title is already used.</strong>
+      Certificates sharing a title are read as one painting photographed more than
+      once — right for another view of it, wrong for a different painting.
+      <span class="mint-notice-links">
+        @for (match of sameTitle(); track match.tokenId) {
+          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+            {{ match.tokenId }} · {{ match.name }}
+          </a>
+        }
+      </span>
+    </aside>
+  }
+  @if (nearTitle().length) {
+    <aside class="mint-notice" role="status">
+      <strong>Nearly the title of something else.</strong>
+      If it is the same painting, the title has to match exactly or the two will not
+      be grouped.
+      <span class="mint-notice-links">
+        @for (match of nearTitle(); track match.tokenId) {
+          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+            {{ match.tokenId }} · {{ match.name }}
+          </a>
+        }
+      </span>
+    </aside>
+  }
+
+  <!--
     What the corrector already knows, shown rather than asked: it cannot
     straighten a photograph without the painting's proportions, so by the time
     there is anything to certify the size has been given. Asking again was only

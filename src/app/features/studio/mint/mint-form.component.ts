@@ -1,12 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import type { Nft } from '@domain/artwork/artwork.entity';
+import { titlesLike } from '@domain/artwork/title-check';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
 import {
@@ -42,6 +40,7 @@ import {
 })
 export class MintFormComponent {
   private readonly api = inject(MintApiService);
+  private readonly artworks = inject(ARTWORK_PORT);
   private readonly router = inject(Router);
   private readonly handoff = inject(StudioHandoffService);
 
@@ -72,6 +71,34 @@ export class MintFormComponent {
     if (!this.height() || !this.width()) return '';
     return `${this.medium()}, ${this.height()} × ${this.width()} ${this.unit()}, ${this.year()}.`;
   });
+
+  /**
+   * Everything already in the collection, for the title check below.
+   *
+   * Read from what the site already holds rather than asked for: the catalogue
+   * is in the browser by the time the studio is open.
+   */
+  private readonly existing = toSignal(this.artworks.getArtPiecesObservable(), {
+    initialValue: [] as Nft[],
+  });
+
+  /**
+   * Titles this one would collide with, exactly or nearly.
+   *
+   * A word rather than a refusal. Sharing a title is how a second photograph of
+   * one painting is grouped, so an exact match is often right — and a title one
+   * letter out is how a painting quietly gets split from its own other
+   * photographs, which nothing else would ever mention.
+   */
+  protected readonly titleClashes = computed(() =>
+    titlesLike(
+      this.name(),
+      this.existing().map((nft) => ({ tokenId: String(nft.tokenId), name: nft.name ?? '' }))
+    )
+  );
+
+  protected readonly sameTitle = computed(() => this.titleClashes().filter((one) => one.same));
+  protected readonly nearTitle = computed(() => this.titleClashes().filter((one) => !one.same));
 
   /** What the corrector has, as it changes, before anything has been rendered. */
   protected readonly fromCorrector = this.handoff.size;

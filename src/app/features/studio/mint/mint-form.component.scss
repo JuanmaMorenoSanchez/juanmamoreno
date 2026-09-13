@@ -128,3 +128,20 @@
   flex-wrap: wrap;
   margin-top: 1.2rem;
 }
+
+/* Said, not enforced: both cases it reports are sometimes exactly right. */
+.mint-notice {
+  display: block;
+  margin: 0.9rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 2px solid currentColor;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.mint-notice-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
