@@ -861,6 +861,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/artwork/198/</loc>
+    <lastmod>2026-09-13</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/zOPeKSKwpDDM3TUClPp-TvWHLWT2fzhNdg1olm3v6sk</image:loc>
+      <image:title>Escena sin asunto</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/artwork/2/</loc>
     <lastmod>2026-09-13</lastmod>
     <priority>0.7</priority>
@@ -2498,6 +2508,16 @@
     <image:image>
       <image:loc>https://arweave.net/95W8phjj9z7PftYqMUfHi5iKjl6NUqJESLsSFP3hLnw</image:loc>
       <image:title>Rockets win II</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/es/artwork/198/</loc>
+    <lastmod>2026-09-13</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/zOPeKSKwpDDM3TUClPp-TvWHLWT2fzhNdg1olm3v6sk</image:loc>
+      <image:title>Escena sin asunto</image:title>
     </image:image>
   </url>
   <url>
