@@ -61,6 +61,33 @@ export function normaliseMeasurement(input: string): string {
   return input.trim().replace('.', ',').replace(/,+$/, '');
 }
 
+/**
+ * A measurement as it is being typed, which is not the same thing.
+ *
+ * `normaliseMeasurement` drops a trailing comma, which is right for a
+ * measurement being stored and wrong for one being written: pressing the comma
+ * key in "140,5" produced "140," which was tidied back to "140" before the 5
+ * could be typed, so the next keystroke gave 1405. A decimal could not be
+ * entered at all, in either form, by anybody.
+ *
+ * So while typing the comma is left where it is put, and only the things that
+ * could never become a measurement are refused: letters, a second comma, more
+ * than two decimal places.
+ */
+export function measurementAsTyped(input: string): string {
+  const [whole, ...rest] = input.trim().replace('.', ',').split(',');
+  const digits = whole.replace(/\D/g, '').slice(0, 4);
+  if (!rest.length) return digits;
+  return `${digits},${rest.join('').replace(/\D/g, '').slice(0, 2)}`;
+}
+
+/** What a typed measurement is worth as a number, or null when it is not one yet. */
+export function measurementValue(input: string): number | null {
+  if (!isMeasurement(input)) return null;
+  const value = Number(normaliseMeasurement(input).replace(',', '.'));
+  return Number.isFinite(value) && value > 0 ? value : null;
+}
+
 /** Whether a measurement is a number the collection would recognise. */
 export function isMeasurement(input: string): boolean {
   return /^\d{1,4}(,\d{1,2})?$/.test(normaliseMeasurement(input));

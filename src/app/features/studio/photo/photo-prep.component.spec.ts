@@ -25,8 +25,10 @@ type Internals = {
   webStatement: () => string;
   noticePreview: () => string;
   rights: () => { artist: string; notice?: string; webStatement?: string } | null;
-  realWidth: { set(v: number): void };
-  realHeight: { set(v: number): void };
+  // Held as text now, because the boxes take the collection's own notation —
+  // "140,5" — which a number input refused outright.
+  widthText: { set(v: string): void };
+  heightText: { set(v: string): void };
   selecting: { (): boolean; set(v: boolean): void };
   brushMode: { (): 'add' | 'erase'; set(v: 'add' | 'erase'): void };
   useBrush(mode: 'add' | 'erase'): void;
@@ -214,8 +216,8 @@ describe('PhotoPrepComponent — brushing an area', () => {
     const { component } = setup();
     component.size.set({ width: 400, height: 300 });
     component.corners.set(QUAD);
-    component.realWidth.set(100);
-    component.realHeight.set(80);
+    component.widthText.set('100');
+    component.heightText.set('80');
     component.selecting.set(true);
 
     // A dab in the middle of the photograph, as a pointer at the centre gives.
@@ -234,8 +236,8 @@ describe('PhotoPrepComponent — brushing an area', () => {
     const { component } = setup();
     component.size.set({ width: 400, height: 300 });
     component.corners.set(QUAD);
-    component.realWidth.set(100);
-    component.realHeight.set(80);
+    component.widthText.set('100');
+    component.heightText.set('80');
     component.selecting.set(true);
     component.brushAt({ x: 200, y: 150 });
     expect(component.hasArea()).toBe(true);

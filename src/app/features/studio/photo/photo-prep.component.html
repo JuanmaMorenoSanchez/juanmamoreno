@@ -110,12 +110,17 @@
         <legend>The painting itself</legend>
         <label>
           Height
+          <!--
+            Text, not a number input. A number box stepping in tenths refused a
+            comma outright and called two decimal places invalid, so the
+            collection's own notation — "140,5" — could not be typed into it.
+          -->
           <input
-            type="number"
-            min="1"
-            step="0.1"
+            type="text"
             inputmode="decimal"
-            [value]="realHeight() ?? ''"
+            autocomplete="off"
+            placeholder="140,5"
+            [value]="heightText()"
             (focus)="$any($event.target).select()"
             (input)="setHeight($event)"
           />
@@ -124,11 +129,11 @@
         <label>
           Width
           <input
-            type="number"
-            min="1"
-            step="0.1"
+            type="text"
             inputmode="decimal"
-            [value]="realWidth() ?? ''"
+            autocomplete="off"
+            placeholder="116"
+            [value]="widthText()"
             (focus)="$any($event.target).select()"
             (input)="setWidth($event)"
           />

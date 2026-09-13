@@ -5,6 +5,8 @@ import {
   MEDIUMS,
   UNITS,
   isMeasurement,
+  measurementAsTyped,
+  measurementValue,
   mintableYears,
   normaliseMeasurement,
 } from './mint-vocabulary';
@@ -87,5 +89,45 @@ describe('measurements, in the notation the collection uses', () => {
     // sensible reading, so it is read rather than rejected mid-typing.
     expect(normaliseMeasurement('50,')).toBe('50');
     expect(isMeasurement('50,')).toBe(true);
+  });
+
+  describe('typing a measurement one key at a time', () => {
+    /** What the box holds after each keystroke, as the handler rewrites it. */
+    const typed = (keys: string): string =>
+      [...keys].reduce((sofar, key) => measurementAsTyped(sofar + key), '');
+
+    it('lets a decimal be typed at all', () => {
+      // It could not be, in either form, by anybody: the comma was tidied away
+      // on the keystroke that made it, so "140,5" came out as 1405.
+      expect(typed('140,5')).toBe('140,5');
+      expect(typed('140,55')).toBe('140,55');
+    });
+
+    it('keeps the comma where it was put, so the next digit lands after it', () => {
+      expect(measurementAsTyped('140,')).toBe('140,');
+    });
+
+    it('takes a dot as the comma it was meant to be', () => {
+      expect(typed('29.7')).toBe('29,7');
+    });
+
+    it('refuses what could never be a measurement', () => {
+      expect(measurementAsTyped('14o')).toBe('14');
+      expect(measurementAsTyped('140,5,5')).toBe('140,55');
+      expect(measurementAsTyped('140,555')).toBe('140,55');
+      expect(measurementAsTyped('123456')).toBe('1234');
+    });
+
+    it('is worth what it says once it is a measurement', () => {
+      expect(measurementValue('140,55')).toBeCloseTo(140.55);
+      expect(measurementValue('29,7')).toBeCloseTo(29.7);
+      expect(measurementValue('140')).toBe(140);
+    });
+
+    it('is worth nothing while it is still half typed', () => {
+      expect(measurementValue('140,')).toBe(140);
+      expect(measurementValue('')).toBeNull();
+      expect(measurementValue('abc')).toBeNull();
+    });
   });
 });

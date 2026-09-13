@@ -961,7 +961,15 @@ that nothing can correct it.
 A measurement typed with a dot becomes a comma as it is typed, because the
 collection writes decimals with a comma and one written both ways can never be
 sorted or matched cleanly.
-*Proven by:* `mint-vocabulary.spec.ts` (13 tests, including "offers the artist
+A decimal can be typed, which for a while it could not: the trailing comma was
+tidied away on the keystroke that made it, so "140,5" became 1405 and every
+measurement in the collection could only be a whole number. Tidying now happens
+when a measurement is read rather than while it is written, and the corrector's
+boxes take the same notation as the form — they were number inputs stepping in
+tenths, which refuse a comma outright.
+*Proven by:* `mint-vocabulary.spec.ts` (19 tests, including "lets a decimal be
+typed at all" and "keeps the comma where it was put, so the next digit lands
+after it", both typed one key at a time as a person would; and "offers the artist
 under the one spelling the collection uses", "rewrites a dot as a comma rather
 than refusing it" and "takes a half-typed decimal as the whole number it
 already is")

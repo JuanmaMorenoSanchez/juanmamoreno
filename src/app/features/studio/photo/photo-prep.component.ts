@@ -10,6 +10,7 @@ import {
 } from '@domain/image/prepare-photo';
 import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
 import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-source';
+import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocabulary';
 import { PhotoBrush } from './photo-brush';
 import { PhotoRights } from './photo-rights';
 import { createSelection, hasSelection, type Selection } from '@domain/image/selection';
@@ -198,7 +199,7 @@ export class PhotoPrepComponent {
   protected setHandleSize(event: Event): void {
     const size = Math.min(
       MAX_HANDLE_SIZE,
-      Math.max(MIN_HANDLE_SIZE, numberIn(event) ?? DEFAULT_HANDLE_SIZE)
+      Math.max(MIN_HANDLE_SIZE, sliderNumber(event) ?? DEFAULT_HANDLE_SIZE)
     );
     this.handleSize.set(size);
     try {
@@ -258,8 +259,19 @@ export class PhotoPrepComponent {
    */
   protected readonly adaptToSize = signal(true);
 
-  protected readonly realWidth = signal<number | null>(null);
-  protected readonly realHeight = signal<number | null>(null);
+  /**
+   * The measurements as typed, and what they are worth.
+   *
+   * Held as text because that is what is being written: the boxes were number
+   * inputs stepping in tenths, which refused a comma outright and called two
+   * decimal places invalid. The collection writes "140,5", so the box should
+   * take "140,5".
+   */
+  protected readonly widthText = signal('');
+  protected readonly heightText = signal('');
+
+  protected readonly realWidth = computed(() => measurementValue(this.widthText()));
+  protected readonly realHeight = computed(() => measurementValue(this.heightText()));
   /**
    * The three sliders, each nought at the photograph as it arrived.
    *
@@ -468,12 +480,12 @@ export class PhotoPrepComponent {
   }
 
   protected setWidth(event: Event): void {
-    this.realWidth.set(numberIn(event));
+    this.widthText.set(typedInto(event));
     this.remember();
   }
 
   protected setHeight(event: Event): void {
-    this.realHeight.set(numberIn(event));
+    this.heightText.set(typedInto(event));
     this.remember();
   }
 
@@ -489,8 +501,8 @@ export class PhotoPrepComponent {
   private prefillSize(quad: Quad): void {
     const remembered = this.rememberedSize();
     if (remembered) {
-      this.realWidth.set(remembered.width);
-      this.realHeight.set(remembered.height);
+      this.widthText.set(measurementAsTyped(String(remembered.width).replace('.', ',')));
+      this.heightText.set(measurementAsTyped(String(remembered.height).replace('.', ',')));
       return;
     }
 
@@ -500,8 +512,8 @@ export class PhotoPrepComponent {
     if (!across || !down) return;
 
     const longest = Math.max(across, down);
-    this.realWidth.set(Math.round((across / longest) * 100));
-    this.realHeight.set(Math.round((down / longest) * 100));
+    this.widthText.set(String(Math.round((across / longest) * 100)));
+    this.heightText.set(String(Math.round((down / longest) * 100)));
   }
 
   private rememberedSize(): { width: number; height: number } | null {
@@ -1036,9 +1048,23 @@ function textIn(event: Event): string {
   return (event.target as HTMLInputElement).value;
 }
 
-function numberIn(event: Event): number | null {
+/** A plain number from a slider, which has no notation to worry about. */
+function sliderNumber(event: Event): number | null {
   const value = Number.parseFloat((event.target as HTMLInputElement).value);
   return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+/**
+ * What is in the box, tidied only as far as typing allows.
+ *
+ * Written straight back into the box so what is shown is what is held, and a
+ * key that could never belong in a measurement simply does not appear.
+ */
+function typedInto(event: Event): string {
+  const input = event.target as HTMLInputElement;
+  const tidied = measurementAsTyped(input.value);
+  input.value = tidied;
+  return tidied;
 }
 
 /**

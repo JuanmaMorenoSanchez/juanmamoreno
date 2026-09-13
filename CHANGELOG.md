@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.46.0
+
+- **fix** — a decimal can be typed. Both forms tidied away a trailing comma on
+  every keystroke, so the comma of "140,5" was removed by the key that made it
+  and the 5 landed on the whole number: 1405. No measurement with a decimal
+  could be entered anywhere, by anybody.
+- **fix** — the corrector's height and width take the collection's own notation.
+  They were number inputs stepping in tenths, which refuse a comma outright and
+  call two decimal places invalid.
+
 ## 1.45.1
 
 - **fix** — throwing a certificate away says whether it worked. The failure was

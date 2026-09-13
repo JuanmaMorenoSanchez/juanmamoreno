@@ -17,6 +17,7 @@ import {
   UNITS,
   isMeasurement,
   mintableYears,
+  measurementAsTyped,
   normaliseMeasurement,
 } from '@domain/artwork/mint-vocabulary';
 
@@ -117,9 +118,18 @@ export class MintFormComponent {
   }
 
   /** A measurement is tidied as it is typed, so "140.5" becomes "140,5". */
+  /**
+   * What was typed, tidied only as far as typing allows.
+   *
+   * It used to drop a trailing comma on every keystroke, which meant the comma
+   * of "140,5" was removed by the keypress that made it and the 5 landed on the
+   * whole number: 1405. No decimal could be entered here at all. The comma is
+   * left where it is put now; it is dropped when the measurement is read, not
+   * while it is being written.
+   */
   protected measure(which: 'height' | 'width', event: Event): void {
     const input = event.target as HTMLInputElement;
-    const tidied = normaliseMeasurement(input.value);
+    const tidied = measurementAsTyped(input.value);
     input.value = tidied;
     if (which === 'height') this.height.set(tidied);
     else this.width.set(tidied);
@@ -162,8 +172,10 @@ export class MintFormComponent {
     body.append('photo', file);
     body.append('name', this.name().trim());
     body.append('medium', this.medium());
-    body.append('height', this.height());
-    body.append('width', this.width());
+    // Tidied here rather than while typing: a measurement is stored without a
+    // trailing comma, and "140," is a measurement halfway written.
+    body.append('height', normaliseMeasurement(this.height()));
+    body.append('width', normaliseMeasurement(this.width()));
     body.append('unit', this.unit());
     body.append('year', this.year());
     body.append('imageType', this.imageType());
