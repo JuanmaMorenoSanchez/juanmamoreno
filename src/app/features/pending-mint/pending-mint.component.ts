@@ -94,9 +94,14 @@ export class PendingMintComponent {
       // the chain says otherwise, so nothing is lost if this is closed early.
       for (let attempt = 0; attempt < 20; attempt += 1) {
         await new Promise((wait) => setTimeout(wait, 6000));
-        const { written } = await this.api.confirmWritten(mint.tokenId);
+        const { written, shown } = await this.api.confirmWritten(mint.tokenId);
         if (written) {
-          this.outcome.set(`Certificate ${mint.tokenId} is on chain. "${mint.name}" is recorded.`);
+          this.outcome.set(
+            `Certificate ${mint.tokenId} is on chain. "${mint.name}" is recorded` +
+              (shown
+                ? ' and is on the site now.'
+                : ' — the site will show it after tonight’s catalogue read.')
+          );
           this.load();
           return;
         }

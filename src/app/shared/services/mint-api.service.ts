@@ -131,16 +131,19 @@ export class MintApiService {
     );
   }
 
-  /** Asks the api to check the chain, and to take it off the list if it is there. */
-  public confirmWritten(tokenId: number): Promise<{ written: boolean }> {
+  /**
+   * Asks the api to check the chain, take it off the list, and read the
+   * catalogue again so the painting is on the site.
+   */
+  public confirmWritten(tokenId: number): Promise<{ written: boolean; shown: boolean }> {
     return firstValueFrom(
       this.http
-        .post<ApiResponse<{ written: boolean }>>(
+        .post<ApiResponse<{ written: boolean; shown: boolean }>>(
           `${this.base}/pending/${tokenId}/written`,
           {},
           this.authorised()
         )
-        .pipe(map(MintApiService.unwrap<{ written: boolean }>))
+        .pipe(map(MintApiService.unwrap<{ written: boolean; shown: boolean }>))
     );
   }
 

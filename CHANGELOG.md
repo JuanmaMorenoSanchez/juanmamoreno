@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.46.1
+
+- **feat** — after signing, the page says whether the painting is on the site
+  already or waiting for tonight's catalogue read.
+
 ## 1.46.0
 
 - **fix** — a decimal can be typed. Both forms tidied away a trailing comma on
