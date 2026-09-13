@@ -79,11 +79,14 @@ jobs:
           curl -sf -o /dev/null http://127.0.0.1:4300 || { echo "the built site would not serve"; exit 1; }
           E2E_BASE_URL=http://127.0.0.1:4300 pnpm run test:e2e
 
+      # `pnpm exec` rather than `npx`, like every other step here: the package is
+      # a declared devDependency and pnpm has already installed it, so this runs
+      # the version the lockfile names instead of asking npm to fetch one.
       - name: Publish to gh-pages
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          npx angular-cli-ghpages \
+          pnpm exec angular-cli-ghpages \
             --dir=dist/juanmamoreno/browser \
             --cname=juanmamoreno.com \
             --repo=https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git \
