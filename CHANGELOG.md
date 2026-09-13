@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.47.0
+
+- **feat** — the studio asks for each thing once. Height, width and unit were
+  typed in the corrector and asked for again in the certificate; there were two
+  file inputs for one photograph and the artist's name in both places. The
+  certificate now shows what the corrector already knows.
+- **feat** — one action instead of three rows. "Preview and prepopulate" is
+  gone: the full-size render happens when **Save for later** or **Prepare and
+  sign** is pressed, because that is when the result is going to be used.
+  Downloading the JPEG is a quiet link, not a row.
+- **feat** — the photograph stays beside its controls on a wide screen, and
+  stays put as they scroll. Every slider used to sit below the thing it moved.
+- **chore** — the rights fields fold into a disclosure that says whose it is.
+  They are filled in and remembered, and were sitting in the path of everything.
+- **chore** — ten stylesheet rules removed that nothing had used since the
+  markup around them went.
+
 ## 1.46.2
 
 - **chore** — a `.gitattributes` that checks out LF, so switching branches on

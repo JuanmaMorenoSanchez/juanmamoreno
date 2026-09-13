@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -15,7 +14,6 @@ import {
   IMAGE_TYPES,
   MEDIUMS,
   UNITS,
-  isMeasurement,
   mintableYears,
   measurementAsTyped,
   normaliseMeasurement,
@@ -61,8 +59,6 @@ export class MintFormComponent {
   protected readonly year = signal(String(mintableYears()[0]));
   protected readonly imageType = signal(IMAGE_TYPES[0]);
   protected readonly description = signal('');
-  protected readonly photo = signal<File | null>(null);
-  protected readonly photoName = signal('');
 
   protected readonly busy = signal(false);
   protected readonly error = signal('');
@@ -77,28 +73,22 @@ export class MintFormComponent {
     return `${this.medium()}, ${this.height()} × ${this.width()} ${this.unit()}, ${this.year()}.`;
   });
 
-  protected readonly measurementsOk = computed(
-    () => isMeasurement(this.height()) && isMeasurement(this.width())
-  );
+  /** What the corrector has, as it changes, before anything has been rendered. */
+  protected readonly fromCorrector = this.handoff.size;
 
+  /**
+   * Enough to go on.
+   *
+   * A title, and a photograph the corrector could give us. Not a photograph in
+   * hand: rendering one takes long enough that it is done when one of these
+   * buttons is pressed rather than on the chance that one will be.
+   */
   protected readonly ready = computed(
-    () => !!this.name().trim() && this.measurementsOk() && !!this.photo() && !this.busy()
+    () => !!this.name().trim() && this.handoff.canProduce() && !this.busy()
   );
 
   constructor() {
     this.loadWaiting();
-
-    // A photograph corrected above arrives here with the size it was corrected
-    // at, so neither the file nor the measurements are given twice.
-    effect(() => {
-      if (!this.handoff.waiting()) return;
-      const prepared = this.handoff.take();
-      if (!prepared) return;
-      this.photo.set(prepared.file);
-      this.photoName.set(prepared.file.name);
-      this.height.set(prepared.height);
-      this.width.set(prepared.width);
-    });
   }
 
   protected set(which: 'name' | 'description', event: Event): void {
@@ -135,12 +125,6 @@ export class MintFormComponent {
     else this.width.set(tidied);
   }
 
-  protected pickPhoto(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
-    this.photo.set(file);
-    this.photoName.set(file?.name ?? '');
-  }
-
   /**
    * Prepares the certificate, and either leaves it waiting or writes it now.
    *
@@ -163,11 +147,22 @@ export class MintFormComponent {
    * perfectly well, which sent the artist back to prepare it a second time.
    */
   protected async prepare(signNow = false): Promise<void> {
-    const file = this.photo();
-    if (!file || !this.ready()) return;
+    if (!this.ready()) return;
 
     this.busy.set(true);
     this.error.set('');
+
+    // Asked for here, and rendered now, because this is the moment it is going
+    // to be used. The corrector answers with null when it cannot.
+    const prepared = this.handoff.take() ?? (await this.handoff.request());
+    if (!prepared) {
+      this.error.set('The photograph above could not be prepared, so nothing was stored.');
+      this.busy.set(false);
+      return;
+    }
+    this.height.set(prepared.height);
+    this.width.set(prepared.width);
+    const file = prepared.file;
     const body = new FormData();
     body.append('photo', file);
     body.append('name', this.name().trim());
@@ -212,8 +207,6 @@ export class MintFormComponent {
     this.height.set('');
     this.width.set('');
     this.description.set('');
-    this.photo.set(null);
-    this.photoName.set('');
   }
 
   private loadWaiting(): void {

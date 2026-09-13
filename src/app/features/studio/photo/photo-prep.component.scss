@@ -257,23 +257,6 @@
   margin-top: tokens.$spacing-lg;
 }
 
-.prep-go {
-  padding: 0.55rem 1.4rem;
-  border: 1px solid var(--catalog-accent);
-  background: transparent;
-  font: inherit;
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  color: var(--catalog-accent);
-  cursor: pointer;
-
-  &:disabled {
-    border-color: var(--catalog-faint);
-    color: var(--catalog-faint);
-    cursor: default;
-  }
-}
-
 .prep-result {
   margin-top: tokens.$spacing-xl;
   padding-top: tokens.$spacing-lg;
@@ -395,17 +378,71 @@
 }
 
 /* Under the file's name and size: what it was, and so what it will be. */
-.prep-source {
+/*
+  What the file was, and what has been done to it since: two quiet lines under
+  the things they describe, and identical, so they are written once.
+*/
+.prep-source,
+.prep-kept {
   display: block;
   font-style: normal;
   font-size: 0.78rem;
   opacity: 0.65;
 }
 
-/* Beside "Back to as shot", so the count and the way out sit together. */
-.prep-kept {
-  display: block;
-  font-style: normal;
-  font-size: 0.78rem;
-  opacity: 0.65;
+/* Closed by default: filled in already, and in the way of everything else. */
+.prep-rights > summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.prep-rights[open] > summary {
+  margin-bottom: 0.6rem;
+}
+
+/*
+  Two columns where there is room for two.
+
+  The stage and the controls were stacked, which put every slider below the
+  photograph it changed: you moved something you could see and watched nothing,
+  then scrolled up to find out what had happened. Beside each other, and with
+  the photograph staying put as the controls scroll, the thing being judged is
+  never off screen.
+
+  Only above this width. Narrower than a laptop there is no second column, and a
+  photograph pinned to the top of a phone would leave nowhere to put the
+  controls — so those still stack, exactly as before.
+*/
+@media (min-width: 68em) {
+  .prep-work {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(19rem, 23rem);
+    gap: tokens.$spacing-xl;
+    align-items: start;
+  }
+
+  .prep-work .prep-bleed {
+    // No longer breaking out to the full width of the window: it shares the row.
+    width: auto;
+    margin: 0;
+    position: sticky;
+    top: tokens.$spacing-md;
+  }
+
+  .prep-work .prep-canvas {
+    max-width: 100%;
+    max-height: 80vh;
+  }
+
+  .prep-work .prep-controls {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: tokens.$spacing-md;
+    margin-top: 0;
+  }
+
+  .prep-work .prep-field {
+    min-width: 0;
+  }
 }

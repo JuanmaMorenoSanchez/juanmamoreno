@@ -1158,3 +1158,24 @@ straightens when it is not reshaping"; and through the whole pipeline in
 `prepare-photo.spec.ts` — "does not stretch the picture to the measurements when
 told not to".
 
+### R89 — The studio asks for each thing once, and acts once · met
+Correcting a photograph and describing a certificate are one job, and were laid
+out as two pages that each asked for the same things: the painting's height,
+width and unit in both, a file input in both, the artist's name in both. The
+handoff copied them across, so a field was filled in, scrolled past, and met
+again. The certificate now shows what the corrector already knows rather than
+asking for it.
+
+There is one action where there were three rows. Rendering the painting at full
+size is the expensive part, and it used to be asked for by a button of its own
+before anything could be saved; it now happens when saving or signing needs the
+result. Downloading the JPEG stays as a quiet link, since that is the one thing
+a person might want without minting anything.
+
+On a screen with room, the photograph sits beside the controls and stays put as
+they scroll. Stacked, every slider was below the thing it moved.
+*Proven by:* `studio-handoff.service.spec.ts` (6 tests, including "answers an
+ask that cannot be met, rather than leaving it waiting" and "answers every ask,
+not just the first"), which is the contract that lets the form offer its buttons
+before anything has been rendered.
+

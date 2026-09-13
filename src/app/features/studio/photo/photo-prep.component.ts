@@ -137,6 +137,24 @@ export class PhotoPrepComponent {
   private grabbedAt: Point = { x: 0, y: 0 };
 
   constructor() {
+    // What the form below needs to know before anything is rendered: whether
+    // there is a photograph it could have, and what size it would be. Published
+    // as they change, so its buttons can be offered straight away.
+    effect(() => {
+      this.handoff.canProduce.set(this.canProcess());
+      const height = this.heightText();
+      const width = this.widthText();
+      this.handoff.size.set(height && width ? { height, width } : null);
+    });
+
+    // The form has asked for the photograph. This is the only thing that starts
+    // the expensive work now — warping forty megapixels is not something to do
+    // on the chance that it will be wanted.
+    effect(() => {
+      if (!this.handoff.asksForPhotograph()) return;
+      void this.process();
+    });
+
     // The canvas is inside the block that `size` reveals, so at the moment the
     // photograph is opened it does not exist yet and drawing into it draws into
     // nothing. Waiting on the view child instead means the paint happens once
@@ -958,7 +976,11 @@ export class PhotoPrepComponent {
     const corners = this.corners();
     const realWidth = this.realWidth();
     const realHeight = this.realHeight();
-    if (!corners || !realWidth || !realHeight || !this.photo()) return;
+    if (!corners || !realWidth || !realHeight || !this.photo()) {
+      // Answered rather than ignored: something may be waiting on this.
+      this.handoff.couldNot();
+      return;
+    }
 
     this.problem.set('');
     this.releaseResult();
@@ -989,6 +1011,7 @@ export class PhotoPrepComponent {
       this.problem.set(
         'The photograph was too large for this browser to hold. Try a smaller copy.'
       );
+      this.handoff.couldNot();
     } finally {
       this.busy.set(null);
     }

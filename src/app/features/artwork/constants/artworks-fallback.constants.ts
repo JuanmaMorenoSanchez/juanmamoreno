@@ -8244,5 +8244,49 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
         },
       },
     },
+    {
+      tokenId: '197',
+      name: 'Primer día con Iris en casa',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/197.jpg',
+        cachedUrl: 'https://arweave.net/BU8pfRAkirH8fNnLk4pDbapOLy2M0mvPIjN13GAarWE',
+        thumbnailUrl:
+          'data:image/jpeg;base64,/9j/2wBDAAYGBgYHBgcICAcKCwoLCg8ODAwODxYQERAREBYiFRkVFRkVIh4kHhweJB42KiYmKjY+NDI0PkxERExfWl98fKf/2wBDAQYGBgYHBgcICAcKCwoLCg8ODAwODxYQERAREBYiFRkVFRkVIh4kHhweJB42KiYmKjY+NDI0PkxERExfWl98fKf/wgARCAArAEADASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAABQYHBAID/8QAGQEBAAMBAQAAAAAAAAAAAAAABQMEBgIH/9oADAMBAAIQAxAAAADb4DN/Ey/nrssEb1M0RfbZ2tWazedtpxguA1GarEMde4VIXQSnJlxvZ1Q15o+g6PQBuI2QImUtA/N7jESn289rbHCh/8QALhAAAgEEAQIFAwMFAQAAAAAAAQIDAAQFERIhMQYTIkFhUWJxFMHRMlNkgZGi/9oACAEBAAE/AMrzYQTbDKrFfgB6aKQ2waNdPIBon2q4tGidyp07nXI9Sdd2q8txF5La5BjxJJ67Pt/FYfORqscDMQ2gI2PZx/NNkH12rxDkykUAikkSZ9jakr6T6SCRTTvd43HY8TXAkgDqyuT5YBbY4AfHekvSrvBO7GKUcT9p+orGm9hmls7skqwDW85GhKo0CB8irzwv+vxUV/bKjvCsnKPfEMoFZC3R4wJHktiejbUv8g7WosneW7SvG67dXTegR6u5G+xrCxm+xTS3PN0Qaclj1PYAGlSPjFEkQIXoi63r8VDgLiUcpmEYPt3NNNDIRyd1/FLepJaJaC4AA2Y5D3R/ZhXhm+yz4BkjdJrhYJBKqjiyPr6e9S5ud8S9oG26+ktsggiuMqtsIWBGx/3VYLIO1r+gVSI4xz792J0a8O2ic5rhxsroJ8U7CjHjL70y26gFxzfjwkX8/add6u8IbGKS5W5jNsrqrljx1s63+KxWXusDf+agJXfB/bYH7ivGmDxzzWmZxyRBb8uskLNpC+uXNKsfC6PZSi4SKGbzhog8uK9Dob6GrSyjjnZYSXLdOR0Og/HQVj7qS1adHXQQjn9PpRvrZhsSCvOm5q0cRVotggj08ezAms1drNisl56kObfiFBBUdjsfnVK+OuvPXzY5IiVFzHy00bA+h/8AW9GrnERmfhFdSiNdlDI2wCT1XX71Fhp2eJ7m5HlAleSciw0OwBpIJLSa3ktj5gAJmgP9Tr9vzWYysUnnTQXBHEgvG54ksPYp7EUrWy2X6ie8C7UEojqxG/Y/NXSjUnT+5/5OhWSOobk/4zn69tisBPLLiZ7mRuUsPARuQNjk6qfyayQD4y/DDfGVwvxtQaxU00uI8x5GZ/KA5E/eRWYu7pJ4Y1nkClW36js+rXevDmOsrmEyTwLIwc9W61Pi8aw4myg18IBX/8QAJhEAAgICAQQBBAMAAAAAAAAAAQIDEQAEMQUSEyFhBiIzQlKx0f/aAAgBAgEBPwDr0bzrB1GMDtkQBwP5DI5npGawD8X/AFk251Dp0Z8Gz2RM3sV3UTyRm59Shj5J0USH9gasgVde80+r6hSOEyNSn8b8G/VZswQinFtFYZLzq+3HJrOhH3Dj/c3opzssXU8CvgViFZTHIortcKL55xJ31pJdeRnYUwFN6BA5og3zkEDTTyp3C1JU2LFc5Mul5PGEYGP0xAHvP//EACYRAAIBBAIABQUAAAAAAAAAAAECAwAEESEFEhMVIkFxMVFhYsH/2gAIAQMBAT8A4GVYPFsHY9o3Yox91NOIizqu8ZprXjb1sz2+ZFXHcHrkD71a2giVEQMVUEY/U7xmuU4nmoZ5J4grgN9V03zVlds4ZGZVlxhwDUEYRsZyG1UbRqgA1qrnrAgVh2zGzn2xggf2vL7K7RJjCOxYbOj6vyvxT2yWqdzk61vJzoVBY3E0STMYiHX0jeq//9k=',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas',
+            },
+            {
+              trait_type: 'Height',
+              value: '150',
+            },
+            {
+              trait_type: 'Width',
+              value: '140,5',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2025',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Work in progress',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
   ],
 };

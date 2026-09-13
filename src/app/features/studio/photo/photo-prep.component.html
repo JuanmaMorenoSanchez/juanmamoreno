@@ -39,7 +39,15 @@
       }
     </p>
 
-    <div class="prep-bleed">
+    <!--
+      The photograph and the controls that change it, side by side where there
+      is room. They used to be stacked — a tall stage, then four boxes of
+      controls underneath — so every slider was below the thing it moved and had
+      to be judged by scrolling back up. Narrow screens still stack, because
+      there is no second column to put anything in.
+    -->
+    <div class="prep-work">
+      <div class="prep-bleed">
       <div
         #stage
         class="prep-stage"
@@ -263,8 +271,16 @@
         </button>
       </fieldset>
 
-      <fieldset class="prep-field">
-        <legend>Whose it is</legend>
+      <!--
+        Folded away, because it is filled in already and stays filled in: the
+        name is remembered, the notice is built from it and the year, and the
+        terms page has not changed. It was three text boxes sitting between the
+        brush and the button, in the path of everything, for something touched
+        about once a year. The summary says what it holds, so it is a thing to
+        glance at rather than a thing to fill in.
+      -->
+      <details class="prep-field prep-rights">
+        <summary>Whose it is — {{ artist() || 'nobody: it will go out unattributed' }}</summary>
         <label>
           Name
           <input
@@ -297,24 +313,26 @@
           — the notice is built from the name and the current year, so leaving it empty keeps it
           right. Clearing the name sends the photograph out unattributed.
         </p>
-      </fieldset>
+      </details>
+      </div>
     </div>
 
+    <!--
+      No button to render with any more. What is on the stage is a preview — the
+      photograph at two thousand pixels, still in perspective — and lifting the
+      painting out of it at full size takes long enough that it is worth doing
+      once, when saving or signing below actually needs the result. Asking for it
+      first was a third row of buttons for what is one decision.
+    -->
     <p class="prep-actions">
-      <!--
-        Still needed, even though the sliders now show their work as they move.
-        What is on the stage is a preview: the photograph at two thousand pixels
-        with the adjustments over it, and still in perspective. This is where the
-        painting is actually lifted out of the photograph, at full size, and
-        encoded — none of which can happen forty times a second under a slider.
-      -->
-      <button type="button" class="prep-go" [disabled]="!canProcess()" (click)="process()">
-        Preview and prepopulate
-      </button>
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
       } @else if (!measured()) {
-        <span class="prep-busy">Give the painting's height and width first.</span>
+        <span class="prep-busy">Give the painting's height and width to go on.</span>
+      } @else {
+        <button type="button" class="prep-link" [disabled]="!canProcess()" (click)="process()">
+          Just download the JPEG
+        </button>
       }
     </p>
   }
@@ -353,14 +371,7 @@
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
         <p class="prep-actions">
-          @if (handedOver()) {
-            <span class="prep-sharp">Ready in the certificate form below.</span>
-          }
           <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
-        </p>
-        <p class="prep-note">
-          JPEG at 95, which discards far less than the camera already did making the file you
-          started from.
         </p>
       }
     </div>

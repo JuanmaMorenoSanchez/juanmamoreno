@@ -38,39 +38,6 @@
     </label>
 
     <label class="field field-narrow">
-      <span class="field-label">Height</span>
-      <input
-        type="text"
-        inputmode="decimal"
-        [value]="height()"
-        (input)="measure('height', $event)"
-        placeholder="140,5"
-        autocomplete="off"
-      />
-    </label>
-
-    <label class="field field-narrow">
-      <span class="field-label">Width</span>
-      <input
-        type="text"
-        inputmode="decimal"
-        [value]="width()"
-        (input)="measure('width', $event)"
-        placeholder="116"
-        autocomplete="off"
-      />
-    </label>
-
-    <label class="field field-narrow">
-      <span class="field-label">Unit</span>
-      <select [value]="unit()" (change)="choose('unit', $event)">
-        @for (option of units; track option) {
-          <option [value]="option">{{ option }}</option>
-        }
-      </select>
-    </label>
-
-    <label class="field field-narrow">
       <span class="field-label">Year</span>
       <select [value]="year()" (change)="choose('year', $event)">
         @for (option of years; track option) {
@@ -93,24 +60,22 @@
       />
     </label>
 
-    <label class="field field-wide file-field">
-      <span class="field-label">Photograph of the painting</span>
-      <input type="file" accept="image/*" (change)="pickPhoto($event)" />
-      @if (photoName()) {
-        <span class="file-chosen">{{ photoName() }}</span>
-      }
-    </label>
   </div>
 
-  <p class="mint-artist">
-    Signed as <strong>{{ artist }}</strong> — the one spelling the collection uses.
+  <!--
+    What the corrector already knows, shown rather than asked: it cannot
+    straighten a photograph without the painting's proportions, so by the time
+    there is anything to certify the size has been given. Asking again was only
+    ever an opportunity to answer differently.
+  -->
+  <p class="mint-from-above">
+    @if (fromCorrector(); as size) {
+      {{ size.height }} × {{ size.width }} {{ unit() }}, signed as
+      <strong>{{ artist }}</strong>
+    } @else {
+      Straighten a photograph above and its measurements come down with it.
+    }
   </p>
-
-  @if (height() && !measurementsOk()) {
-    <p class="mint-error">
-      Height and width should be numbers, with a comma for a decimal: 140,5
-    </p>
-  }
   @if (error()) {
     <p class="mint-error">{{ error() }}</p>
   }
