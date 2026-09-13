@@ -5,10 +5,11 @@ name: Deploy
 # renders wrong fails here rather than reaching juanmamoreno.com.
 on:
   push:
-    # This branch, not master. The certificates on Ethereum are served from
-    # here while master still builds against the old Polygon collection — so
-    # going back is pushing master, not undoing a commit.
-    branches: [feature/own-collection]
+    # Master again. The site built against the old Polygon collection until the
+    # certificates on Ethereum were ready, and for that while it deployed from
+    # feature/own-collection so master stayed the way back. The move is done and
+    # merged, so this is the working branch once more.
+    branches: [master]
     # Nothing here reaches what is published: no markdown is served or built
     # into anything (there is none under src at all), and the editor and agent
     # settings are for whoever is working, not for the site. A commit touching
