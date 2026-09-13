@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.45.1
+
+- **fix** — throwing a certificate away says whether it worked. The failure was
+  caught and dropped, so when the browser refused to send the request at all the
+  button did nothing and explained nothing.
+
 ## 1.45.0
 
 - **fix** — the studio's second button prepares the certificate and takes you to

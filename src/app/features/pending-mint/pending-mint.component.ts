@@ -115,8 +115,24 @@ export class PendingMintComponent {
     }
   }
 
+  /**
+   * Throws a prepared certificate away.
+   *
+   * The failure is reported rather than swallowed. It used to be caught and
+   * dropped, and when the browser refused to send the request at all — DELETE
+   * was missing from what the api allows, so the preflight passed and the
+   * delete never followed — the button did nothing, said nothing, and left the
+   * certificate exactly where it was.
+   */
   protected async discard(tokenId: number): Promise<void> {
-    await this.api.discard(tokenId).catch(() => undefined);
+    this.problem.set('');
+    try {
+      await this.api.discard(tokenId);
+      this.outcome.set(`Certificate ${tokenId} thrown away. It was never on the chain.`);
+    } catch (failure: unknown) {
+      const message = (failure as { error?: { message?: string } })?.error?.message;
+      this.problem.set(message ?? `Certificate ${tokenId} could not be thrown away.`);
+    }
     this.load();
   }
 

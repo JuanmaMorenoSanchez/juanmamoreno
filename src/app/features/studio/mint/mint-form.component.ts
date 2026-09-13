@@ -186,7 +186,12 @@ export class MintFormComponent {
   }
 
   protected async discard(tokenId: number): Promise<void> {
-    await this.api.discard(tokenId).catch(() => undefined);
+    try {
+      await this.api.discard(tokenId);
+    } catch (failure: unknown) {
+      const message = (failure as { error?: { message?: string } })?.error?.message;
+      this.error.set(message ?? `Certificate ${tokenId} could not be thrown away.`);
+    }
     this.loadWaiting();
   }
 
