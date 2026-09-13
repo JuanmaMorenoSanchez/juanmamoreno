@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
@@ -43,6 +43,7 @@ import {
 })
 export class MintFormComponent {
   private readonly api = inject(MintApiService);
+  private readonly router = inject(Router);
   private readonly handoff = inject(StudioHandoffService);
 
   protected readonly mediums = MEDIUMS;
@@ -138,7 +139,20 @@ export class MintFormComponent {
    * afterwards. Saving is the ordinary case: gas is the whole of what a
    * certificate costs, and nothing about a finished painting is urgent.
    */
-  protected async prepare(mintNow = false): Promise<void> {
+  /**
+   * Prepares the certificate, and optionally goes on to sign it.
+   *
+   * Signing happens on the waiting list, where the wallet is, because the only
+   * key that can write a certificate is on the artist's phone. This used to ask
+   * the server to mint instead, which could not work — no minting key is
+   * configured there, by choice — and asked it to write *everything* waiting
+   * rather than the one just prepared.
+   *
+   * Nothing after the preparing is inside the same try any more. A failure there
+   * reported "nothing was stored" over a certificate that had been stored
+   * perfectly well, which sent the artist back to prepare it a second time.
+   */
+  protected async prepare(signNow = false): Promise<void> {
     const file = this.photo();
     if (!file || !this.ready()) return;
 
@@ -160,22 +174,15 @@ export class MintFormComponent {
       this.prepared.set(result ?? null);
       this.reset();
       this.loadWaiting();
-
-      if (mintNow) {
-        const written = await this.api.mintWaiting();
-        if (!written.minted.length) {
-          this.error.set(
-            `Prepared and waiting, but not written${written.skipped ? ` — ${written.skipped}` : ''}.`
-          );
-        }
-        this.loadWaiting();
-      }
     } catch (failure: unknown) {
       const message = (failure as { error?: { message?: string } })?.error?.message;
       this.error.set(message ?? 'The api could not prepare that. Nothing was stored.');
+      return;
     } finally {
       this.busy.set(false);
     }
+
+    if (signNow) await this.router.navigate(['/pendingmint']);
   }
 
   protected async discard(tokenId: number): Promise<void> {

@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.45.0
+
+- **fix** — the studio's second button prepares the certificate and takes you to
+  the waiting list to sign it, instead of asking the server to mint. The server
+  has no minting key, by choice, so that could never work — and it asked for
+  everything waiting to be written rather than the one just prepared.
+- **fix** — a failure after the certificate is stored no longer claims nothing
+  was stored. It reported "The api could not prepare that. Nothing was stored."
+  over a certificate that had been stored perfectly, which led to the same
+  painting being prepared twice.
+
 ## 1.44.2
 
 - **fix** — the mint api's answers are read out of the envelope the backend puts
