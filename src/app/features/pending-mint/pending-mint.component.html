@@ -25,8 +25,21 @@
     </p>
   }
 
-  @if (busy()) {
-    <p class="pending-note">Writing…</p>
+  @if (stage()) {
+    <p class="pending-note" role="status"><span class="pending-spin"></span>{{ stage() }}</p>
+  } @else if (busy()) {
+    <p class="pending-note" role="status"><span class="pending-spin"></span>Working…</p>
+  }
+  @if (sent(); as hash) {
+    <!--
+      Shown in full and linked, because a transaction that is slow and a
+      transaction that never happened look identical from here, and the chain
+      can tell them apart.
+    -->
+    <p class="pending-note">
+      Transaction
+      <a [href]="'https://etherscan.io/tx/' + hash" target="_blank" rel="noopener">{{ hash }}</a>
+    </p>
   }
   @if (outcome()) {
     <p class="pending-note">{{ outcome() }}</p>

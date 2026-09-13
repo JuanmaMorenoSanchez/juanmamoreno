@@ -16,8 +16,19 @@ import { DestroyRef, Injectable, inject, signal } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export class GasPriceService {
-  /** The most a certificate is worth paying for, in gwei. */
-  static readonly LIMIT = 0.7;
+  /**
+   * The most a certificate is worth paying for, in gwei.
+   *
+   * This is the base fee, which is what the chain charges; the wallet adds its
+   * own tip on top. Token 197 went through at a base fee under this and settled
+   * at 0.1381 gwei all in — so the tip is worth setting low in the wallet too,
+   * on the days this lets anything through at all.
+   *
+   * Lowered from 0.7 on the artist's word. At 0.7 a certificate cost about
+   * thirty cents; at this, around ten. Nothing here is urgent enough to pay the
+   * difference — a painting finished today is no less finished next week.
+   */
+  static readonly LIMIT = 0.06;
 
   private static readonly ENDPOINT = 'https://ethereum-rpc.publicnode.com';
   private static readonly EVERY_MS = 15_000;

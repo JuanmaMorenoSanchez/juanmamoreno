@@ -77,3 +77,28 @@
   @include controls.plain-button(0.35rem 0.9rem, 0.85rem);
   align-self: center;
 }
+
+/* A turning mark beside whatever is being waited on, so waiting looks like
+   waiting rather than like nothing. */
+.pending-spin {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.5em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: pending-turn 0.9s linear infinite;
+}
+
+@keyframes pending-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pending-spin {
+    animation: none;
+  }
+}

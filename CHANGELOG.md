@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.51.0
+
+- **feat** — the height and width start empty and have to be given. They used to
+  offer the last size typed, or the photograph's own proportions, and a
+  measurement already in the box is one nobody reads before pressing on. The
+  note under them is gone.
+- **feat** — the gas ceiling is 0.06 gwei, down from 0.7.
+- **fix** — signing says what it is doing at every step and cannot hang. A wallet
+  that never answers hands back a promise that never settles, so the page sat
+  silent for as long as anyone watched it: a mint that "took forever" and never
+  reached the chain, with nothing said. Every wallet call now has an end, and
+  the transaction is shown in full and linked, because slow and never-sent look
+  identical from here.
+
 ## 1.50.0
 
 - **feat** — a certificate that is saved or signed says so in a floating message

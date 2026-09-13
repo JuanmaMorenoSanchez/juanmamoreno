@@ -24,7 +24,7 @@ describe('MintGateComponent', () => {
           useValue: {
             price,
             unreachable: stale,
-            affordable: () => price() !== null && (price() as number) <= 0.7,
+            affordable: () => price() !== null && (price() as number) <= GasPriceService.LIMIT,
             watch: () => {
               watching += 1;
               return () => {
@@ -63,12 +63,12 @@ describe('MintGateComponent', () => {
   });
 
   it('refuses at anything above the limit, not merely far above it', () => {
-    const { host } = build(0.71);
+    const { host } = build(GasPriceService.LIMIT + 0.01);
     expect(button(host).disabled).toBe(true);
   });
 
   it('allows exactly the limit', () => {
-    const { host } = build(0.7);
+    const { host } = build(GasPriceService.LIMIT);
     expect(button(host).disabled).toBe(false);
   });
 

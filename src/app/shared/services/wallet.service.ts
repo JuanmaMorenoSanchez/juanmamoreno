@@ -4,6 +4,37 @@ import { Injectable, signal } from '@angular/core';
 const MAINNET = '0x1';
 
 /**
+ * How long to wait on a wallet before saying so.
+ *
+ * A wallet that is never going to answer answers by never answering: the
+ * promise it hands back simply does not settle. Left alone that is a page that
+ * sits doing nothing for as long as anyone is willing to watch it, which is
+ * what happened — a mint that "took forever" and never went through, with no
+ * transaction on the chain and nothing said.
+ *
+ * Signing is the long one, because it waits on a person finding their phone.
+ */
+const ANSWER_WITHIN = 60_000;
+const SIGNATURE_WITHIN = 300_000;
+
+/** The same promise, with an end to it. */
+function within<T>(work: Promise<T>, ms: number, complaint: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const bell = setTimeout(() => reject(new Error(complaint)), ms);
+    work.then(
+      (value) => {
+        clearTimeout(bell);
+        resolve(value);
+      },
+      (failure) => {
+        clearTimeout(bell);
+        reject(failure);
+      }
+    );
+  });
+}
+
+/**
  * The wallet the browser has, if it has one.
  *
  * EIP-1193, which every wallet's in-app browser provides: opening the studio
@@ -50,7 +81,11 @@ export class WalletService {
       );
     }
 
-    const accounts = (await wallet.request({ method: 'eth_requestAccounts' })) as string[];
+    const accounts = (await within(
+      wallet.request({ method: 'eth_requestAccounts' }) as Promise<string[]>,
+      ANSWER_WITHIN,
+      'Your wallet did not answer. Open it, unlock it, and press Sign again.'
+    )) as string[];
     const account = accounts?.[0];
     if (!account) throw new Error('The wallet did not say which account to use.');
 
@@ -83,9 +118,14 @@ export class WalletService {
     const from = this.account();
     if (!wallet || !from) throw new Error('No wallet is connected.');
 
-    return (await wallet.request({
-      method: 'eth_sendTransaction',
-      params: [{ from, to: transaction.to, data: transaction.data }],
-    })) as string;
+    return (await within(
+      wallet.request({
+        method: 'eth_sendTransaction',
+        params: [{ from, to: transaction.to, data: transaction.data }],
+      }) as Promise<string>,
+      SIGNATURE_WITHIN,
+      'Your wallet never came back with a signature, so nothing was sent. ' +
+        'The certificate is untouched and still on the list.'
+    )) as string;
   }
 }

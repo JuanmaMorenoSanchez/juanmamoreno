@@ -36,6 +36,12 @@ export class PendingMintComponent {
 
   protected readonly waiting = signal<PendingMint[]>([]);
   protected readonly busy = signal(false);
+
+  /** What is happening at this moment, while it is happening. */
+  protected readonly stage = signal('');
+
+  /** The transaction, once there is one, so it can be followed. */
+  protected readonly sent = signal<string | null>(null);
   protected readonly outcome = signal('');
   protected readonly problem = signal('');
 
@@ -84,20 +90,31 @@ export class PendingMintComponent {
     this.busy.set(true);
     this.outcome.set('');
     this.problem.set('');
-    try {
-      const from = await this.wallet.connect();
-      const transaction = await this.api.signable(mint.tokenId, from);
-      const hash = await this.wallet.send(transaction);
-      this.outcome.set(`Signed as ${from}. Waiting for ${hash.slice(0, 10)}… to land.`);
+    this.sent.set(null);
 
-      // A block at a time, for a couple of minutes. It stays on the list until
-      // the chain says otherwise, so nothing is lost if this is closed early.
-      for (let attempt = 0; attempt < 20; attempt += 1) {
+    try {
+      // Said at every step, because the steps are the slow part and silence
+      // during them is indistinguishable from nothing happening. A mint that
+      // "took forever and did not go through" was this: a wallet that never
+      // answered, and a page with nothing to say about it.
+      this.stage.set('Asking your wallet who is signing…');
+      const from = await this.wallet.connect();
+
+      this.stage.set('Preparing the transaction…');
+      const transaction = await this.api.signable(mint.tokenId, from);
+
+      this.stage.set('Waiting for you to approve it in your wallet…');
+      const hash = await this.wallet.send(transaction);
+      this.sent.set(hash);
+
+      this.stage.set('Sent. Waiting for the chain…');
+      for (let attempt = 0; attempt < 30; attempt += 1) {
         await new Promise((wait) => setTimeout(wait, 6000));
         const { written, shown } = await this.api.confirmWritten(mint.tokenId);
         if (written) {
+          this.stage.set('');
           this.outcome.set(
-            `Certificate ${mint.tokenId} is on chain. "${mint.name}" is recorded` +
+            `Certificate ${mint.tokenId} is on chain. “${mint.name}” is recorded` +
               (shown
                 ? ' and is on the site now.'
                 : ' — the site will show it after tonight’s catalogue read.')
@@ -106,15 +123,23 @@ export class PendingMintComponent {
           return;
         }
       }
+
+      // Three minutes without it appearing. The transaction exists — its hash
+      // is on screen — so this is slowness, not failure, and saying which is
+      // the whole point.
+      this.stage.set('');
       this.outcome.set(
-        `Signed, but ${mint.tokenId} has not appeared yet. It stays on the list; open this page ` +
-          'again in a few minutes and it will clear itself.'
+        `Signed and sent, but ${mint.tokenId} has not appeared after three minutes. That is slow, ` +
+          'not lost: follow the transaction below. It stays on the list until the chain has it.'
       );
     } catch (failure: unknown) {
+      this.stage.set('');
       const message =
         (failure as { error?: { message?: string } })?.error?.message ??
         (failure as Error)?.message;
-      this.problem.set(message ?? 'The wallet refused, and nothing was written.');
+      this.problem.set(
+        message ?? 'The wallet refused, and nothing was sent. The certificate is untouched.'
+      );
     } finally {
       this.busy.set(false);
     }

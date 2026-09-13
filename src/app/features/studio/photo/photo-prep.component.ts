@@ -29,7 +29,6 @@ import { StudioHandoffService } from '../studio-handoff.service';
 import {
   correctedSize,
   EDGE_CORNERS,
-  distance,
   fullFrame,
   straightBows,
   type EdgeBows,
@@ -95,9 +94,6 @@ const DETECTION_LONG_SIDE = 720;
  *
  * See `domain/image/jpeg-source.ts`, which reads both facts out of the header.
  */
-
-/** Where the last size typed in is kept, so the next painting needs no typing. */
-const REMEMBERED_SIZE = 'juanmamoreno.paintingSize';
 
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
@@ -526,62 +522,22 @@ export class PhotoPrepComponent {
 
   protected setWidth(event: Event): void {
     this.widthText.set(typedInto(event));
-    this.remember();
   }
 
   protected setHeight(event: Event): void {
     this.heightText.set(typedInto(event));
-    this.remember();
   }
 
   /**
-   * Fills the size in so the next painting needs no typing at all.
+   * Nothing is filled in for the artist.
    *
-   * The last size given is offered back, since paintings come in series and
-   * the one before this was very often the same. Failing that — the first time
-   * the studio is opened — the proportions are taken from the photograph, which
-   * keeps the button live and the result true to what was shot. Both are only a
-   * starting point, and the note under the boxes says so.
+   * The boxes used to offer the last size given, or failing that the
+   * proportions of the photograph itself. Both were only ever a starting point,
+   * and a starting point that is already in the box is a measurement nobody
+   * reads before pressing on — the wrong size on a certificate looks exactly
+   * like the right one. They are empty now, and required: the painting cannot
+   * be squared up without them, so nothing renders until they are given.
    */
-  private prefillSize(quad: Quad): void {
-    const remembered = this.rememberedSize();
-    if (remembered) {
-      this.widthText.set(measurementAsTyped(String(remembered.width).replace('.', ',')));
-      this.heightText.set(measurementAsTyped(String(remembered.height).replace('.', ',')));
-      return;
-    }
-
-    const [tl, tr, br, bl] = quad;
-    const across = Math.max(distance(tl, tr), distance(bl, br));
-    const down = Math.max(distance(tl, bl), distance(tr, br));
-    if (!across || !down) return;
-
-    const longest = Math.max(across, down);
-    this.widthText.set(String(Math.round((across / longest) * 100)));
-    this.heightText.set(String(Math.round((down / longest) * 100)));
-  }
-
-  private rememberedSize(): { width: number; height: number } | null {
-    try {
-      const stored = JSON.parse(window.localStorage.getItem(REMEMBERED_SIZE) ?? 'null');
-      const width = Number(stored?.width);
-      const height = Number(stored?.height);
-      return width > 0 && height > 0 ? { width, height } : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private remember(): void {
-    const width = this.realWidth();
-    const height = this.realHeight();
-    if (!width || !height) return;
-    try {
-      window.localStorage.setItem(REMEMBERED_SIZE, JSON.stringify({ width, height }));
-    } catch {
-      // Private browsing. The size lasts as long as the tab, which is fair.
-    }
-  }
 
   protected async onFile(event: Event): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -636,7 +592,6 @@ export class PhotoPrepComponent {
     // Straight to begin with: corner finding fits four sides, so a bow is
     // always something the artist adds after looking.
     this.bows.set(straightBows(quad));
-    this.prefillSize(quad);
   }
 
   private sampleTimer: ReturnType<typeof setTimeout> | null = null;

@@ -89,4 +89,50 @@ describe('WalletService', () => {
   it('says where to find a wallet rather than failing silently', async () => {
     await expect(wallet.connect()).rejects.toThrow(/wallet app/);
   });
+
+  describe('a wallet that never answers', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('gives up on connecting rather than waiting for ever', async () => {
+      // How the page came to sit doing nothing: the provider hands back a
+      // promise and simply never settles it, so there is nothing to catch and
+      // nothing to show. A mint "took forever" and never reached the chain.
+      (globalThis as { ethereum?: unknown }).ethereum = { request: () => new Promise(() => {}) };
+
+      const asking = wallet.connect();
+      const caught = asking.catch((failure: Error) => failure.message);
+      await vi.advanceTimersByTimeAsync(61_000);
+
+      await expect(caught).resolves.toMatch(/did not answer/);
+    });
+
+    it('gives up on a signature too, and says nothing was sent', async () => {
+      const request = vi.fn(async ({ method }: { method: string }) => {
+        if (method === 'eth_requestAccounts') return [ACCOUNT];
+        if (method === 'eth_chainId') return '0x1';
+        return new Promise(() => {});
+      });
+      (globalThis as { ethereum?: unknown }).ethereum = { request };
+      await wallet.connect();
+
+      const sending = wallet.send({ to: '0xa', data: '0xb' });
+      const caught = sending.catch((failure: Error) => failure.message);
+      await vi.advanceTimersByTimeAsync(301_000);
+
+      await expect(caught).resolves.toMatch(/nothing was sent/);
+    });
+
+    it('does not give up on one that answers', async () => {
+      const request = vi.fn(async ({ method }: { method: string }) => {
+        if (method === 'eth_requestAccounts') return [ACCOUNT];
+        if (method === 'eth_chainId') return '0x1';
+        return '0xhash';
+      });
+      (globalThis as { ethereum?: unknown }).ethereum = { request };
+
+      await expect(wallet.connect()).resolves.toBe(ACCOUNT);
+      await expect(wallet.send({ to: '0xa', data: '0xb' })).resolves.toBe('0xhash');
+    });
+  });
 });

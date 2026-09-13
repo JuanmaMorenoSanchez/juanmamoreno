@@ -48,230 +48,275 @@
     -->
     <div class="prep-work">
       <div class="prep-bleed">
-      <div
-        #stage
-        class="prep-stage"
-        [class.prep-selecting]="selecting()"
-        (pointerdown)="startBrush($event)"
-        (pointermove)="drag($event); brushMove($event); trackBrush($event)"
-        (pointerleave)="leaveBrush()"
-        (pointerup)="release()"
-        (pointercancel)="release()"
-      >
-        <canvas #preview class="prep-canvas"></canvas>
-        <!--
+        <div
+          #stage
+          class="prep-stage"
+          [class.prep-selecting]="selecting()"
+          (pointerdown)="startBrush($event)"
+          (pointermove)="drag($event); brushMove($event); trackBrush($event)"
+          (pointerleave)="leaveBrush()"
+          (pointerup)="release()"
+          (pointercancel)="release()"
+        >
+          <canvas #preview class="prep-canvas"></canvas>
+          <!--
           The brush, drawn where it is and at the width it would cover. The size
           slider gives a number, and a number cannot say how much of this
           painting it takes.
         -->
-        @if (brushCursor(); as cursor) {
-          <span
-            class="prep-brush-ring"
-            aria-hidden="true"
-            [style.left.%]="cursor.x"
-            [style.top.%]="cursor.y"
-            [style.width.%]="cursor.size"
-            [class.prep-brush-erasing]="brushMode() === 'erase'"
-          ></span>
-        }
-        <svg
-          class="prep-outline"
-          [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
-          @for (bow of bowHandles(); track bow.edge + bow.index) {
-            <path class="prep-tether" [attr.d]="bow.tether" vector-effect="non-scaling-stroke" />
+          @if (brushCursor(); as cursor) {
+            <span
+              class="prep-brush-ring"
+              aria-hidden="true"
+              [style.left.%]="cursor.x"
+              [style.top.%]="cursor.y"
+              [style.width.%]="cursor.size"
+              [class.prep-brush-erasing]="brushMode() === 'erase'"
+            ></span>
           }
-        </svg>
-        @for (handle of handles(); track $index) {
-          <button
-            type="button"
-            class="prep-handle"
-            [style.left]="handle.left"
-            [style.top]="handle.top"
-            [style.width.px]="handleSize()"
-            [style.height.px]="handleSize()"
-            [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
-            (pointerdown)="grab($index, $event)"
-          ></button>
-        }
-        @for (bow of bowHandles(); track bow.edge + bow.index) {
-          <button
-            type="button"
-            class="prep-bow"
-            [style.left]="bow.left"
-            [style.top]="bow.top"
-            [style.width.px]="handleSize() * 0.55"
-            [style.height.px]="handleSize() * 0.55"
-            [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
-            (pointerdown)="grabBow(bow.edge, bow.index, $event)"
-          ></button>
-        }
+          <svg
+            class="prep-outline"
+            [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
+            @for (bow of bowHandles(); track bow.edge + bow.index) {
+              <path class="prep-tether" [attr.d]="bow.tether" vector-effect="non-scaling-stroke" />
+            }
+          </svg>
+          @for (handle of handles(); track $index) {
+            <button
+              type="button"
+              class="prep-handle"
+              [style.left]="handle.left"
+              [style.top]="handle.top"
+              [style.width.px]="handleSize()"
+              [style.height.px]="handleSize()"
+              [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
+              (pointerdown)="grab($index, $event)"
+            ></button>
+          }
+          @for (bow of bowHandles(); track bow.edge + bow.index) {
+            <button
+              type="button"
+              class="prep-bow"
+              [style.left]="bow.left"
+              [style.top]="bow.top"
+              [style.width.px]="handleSize() * 0.55"
+              [style.height.px]="handleSize() * 0.55"
+              [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
+              (pointerdown)="grabBow(bow.edge, bow.index, $event)"
+            ></button>
+          }
+        </div>
       </div>
-    </div>
 
-    <div class="prep-controls">
-
-      <fieldset class="prep-field">
-        <legend>The painting itself</legend>
-        <label>
-          Height
-          <!--
+      <div class="prep-controls">
+        <fieldset class="prep-field">
+          <legend>The painting itself</legend>
+          <label>
+            Height
+            <!--
             Text, not a number input. A number box stepping in tenths refused a
             comma outright and called two decimal places invalid, so the
             collection's own notation — "140,5" — could not be typed into it.
           -->
-          <input
-            type="text"
-            inputmode="decimal"
-            autocomplete="off"
-            placeholder="140,5"
-            [value]="heightText()"
-            (focus)="$any($event.target).select()"
-            (input)="setHeight($event)"
-          />
-          cm
-        </label>
-        <label>
-          Width
-          <input
-            type="text"
-            inputmode="decimal"
-            autocomplete="off"
-            placeholder="116"
-            [value]="widthText()"
-            (focus)="$any($event.target).select()"
-            (input)="setWidth($event)"
-          />
-          cm
-        </label>
-        <!--
+            <input
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              required
+              placeholder="140,5"
+              [value]="heightText()"
+              (focus)="$any($event.target).select()"
+              (input)="setHeight($event)"
+            />
+            cm
+          </label>
+          <label>
+            Width
+            <input
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              required
+              placeholder="116"
+              [value]="widthText()"
+              (focus)="$any($event.target).select()"
+              (input)="setWidth($event)"
+            />
+            cm
+          </label>
+          <!--
           On for a photograph of a whole canvas, which is nearly all of them.
           Off for a detail or a canvas caught half-finished: the measurements
           still describe the painting, but the photograph is not of the whole of
           it, and squaring one to the other stretches what is there.
         -->
-        <label class="prep-check">
-          <input type="checkbox" [checked]="adaptToSize()" (change)="toggleAdaptToSize()" />
-          Square the picture up to these
-        </label>
-        <p class="prep-note">
-          @if (adaptToSize()) {
-            The result is given these proportions exactly. Only the ratio is read, so any unit will
-            do as long as both are in it. Filled in with the last size you gave — or, the first
-            time, with the proportions of the photograph itself, which are a starting point and not
-            a measurement.
-          } @else {
-            The corners are still straightened, but the result keeps the shape they describe rather
-            than being stretched to the measurements. For a detail, or a painting photographed
-            before it was finished — the measurements go on the certificate either way.
-          }
-        </p>
-      </fieldset>
+          <label class="prep-check">
+            <input type="checkbox" [checked]="adaptToSize()" (change)="toggleAdaptToSize()" />
+            Square the picture up to these
+          </label>
+        </fieldset>
 
-      <fieldset class="prep-field">
-        <legend>Light and colour</legend>
-        <!--
+        <fieldset class="prep-field">
+          <legend>Light and colour</legend>
+          <!--
           Three sliders, each sitting at nought on the photograph as it arrived.
           They replaced five checkboxes that measured the photograph and decided
           for themselves whether to act — and were kept deliberately too weak,
           because none of them could tell a lamp that fell off from paint that is
           dark. Whoever is looking at the painting can.
         -->
-        <label class="prep-slider">
-          <span>Brightness <em>{{ brightness() > 0 ? '+' : '' }}{{ brightness() * 100 | number: '1.0-0' }}</em></span>
-          <input type="range" min="-100" max="100" step="1" [value]="brightness() * 100" (input)="setBrightness($event)" />
-        </label>
-        <label class="prep-slider">
-          <span>Temperature <em>{{ temperature() < 0 ? 'bluer' : temperature() > 0 ? 'warmer' : 'as shot' }}</em></span>
-          <input type="range" min="-100" max="100" step="1" [value]="temperature() * 100" (input)="setTemperature($event)" />
-        </label>
-        <label class="prep-slider">
-          <span>Range <em>{{ range() < 0 ? 'flatter' : range() > 0 ? 'deeper' : 'as shot' }}</em></span>
-          <input type="range" min="-100" max="100" step="1" [value]="range() * 100" (input)="setRange($event)" />
-        </label>
-        @if (keptCount()) {
-          <!--
+          <label class="prep-slider">
+            <span
+              >Brightness
+              <em
+                >{{ brightness() > 0 ? '+' : '' }}{{ brightness() * 100 | number: '1.0-0' }}</em
+              ></span
+            >
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              [value]="brightness() * 100"
+              (input)="setBrightness($event)"
+            />
+          </label>
+          <label class="prep-slider">
+            <span
+              >Temperature
+              <em>{{
+                temperature() < 0 ? 'bluer' : temperature() > 0 ? 'warmer' : 'as shot'
+              }}</em></span
+            >
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              [value]="temperature() * 100"
+              (input)="setTemperature($event)"
+            />
+          </label>
+          <label class="prep-slider">
+            <span
+              >Range
+              <em>{{ range() < 0 ? 'flatter' : range() > 0 ? 'deeper' : 'as shot' }}</em></span
+            >
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              [value]="range() * 100"
+              (input)="setRange($event)"
+            />
+          </label>
+          @if (keptCount()) {
+            <!--
             Said out loud because it is the thing that was surprising: a change
             is kept where it was made, and the sliders start again, so the next
             selection gets its own.
           -->
-          <em class="prep-kept">
-            {{ keptCount() }} earlier change{{ keptCount() === 1 ? '' : 's' }} kept where it was made
-          </em>
-        }
-        @if (anyAdjustment()) {
-          <button type="button" class="prep-link" (click)="resetAdjustments()">Back to as shot</button>
-        }
-      </fieldset>
+            <em class="prep-kept">
+              {{ keptCount() }} earlier change{{ keptCount() === 1 ? '' : 's' }} kept where it was
+              made
+            </em>
+          }
+          @if (anyAdjustment()) {
+            <button type="button" class="prep-link" (click)="resetAdjustments()">
+              Back to as shot
+            </button>
+          }
+        </fieldset>
 
-      <fieldset class="prep-field">
-        <legend>Where they apply</legend>
-        <!--
+        <fieldset class="prep-field">
+          <legend>Where they apply</legend>
+          <!--
           The brush selects and nothing else. Nothing selected is not an empty
           selection but the absence of one: the sliders then apply everywhere,
           because a photograph that is too warm is usually too warm all over and
           painting over the whole of it first would be a chore with no purpose.
         -->
-        <label class="prep-check">
-          <input type="checkbox" [checked]="selecting()" (change)="toggleSelecting()" />
-          Brush an area
-        </label>
-        @if (selecting()) {
-          <!--
+          <label class="prep-check">
+            <input type="checkbox" [checked]="selecting()" (change)="toggleSelecting()" />
+            Brush an area
+          </label>
+          @if (selecting()) {
+            <!--
             Two tools rather than a key held down. Pulling an edge back is most
             of what selecting an area is, and it used to be on shift alone,
             which is to say nowhere a person would find it.
           -->
-          <div class="prep-tools" role="group" aria-label="Brush">
-            <button
-              type="button"
-              class="prep-tool"
-              [class.prep-tool-on]="brushMode() === 'add'"
-              [attr.aria-pressed]="brushMode() === 'add'"
-              (click)="useBrush('add')"
-            >
-              Select
-            </button>
-            <button
-              type="button"
-              class="prep-tool"
-              [class.prep-tool-on]="brushMode() === 'erase'"
-              [attr.aria-pressed]="brushMode() === 'erase'"
-              (click)="useBrush('erase')"
-            >
-              Erase
-            </button>
-          </div>
-          <label class="prep-slider">
-            <span>Brush size <em>{{ brushRadius() }}%</em></span>
-            <input type="range" min="1" max="60" step="1" [value]="brushRadius()" (input)="setBrushRadius($event)" />
-          </label>
-          <label class="prep-slider">
-            <span>Edge <em>{{ brushSoftness() === 0 ? 'hard' : brushSoftness() + '% soft' }}</em></span>
-            <input type="range" min="0" max="100" step="1" [value]="brushSoftness()" (input)="setBrushSoftness($event)" />
-          </label>
+            <div class="prep-tools" role="group" aria-label="Brush">
+              <button
+                type="button"
+                class="prep-tool"
+                [class.prep-tool-on]="brushMode() === 'add'"
+                [attr.aria-pressed]="brushMode() === 'add'"
+                (click)="useBrush('add')"
+              >
+                Select
+              </button>
+              <button
+                type="button"
+                class="prep-tool"
+                [class.prep-tool-on]="brushMode() === 'erase'"
+                [attr.aria-pressed]="brushMode() === 'erase'"
+                (click)="useBrush('erase')"
+              >
+                Erase
+              </button>
+            </div>
+            <label class="prep-slider">
+              <span
+                >Brush size <em>{{ brushRadius() }}%</em></span
+              >
+              <input
+                type="range"
+                min="1"
+                max="60"
+                step="1"
+                [value]="brushRadius()"
+                (input)="setBrushRadius($event)"
+              />
+            </label>
+            <label class="prep-slider">
+              <span
+                >Edge
+                <em>{{ brushSoftness() === 0 ? 'hard' : brushSoftness() + '% soft' }}</em></span
+              >
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                [value]="brushSoftness()"
+                (input)="setBrushSoftness($event)"
+              />
+            </label>
+            <p class="prep-note">
+              Drag on the photograph to
+              {{ brushMode() === 'erase' ? 'erase' : 'select' }}. Hold shift for the other one, and
+              take the size down for an edge.
+            </p>
+          }
           <p class="prep-note">
-            Drag on the photograph to
-            {{ brushMode() === 'erase' ? 'erase' : 'select' }}. Hold shift for the
-            other one, and take the size down for an edge.
+            {{
+              hasArea()
+                ? 'Outlined on the photograph. The sliders apply inside it only.'
+                : 'Nothing brushed, so the sliders apply to the whole photograph.'
+            }}
           </p>
-        }
-        <p class="prep-note">
-          {{
-            hasArea()
-              ? 'Outlined on the photograph. The sliders apply inside it only.'
-              : 'Nothing brushed, so the sliders apply to the whole photograph.'
-          }}
-        </p>
-        <button type="button" class="prep-link" [disabled]="!hasArea()" (click)="clearArea()">
-          Unselect all
-        </button>
-      </fieldset>
+          <button type="button" class="prep-link" [disabled]="!hasArea()" (click)="clearArea()">
+            Unselect all
+          </button>
+        </fieldset>
 
-      <!--
+        <!--
         Folded away, because it is filled in already and stays filled in: the
         name is remembered, the notice is built from it and the year, and the
         terms page has not changed. It was three text boxes sitting between the
@@ -279,41 +324,41 @@
         about once a year. The summary says what it holds, so it is a thing to
         glance at rather than a thing to fill in.
       -->
-      <details class="prep-field prep-rights">
-        <summary>Whose it is — {{ artist() || 'nobody: it will go out unattributed' }}</summary>
-        <label>
-          Name
-          <input
-            type="text"
-            [value]="artist()"
-            placeholder="Juanma Moreno Sánchez"
-            (input)="setArtist($event)"
-          />
-        </label>
-        <label>
-          Notice
-          <input
-            type="text"
-            [value]="notice()"
-            [placeholder]="noticePreview() || '© year name. All rights reserved.'"
-            (input)="setNotice($event)"
-          />
-        </label>
-        <label>
-          Terms page
-          <input
-            type="text"
-            [value]="webStatement()"
-            placeholder="https://www.juanmamoreno.com/terms"
-            (input)="setWebStatement($event)"
-          />
-        </label>
-        <p class="prep-hint">
-          Written into the file as exif and xmp, which costs nothing in quality. Filled in already
-          — the notice is built from the name and the current year, so leaving it empty keeps it
-          right. Clearing the name sends the photograph out unattributed.
-        </p>
-      </details>
+        <details class="prep-field prep-rights">
+          <summary>Whose it is — {{ artist() || 'nobody: it will go out unattributed' }}</summary>
+          <label>
+            Name
+            <input
+              type="text"
+              [value]="artist()"
+              placeholder="Juanma Moreno Sánchez"
+              (input)="setArtist($event)"
+            />
+          </label>
+          <label>
+            Notice
+            <input
+              type="text"
+              [value]="notice()"
+              [placeholder]="noticePreview() || '© year name. All rights reserved.'"
+              (input)="setNotice($event)"
+            />
+          </label>
+          <label>
+            Terms page
+            <input
+              type="text"
+              [value]="webStatement()"
+              placeholder="https://www.juanmamoreno.com/terms"
+              (input)="setWebStatement($event)"
+            />
+          </label>
+          <p class="prep-hint">
+            Written into the file as exif and xmp, which costs nothing in quality. Filled in already
+            — the notice is built from the name and the current year, so leaving it empty keeps it
+            right. Clearing the name sends the photograph out unattributed.
+          </p>
+        </details>
       </div>
     </div>
 
