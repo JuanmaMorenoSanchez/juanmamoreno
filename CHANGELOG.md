@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.47.1
+
+- **fix** — the viewer no longer shows a band of empty frame while the blurred
+  preview is up. The frame reserves its shape from the painting's measured width
+  and height, which is right for a photograph of the whole canvas and wrong for
+  a second one — a detail is a different crop of the same painting. The preview
+  knows its own proportions, so it is asked, and the frame is the right shape
+  from the first blurred pixels rather than snapping straight later.
+
 ## 1.47.0
 
 - **feat** — the studio asks for each thing once. Height, width and unit were

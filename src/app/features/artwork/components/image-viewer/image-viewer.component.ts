@@ -112,7 +112,10 @@ export class ImageViewerComponent {
         }),
         takeUntilDestroyed()
       )
-      .subscribe((background) => this.previewImage.set(background));
+      .subscribe((background) => {
+        this.previewImage.set(background);
+        void this.shapeFromPreview(background);
+      });
 
     // Hi-res loader: decode the best available candidate off-DOM, then hand it
     // to the double buffer to cross-fade in. Reacts to the artwork changing.
@@ -133,6 +136,50 @@ export class ImageViewerComponent {
   // Clears both hi-res layers so the low-res preview shows through again. Used
   // on every artwork change so each view starts from its preview, exactly like
   // the very first load.
+  /**
+   * Takes the frame's shape from the blurred preview, until the real file says.
+   *
+   * The frame reserves the artwork's footprint before any pixels arrive, and
+   * the only shape available then comes from the painting's measured width and
+   * height. That is right for a photograph of the whole canvas and wrong for a
+   * second one — a detail, or a corner, or a canvas caught half-finished —
+   * which is a different crop of the same painting and so a different shape.
+   *
+   * The frame was therefore the wrong shape for as long as the preview was
+   * showing, letterboxing it, and snapped straight when the full file decoded.
+   * The preview knows its own proportions, so it is asked.
+   */
+  private async shapeFromPreview(background: string): Promise<void> {
+    if (!background.startsWith('url(')) return;
+    // Only until something better arrives: the full file is the same photograph
+    // and measures it exactly.
+    if (this.decodedAspectRatio() !== null) return;
+
+    const showing = this.currentNft();
+    const ratio = await this.ratioOf(background.slice(4, -1));
+    if (ratio === null) return;
+    // Navigated away while it was decoding, or the real one landed first.
+    if (this.currentNft() !== showing || this.decodedAspectRatio() !== null) return;
+    this.decodedAspectRatio.set(ratio);
+  }
+
+  /** What shape an image is, or null when it cannot be read. */
+  protected ratioOf(url: string): Promise<number | null> {
+    // Nothing decodes during a prerender, where there is no Image at all.
+    if (typeof Image === 'undefined') return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const probe = new Image();
+      probe.onload = () =>
+        resolve(
+          probe.naturalWidth && probe.naturalHeight
+            ? probe.naturalWidth / probe.naturalHeight
+            : null
+        );
+      probe.onerror = () => resolve(null);
+      probe.src = url;
+    });
+  }
+
   private resetLayers() {
     this.layerA.set('none');
     this.layerB.set('none');
