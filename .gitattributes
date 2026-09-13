@@ -1,0 +1,22 @@
+# Line endings, settled once.
+#
+# The repository stores LF and Prettier insists on LF, but git on Windows was
+# writing CRLF into the working tree on every checkout — so switching branches
+# left every file "modified", lint failed on carriage returns alone, and the
+# pre-push hook refused the next push until Prettier had rewritten the lot.
+#
+# `eol=lf` tells git to check out what it stores. Nothing about the committed
+# files changes; only what lands on disk here.
+* text=auto eol=lf
+
+# Left exactly as they are: rewriting a byte inside one corrupts it.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary

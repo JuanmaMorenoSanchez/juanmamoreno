@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.46.2
+
+- **chore** — a `.gitattributes` that checks out LF, so switching branches on
+  Windows no longer leaves every file modified by carriage returns alone and
+  fails the lint before a push.
+
 ## 1.46.1
 
 - **feat** — after signing, the page says whether the painting is on the site
