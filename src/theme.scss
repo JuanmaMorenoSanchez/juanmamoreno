@@ -41,6 +41,25 @@ $jm-dark-theme: mat.define-theme(
 
 @mixin jm-dark-colors {
   @include mat.all-component-colors($jm-dark-theme);
+  @include jm-alert-colors($jm-dark-theme);
+}
+
+// The colours an alert is drawn in, taken from the Material theme rather than
+// chosen: the same red Material uses for an error, and the green of the
+// tertiary palette for something that worked. Emitted as custom properties so a
+// component stylesheet — which cannot reach into the theme — can still use them,
+// and so the snackbar can, which is drawn in an overlay outside every component.
+@mixin jm-alert-colors($theme) {
+  --jm-error: #{mat.get-theme-color($theme, error)};
+  --jm-on-error: #{mat.get-theme-color($theme, on-error)};
+  --jm-error-bg: #{mat.get-theme-color($theme, error-container)};
+  --jm-on-error-bg: #{mat.get-theme-color($theme, on-error-container)};
+  --jm-good: #{mat.get-theme-color($theme, tertiary)};
+  --jm-on-good: #{mat.get-theme-color($theme, on-tertiary)};
+}
+
+html {
+  @include jm-alert-colors($jm-theme);
 }
 
 // An explicit choice, stamped on the document by index.html before first paint

@@ -5,6 +5,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import type { Nft } from '@domain/artwork/artwork.entity';
 import { titlesLike } from '@domain/artwork/title-check';
+import { MatIcon } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
@@ -34,7 +36,7 @@ import {
  */
 @Component({
   selector: 'app-mint-form',
-  imports: [RouterLink, MintGateComponent],
+  imports: [RouterLink, MintGateComponent, MatIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mint-form.component.html',
   styleUrl: './mint-form.component.scss',
@@ -43,6 +45,7 @@ export class MintFormComponent {
   private readonly api = inject(MintApiService);
   private readonly artworks = inject(ARTWORK_PORT);
   private readonly images = inject(ImageMatchService);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
   private readonly handoff = inject(StudioHandoffService);
 
@@ -62,8 +65,6 @@ export class MintFormComponent {
   protected readonly description = signal('');
 
   protected readonly busy = signal(false);
-  protected readonly error = signal('');
-  protected readonly prepared = signal<PendingMint | null>(null);
   protected readonly waiting = signal<PendingMint[]>([]);
 
   /** The line that will be written when no description is typed. */
@@ -129,6 +130,29 @@ export class MintFormComponent {
   protected readonly ready = computed(
     () => !!this.name().trim() && this.handoff.canProduce() && !this.busy()
   );
+
+  /**
+   * Says how it went, over the page rather than in it.
+   *
+   * What used to happen was a copy of the certificate appearing below the form:
+   * the thumbnail, the title, the description — all of it already known, none of
+   * it needing a decision, and all of it below the fold. What is wanted is to
+   * know it worked and to start the next one.
+   */
+  private say(message: string, how: 'good' | 'bad'): void {
+    this.snackBar.open(message, 'Ok', {
+      duration: how === 'good' ? 6000 : 10000,
+      panelClass: how === 'good' ? 'studio-good' : 'studio-bad',
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
+  }
+
+  /** Back to the photograph, which is where the next certificate starts. */
+  private toTheTop(): void {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   constructor() {
     this.loadWaiting();
@@ -196,13 +220,12 @@ export class MintFormComponent {
     if (!this.ready()) return;
 
     this.busy.set(true);
-    this.error.set('');
 
     // Asked for here, and rendered now, because this is the moment it is going
     // to be used. The corrector answers with null when it cannot.
     const prepared = this.handoff.take() ?? (await this.handoff.request());
     if (!prepared) {
-      this.error.set('The photograph above could not be prepared, so nothing was stored.');
+      this.say('The photograph above could not be prepared, so nothing was stored.', 'bad');
       this.busy.set(false);
       return;
     }
@@ -224,12 +247,16 @@ export class MintFormComponent {
 
     try {
       const result = await this.api.prepare(body);
-      this.prepared.set(result ?? null);
       this.reset();
       this.loadWaiting();
+      this.say(
+        `Certificate ${result.tokenId} — “${result.name}” — is prepared and waiting.`,
+        'good'
+      );
+      this.toTheTop();
     } catch (failure: unknown) {
       const message = (failure as { error?: { message?: string } })?.error?.message;
-      this.error.set(message ?? 'The api could not prepare that. Nothing was stored.');
+      this.say(message ?? 'The api could not prepare that. Nothing was stored.', 'bad');
       return;
     } finally {
       this.busy.set(false);
@@ -243,7 +270,7 @@ export class MintFormComponent {
       await this.api.discard(tokenId);
     } catch (failure: unknown) {
       const message = (failure as { error?: { message?: string } })?.error?.message;
-      this.error.set(message ?? `Certificate ${tokenId} could not be thrown away.`);
+      this.say(message ?? `Certificate ${tokenId} could not be thrown away.`, 'bad');
     }
     this.loadWaiting();
   }

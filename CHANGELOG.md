@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.50.0
+
+- **feat** — a certificate that is saved or signed says so in a floating message
+  and clears the form, instead of showing a copy of itself below the fold. The
+  thumbnail, title and description were all already known and none of them
+  needed a decision.
+- **feat** — failures say so the same way, in red, rather than as a line of text
+  in the middle of the page.
+- **feat** — the three warnings are drawn in the colours Material uses for an
+  error, with its warning icon. They were neutral, which read as an aside.
+
 ## 1.49.0
 
 - **feat** — the studio says when a photograph is already certified. Every

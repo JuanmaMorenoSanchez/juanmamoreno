@@ -129,14 +129,30 @@
   margin-top: 1.2rem;
 }
 
-/* Said, not enforced: both cases it reports are sometimes exactly right. */
+/*
+  Said, not enforced — but impossible to walk past.
+
+  It was a neutral note with a thin rule down its side, which read as an aside
+  and was missed. Drawn now in the colours Material uses for an error, with its
+  warning icon: both cases it reports are sometimes exactly right, and both are
+  written on the chain for good if they are not.
+*/
 .mint-notice {
-  display: block;
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
   margin: 0.9rem 0 0;
-  padding: 0.7rem 0.9rem;
-  border-left: 2px solid currentColor;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid var(--jm-error);
+  border-radius: 4px;
+  background: var(--jm-error-bg);
+  color: var(--jm-on-error-bg);
   font-size: 0.85rem;
-  opacity: 0.9;
+}
+
+.mint-notice mat-icon {
+  flex: none;
+  color: var(--jm-error);
 }
 
 .mint-notice-links {

@@ -219,3 +219,24 @@ a img {
 .years-menu.mat-mdc-menu-panel {
   max-height: min(22rem, 60vh);
 }
+
+/*
+  The studio's floating messages.
+  
+  Global because a snackbar is drawn in an overlay at the root of the document,
+  outside every component's styles. The colours come from the Material theme —
+  the same red it uses for an error, the green of its tertiary palette for
+  something that worked — rather than being picked by hand.
+*/
+.studio-good .mdc-snackbar__surface,
+.studio-bad .mdc-snackbar__surface {
+  --mdc-snackbar-container-color: var(--jm-good);
+  --mdc-snackbar-supporting-text-color: var(--jm-on-good);
+  --mat-snack-bar-button-color: var(--jm-on-good);
+}
+
+.studio-bad .mdc-snackbar__surface {
+  --mdc-snackbar-container-color: var(--jm-error);
+  --mdc-snackbar-supporting-text-color: var(--jm-on-error);
+  --mat-snack-bar-button-color: var(--jm-on-error);
+}

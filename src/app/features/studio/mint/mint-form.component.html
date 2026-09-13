@@ -1,10 +1,9 @@
 <section class="mint">
   <h2 class="mint-heading">New certificate</h2>
   <p class="mint-intro">
-    The images and the metadata are prepared on the server either way. Saving
-    leaves the certificate on the waiting list; preparing and signing takes you
-    straight there to sign it with the wallet on this device. The price beside
-    the button is what a certificate costs to write.
+    The images and the metadata are prepared on the server either way. Saving leaves the certificate
+    on the waiting list; preparing and signing takes you straight there to sign it with the wallet
+    on this device. The price beside the button is what a certificate costs to write.
   </p>
 
   <div class="mint-grid">
@@ -59,7 +58,6 @@
         autocomplete="off"
       />
     </label>
-
   </div>
 
   <!--
@@ -70,44 +68,52 @@
     mention. Both link to what they found, so it can be checked.
   -->
   @if (sameTitle().length) {
-    <aside class="mint-notice" role="status">
-      <strong>That title is already used.</strong>
-      Certificates sharing a title are read as one painting photographed more than
-      once — right for another view of it, wrong for a different painting.
-      <span class="mint-notice-links">
-        @for (match of sameTitle(); track match.tokenId) {
-          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
-            {{ match.tokenId }} · {{ match.name }}
-          </a>
-        }
+    <aside class="mint-notice" role="alert">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      <span>
+        <strong>That title is already used.</strong>
+        Certificates sharing a title are read as one painting photographed more than once — right
+        for another view of it, wrong for a different painting.
+        <span class="mint-notice-links">
+          @for (match of sameTitle(); track match.tokenId) {
+            <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+              {{ match.tokenId }} · {{ match.name }}
+            </a>
+          }
+        </span>
       </span>
     </aside>
   }
   @if (sameImage().length) {
-    <aside class="mint-notice" role="status">
-      <strong>This photograph is already certified.</strong>
-      It matches one already on the chain. Another view of the same painting is
-      fine; the same photograph twice is not.
-      <span class="mint-notice-links">
-        @for (match of sameImage(); track match.tokenId) {
-          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
-            {{ match.tokenId }} · {{ match.name }}
-          </a>
-        }
+    <aside class="mint-notice" role="alert">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      <span>
+        <strong>This photograph is already certified.</strong>
+        It matches one already on the chain. Another view of the same painting is fine; the same
+        photograph twice is not.
+        <span class="mint-notice-links">
+          @for (match of sameImage(); track match.tokenId) {
+            <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+              {{ match.tokenId }} · {{ match.name }}
+            </a>
+          }
+        </span>
       </span>
     </aside>
   }
   @if (nearTitle().length) {
-    <aside class="mint-notice" role="status">
-      <strong>Nearly the title of something else.</strong>
-      If it is the same painting, the title has to match exactly or the two will not
-      be grouped.
-      <span class="mint-notice-links">
-        @for (match of nearTitle(); track match.tokenId) {
-          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
-            {{ match.tokenId }} · {{ match.name }}
-          </a>
-        }
+    <aside class="mint-notice" role="alert">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      <span>
+        <strong>Nearly the title of something else.</strong>
+        If it is the same painting, the title has to match exactly or the two will not be grouped.
+        <span class="mint-notice-links">
+          @for (match of nearTitle(); track match.tokenId) {
+            <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+              {{ match.tokenId }} · {{ match.name }}
+            </a>
+          }
+        </span>
       </span>
     </aside>
   }
@@ -126,10 +132,6 @@
       Straighten a photograph above and its measurements come down with it.
     }
   </p>
-  @if (error()) {
-    <p class="mint-error">{{ error() }}</p>
-  }
-
   <!--
     Two ways out, and the difference is only when. Saving puts the certificate on
     the list the night's work writes from as soon as gas is cheap; minting does
@@ -147,22 +149,6 @@
 
     <app-mint-gate label="Prepare and sign" [disabled]="!ready()" (mint)="prepare(true)" />
   </div>
-
-  @if (prepared(); as done) {
-    <div class="prepared">
-      <h3>Token {{ done.tokenId }} — {{ done.name }}</h3>
-      <img
-        class="prepared-thumb"
-        [src]="'data:image/jpeg;base64,' + done.thumbnailBase64"
-        [alt]="done.name"
-      />
-      <p class="prepared-desc">{{ done.description }}</p>
-      <p class="prepared-note">
-        Prepared and stored. It is written when gas is cheap — tonight on its own,
-        or now from <a routerLink="/pendingmint">the waiting list</a>.
-      </p>
-    </div>
-  }
 
   @if (waiting().length) {
     <p class="mint-intro">
