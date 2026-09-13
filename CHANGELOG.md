@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.49.0
+
+- **feat** — the studio says when a photograph is already certified. Every
+  certificate carries its thumbnail inside the token, so the whole collection is
+  in the browser already: the comparison costs a quarter of a second of this
+  machine's time, once, and nothing else. Measured on the collection, the same
+  photograph at very different sizes differs by 2 to 7 bits of 64 and two
+  different paintings never by fewer than 14, so 10 is the line.
+
 ## 1.48.0
 
 - **feat** — the studio says when a title is already used, or nearly. Sharing a

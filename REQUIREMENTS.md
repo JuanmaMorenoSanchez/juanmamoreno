@@ -1195,3 +1195,27 @@ writing one name, not different names.
 repeated title would join", "catches the near miss, which is the dangerous one"
 and "reads accents, case and punctuation as ways of writing one name").
 
+### R91 — A photograph already certified is mentioned before it is certified again · met
+It has happened: a certificate was prepared, an error wrongly said nothing had
+been stored, and the same painting was prepared a second time. The collection
+can say so, because every certificate carries its own thumbnail inside the token
+— all 186 of them arrive with the catalogue, 364 KB the site downloads anyway.
+Nothing is uploaded and no service is called.
+
+Each picture is reduced to sixty-four bits: shrunk to nine by eight and each
+cell compared with the one to its right, so what is kept is the arrangement of
+light and dark and not the values. That survives a change of size, of
+compression and of overall brightness — which it must, since a full-size
+corrected photograph is compared against a two-kilobyte thumbnail.
+
+Measured on this collection: the same photograph as an on-chain thumbnail and as
+its web copy, fifty times the area, differs by 2 to 7 bits; across all 17,156
+pairs of different paintings the closest is 14. Ten is the line, and it flagged
+nothing it should not have. It catches the same photograph twice rather than
+another view of the same painting, which is allowed and is what the title check
+is for.
+*Proven by:* `fingerprint.spec.ts` (7 tests, including "is unmoved by size,
+which is why a thumbnail can stand for the original" and "is unmoved by the
+whole picture being lighter or darker") and `image-match.service.spec.ts`
+(5 tests, including "says nothing before it has read the collection").
+

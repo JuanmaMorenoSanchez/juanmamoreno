@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import type { Nft } from '@domain/artwork/artwork.entity';
 import { titlesLike } from '@domain/artwork/title-check';
+import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
 import {
@@ -41,6 +42,7 @@ import {
 export class MintFormComponent {
   private readonly api = inject(MintApiService);
   private readonly artworks = inject(ARTWORK_PORT);
+  private readonly images = inject(ImageMatchService);
   private readonly router = inject(Router);
   private readonly handoff = inject(StudioHandoffService);
 
@@ -97,6 +99,20 @@ export class MintFormComponent {
     )
   );
 
+  /**
+   * Certificates whose picture is this picture.
+   *
+   * Free, and entirely on this machine: every certificate carries its own
+   * thumbnail inside the token, so the collection to compare against arrived
+   * with the catalogue. What it catches is the same photograph prepared twice,
+   * which has happened here.
+   */
+  protected readonly sameImage = computed(() => {
+    const sample = this.handoff.sample();
+    this.images.ready();
+    return sample ? this.images.like(sample) : [];
+  });
+
   protected readonly sameTitle = computed(() => this.titleClashes().filter((one) => one.same));
   protected readonly nearTitle = computed(() => this.titleClashes().filter((one) => !one.same));
 
@@ -116,6 +132,9 @@ export class MintFormComponent {
 
   constructor() {
     this.loadWaiting();
+    // Started now, while a photograph is still being chosen, so there is
+    // something to compare against by the time there is anything to compare.
+    void this.images.learn();
   }
 
   protected set(which: 'name' | 'description', event: Event): void {

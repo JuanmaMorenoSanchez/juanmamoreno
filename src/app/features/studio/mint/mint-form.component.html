@@ -83,6 +83,20 @@
       </span>
     </aside>
   }
+  @if (sameImage().length) {
+    <aside class="mint-notice" role="status">
+      <strong>This photograph is already certified.</strong>
+      It matches one already on the chain. Another view of the same painting is
+      fine; the same photograph twice is not.
+      <span class="mint-notice-links">
+        @for (match of sameImage(); track match.tokenId) {
+          <a [routerLink]="['/artwork', match.tokenId]" target="_blank" rel="noopener">
+            {{ match.tokenId }} · {{ match.name }}
+          </a>
+        }
+      </span>
+    </aside>
+  }
   @if (nearTitle().length) {
     <aside class="mint-notice" role="status">
       <strong>Nearly the title of something else.</strong>

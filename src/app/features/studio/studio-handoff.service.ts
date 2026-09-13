@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import type { Raster } from '@domain/image/raster';
 
 /**
  * What the corrector has, and the corrected photograph itself, shared with the
@@ -50,6 +51,17 @@ export class StudioHandoffService {
    */
   readonly canProduce = signal(false);
   readonly size = signal<{ height: string; width: string } | null>(null);
+
+  /**
+   * The straightened photograph reduced to a small picture, for comparing
+   * against the collection.
+   *
+   * Taken from the preview rather than the finished file, since the finished
+   * file is not made until something is going to be done with it — and a
+   * warning about a photograph already certified is only useful beforehand. It
+   * is straightened first, because everything it will be compared against is.
+   */
+  readonly sample = signal<Raster | null>(null);
 
   /**
    * Asks the corrector for the photograph, and waits.

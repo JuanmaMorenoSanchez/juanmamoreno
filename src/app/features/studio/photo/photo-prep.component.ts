@@ -1,5 +1,13 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { detectQuad } from '@domain/image/detect-corners';
 import { withRights, type Rights } from '@domain/image/jpeg-rights';
 import {
@@ -14,7 +22,7 @@ import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocab
 import { PhotoBrush } from './photo-brush';
 import { PhotoRights } from './photo-rights';
 import { createSelection, hasSelection, type Selection } from '@domain/image/selection';
-import { solveHomography } from '@domain/image/perspective';
+import { solveHomography, warpPerspective } from '@domain/image/perspective';
 import { inject } from '@angular/core';
 import { StudioHandoffService } from '../studio-handoff.service';
 
@@ -64,6 +72,9 @@ function mapThrough(h: Float64Array, point: { x: number; y: number }): { x: numb
  */
 const PREVIEW_LONG_SIDE = 2000;
 /** Corner finding works on a copy this size, which is all the detail an outline needs. */
+/** Large enough to fingerprint from, small enough to warp instantly. */
+const SAMPLE_LONG_SIDE = 96;
+
 const DETECTION_LONG_SIDE = 720;
 /**
  * How the corrected photograph is written back out.
@@ -145,6 +156,22 @@ export class PhotoPrepComponent {
       const height = this.heightText();
       const width = this.widthText();
       this.handoff.size.set(height && width ? { height, width } : null);
+    });
+
+    // A small straightened copy, for the form to compare against the
+    // collection. Settled on a timer rather than recomputed under a dragging
+    // corner: it is wanted once the picture has stopped moving, not forty times
+    // a second while it is.
+    effect(() => {
+      const ready = this.canProcess();
+      const corners = this.corners();
+      this.adjustments();
+      if (this.sampleTimer) clearTimeout(this.sampleTimer);
+      if (!ready || !corners) {
+        this.handoff.sample.set(null);
+        return;
+      }
+      this.sampleTimer = setTimeout(() => untracked(() => this.publishSample()), 500);
     });
 
     // The form has asked for the photograph. This is the only thing that starts
@@ -610,6 +637,41 @@ export class PhotoPrepComponent {
     // always something the artist adds after looking.
     this.bows.set(straightBows(quad));
     this.prefillSize(quad);
+  }
+
+  private sampleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * A small straightened copy of what is on the stage.
+   *
+   * Small on purpose: what it is for is a sixty-four bit fingerprint, and the
+   * collection it will be compared against is held as two-kilobyte thumbnails.
+   * Warping ninety-six pixels costs nothing next to warping forty megapixels.
+   */
+  private publishSample(): void {
+    const corners = this.corners();
+    const realWidth = this.realWidth();
+    const realHeight = this.realHeight();
+    if (!corners || !realWidth || !realHeight || !this.photo()) {
+      this.handoff.sample.set(null);
+      return;
+    }
+
+    try {
+      const source = this.rasterAt(SAMPLE_LONG_SIDE);
+      const scale = source.width / (this.size()?.width ?? source.width);
+      const scaled = corners.map((corner) => ({
+        x: corner.x * scale,
+        y: corner.y * scale,
+      })) as Quad;
+      const target = correctedSize(scaled, realWidth, realHeight, this.adaptToSize());
+      const small = warpPerspective(source, scaled, target);
+      applyAdjustments(small, this.adjustments(), null);
+      this.handoff.sample.set(small);
+    } catch {
+      // Only a warning depends on this; the certificate does not.
+      this.handoff.sample.set(null);
+    }
   }
 
   /** Draws the photograph into a scratch canvas to read its pixels back out. */
