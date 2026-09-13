@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.44.2
+
+- **fix** — the mint api's answers are read out of the envelope the backend puts
+  everything in. Read as though they were the value itself, a stored certificate
+  showed as "Token — undefined" and the waiting list as empty, though the
+  certificate was stored correctly and its image already on Arweave. The tests
+  now send the envelope the server sends, and fail without the unwrapping.
+
 ## 1.44.1
 
 - **fix** — every call to the mint api now carries the artist's token. None of

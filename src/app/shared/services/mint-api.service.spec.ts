@@ -14,6 +14,17 @@ describe('MintApiService', () => {
   let http: HttpTestingController;
   const base = `${environment.backendUrl}/mint`;
 
+  /**
+   * The envelope every controller's answer arrives in.
+   *
+   * A single interceptor on the backend wraps everything as
+   * `{ success, message, data }`. Tests that flushed the bare value passed while
+   * the real api was misread — a stored certificate showed as "Token —
+   * undefined" and the waiting list as empty — so they send what the server
+   * sends.
+   */
+  const envelope = <T>(data: T) => ({ success: true, message: null, data });
+
   const waiting = (tokenId: number): PendingMint => ({
     tokenId,
     name: `Painting ${tokenId}`,
@@ -42,7 +53,7 @@ describe('MintApiService', () => {
 
   it('puts the waiting certificates in token order, whatever order they arrive in', async () => {
     const promise = api.waiting();
-    http.expectOne(`${base}/pending`).flush([waiting(199), waiting(197), waiting(198)]);
+    http.expectOne(`${base}/pending`).flush(envelope([waiting(199), waiting(197), waiting(198)]));
 
     expect((await promise).map((one) => one.tokenId)).toEqual([197, 198, 199]);
   });
@@ -51,7 +62,7 @@ describe('MintApiService', () => {
     const promise = api.mintWaiting();
     const request = http.expectOne(`${base}/pending/mint`);
     expect(request.request.method).toBe('POST');
-    request.flush({ minted: [197], skipped: 'gas is 0.9 gwei, above the 0.7 limit' });
+    request.flush(envelope({ minted: [197], skipped: 'gas is 0.9 gwei, above the 0.7 limit' }));
 
     await expect(promise).resolves.toEqual({
       minted: [197],
@@ -68,7 +79,7 @@ describe('MintApiService', () => {
     expect(request.request.method).toBe('POST');
     // Not serialised to json anywhere: that would lose the file.
     expect(request.request.body).toBeInstanceOf(FormData);
-    request.flush(waiting(197));
+    request.flush(envelope(waiting(197)));
 
     await expect(promise).resolves.toMatchObject({ tokenId: 197 });
   });
@@ -77,7 +88,7 @@ describe('MintApiService', () => {
     const promise = api.discard(197);
     const request = http.expectOne(`${base}/pending/197`);
     expect(request.request.method).toBe('DELETE');
-    request.flush({});
+    request.flush(envelope({}));
 
     await promise;
   });
@@ -104,7 +115,7 @@ describe('MintApiService', () => {
         const request = http.expectOne((candidate) => candidate.url === url);
         expect(request.request.method).toBe(method);
         expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
-        request.flush([]);
+        request.flush(envelope([]));
       }
     });
 
@@ -118,7 +129,7 @@ describe('MintApiService', () => {
 
       expect(request.request.params.get('to')).toBe('0xD7D0');
       expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
-      request.flush({});
+      request.flush(envelope({}));
     });
   });
 });
