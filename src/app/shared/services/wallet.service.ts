@@ -113,15 +113,32 @@ export class WalletService {
    * Nothing here builds or interprets the call: the bytes arrive from the
    * server, which is the only place that decides what a certificate says.
    */
-  public async send(transaction: { to: string; data: string }): Promise<string> {
+  public async send(transaction: {
+    to: string;
+    data: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+  }): Promise<string> {
     const wallet = this.provider;
     const from = this.account();
     if (!wallet || !from) throw new Error('No wallet is connected.');
 
+    // The fees are passed on exactly as they arrive, and left out when they did
+    // not: a wallet choosing for itself added a tip twice the size of what the
+    // chain was charging. Some wallets override this and some honour it; being
+    // overridden costs nothing that was not already being paid.
+    const fees =
+      transaction.maxFeePerGas && transaction.maxPriorityFeePerGas
+        ? {
+            maxFeePerGas: transaction.maxFeePerGas,
+            maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+          }
+        : {};
+
     return (await within(
       wallet.request({
         method: 'eth_sendTransaction',
-        params: [{ from, to: transaction.to, data: transaction.data }],
+        params: [{ from, to: transaction.to, data: transaction.data, ...fees }],
       }) as Promise<string>,
       SIGNATURE_WITHIN,
       'Your wallet never came back with a signature, so nothing was sent. ' +

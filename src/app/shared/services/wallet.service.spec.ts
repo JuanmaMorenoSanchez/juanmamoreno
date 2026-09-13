@@ -80,6 +80,55 @@ describe('WalletService', () => {
     });
   });
 
+  it('passes the fees on when the api worked them out', async () => {
+    // Left to itself the wallet added a tip twice what the chain was charging,
+    // which was two thirds of the cost of a certificate.
+    const request = inject({
+      eth_requestAccounts: [ACCOUNT],
+      eth_chainId: '0x1',
+      eth_sendTransaction: '0xhash',
+    });
+    await wallet.connect();
+
+    await wallet.send({
+      to: '0xcontract',
+      data: '0xdeadbeef',
+      maxFeePerGas: '0x6553f100',
+      maxPriorityFeePerGas: '0x989680',
+    });
+
+    expect(request).toHaveBeenCalledWith({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: ACCOUNT,
+          to: '0xcontract',
+          data: '0xdeadbeef',
+          maxFeePerGas: '0x6553f100',
+          maxPriorityFeePerGas: '0x989680',
+        },
+      ],
+    });
+  });
+
+  it('leaves the wallet to choose when the api could not', async () => {
+    // Half a fee is worse than none: a ceiling without a tip, or a tip without
+    // a ceiling, is a transaction the wallet may refuse outright.
+    const request = inject({
+      eth_requestAccounts: [ACCOUNT],
+      eth_chainId: '0x1',
+      eth_sendTransaction: '0xhash',
+    });
+    await wallet.connect();
+
+    await wallet.send({ to: '0xcontract', data: '0xdeadbeef' });
+
+    expect(request).toHaveBeenCalledWith({
+      method: 'eth_sendTransaction',
+      params: [{ from: ACCOUNT, to: '0xcontract', data: '0xdeadbeef' }],
+    });
+  });
+
   it('will not send before anybody has connected', async () => {
     inject({ eth_chainId: '0x1' });
 

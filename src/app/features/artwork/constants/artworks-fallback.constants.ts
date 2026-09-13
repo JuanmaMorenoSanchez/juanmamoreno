@@ -8288,5 +8288,49 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
         },
       },
     },
+    {
+      tokenId: '198',
+      name: 'Escena sin asunto',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/198.jpg',
+        cachedUrl: 'https://arweave.net/zOPeKSKwpDDM3TUClPp-TvWHLWT2fzhNdg1olm3v6sk',
+        thumbnailUrl:
+          'data:image/jpeg;base64,/9j/2wBDAAoKCgoKCgsMDAsPEA4QDxYUExMUFiIYGhgaGCIzICUgICUgMy03LCksNy1RQDg4QFFeT0pPXnFlZXGPiI+7u/v/2wBDAQoKCgoKCgsMDAsPEA4QDxYUExMUFiIYGhgaGCIzICUgICUgMy03LCksNy1RQDg4QFFeT0pPXnFlZXGPiI+7u/v/wgARCABVAEADASIAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAAAwUAAgQBBgf/xAAaAQACAwEBAAAAAAAAAAAAAAAEBQIDBgEA/9oADAMBAAIQAxAAAAD5zK2Mqrztfc7S1eSle895yFuEkNWWpAWNc7QtFyMmrY3TbQkywkE3fQodDgzlUwvqXhdNlDAvnoKK3QRUzcqudsgW5qng4dd9SNx58XqfKy4fUq0OlbcirTyxvkkyOi8weTRJGqGQUmFkZg//xAAwEAACAgEDAgQDBwUAAAAAAAABAgMRAAQhMRJREyJBQgUUYSNSYnGCkaEVMoGx0f/aAAgBAQABPwABKHlGFEPtGeGv3MKKPbnSg9owhR6Z0qfQYyKPQYrrQBIvAR6MuEnCxy7w3lnthYUNsGg0wW+hyb9Dkmn0y10dXF78jBAG2F/vmg0ml1U00UhkLBbRQSb758R0Oj0mpSBOsmrezxg0MZUHvXrh0iizbUPrjaAUNn3ytrPrny6sHobkVlMCVvFjTT63SzMfKftG+gxHjn1c+rMZCEgRjtmpQFusD+/fgAWMBYNiysytnTaDc47BOoZL0EM3uz5JpTqHnsOSAregUfljafePwDFIyEN4Q56c+I+XUbJ0ArxVVgUgn8sQVnKmuMd9hZBzSaZdQXllPTAnJ+8ewykC7+psDjHgYyF1FN3BOdcrm5pCzjazgBbbOnj+cPmVSO22AIz25pRuR3+gyaYzUOEXZU4AAxviuhi2kk6W7EHP6hppHAaUKCeSCoP7jGId3IFWx/k4ieW/U5QIo5flHmIFY9bgHa8aqvDU2r0vlF9J6v07ZrqkdYgBQ3OInUQP3z23XAzkWRYBxGaWZUjAZiaA43yXQa6O/sw4/AbySQoSrAitqOxxdSIZi3QbVbJvgHsMhl8YNL7mN5G9tfc5ZAa2H/cFMS2xqiaJF5Fphp5FciQlLAoj/RrGfSKxk8XVRH8QJXEmgnIA1EM3+ATmviYugETxUQJGKsb/ABHAXgoNX6TasvcHC4AIuqxJgVFnIZ0DgWLPBrYHvhk+Y08WqoKzEqwHBI9c1czQwF+dslmldqdrA24rFlnXwEjnkTq5pj3yXxtVLHpmkBRYA3nRWs1d48jXtQBPA4wOem/riu/N8Z//xAAnEQACAQMDAgYDAAAAAAAAAAABAgMAERIEBSETMRQiQVFSYRUykf/aAAgBAgEBPwCwPrWK1gKxUVZbfqK17YwDBsWJ4t9c1t8+UiwSrkxW+R+VrkV0k+NIa3bVr1I40PKXyPte3FbPE7apZQ4IRTf381M9Y5xsoYqSLZDuK3LRwmOAWIRMu1bTpxFG8wBAYWF/qmbmp90kEieHF0x5upPNfkDqx0Wix960sivAFFvLxTCkUCUpbyiVlA+gakjjWKMBFtiT29ca2rgygcARof7Xc1//xAAmEQACAQMCBgIDAAAAAAAAAAABAgADERIEMQUTISJBURRhI3KB/9oACAEDAQE/AM7eJzDOZMyYCw3YzQJnX6qGQWvfYXNpxLTlENekcUDWsPWwMarUHmOtzecJ02FJ6lUHFyMR7tfrOL1Ka6R6VmvUIx9dpBnL3vAQlRWKhgDfE7GaDVVuZWYsC7Y7ziWpasyUjYlD4+4ElHQIUbnHFr+D4h0Q035VqhvUroVqliD3dYBcQM3xw9+7C95Tdy5Jdrkgb/c4gBdf3cfwQbCf/9k=',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Watercolor on paper',
+            },
+            {
+              trait_type: 'Height',
+              value: '20',
+            },
+            {
+              trait_type: 'Width',
+              value: '15',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2015',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
   ],
 };

@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.52.0
+
+- **feat** — the fees the api works out are passed to the wallet rather than
+  dropped. Left to itself the wallet tipped 0.1 gwei while the chain was
+  charging 0.0495, which was two thirds of what a certificate cost. Passed on
+  exactly as they arrive, and left out entirely when they are absent — half a
+  fee is a transaction a wallet may refuse.
+
 ## 1.51.0
 
 - **feat** — the height and width start empty and have to be given. They used to

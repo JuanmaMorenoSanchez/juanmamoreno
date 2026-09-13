@@ -30,6 +30,16 @@ export interface SignableTransaction {
   data: string;
   chainId: number;
   tokenId: number;
+  /**
+   * What to offer the chain, when the api could work it out.
+   *
+   * Stated so the wallet does not choose for itself: left to its own devices it
+   * added a tip of 0.1 gwei to a chain charging 0.0495, which was two thirds of
+   * what the certificate cost. Absent when the base fee could not be read, and
+   * then the wallet decides as before.
+   */
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
 }
 
 /** What came of asking for the waiting certificates to be written. */
