@@ -58,8 +58,18 @@ describe('the photograph inside a raw file', () => {
     expect(isRawPhotograph('DSC_0195.nef')).toBe(true);
     expect(isRawPhotograph('shot.cr2')).toBe(true);
     expect(isRawPhotograph('shot.arw')).toBe(true);
-    expect(isRawPhotograph('painting.jpg', 'image/jpeg')).toBe(false);
-    expect(isRawPhotograph('painting.png', 'image/png')).toBe(false);
+    expect(isRawPhotograph('painting.jpg')).toBe(false);
+    expect(isRawPhotograph('painting.png')).toBe(false);
+    expect(isRawPhotograph('not a photograph at all.pdf')).toBe(false);
+  });
+
+  it('does not ask the operating system what it thinks', () => {
+    // It asked, once, meaning to be careful — and Windows answered `image/nef`,
+    // which was read as a claim the browser could open the file. The artist got
+    // "that file could not be read as an image" for a perfectly good NEF.
+    // Whatever any registry says, a file named .nef is a raw.
+    expect(isRawPhotograph('DSC_0101.NEF')).toBe(true);
+    expect(isRawPhotograph('  DSC_0101.NEF  ')).toBe(true);
   });
 
   it('finds the full-size photograph, not the menu thumbnail', () => {

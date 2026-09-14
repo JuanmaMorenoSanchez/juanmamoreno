@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.53.2
+
+- **fix** — a raw file is recognised by its name alone. It also consulted the
+  type the operating system reports, and Windows answering `image/nef` was read
+  as a claim the browser could open it — so a perfectly good NEF came back as
+  "that file could not be read as an image".
+
 ## 1.53.1
 
 - **fix** — the raw-file test built its fixture out of the machine's temp

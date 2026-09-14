@@ -34,9 +34,20 @@ const END = [0xff, 0xd9];
  */
 const NOT_A_PICTURE = 1024;
 
-/** Whether this is a file the browser will refuse to open by itself. */
-export function isRawPhotograph(name: string, type = ''): boolean {
-  if (type.startsWith('image/') && !type.includes('x-') && type !== 'image/tiff') return false;
+/**
+ * Whether this is a file the browser will refuse to open by itself.
+ *
+ * Decided on the name alone. The first version also consulted the type the
+ * operating system reports, meaning to be careful, and was the reason a NEF came
+ * back as "that file could not be read as an image": Windows reports whatever is
+ * in its registry, and `image/nef` — no stranger than `image/x-nikon-nef`, which
+ * was allowed — was taken as a claim the browser could open it.
+ *
+ * The extension is the whole of the signal and needs no help. A photograph the
+ * browser can open is not named .nef, and one named .nef is not a photograph the
+ * browser can open, whatever any registry says about it.
+ */
+export function isRawPhotograph(name: string): boolean {
   return /\.(nef|nrw|cr2|cr3|arw|orf|raf|rw2|pef|dng|srw)$/i.test(name.trim());
 }
 

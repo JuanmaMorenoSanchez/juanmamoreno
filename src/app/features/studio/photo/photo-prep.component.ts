@@ -560,7 +560,7 @@ export class PhotoPrepComponent {
     this.fileName.set(file.name);
 
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const raw = isRawPhotograph(file.name, file.type);
+    const raw = isRawPhotograph(file.name);
 
     // A browser cannot develop a raw, but every raw carries the JPEG the camera
     // made at the moment of the shot — on this one, the full 6016 × 4000 frame.
