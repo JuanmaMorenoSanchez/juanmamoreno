@@ -102,12 +102,45 @@
   text-align: center;
 }
 
+/*
+  What the photograph is looked at through.
+
+  The stage is magnified rather than redrawn — the canvas holds the preview at
+  two thousand pixels either way — and a magnified box still takes up the room
+  its unmagnified self would, so without something to scroll the enlarged
+  picture there is nothing to reach the rest of it by. Scrollable overflow does
+  account for the magnification, which is what makes this the whole of the
+  plumbing.
+*/
+.prep-viewport {
+  overflow: auto;
+  max-width: 100%;
+  max-height: 82vh;
+  // The stage is an inline-block, and a line box would leave room under it for
+  // a descender that is not there — enough to put a scrollbar on a picture that
+  // fits perfectly well.
+  line-height: 0;
+}
+
 .prep-stage {
   position: relative;
   display: inline-block;
   background: var(--catalog-frame-bg);
   touch-action: none;
   line-height: 0;
+  // From the top left, so magnifying does not push the picture off its own
+  // scrolling box before it can be scrolled to.
+  transform-origin: 0 0;
+}
+
+/* The buttons and dials that act on the photograph itself, above it. */
+.prep-stage-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-sm;
 }
 
 .prep-canvas {
@@ -130,7 +163,10 @@
   path {
     fill: none;
     stroke: var(--catalog-accent);
-    stroke-width: 2;
+    // Divided by the magnification, because a line drawn over the very edge
+    // being matched hides it — and the whole reason for going in close is to
+    // see that edge.
+    stroke-width: calc(2 / var(--prep-zoom, 1));
     stroke-dasharray: 6 4;
   }
 
@@ -151,7 +187,9 @@
   // Sized from the component: the artist chooses how wide a ring to aim with,
   // and the choice is remembered.
   padding: 0;
-  border: 2px solid var(--catalog-accent);
+  // The ring keeps its size on screen as the picture grows under it, so its
+  // outline has to thin in step or it would swallow the corner it marks.
+  border: calc(2px / var(--prep-zoom, 1)) solid var(--catalog-accent);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: grab;
@@ -183,7 +221,7 @@
     top: 50%;
     left: 12%;
     width: 76%;
-    height: 1px;
+    height: calc(1px / var(--prep-zoom, 1));
     background: var(--catalog-accent);
   }
 
@@ -312,7 +350,8 @@
 // A slider and the word for where it currently sits. A word rather than a
 // number wherever one is clearer: "warmer" means something on sight, where
 // "+34" has to be read against a scale nobody has been shown.
-.prep-slider {
+.prep-slider,
+.prep-dial {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -332,6 +371,15 @@
   input {
     width: 100%;
   }
+}
+
+// The same control, narrow enough to stand in a row beside the buttons above
+// the photograph rather than in a column of its own.
+.prep-dial {
+  width: 9rem;
+  margin-bottom: 0;
+  font-size: 0.76rem;
+  color: var(--catalog-faint);
 }
 
 // While the brush is on, the stage is for painting rather than for moving
@@ -432,6 +480,10 @@
 
   .prep-work .prep-canvas {
     max-width: 100%;
+    max-height: 80vh;
+  }
+
+  .prep-work .prep-viewport {
     max-height: 80vh;
   }
 

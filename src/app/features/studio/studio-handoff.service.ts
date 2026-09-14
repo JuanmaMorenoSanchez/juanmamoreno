@@ -76,6 +76,25 @@ export class StudioHandoffService {
     });
   }
 
+  private readonly cleared = signal(0);
+
+  /**
+   * Bumped when the studio should start again from nothing.
+   *
+   * A certificate that has been stored is finished with, and what should be on
+   * screen is an empty studio: the form clears its own fields, but the
+   * photograph, the corners, the measurements and the brushwork all belong to
+   * the corrector above, which has no other way of hearing that the thing it
+   * prepared has been dealt with. A counter rather than a flag, for the same
+   * reason as the ask above — two certificates in a row are two clearings.
+   */
+  readonly startsAgain = this.cleared.asReadonly();
+
+  startAgain(): void {
+    this.held.set(null);
+    this.cleared.update((count) => count + 1);
+  }
+
   handOver(prepared: PreparedForMint): void {
     this.held.set(prepared);
     this.answer(prepared);

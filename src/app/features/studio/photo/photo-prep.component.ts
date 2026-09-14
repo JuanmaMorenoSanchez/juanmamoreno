@@ -22,7 +22,12 @@ import { isRawPhotograph, largestEmbeddedJpeg } from '@domain/image/raw-preview'
 import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocabulary';
 import { PhotoBrush } from './photo-brush';
 import { PhotoRights } from './photo-rights';
-import { createSelection, hasSelection, type Selection } from '@domain/image/selection';
+import {
+  createSelection,
+  hasSelection,
+  turnSelection,
+  type Selection,
+} from '@domain/image/selection';
 import { solveHomography, warpPerspective } from '@domain/image/perspective';
 import { inject } from '@angular/core';
 import { StudioHandoffService } from '../studio-handoff.service';
@@ -32,6 +37,7 @@ import {
   EDGE_CORNERS,
   fullFrame,
   straightBows,
+  turnClockwise,
   type EdgeBows,
   type EdgeName,
   type Point,
@@ -118,6 +124,18 @@ const DEFAULT_HANDLE_SIZE = 46;
 const MIN_HANDLE_SIZE = 20;
 const MAX_HANDLE_SIZE = 110;
 
+/**
+ * How far into the photograph one can go.
+ *
+ * The stage shows the whole photograph at once, which is right for judging it
+ * and wrong for placing a corner: a corner dropped a pixel out on a stage a
+ * thousand pixels wide is six pixels out on the photograph. Zooming the whole
+ * browser was the way round that, and it takes the controls with it. Four is
+ * as far as it is worth going — beyond that the preview itself, capped at two
+ * thousand pixels, has no more detail to show.
+ */
+const MAX_ZOOM = 4;
+
 function rememberedHandleSize(): number {
   try {
     const stored = Number(window.localStorage.getItem(HANDLE_SIZE_KEY));
@@ -177,6 +195,15 @@ export class PhotoPrepComponent {
     effect(() => {
       if (!this.handoff.asksForPhotograph()) return;
       void this.process();
+    });
+
+    // Cleared from below. Saving or signing a certificate finishes with this
+    // photograph, and what should be on screen afterwards is an empty studio
+    // ready for the next painting — not the last one still straightened on the
+    // stage with its file name above it.
+    effect(() => {
+      if (!this.handoff.startsAgain()) return;
+      untracked(() => this.reset());
     });
 
     // The canvas is inside the block that `size` reveals, so at the moment the
@@ -249,6 +276,16 @@ export class PhotoPrepComponent {
     } catch {
       // Storage off. The size holds for this session, which is enough.
     }
+  }
+
+  protected readonly maxZoom = MAX_ZOOM;
+
+  /** How far the stage is magnified. One is the whole photograph, as before. */
+  protected readonly zoom = signal(1);
+
+  protected setZoom(event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.zoom.set(Number.isFinite(value) ? Math.min(MAX_ZOOM, Math.max(1, value)) : 1);
   }
 
   protected readonly fileName = signal('');
@@ -492,6 +529,59 @@ export class PhotoPrepComponent {
       })
     );
   });
+
+  /**
+   * Stands the photograph up, a quarter turn at a time.
+   *
+   * The pixels themselves are turned rather than the picture being displayed
+   * rotated, so everything downstream — the corner finding, the warp, the
+   * brush, the fingerprint — goes on working in one set of coordinates. What it
+   * costs is one draw of the full photograph, once, when the button is pressed.
+   *
+   * The corners and the brushed area come round with it. Leaving them would
+   * give a certificate of a painting on its side squeezed into the shape of an
+   * upright one, and an adjustment on the wrong corner.
+   */
+  protected async turn(): Promise<void> {
+    const photo = this.photo();
+    const corners = this.corners();
+    const bows = this.bows();
+    const size = this.size();
+    if (!photo || !corners || !bows || !size || this.busy()) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = size.height;
+    canvas.height = size.width;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    context.translate(canvas.width, 0);
+    context.rotate(Math.PI / 2);
+    context.drawImage(photo, 0, 0);
+
+    const turned = await createImageBitmap(canvas);
+    const geometry = turnClockwise(corners, bows, size);
+
+    photo.close();
+    this.photo.set(turned);
+    this.size.set({ width: canvas.width, height: canvas.height });
+    this.corners.set(geometry.quad);
+    this.bows.set(geometry.bows);
+    this.turnSelections();
+  }
+
+  /** Every mask there is, brought round with the picture it was painted on. */
+  private turnSelections(): void {
+    const selection = this.brushTool.selection();
+    if (selection) {
+      this.brushTool.selection.set(turnSelection(selection));
+      this.brushTool.version.update((n) => n + 1);
+    }
+    this.edits.update((kept) =>
+      kept.map((edit) => ({
+        adjustments: edit.adjustments,
+        selection: edit.selection ? turnSelection(edit.selection) : null,
+      }))
+    );
+  }
 
   protected straightenSides(): void {
     const corners = this.corners();
@@ -1092,6 +1182,8 @@ export class PhotoPrepComponent {
     this.busy.set(null);
     this.source.set(null);
     this.adaptToSize.set(true);
+    this.zoom.set(1);
+    this.handedOver.set(false);
     // Changes belong to the photograph they were made to, and the brush's mask
     // is measured in that photograph's straightened rectangle. Carried into the
     // next one they would land somewhere arbitrary.

@@ -402,12 +402,50 @@ through a bend comes back more than twice as close to the original as ignoring
 the bend does
 
 ### R26 — Handles are as large as the hand wants · met
-The corner rings are wide by default and adjustable from 20 to 110 px, and the
-width is remembered. The handle is what the pointer sits on while the corner
+The corner rings are wide by default and adjustable from 20 to 110 px on a
+slider above the stage, and the width is remembered. The handle is what the pointer sits on while the corner
 underneath it is what has to be judged, so a small ring puts the cursor exactly
 where the eye needs to be; a wide one is grabbed anywhere along its edge. The
 cross still marks the exact pixel.
 *Proven by:* `photo-prep.component.spec.ts` "aiming" (3 tests)
+
+### R93 — A photograph that arrived on its side can be stood up · met
+A button above the stage turns the photograph a quarter turn clockwise, as many
+times as it takes. A camera that recorded nothing about which way up it was held
+hands over a painting lying on its side, and there is nothing else in the studio
+that can put it right.
+
+The pixels themselves are turned, so everything downstream — the warp, the
+brush, the fingerprint — goes on working in one set of coordinates. The corners
+turn with them and are renamed as they go: the corner that was at the bottom
+left is the top left afterwards, which is the corner the straightening squares
+to the top left of the certificate. Leaving them would give a certificate of a
+sideways painting squeezed into the shape of an upright one. The brushed area
+and every change kept with it come round too, since the mask lives in the
+straightened rectangle and the painting arrives in it a quarter turn round.
+*Proven by:* `quad.spec.ts` "turnClockwise" (4 tests — the whole frame stays the
+whole frame, a bent side stays the only bent side, four turns return) and
+`selection.spec.ts` "turning a selection with the photograph" (3 tests)
+
+### R94 — The picture can be gone into without taking the page with it · met
+The stage magnifies up to four times, and the corner rings keep the size they
+had on screen while the picture grows under them — so a ring covers a quarter as
+much painting at four times as it does at one. The outline and the rings thin in
+step, because a line drawn over the very edge being matched hides the thing that
+going in close was for. Zooming the browser was the way round this before, and
+it takes every control on the page with it.
+*Proven by:* `photo-prep.component.spec.ts` "going in closer" (4 tests — the
+bounds, the transform on the stage, the halved handle at two times, and no
+transform at all when the whole photograph is shown)
+
+### R95 — A certificate that is stored leaves an empty studio · met
+Saving or signing a certificate clears the whole page, not only the form: the
+chosen file, the photograph on the stage, the corners, the measurements, the
+brushwork and the magnification all go, leaving the studio as it opens. The
+corrector hears this through the same handoff the form asks for the photograph
+on, counted rather than flagged so a second certificate clears it again.
+*Proven by:* `studio-handoff.service.spec.ts` (the count, and the held
+photograph dropped) and `photo-prep.component.spec.ts` "starting again"
 
 ### R27 — The file says whose it is · met
 The corrected jpeg carries the artist's name and a copyright notice as both exif

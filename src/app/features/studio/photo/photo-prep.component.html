@@ -57,67 +57,122 @@
     -->
     <div class="prep-work">
       <div class="prep-bleed">
-        <div
-          #stage
-          class="prep-stage"
-          [class.prep-selecting]="selecting()"
-          (pointerdown)="startBrush($event)"
-          (pointermove)="drag($event); brushMove($event); trackBrush($event)"
-          (pointerleave)="leaveBrush()"
-          (pointerup)="release()"
-          (pointercancel)="release()"
-        >
-          <canvas #preview class="prep-canvas"></canvas>
+        <!--
+          Everything about looking at the photograph, kept beside the
+          photograph. A camera that recorded nothing about which way up it was
+          held hands over a painting on its side; a stage showing the whole of a
+          six thousand pixel photograph at once cannot be aimed at to the pixel;
+          and a side bent by accident needs putting back. None of those is a
+          setting about the painting, so none of them belongs in the column of
+          fields that is.
+        -->
+        <div class="prep-stage-tools">
+          <button type="button" class="prep-tool" (click)="turn()">Rotate 90°</button>
+          <button type="button" class="prep-tool" (click)="straightenSides()">
+            Straighten the sides
+          </button>
+          <label class="prep-dial">
+            <span
+              >Zoom <em>{{ zoom() }}×</em></span
+            >
+            <input
+              type="range"
+              min="1"
+              [max]="maxZoom"
+              step="0.25"
+              [value]="zoom()"
+              (input)="setZoom($event)"
+            />
+          </label>
           <!--
+            How wide a ring to aim with. Large by default, because the ring is
+            what the pointer is on while the corner underneath it is what has to
+            be judged — and small when the picture has been zoomed into, where a
+            ring the size of a thumbnail covers the very thing being placed.
+          -->
+          <label class="prep-dial">
+            <span
+              >Handles <em>{{ handleSize() }}px</em></span
+            >
+            <input
+              type="range"
+              [min]="minHandleSize"
+              [max]="maxHandleSize"
+              step="1"
+              [value]="handleSize()"
+              (input)="setHandleSize($event)"
+            />
+          </label>
+        </div>
+
+        <div class="prep-viewport" [style.--prep-zoom]="zoom()">
+          <div
+            #stage
+            class="prep-stage"
+            [style.transform]="zoom() > 1 ? 'scale(' + zoom() + ')' : null"
+            [class.prep-selecting]="selecting()"
+            (pointerdown)="startBrush($event)"
+            (pointermove)="drag($event); brushMove($event); trackBrush($event)"
+            (pointerleave)="leaveBrush()"
+            (pointerup)="release()"
+            (pointercancel)="release()"
+          >
+            <canvas #preview class="prep-canvas"></canvas>
+            <!--
           The brush, drawn where it is and at the width it would cover. The size
           slider gives a number, and a number cannot say how much of this
           painting it takes.
         -->
-          @if (brushCursor(); as cursor) {
-            <span
-              class="prep-brush-ring"
-              aria-hidden="true"
-              [style.left.%]="cursor.x"
-              [style.top.%]="cursor.y"
-              [style.width.%]="cursor.size"
-              [class.prep-brush-erasing]="brushMode() === 'erase'"
-            ></span>
-          }
-          <svg
-            class="prep-outline"
-            [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
-            @for (bow of bowHandles(); track bow.edge + bow.index) {
-              <path class="prep-tether" [attr.d]="bow.tether" vector-effect="non-scaling-stroke" />
+            @if (brushCursor(); as cursor) {
+              <span
+                class="prep-brush-ring"
+                aria-hidden="true"
+                [style.left.%]="cursor.x"
+                [style.top.%]="cursor.y"
+                [style.width.%]="cursor.size"
+                [class.prep-brush-erasing]="brushMode() === 'erase'"
+              ></span>
             }
-          </svg>
-          @for (handle of handles(); track $index) {
-            <button
-              type="button"
-              class="prep-handle"
-              [style.left]="handle.left"
-              [style.top]="handle.top"
-              [style.width.px]="handleSize()"
-              [style.height.px]="handleSize()"
-              [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
-              (pointerdown)="grab($index, $event)"
-            ></button>
-          }
-          @for (bow of bowHandles(); track bow.edge + bow.index) {
-            <button
-              type="button"
-              class="prep-bow"
-              [style.left]="bow.left"
-              [style.top]="bow.top"
-              [style.width.px]="handleSize() * 0.55"
-              [style.height.px]="handleSize() * 0.55"
-              [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
-              (pointerdown)="grabBow(bow.edge, bow.index, $event)"
-            ></button>
-          }
+            <svg
+              class="prep-outline"
+              [attr.viewBox]="'0 0 ' + photo.width + ' ' + photo.height"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path [attr.d]="outline()" vector-effect="non-scaling-stroke" />
+              @for (bow of bowHandles(); track bow.edge + bow.index) {
+                <path
+                  class="prep-tether"
+                  [attr.d]="bow.tether"
+                  vector-effect="non-scaling-stroke"
+                />
+              }
+            </svg>
+            @for (handle of handles(); track $index) {
+              <button
+                type="button"
+                class="prep-handle"
+                [style.left]="handle.left"
+                [style.top]="handle.top"
+                [style.width.px]="handleSize() / zoom()"
+                [style.height.px]="handleSize() / zoom()"
+                [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
+                (pointerdown)="grab($index, $event)"
+              ></button>
+            }
+            @for (bow of bowHandles(); track bow.edge + bow.index) {
+              <button
+                type="button"
+                class="prep-bow"
+                [style.left]="bow.left"
+                [style.top]="bow.top"
+                [style.width.px]="(handleSize() * 0.55) / zoom()"
+                [style.height.px]="(handleSize() * 0.55) / zoom()"
+                [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
+                (pointerdown)="grabBow(bow.edge, bow.index, $event)"
+              ></button>
+            }
+          </div>
         </div>
       </div>
 

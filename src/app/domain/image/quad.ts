@@ -190,3 +190,40 @@ export function correctedSize(
     height: Math.max(1, Math.round(width / ratio)),
   };
 }
+
+/**
+ * The same photograph, turned a quarter turn clockwise.
+ *
+ * A camera that recorded nothing about which way up it was held hands over a
+ * painting lying on its side, and the corners found in it are the corners of a
+ * sideways painting: straightening squares them to the measurements typed
+ * below, so the certificate comes out rotated and stretched into the wrong
+ * shape. Turning the picture has to turn the corners with it or it is only a
+ * different way of looking at the same mistake.
+ *
+ * The four corners keep their places on the painting and change their names:
+ * what was the bottom left is now the top left, because that is where it has
+ * arrived. Each side likewise becomes the next one round — and two of them run
+ * the other way afterwards, since the sides are parameterised in pairs and a
+ * quarter turn swaps which pair a side belongs to.
+ *
+ * `height` is the photograph's height *before* the turn, which is the new width.
+ */
+export function turnClockwise(
+  quad: Quad,
+  bows: EdgeBows,
+  { height }: Size
+): { quad: Quad; bows: EdgeBows } {
+  const turn = (point: Point): Point => ({ x: height - point.y, y: point.x });
+  const [tl, tr, br, bl] = quad;
+
+  return {
+    quad: [turn(bl), turn(tl), turn(tr), turn(br)],
+    bows: {
+      top: [turn(bows.left[1]), turn(bows.left[0])],
+      right: [turn(bows.top[0]), turn(bows.top[1])],
+      bottom: [turn(bows.right[1]), turn(bows.right[0])],
+      left: [turn(bows.bottom[0]), turn(bows.bottom[1])],
+    },
+  };
+}

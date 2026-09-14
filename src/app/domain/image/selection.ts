@@ -104,3 +104,34 @@ export function paintDab(
     }
   }
 }
+
+/**
+ * The same selection on a picture turned a quarter turn clockwise.
+ *
+ * The mask is painted in the straightened rectangle rather than in the
+ * photograph, because that is where the adjustment finally lands. Turn the
+ * photograph and the painting arrives in that rectangle a quarter turn round,
+ * so a mask left where it was would be on the wrong part of the painting —
+ * which is not an error anything would report, only a corner brightened that
+ * nobody asked for.
+ *
+ * Turned in the mask's own proportions rather than transposed: the rectangle
+ * keeps the shape the typed measurements give it, whichever way the photograph
+ * is held, so the mask keeps its grid and the coverage rotates within it.
+ */
+export function turnSelection(selection: Selection): Selection {
+  const { width, height, values } = selection;
+  const turned = new Float32Array(width * height);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      // Where this cell was before the turn: across becomes down, and down
+      // becomes across the other way.
+      const from = Math.min(width - 1, Math.floor(((y + 0.5) / height) * width));
+      const above = Math.min(height - 1, Math.floor((1 - (x + 0.5) / width) * height));
+      turned[y * width + x] = values[above * width + from];
+    }
+  }
+
+  return { values: turned, width, height };
+}

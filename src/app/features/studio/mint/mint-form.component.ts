@@ -248,6 +248,11 @@ export class MintFormComponent {
     try {
       const result = await this.api.prepare(body);
       this.reset();
+      // And the corrector above with it, so what is left is the studio as it
+      // opens: no file chosen, no corners, no measurements. Clearing only these
+      // fields left the last painting straightened on the stage, which read as
+      // a certificate still waiting to be saved.
+      this.handoff.startAgain();
       this.loadWaiting();
       this.say(
         `Certificate ${result.tokenId} — “${result.name}” — is prepared and waiting.`,

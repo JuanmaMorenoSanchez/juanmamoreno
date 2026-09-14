@@ -64,6 +64,25 @@ describe('StudioHandoffService', () => {
     expect(handoff.asksForPhotograph()).toBe(before + 2);
   });
 
+  it('counts the clearings, so a second certificate clears the studio again', () => {
+    // The same reason the asks are counted: a flag would be set already by the
+    // time the second certificate was stored, and the corrector would keep the
+    // photograph it had just finished with.
+    expect(handoff.startsAgain()).toBe(0);
+    handoff.startAgain();
+    handoff.startAgain();
+
+    expect(handoff.startsAgain()).toBe(2);
+  });
+
+  it('drops the photograph it is holding when the studio starts again', () => {
+    handoff.handOver(prepared());
+
+    handoff.startAgain();
+
+    expect(handoff.waiting()).toBeNull();
+  });
+
   it('hands the photograph over only once', () => {
     handoff.handOver(prepared());
 

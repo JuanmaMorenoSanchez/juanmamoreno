@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { EDGE_CORNERS, straightBows, type EdgeBows, type Quad } from '@domain/image/quad';
 import { describe, expect, it } from 'vitest';
 import { PhotoPrepComponent } from './photo-prep.component';
+import { StudioHandoffService } from '../studio-handoff.service';
 
 /**
  * The bows are the part of the studio a test can reach without a photograph:
@@ -18,6 +19,9 @@ type Internals = {
   handleSize: () => number;
   setHandleSize(event: Event): void;
   straightenSides(): void;
+  zoom: { (): number; set(v: number): void };
+  setZoom(event: Event): void;
+  fileName: { set(v: string): void };
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
   artist: () => string;
@@ -259,5 +263,79 @@ describe('PhotoPrepComponent — brushing an area', () => {
     // Choosing a brush turns brushing on: choosing one and then finding the
     // photograph does not answer is a fault with nothing to show for it.
     expect(component.selecting()).toBe(true);
+  });
+});
+
+/**
+ * Placing a corner is only as precise as the picture is large, and the picture
+ * is a photograph shown whole. Zooming the browser was the way round that, and
+ * it takes the page with it.
+ */
+describe('PhotoPrepComponent — going in closer', () => {
+  it('starts at the whole photograph', () => {
+    const { component } = setup();
+    expect(component.zoom()).toBe(1);
+  });
+
+  it('refuses to go below the whole photograph or past what the preview holds', () => {
+    const { component } = setup();
+
+    component.setZoom({ target: { value: '0.2' } } as unknown as Event);
+    expect(component.zoom()).toBe(1);
+
+    component.setZoom({ target: { value: '40' } } as unknown as Event);
+    expect(component.zoom()).toBe(4);
+  });
+
+  it('magnifies the stage and keeps the handles the size they were', () => {
+    const { fixture, component } = setup();
+    component.setZoom({ target: { value: '2' } } as unknown as Event);
+    fixture.detectChanges();
+
+    const stage = fixture.nativeElement.querySelector('.prep-stage') as HTMLElement;
+    expect(stage.style.transform).toBe('scale(2)');
+
+    // Halved in the stage's own pixels, which the stage then doubles: the ring
+    // covers a quarter as much of the painting and the same amount of screen.
+    const handle = fixture.nativeElement.querySelector('.prep-handle') as HTMLElement;
+    expect(Number.parseFloat(handle.style.width)).toBeCloseTo(component.handleSize() / 2, 3);
+
+    // Read by the stylesheet, to thin the outline and the rings in step.
+    const viewport = fixture.nativeElement.querySelector('.prep-viewport') as HTMLElement;
+    expect(viewport.style.getPropertyValue('--prep-zoom')).toBe('2');
+  });
+
+  it('leaves the stage untransformed when it is showing the whole photograph', () => {
+    const { fixture } = setup();
+    fixture.detectChanges();
+
+    const stage = fixture.nativeElement.querySelector('.prep-stage') as HTMLElement;
+    expect(stage.style.transform).toBe('');
+  });
+});
+
+/**
+ * A certificate that has been stored is finished with, and the studio should
+ * look the way it looks on opening — which is what pressing F5 gives, and what
+ * the form below has no way of doing on its own.
+ */
+describe('PhotoPrepComponent — starting again', () => {
+  it('clears the photograph when the form says the certificate is stored', () => {
+    const { fixture, component } = setup();
+    const handoff = TestBed.inject(StudioHandoffService);
+    component.fileName.set('DSC_0101.NEF');
+    component.widthText.set('116');
+    component.heightText.set('140,5');
+    component.setZoom({ target: { value: '3' } } as unknown as Event);
+
+    handoff.startAgain();
+    TestBed.tick();
+    fixture.detectChanges();
+
+    expect(component.corners()).toBe(null);
+    expect(component.zoom()).toBe(1);
+    // With no photograph, the file chooser is on the page again — empty,
+    // because it is a new one.
+    expect(fixture.nativeElement.querySelector('input[type="file"]')).not.toBe(null);
   });
 });

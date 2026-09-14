@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.54.0
+
+- **feat** — the studio stands a sideways photograph up, and goes in close. A
+  quarter-turn button turns the pixels and the corners together, so a painting a
+  camera recorded nothing about comes out of the straightening the right way up
+  rather than squeezed into the shape of an upright one; the brushed area comes
+  round with it. The stage magnifies up to four times with the rings and the
+  outline keeping their size on screen, which is what the browser's own zoom was
+  standing in for. The handle-size slider and the button that puts a bent side
+  back on its chord are on the page again — both were left unreachable by the
+  layout of 1.50.0. And a certificate that is saved or signed now clears the
+  whole studio, the chosen file included, rather than only the form beneath it.
+
 ## 1.53.2
 
 - **fix** — a raw file is recognised by its name alone. It also consulted the
