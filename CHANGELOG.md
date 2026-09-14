@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.53.1
+
+- **fix** — the raw-file test built its fixture out of the machine's temp
+  directory, so it passed where it was written and failed on the deploy. The
+  fixture is built inside the test now and depends on nothing outside the
+  repository.
+
 ## 1.53.0
 
 - **feat** — the studio opens raw files. A browser cannot develop a raw, but

@@ -1,13 +1,49 @@
-import { readFileSync } from 'node:fs';
 import { isRawPhotograph, largestEmbeddedJpeg } from './raw-preview';
 
 /**
- * Built to the shape of a NEF — a TIFF header, the camera's menu thumbnail,
- * a stretch standing in for sensor data, then the full-size preview — because
- * that is the arrangement this has to find its way through, and a real raw is
- * forty megabytes of it.
+ * A file with the shape of a NEF, built here rather than read from disk.
+ *
+ * The first version of this read a fixture out of the machine's temp directory,
+ * which passed on the machine that wrote it and nowhere else — including the
+ * deploy, where it failed. A test that depends on something outside the
+ * repository is a test that says nothing about the repository.
+ *
+ * What it has to be is the shape a raw file has: a TIFF header, the camera's
+ * menu thumbnail, a stretch standing in for sensor data, then the full-size
+ * preview. What is under test is finding the right byte range among those, so
+ * the blocks need the markers a JPEG opens and closes with and nothing else.
+ * That the range decodes was measured separately, in a browser, against the
+ * artist's own 21.4 MB NEF: three embedded JPEGs, the largest 6016 × 4000.
  */
-const rawFile = () => new Uint8Array(readFileSync('C:/Users/User/AppData/Local/Temp/fake.nef'));
+const jpegOfSize = (bytes: number, fill: number): number[] => {
+  const block = new Array<number>(bytes).fill(fill);
+  block[0] = 0xff;
+  block[1] = 0xd8;
+  block[2] = 0xff;
+  block[3] = 0xe1;
+  block[bytes - 2] = 0xff;
+  block[bytes - 1] = 0xd9;
+  return block;
+};
+
+const THUMBNAIL_BYTES = 4_000;
+const FULL_SIZE_BYTES = 40_000;
+
+const rawFile = () =>
+  new Uint8Array([
+    0x4d,
+    0x4d,
+    0x00,
+    0x2a,
+    0x00,
+    0x00,
+    0x00,
+    0x08,
+    ...jpegOfSize(THUMBNAIL_BYTES, 0x11),
+    ...new Array<number>(20_000).fill(0x7f),
+    ...jpegOfSize(FULL_SIZE_BYTES, 0x22),
+    ...new Array<number>(1_024).fill(0x00),
+  ]);
 
 const isJpeg = (bytes: Uint8Array | null) =>
   !!bytes &&
@@ -32,7 +68,7 @@ describe('the photograph inside a raw file', () => {
     const found = largestEmbeddedJpeg(rawFile());
 
     expect(isJpeg(found)).toBe(true);
-    expect(found!.length).toBeGreaterThan(5000);
+    expect(found!.length).toBe(FULL_SIZE_BYTES);
   });
 
   it('gives back a whole JPEG, opening and closing markers included', () => {
