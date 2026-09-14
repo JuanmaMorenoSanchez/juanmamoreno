@@ -438,6 +438,41 @@ it takes every control on the page with it.
 bounds, the transform on the stage, the halved handle at two times, and no
 transform at all when the whole photograph is shown)
 
+### R96 — The view is moved with the hand, not with the scrollbars · met
+Holding the space bar and dragging moves the magnified picture under the
+pointer, the distance dragged and the direction dragged — the hand tool every
+other program has. Held rather than switched on, because panning happens in the
+middle of placing a corner and a mode you have to leave and come back to is a
+mode you forget you are in.
+
+The space bar already means something, so it is taken only where it is worth
+taking: a photograph on the stage, magnified past one, and the focus not in a
+box being typed into, a list, or a checkbox. Buttons and sliders give it up,
+which is the one real cost, and Enter still presses a button. Nothing is
+brushed and no corner is dragged while the hand has it.
+*Proven by:* `photo-prep.component.spec.ts` "moving the view" (7 tests — the key
+claimed only when magnified, left alone while typing, released on keyup and on
+losing the window, the view moved by exactly the distance dragged, and no mark
+left by a brush that is in hand)
+
+### R97 — The two ends of the scale move separately, and the colour with them · met
+Whites, darks and colour are three sliders where whites and darks were one.
+That one stretched both ends away from mid grey together, and a canvas
+photographed against a lit wall generally needs one of them: whites that have
+gone grey over blacks that are already black, so moving both was a choice of
+which to get wrong.
+
+Which half a pixel belongs to, and how far into it, is read from the pixel's own
+brightness — so each slider reaches the end it is named for and leaves the
+middle where it is. Splitting hard at mid grey instead would put a crease across
+every smooth gradient, which is exactly what a wall behind a canvas is. Colour
+is measured from each pixel's own grey, so a hue stays where it is while it
+gets stronger or weaker, and something already grey does not pick up a cast.
+*Proven by:* `adjustments.spec.ts` "the whites" (3 tests), "the darks" (4 tests,
+including that the deep shadow moves further than the half light) and "the
+strength of the colour" (4 tests, including that grey stays grey and the
+brightness is kept)
+
 ### R95 — A certificate that is stored leaves an empty studio · met
 Saving or signing a certificate clears the whole page, not only the form: the
 chosen file, the photograph on the stage, the corners, the measurements, the

@@ -5,6 +5,7 @@ import { solveHomography, warpPerspective } from './perspective';
 import { checkFocus } from './focus';
 import { createSelection, paintDab } from './selection';
 import { preparePhoto, type PhotoStage } from './prepare-photo';
+import { NO_ADJUSTMENTS } from './adjustments';
 
 type Rgb = [number, number, number];
 
@@ -227,7 +228,7 @@ describe('preparePhoto', () => {
 
     const lifted = await preparePhoto(photographedPainting(askew), {
       ...options,
-      edits: [{ adjustments: { brightness: 0.5, temperature: 0, range: 0 }, selection: null }],
+      edits: [{ adjustments: { ...NO_ADJUSTMENTS, brightness: 0.5 }, selection: null }],
     });
     expect(lifted.report.adjusted).toBe(true);
   });
@@ -236,7 +237,7 @@ describe('preparePhoto', () => {
     const before = await preparePhoto(photographedPainting(askew), options);
     const after = await preparePhoto(photographedPainting(askew), {
       ...options,
-      edits: [{ adjustments: { brightness: 0.6, temperature: 0, range: 0 }, selection: null }],
+      edits: [{ adjustments: { ...NO_ADJUSTMENTS, brightness: 0.6 }, selection: null }],
     });
 
     const mean = (r: { data: Uint8ClampedArray }) => {
@@ -260,8 +261,8 @@ describe('preparePhoto', () => {
     const { image } = await preparePhoto(photographedPainting(askew), {
       ...options,
       edits: [
-        { adjustments: { brightness: 0.8, temperature: 0, range: 0 }, selection: left },
-        { adjustments: { brightness: 0.8, temperature: 0, range: 0 }, selection: right },
+        { adjustments: { ...NO_ADJUSTMENTS, brightness: 0.8 }, selection: left },
+        { adjustments: { ...NO_ADJUSTMENTS, brightness: 0.8 }, selection: right },
       ],
     });
     const { image: plain } = await preparePhoto(photographedPainting(askew), options);

@@ -149,11 +149,22 @@ function rememberedHandleSize(): number {
 @Component({
   selector: 'app-photo-prep',
   imports: [DecimalPipe],
+  // Listened for on the document, because the space bar is pressed wherever the
+  // hand happens to have left the focus — on a corner handle just dragged, on
+  // the button that turned the picture — and a key that only worked after
+  // clicking the right nothing would not be the tool it is imitating.
+  host: {
+    '(document:keydown)': 'takeSpace($event)',
+    '(document:keyup)': 'releaseSpace($event)',
+    '(window:blur)': 'stopPanning()',
+  },
   templateUrl: './photo-prep.component.html',
   styleUrl: './photo-prep.component.scss',
 })
 export class PhotoPrepComponent {
   private readonly stage = viewChild<ElementRef<HTMLElement>>('stage');
+  /** The box the stage is scrolled inside, which is what panning moves. */
+  private readonly viewport = viewChild<ElementRef<HTMLElement>>('viewport');
   private readonly previewCanvas = viewChild<ElementRef<HTMLCanvasElement>>('preview');
 
   private readonly photo = signal<ImageBitmap | null>(null);
@@ -286,6 +297,76 @@ export class PhotoPrepComponent {
   protected setZoom(event: Event): void {
     const value = Number((event.target as HTMLInputElement).value);
     this.zoom.set(Number.isFinite(value) ? Math.min(MAX_ZOOM, Math.max(1, value)) : 1);
+    if (this.zoom() <= 1) this.stopPanning();
+  }
+
+  /**
+   * Whether the pointer is moving the view rather than the picture.
+   *
+   * The hand tool, and held down rather than switched on for the same reason it
+   * is in every other program: panning happens in the middle of placing a
+   * corner, and a mode you have to leave and come back to is a mode you forget
+   * you are in.
+   */
+  protected readonly panning = signal(false);
+
+  /** Where the pointer was and where the view was, at the moment of the grab. */
+  private panFrom: { x: number; y: number; left: number; top: number } | null = null;
+
+  /**
+   * Claims the space bar, but only where it is worth claiming.
+   *
+   * Space does something already: it types, it ticks a checkbox, it presses the
+   * button that has the focus. So it is taken only when there is a photograph
+   * on the stage that is magnified — which is the only time there is anywhere
+   * to pan to — and never while something is being typed into. Buttons and the
+   * sliders give it up in that case, which is the one real cost; Enter still
+   * presses a button.
+   */
+  protected takeSpace(event: KeyboardEvent): void {
+    if (event.code !== 'Space' || !this.size() || this.zoom() <= 1) return;
+    if (isTypingInto(event.target)) return;
+    // Otherwise the page jumps a screenful down under the picture being panned.
+    event.preventDefault();
+    this.panning.set(true);
+  }
+
+  protected releaseSpace(event: KeyboardEvent): void {
+    if (event.code === 'Space') this.stopPanning();
+  }
+
+  /** Also on losing the window, where no keyup is ever going to arrive. */
+  protected stopPanning(): void {
+    this.panning.set(false);
+    this.panFrom = null;
+  }
+
+  private startPan(event: PointerEvent): void {
+    const viewport = this.viewport()?.nativeElement;
+    if (!viewport) return;
+    this.panFrom = {
+      x: event.clientX,
+      y: event.clientY,
+      left: viewport.scrollLeft,
+      top: viewport.scrollTop,
+    };
+    (event.target as Element).setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  }
+
+  /**
+   * Moves the view under the hand, the opposite way to a scrollbar.
+   *
+   * The picture follows the pointer exactly, which is what makes this more
+   * intuitive than the scrollbars it replaces: the distance dragged is the
+   * distance the painting moves, in the direction it was dragged.
+   */
+  protected pan(event: PointerEvent): void {
+    const from = this.panFrom;
+    const viewport = this.viewport()?.nativeElement;
+    if (!from || !viewport) return;
+    viewport.scrollLeft = from.left - (event.clientX - from.x);
+    viewport.scrollTop = from.top - (event.clientY - from.y);
   }
 
   protected readonly fileName = signal('');
@@ -362,12 +443,24 @@ export class PhotoPrepComponent {
    */
   protected readonly brightness = signal(0);
   protected readonly temperature = signal(0);
-  protected readonly range = signal(0);
+  /**
+   * The two ends of the scale, each on its own slider.
+   *
+   * They were one — "range" — which stretched both ends away from mid grey
+   * together. A canvas photographed against a lit wall usually needs one of
+   * them and not the other, and moving both was a choice of which to get wrong.
+   */
+  protected readonly whites = signal(0);
+  protected readonly darks = signal(0);
+  /** How strong the colour is, which nothing else here can answer. */
+  protected readonly saturation = signal(0);
 
   protected readonly adjustments = computed<Adjustments>(() => ({
     brightness: this.brightness(),
     temperature: this.temperature(),
-    range: this.range(),
+    whites: this.whites(),
+    darks: this.darks(),
+    saturation: this.saturation(),
   }));
 
   /**
@@ -770,6 +863,9 @@ export class PhotoPrepComponent {
    * being aimed at underneath the finger doing the aiming.
    */
   protected grab(index: number, event: PointerEvent): void {
+    // The hand is panning, so the handle under it is only scenery. Left to
+    // run, this would drag the corner across the painting instead.
+    if (this.panning()) return;
     const at = this.pointIn(event);
     const corner = this.corners()?.[index];
     this.grabbedAt = at && corner ? { x: corner.x - at.x, y: corner.y - at.y } : { x: 0, y: 0 };
@@ -779,6 +875,7 @@ export class PhotoPrepComponent {
   }
 
   protected grabBow(edge: EdgeName, index: 0 | 1, event: PointerEvent): void {
+    if (this.panning()) return;
     const at = this.pointIn(event);
     const handle = this.bows()?.[edge][index];
     this.grabbedAt = at && handle ? { x: handle.x - at.x, y: handle.y - at.y } : { x: 0, y: 0 };
@@ -838,6 +935,7 @@ export class PhotoPrepComponent {
   protected release(): void {
     this.dragging = null;
     this.brushing = false;
+    this.panFrom = null;
   }
 
   // --- showing what the controls are doing -------------------------------
@@ -966,8 +1064,16 @@ export class PhotoPrepComponent {
     this.temperature.set(sliderValue(event));
   }
 
-  protected setRange(event: Event): void {
-    this.range.set(sliderValue(event));
+  protected setWhites(event: Event): void {
+    this.whites.set(sliderValue(event));
+  }
+
+  protected setDarks(event: Event): void {
+    this.darks.set(sliderValue(event));
+  }
+
+  protected setSaturation(event: Event): void {
+    this.saturation.set(sliderValue(event));
   }
 
   /**
@@ -985,7 +1091,9 @@ export class PhotoPrepComponent {
   private zeroSliders(): void {
     this.brightness.set(0);
     this.temperature.set(0);
-    this.range.set(0);
+    this.whites.set(0);
+    this.darks.set(0);
+    this.saturation.set(0);
   }
 
   // --- the brush ---------------------------------------------------------
@@ -1075,6 +1183,10 @@ export class PhotoPrepComponent {
   }
 
   protected startBrush(event: PointerEvent): void {
+    if (this.panning()) {
+      this.startPan(event);
+      return;
+    }
     if (!this.selecting()) return;
     // The selection is about to differ, so whatever the sliders say belongs to
     // the selection as it is now, not as it is about to become.
@@ -1183,6 +1295,7 @@ export class PhotoPrepComponent {
     this.source.set(null);
     this.adaptToSize.set(true);
     this.zoom.set(1);
+    this.stopPanning();
     this.handedOver.set(false);
     // Changes belong to the photograph they were made to, and the brush's mask
     // is measured in that photograph's straightened rectangle. Carried into the
@@ -1197,6 +1310,26 @@ export class PhotoPrepComponent {
     this.resultUrl.set(null);
     this.report.set(null);
   }
+}
+
+/**
+ * Whether a key belongs to what has the focus rather than to the page.
+ *
+ * Only where the space bar already means something: a box being written in, a
+ * list being chosen from, a box being ticked. A range slider and a button do
+ * nothing with it that Enter cannot also do.
+ */
+function isTypingInto(target: EventTarget | null): boolean {
+  const element = target as HTMLElement | null;
+  if (!element) return false;
+  if (element.isContentEditable) return true;
+
+  const tag = element.tagName;
+  if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  if (tag !== 'INPUT') return false;
+
+  const type = (element as HTMLInputElement).type;
+  return type !== 'range' && type !== 'button' && type !== 'submit';
 }
 
 function textIn(event: Event): string {

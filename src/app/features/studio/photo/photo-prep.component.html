@@ -84,6 +84,13 @@
               (input)="setZoom($event)"
             />
           </label>
+          @if (zoom() > 1) {
+            <!--
+              Said only when there is somewhere to pan to, which is also the
+              only time the space bar is taken from everything else on the page.
+            -->
+            <span class="prep-hint prep-pan-hint"> Hold space and drag to move the picture. </span>
+          }
           <!--
             How wide a ring to aim with. Large by default, because the ring is
             what the pointer is on while the corner underneath it is what has to
@@ -105,14 +112,15 @@
           </label>
         </div>
 
-        <div class="prep-viewport" [style.--prep-zoom]="zoom()">
+        <div #viewport class="prep-viewport" [style.--prep-zoom]="zoom()">
           <div
             #stage
             class="prep-stage"
             [style.transform]="zoom() > 1 ? 'scale(' + zoom() + ')' : null"
             [class.prep-selecting]="selecting()"
+            [class.prep-panning]="panning()"
             (pointerdown)="startBrush($event)"
-            (pointermove)="drag($event); brushMove($event); trackBrush($event)"
+            (pointermove)="pan($event); drag($event); brushMove($event); trackBrush($event)"
             (pointerleave)="leaveBrush()"
             (pointerup)="release()"
             (pointercancel)="release()"
@@ -265,18 +273,54 @@
               (input)="setTemperature($event)"
             />
           </label>
+          <!--
+            The two ends of the scale, apart. They were one slider that pulled
+            both away from mid grey together, and a canvas photographed against
+            a lit wall generally needs one of them: whites that have gone grey,
+            over blacks that are already black.
+          -->
           <label class="prep-slider">
             <span
-              >Range
-              <em>{{ range() < 0 ? 'flatter' : range() > 0 ? 'deeper' : 'as shot' }}</em></span
+              >Whites
+              <em>{{ whites() < 0 ? 'duller' : whites() > 0 ? 'brighter' : 'as shot' }}</em></span
             >
             <input
               type="range"
               min="-100"
               max="100"
               step="1"
-              [value]="range() * 100"
-              (input)="setRange($event)"
+              [value]="whites() * 100"
+              (input)="setWhites($event)"
+            />
+          </label>
+          <label class="prep-slider">
+            <span
+              >Darks
+              <em>{{ darks() < 0 ? 'lifted' : darks() > 0 ? 'deeper' : 'as shot' }}</em></span
+            >
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              [value]="darks() * 100"
+              (input)="setDarks($event)"
+            />
+          </label>
+          <label class="prep-slider">
+            <span
+              >Colour
+              <em>{{
+                saturation() < 0 ? 'greyer' : saturation() > 0 ? 'stronger' : 'as shot'
+              }}</em></span
+            >
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              [value]="saturation() * 100"
+              (input)="setSaturation($event)"
             />
           </label>
           @if (keptCount()) {

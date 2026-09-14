@@ -388,6 +388,16 @@
   cursor: crosshair;
 }
 
+// And while the space bar is down it is neither: it is the picture itself,
+// being moved under the hand. Written after the brush so it wins over it.
+.prep-stage.prep-panning {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
 // The brush, shown where it is and at the width it would take. Two rings in
 // opposite colours, so it stays visible over a dark painting and a light one.
 /* Two small buttons rather than a select: which tool is in hand should be

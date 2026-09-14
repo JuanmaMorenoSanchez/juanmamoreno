@@ -21,6 +21,12 @@ type Internals = {
   straightenSides(): void;
   zoom: { (): number; set(v: number): void };
   setZoom(event: Event): void;
+  panning: () => boolean;
+  takeSpace(event: KeyboardEvent): void;
+  releaseSpace(event: KeyboardEvent): void;
+  stopPanning(): void;
+  pan(event: PointerEvent): void;
+  startBrush(event: PointerEvent): void;
   fileName: { set(v: string): void };
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
@@ -337,5 +343,145 @@ describe('PhotoPrepComponent — starting again', () => {
     // With no photograph, the file chooser is on the page again — empty,
     // because it is a new one.
     expect(fixture.nativeElement.querySelector('input[type="file"]')).not.toBe(null);
+  });
+});
+
+/** A space bar pressed with the focus on whatever is given. */
+function spaceOn(target: unknown): KeyboardEvent {
+  let prevented = false;
+  return {
+    code: 'Space',
+    target,
+    preventDefault: () => {
+      prevented = true;
+    },
+    get defaultPrevented() {
+      return prevented;
+    },
+  } as unknown as KeyboardEvent;
+}
+
+/** A pointer at a place on the screen, with capture that goes nowhere. */
+function pointerAtScreen(x: number, y: number): PointerEvent {
+  return {
+    clientX: x,
+    clientY: y,
+    pointerId: 1,
+    button: 0,
+    shiftKey: false,
+    target: { setPointerCapture: () => undefined },
+    preventDefault: () => undefined,
+  } as unknown as PointerEvent;
+}
+
+/**
+ * The hand tool. Magnified, the picture is larger than the box it is shown in,
+ * and reaching the rest of it through the scrollbars means letting go of what
+ * you were doing to find them.
+ */
+describe('PhotoPrepComponent — moving the view', () => {
+  function zoomedIn() {
+    const made = setup();
+    made.component.setZoom({ target: { value: '3' } } as unknown as Event);
+    made.fixture.detectChanges();
+    return made;
+  }
+
+  it('takes the space bar only once there is somewhere to pan to', () => {
+    const { component } = setup();
+
+    // Whole photograph on screen: nothing to move, so the key stays the
+    // page's own and every button on it goes on answering to it.
+    const atRest = spaceOn(document.body);
+    component.takeSpace(atRest);
+    expect(component.panning()).toBe(false);
+    expect(atRest.defaultPrevented).toBe(false);
+
+    component.setZoom({ target: { value: '3' } } as unknown as Event);
+    const magnified = spaceOn(document.body);
+    component.takeSpace(magnified);
+
+    expect(component.panning()).toBe(true);
+    // Otherwise the page jumps a screenful down under the picture.
+    expect(magnified.defaultPrevented).toBe(true);
+  });
+
+  it('leaves the space bar alone while something is being typed into', () => {
+    const { component, fixture } = zoomedIn();
+    const box = fixture.nativeElement.querySelector(
+      'input[inputmode="decimal"]'
+    ) as HTMLInputElement;
+
+    const typed = spaceOn(box);
+    component.takeSpace(typed);
+
+    expect(component.panning()).toBe(false);
+    expect(typed.defaultPrevented).toBe(false);
+  });
+
+  it('still takes it from a slider or a button, which have Enter to fall back on', () => {
+    const { component, fixture } = zoomedIn();
+    const slider = fixture.nativeElement.querySelector('input[type="range"]') as HTMLInputElement;
+
+    component.takeSpace(spaceOn(slider));
+
+    expect(component.panning()).toBe(true);
+  });
+
+  it('lets go when the key comes up, and when the window goes away', () => {
+    const { component } = zoomedIn();
+
+    component.takeSpace(spaceOn(document.body));
+    component.releaseSpace({ code: 'Space' } as KeyboardEvent);
+    expect(component.panning()).toBe(false);
+
+    component.takeSpace(spaceOn(document.body));
+    // No keyup is ever coming for a window that has lost the focus.
+    component.stopPanning();
+    expect(component.panning()).toBe(false);
+  });
+
+  it('moves the view the way the hand went, and by as much', () => {
+    const { component, fixture } = zoomedIn();
+    const viewport = fixture.nativeElement.querySelector('.prep-viewport') as HTMLElement;
+    viewport.scrollLeft = 200;
+    viewport.scrollTop = 100;
+
+    component.takeSpace(spaceOn(document.body));
+    component.startBrush(pointerAtScreen(500, 400));
+    component.pan(pointerAtScreen(460, 370));
+
+    // Dragged 40 left and 30 up, so the view moves 40 and 30 the other way —
+    // which is the picture following the hand exactly.
+    expect(viewport.scrollLeft).toBe(240);
+    expect(viewport.scrollTop).toBe(130);
+  });
+
+  it('does not paint with the brush that is in hand', () => {
+    // The brush and the hand share the same press. Panning across a painting
+    // with the brush switched on must move the view and leave no mark.
+    const { component, fixture } = zoomedIn();
+    component.widthText.set('116');
+    component.heightText.set('140,5');
+    component.useBrush('add');
+    // The brush reads the pointer through the stage's box, which in a test
+    // browser has no size at all — and a dab that lands nowhere would let this
+    // pass whether the hand stopped it or not.
+    const stage = fixture.nativeElement.querySelector('.prep-stage') as HTMLElement;
+    stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1000, height: 800 }) as DOMRect;
+
+    component.takeSpace(spaceOn(document.body));
+    component.startBrush(pointerAtScreen(500, 400));
+
+    expect(component.hasArea()).toBe(false);
+  });
+
+  it('gives the key back when the picture is no longer magnified', () => {
+    const { component } = zoomedIn();
+    component.takeSpace(spaceOn(document.body));
+
+    component.setZoom({ target: { value: '1' } } as unknown as Event);
+
+    expect(component.panning()).toBe(false);
   });
 });

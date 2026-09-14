@@ -87,33 +87,118 @@ describe('temperature', () => {
   });
 });
 
-describe('range', () => {
-  it('drives the dark darker and the light lighter above nought', () => {
-    const dark = patch(60, 60, 60);
+/**
+ * One slider stretched both ends of the scale at once, which is only ever half
+ * right: a canvas photographed against a lit wall has whites that have gone
+ * grey and blacks that are already black. These are that slider split in two,
+ * and the thing to prove is that each one stays on its own half.
+ */
+describe('the whites', () => {
+  it('drives the light half lighter above nought', () => {
     const light = patch(200, 200, 200);
-    applyAdjustments(dark, adjust({ range: 1 }));
-    applyAdjustments(light, adjust({ range: 1 }));
+    applyAdjustments(light, adjust({ whites: 1 }));
 
-    expect(pixel(dark, 0, 0)[0]).toBeLessThan(60);
     expect(pixel(light, 0, 0)[0]).toBeGreaterThan(200);
   });
 
-  it('brings both towards the middle below nought', () => {
-    const dark = patch(60, 60, 60);
+  it('brings the light half back towards the middle below nought', () => {
     const light = patch(200, 200, 200);
-    applyAdjustments(dark, adjust({ range: -1 }));
-    applyAdjustments(light, adjust({ range: -1 }));
+    applyAdjustments(light, adjust({ whites: -1 }));
 
-    expect(pixel(dark, 0, 0)[0]).toBeGreaterThan(60);
     expect(pixel(light, 0, 0)[0]).toBeLessThan(200);
   });
 
-  it('leaves mid grey where it is, since that is what it pivots on', () => {
+  it('leaves the dark half alone, which is the whole reason it is its own slider', () => {
+    const dark = patch(60, 60, 60);
+    applyAdjustments(dark, adjust({ whites: 1 }));
+
+    expect(pixel(dark, 0, 0)[0]).toBe(60);
+  });
+});
+
+describe('the darks', () => {
+  it('drives the dark half darker above nought', () => {
+    const dark = patch(60, 60, 60);
+    applyAdjustments(dark, adjust({ darks: 1 }));
+
+    expect(pixel(dark, 0, 0)[0]).toBeLessThan(60);
+  });
+
+  it('lifts the dark half below nought', () => {
+    const dark = patch(60, 60, 60);
+    applyAdjustments(dark, adjust({ darks: -1 }));
+
+    expect(pixel(dark, 0, 0)[0]).toBeGreaterThan(60);
+  });
+
+  it('leaves the light half alone', () => {
+    const light = patch(200, 200, 200);
+    applyAdjustments(light, adjust({ darks: 1 }));
+
+    expect(pixel(light, 0, 0)[0]).toBe(200);
+  });
+
+  it('leaves mid grey where it is, since that is the hinge both turn on', () => {
     const raster = patch(128, 128, 128);
-    applyAdjustments(raster, adjust({ range: 1 }));
+    applyAdjustments(raster, adjust({ whites: 1, darks: 1 }));
 
     expect(pixel(raster, 0, 0)[0]).toBeGreaterThanOrEqual(127);
     expect(pixel(raster, 0, 0)[0]).toBeLessThanOrEqual(129);
+  });
+
+  it('reaches further into the shadow than into the half light', () => {
+    // Named for the end it acts on: a near-black moves more than a tone only
+    // just below the middle, which is what keeps it from being a contrast
+    // slider wearing another name.
+    const deep = patch(20, 20, 20);
+    const nearlyMid = patch(110, 110, 110);
+    applyAdjustments(deep, adjust({ darks: 1 }));
+    applyAdjustments(nearlyMid, adjust({ darks: 1 }));
+
+    expect(20 - pixel(deep, 0, 0)[0]).toBeGreaterThan(110 - pixel(nearlyMid, 0, 0)[0]);
+  });
+});
+
+/**
+ * A photograph of a painting can come back with the colour flattened out of it
+ * or laid on too thick, and neither is something the other sliders can answer.
+ */
+describe('the strength of the colour', () => {
+  it('pushes a colour away from its own grey above nought', () => {
+    const raster = patch(160, 110, 90);
+    const before = pixel(raster, 0, 0);
+    applyAdjustments(raster, adjust({ saturation: 1 }));
+    const after = pixel(raster, 0, 0);
+
+    expect(after[0]).toBeGreaterThan(before[0]);
+    expect(after[2]).toBeLessThan(before[2]);
+  });
+
+  it('arrives at grey at the bottom of the slider', () => {
+    const raster = patch(160, 110, 90);
+    applyAdjustments(raster, adjust({ saturation: -1 }));
+    const [r, g, b] = pixel(raster, 0, 0);
+
+    expect(Math.abs(r - g)).toBeLessThanOrEqual(1);
+    expect(Math.abs(g - b)).toBeLessThanOrEqual(1);
+  });
+
+  it('leaves something already grey exactly where it was', () => {
+    // Nothing to strengthen, so nothing should move — a grey wall behind a
+    // canvas must not pick up a cast from a slider about colour.
+    const raster = patch(140, 140, 140);
+    applyAdjustments(raster, adjust({ saturation: 1 }));
+
+    expect(pixel(raster, 0, 0)).toEqual([140, 140, 140]);
+  });
+
+  it('keeps the brightness of what it strengthens', () => {
+    const raster = patch(160, 110, 90);
+    applyAdjustments(raster, adjust({ saturation: 0.5 }));
+    const [r, g, b] = pixel(raster, 0, 0);
+    const before = 0.2126 * 160 + 0.7152 * 110 + 0.0722 * 90;
+
+    expect(0.2126 * r + 0.7152 * g + 0.0722 * b).toBeCloseTo(before, 0);
   });
 });
 

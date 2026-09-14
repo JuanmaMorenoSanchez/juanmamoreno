@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.55.0
+
+- **feat** — the studio gets the hand tool, and the tonal sliders come apart.
+  Holding space and dragging moves the magnified picture under the pointer
+  rather than hunting for the scrollbars; the key is claimed only when there is
+  somewhere to pan to and never while something is being typed into. The one
+  range slider is now whites and darks, each reaching the end it is named for
+  and leaving the midtones alone, because a canvas photographed against a lit
+  wall generally needs one of them and not the other. And a colour slider, from
+  grey to stronger, measured around each pixel's own grey so a hue keeps its
+  brightness while it changes.
+
 ## 1.54.0
 
 - **feat** — the studio stands a sideways photograph up, and goes in close. A
