@@ -18,6 +18,7 @@ import {
 } from '@domain/image/prepare-photo';
 import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
 import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-source';
+import { isRawPhotograph, largestEmbeddedJpeg } from '@domain/image/raw-preview';
 import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocabulary';
 import { PhotoBrush } from './photo-brush';
 import { PhotoRights } from './photo-rights';
@@ -558,21 +559,43 @@ export class PhotoPrepComponent {
     this.reset();
     this.fileName.set(file.name);
 
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const raw = isRawPhotograph(file.name, file.type);
+
+    // A browser cannot develop a raw, but every raw carries the JPEG the camera
+    // made at the moment of the shot — on this one, the full 6016 × 4000 frame.
+    // That is the picture, and it is what the camera would have written had the
+    // shot been taken as a JPEG.
+    const readable = raw ? largestEmbeddedJpeg(bytes) : bytes;
+    if (raw && !readable) {
+      this.problem.set(
+        'No photograph could be found inside that raw file. Export a JPEG from it and use that.'
+      );
+      return;
+    }
+
     let photo: ImageBitmap;
     try {
       // Phone cameras record which way up they were held rather than rotating
       // the pixels, so without this a portrait painting arrives on its side.
-      photo = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      photo = await createImageBitmap(
+        raw ? new Blob([readable as Uint8Array<ArrayBuffer>], { type: 'image/jpeg' }) : file,
+        { imageOrientation: 'from-image' }
+      );
     } catch {
-      this.problem.set('That file could not be read as an image.');
+      this.problem.set(
+        raw
+          ? 'The photograph inside that raw file could not be read.'
+          : 'That file could not be read as an image.'
+      );
       return;
     }
 
-    // What arrived, so what leaves can match it. Read from the file's own
-    // header rather than assumed: straightening forces one re-encode, and this
-    // decides how large that one costs.
+    // What arrived, so what leaves can match it. A raw has no quality of its
+    // own to match — the number belongs to the JPEG a camera embedded in it,
+    // not to the sensor — so it is written back at the top of the scale.
     try {
-      this.source.set(readJpegSource(new Uint8Array(await file.arrayBuffer())));
+      this.source.set(raw ? { quality: null, fullColour: true } : readJpegSource(bytes));
     } catch {
       this.source.set(null);
     }

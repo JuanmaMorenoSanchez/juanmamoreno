@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.53.0
+
+- **feat** — the studio opens raw files. A browser cannot develop a raw, but
+  every raw carries the JPEG the camera made at the moment of the shot: on a
+  real NEF from the artist's camera that is the full 6016 × 4000 frame, found in
+  32 ms and decoded in 80. Written back at the top of the scale, since a raw has
+  no quality of its own to match. NEF, NRW, CR2, CR3, ARW, ORF, RAF, RW2, PEF,
+  DNG and SRW.
+
 ## 1.52.0
 
 - **feat** — the fees the api works out are passed to the wallet rather than

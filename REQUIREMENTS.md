@@ -1219,3 +1219,25 @@ which is why a thumbnail can stand for the original" and "is unmoved by the
 whole picture being lighter or darker") and `image-match.service.spec.ts`
 (5 tests, including "says nothing before it has read the collection").
 
+### R92 — A raw file can be corrected without leaving the studio · met
+A browser cannot develop a raw: demosaicing a sensor's own readings needs the
+camera's colour profile and a great deal of arithmetic, and none of it is built
+in. What every raw does carry is the JPEG the camera made at the moment of the
+shot — the picture on its back screen — and on the artist's own NEF that is the
+whole frame at full resolution, 6016 × 4000, in 3 MB of a 21 MB file.
+
+It is found by scanning for the markers a JPEG opens and closes with, rather
+than by walking the file's directories: raw formats are TIFF containers whose
+layout differs by maker and by model, and a parser written for one is a parser
+that fails on the next camera bought. Inside a JPEG's compressed data an FF is
+always written as FF 00, so those markers cannot occur there by accident. The
+largest of the embedded JPEGs is the full-size one; the smaller are for the
+camera's own menus.
+
+The result is written back at the top of the scale. A raw has no quality of its
+own to match — the number would belong to the JPEG embedded in it, not to the
+sensor.
+*Proven by:* `raw-preview.spec.ts` (5 tests, against a file built to the shape
+of a NEF), and measured end to end in Chrome on a real 21.4 MB NEF: three
+embedded JPEGs, the largest decoding to 6016 × 4000, found in 32 ms.
+

@@ -7,9 +7,18 @@
 
   @if (!size()) {
     <label class="prep-drop" (drop)="onDrop($event)" (dragover)="allowDrop($event)">
-      <input type="file" accept="image/*" (change)="onFile($event)" hidden />
+      <!--
+        Raw files are named as well as typed: a browser gives a .NEF no mime
+        type it recognises, so `image/*` alone hides them in the picker.
+      -->
+      <input
+        type="file"
+        accept="image/*,.nef,.nrw,.cr2,.cr3,.arw,.orf,.raf,.rw2,.pef,.dng,.srw"
+        (change)="onFile($event)"
+        hidden
+      />
       <span class="prep-drop-title">Choose a photograph</span>
-      <span class="prep-drop-hint">or drop one here</span>
+      <span class="prep-drop-hint">or drop one here — jpeg, png or a raw file</span>
     </label>
   }
 

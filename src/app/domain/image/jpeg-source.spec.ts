@@ -72,6 +72,13 @@ describe('what a jpeg says about how it was written', () => {
       expect(qualityFor({ quality: 85, fullColour: false })).toBeCloseTo(0.9);
     });
 
+    it('writes a raw file at the top of the scale', () => {
+      // A raw has no quality of its own to match: the number would belong to
+      // the JPEG the camera embedded in it, not to the sensor. Measured on a
+      // real NEF, that embedded frame is the full 6016 × 4000.
+      expect(qualityFor({ quality: null, fullColour: true })).toBe(1);
+    });
+
     it('errs upwards when it cannot tell', () => {
       expect(qualityFor({ quality: null, fullColour: false })).toBeGreaterThanOrEqual(0.99);
     });
