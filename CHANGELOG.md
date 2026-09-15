@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.60.0
+
+- **feat** — the studio questions measurements that do not match the corners.
+  It compares the shape the four corners describe with the shape the typed
+  height and width describe, and when they disagree by more than six per cent it
+  says how far the painting would be stretched and what it measures with the
+  corners where they are, both ways round. A word, never a refusal, and only
+  while the squaring is on. A canvas 23 × 30,7 cm typed in as 27,33 × 23 came
+  out an eighth too wide with nothing said, and a certificate cannot be
+  corrected once it is frozen.
+- **fix** — the end-to-end check for the share control waits for the control
+  rather than for the bar it sits in. It failed about half the time on this
+  machine, which is worse than no gate at all.
+
 ## 1.59.0
 
 - **feat** — a certificate waiting to be written can be corrected where it

@@ -546,7 +546,12 @@ describe('passing a painting on', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artwork/5');
-    await page.waitForSelector('.viewer-toolbar', READY);
+    // The control itself, not the bar it sits in. The toolbar is on the page
+    // before the painting has arrived, and waiting on it meant this passed on a
+    // quiet machine and failed on a busy one — about half the time here, which
+    // is worse than no gate at all, since a gate nobody trusts is one everybody
+    // re-runs.
+    await page.waitForSelector('.viewer-toolbar app-share-button button', READY);
 
     const share = page.locator('.viewer-toolbar app-share-button button');
     assert.equal(await share.count(), 1, 'no share control in the artwork toolbar');

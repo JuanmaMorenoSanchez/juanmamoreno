@@ -8,6 +8,7 @@ import {
   isConvex,
   orderCorners,
   quadArea,
+  squaringMismatch,
   straightBows,
   turnClockwise,
   type EdgeBows,
@@ -296,5 +297,72 @@ describe('a bow can only leave the chord sideways', () => {
     const moved: Quad = [{ x: 300, y: 200 }, quad[1], quad[2], quad[3]];
 
     expect(bowOffset(moved, 'top', bowControls(moved, bows, 'top')[0])).toBeCloseTo(14, 6);
+  });
+});
+
+/**
+ * The fault this exists for, measured from the photograph it came from.
+ *
+ * A canvas 23 cm on its short side and 30,7 on its long one, photographed
+ * square-on: opposite edges in the file differ by under one and a quarter per
+ * cent, so what the camera saw is what the painting is. Typed in as 27,33 × 23
+ * and squared up to that, the correction pulled the long axis in by an eighth
+ * and the painting came out visibly wide, with nothing said about it.
+ */
+describe('squaringMismatch', () => {
+  // The canvas face as measured in DSC_0102.NEF: 4111 × 3080 px, and standing
+  // on its side in the frame, so the short side runs across the picture.
+  const photographed: Quad = [
+    { x: 0, y: 0 },
+    { x: 3080, y: 0 },
+    { x: 3080, y: 4111 },
+    { x: 0, y: 4111 },
+  ];
+
+  it('says nothing when the corners and the measurements agree', () => {
+    expect(squaringMismatch(photographed, 23, 30.7)).toBeNull();
+  });
+
+  it('sits out the small disagreement an angled photograph makes', () => {
+    // Three per cent out, which is a painting leaning back a little rather
+    // than a measurement that is wrong.
+    expect(squaringMismatch(photographed, 23, 29.8)).toBeNull();
+  });
+
+  it('catches the measurements that came out an eighth too wide', () => {
+    const off = squaringMismatch(photographed, 23, 27.33);
+
+    expect(off).not.toBeNull();
+    expect(off?.stretch).toBeCloseTo(0.123, 2);
+  });
+
+  it('offers both ways of putting it right', () => {
+    const off = squaringMismatch(photographed, 23, 27.33);
+
+    // Keep the width that was typed and the height has to give, or keep the
+    // height and the width does. The artist knows which of the two they
+    // measured properly.
+    expect(off?.heightIfWidthIsRight).toBeCloseTo(30.7, 1);
+    expect(off?.widthIfHeightIsRight).toBeCloseTo(20.5, 1);
+  });
+
+  it('is not fooled by the painting standing the other way up', () => {
+    // The same canvas the right way up. A mismatch is about shapes, not about
+    // which of the two numbers is the larger.
+    const upright: Quad = [
+      { x: 0, y: 0 },
+      { x: 4111, y: 0 },
+      { x: 4111, y: 3080 },
+      { x: 0, y: 3080 },
+    ];
+
+    expect(squaringMismatch(upright, 30.7, 23)).toBeNull();
+    // The same painting, the same wrong measurements, the same stretch.
+    expect(squaringMismatch(upright, 27.33, 23)?.stretch).toBeCloseTo(0.123, 2);
+  });
+
+  it('says nothing when there is nothing to compare', () => {
+    expect(squaringMismatch(photographed, 0, 23)).toBeNull();
+    expect(squaringMismatch(photographed, 23, 0)).toBeNull();
   });
 });

@@ -221,6 +221,76 @@ export function fullFrame({ width, height }: Size): Quad {
  * photographed: one axis lands exactly on its measured length and the other
  * comes in under, which loses the least while enlarging nothing.
  */
+/**
+ * The shape the four corners describe, as width over height.
+ *
+ * The longest of each pair of opposite sides, because a photograph taken at an
+ * angle foreshortens the far one and the near one is the better record of what
+ * was there. This is what the correction falls back on when it is told not to
+ * square the picture up, and what {@link squaringMismatch} compares the typed
+ * measurements against.
+ */
+export function cornerShape(quad: Quad): number {
+  const [tl, tr, br, bl] = quad;
+  const widest = Math.max(distance(tl, tr), distance(bl, br));
+  const tallest = Math.max(distance(tl, bl), distance(tr, br));
+  return widest / tallest;
+}
+
+/** What the corners say, set beside what was typed, when the two disagree. */
+export interface SquaringMismatch {
+  /** How far out, as a fraction: 0.12 is the picture stretched by a twelfth. */
+  stretch: number;
+  /** The height the corners imply, taking the typed width to be right. */
+  heightIfWidthIsRight: number;
+  /** And the width, taking the typed height to be right. */
+  widthIfHeightIsRight: number;
+}
+
+/**
+ * Whether squaring this photograph up to these measurements would stretch it.
+ *
+ * The corners describe a shape and the measurements describe a shape, and when
+ * a painting is photographed square-on those two are the same shape. When they
+ * are not, squaring one to the other pulls the picture out of true — and it is
+ * the picture that gives, silently, because the numbers are what the
+ * certificate is squared to.
+ *
+ * This is the fault that made it worth writing: a 23 × 30,7 cm canvas typed in
+ * as 27,33 × 23. The corners were on the canvas, the correction did exactly
+ * what it was asked, and the painting came out an eighth too wide with nothing
+ * said. A certificate cannot be corrected once it is frozen.
+ *
+ * Null when they agree, or when there is nothing to compare. A photograph taken
+ * at an angle foreshortens one axis, so the tolerance is wide enough to sit out
+ * the ordinary case and narrow enough to catch a measurement that is simply
+ * wrong.
+ */
+export function squaringMismatch(
+  quad: Quad,
+  realWidth: number,
+  realHeight: number,
+  tolerance = 0.06
+): SquaringMismatch | null {
+  const shape = cornerShape(quad);
+  const asked = realWidth / realHeight;
+  if (!Number.isFinite(shape) || !Number.isFinite(asked) || shape <= 0 || asked <= 0) return null;
+
+  // Measured as the factor the picture is pulled by, taken the way round that
+  // is greater than one. Read as `asked / shape - 1` it came out as a different
+  // number for the same painting depending on which way up it stood, since
+  // pulling a thing to 1.12 of itself and to 0.89 of itself are one stretch.
+  const factor = asked / shape;
+  const stretch = (factor > 1 ? factor : 1 / factor) - 1;
+  if (stretch <= tolerance) return null;
+
+  return {
+    stretch,
+    heightIfWidthIsRight: realWidth / shape,
+    widthIfHeightIsRight: realHeight * shape,
+  };
+}
+
 export function correctedSize(
   quad: Quad,
   realWidth: number,
@@ -242,7 +312,7 @@ export function correctedSize(
   const [tl, tr, br, bl] = quad;
   const widest = Math.max(distance(tl, tr), distance(bl, br));
   const tallest = Math.max(distance(tl, bl), distance(tr, br));
-  const ratio = adapt ? realWidth / realHeight : widest / tallest;
+  const ratio = adapt ? realWidth / realHeight : cornerShape(quad);
 
   const width = Math.min(widest, tallest * ratio);
   return {

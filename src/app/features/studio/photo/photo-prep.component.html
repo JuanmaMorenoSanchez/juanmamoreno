@@ -201,6 +201,22 @@
             />
             cm
           </label>
+          @if (squaring(); as off) {
+            <!--
+              The corners and the measurements describe two different shapes,
+              and squaring one to the other stretches the painting. Said here,
+              beside the boxes, rather than found afterwards in the file.
+            -->
+            <p class="prep-alert" role="alert">
+              <strong>These measurements do not match the corners.</strong>
+              Squared up to them the painting is stretched by about
+              {{ stretchedBy() }}%. With the corners where they are it measures about
+              {{ asMeasured(off.heightIfWidthIsRight) }} × {{ widthText() }} — or
+              {{ heightText() }} × {{ asMeasured(off.widthIfHeightIsRight) }}, if the height is the
+              one that is right. Check the tape, or turn off the squaring below to keep the
+              picture's own shape.
+            </p>
+          }
           <!--
           On for a photograph of a whole canvas, which is nearly all of them.
           Off for a detail or a canvas caught half-finished: the measurements

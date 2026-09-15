@@ -43,6 +43,7 @@ import {
   correctedSize,
   EDGE_CORNERS,
   fullFrame,
+  squaringMismatch,
   straightBows,
   turnClockwise,
   type EdgeBows,
@@ -593,6 +594,37 @@ export class PhotoPrepComponent {
   protected readonly canProcess = computed(
     () => !!this.corners() && this.measured() && !this.busy()
   );
+
+  /**
+   * Whether squaring the picture up to the typed size would pull it out of true.
+   *
+   * The corners describe a shape and the measurements describe a shape, and on
+   * a painting photographed square-on those are the same shape. When they are
+   * not, it is the picture that gives — silently, because the numbers are what
+   * it is squared to.
+   *
+   * A word and never a refusal: the artist may have the tape measure in hand
+   * and know better than the photograph. Only while the squaring is switched
+   * on, since with it off the picture keeps its own shape and there is nothing
+   * to warn about.
+   */
+  protected readonly squaring = computed(() => {
+    const corners = this.corners();
+    const width = this.realWidth();
+    const height = this.realHeight();
+    if (!corners || !width || !height || !this.adaptToSize()) return null;
+    return squaringMismatch(corners, width, height);
+  });
+
+  /** A measurement written the way the collection writes one. */
+  protected asMeasured(centimetres: number): string {
+    return centimetres.toFixed(1).replace('.', ',').replace(/,0$/, '');
+  }
+
+  protected readonly stretchedBy = computed(() => {
+    const off = this.squaring();
+    return off ? Math.round(off.stretch * 100) : 0;
+  });
 
   /**
    * The outline as a path rather than a polygon, so a bowed side is drawn as

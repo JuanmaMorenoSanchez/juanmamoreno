@@ -464,6 +464,30 @@ it takes every control on the page with it.
 bounds, the transform on the stage, the ring drawn at half its width when the
 picture is doubled, and no transform at all when the whole photograph is shown)
 
+### R101 — Measurements that do not match the corners are questioned · met
+The studio compares the shape the four corners describe with the shape the typed
+height and width describe, and says so when the two disagree by more than six
+per cent: how far the painting would be stretched, and what it measures with the
+corners where they are — both ways round, since the artist knows which of the
+two numbers they measured properly.
+
+A word and never a refusal, and only while "square the picture up to these" is
+on; with it off the picture keeps the corners' own shape and there is nothing to
+warn about. Six per cent is wide enough to sit out an angled photograph and
+narrow enough to catch a measurement that is simply wrong.
+
+It exists because of one: a canvas 23 cm across and 30,7 tall, typed in as
+27,33 × 23. The corners were on the canvas and the correction did exactly what
+it was asked — it squares the picture to the numbers, so it is the picture that
+gives — and the painting came out an eighth too wide with nothing said. The
+photograph proves the point: opposite edges of the canvas in it differ by under
+1.2%, so the camera was square-on and what it saw is what the painting is.
+*Proven by:* `quad.spec.ts` "squaringMismatch" (6 tests, on the measured corners
+of that photograph — agreement, an angled photograph tolerated, the eighth
+caught, both ways of putting it right, and the same answer whichever way up the
+painting stands) and `photo-prep.component.spec.ts` "measurements that do not
+match the corners" (5 tests)
+
 ### R100 — A waiting certificate can be corrected where it waits · met
 Every row on the waiting list opens into the fields the studio asks for — title,
 medium, kind of photograph, height, width, unit, year, description — and saves

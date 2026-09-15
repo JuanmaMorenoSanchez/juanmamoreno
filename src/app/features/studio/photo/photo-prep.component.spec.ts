@@ -44,6 +44,10 @@ type Internals = {
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
   drag(event: PointerEvent): void;
+  squaring: () => { heightIfWidthIsRight: number; widthIfHeightIsRight: number } | null;
+  stretchedBy: () => number;
+  asMeasured(centimetres: number): string;
+  toggleAdaptToSize(): void;
   artist: () => string;
   notice: () => string;
   webStatement: () => string;
@@ -633,5 +637,74 @@ describe('PhotoPrepComponent — a handle cannot stretch the painting along a si
 
     expect(component.corners()?.[0]).toEqual({ x: QUAD[0].x + 60, y: QUAD[0].y + 40 });
     expect(component.bows()?.top).toEqual([18, 18]);
+  });
+});
+
+/**
+ * A canvas 23 cm across and 30,7 tall, typed in as 27,33 × 23 and squared up to
+ * that: the correction pulled the long axis in by an eighth and the painting
+ * came out visibly wide, with nothing said. A certificate cannot be corrected
+ * once it is frozen, so the studio says it before rather than after.
+ */
+describe('PhotoPrepComponent — measurements that do not match the corners', () => {
+  /** The canvas as measured in DSC_0102.NEF, standing on its side in the frame. */
+  const photographed: Quad = [
+    { x: 0, y: 0 },
+    { x: 3080, y: 0 },
+    { x: 3080, y: 4111 },
+    { x: 0, y: 4111 },
+  ];
+
+  function withCorners() {
+    const made = setup();
+    made.component.size.set({ width: 6016, height: 4000 });
+    made.component.corners.set(photographed);
+    return made;
+  }
+
+  it('says nothing while the two agree', () => {
+    const { component } = withCorners();
+    component.widthText.set('23');
+    component.heightText.set('30,7');
+
+    expect(component.squaring()).toBe(null);
+  });
+
+  it('catches the measurements that came out an eighth too wide', () => {
+    const { component } = withCorners();
+    component.widthText.set('23');
+    component.heightText.set('27,33');
+
+    expect(component.squaring()).not.toBe(null);
+    expect(component.stretchedBy()).toBe(12);
+  });
+
+  it('offers both ways of putting it right, in the notation the collection uses', () => {
+    const { component } = withCorners();
+    component.widthText.set('23');
+    component.heightText.set('27,33');
+    const off = component.squaring();
+
+    expect(component.asMeasured(off!.heightIfWidthIsRight)).toBe('30,7');
+    expect(component.asMeasured(off!.widthIfHeightIsRight)).toBe('20,5');
+  });
+
+  it('says nothing when the squaring is switched off', () => {
+    // Then the picture keeps the shape the corners give it, and the
+    // measurements describe the painting rather than the photograph.
+    const { component } = withCorners();
+    component.widthText.set('23');
+    component.heightText.set('27,33');
+    component.toggleAdaptToSize();
+
+    expect(component.squaring()).toBe(null);
+  });
+
+  it('waits for both measurements before saying anything', () => {
+    const { component } = withCorners();
+    component.widthText.set('23');
+    component.heightText.set('');
+
+    expect(component.squaring()).toBe(null);
   });
 });
