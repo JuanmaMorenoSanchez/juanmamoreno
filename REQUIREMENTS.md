@@ -401,13 +401,18 @@ to having no bows at all, the corners do not move, and a card photographed
 through a bend comes back more than twice as close to the original as ignoring
 the bend does
 
-### R26 — Handles are as large as the hand wants · met
-The corner rings are wide by default and adjustable from 20 to 110 px on a
-slider above the stage, and the width is remembered. The handle is what the pointer sits on while the corner
-underneath it is what has to be judged, so a small ring puts the cursor exactly
-where the eye needs to be; a wide one is grabbed anywhere along its edge. The
-cross still marks the exact pixel.
-*Proven by:* `photo-prep.component.spec.ts` "aiming" (3 tests)
+### R26 — Handles are wide enough to aim with · met
+The corner rings are drawn at 46 px, and hold that size on screen however far
+the picture is magnified under them. The handle is what the pointer sits on
+while the corner underneath it is what has to be judged, so a wide ring is
+grabbed anywhere along its edge and the hand stays clear of the point it is
+setting. The cross marks the exact pixel.
+
+The width was on a slider from 20 to 110 px, remembered between sessions, and
+the artist never touched it: magnifying the picture is what it was standing in
+for, and once the ring held its size through that there was nothing left for the
+slider to do. A control nobody moves is a control in the way.
+*Proven by:* `photo-prep.component.spec.ts` "aiming" and "going in closer"
 
 ### R93 — A photograph that arrived on its side can be stood up · met
 A button above the stage turns the photograph a quarter turn clockwise, as many
@@ -435,8 +440,25 @@ step, because a line drawn over the very edge being matched hides the thing that
 going in close was for. Zooming the browser was the way round this before, and
 it takes every control on the page with it.
 *Proven by:* `photo-prep.component.spec.ts` "going in closer" (4 tests — the
-bounds, the transform on the stage, the halved handle at two times, and no
-transform at all when the whole photograph is shown)
+bounds, the transform on the stage, the ring drawn at half its width when the
+picture is doubled, and no transform at all when the whole photograph is shown)
+
+### R98 — The sliders stay where they were left · met
+Brightness, temperature, whites, darks and colour keep their positions between
+photographs and between sessions, so the next picture opens with the correction
+already set. A studio is one room with one set of lights: the correction one
+photograph needs is very nearly the correction the next one needs, and starting
+every picture at nought meant finding the same numbers again each time.
+
+Written down when the artist moves a slider, and when they say the photograph
+needed nothing — both are statements about the room. Never written down when
+the component zeroes the sliders itself, which it does to keep a change where it
+was made; that is bookkeeping, and saving it would throw the settings away the
+moment a brush was picked up.
+*Proven by:* `photo-prep.component.spec.ts` "the sliders stay where they were
+left" (6 tests — written down, still there for the next photograph and for a
+fresh page, "back to as shot" remembered, the brush's zeroing not remembered,
+and nought when nothing was ever stored)
 
 ### R96 — The view is moved with the hand, not with the scrollbars · met
 Holding the space bar and dragging moves the magnified picture under the

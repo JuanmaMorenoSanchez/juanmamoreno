@@ -16,7 +16,12 @@ import {
   type PreparePhotoReport,
   type PhotoEdit,
 } from '@domain/image/prepare-photo';
-import { applyAdjustments, isUnchanged, type Adjustments } from '@domain/image/adjustments';
+import {
+  applyAdjustments,
+  isUnchanged,
+  NO_ADJUSTMENTS,
+  type Adjustments,
+} from '@domain/image/adjustments';
 import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-source';
 import { isRawPhotograph, largestEmbeddedJpeg } from '@domain/image/raw-preview';
 import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocabulary';
@@ -113,16 +118,16 @@ const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
 /**
  * How wide a corner handle is drawn, in pixels of the page.
  *
- * Large by default, and adjustable, because the handle is what the pointer is
- * on while the corner underneath it is what has to be judged: a small circle
- * puts the cursor exactly where the eye needs to be. A wide ring is grabbed
- * anywhere along its edge, so the hand can stay clear of the point it is
- * setting. The cross keeps marking the exact pixel however wide the ring gets.
+ * Wide, because the handle is what the pointer is on while the corner
+ * underneath it is what has to be judged: a small circle puts the cursor
+ * exactly where the eye needs to be, and a wide ring is grabbed anywhere along
+ * its edge. The cross marks the exact pixel either way.
+ *
+ * It was adjustable, on a slider, and the artist never moved it — zooming is
+ * what the width was standing in for, and the ring already holds its size on
+ * screen as the picture grows under it. One number, not a setting.
  */
-const HANDLE_SIZE_KEY = 'juanmamoreno.studio.handleSize';
-const DEFAULT_HANDLE_SIZE = 46;
-const MIN_HANDLE_SIZE = 20;
-const MAX_HANDLE_SIZE = 110;
+const HANDLE_SIZE = 46;
 
 /**
  * How far into the photograph one can go.
@@ -136,13 +141,47 @@ const MAX_HANDLE_SIZE = 110;
  */
 const MAX_ZOOM = 4;
 
-function rememberedHandleSize(): number {
+/**
+ * Where the sliders were last left.
+ *
+ * A studio is one room with one set of lights, so the correction a photograph
+ * taken in it needs is very nearly the correction the next one needs. Starting
+ * every picture at nought meant finding the same numbers again each time.
+ *
+ * Read fresh rather than kept, so a second tab does not hand back what it
+ * happened to be holding when it opened.
+ */
+const ADJUSTMENTS_KEY = 'juanmamoreno.studio.adjustments';
+
+function rememberedAdjustments(): Adjustments {
+  const within = (value: unknown): number =>
+    typeof value === 'number' && Number.isFinite(value) ? Math.min(1, Math.max(-1, value)) : 0;
+
   try {
-    const stored = Number(window.localStorage.getItem(HANDLE_SIZE_KEY));
-    if (!Number.isFinite(stored) || !stored) return DEFAULT_HANDLE_SIZE;
-    return Math.min(MAX_HANDLE_SIZE, Math.max(MIN_HANDLE_SIZE, stored));
+    const stored = JSON.parse(
+      window.localStorage.getItem(ADJUSTMENTS_KEY) ?? 'null'
+    ) as Partial<Adjustments> | null;
+    if (!stored) return NO_ADJUSTMENTS;
+
+    return {
+      brightness: within(stored.brightness),
+      temperature: within(stored.temperature),
+      whites: within(stored.whites),
+      darks: within(stored.darks),
+      saturation: within(stored.saturation),
+    };
   } catch {
-    return DEFAULT_HANDLE_SIZE;
+    // Storage off, or something else's data under our key. Nought is always a
+    // safe place to start: it is the photograph as it arrived.
+    return NO_ADJUSTMENTS;
+  }
+}
+
+function rememberAdjustments(adjustments: Adjustments): void {
+  try {
+    window.localStorage.setItem(ADJUSTMENTS_KEY, JSON.stringify(adjustments));
+  } catch {
+    // A browser that refuses to remember is not a reason to stop working.
   }
 }
 
@@ -272,22 +311,7 @@ export class PhotoPrepComponent {
     this.rightsPanel.setWebStatement(textIn(event));
   }
 
-  protected readonly minHandleSize = MIN_HANDLE_SIZE;
-  protected readonly maxHandleSize = MAX_HANDLE_SIZE;
-  protected readonly handleSize = signal(rememberedHandleSize());
-
-  protected setHandleSize(event: Event): void {
-    const size = Math.min(
-      MAX_HANDLE_SIZE,
-      Math.max(MIN_HANDLE_SIZE, sliderNumber(event) ?? DEFAULT_HANDLE_SIZE)
-    );
-    this.handleSize.set(size);
-    try {
-      window.localStorage.setItem(HANDLE_SIZE_KEY, String(size));
-    } catch {
-      // Storage off. The size holds for this session, which is enough.
-    }
-  }
+  protected readonly handleSize = HANDLE_SIZE;
 
   protected readonly maxZoom = MAX_ZOOM;
 
@@ -441,8 +465,10 @@ export class PhotoPrepComponent {
    * deliberately too weak because of the doubt. The person looking at the
    * painting knows, so they say.
    */
-  protected readonly brightness = signal(0);
-  protected readonly temperature = signal(0);
+  private readonly lastLeftAt = rememberedAdjustments();
+
+  protected readonly brightness = signal(this.lastLeftAt.brightness);
+  protected readonly temperature = signal(this.lastLeftAt.temperature);
   /**
    * The two ends of the scale, each on its own slider.
    *
@@ -450,10 +476,10 @@ export class PhotoPrepComponent {
    * together. A canvas photographed against a lit wall usually needs one of
    * them and not the other, and moving both was a choice of which to get wrong.
    */
-  protected readonly whites = signal(0);
-  protected readonly darks = signal(0);
+  protected readonly whites = signal(this.lastLeftAt.whites);
+  protected readonly darks = signal(this.lastLeftAt.darks);
   /** How strong the colour is, which nothing else here can answer. */
-  protected readonly saturation = signal(0);
+  protected readonly saturation = signal(this.lastLeftAt.saturation);
 
   protected readonly adjustments = computed<Adjustments>(() => ({
     brightness: this.brightness(),
@@ -1058,22 +1084,39 @@ export class PhotoPrepComponent {
 
   protected setBrightness(event: Event): void {
     this.brightness.set(sliderValue(event));
+    this.rememberSliders();
   }
 
   protected setTemperature(event: Event): void {
     this.temperature.set(sliderValue(event));
+    this.rememberSliders();
   }
 
   protected setWhites(event: Event): void {
     this.whites.set(sliderValue(event));
+    this.rememberSliders();
   }
 
   protected setDarks(event: Event): void {
     this.darks.set(sliderValue(event));
+    this.rememberSliders();
   }
 
   protected setSaturation(event: Event): void {
     this.saturation.set(sliderValue(event));
+    this.rememberSliders();
+  }
+
+  /**
+   * Written down whenever the artist moves one, and never when the component
+   * moves them itself.
+   *
+   * The sliders are zeroed as part of keeping a change where it was made, and
+   * that is bookkeeping rather than an opinion about where they belong — saving
+   * it would throw away the settings the moment a brush was picked up.
+   */
+  private rememberSliders(): void {
+    rememberAdjustments(this.adjustments());
   }
 
   /**
@@ -1086,6 +1129,19 @@ export class PhotoPrepComponent {
   protected resetAdjustments(): void {
     this.edits.set([]);
     this.zeroSliders();
+    // Remembered like any other placing of the sliders: "this one needed
+    // nothing" is as much a statement about the room as "+20 brightness" is.
+    this.rememberSliders();
+  }
+
+  /** Back to wherever they were last left, which is where a new photograph starts. */
+  private recallSliders(): void {
+    const remembered = rememberedAdjustments();
+    this.brightness.set(remembered.brightness);
+    this.temperature.set(remembered.temperature);
+    this.whites.set(remembered.whites);
+    this.darks.set(remembered.darks);
+    this.saturation.set(remembered.saturation);
   }
 
   private zeroSliders(): void {
@@ -1299,8 +1355,11 @@ export class PhotoPrepComponent {
     this.handedOver.set(false);
     // Changes belong to the photograph they were made to, and the brush's mask
     // is measured in that photograph's straightened rectangle. Carried into the
-    // next one they would land somewhere arbitrary.
-    this.resetAdjustments();
+    // next one they would land somewhere arbitrary. The sliders are the
+    // exception: where they were left is where the next photograph starts,
+    // since the next photograph was almost certainly taken in the same room.
+    this.edits.set([]);
+    this.recallSliders();
     this.brushTool.clear();
   }
 
@@ -1334,12 +1393,6 @@ function isTypingInto(target: EventTarget | null): boolean {
 
 function textIn(event: Event): string {
   return (event.target as HTMLInputElement).value;
-}
-
-/** A plain number from a slider, which has no notation to worry about. */
-function sliderNumber(event: Event): number | null {
-  const value = Number.parseFloat((event.target as HTMLInputElement).value);
-  return Number.isFinite(value) && value > 0 ? value : null;
 }
 
 /**

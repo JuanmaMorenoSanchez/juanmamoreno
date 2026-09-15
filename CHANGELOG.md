@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.56.0
+
+- **feat** — the light and colour sliders stay where they were left, between
+  photographs and between sessions, so the next picture opens with the
+  correction already set. A studio is one room with one set of lights. Moving a
+  slider writes it down, and so does saying the photograph needed nothing; the
+  zeroing that keeps a change where it was made does not, or picking up the
+  brush would throw the settings away.
+- **chore** — the handle-size slider is gone. It was restored to the page in
+  1.54.0 after a spell unreachable, and went unused: magnifying the picture is
+  what it was standing in for, and the ring already holds its size on screen
+  through that. The rings are drawn at 46 px.
+
 ## 1.55.0
 
 - **feat** — the studio gets the hand tool, and the tonal sliders come apart.

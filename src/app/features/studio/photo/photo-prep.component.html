@@ -91,25 +91,6 @@
             -->
             <span class="prep-hint prep-pan-hint"> Hold space and drag to move the picture. </span>
           }
-          <!--
-            How wide a ring to aim with. Large by default, because the ring is
-            what the pointer is on while the corner underneath it is what has to
-            be judged — and small when the picture has been zoomed into, where a
-            ring the size of a thumbnail covers the very thing being placed.
-          -->
-          <label class="prep-dial">
-            <span
-              >Handles <em>{{ handleSize() }}px</em></span
-            >
-            <input
-              type="range"
-              [min]="minHandleSize"
-              [max]="maxHandleSize"
-              step="1"
-              [value]="handleSize()"
-              (input)="setHandleSize($event)"
-            />
-          </label>
         </div>
 
         <div #viewport class="prep-viewport" [style.--prep-zoom]="zoom()">
@@ -162,8 +143,8 @@
                 class="prep-handle"
                 [style.left]="handle.left"
                 [style.top]="handle.top"
-                [style.width.px]="handleSize() / zoom()"
-                [style.height.px]="handleSize() / zoom()"
+                [style.width.px]="handleSize / zoom()"
+                [style.height.px]="handleSize / zoom()"
                 [attr.aria-label]="'Move the ' + cornerNames[$index] + ' corner'"
                 (pointerdown)="grab($index, $event)"
               ></button>
@@ -174,8 +155,8 @@
                 class="prep-bow"
                 [style.left]="bow.left"
                 [style.top]="bow.top"
-                [style.width.px]="(handleSize() * 0.55) / zoom()"
-                [style.height.px]="(handleSize() * 0.55) / zoom()"
+                [style.width.px]="(handleSize * 0.55) / zoom()"
+                [style.height.px]="(handleSize * 0.55) / zoom()"
                 [attr.aria-label]="'Bend the ' + bow.edge + ' side'"
                 (pointerdown)="grabBow(bow.edge, bow.index, $event)"
               ></button>

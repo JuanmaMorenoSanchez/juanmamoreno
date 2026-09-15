@@ -16,11 +16,17 @@ type Internals = {
   size: { set(size: { width: number; height: number }): void };
   bowHandles: () => { edge: string; index: number; left: string; top: string; tether: string }[];
   outline: () => string;
-  handleSize: () => number;
-  setHandleSize(event: Event): void;
+  handleSize: number;
   straightenSides(): void;
   zoom: { (): number; set(v: number): void };
   setZoom(event: Event): void;
+  brightness: { (): number; set(v: number): void };
+  whites: () => number;
+  saturation: () => number;
+  setBrightness(event: Event): void;
+  setWhites(event: Event): void;
+  resetAdjustments(): void;
+  reset(): void;
   panning: () => boolean;
   takeSpace(event: KeyboardEvent): void;
   releaseSpace(event: KeyboardEvent): void;
@@ -140,29 +146,13 @@ describe('PhotoPrepComponent — bending the sides', () => {
 });
 
 describe('PhotoPrepComponent — aiming', () => {
-  it('starts wide enough to grab away from the corner', () => {
-    const { component } = setup();
+  it('draws a ring wide enough to grab away from the corner it marks', () => {
     // The complaint this answers: a small ring puts the cursor on the very
-    // point being placed.
-    expect(component.handleSize()).toBeGreaterThanOrEqual(40);
-  });
-
-  it('remembers a size that was chosen', () => {
-    const { component } = setup();
-    component.setHandleSize({ target: { value: '72' } } as unknown as Event);
-
-    expect(component.handleSize()).toBe(72);
-    expect(localStorage.getItem('juanmamoreno.studio.handleSize')).toBe('72');
-  });
-
-  it('refuses a size too small to aim with or too large to see past', () => {
+    // point being placed. It was a slider for a while and never moved —
+    // magnifying the picture is what the width was standing in for.
     const { component } = setup();
 
-    component.setHandleSize({ target: { value: '2' } } as unknown as Event);
-    expect(component.handleSize()).toBeGreaterThanOrEqual(20);
-
-    component.setHandleSize({ target: { value: '900' } } as unknown as Event);
-    expect(component.handleSize()).toBeLessThanOrEqual(110);
+    expect(component.handleSize).toBeGreaterThanOrEqual(40);
   });
 });
 
@@ -304,7 +294,7 @@ describe('PhotoPrepComponent — going in closer', () => {
     // Halved in the stage's own pixels, which the stage then doubles: the ring
     // covers a quarter as much of the painting and the same amount of screen.
     const handle = fixture.nativeElement.querySelector('.prep-handle') as HTMLElement;
-    expect(Number.parseFloat(handle.style.width)).toBeCloseTo(component.handleSize() / 2, 3);
+    expect(Number.parseFloat(handle.style.width)).toBeCloseTo(component.handleSize / 2, 3);
 
     // Read by the stylesheet, to thin the outline and the rings in step.
     const viewport = fixture.nativeElement.querySelector('.prep-viewport') as HTMLElement;
@@ -483,5 +473,98 @@ describe('PhotoPrepComponent — moving the view', () => {
     component.setZoom({ target: { value: '1' } } as unknown as Event);
 
     expect(component.panning()).toBe(false);
+  });
+});
+
+/** A slider dragged to a position, as a percentage of its travel. */
+function slid(percent: number): Event {
+  return { target: { value: String(percent) } } as unknown as Event;
+}
+
+/**
+ * A studio is one room with one set of lights, so the correction one photograph
+ * needs is very nearly the correction the next one needs. Starting every
+ * picture at nought meant finding the same numbers again each time.
+ */
+describe('PhotoPrepComponent — the sliders stay where they were left', () => {
+  beforeEach(() => localStorage.removeItem('juanmamoreno.studio.adjustments'));
+
+  it('writes down where a slider was put', () => {
+    const { component } = setup();
+
+    component.setBrightness(slid(30));
+    component.setWhites(slid(-40));
+
+    const stored = JSON.parse(
+      localStorage.getItem('juanmamoreno.studio.adjustments') ?? 'null'
+    ) as Record<string, number>;
+    expect(stored['brightness']).toBeCloseTo(0.3, 3);
+    expect(stored['whites']).toBeCloseTo(-0.4, 3);
+  });
+
+  it('opens the next photograph with them already there', () => {
+    const { component } = setup();
+    component.setBrightness(slid(30));
+
+    // What choosing another photograph does, which is also what a finished
+    // certificate does from below.
+    component.reset();
+
+    expect(component.brightness()).toBeCloseTo(0.3, 3);
+  });
+
+  it('starts a second studio where the first one was left', () => {
+    const first = setup();
+    first.component.setWhites(slid(50));
+
+    // The next visit to the page, which is the whole point of writing it down:
+    // a fresh component reading the same storage.
+    const next = TestBed.createComponent(PhotoPrepComponent)
+      .componentInstance as unknown as Internals;
+
+    expect(next.whites()).toBeCloseTo(0.5, 3);
+  });
+
+  it('remembers being told the photograph needed nothing', () => {
+    const { component } = setup();
+    component.setBrightness(slid(30));
+
+    component.resetAdjustments();
+
+    expect(component.brightness()).toBe(0);
+    const stored = JSON.parse(
+      localStorage.getItem('juanmamoreno.studio.adjustments') ?? 'null'
+    ) as Record<string, number>;
+    expect(stored['brightness']).toBe(0);
+  });
+
+  it('does not write down the zeroing that keeping a change does', () => {
+    // A change is kept where it was made and the sliders start again, so that
+    // the next selection gets its own. That is bookkeeping, not an opinion
+    // about where the sliders belong — saving it would throw the settings away
+    // the moment a brush was picked up.
+    const { component } = setup();
+    component.widthText.set('116');
+    component.heightText.set('140,5');
+    component.setBrightness(slid(30));
+
+    // Picking up the brush is what commits the pending change and starts the
+    // sliders again.
+    component.useBrush('add');
+    component.startBrush(pointerAtScreen(500, 400));
+    expect(component.brightness()).toBe(0);
+
+    const stored = JSON.parse(
+      localStorage.getItem('juanmamoreno.studio.adjustments') ?? 'null'
+    ) as Record<string, number>;
+    expect(stored['brightness']).toBeCloseTo(0.3, 3);
+  });
+
+  it('starts at nought when nothing has ever been stored', () => {
+    const { component } = setup();
+
+    expect(component.brightness()).toBe(0);
+    expect(component.whites()).toBe(0);
+    expect(component.saturation()).toBe(0);
   });
 });
