@@ -277,7 +277,11 @@ export class ArtPieceComponent {
       );
       this.seo.setArtworkStructuredData({
         name: nft.name,
-        url: `https://juanmamoreno.com/artwork/${nft.tokenId}/`,
+        // The page's own address, in the page's own language. Written without
+        // the prefix this said /artwork/23/ on the Spanish page as well, which
+        // contradicted that page's canonical and put an English trail — Home,
+        // Paintings — at the foot of every Spanish painting.
+        url: `https://juanmamoreno.com${this.language.link(`artwork/${nft.tokenId}`)}/`,
         image,
         description,
         year: this.getTraitValue(nft, VALIDTRAITS.YEAR),
@@ -285,6 +289,9 @@ export class ArtPieceComponent {
         width: this.getTraitValue(nft, VALIDTRAITS.WIDTH),
         height: this.getTraitValue(nft, VALIDTRAITS.HEIGHT),
         unit: this.getTraitValue(nft, VALIDTRAITS.UNIT),
+        // The same answer the dot beside the caption gives, so the two cannot
+        // disagree about a painting.
+        sold: this.sold(),
       });
     });
   }

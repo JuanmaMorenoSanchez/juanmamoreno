@@ -240,8 +240,43 @@ pair.
 
 ### R13 — Artwork pages carry structured data · met
 `VisualArtwork` and `BreadcrumbList`, plus `Person` site-wide.
+
+The `VisualArtwork` says two things the page cannot say to a machine on its own.
+
+It names the catalogue the painting belongs to, at one address every page
+repeats, so that the hundred and eighty-six of them describe one body of work
+rather than a hundred and eighty-six unrelated paintings by the same person.
+
+And it says whether the painting has sold, in a word from a fixed vocabulary.
+On the page that is a red dot, which is a colour and a border radius: it
+survives neither being read aloud nor being turned into plain text, and those
+are the two ways anything but a browser arrives. The word is now beside the dot
+as well, out of sight (R103).
+
+All of it is written in the page's own language and about the page's own
+address. It was not: a Spanish artwork page gave the url of the English one and
+a trail reading Home > Paintings, while its own canonical said /es/. The address
+was written out without the prefix, and the test that looked localised was
+passing in a Spanish url the app never passed.
+
+The build refuses a page missing either fact, or naming an address in the wrong
+language, because all of it is written by the same call and a page without it is
+a page where that call did not run.
 *Proven by:* `seo-title.strategy.spec.ts` "describes the artwork and who made
-it", "places the artwork in a trail from the home page"
+it", "places the artwork in a trail from the home page", "places the artwork in
+the catalogue the rest of the paintings are in", "says the painting can still be
+bought", "says a sold painting has sold"; and `scripts/verify-render.mjs`, which
+fails the build
+
+### R103 — Nothing on the site says what a painting costs · met
+Not the page, not the structured data, not the offer that says the painting is
+for sale. The offer carries where to ask — the painting's own page, which is
+where the button that opens the enquiry sits — and no figure at all.
+
+This is a decision rather than an omission waiting to be filled in. A price is
+answered to whoever asks for it, and a published one is an anchor far easier to
+set than to move.
+*Proven by:* `seo-title.strategy.spec.ts` "never says what anything costs"
 
 ### R14 — The sitemap lists what exists · met
 Generated from the prerendered output, with `lastmod`.

@@ -8332,5 +8332,181 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
         },
       },
     },
+    {
+      tokenId: '199',
+      name: 'Houston I',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/199.jpg',
+        cachedUrl: 'https://arweave.net/8W0sMpaTs39rktDfK7v4Q7dcTHUniaZnzofH9q6K5IQ',
+        thumbnailUrl:
+          'data:image/jpeg;base64,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',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas on cardboard',
+            },
+            {
+              trait_type: 'Height',
+              value: '30,7',
+            },
+            {
+              trait_type: 'Width',
+              value: '23',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2026',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
+    {
+      tokenId: '200',
+      name: 'Houston II',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/200.jpg',
+        cachedUrl: 'https://arweave.net/E9NS5llo2DBr3v1JeaE2cv8ZR8dJAQsfjVRNpUq4GfY',
+        thumbnailUrl:
+          'data:image/jpeg;base64,/9j/2wBDABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z////////////////2wBDARsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z////////////////wgARCABYAHADASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAAAAIDBAEF/8QAGQEAAwEBAQAAAAAAAAAAAAAAAQIDAAQF/9oADAMBAAIQAxAAAADI8HMKBeDGPfnQ6JMh3bweRt5+3P1TiMejDiaJ87sdVDeuV+K14WVHhTsaLoivbTZaJ0SWXFSmlOplq6zjTSRpB585bNndGbO+e9J40rItR81kNkYycdXYcaE82zNRlKUSi6EvWtVvGn7HmAyalAFd2OyJ6UzoKygkrTUb/PC238DZ+ARwA4zhtyoDScMf/8QAKhAAAgICAQMEAgEFAQAAAAAAAQIAEQMhEjFBYQQTMlEicYEFEEJTkdH/2gAIAQEAAT8A5q2iIpXuZkLUAinjfWYg6m1OzMzZmUqcd6lFVA73BlOXC62LsUPEIvh4Gh5g5Lvj+jEc/kuWuJHygVGJDlmKbB6A+ISXZmPc3P1/bgbXzFoWuyYCT4rtFKqYTskDrGRunWBFVQWVg16I7yyepEDv2aBS9jVEbPYVHxnZyZSyL2EYUCANSpU9tXbkDrvKHu1egZxHGNYS++jBRRSprVmI6i7mZcYpzdjoJ8rNbJnBgdxGVMd9XMLOQv8Aj+uhlrZ+5UMChNCMylvMoVC34kb+MxsFUch2oT3A2uFVAzADlRPfvqe4MZPBa3uc1bkSN9qnLa3WoKBM3BxNbjCiBcyAVys3FUBQOR3BDpCfAgG7J7CoQgQE7YvLBYiwIav8TYsRgaMZWhs+AINjYignZ7QbJNz3G5U41AELdepgZdAQ37Z8x6/HrYhK2n7gYb/HUJAA1UdyUBO+0yXx62O05Vqor1diwYdgVqYyGYAmgTMnKwSRc6UbH6gYEzleOvMZW2eUsjiT0qAuB0NjcdjaF9COpKoB3l8tX0jCx+J2BByGusVgL5TkLhKtGFdwYNQOONTn+DfdQvScddBuURV945T5kdDUbKp4H6uM4LchYNCB3LCh2lcHK31MIvIwPioBgGnc34nF6rgYUZfkpEbGVPxNamgWHjU5mqHeJvkCa1qG36dIcYKKARcbA/UCAPyC8TcI9QWGiBVfxCrYSK2YjuebGhQg2YP6f6XuXmLD6TCSvu3Y+BaZ8KqLxIBWyeRhGN2+rEXClg+5OeC7KEk7nD02SmL1ET0+JtZJ7+ME01mZUGQWponqYcDdjYA0Jw9UD1AnstRLML8TjiB+ZhOf/WP+xvT5ufxJN3Yij1B+RoeIvpsC7O57WD6hx4DPbweZ7eH6MZMXE8QQfuHEbBDm6gxPysn+YUNf+iOhPHYP2Iqqoqp//8QAJBEBAAIBBAEFAAMAAAAAAAAAAQIRAAMSITFRBBATQWEicdH/2gAIAQIBAT8ATUp2tW47y4rbkNWJRQB9ZaxWBUbWsaQ3AHk7M9PMHiQ3R4D2kFW1d3ikZfyrm/rNXSkyumntc07DbW5uh3cVk5rUZ2p2ZCOkQvozT9Vpza5M7lx95KR0+HNe2wm92mQhEi99cmTNu3roypR4p/2sIR3KysDoM3jfGNkhMQvcvfJxkZEis1Ddm6G3Z46/rDUjpysjdmUfuAn7nMuAz4yi14zb9Z8R+V4rGBG/3wYYGV77RyjP/8QAIhEAAgIBAwQDAAAAAAAAAAAAAREAAiEDMUEQEjBRYZGh/9oACAEDAQE/AHTDDjrwOiAsGcqZZTM1AVso4CWg0oGQFwRKWA9OWRySvhQV5qs7Sxv3I5ltK1YiBKg/omnwe2Elypf2ZgyxKAWSeZUcQgKBpAbQhESjUAsGfctQ33K6heT/2Q==',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas on cardboard',
+            },
+            {
+              trait_type: 'Height',
+              value: '27,94',
+            },
+            {
+              trait_type: 'Width',
+              value: '35,56',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2026',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
+    {
+      tokenId: '201',
+      name: 'Electricidad estática I',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/201.jpg',
+        cachedUrl: 'https://arweave.net/cW6BXCMDth_qS4wqc6i6NGfPEzhSPhQpscZvlWe8MnI',
+        thumbnailUrl:
+          'data:image/jpeg;base64,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',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas on cardboard',
+            },
+            {
+              trait_type: 'Height',
+              value: '35,56',
+            },
+            {
+              trait_type: 'Width',
+              value: '27,94',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2026',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
+    {
+      tokenId: '202',
+      name: 'Electricidad estática II',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/202.jpg',
+        cachedUrl: 'https://arweave.net/i24yVgTqQXNdLMi1IR7QSrerpTXQxzMI5hJpCKWQsr0',
+        thumbnailUrl:
+          'data:image/jpeg;base64,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',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas on cardboard',
+            },
+            {
+              trait_type: 'Height',
+              value: '35,56',
+            },
+            {
+              trait_type: 'Width',
+              value: '27,94',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2026',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
   ],
 };

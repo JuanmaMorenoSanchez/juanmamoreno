@@ -135,13 +135,44 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   //     artwork's page: the painting's name in the title, and its picture.
   if (/^(es\/)?artwork\/\d+$/.test(route)) {
     if (/^(Artwork|Obra) · /.test(title ?? ''))
-      fail(route, 'no artwork on it: the title never got the painting\'s name');
+      fail(route, "no artwork on it: the title never got the painting's name");
     // The painting itself is not an <img> in the served markup — the viewer
     // draws it once the page is running — so what is checked is the picture the
     // page advertises, which comes from the same artwork and is empty without
     // it.
     if (!/property="og:image" content="https?:\/\//.test(html))
       fail(route, 'no artwork on it: no picture is advertised');
+
+    // 6c. And the facts a machine reads rather than the ones a person does.
+    //
+    //     Two of them are in the structured data and nowhere else that
+    //     survives a page being turned into plain text: the catalogue the
+    //     painting belongs to, without which each page is an unrelated work by
+    //     the same person, and whether it has sold, which on the page itself is
+    //     a red circle. Both are written by the same call, so what this really
+    //     catches is that call not having run on a page it should have.
+    const markup = html.match(
+      /<script[^>]*id="artwork-structured-data"[^>]*>([\s\S]*?)<\/script>/
+    )?.[1];
+    if (!markup) fail(route, 'no structured data describing the artwork');
+    else {
+      let described;
+      try {
+        described = JSON.parse(markup);
+      } catch {
+        fail(route, 'the artwork structured data is not valid json');
+      }
+      if (described && !described.isPartOf)
+        fail(route, 'structured data does not say which catalogue the artwork belongs to');
+      if (described && !described.offers?.availability)
+        fail(route, 'structured data does not say whether the artwork can still be bought');
+      // In the page's own language, like its canonical. Every Spanish artwork
+      // page once described itself as the English one — the url of the English
+      // page, and a trail reading Home > Paintings — because the address was
+      // written out without the prefix.
+      if (described?.url && spanish !== described.url.includes('/es/'))
+        fail(route, `structured data calls this page ${described.url}`);
+    }
   }
 
   // 7. Nothing in the page shows the build asked the reverse image search.
@@ -173,18 +204,21 @@ for (const [route, target] of pointsElsewhere) {
 }
 
 const english = checked.filter((r) => !(r === 'es' || r.startsWith('es/'))).length;
-console.log(`verify-render: ${checked.length} pages (${english} en / ${checked.length - english} es)`);
+console.log(
+  `verify-render: ${checked.length} pages (${english} en / ${checked.length - english} es)`
+);
 if (pointsElsewhere.length)
   console.log(
     `verify-render: ${pointsElsewhere.length} of them are second photographs of a painting ` +
-      `already listed, and name it as the original.`,
+      `already listed, and name it as the original.`
   );
 
 if (failures.length) {
   const shown = failures.slice(0, 25);
   console.error(`\n${failures.length} problem(s):`);
   for (const { route, message } of shown) console.error(`  /${route || ''} — ${message}`);
-  if (failures.length > shown.length) console.error(`  …and ${failures.length - shown.length} more`);
+  if (failures.length > shown.length)
+    console.error(`  …and ${failures.length - shown.length} more`);
   process.exit(1);
 }
 console.log('verify-render: every page has its own canonical, title, hreflang pair and content.');

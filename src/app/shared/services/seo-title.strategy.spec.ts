@@ -141,6 +141,7 @@ describe('SeoTitleStrategy', () => {
       width: '130',
       height: '130',
       unit: 'cm',
+      sold: false,
     };
 
     it('describes the artwork and who made it', async () => {
@@ -185,6 +186,70 @@ describe('SeoTitleStrategy', () => {
       await navigateTo('/es/about');
       expect(document.head.querySelector('#artwork-structured-data')).toBeNull();
       expect(document.head.querySelector('#breadcrumb-structured-data')).toBeNull();
+    });
+
+    /**
+     * A hundred and eighty-six pages of one painting each, with nothing tying
+     * them together, are a hundred and eighty-six unrelated works by the same
+     * person. The collection is addressed the same way from every one of them,
+     * so that between them they describe one catalogue.
+     */
+    it('places the artwork in the catalogue the rest of the paintings are in', async () => {
+      await navigateTo('/about');
+      strategy.setArtworkStructuredData(artwork);
+
+      const data = jsonLd('artwork-structured-data');
+      expect(data.isPartOf['@type']).toBe('Collection');
+      expect(data.isPartOf['@id']).toBe('https://juanmamoreno.com/artworks#catalogue');
+      expect(data.isPartOf.url).toBe('https://juanmamoreno.com/artworks/');
+    });
+
+    it('names the Spanish catalogue from a Spanish artwork', async () => {
+      await navigateTo('/es/about');
+      strategy.setArtworkStructuredData({
+        ...artwork,
+        url: 'https://juanmamoreno.com/es/artwork/152/',
+      });
+
+      const data = jsonLd('artwork-structured-data');
+      expect(data.isPartOf['@id']).toBe('https://juanmamoreno.com/es/artworks#catalogue');
+      expect(data.isPartOf.name).toBe('Pinturas');
+    });
+
+    /**
+     * On the page this is a red dot: a colour and a border radius, which says
+     * nothing at all to anything reading the page as text.
+     */
+    it('says the painting can still be bought', async () => {
+      await navigateTo('/about');
+      strategy.setArtworkStructuredData(artwork);
+
+      const data = jsonLd('artwork-structured-data');
+      expect(data.offers.availability).toBe('https://schema.org/InStock');
+      expect(data.offers.url).toBe(artwork.url);
+    });
+
+    it('says a sold painting has sold', async () => {
+      await navigateTo('/about');
+      strategy.setArtworkStructuredData({ ...artwork, sold: true });
+
+      expect(jsonLd('artwork-structured-data').offers.availability).toBe(
+        'https://schema.org/SoldOut'
+      );
+    });
+
+    /**
+     * Deliberate, and the reason the offer is there at all is to carry the
+     * address to ask at. What a painting costs is answered by the artist to
+     * whoever asks him, and nothing here is allowed to answer it first.
+     */
+    it('never says what anything costs', async () => {
+      await navigateTo('/about');
+      strategy.setArtworkStructuredData(artwork);
+
+      const written = JSON.stringify(jsonLd('artwork-structured-data'));
+      expect(written).not.toMatch(/price/i);
+      expect(written).not.toMatch(/priceCurrency|EUR/);
     });
 
     it('omits measurements it does not have rather than emitting empty ones', async () => {

@@ -33,6 +33,8 @@ export interface ArtworkStructuredData {
   width: string;
   height: string;
   unit: string;
+  /** Whether the painting has been sold, which is the red dot on the page. */
+  sold: boolean;
 }
 
 /**
@@ -141,11 +143,31 @@ export class SeoTitleStrategy extends TitleStrategy {
    * one part of an artwork's facts — who made it, when, in what medium, at what
    * size — that a crawler can read without interpreting prose or running any
    * JavaScript. Especially worth having on the pieces that have no essay yet.
+   *
+   * Two of those facts are said here and nowhere else a machine can reach.
+   *
+   * WHICH CATALOGUE it belongs to. Without it each of a hundred and eighty-six
+   * pages is an unrelated painting by the same person; with it they are one
+   * body of work, and something reading any one of them can find the rest. The
+   * collection is given an address of its own, the same one on every page, so
+   * that they name one catalogue between them rather than a hundred and
+   * eighty-six identical ones.
+   *
+   * WHETHER IT IS STILL AVAILABLE. On the page that is a red circle: a border
+   * radius and a colour, which survives neither being turned into plain text
+   * nor being read aloud. Here it is a word from a fixed vocabulary.
+   *
+   * What is deliberately absent is the price. Not an oversight, and not a gap
+   * to be filled in later: what a painting costs is answered by the artist to
+   * whoever asks, so the offer carries the address to ask at and no figure at
+   * all. Putting a number here would undo that.
    */
   setArtworkStructuredData(artwork: ArtworkStructuredData): void {
-    const { name, url, image, description, year, medium, width, height, unit } = artwork;
+    const { name, url, image, description, year, medium, width, height, unit, sold } = artwork;
     const distance = (value: string) =>
       value && unit ? { '@type': 'Distance', name: `${value} ${unit}` } : undefined;
+    const spanish = url.includes('/es/');
+    const base = spanish ? `${SITE_URL}/es` : SITE_URL;
 
     const data = {
       '@context': 'https://schema.org',
@@ -160,6 +182,20 @@ export class SeoTitleStrategy extends TitleStrategy {
       width: distance(width),
       height: distance(height),
       creator: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
+      isPartOf: {
+        '@type': 'Collection',
+        '@id': `${base}/artworks#catalogue`,
+        name: spanish ? 'Pinturas' : 'Paintings',
+        url: `${base}/artworks/`,
+      },
+      offers: {
+        '@type': 'Offer',
+        availability: sold ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        // Where to ask, there being no price to read: the painting's own page,
+        // which is where the button that opens the enquiry sits.
+        url,
+        seller: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
+      },
     };
 
     // undefined values drop out of JSON.stringify, so partial trait data yields

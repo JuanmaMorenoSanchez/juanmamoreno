@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.63.0
+
+- **feat** — an artwork page now tells a machine which catalogue the painting
+  belongs to and whether it can still be bought. Both were on the page already
+  and neither survived it being read as text: the works were a hundred and
+  eighty-six unrelated paintings by the same person, and having sold was a red
+  circle. The word "sold" is now beside that circle too, out of sight, for
+  screen readers and for anything reading the text rather than the picture of a
+  page. No price, anywhere, on purpose — what a painting costs is answered to
+  whoever asks. The build refuses an artwork page missing either fact.
+- **fix** — a Spanish artwork page no longer describes itself as the English
+  one. Its structured data gave the address of the English page and a trail
+  reading Home > Paintings, contradicting the page's own canonical, because the
+  address was written out with no language prefix. All 201 Spanish pages are
+  checked for it now.
+- **chore** — the paragraph above the new-certificate form is gone.
+
 ## 1.62.0
 
 - **feat** — a reel waiting to be published can go out with no critic. Clearing

@@ -48,8 +48,15 @@
           {{ nft() | trait: validTraits.HEIGHT }} x
           {{ nft() | trait: validTraits.WIDTH }}
           {{ nft() | trait: validTraits.UNIT }}.
+          <!--
+            The dot says sold to whoever can see it. The word beside it says the
+            same thing to whoever cannot, and to anything that reads this page
+            as text rather than as a picture of a page: a coloured circle is a
+            border radius and survives neither.
+          -->
           @if (sold()) {
-            <span [matTooltip]="'sold' | translate" class="dot"></span>
+            <span [matTooltip]="'sold' | translate" class="dot" aria-hidden="true"></span>
+            <span class="visually-hidden">{{ 'sold' | translate }}</span>
           }
         </small>
       </h3>
