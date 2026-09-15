@@ -1,10 +1,9 @@
 import { createRaster, type Raster, type Size } from './raster';
 import {
-  bezierAt,
+  bowAmount,
   bowsAreStraight,
   distance,
-  EDGE_CORNERS,
-  straightBows,
+  edgeNormal,
   type EdgeBows,
   type Point,
   type Quad,
@@ -54,12 +53,7 @@ export function solveHomography(from: Quad, to: Quad): Float64Array {
  * departure is zero at a corner, which is what keeps the corners exactly where
  * the homography put them.
  */
-export function warpPerspective(
-  source: Raster,
-  quad: Quad,
-  size: Size,
-  bows?: EdgeBows
-): Raster {
+export function warpPerspective(source: Raster, quad: Quad, size: Size, bows?: EdgeBows): Raster {
   const { width, height } = size;
   const destination: Quad = [
     { x: 0, y: 0 },
@@ -73,7 +67,7 @@ export function warpPerspective(
   const out = createRaster(width, height);
   // Straight sides displace nothing, so the arithmetic is skipped rather than
   // run to produce zeroes: this is the common case and the loop is per pixel.
-  const bow = bows && !bowsAreStraight(quad, bows) ? bowDisplacement(quad, bows) : null;
+  const bow = bows && !bowsAreStraight(bows) ? bowDisplacement(quad, bows) : null;
 
   for (let v = 0; v < height; v++) {
     const cy = v + 0.5;
@@ -101,25 +95,37 @@ export function warpPerspective(
  * parameter, weighted by how near that side is. The corner terms a Coons patch
  * would subtract are not needed here: a departure is zero at both ends of every
  * side, so the four contributions already vanish at the corners.
+ *
+ * A departure is a distance square to the side, and only that: a side's control
+ * points cannot leave the chord in any other direction, so nothing here can
+ * move a pixel *along* an edge. The four directions are settled once, before
+ * the loop, rather than per pixel — this used to evaluate eight cubic Béziers
+ * for every pixel of the result and subtract them in pairs.
  */
 function bowDisplacement(quad: Quad, bows: EdgeBows): (u: number, v: number) => Point {
-  const chord = straightBows(quad);
-
-  const departure = (edge: keyof EdgeBows, t: number): Point => {
-    const [from, to] = EDGE_CORNERS[edge];
-    const curved = bezierAt(quad[from], bows[edge][0], bows[edge][1], quad[to], t);
-    const straight = bezierAt(quad[from], chord[edge][0], chord[edge][1], quad[to], t);
-    return { x: curved.x - straight.x, y: curved.y - straight.y };
+  const normals = {
+    top: edgeNormal(quad, 'top'),
+    right: edgeNormal(quad, 'right'),
+    bottom: edgeNormal(quad, 'bottom'),
+    left: edgeNormal(quad, 'left'),
   };
 
   return (u, v) => {
-    const top = departure('top', u);
-    const bottom = departure('bottom', u);
-    const left = departure('left', v);
-    const right = departure('right', v);
+    const top = bowAmount(bows, 'top', u) * (1 - v);
+    const bottom = bowAmount(bows, 'bottom', u) * v;
+    const left = bowAmount(bows, 'left', v) * (1 - u);
+    const right = bowAmount(bows, 'right', v) * u;
     return {
-      x: (1 - v) * top.x + v * bottom.x + (1 - u) * left.x + u * right.x,
-      y: (1 - v) * top.y + v * bottom.y + (1 - u) * left.y + u * right.y,
+      x:
+        top * normals.top.x +
+        bottom * normals.bottom.x +
+        left * normals.left.x +
+        right * normals.right.x,
+      y:
+        top * normals.top.y +
+        bottom * normals.bottom.y +
+        left * normals.left.y +
+        right * normals.right.y,
     };
   };
 }

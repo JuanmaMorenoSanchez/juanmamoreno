@@ -38,6 +38,8 @@ import { inject } from '@angular/core';
 import { StudioHandoffService } from '../studio-handoff.service';
 
 import {
+  bowControls,
+  bowOffset,
   correctedSize,
   EDGE_CORNERS,
   fullFrame,
@@ -607,7 +609,7 @@ export class PhotoPrepComponent {
     }
     const curve = (edge: EdgeName, reverse = false) => {
       const [from, to] = EDGE_CORNERS[edge];
-      const [c0, c1] = bows[edge];
+      const [c0, c1] = bowControls(corners, bows, edge);
       const end = reverse ? corners[from] : corners[to];
       const first = reverse ? c1 : c0;
       const second = reverse ? c0 : c1;
@@ -634,9 +636,10 @@ export class PhotoPrepComponent {
     const bows = this.bows();
     if (!size || !corners || !bows) return [];
 
-    return this.edgeNames.flatMap((edge) =>
-      ([0, 1] as const).map((index) => {
-        const point = bows[edge][index];
+    return this.edgeNames.flatMap((edge) => {
+      const controls = bowControls(corners, bows, edge);
+      return ([0, 1] as const).map((index) => {
+        const point = controls[index];
         const anchor = corners[EDGE_CORNERS[edge][index]];
         return {
           edge,
@@ -645,8 +648,8 @@ export class PhotoPrepComponent {
           top: `${(point.y / size.height) * 100}%`,
           tether: `M ${anchor.x} ${anchor.y} L ${point.x} ${point.y}`,
         };
-      })
-    );
+      });
+    });
   });
 
   /**
@@ -703,8 +706,7 @@ export class PhotoPrepComponent {
   }
 
   protected straightenSides(): void {
-    const corners = this.corners();
-    if (corners) this.bows.set(straightBows(corners));
+    if (this.corners()) this.bows.set(straightBows());
   }
 
   /** Placed as a share of the frame, so a handle stays the same size however the photo is scaled. */
@@ -823,7 +825,7 @@ export class PhotoPrepComponent {
     this.corners.set(quad);
     // Straight to begin with: corner finding fits four sides, so a bow is
     // always something the artist adds after looking.
-    this.bows.set(straightBows(quad));
+    this.bows.set(straightBows());
   }
 
   private sampleTimer: ReturnType<typeof setTimeout> | null = null;
@@ -903,7 +905,9 @@ export class PhotoPrepComponent {
   protected grabBow(edge: EdgeName, index: 0 | 1, event: PointerEvent): void {
     if (this.panning()) return;
     const at = this.pointIn(event);
-    const handle = this.bows()?.[edge][index];
+    const corners = this.corners();
+    const bows = this.bows();
+    const handle = corners && bows ? bowControls(corners, bows, edge)[index] : null;
     this.grabbedAt = at && handle ? { x: handle.x - at.x, y: handle.y - at.y } : { x: 0, y: 0 };
     this.dragging = { edge, index };
     (event.target as Element).setPointerCapture(event.pointerId);
@@ -929,8 +933,13 @@ export class PhotoPrepComponent {
       const bows = this.bows();
       if (!bows) return;
       const { edge, index } = this.dragging;
-      const pair = [...bows[edge]] as [Point, Point];
-      pair[index] = clamped;
+      // Only the part of the drag square to the side is kept. The rest — the
+      // part along it — would not bend the side at all: it would change how
+      // fast the side is travelled, stretching one stretch of the painting and
+      // squeezing another, which is not a thing a photograph of a painting is
+      // ever improved by.
+      const pair = [...bows[edge]] as [number, number];
+      pair[index] = bowOffset(corners, edge, clamped);
       this.bows.set({ ...bows, [edge]: pair });
       return;
     }
@@ -939,23 +948,9 @@ export class PhotoPrepComponent {
     const moved = [...corners] as Quad;
     moved[index] = clamped;
     this.corners.set(moved);
-
-    // A corner takes its own two control points with it, so a side that has
-    // been bent keeps its bend when the corner it hangs from is repositioned.
-    // Recomputing them from the new chord instead would undo the bow the moment
-    // the corner beside it was nudged.
-    const shift = { x: clamped.x - corners[index].x, y: clamped.y - corners[index].y };
-    const bows = this.bows();
-    if (!bows) return;
-    const next = { ...bows };
-    for (const edge of this.edgeNames) {
-      const [from, to] = EDGE_CORNERS[edge];
-      const pair = [...bows[edge]] as [Point, Point];
-      if (from === index) pair[0] = { x: pair[0].x + shift.x, y: pair[0].y + shift.y };
-      if (to === index) pair[1] = { x: pair[1].x + shift.x, y: pair[1].y + shift.y };
-      next[edge] = pair;
-    }
-    this.bows.set(next);
+    // The control points need no attention: they are held as distances from
+    // their own chord, so they follow the corner that moved on their own. They
+    // used to be absolute points, and had to be dragged along by hand here.
   }
 
   protected release(): void {

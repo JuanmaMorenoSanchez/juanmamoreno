@@ -1,5 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-import { EDGE_CORNERS, straightBows, type EdgeBows, type Quad } from '@domain/image/quad';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import {
+  bowControls,
+  edgeNormal,
+  EDGE_CORNERS,
+  straightBows,
+  type EdgeBows,
+  type Quad,
+} from '@domain/image/quad';
 import { describe, expect, it } from 'vitest';
 import { PhotoPrepComponent } from './photo-prep.component';
 import { StudioHandoffService } from '../studio-handoff.service';
@@ -36,6 +43,7 @@ type Internals = {
   fileName: { set(v: string): void };
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
+  drag(event: PointerEvent): void;
   artist: () => string;
   notice: () => string;
   webStatement: () => string;
@@ -66,16 +74,31 @@ function setup() {
   const component = fixture.componentInstance as unknown as Internals;
   component.size.set({ width: 1000, height: 800 });
   component.corners.set(QUAD);
-  component.bows.set(straightBows(QUAD));
+  component.bows.set(straightBows());
   return { fixture, component };
 }
 
-/** Stands in for a pointer that has moved to a place on the photograph. */
-function pointerAt(): PointerEvent {
+/**
+ * Stands in for a pointer at a place on the photograph.
+ *
+ * The stage is given a thousand by eight hundred box below, which is the size
+ * of the photograph itself, so these coordinates are the photograph's own.
+ */
+function pointerAt(x = 0, y = 0): PointerEvent {
   return {
+    clientX: x,
+    clientY: y,
+    pointerId: 1,
     target: { setPointerCapture: () => undefined },
     preventDefault: () => undefined,
   } as unknown as PointerEvent;
+}
+
+/** A stage that knows how big it is, which no test browser gives it. */
+function stageOf(fixture: ComponentFixture<PhotoPrepComponent>): void {
+  fixture.detectChanges();
+  const stage = fixture.nativeElement.querySelector('.prep-stage') as HTMLElement;
+  stage.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1000, height: 800 }) as DOMRect;
 }
 
 describe('PhotoPrepComponent — bending the sides', () => {
@@ -97,12 +120,7 @@ describe('PhotoPrepComponent — bending the sides', () => {
     const { component } = setup();
     expect(component.outline()).toContain('C ');
 
-    const bows = straightBows(QUAD);
-    bows.left = [
-      { x: bows.left[0].x - 40, y: bows.left[0].y },
-      { x: bows.left[1].x - 40, y: bows.left[1].y },
-    ];
-    component.bows.set(bows);
+    component.bows.set({ ...straightBows(), left: [-40, -40] });
 
     // Four curve segments, one per side — never a straight-sided polygon, which
     // would draw a bent edge as the line it is not.
@@ -110,38 +128,28 @@ describe('PhotoPrepComponent — bending the sides', () => {
   });
 
   it('moves only the control that was grabbed', () => {
-    const { component } = setup();
-    const before = component.bows() as EdgeBows;
+    const { fixture, component } = setup();
+    stageOf(fixture);
+    const controls = bowControls(QUAD, straightBows(), 'top');
 
-    component.grabBow('top', 1, pointerAt());
-    // drag() reads the pointer through the stage element, which no test has;
-    // setting the signal is the same state change with the plumbing removed.
-    const bows = {
-      ...before,
-      top: [before.top[0], { x: 500, y: 20 }] as [
-        { x: number; y: number },
-        { x: number; y: number },
-      ],
-    };
-    component.bows.set(bows);
+    // Square to the side, which on a side that is not quite level is not the
+    // same as straight up the screen.
+    const across = edgeNormal(QUAD, 'top');
+    component.grabBow('top', 1, pointerAt(controls[1].x, controls[1].y));
+    component.drag(pointerAt(controls[1].x + across.x * 30, controls[1].y + across.y * 30));
 
-    expect(component.bows()?.top[1]).toEqual({ x: 500, y: 20 });
-    expect(component.bows()?.top[0]).toEqual(before.top[0]);
-    expect(component.bows()?.left).toEqual(before.left);
+    expect(component.bows()?.top[1]).toBeCloseTo(30, 6);
+    expect(component.bows()?.top[0]).toBe(0);
+    expect(component.bows()?.left).toEqual([0, 0]);
   });
 
   it('puts every control back on its chord when the sides are straightened', () => {
     const { component } = setup();
-    const bent = straightBows(QUAD);
-    bent.top = [
-      { x: bent.top[0].x, y: bent.top[0].y - 60 },
-      { x: bent.top[1].x, y: bent.top[1].y - 60 },
-    ];
-    component.bows.set(bent);
+    component.bows.set({ ...straightBows(), top: [-60, -60] });
 
     component.straightenSides();
 
-    expect(component.bows()).toEqual(straightBows(QUAD));
+    expect(component.bows()).toEqual(straightBows());
   });
 });
 
@@ -566,5 +574,64 @@ describe('PhotoPrepComponent — the sliders stay where they were left', () => {
     expect(component.brightness()).toBe(0);
     expect(component.whites()).toBe(0);
     expect(component.saturation()).toBe(0);
+  });
+});
+
+/**
+ * The fault this answers, in the artist's words: "the result is distorted".
+ *
+ * Each side's two handles could be dragged anywhere. Pulled square to the side
+ * they bend it, which is what they are for. Pushed *along* it they bend nothing
+ * — they change how fast the side is travelled, so the correction reads faster
+ * through one stretch of the painting and slower through the next, and one part
+ * comes out bigger than it is with its neighbour smaller. Nothing showed it:
+ * the outline still ran through the corners and still looked like the edge of
+ * the canvas.
+ */
+describe('PhotoPrepComponent — a handle cannot stretch the painting along a side', () => {
+  it('ignores the part of a drag that runs along the side', () => {
+    const { fixture, component } = setup();
+    stageOf(fixture);
+    const [first] = bowControls(QUAD, straightBows(), 'top');
+
+    // The top side runs from (100, 80) to (900, 90), so this is a long drag
+    // straight down it and not at all across it.
+    component.grabBow('top', 0, pointerAt(first.x, first.y));
+    component.drag(pointerAt(first.x + 240, first.y + 240 * (10 / 800)));
+
+    expect(component.bows()?.top[0]).toBeCloseTo(0, 6);
+  });
+
+  it('still bends the side by exactly the part that is across it', () => {
+    const { fixture, component } = setup();
+    stageOf(fixture);
+    const [first] = bowControls(QUAD, straightBows(), 'top');
+
+    // The same drag with a push square to the side added to it. Only the push
+    // survives, and all of it does — the handles still move the cut line.
+    const across = edgeNormal(QUAD, 'top');
+    component.grabBow('top', 0, pointerAt(first.x, first.y));
+    component.drag(
+      pointerAt(first.x + 240 + across.x * 25, first.y + 240 * (10 / 800) + across.y * 25)
+    );
+
+    expect(component.bows()?.top[0]).toBeCloseTo(25, 6);
+  });
+
+  it('keeps a bend through a corner being moved, without touching it', () => {
+    // A bow is a distance from its own chord, so the corner that moves takes
+    // the chord and the control points with it. They used to be absolute
+    // points shifted by hand here, and a corner nudged after a side was bent
+    // left the control points a little off the new chord — which is the same
+    // stretch along the side, arriving by a different door.
+    const { fixture, component } = setup();
+    stageOf(fixture);
+    component.bows.set({ ...straightBows(), top: [18, 18] });
+
+    component.grab(0, pointerAt(QUAD[0].x, QUAD[0].y));
+    component.drag(pointerAt(QUAD[0].x + 60, QUAD[0].y + 40));
+
+    expect(component.corners()?.[0]).toEqual({ x: QUAD[0].x + 60, y: QUAD[0].y + 40 });
+    expect(component.bows()?.top).toEqual([18, 18]);
   });
 });

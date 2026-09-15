@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.58.0
+
+- **fix** — a side's handles can no longer stretch the painting along that side.
+  They were free to move in two dimensions, and the movement *along* the side
+  bent nothing: it changed how fast the side was travelled, so one stretch of
+  the painting came out bigger than it is and its neighbour smaller, with the
+  outline still running neatly through the corners and still looking like the
+  edge of the canvas. A bow is now two distances from the chord rather than two
+  points, so the slide cannot be expressed at all. The handles still move the
+  cut line across, which is what they were added for.
+- **chore** — the correction is quicker with it: the warp was evaluating eight
+  cubic Béziers per pixel of the result and subtracting them in pairs, where a
+  distance along four directions settled before the loop says the same thing.
+
 ## 1.57.1
 
 - **fix** — the requirements check passes again, and with it the deploy. R98's

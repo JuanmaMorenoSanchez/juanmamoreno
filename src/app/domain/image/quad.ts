@@ -18,15 +18,29 @@ export type Quad = [Point, Point, Point, Point];
  * that, so each side also carries the two control points of a cubic Bézier
  * running between its corners.
  *
+ * Two numbers per side, not two points: how far each control point stands off
+ * the chord, square to it. A control point free to move in two dimensions can
+ * also slide *along* the chord, and sliding along it does not bend the side at
+ * all — it changes how fast the side is travelled, which stretches one part of
+ * the painting and squeezes another. That is a distortion nobody photographing
+ * a painting ever wants, and it was invisible in the outline: the line still
+ * ran through the corners and still looked like the edge of the canvas, while
+ * the picture inside it came out wrong. Held as distances, it cannot be
+ * expressed.
+ *
  * Sides run the way the corners do — top left→right, right top→bottom, bottom
  * left→right, left top→bottom — so the two horizontal sides are parameterised
- * in the same direction as each other, and so are the two vertical ones.
+ * in the same direction as each other, and so are the two vertical ones. Each
+ * side's distances are measured against its own direction, a quarter turn from
+ * it, and therefore mean "outwards" on the top and the right and "inwards" on
+ * the other two. Nothing reads them that way: a handle sets one by where it is
+ * put, and the warp adds it back in the same direction it was measured.
  */
 export interface EdgeBows {
-  top: [Point, Point];
-  right: [Point, Point];
-  bottom: [Point, Point];
-  left: [Point, Point];
+  top: [number, number];
+  right: [number, number];
+  bottom: [number, number];
+  left: [number, number];
 }
 
 export const EDGE_CORNERS = {
@@ -43,13 +57,62 @@ const along = (a: Point, b: Point, t: number): Point => ({
   y: a.y + (b.y - a.y) * t,
 });
 
-/** Control points sitting on the straight line, which is a side with no bow. */
-export function straightBows(quad: Quad): EdgeBows {
-  const make = (edge: EdgeName): [Point, Point] => {
-    const [from, to] = EDGE_CORNERS[edge];
-    return [along(quad[from], quad[to], 1 / 3), along(quad[from], quad[to], 2 / 3)];
+/** No departure at all, which is four straight sides. */
+export function straightBows(): EdgeBows {
+  return { top: [0, 0], right: [0, 0], bottom: [0, 0], left: [0, 0] };
+}
+
+/**
+ * The one direction a side's control points may move in: square to its chord.
+ *
+ * Everything about a bow is measured along this and nothing is measured across
+ * it, which is what makes the stretch along a side impossible rather than
+ * merely discouraged.
+ */
+export function edgeNormal(quad: Quad, edge: EdgeName): Point {
+  const [from, to] = EDGE_CORNERS[edge];
+  const dx = quad[to].x - quad[from].x;
+  const dy = quad[to].y - quad[from].y;
+  const length = Math.hypot(dx, dy) || 1;
+  return { x: dy / length, y: -dx / length };
+}
+
+/** Where a side's two control points actually sit, for drawing and for grabbing. */
+export function bowControls(quad: Quad, bows: EdgeBows, edge: EdgeName): [Point, Point] {
+  const [from, to] = EDGE_CORNERS[edge];
+  const normal = edgeNormal(quad, edge);
+  const at = (t: number, off: number): Point => {
+    const on = along(quad[from], quad[to], t);
+    return { x: on.x + normal.x * off, y: on.y + normal.y * off };
   };
-  return { top: make('top'), right: make('right'), bottom: make('bottom'), left: make('left') };
+  return [at(1 / 3, bows[edge][0]), at(2 / 3, bows[edge][1])];
+}
+
+/**
+ * What a point dragged to `at` sets the control point to.
+ *
+ * Only the part square to the chord survives. Everything along it is dropped
+ * here, once, which is why no other code has to remember not to do it.
+ */
+export function bowOffset(quad: Quad, edge: EdgeName, at: Point): number {
+  const [from] = EDGE_CORNERS[edge];
+  const normal = edgeNormal(quad, edge);
+  return (at.x - quad[from].x) * normal.x + (at.y - quad[from].y) * normal.y;
+}
+
+/**
+ * How far the bowed side stands off its chord at t, as a distance along the
+ * side's normal.
+ *
+ * The cubic's two middle terms, which is all that is left once the control
+ * points can only leave the chord sideways: the other two terms are the chord
+ * itself and cancel exactly. It used to be worked out by evaluating two whole
+ * Béziers per side per pixel and subtracting them.
+ */
+export function bowAmount(bows: EdgeBows, edge: EdgeName, t: number): number {
+  const [first, second] = bows[edge];
+  const s = 1 - t;
+  return 3 * s * s * t * first + 3 * s * t * t * second;
 }
 
 /** A point on the cubic Bézier of one side. */
@@ -69,12 +132,9 @@ export function bezierAt(p0: Point, c0: Point, c1: Point, p1: Point, t: number):
  * Whether every side is straight to within a pixel, in which case the bows have
  * nothing to say and the plain perspective correction is the whole answer.
  */
-export function bowsAreStraight(quad: Quad, bows: EdgeBows, tolerance = 0.5): boolean {
-  const flat = straightBows(quad);
+export function bowsAreStraight(bows: EdgeBows, tolerance = 0.5): boolean {
   return (Object.keys(EDGE_CORNERS) as EdgeName[]).every((edge) =>
-    bows[edge].every(
-      (point, i) => distance(point, flat[edge][i]) <= tolerance
-    )
+    bows[edge].every((off) => Math.abs(off) <= tolerance)
   );
 }
 
@@ -177,7 +237,7 @@ export function correctedSize(
    * photographed, and forcing the picture into them stretches it. Then the four
    * corners are still squared up, but the result keeps the shape they describe.
    */
-  adapt = true,
+  adapt = true
 ): Size {
   const [tl, tr, br, bl] = quad;
   const widest = Math.max(distance(tl, tr), distance(bl, br));
@@ -216,14 +276,25 @@ export function turnClockwise(
 ): { quad: Quad; bows: EdgeBows } {
   const turn = (point: Point): Point => ({ x: height - point.y, y: point.x });
   const [tl, tr, br, bl] = quad;
+  // A side that comes round pointing the other way has its two distances
+  // swapped end for end, and negated with the normal they were measured
+  // against. The other two are carried over untouched: the turn rotates their
+  // normals exactly as it rotates them.
+  // Nought stays nought rather than becoming minus nought, which is the same
+  // number and not the same value to anything comparing two sets of bows.
+  const flip = (off: number) => (off === 0 ? 0 : -off);
+  const reversed = ([first, second]: [number, number]): [number, number] => [
+    flip(second),
+    flip(first),
+  ];
 
   return {
     quad: [turn(bl), turn(tl), turn(tr), turn(br)],
     bows: {
-      top: [turn(bows.left[1]), turn(bows.left[0])],
-      right: [turn(bows.top[0]), turn(bows.top[1])],
-      bottom: [turn(bows.right[1]), turn(bows.right[0])],
-      left: [turn(bows.bottom[0]), turn(bows.bottom[1])],
+      top: reversed(bows.left),
+      right: [...bows.top],
+      bottom: reversed(bows.right),
+      left: [...bows.bottom],
     },
   };
 }

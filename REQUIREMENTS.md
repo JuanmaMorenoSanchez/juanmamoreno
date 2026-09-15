@@ -393,6 +393,16 @@ the long sides, and a stretcher that has taken a bow bows them for real. Each
 side carries the two control points of a cubic Bézier, dragged like the corners
 and drawn as the curve they make.
 
+A control point moves square to its side and in no other direction. Free in two
+dimensions it could also slide *along* the side, which bends nothing: it changes
+how fast the side is travelled, so the correction reads faster through one
+stretch of the painting and slower through the next, and one part comes out
+bigger than it is with its neighbour smaller. Nothing showed it — the outline
+still ran through the corners and still looked like the edge of the canvas — and
+the certificate was of a distorted painting. A bow is held as two distances from
+the chord, so the slide cannot be expressed rather than merely being discouraged,
+and the control points follow a corner that moves without being carried.
+
 The bow rides on top of the homography rather than replacing it. A patch fitted
 to the four sides interpolates evenly between them and loses the foreshortening
 that makes the far edge of a leaning canvas shorter than the near one, so the
@@ -400,9 +410,14 @@ perspective stays where it was and each side's departure from its own straight
 chord is added to it. Every departure is zero at a corner, which is what keeps
 the corners exactly where the correction put them.
 *Proven by:* `edge-bows.spec.ts` — straight sides produce byte-identical output
-to having no bows at all, the corners do not move, and a card photographed
-through a bend comes back more than twice as close to the original as ignoring
-the bend does
+to having no bows at all, the corners do not move, a card photographed through a
+bend comes back more than twice as close to the original as ignoring the bend
+does, and the curve drawn on screen departs from its chord by exactly what the
+warp underneath it applies. `quad.spec.ts` "a bow can only leave the chord
+sideways" (5 tests) and `photo-prep.component.spec.ts` "a handle cannot stretch
+the painting along a side" (3 tests — a long drag along a side changes nothing,
+the part square to it survives whole, and a bend outlives the corner beside it
+being moved)
 
 ### R26 — Handles are wide enough to aim with · met
 The corner rings are drawn at 46 px, and hold that size on screen however far

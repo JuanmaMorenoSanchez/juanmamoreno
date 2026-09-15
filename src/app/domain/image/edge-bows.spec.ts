@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { warpPerspective } from './perspective';
 import {
   bezierAt,
+  bowAmount,
+  bowControls,
   bowsAreStraight,
+  edgeNormal,
   fullFrame,
   straightBows,
   type EdgeBows,
-  type Point,
   type Quad,
 } from './quad';
 import { createRaster, type Raster } from './raster';
@@ -31,14 +33,17 @@ function testCard(width: number, height: number): Raster {
   return raster;
 }
 
-/** Pushes one side out sideways by `amount`, leaving its corners alone. */
+/**
+ * Pushes one side off its chord by `amount`, leaving its corners alone.
+ *
+ * A distance square to the side, which since the rewrite is the only thing a
+ * bow can be: there is no longer any way to express a control point that has
+ * slid along the side instead, which was never a bend and only ever stretched
+ * the picture.
+ */
 function bowOut(quad: Quad, edge: keyof EdgeBows, amount: number): EdgeBows {
-  const bows = straightBows(quad);
-  const vertical = edge === 'left' || edge === 'right';
-  bows[edge] = bows[edge].map((point) => ({
-    x: vertical ? point.x + amount : point.x,
-    y: vertical ? point.y : point.y + amount,
-  })) as [Point, Point];
+  const bows = straightBows();
+  bows[edge] = [amount, amount];
   return bows;
 }
 
@@ -61,7 +66,7 @@ describe('bowed sides', () => {
   // room rather than made smaller.
   it('changes nothing at all when the sides are straight', () => {
     const withoutBows = warpPerspective(source, quad, size);
-    const withStraightBows = warpPerspective(source, quad, size, straightBows(quad));
+    const withStraightBows = warpPerspective(source, quad, size, straightBows());
 
     expect(withStraightBows.data).toEqual(withoutBows.data);
   }, 20000);
@@ -115,27 +120,29 @@ describe('bowed sides', () => {
     const BOW = -22;
     const photoBows = bowOut(photoQuad, 'left', BOW);
 
+    // Where the four sides' control points actually sit, which is what a curve
+    // is drawn through. Held as distances now, so they are worked out rather
+    // than stored.
+    const topControls = bowControls(photoQuad, photoBows, 'top');
+    const bottomControls = bowControls(photoQuad, photoBows, 'bottom');
+    const leftControls = bowControls(photoQuad, photoBows, 'left');
+    const rightControls = bowControls(photoQuad, photoBows, 'right');
+
     const photo = createRaster(PHOTO.width, PHOTO.height);
     for (let v = 0; v < CARD.height * 3; v++) {
       const ty = v / (CARD.height * 3 - 1);
       for (let u = 0; u < CARD.width * 3; u++) {
         const tx = u / (CARD.width * 3 - 1);
-        const top = bezierAt(photoQuad[0], photoBows.top[0], photoBows.top[1], photoQuad[1], tx);
+        const top = bezierAt(photoQuad[0], topControls[0], topControls[1], photoQuad[1], tx);
         const bottom = bezierAt(
           photoQuad[3],
-          photoBows.bottom[0],
-          photoBows.bottom[1],
+          bottomControls[0],
+          bottomControls[1],
           photoQuad[2],
           tx
         );
-        const left = bezierAt(photoQuad[0], photoBows.left[0], photoBows.left[1], photoQuad[3], ty);
-        const right = bezierAt(
-          photoQuad[1],
-          photoBows.right[0],
-          photoBows.right[1],
-          photoQuad[2],
-          ty
-        );
+        const left = bezierAt(photoQuad[0], leftControls[0], leftControls[1], photoQuad[3], ty);
+        const right = bezierAt(photoQuad[1], rightControls[0], rightControls[1], photoQuad[2], ty);
         // Coons: the standard surface through four boundary curves.
         const x =
           (1 - ty) * top.x +
@@ -206,17 +213,51 @@ describe('bowsAreStraight', () => {
   const quad = fullFrame({ width: 100, height: 80 });
 
   it('is true for controls sitting on the chords', () => {
-    expect(bowsAreStraight(quad, straightBows(quad))).toBe(true);
+    expect(bowsAreStraight(straightBows())).toBe(true);
   });
 
   it('is false once a side is pushed out', () => {
-    expect(bowsAreStraight(quad, bowOut(quad, 'top', 9))).toBe(false);
+    expect(bowsAreStraight(bowOut(quad, 'top', 9))).toBe(false);
   });
 
-  // Dragging a corner leaves the controls where they were, a fraction off the
-  // new chord; that is not a bow anyone asked for and must not switch the
-  // slower path on.
+  // A fraction off the line is not a bow anyone asked for and must not switch
+  // the slower path on.
   it('tolerates a control point a fraction off the line', () => {
-    expect(bowsAreStraight(quad, bowOut(quad, 'top', 0.3))).toBe(true);
+    expect(bowsAreStraight(bowOut(quad, 'top', 0.3))).toBe(true);
+  });
+});
+
+/**
+ * The outline on screen and the warp underneath it must be the same curve.
+ *
+ * The artist judges the correction by whether the drawn line follows the edge
+ * of the painting. The line is a cubic Bézier through the control points; the
+ * warp adds a distance along the side's normal. They are two descriptions of
+ * one thing and there is nothing to make them agree except that they do.
+ */
+describe('what is drawn and what is warped', () => {
+  const quad: Quad = [
+    { x: 100, y: 80 },
+    { x: 900, y: 90 },
+    { x: 890, y: 700 },
+    { x: 110, y: 690 },
+  ];
+
+  it('departs from the chord by exactly what the drawn curve does', () => {
+    const bows: EdgeBows = { ...straightBows(), top: [26, -14] };
+    const [c0, c1] = bowControls(quad, bows, 'top');
+    const normal = edgeNormal(quad, 'top');
+
+    for (const t of [0.1, 0.25, 0.5, 0.75, 0.9]) {
+      const drawn = bezierAt(quad[0], c0, c1, quad[1], t);
+      const onChord = {
+        x: quad[0].x + (quad[1].x - quad[0].x) * t,
+        y: quad[0].y + (quad[1].y - quad[0].y) * t,
+      };
+      const warped = bowAmount(bows, 'top', t);
+
+      expect(drawn.x - onChord.x).toBeCloseTo(normal.x * warped, 6);
+      expect(drawn.y - onChord.y).toBeCloseTo(normal.y * warped, 6);
+    }
   });
 });

@@ -1,6 +1,9 @@
 import {
+  bowAmount,
+  bowControls,
+  bowOffset,
+  edgeNormal,
   correctedSize,
-  EDGE_CORNERS,
   fullFrame,
   isConvex,
   orderCorners,
@@ -8,7 +11,6 @@ import {
   straightBows,
   turnClockwise,
   type EdgeBows,
-  type EdgeName,
   type Quad,
 } from './quad';
 
@@ -165,32 +167,16 @@ describe('correctedSize', () => {
  * left of the frame is at the top left afterwards, and is the corner the
  * straightening will square to the top left of the certificate.
  */
-/**
- * Bows compared to the nearest thousandth of a pixel.
- *
- * A turn is a subtraction and a straight chord is two divisions, so the same
- * point reached both ways differs in the last bit — 3.333333333333333 against
- * 3.3333333333333335. That is not a difference in where a control point sits.
- */
-function expectBowsClose(actual: EdgeBows, expected: EdgeBows): void {
-  for (const edge of Object.keys(EDGE_CORNERS) as EdgeName[]) {
-    for (const index of [0, 1] as const) {
-      expect(actual[edge][index].x).toBeCloseTo(expected[edge][index].x, 3);
-      expect(actual[edge][index].y).toBeCloseTo(expected[edge][index].y, 3);
-    }
-  }
-}
-
 describe('turnClockwise', () => {
   it('turns the whole frame into the whole frame, standing the other way', () => {
     const before = fullFrame({ width: 40, height: 10 });
 
-    const after = turnClockwise(before, straightBows(before), { width: 40, height: 10 });
+    const after = turnClockwise(before, straightBows(), { width: 40, height: 10 });
 
     // Still the frame, still clockwise from the top left — which it can only be
     // if the four corners were renamed as well as moved.
     expect(after.quad).toEqual(fullFrame({ width: 10, height: 40 }));
-    expectBowsClose(after.bows, straightBows(after.quad));
+    expect(after.bows).toEqual(straightBows());
   });
 
   it('keeps each corner on the same part of the painting', () => {
@@ -202,7 +188,7 @@ describe('turnClockwise', () => {
     ];
     const size = { width: 1000, height: 800 };
 
-    const after = turnClockwise(quad, straightBows(quad), size);
+    const after = turnClockwise(quad, straightBows(), size);
 
     // The old bottom left is the new top left, at the place a clockwise turn
     // puts it: x becomes the height less y, and y becomes x.
@@ -212,20 +198,17 @@ describe('turnClockwise', () => {
 
   it('carries a bent side round with the side it bends', () => {
     const quad = fullFrame({ width: 40, height: 10 });
-    const bows = straightBows(quad);
+    const bows = straightBows();
     // The left side pulled out of true. After the turn it is the top side, and
-    // it must still be the only one that is bent.
-    bows.left = [
-      { x: -6, y: bows.left[0].y },
-      { x: -6, y: bows.left[1].y },
-    ];
+    // it must still be the only one that is bent, by as much as it was.
+    bows.left = [-6, -6];
 
     const after = turnClockwise(quad, bows, { width: 40, height: 10 });
-    const straight = straightBows(after.quad);
 
-    // The bend is on the top now, and nowhere else.
-    expect(after.bows.top[0].y).toBeLessThan(straight.top[0].y - 1);
-    expectBowsClose({ ...after.bows, top: straight.top }, straight);
+    expect(after.bows.top.map(Math.abs)).toEqual([6, 6]);
+    expect(after.bows.right).toEqual([0, 0]);
+    expect(after.bows.bottom).toEqual([0, 0]);
+    expect(after.bows.left).toEqual([0, 0]);
   });
 
   it('comes back to where it started after four turns', () => {
@@ -235,7 +218,7 @@ describe('turnClockwise', () => {
       { x: 890, y: 700 },
       { x: 110, y: 690 },
     ];
-    const bows = straightBows(quad);
+    const bows: EdgeBows = { top: [3, -5], right: [0, 7], bottom: [-2, 2], left: [9, 1] };
 
     let turned = { quad, bows };
     let size = { width: 1000, height: 800 };
@@ -245,6 +228,73 @@ describe('turnClockwise', () => {
     }
 
     expect(turned.quad).toEqual(quad);
-    expectBowsClose(turned.bows, bows);
+    expect(turned.bows).toEqual(bows);
+  });
+});
+
+/**
+ * A bow is a distance and nothing else.
+ *
+ * Every corner used to carry two control points that could be dragged anywhere.
+ * Moving one square to its side bends the side, which is what they are for.
+ * Moving one *along* the side bends nothing: it changes how fast the side is
+ * travelled, so the warp reads faster through one stretch of the painting and
+ * slower through the next — one part comes out bigger and its neighbour
+ * smaller, with the outline still running neatly through the corners and still
+ * looking like the edge of the canvas.
+ */
+describe('a bow can only leave the chord sideways', () => {
+  const quad: Quad = [
+    { x: 100, y: 80 },
+    { x: 900, y: 90 },
+    { x: 890, y: 700 },
+    { x: 110, y: 690 },
+  ];
+
+  it('keeps only the part of a drag that is square to the side', () => {
+    const [first] = bowControls(quad, straightBows(), 'top');
+
+    // Dragged a long way along the side and not at all across it.
+    const alongTheSide = { x: first.x + 200, y: first.y + 200 * (10 / 800) };
+
+    expect(bowOffset(quad, 'top', alongTheSide)).toBeCloseTo(0, 6);
+  });
+
+  it('reads a drag across the side as the distance it is across it', () => {
+    const [first] = bowControls(quad, straightBows(), 'left');
+    // Square to the side as the side actually lies, which on a photographed
+    // canvas is never quite vertical.
+    const across = edgeNormal(quad, 'left');
+    const pulled = { x: first.x + across.x * 30, y: first.y + across.y * 30 };
+
+    expect(bowOffset(quad, 'left', pulled)).toBeCloseTo(30, 6);
+  });
+
+  it('puts a control point back where it was read from', () => {
+    const bows: EdgeBows = { ...straightBows(), right: [12, -7] };
+    const controls = bowControls(quad, bows, 'right');
+
+    expect(bowOffset(quad, 'right', controls[0])).toBeCloseTo(12, 6);
+    expect(bowOffset(quad, 'right', controls[1])).toBeCloseTo(-7, 6);
+  });
+
+  it('departs from the chord nowhere at the corners, and most in the middle', () => {
+    const bows: EdgeBows = { ...straightBows(), top: [10, 10] };
+
+    expect(bowAmount(bows, 'top', 0)).toBe(0);
+    expect(bowAmount(bows, 'top', 1)).toBe(0);
+    expect(bowAmount(bows, 'top', 0.5)).toBeGreaterThan(0);
+    // Both control points pulled out by ten lifts the middle of the side by
+    // three quarters of that, which is the cubic and not a choice.
+    expect(bowAmount(bows, 'top', 0.5)).toBeCloseTo(7.5, 6);
+  });
+
+  it('moves the control points with the corner they hang from, on its own', () => {
+    // They used to be absolute points that had to be dragged along by hand
+    // whenever a corner moved, and a corner moved changes the chord under them.
+    const bows: EdgeBows = { ...straightBows(), top: [14, 14] };
+    const moved: Quad = [{ x: 300, y: 200 }, quad[1], quad[2], quad[3]];
+
+    expect(bowOffset(moved, 'top', bowControls(moved, bows, 'top')[0])).toBeCloseTo(14, 6);
   });
 });
