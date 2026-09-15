@@ -343,3 +343,85 @@ describe('focus', () => {
   });
 });
 
+/**
+ * A gloss surface returns the lamp as well as the paint. Looking for that costs
+ * a pass over the picture, so it is asked for rather than always done — and
+ * when it is asked for, it has to happen before the sliders: the glare is a
+ * fault in the photograph, and brightening the picture first would only make
+ * the glints brighter.
+ */
+describe('taking the shine off', () => {
+  const quad: Quad = [
+    { x: 0, y: 0 },
+    { x: 239, y: 0 },
+    { x: 239, y: 179 },
+    { x: 0, y: 179 },
+  ];
+
+  /** A flat painting with one varnish glint on it. */
+  function withAGlint(): Raster {
+    const raster = createRaster(240, 180);
+    for (let i = 0; i < 240 * 180; i += 1) {
+      raster.data[i * 4] = 96;
+      raster.data[i * 4 + 1] = 130;
+      raster.data[i * 4 + 2] = 70;
+      raster.data[i * 4 + 3] = 255;
+    }
+    for (let y = 88; y <= 92; y += 1) {
+      for (let x = 118; x <= 122; x += 1) {
+        const i = (y * 240 + x) * 4;
+        raster.data[i] = 230;
+        raster.data[i + 1] = 245;
+        raster.data[i + 2] = 215;
+      }
+    }
+    return raster;
+  }
+
+  const options = { quad, realWidth: 240, realHeight: 180, edits: [] };
+
+  it('leaves the glint alone unless it is asked', async () => {
+    const { report } = await preparePhoto(withAGlint(), options);
+
+    expect(report.shone).toBe(false);
+  });
+
+  it('takes it off when it is asked, and says it found some', async () => {
+    const { image, report } = await preparePhoto(withAGlint(), {
+      ...options,
+      takeShineOff: true,
+    });
+
+    expect(report.shone).toBe(true);
+    const middle = (90 * image.width + 120) * 4;
+    expect(image.data[middle + 1]).toBeLessThan(160);
+  });
+
+  it('says it found none on a painting that has none', async () => {
+    const flat = createRaster(240, 180);
+    for (let i = 0; i < 240 * 180; i += 1) {
+      flat.data[i * 4] = 96;
+      flat.data[i * 4 + 1] = 130;
+      flat.data[i * 4 + 2] = 70;
+      flat.data[i * 4 + 3] = 255;
+    }
+
+    const { report } = await preparePhoto(flat, { ...options, takeShineOff: true });
+
+    expect(report.shone).toBe(false);
+  });
+
+  it('says what it is doing while it does it', async () => {
+    const stages: PhotoStage[] = [];
+    await preparePhoto(withAGlint(), {
+      ...options,
+      takeShineOff: true,
+      onStage: (stage) => {
+        stages.push(stage);
+      },
+    });
+
+    // Before the adjusting, which is the order that matters.
+    expect(stages).toEqual(['straightening', 'shine', 'adjusting', 'focus']);
+  });
+});

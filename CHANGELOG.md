@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.61.0
+
+- **feat** — the studio can take the shine off a photograph. Varnish and oil
+  return the lamp as well as the paint, as hundreds of tiny white glints —
+  2,235 on one 2006 canvas — and a tick beside the sliders finds and mends them.
+  A glint is told from brushwork by being small in every direction: the baseline
+  is the best of four openings, so a stroke survives the one that runs along it
+  and registers as nothing. Off by default, shown in the preview, and what goes
+  back is the paint around the glint rather than a guess at it.
+- **fix** — the end-to-end check for the view counter waits for the counter
+  rather than for the heading above it, which is the same fault the share
+  control's check had: the heading is prerendered and the counter arrives with
+  the painting.
+
 ## 1.60.0
 
 - **feat** — the studio questions measurements that do not match the corners.

@@ -16,6 +16,7 @@ import {
   type PreparePhotoReport,
   type PhotoEdit,
 } from '@domain/image/prepare-photo';
+import { findShine, takeOffShine } from '@domain/image/shine';
 import {
   applyAdjustments,
   isUnchanged,
@@ -112,6 +113,7 @@ const DETECTION_LONG_SIDE = 720;
 
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
+  shine: 'Taking the shine off',
   adjusting: 'Applying the adjustments',
   focus: 'Checking the focus',
 };
@@ -277,6 +279,7 @@ export class PhotoPrepComponent {
       const canvas = this.previewCanvas()?.nativeElement;
       const photo = this.photo();
       const edits = this.previewEdits();
+      this.takeShineOff();
       const selection = this.previewSelection();
       const showing = this.selecting() || this.hasArea();
       if (!canvas || !photo) return;
@@ -445,6 +448,29 @@ export class PhotoPrepComponent {
    * hard to notice afterwards.
    */
   protected readonly adaptToSize = signal(true);
+
+  /**
+   * Whether to take the varnish off.
+   *
+   * Off, and asked for rather than decided: most photographs have no glare in
+   * them, and the ones that do have it because of how the painting was lit on
+   * the day. A tick rather than a slider because there is no half of this worth
+   * having — a glint taken off by half is a dimmer glint, not a mended one.
+   */
+  protected readonly takeShineOff = signal(false);
+
+  protected toggleShine(): void {
+    this.takeShineOff.update((on) => !on);
+  }
+
+  /**
+   * Where the varnish caught the light on the preview, worked out once.
+   *
+   * Finding it is a pass over the whole picture and it does not change as the
+   * sliders move, so it is done the first time it is wanted and kept until
+   * another photograph arrives.
+   */
+  private shineOnPreview: Float32Array | null = null;
 
   /**
    * The measurements as typed, and what they are worth.
@@ -1094,6 +1120,15 @@ export class PhotoPrepComponent {
     );
     const raster: Raster = { width: frame.width, height: frame.height, data: frame.data };
 
+    // Shown here as well as written into the file, because a control whose
+    // effect can only be seen by pressing the button and waiting is one nobody
+    // can judge. Looked for on the preview, which is a different size from the
+    // finished picture — so the file looks for its own.
+    if (this.takeShineOff()) {
+      this.shineOnPreview ??= findShine(raster);
+      takeOffShine(raster, this.shineOnPreview);
+    }
+
     // Every change so far, in order, each onto the result of the last — so the
     // preview shows what the finished file will show rather than only the
     // change being made at this moment.
@@ -1317,6 +1352,7 @@ export class PhotoPrepComponent {
         realWidth,
         realHeight,
         adaptToSize: this.adaptToSize(),
+        takeShineOff: this.takeShineOff(),
         edits: this.allEdits(),
         onStage: async (stage) => {
           this.busy.set(stage);
@@ -1377,6 +1413,8 @@ export class PhotoPrepComponent {
     this.busy.set(null);
     this.source.set(null);
     this.adaptToSize.set(true);
+    this.takeShineOff.set(false);
+    this.shineOnPreview = null;
     this.zoom.set(1);
     this.stopPanning();
     this.handedOver.set(false);

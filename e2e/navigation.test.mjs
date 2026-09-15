@@ -45,7 +45,11 @@ describe('an artwork page', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artwork/5');
-    await page.waitForSelector('h1', READY);
+    // The counter itself, not the heading. The heading is in the prerendered
+    // html and the counter arrives with the painting, so waiting on the first
+    // and asserting on the second passed on a quiet machine and failed on a
+    // busy one — the same fault the share control's check had.
+    await page.waitForSelector('.counter', READY);
 
     // Token 5 is photographed more than once, so the pager counts above one.
     const text = await visibleText(page);

@@ -464,6 +464,34 @@ it takes every control on the page with it.
 bounds, the transform on the stage, the ring drawn at half its width when the
 picture is doubled, and no transform at all when the whole photograph is shown)
 
+### R102 — The varnish can be taken off, and the brushwork left on · met
+A tick in the studio takes the glints a gloss surface returns off the
+photograph: 2,235 of them on one 2006 canvas, covering a third of a per cent of
+the picture and making the whole of it read as though it were behind glass. Off
+by default, and a tick rather than a slider — a glint taken off by half is a
+dimmer glint, not a mended one.
+
+What is measured is the least of the three channels, because what is reflected
+is the lamp rather than the paint and white light lifts all three at once. What
+it is compared against is the best of four openings, along the horizontal, the
+vertical and both diagonals: a stroke, however fine, is long in one direction,
+survives the opening that runs along it and registers as nothing, where a glint
+is small in every direction and survives none. Against a single square opening
+instead, this found a quarter of the picture and took the fine strokes out of a
+splash of wine with it.
+
+What goes back is the average of the neighbours that are not themselves glare,
+over a mask grown and softened first — mend only the core and the bright rim
+stays where it was, which reads worse than the glint did. The size a glint is
+looked for at is taken from the photograph, since a speck is the same size on
+the canvas and a different number of pixels in every photograph of it.
+*Proven by:* `shine.spec.ts` (14 tests — nothing found on a clean painting, a
+glint found and mended to the paint around it in the paint's own colour, its rim
+covered, a fine stroke left alone in each of the four directions, a broad light
+passage left alone, and the rest of the picture untouched to the byte) and
+`prepare-photo.spec.ts` "taking the shine off" (4 tests, including that it
+happens before the sliders)
+
 ### R101 — Measurements that do not match the corners are questioned · met
 The studio compares the shape the four corners describe with the shape the typed
 height and width describe, and says so when the two disagree by more than six

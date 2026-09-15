@@ -331,6 +331,15 @@
               made
             </em>
           }
+          <!--
+            Varnish and oil return the lamp as well as the paint, as hundreds of
+            tiny white glints. A tick rather than a slider: a glint taken off by
+            half is a dimmer glint, not a mended one.
+          -->
+          <label class="prep-check">
+            <input type="checkbox" [checked]="takeShineOff()" (change)="toggleShine()" />
+            Take the shine off
+          </label>
           @if (anyAdjustment()) {
             <button type="button" class="prep-link" (click)="resetAdjustments()">
               Back to as shot

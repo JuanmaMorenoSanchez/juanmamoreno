@@ -2,10 +2,11 @@ import { correctedSize, type EdgeBows, type Quad } from './quad';
 import { warpPerspective } from './perspective';
 import { applyAdjustments, isUnchanged, type Adjustments } from './adjustments';
 import { checkFocus, type FocusReport } from './focus';
+import { anyShine, findShine, takeOffShine } from './shine';
 import type { Selection } from './selection';
 import type { Raster, Size } from './raster';
 
-export type PhotoStage = 'straightening' | 'adjusting' | 'focus';
+export type PhotoStage = 'straightening' | 'shine' | 'adjusting' | 'focus';
 
 /** One change, and the part of the picture it was made to. */
 export interface PhotoEdit {
@@ -44,6 +45,14 @@ export interface PreparePhotoOptions {
    */
   edits: PhotoEdit[];
   /**
+   * Whether to take the varnish off. Default false.
+   *
+   * A gloss surface returns the lamp as well as the paint, as hundreds of tiny
+   * white glints. Off unless asked for: most photographs have none, and looking
+   * for them costs a pass over the picture.
+   */
+  takeShineOff?: boolean;
+  /**
    * Awaited between stages. A forty megapixel photograph takes long enough that
    * without this the tab would sit frozen with nothing on screen to say why.
    */
@@ -54,6 +63,8 @@ export interface PreparePhotoReport {
   size: Size;
   /** Whether any slider was moved at all. */
   adjusted: boolean;
+  /** Whether there was any glare to take off, when it was looked for. */
+  shone: boolean;
   focus: FocusReport;
 }
 
@@ -91,6 +102,17 @@ export async function preparePhoto(
   const size = correctedSize(quad, realWidth, realHeight, adaptToSize);
   const image = warpPerspective(source, quad, size, bows);
 
+  // Before the sliders rather than after: the glare is a fault in the
+  // photograph, and the grading is a judgement about the painting underneath
+  // it. Brightening the picture first would only make the glints brighter.
+  let shone = false;
+  if (options.takeShineOff) {
+    await onStage?.('shine');
+    const shine = findShine(image);
+    shone = anyShine(shine);
+    if (shone) takeOffShine(image, shine);
+  }
+
   await onStage?.('adjusting');
   // The selection is in this rectangle's coordinates, not the photograph's.
   // A mask painted on the photograph would sit crooked on the straightened
@@ -103,5 +125,5 @@ export async function preparePhoto(
   await onStage?.('focus');
   const focus = checkFocus(image);
 
-  return { image, report: { size, adjusted, focus } };
+  return { image, report: { size, adjusted, shone, focus } };
 }
