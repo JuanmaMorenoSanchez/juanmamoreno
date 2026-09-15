@@ -79,11 +79,20 @@
           @if (willBeTrimmed(reel)) {
             <span> — the essay will be trimmed at a sentence</span>
           }
+          @if (!essayOf(reel).trim()) {
+            <!--
+              Not a warning. A painting with no critic yet is still worth
+              showing, and it goes out on its facts — but the caption being
+              half what it usually is should be visible before the button is
+              pressed rather than afterwards on Instagram.
+            -->
+            <span> — no critic, so the caption is the technical sheet alone</span>
+          }
         </p>
         @if (isRemaking(reel)) {
           <p class="publish-remaking" role="status">
-            Making the video again — several minutes. You can leave this page; it carries on
-            without you, and the new one appears here when it is done.
+            Making the video again — several minutes. You can leave this page; it carries on without
+            you, and the new one appears here when it is done.
           </p>
         }
         @if (saved() === reel.tokenId) {

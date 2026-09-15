@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.62.0
+
+- **feat** — a reel waiting to be published can go out with no critic. Clearing
+  the box now publishes the technical sheet alone rather than being refused by
+  the api, and the character count says so before the button is pressed. Saving
+  an empty critic over a stored one is still refused: publishing and updating
+  the critic remain two separate acts, and only the second changes the essay on
+  the artwork's page.
+
 ## 1.61.0
 
 - **feat** — the studio can take the shine off a photograph. Varnish and oil

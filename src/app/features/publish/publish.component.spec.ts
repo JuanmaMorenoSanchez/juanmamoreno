@@ -99,7 +99,7 @@ describe('PublishComponent', () => {
     expect(reels.publish).toHaveBeenCalledWith(
       '10',
       { sheet: REEL.sheet, essay: REEL.essay },
-      'a-real-looking-token',
+      'a-real-looking-token'
     );
   });
 
@@ -116,7 +116,7 @@ describe('PublishComponent', () => {
     expect(reels.publish).toHaveBeenCalledWith(
       '10',
       { sheet: REEL.sheet, essay: 'His own words about the painting' },
-      'a-real-looking-token',
+      'a-real-looking-token'
     );
   });
 
@@ -232,10 +232,10 @@ describe('PublishComponent', () => {
       const { fixture } = setup({ waiting: [older] });
 
       expect((find(fixture, '.publish-sheet') as HTMLTextAreaElement).value).toBe(
-        'Siesta\nJuanma Moreno Sánchez, 2019',
+        'Siesta\nJuanma Moreno Sánchez, 2019'
       );
       expect((find(fixture, '.publish-essay') as HTMLTextAreaElement).value).toBe(
-        'The blue arrives first.',
+        'The blue arrives first.'
       );
     });
 
@@ -247,7 +247,7 @@ describe('PublishComponent', () => {
       expect(reels.publish).toHaveBeenCalledWith(
         '10',
         { sheet: 'Siesta\nJuanma Moreno Sánchez, 2019', essay: 'The blue arrives first.' },
-        'a-real-looking-token',
+        'a-real-looking-token'
       );
     });
   });
@@ -270,7 +270,7 @@ describe('PublishComponent', () => {
         '10',
         'es',
         'A better sentence.',
-        'a-real-looking-token',
+        'a-real-looking-token'
       );
     });
 
@@ -430,5 +430,51 @@ describe('PublishComponent', () => {
     const { reels } = setup({ signedIn: false });
 
     expect(reels.pending).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Not every painting has a critic, and one that has none is still worth
+ * showing: the reel goes out on its facts, which is what the technical sheet
+ * is. Clearing the box used to be refused by the api with nothing on screen to
+ * explain it — the page sends both halves every time, and an empty one was a
+ * four hundred.
+ */
+describe('PublishComponent — a reel with no critic', () => {
+  function cleared() {
+    const made = setup();
+    const essay = find(made.fixture, '.publish-essay') as HTMLTextAreaElement;
+    essay.value = '';
+    essay.dispatchEvent(new Event('input'));
+    made.fixture.detectChanges();
+    return made;
+  }
+
+  it('publishes it, sending the empty half rather than holding it back', () => {
+    const { fixture, reels } = cleared();
+
+    find(fixture, '.publish-go')?.click();
+
+    const sent = reels.publish.mock.calls[0][1] as { sheet: string; essay: string };
+    expect(sent.essay).toBe('');
+    expect(sent.sheet.length).toBeGreaterThan(0);
+  });
+
+  it('says the caption will be the sheet alone, before the button is pressed', () => {
+    const { fixture } = cleared();
+
+    expect(text(fixture)).toContain('no critic');
+  });
+
+  it('still refuses to save an empty critic over the stored one', () => {
+    // The two acts stay separate: publishing without a critic is a decision
+    // about one video, and it must not empty the essay on the artwork's page.
+    const { fixture, reels } = cleared();
+
+    const save = find(fixture, '.publish-save') as HTMLButtonElement;
+    expect(save.disabled).toBe(true);
+    save.click();
+
+    expect(reels.updateCritic).not.toHaveBeenCalled();
   });
 });
