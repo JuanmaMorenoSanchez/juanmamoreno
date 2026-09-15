@@ -871,6 +871,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/artwork/199/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/8W0sMpaTs39rktDfK7v4Q7dcTHUniaZnzofH9q6K5IQ</image:loc>
+      <image:title>Houston I</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/artwork/2/</loc>
     <lastmod>2026-09-15</lastmod>
     <priority>0.7</priority>
@@ -888,6 +898,36 @@
     <image:image>
       <image:loc>https://arweave.net/q5FsXMT5i9O_SO2VjXo6wNEOosPi41pwQ-BzJ8QWRxo</image:loc>
       <image:title>33. El desengaño</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/artwork/200/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/E9NS5llo2DBr3v1JeaE2cv8ZR8dJAQsfjVRNpUq4GfY</image:loc>
+      <image:title>Houston II</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/artwork/201/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/cW6BXCMDth_qS4wqc6i6NGfPEzhSPhQpscZvlWe8MnI</image:loc>
+      <image:title>Electricidad estática I</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/artwork/202/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/i24yVgTqQXNdLMi1IR7QSrerpTXQxzMI5hJpCKWQsr0</image:loc>
+      <image:title>Electricidad estática II</image:title>
     </image:image>
   </url>
   <url>
@@ -2521,6 +2561,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/es/artwork/199/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/8W0sMpaTs39rktDfK7v4Q7dcTHUniaZnzofH9q6K5IQ</image:loc>
+      <image:title>Houston I</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/es/artwork/2/</loc>
     <lastmod>2026-09-15</lastmod>
     <priority>0.7</priority>
@@ -2538,6 +2588,36 @@
     <image:image>
       <image:loc>https://arweave.net/q5FsXMT5i9O_SO2VjXo6wNEOosPi41pwQ-BzJ8QWRxo</image:loc>
       <image:title>33. El desengaño</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/es/artwork/200/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/E9NS5llo2DBr3v1JeaE2cv8ZR8dJAQsfjVRNpUq4GfY</image:loc>
+      <image:title>Houston II</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/es/artwork/201/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/cW6BXCMDth_qS4wqc6i6NGfPEzhSPhQpscZvlWe8MnI</image:loc>
+      <image:title>Electricidad estática I</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://juanmamoreno.com/es/artwork/202/</loc>
+    <lastmod>2026-09-15</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/i24yVgTqQXNdLMi1IR7QSrerpTXQxzMI5hJpCKWQsr0</image:loc>
+      <image:title>Electricidad estática II</image:title>
     </image:image>
   </url>
   <url>
