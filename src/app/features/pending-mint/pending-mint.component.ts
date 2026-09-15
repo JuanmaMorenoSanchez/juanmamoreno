@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
+import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { WalletService } from '@shared/services/wallet.service';
@@ -15,7 +16,7 @@ import { WalletService } from '@shared/services/wallet.service';
  */
 @Component({
   selector: 'app-pending-mint',
-  imports: [MatIcon, MintGateComponent],
+  imports: [MatIcon, MintGateComponent, DownloadButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pending-mint.component.html',
   styleUrl: './pending-mint.component.scss',

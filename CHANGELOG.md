@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.57.0
+
+- **feat** — every certificate waiting to be written offers its photograph for
+  download, full size or medium, with the same button the artwork pages carry.
+  A prepared certificate was the one place the file existed in full and could
+  not be reached: it has no page yet, because it is not on the chain, and the
+  list showed a thumbnail the size of a postage stamp. The button moved from the
+  artwork feature into `@shared`, which is where a component two features use
+  belongs.
+
 ## 1.56.0
 
 - **feat** — the light and colour sliders stay where they were left, between

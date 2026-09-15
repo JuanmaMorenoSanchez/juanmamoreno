@@ -65,6 +65,19 @@
               {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
             </small>
           </span>
+          <!--
+            The photograph itself, which until now only existed on this page as
+            a thumbnail the size of a postage stamp. A prepared certificate is
+            the one place the full file is already stored and nowhere reachable:
+            the painting has no page yet, because it is not on the chain.
+
+            The same button the artwork pages carry, so "the original" means the
+            same file and the same sizes here as it does there.
+          -->
+          <app-download-button
+            [links]="[mint.originalUrl, mint.webUrl]"
+            [name]="mint.tokenId + ' ' + mint.name"
+          />
           @if (wallet.available()) {
             <button
               type="button"

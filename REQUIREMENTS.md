@@ -35,9 +35,12 @@ drag fires no click, which a synthetic click cannot detect.
 ## Images
 
 ### R4 — Full-resolution download · met
-The original file, untouched.
+The original file, untouched. On every artwork page, and on every certificate
+still waiting to be written — the same button in both places, so "the original"
+means the same file and the same sizes wherever it is asked for.
 *Proven by:* `download-button.component.ts` (`downloadFull`), and a measured
-download in review. Nothing automated would notice if this stopped working.
+download in review. Nothing automated would notice if the artwork pages stopped
+offering it; the waiting list is covered by R99.
 
 ### R5 — Medium-resolution download · met
 At least **2500 px** on the shorter side and at most **5 MB**. Never enlarges an
@@ -442,6 +445,20 @@ it takes every control on the page with it.
 *Proven by:* `photo-prep.component.spec.ts` "going in closer" (4 tests — the
 bounds, the transform on the stage, the ring drawn at half its width when the
 picture is doubled, and no transform at all when the whole photograph is shown)
+
+### R99 — The photograph can be taken back off a prepared certificate · met
+Every certificate on the waiting list carries the download button the artwork
+pages carry, offering the full stored file and the medium size.
+
+A prepared certificate is the one place the photograph exists in full and
+cannot be reached: it is in the originals bucket under the token id, the
+painting has no page because it is not on the chain, and the list showed a
+thumbnail the size of a postage stamp. The original is offered first and the web
+copy second, and the file is named for the token as well as the title, since two
+certificates can share a title — the studio warns about exactly that.
+*Proven by:* `pending-mint.component.spec.ts` (3 tests — the original offered
+first with the web copy behind it, the file named for the token, and nothing
+offered when nothing is waiting)
 
 ### R98 — The sliders stay where they were left · met
 Brightness, temperature, whites, darks and colour keep their positions between

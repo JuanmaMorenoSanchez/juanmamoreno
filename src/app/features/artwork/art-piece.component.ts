@@ -34,7 +34,7 @@ import { PostedArtworksService } from '@shared/services/posted-artworks.service'
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
-import { DownloadButtonComponent } from './components/download-button/download-button.component';
+import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
 import { QuoteButtonComponent } from './components/quote-button/quote-button.component';
