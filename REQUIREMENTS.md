@@ -474,8 +474,8 @@ was made; that is bookkeeping, and saving it would throw the settings away the
 moment a brush was picked up.
 *Proven by:* `photo-prep.component.spec.ts` "the sliders stay where they were
 left" (6 tests — written down, still there for the next photograph and for a
-fresh page, "back to as shot" remembered, the brush's zeroing not remembered,
-and nought when nothing was ever stored)
+fresh page, being told the photograph needed nothing remembered too, the
+brush's zeroing not remembered, and nought when nothing was ever stored)
 
 ### R96 — The view is moved with the hand, not with the scrollbars · met
 Holding the space bar and dragging moves the magnified picture under the

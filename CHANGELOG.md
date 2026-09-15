@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.57.1
+
+- **fix** — the requirements check passes again, and with it the deploy. R98's
+  proof quoted "back to as shot" as though it were the name of a test; the
+  check reads a quoted phrase in a *Proven by* line as a claim that those exact
+  words are in the file named, and they were not. 1.56.0 and 1.57.0 both failed
+  on it and neither reached the site.
+
 ## 1.57.0
 
 - **feat** — every certificate waiting to be written offers its photograph for
