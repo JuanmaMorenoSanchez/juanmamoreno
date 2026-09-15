@@ -1,13 +1,5 @@
 import { createRaster, type Raster, type Size } from './raster';
-import {
-  bowAmount,
-  bowsAreStraight,
-  distance,
-  edgeNormal,
-  type EdgeBows,
-  type Point,
-  type Quad,
-} from './quad';
+import { bowShift, bowsAreStraight, distance, type EdgeBows, type Quad } from './quad';
 import { solveLinearSystem } from './linear';
 
 /** Below this the warp is shrinking enough that point sampling would alias, so soften first. */
@@ -67,7 +59,7 @@ export function warpPerspective(source: Raster, quad: Quad, size: Size, bows?: E
   const out = createRaster(width, height);
   // Straight sides displace nothing, so the arithmetic is skipped rather than
   // run to produce zeroes: this is the common case and the loop is per pixel.
-  const bow = bows && !bowsAreStraight(bows) ? bowDisplacement(quad, bows) : null;
+  const bow = bows && !bowsAreStraight(bows) ? bowShift(quad, bows) : null;
 
   for (let v = 0; v < height; v++) {
     const cy = v + 0.5;
@@ -85,49 +77,6 @@ export function warpPerspective(source: Raster, quad: Quad, size: Size, bows?: E
     }
   }
   return out;
-}
-
-/**
- * How far to move the point the homography chose, for a position across the
- * corrected rectangle.
- *
- * Each side contributes what it departs from its own chord at the matching
- * parameter, weighted by how near that side is. The corner terms a Coons patch
- * would subtract are not needed here: a departure is zero at both ends of every
- * side, so the four contributions already vanish at the corners.
- *
- * A departure is a distance square to the side, and only that: a side's control
- * points cannot leave the chord in any other direction, so nothing here can
- * move a pixel *along* an edge. The four directions are settled once, before
- * the loop, rather than per pixel — this used to evaluate eight cubic Béziers
- * for every pixel of the result and subtract them in pairs.
- */
-function bowDisplacement(quad: Quad, bows: EdgeBows): (u: number, v: number) => Point {
-  const normals = {
-    top: edgeNormal(quad, 'top'),
-    right: edgeNormal(quad, 'right'),
-    bottom: edgeNormal(quad, 'bottom'),
-    left: edgeNormal(quad, 'left'),
-  };
-
-  return (u, v) => {
-    const top = bowAmount(bows, 'top', u) * (1 - v);
-    const bottom = bowAmount(bows, 'bottom', u) * v;
-    const left = bowAmount(bows, 'left', v) * (1 - u);
-    const right = bowAmount(bows, 'right', v) * u;
-    return {
-      x:
-        top * normals.top.x +
-        bottom * normals.bottom.x +
-        left * normals.left.x +
-        right * normals.right.x,
-      y:
-        top * normals.top.y +
-        bottom * normals.bottom.y +
-        left * normals.left.y +
-        right * normals.right.y,
-    };
-  };
 }
 
 /**

@@ -5,7 +5,9 @@ import {
   bowAmount,
   bowControls,
   bowsAreStraight,
+  bowShift,
   edgeNormal,
+  edgeTangent,
   fullFrame,
   straightBows,
   type EdgeBows,
@@ -259,5 +261,54 @@ describe('what is drawn and what is warped', () => {
       expect(drawn.x - onChord.x).toBeCloseTo(normal.x * warped, 6);
       expect(drawn.y - onChord.y).toBeCloseTo(normal.y * warped, 6);
     }
+  });
+});
+
+/**
+ * The claim the artist asked for, measured rather than asserted: a side's bow
+ * moves pixels across that side and never along it.
+ *
+ * It is not "nearly none" and it is not corrected away afterwards. Each side
+ * contributes a distance multiplied by its own normal, and a scalar times a
+ * perpendicular vector has no component along the side to begin with — at every
+ * point in the picture, for any bow, however large.
+ */
+describe('a bow never moves anything along the side it bends', () => {
+  const quad: Quad = [
+    { x: 100, y: 80 },
+    { x: 900, y: 90 },
+    { x: 890, y: 700 },
+    { x: 110, y: 690 },
+  ];
+  const across = (shift: { x: number; y: number }, tangent: { x: number; y: number }) =>
+    shift.x * tangent.x + shift.y * tangent.y;
+
+  for (const edge of ['top', 'right', 'bottom', 'left'] as const) {
+    it(`moves nothing along the ${edge} when the ${edge} is bent`, () => {
+      // Far past anything a photograph of a painting would need, so that a
+      // component along the side would be impossible to miss.
+      const bows: EdgeBows = { ...straightBows(), [edge]: [140, -90] };
+      const shift = bowShift(quad, bows);
+      const tangent = edgeTangent(quad, edge);
+
+      let worst = 0;
+      for (let u = 0; u <= 1.0001; u += 0.05) {
+        for (let v = 0; v <= 1.0001; v += 0.05) {
+          worst = Math.max(worst, Math.abs(across(shift(u, v), tangent)));
+        }
+      }
+
+      expect(worst).toBeCloseTo(0, 9);
+    });
+  }
+
+  it('does move things across it, or it would not be doing anything', () => {
+    const bows: EdgeBows = { ...straightBows(), top: [140, -90] };
+    const shift = bowShift(quad, bows);
+    const normal = edgeNormal(quad, 'top');
+
+    // The middle of the top edge, where the two control points fight and the
+    // first one wins: the side is pulled out, not left where it was.
+    expect(across(shift(0.4, 0), normal)).toBeGreaterThan(10);
   });
 });

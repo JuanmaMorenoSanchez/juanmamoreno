@@ -413,7 +413,10 @@ the corners exactly where the correction put them.
 to having no bows at all, the corners do not move, a card photographed through a
 bend comes back more than twice as close to the original as ignoring the bend
 does, and the curve drawn on screen departs from its chord by exactly what the
-warp underneath it applies. `quad.spec.ts` "a bow can only leave the chord
+warp underneath it applies. `edge-bows.spec.ts` "a bow never moves anything along
+the side it bends" (5 tests — every side swept across the whole picture with an
+enormous bow, the component along it zero to nine decimal places, and the
+component across it not zero). `quad.spec.ts` "a bow can only leave the chord
 sideways" (5 tests) and `photo-prep.component.spec.ts` "a handle cannot stretch
 the painting along a side" (3 tests — a long drag along a side changes nothing,
 the part square to it survives whole, and a bend outlives the corner beside it

@@ -252,6 +252,59 @@ export function correctedSize(
 }
 
 /**
+ * How far to move a point, for a position across the corrected rectangle.
+ *
+ * Each side contributes what it departs from its own chord at the matching
+ * parameter, weighted by how near that side is. The corner terms a Coons patch
+ * would subtract are not needed: a departure is zero at both ends of every
+ * side, so the four contributions already vanish at the corners.
+ *
+ * Every contribution is a distance multiplied by its own side's normal, which
+ * is the whole of why a bow cannot stretch the painting along the side it bends.
+ * Not nearly zero along it, and not corrected to zero afterwards: a scalar times
+ * a perpendicular vector has no component along that side to begin with, at any
+ * point in the picture and for any bow. `edge-bows.spec.ts` measures it.
+ *
+ * The four directions are settled once, before the caller starts its loop.
+ */
+export function bowShift(quad: Quad, bows: EdgeBows): (u: number, v: number) => Point {
+  const normals = {
+    top: edgeNormal(quad, 'top'),
+    right: edgeNormal(quad, 'right'),
+    bottom: edgeNormal(quad, 'bottom'),
+    left: edgeNormal(quad, 'left'),
+  };
+
+  return (u, v) => {
+    const top = bowAmount(bows, 'top', u) * (1 - v);
+    const bottom = bowAmount(bows, 'bottom', u) * v;
+    const left = bowAmount(bows, 'left', v) * (1 - u);
+    const right = bowAmount(bows, 'right', v) * u;
+    return {
+      x:
+        top * normals.top.x +
+        bottom * normals.bottom.x +
+        left * normals.left.x +
+        right * normals.right.x,
+      y:
+        top * normals.top.y +
+        bottom * normals.bottom.y +
+        left * normals.left.y +
+        right * normals.right.y,
+    };
+  };
+}
+
+/** The direction a side runs in, which is the one direction its bow never moves anything. */
+export function edgeTangent(quad: Quad, edge: EdgeName): Point {
+  const [from, to] = EDGE_CORNERS[edge];
+  const dx = quad[to].x - quad[from].x;
+  const dy = quad[to].y - quad[from].y;
+  const length = Math.hypot(dx, dy) || 1;
+  return { x: dx / length, y: dy / length };
+}
+
+/**
  * The same photograph, turned a quarter turn clockwise.
  *
  * A camera that recorded nothing about which way up it was held hands over a

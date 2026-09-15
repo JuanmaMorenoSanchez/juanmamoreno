@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.58.1
+
+- **chore** — the claim that a bow never moves anything along the side it bends
+  is now measured rather than reasoned about. The displacement field moved from
+  the warp into the geometry so a test can reach it, and four tests sweep the
+  whole picture with a bow far larger than any photograph needs, checking the
+  component along the bent side is zero to nine decimal places. No behaviour
+  changed; the warp calls the same arithmetic from its new home.
+
 ## 1.58.0
 
 - **fix** — a side's handles can no longer stretch the painting along that side.
