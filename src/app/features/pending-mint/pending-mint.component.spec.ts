@@ -28,7 +28,13 @@ const waiting: PendingMint = {
   preparedAt: '2026-09-15T08:00:00.000Z',
 };
 
+/** What the api was asked to store, so a test can read it back. */
+let amended: Array<{ tokenId: number; facts: Record<string, unknown> }>;
+let refuse: string | null;
+
 function setup(list: PendingMint[] = [waiting]) {
+  amended = [];
+  refuse = null;
   TestBed.configureTestingModule({
     imports: [PendingMintComponent],
     providers: [
@@ -38,7 +44,14 @@ function setup(list: PendingMint[] = [waiting]) {
       provideTranslateService(),
       {
         provide: MintApiService,
-        useValue: { waiting: () => Promise.resolve(list) },
+        useValue: {
+          waiting: () => Promise.resolve(list),
+          amend: (tokenId: number, facts: Record<string, unknown>) => {
+            if (refuse) return Promise.reject({ error: { message: refuse } });
+            amended.push({ tokenId, facts });
+            return Promise.resolve({ ...waiting, ...facts, tokenId });
+          },
+        },
       },
     ],
   });
@@ -46,6 +59,28 @@ function setup(list: PendingMint[] = [waiting]) {
   fixture.detectChanges();
   return fixture;
 }
+
+/** The component's own workings, which is where the corrections are made. */
+type Editing = {
+  editing: () => number | null;
+  draft: () => Record<string, string>;
+  edit(mint: PendingMint): void;
+  stopEditing(): void;
+  write(field: 'name' | 'description', event: Event): void;
+  pick(field: 'medium' | 'unit' | 'year' | 'imageType', event: Event): void;
+  measure(field: 'height' | 'width', event: Event): void;
+  save(): Promise<void>;
+  canSave: () => boolean;
+  reshaped: () => boolean;
+  years: () => string[];
+  outcome: () => string;
+  problem: () => string;
+};
+
+const inside = (fixture: { componentInstance: unknown }) =>
+  fixture.componentInstance as unknown as Editing;
+
+const typed = (value: string) => ({ target: { value } }) as unknown as Event;
 
 describe('PendingMintComponent — taking the photograph back off the list', () => {
   it('offers the stored file on every certificate waiting', async () => {
@@ -86,5 +121,127 @@ describe('PendingMintComponent — taking the photograph back off the list', () 
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('app-download-button')).toBe(null);
+  });
+});
+
+/**
+ * A prepared certificate is a draft, and every fault the migration found in the
+ * old collection was a typed one: two misspellings of the artist, a missing
+ * unit, a title ending in a space, a "spash". Until now the only way to correct
+ * a letter was to throw the draft away and prepare it again, which spent a
+ * token id and a second upload doing it.
+ */
+describe('PendingMintComponent — correcting what a certificate says', () => {
+  it('reads the certificate into the form, traits and all', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+
+    page.edit(waiting);
+
+    expect(page.editing()).toBe(198);
+    expect(page.draft()['name']).toBe('Rockets win III');
+    expect(page.draft()['medium']).toBe('Oil on canvas');
+    expect(page.draft()['height']).toBe('140,5');
+    expect(page.draft()['year']).toBe('2026');
+    expect(page.draft()['description']).toBe(waiting.description);
+  });
+
+  it('sends the correction against the certificate it was opened on', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+
+    page.write('name', typed('Rockets win IV'));
+    await page.save();
+
+    expect(amended).toHaveLength(1);
+    expect(amended[0].tokenId).toBe(198);
+    expect(amended[0].facts['name']).toBe('Rockets win IV');
+    // Closed again, and the list read afresh rather than patched in place.
+    expect(page.editing()).toBe(null);
+    expect(page.outcome()).toContain('198');
+  });
+
+  it('tidies a measurement on the way out, as the studio does', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+
+    // Half-written, which is what a box being typed into looks like.
+    page.measure('height', typed('141,'));
+    await page.save();
+
+    expect(amended[0].facts['height']).toBe('141');
+  });
+
+  it('refuses to save a title that is only spaces', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+
+    page.write('name', typed('   '));
+
+    expect(page.canSave()).toBe(false);
+    await page.save();
+    expect(amended).toHaveLength(0);
+  });
+
+  it('says when the measurements no longer describe the picture', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+
+    expect(page.reshaped()).toBe(false);
+
+    // The picture was squared up to the old numbers and is stored flattened.
+    // Correcting the number corrects what the certificate says and nothing else.
+    page.measure('width', typed('161'));
+
+    expect(page.reshaped()).toBe(true);
+  });
+
+  it('keeps a year the list does not offer, rather than swapping it silently', async () => {
+    const old = { ...waiting, attributes: [{ trait_type: 'Year', value: '1998' }] };
+    const fixture = setup([old]);
+    await fixture.whenStable();
+    const page = inside(fixture);
+
+    page.edit(old);
+
+    expect(page.draft()['year']).toBe('1998');
+    expect(page.years()).toContain('1998');
+  });
+
+  it('says so and stays open when the api refuses', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+    refuse = 'The year should be four digits.';
+
+    await page.save();
+
+    expect(page.problem()).toBe('The year should be four digits.');
+    // Still open, because the correction has not been made and closing the form
+    // would throw away what was typed.
+    expect(page.editing()).toBe(198);
+  });
+
+  it('forgets the draft when the correction is abandoned', async () => {
+    const fixture = setup();
+    await fixture.whenStable();
+    const page = inside(fixture);
+    page.edit(waiting);
+    page.write('name', typed('Something else'));
+
+    page.stopEditing();
+
+    expect(page.editing()).toBe(null);
+    expect(page.draft()['name']).toBe('');
   });
 });

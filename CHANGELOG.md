@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.59.0
+
+- **feat** — a certificate waiting to be written can be corrected where it
+  waits. Each row opens into the fields the studio asks for and saves them
+  against that certificate; before, a typo in a title meant throwing the draft
+  away and preparing it again. Not the photograph — what is stored is the
+  flattened picture, and the corners and brushwork that shaped it were never
+  stored anywhere — so changing the measurements is allowed and says in red that
+  it corrects what the certificate reads, not the shape of the picture.
+
 ## 1.58.1
 
 - **chore** — the claim that a bow never moves anything along the side it bends

@@ -57,14 +57,136 @@
             [src]="'data:image/jpeg;base64,' + mint.thumbnailBase64"
             [alt]="mint.name"
           />
-          <span class="pending-what">
-            <strong>{{ mint.tokenId }} · {{ mint.name }}</strong>
-            <em>{{ mint.description }}</em>
-            <small>
-              {{ trait(mint, 'Medium') }} · {{ trait(mint, 'Height') }} × {{ trait(mint, 'Width') }}
-              {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
-            </small>
-          </span>
+          @if (editing() === mint.tokenId) {
+            <!--
+              Everything a certificate says except the photograph. The picture
+              was made once, at preparing, and the corners and brushwork that
+              shaped it were never stored anywhere but the browser that did the
+              work — so a different picture is a different certificate.
+            -->
+            <div class="pending-edit">
+              <label class="pending-field pending-wide">
+                <span>Title</span>
+                <input
+                  type="text"
+                  autocomplete="off"
+                  [value]="draft().name"
+                  (input)="write('name', $event)"
+                />
+              </label>
+              <label class="pending-field">
+                <span>Medium</span>
+                <select [value]="draft().medium" (change)="pick('medium', $event)">
+                  @for (option of mediums; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </label>
+              <label class="pending-field">
+                <span>Photograph is</span>
+                <select [value]="draft().imageType" (change)="pick('imageType', $event)">
+                  @for (option of imageTypes; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </label>
+              <label class="pending-field pending-narrow">
+                <span>Height</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  [value]="draft().height"
+                  (input)="measure('height', $event)"
+                />
+              </label>
+              <label class="pending-field pending-narrow">
+                <span>Width</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  [value]="draft().width"
+                  (input)="measure('width', $event)"
+                />
+              </label>
+              <label class="pending-field pending-narrow">
+                <span>Unit</span>
+                <select [value]="draft().unit" (change)="pick('unit', $event)">
+                  @for (option of units; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </label>
+              <label class="pending-field pending-narrow">
+                <span>Year</span>
+                <select [value]="draft().year" (change)="pick('year', $event)">
+                  @for (option of years(); track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </label>
+              <label class="pending-field pending-wide">
+                <span>Description</span>
+                <input
+                  type="text"
+                  autocomplete="off"
+                  [value]="draft().description"
+                  (input)="write('description', $event)"
+                />
+              </label>
+
+              @if (reshaped()) {
+                <!--
+                  A word, never a refusal. The measurements on the certificate
+                  and the shape of the picture are two different things, and
+                  only one of them can be corrected from here.
+                -->
+                <aside class="pending-warning" role="alert">
+                  <mat-icon aria-hidden="true">warning</mat-icon>
+                  <span>
+                    The photograph was squared up to
+                    {{ trait(mint, 'Height') }} × {{ trait(mint, 'Width') }}
+                    {{ trait(mint, 'Unit') }} and stays that shape. This corrects what the
+                    certificate says, not the picture — for a size that is really different,
+                    straighten the painting again in the studio.
+                  </span>
+                </aside>
+              }
+
+              <p class="pending-edit-actions">
+                <button
+                  type="button"
+                  class="pending-sign"
+                  [disabled]="!canSave() || saving()"
+                  (click)="save()"
+                >
+                  {{ saving() ? 'Saving…' : 'Save' }}
+                </button>
+                <button type="button" class="pending-link" (click)="stopEditing()">Cancel</button>
+              </p>
+            </div>
+          } @else {
+            <span class="pending-what">
+              <strong>{{ mint.tokenId }} · {{ mint.name }}</strong>
+              <em>{{ mint.description }}</em>
+              <small>
+                {{ trait(mint, 'Medium') }} · {{ trait(mint, 'Height') }} ×
+                {{ trait(mint, 'Width') }}
+                {{ trait(mint, 'Unit') }} · {{ trait(mint, 'Year') }}
+              </small>
+            </span>
+          }
+          @if (editing() !== mint.tokenId) {
+            <button
+              type="button"
+              class="pending-discard"
+              (click)="edit(mint)"
+              [attr.aria-label]="'Correct what ' + mint.name + ' says'"
+            >
+              <mat-icon>edit_outline</mat-icon>
+            </button>
+          }
           <!--
             The photograph itself, which until now only existed on this page as
             a thumbnail the size of a postage stamp. A prepared certificate is

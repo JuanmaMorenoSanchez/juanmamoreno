@@ -24,6 +24,18 @@ export interface PendingMint {
   preparedAt: string;
 }
 
+/** What a waiting certificate can be corrected to say, short of its photograph. */
+export interface MintFacts {
+  name: string;
+  medium: string;
+  height: string;
+  width: string;
+  unit: string;
+  year: string;
+  imageType: string;
+  description?: string;
+}
+
 /** A mint call, encoded by the api and ready for a wallet to sign. */
 export interface SignableTransaction {
   to: string;
@@ -154,6 +166,27 @@ export class MintApiService {
           this.authorised()
         )
         .pipe(map(MintApiService.unwrap<{ written: boolean; shown: boolean }>))
+    );
+  }
+
+  /**
+   * Corrects what a waiting certificate says.
+   *
+   * Everything but the photograph. What is stored is the flattened picture the
+   * studio produced rather than the photograph it was made from, and the
+   * corners and the brushwork that made it were never stored anywhere — so a
+   * different picture is a different certificate, and preparing one is what
+   * that is for.
+   */
+  public amend(tokenId: number, facts: MintFacts): Promise<PendingMint> {
+    return firstValueFrom(
+      this.http
+        .patch<ApiResponse<PendingMint>>(
+          `${this.base}/pending/${tokenId}`,
+          facts,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<PendingMint>))
     );
   }
 

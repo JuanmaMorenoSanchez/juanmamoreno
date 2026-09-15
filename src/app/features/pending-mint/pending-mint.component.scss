@@ -102,3 +102,81 @@
     animation: none;
   }
 }
+
+/*
+  Correcting what a waiting certificate says.
+
+  The same fields the studio asks for, in the row the certificate already
+  occupies rather than on a page of their own: what is being corrected is
+  usually one letter, and it is read off the row beside it.
+*/
+.pending-edit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.6rem 0.8rem;
+  flex: 1 1 22rem;
+}
+
+.pending-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--catalog-faint);
+
+  input,
+  select {
+    padding: 0.35rem 0.4rem;
+    border: 1px solid var(--catalog-faint);
+    background: transparent;
+    font: inherit;
+    font-size: 0.85rem;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--catalog-ink);
+  }
+}
+
+.pending-wide {
+  grid-column: 1 / -1;
+}
+
+.pending-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  grid-column: 1 / -1;
+  margin: 0.2rem 0 0;
+}
+
+.pending-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--catalog-accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Red, with the warning icon, as the studio's own warnings are. */
+.pending-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  padding: 0.5rem 0.7rem;
+  background: var(--jm-error-bg);
+  color: var(--jm-on-error-bg);
+  font-size: 0.78rem;
+  line-height: 1.5;
+
+  mat-icon {
+    flex: none;
+    color: var(--jm-error);
+  }
+}

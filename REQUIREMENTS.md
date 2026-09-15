@@ -464,6 +464,27 @@ it takes every control on the page with it.
 bounds, the transform on the stage, the ring drawn at half its width when the
 picture is doubled, and no transform at all when the whole photograph is shown)
 
+### R100 — A waiting certificate can be corrected where it waits · met
+Every row on the waiting list opens into the fields the studio asks for — title,
+medium, kind of photograph, height, width, unit, year, description — and saves
+them against that certificate. Nothing on the list has reached the chain, and
+every fault the migration's audit found in the old collection was a typed one,
+so a title with a letter wrong is a thing to fix rather than a reason to throw
+the certificate away.
+
+Not the photograph, and the page says why rather than leaving it out: what is
+stored is the flattened picture, and the corners and the brushwork that shaped
+it were never stored anywhere. Changing the measurements is allowed and warned
+about in red — the picture was squared up to the old ones and stays that shape,
+so this corrects what the certificate says and not the picture. A year the list
+does not offer is kept rather than quietly swapped for the first one. A refusal
+from the api leaves the form open with what was typed still in it.
+*Proven by:* `pending-mint.component.spec.ts` "correcting what a certificate
+says" (8 tests — the certificate read into the form, the correction sent against
+the right token, a half-written measurement tidied, an empty title refused, the
+warning when the measurements change, an unlisted year kept, a refusal leaving
+the form open, and cancelling forgetting the draft)
+
 ### R99 — The photograph can be taken back off a prepared certificate · met
 Every certificate on the waiting list carries the download button the artwork
 pages carry, offering the full stored file and the medium size.

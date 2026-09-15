@@ -1,9 +1,33 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
-import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
+import {
+  MintApiService,
+  type MintFacts,
+  type PendingMint,
+} from '@shared/services/mint-api.service';
+import {
+  IMAGE_TYPES,
+  MEDIUMS,
+  UNITS,
+  measurementAsTyped,
+  mintableYears,
+  normaliseMeasurement,
+} from '@domain/artwork/mint-vocabulary';
 import { WalletService } from '@shared/services/wallet.service';
+
+/** What an untouched edit form holds, before a certificate is read into it. */
+const EMPTY_FACTS: MintFacts = {
+  name: '',
+  medium: MEDIUMS[0],
+  height: '',
+  width: '',
+  unit: UNITS[0],
+  year: String(mintableYears()[0]),
+  imageType: IMAGE_TYPES[0],
+  description: '',
+};
 
 /**
  * The certificates that are ready and not yet written.
@@ -37,6 +61,122 @@ export class PendingMintComponent {
 
   protected readonly waiting = signal<PendingMint[]>([]);
   protected readonly busy = signal(false);
+
+  protected readonly mediums = MEDIUMS;
+  protected readonly imageTypes = IMAGE_TYPES;
+  protected readonly units = UNITS;
+
+  /**
+   * The certificate being corrected, if any.
+   *
+   * Everything here is a draft — nothing has reached the chain — so a title
+   * with a typo in it is a thing to fix. It used to be a thing to throw the
+   * certificate away over, which cost a token id and a second upload to correct
+   * a letter.
+   */
+  protected readonly editing = signal<number | null>(null);
+  protected readonly draft = signal<MintFacts>(EMPTY_FACTS);
+  protected readonly saving = signal(false);
+
+  /**
+   * The years on offer, with whatever this certificate says among them.
+   *
+   * A stored year the list does not contain would otherwise be quietly swapped
+   * for the first one the moment anything else was corrected.
+   */
+  protected readonly years = computed(() => {
+    const listed = mintableYears().map(String);
+    const current = this.draft().year;
+    return current && !listed.includes(current) ? [current, ...listed] : listed;
+  });
+
+  /**
+   * Whether the measurements have been changed, which the photograph cannot
+   * follow.
+   *
+   * Said rather than refused. The picture was squared up to the measurements
+   * given at the time and is stored flattened; correcting a digit here corrects
+   * what the certificate *says*, and the shape of the picture stays as it was.
+   * For a size that is genuinely different, the painting wants straightening
+   * again.
+   */
+  protected readonly reshaped = computed(() => {
+    const token = this.editing();
+    const was = this.waiting().find((one) => one.tokenId === token);
+    if (!was) return false;
+    const draft = this.draft();
+    return (
+      normaliseMeasurement(draft.height) !== this.trait(was, 'Height') ||
+      normaliseMeasurement(draft.width) !== this.trait(was, 'Width')
+    );
+  });
+
+  protected edit(mint: PendingMint): void {
+    this.problem.set('');
+    this.outcome.set('');
+    this.draft.set({
+      name: mint.name,
+      medium: this.trait(mint, 'Medium'),
+      height: this.trait(mint, 'Height'),
+      width: this.trait(mint, 'Width'),
+      unit: this.trait(mint, 'Unit') || UNITS[0],
+      year: this.trait(mint, 'Year'),
+      imageType: this.trait(mint, 'Image Type'),
+      description: mint.description,
+    });
+    this.editing.set(mint.tokenId);
+  }
+
+  protected stopEditing(): void {
+    this.editing.set(null);
+    this.draft.set(EMPTY_FACTS);
+  }
+
+  protected write(field: 'name' | 'description', event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.draft.update((draft) => ({ ...draft, [field]: value }));
+  }
+
+  protected pick(field: 'medium' | 'unit' | 'year' | 'imageType', event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.draft.update((draft) => ({ ...draft, [field]: value }));
+  }
+
+  /** A measurement keeps its comma while it is being written, as in the studio. */
+  protected measure(field: 'height' | 'width', event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const tidied = measurementAsTyped(input.value);
+    input.value = tidied;
+    this.draft.update((draft) => ({ ...draft, [field]: tidied }));
+  }
+
+  protected readonly canSave = computed(
+    () => !!this.draft().name.trim() && !!this.draft().height && !!this.draft().width
+  );
+
+  protected async save(): Promise<void> {
+    const tokenId = this.editing();
+    if (tokenId === null || !this.canSave()) return;
+
+    this.saving.set(true);
+    this.problem.set('');
+    try {
+      const draft = this.draft();
+      const amended = await this.api.amend(tokenId, {
+        ...draft,
+        height: normaliseMeasurement(draft.height),
+        width: normaliseMeasurement(draft.width),
+      });
+      this.outcome.set(`Certificate ${tokenId} now reads “${amended.name}”.`);
+      this.stopEditing();
+      this.load();
+    } catch (failure: unknown) {
+      const message = (failure as { error?: { message?: string } })?.error?.message;
+      this.problem.set(message ?? `Certificate ${tokenId} could not be corrected.`);
+    } finally {
+      this.saving.set(false);
+    }
+  }
 
   /** What is happening at this moment, while it is happening. */
   protected readonly stage = signal('');
