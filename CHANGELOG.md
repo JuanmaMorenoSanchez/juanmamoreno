@@ -5,6 +5,25 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.68.0
+
+- **feat** — a painting's frame is the right shape before anything loads, so
+  nothing moves when the image arrives. It used to be reserved at the shape the
+  canvas was measured as, and a photograph is never quite that: 130 x 130
+  measured is 80 x 82 photographed, which showed as a gap beside the blurred
+  preview and a frame that resized when the full file landed.
+
+  The photograph's own shape was in the catalogue all along. Every certificate
+  carries a two-kilobyte thumbnail of its painting and a jpeg holds its
+  dimensions in its header, so the shape is four bytes and a walk along the
+  markers — no decoding, nothing asynchronous, no canvas, which is what lets it
+  answer during the prerender. Measuring it in the browser cannot work: the
+  preview is painted out of the prerendered html before any javascript runs.
+
+  Checked in Chrome on a throttled connection — a square canvas, a portrait
+  crop and a painting whose photograph matches its measurements each hold one
+  shape from the first paint to the full image.
+
 ## 1.67.1
 
 - **fix** — the blurred preview no longer leaves a gap down each side of the

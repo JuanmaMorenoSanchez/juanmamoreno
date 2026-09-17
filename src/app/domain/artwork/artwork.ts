@@ -1,4 +1,5 @@
 import { SORT } from '@shared/constants/order.constants';
+import { ratioOfDataUri } from '@domain/image/jpeg-size';
 import { VALIDTRAITS, VIEW_TYPES } from './artwork.constants';
 import { Nft, NftImage } from './artwork.entity';
 
@@ -95,14 +96,36 @@ export class Artwork {
   }
 
   /**
-   * Width over height, from the artwork's own measurements.
+   * Width over height, to reserve a frame at before any image has loaded.
    *
-   * Used to reserve a frame at the right shape before any image has loaded.
-   * Falls back to a portrait-ish guess when the traits are missing or
-   * unparseable, since a wrong shape reserves less badly than none at all.
+   * **The photograph first, and the canvas only if there is no photograph.**
+   * They are not the same shape and the difference is visible: a canvas
+   * measured 130 x 130 is photographed 80 x 82, and a frame reserved square
+   * around a picture that is not leaves a gap down each side until the full
+   * file lands and corrects it.
+   *
+   * The photograph is available here, which is the part that is easy to miss.
+   * Every certificate carries a two-kilobyte thumbnail of its own painting, and
+   * a JPEG holds its dimensions in its header — so the shape is four bytes and
+   * a walk along the markers, with nothing to decode and nothing to wait for.
+   * That is what lets the right shape be written into a prerendered page rather
+   * than discovered afterwards in the reader's browser, where it is too late to
+   * matter: the preview is painted on the first frame, before any javascript
+   * has run at all.
+   *
+   * It is also the only thing that is right for a second photograph — a detail,
+   * a corner, a canvas caught half-finished — which is a different crop of the
+   * same painting and so a different shape, while the measurements are the
+   * whole canvas either way.
+   *
+   * Falls back to the measurements, and then to a portrait-ish guess, since a
+   * wrong shape reserves less badly than none at all.
    */
   getAspectRatio(nft: Nft | undefined): number {
     if (!nft) return FALLBACK_ASPECT_RATIO;
+
+    const photographed = ratioOfDataUri(nft.image?.thumbnailUrl ?? nft.raw?.metadata?.image);
+    if (photographed) return photographed;
 
     const width = parseFloat(this.getTraitValue(nft, VALIDTRAITS.WIDTH));
     const height = parseFloat(this.getTraitValue(nft, VALIDTRAITS.HEIGHT));

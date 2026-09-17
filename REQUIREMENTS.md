@@ -338,26 +338,41 @@ there was only ever one.
 `/MediaBox` is 210×297mm on the four and the dossier's builder is the only
 caller that asks for no format, which is the square
 
-### R107 — The blurred preview never leaves a gap beside the painting · met
-It fills the frame rather than fitting inside it.
+### R107 — A painting's frame is the right shape before any image loads · met
+The frame takes its shape from **the photograph**, not from the canvas, and it
+does so in the prerendered html — so the shape is right on the first painted
+frame and never changes afterwards.
 
-The frame is the shape the painting was **measured** as until a real file
-decodes and says otherwise, and a photograph is never quite that shape — a
-canvas measured 130 x 130 against a photograph 0.9756 wide. Fitted, that
-difference is an empty strip down each side of the preview which closes when
-the full image lands.
+The two are not the same shape and the difference is visible: a canvas measured
+130 x 130 is photographed 80 x 82. Reserved square, that is an empty strip down
+each side of the blurred preview which closes when the full file lands. It is
+also the only thing that can be right for a second photograph — a detail, a
+corner, a canvas caught half-finished — which is a different crop and so a
+different shape, where the measurements describe the whole canvas either way.
 
-Measuring the preview and reshaping the frame to it cannot fix this, which was
-the first attempt: the page is prerendered with the thumbnail already in it, so
-the preview is painted on the first frame, before any javascript has run at
-all. Nothing done after hydration can get in front of that.
+**The photograph's shape is already in the catalogue.** Every certificate
+carries a two-kilobyte thumbnail of its own painting, and a JPEG holds its
+dimensions in the header of its frame — so reading them is a walk along the
+markers and four bytes, with nothing to decode, nothing asynchronous and no
+canvas. That is what makes it work at all: it answers during a prerender, in
+Node, where there is nothing to decode an image with.
 
-Filling is the right trade for a blurred placeholder specifically. Two per cent
-of crop on something already blurred and scaled cannot be seen; a moving edge
-can. On the picture itself, fitting is still right and still used.
-*Proven by:* `background-size: cover` on `.preview-layer`, and measured in
-Chrome on a throttled connection — the frame holds the measured shape while the
-preview shows, and the preview has no edge inside it to move
+Measuring it in the browser instead cannot work, which was the first attempt
+and was thrown away: the preview is painted on the first frame, out of the
+prerendered html, before any javascript has run. Measured in Chrome it was on
+screen at 150ms while the probe had not started at 1.3s.
+
+The blurred preview also fills its frame rather than fitting inside it, which
+is now belt and braces rather than the fix — it keeps an artwork whose
+thumbnail cannot be read from showing a gap while it falls back to the
+measurements. Two per cent of crop on something already blurred cannot be seen;
+a moving edge can.
+*Proven by:* `jpeg-size.spec.ts` (11 tests, including a progressive frame, a
+Huffman table that looks like a frame, and a segment claiming no length, which
+would hang the walk rather than answer wrongly), and measured in Chrome on a
+throttled connection: a square canvas, a portrait crop and a painting whose
+photograph matches its measurements all hold one shape from first paint to
+full image
 
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
