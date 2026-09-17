@@ -285,12 +285,14 @@ on this page has to be taken on trust.
 **A seal rather than a lock or a tick, and the difference is the point.** A lock
 would say the record is sealed, and no token is frozen. A tick would say
 somebody else checked it, and nobody did. This is the artist's own account of
-his own painting, written where he cannot quietly rewrite it — which is what a
-certificate of authenticity has always been, and all it has ever been.
+his own painting, written where it cannot be unwritten — which is what a
+certificate of authenticity has always been.
 
-So the last line says what it is not: holding the token is not owning the
-painting. A token beside a painting invites exactly one wrong conclusion, and
-answering it is better than leaving it to be drawn.
+It says the recording was irreversible, and that is exact: the transaction is in
+its block permanently and no one can unmake it. What is not fixed is what
+`tokenURI` returns today, which the owner may amend until a token is frozen and
+none are — so the sentence describes the act, which is irreversible, rather than
+the mutability of the current metadata.
 
 The date is the only part fetched, and the panel is written twice — with it and
 without it — because everything else is known without asking anybody. The date
@@ -298,10 +300,20 @@ is shown in UTC rather than the reader's own zone: a block timestamp is UTC and
 Etherscan shows UTC, and a panel whose purpose is to be checked against
 Etherscan must not name a different day than Etherscan does.
 
+**The certificate can be printed**, and the printed one abbreviates nothing. On
+screen `0x6E8b…5548` is a tidy label; on paper it is useless, and a certificate
+that has been printed has left the internet behind. So the page carries the
+token, the contract address and the transaction hash written out in full, over
+the painting at print density and at a higher jpeg quality than a catalogue
+page — one painting on one page, kept and looked at closely, is worth the bytes
+that thirty of them are not.
+
 Every artwork has one. The catalogue is read out of the contract, so a painting
 on this site is a painting with a certificate, and there is no empty state.
 *Proven by:* `certificate-dialog.component.spec.ts` (4 tests, including the
-panel with no date and that it always says it is not ownership)
+panel with no date), and driven in Chrome against a running site: the seal
+opens the panel, the three links are right, and the download produces a 313 kB
+pdf — none of which jsdom can see, since it has no canvas to draw one with
 
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is

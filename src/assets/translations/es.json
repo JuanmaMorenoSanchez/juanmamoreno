@@ -300,12 +300,15 @@
   },
   "certificate": {
     "title": "Certificado de autenticidad",
-    "recordedOn": "El artista registró esta pintura en Ethereum el {{date}}: su título, técnica, medidas, año y una fotografía, escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al artista.",
-    "recorded": "El artista registró esta pintura en Ethereum: su título, técnica, medidas, año y una fotografía, escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al artista.",
+    "recordedOn": "El artista registró esta pintura de forma irreversible en Ethereum el {{date}}: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
+    "recorded": "El artista registró esta pintura de forma irreversible en Ethereum: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
     "token": "Certificado",
     "contract": "Contrato",
     "transaction": "Transacción",
     "view": "Ver en Etherscan",
-    "notOwnership": "Este es el registro que el artista hace de la obra. No es una transmisión de propiedad: tener el token no otorga la propiedad de la pintura."
+    "download": "Descargar el certificado",
+    "pdfHeading": "Certificado de autenticidad",
+    "pdfRecordedOn": "Registrado en Ethereum el {{date}}",
+    "pdfRecorded": "Registrado en Ethereum"
   }
 }

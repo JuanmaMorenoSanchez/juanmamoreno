@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.66.0
+
+- **feat** — the certificate can be printed. A download in the panel writes a
+  page carrying the painting, what it is, when it was recorded, and the token,
+  contract address and transaction hash in full — nothing abbreviated, because
+  `0x6E8b…5548` is a tidy label on screen and useless on paper. The image is at
+  print density and a higher quality than a catalogue page: one painting on one
+  page, kept, is worth bytes that thirty are not.
+- **chore** — the line about the token not being ownership is gone, at the
+  artist's request, and the sentence above it now says the recording was
+  irreversible. It is: the transaction is in its block permanently. What a later
+  amendment could still change is what `tokenURI` returns today, which is how
+  a certificate with the wrong measurements will be corrected.
+
 ## 1.65.0
 
 - **feat** — a painting says where it is written down. A seal joins the icons

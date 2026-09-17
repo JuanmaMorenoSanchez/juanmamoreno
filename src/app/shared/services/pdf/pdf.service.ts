@@ -1,5 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { SOLDCERTIFICATES, VALIDTRAITS } from '@domain/artwork/artwork.constants';
+import {
+  ARTWORK_PAGE_BASE,
+  CERTIFICATES_CONTRACT,
+  SOLDCERTIFICATES,
+  VALIDTRAITS,
+} from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
@@ -16,6 +21,10 @@ const CAPTION_BLOCK = 16;
 const CAPTION_CHAR_SPACE = 0.4;
 // Narrow reading column used by text pages (mm)
 const TEXT_COLUMN_WIDTH = 130;
+// One painting on one page, kept: worth more than a catalogue page's eight tenths
+const CERTIFICATE_IMAGE_QUALITY = 0.92;
+// How much of the page the painting may take, leaving room for what is written
+const CERTIFICATE_IMAGE_SHARE = 0.46;
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +50,124 @@ export class PdfService {
     const writer = await this.newWriter();
     await this.addArtworkPage(writer, nft);
     return writer.doc;
+  }
+
+  /**
+   * The certificate as a page: the painting, what it is, and where it is written.
+   *
+   * Everything here is printed in full — the token, the contract address, the
+   * transaction — because a certificate that has been printed has left the
+   * internet behind, and an address abbreviated to `0x6E8b…5548` is a nice
+   * label on screen and useless on paper. Somebody holding this should be able
+   * to type what is on it into a block explorer and arrive at the same record.
+   *
+   * The record may be null, which is the same everywhere else: the date is the
+   * only part that has to be fetched, and the page reads correctly without it.
+   */
+  public async createCertificate(
+    nft: Nft,
+    record: { txHash: string; mintedAt: string } | null
+  ): Promise<jsPDF> {
+    const writer = await this.newWriter();
+    const { doc, pageWidth, contentWidth } = writer;
+    const t = (key: string, params?: Record<string, string>) =>
+      this.translateService.instant(key, params) as string;
+
+    writer.heading(t('certificate.pdfHeading'), { align: 'center' });
+    writer.space(6);
+
+    const img = await loadFirstAvailableImage(this.artworkService.getNftFetchableUrls(nft.image));
+    const maxImageHeight = writer.pageHeight * CERTIFICATE_IMAGE_SHARE;
+    const compressed = compressImage(img, contentWidth, maxImageHeight, CERTIFICATE_IMAGE_QUALITY);
+
+    const { width, height } = doc.getImageProperties(compressed);
+    const ratio = width / height;
+    let renderedWidth = contentWidth;
+    let renderedHeight = renderedWidth / ratio;
+    if (renderedHeight > maxImageHeight) {
+      renderedHeight = maxImageHeight;
+      renderedWidth = renderedHeight * ratio;
+    }
+    doc.addImage(
+      compressed,
+      'JPEG',
+      (pageWidth - renderedWidth) / 2,
+      writer.y,
+      renderedWidth,
+      renderedHeight
+    );
+    writer.space(renderedHeight + 10);
+
+    writer.paragraph(nft.name ?? '', {
+      size: PDF_TYPE.size.title,
+      style: 'italic',
+      align: 'center',
+    });
+    writer.paragraph(this.getTraitsAsText(nft), {
+      size: PDF_TYPE.size.caption,
+      color: PDF_COLORS.soft,
+      align: 'center',
+      charSpace: CAPTION_CHAR_SPACE,
+    });
+    writer.space(6);
+
+    const on = record ? this.certificateDate(record.mintedAt) : null;
+    writer.paragraph(
+      on ? t('certificate.pdfRecordedOn', { date: on }) : t('certificate.pdfRecorded'),
+      {
+        size: PDF_TYPE.size.body,
+        align: 'center',
+      }
+    );
+    writer.space(6);
+
+    this.certificateFact(writer, t('certificate.token'), `#${nft.tokenId}`);
+    this.certificateFact(writer, t('certificate.contract'), CERTIFICATES_CONTRACT);
+    if (record) {
+      this.certificateFact(writer, t('certificate.transaction'), record.txHash);
+    }
+
+    writer.space(6);
+    writer.paragraph(`${ARTWORK_PAGE_BASE}/${nft.tokenId}`, {
+      size: PDF_TYPE.size.small,
+      color: PDF_COLORS.faint,
+      align: 'center',
+    });
+
+    return writer.doc;
+  }
+
+  /** A label above its value, the value never abbreviated. */
+  private certificateFact(writer: PdfWriter, label: string, value: string): void {
+    writer.paragraph(label.toUpperCase(), {
+      size: PDF_TYPE.size.small,
+      color: PDF_COLORS.faint,
+      charSpace: PDF_TYPE.wideCharSpace,
+      align: 'center',
+    });
+    writer.paragraph(value, {
+      size: PDF_TYPE.size.caption,
+      color: PDF_COLORS.ink,
+      align: 'center',
+    });
+    writer.space(3);
+  }
+
+  /**
+   * The day it was written, in the reader's language and in UTC.
+   *
+   * UTC because a block timestamp is UTC and a block explorer shows UTC, and a
+   * certificate somebody is holding up against one must not name a different
+   * day than it does.
+   */
+  private certificateDate(mintedAt: string): string {
+    const spanish = this.translateService.currentLang()?.startsWith('es');
+    return new Intl.DateTimeFormat(spanish ? 'es-ES' : 'en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(new Date(mintedAt));
   }
 
   public async createDossier(

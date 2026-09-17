@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import {
@@ -8,7 +8,11 @@ import {
   MatDialogContent,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { TranslatePipe } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Nft } from '@domain/artwork/artwork.entity';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
+import { PdfService } from '@shared/services/pdf/pdf.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import {
   CERTIFICATES_CONTRACT,
@@ -22,6 +26,8 @@ export interface CertificateDialogData {
   tokenId: string;
   /** Year, medium and size, as the caption under the painting already says it. */
   details: string;
+  /** The painting itself, which the printed certificate carries a picture of. */
+  nft: Nft;
 }
 
 /**
@@ -50,6 +56,9 @@ export class CertificateDialogComponent {
   protected readonly data = inject<CertificateDialogData>(MAT_DIALOG_DATA);
   private readonly certificates = inject(CertificateService);
   private readonly language = inject(LanguageUrlService);
+  private readonly pdf = inject(PdfService);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   protected readonly contract = CERTIFICATES_CONTRACT;
 
@@ -67,6 +76,30 @@ export class CertificateDialogComponent {
     const hash = this.record()?.txHash;
     return hash ? `${ETHERSCAN}/tx/${hash}` : null;
   };
+
+  protected readonly saving = signal(false);
+
+  /**
+   * The certificate as a page to keep.
+   *
+   * Printed with whatever is known when the button is pressed. A printed
+   * certificate is never refreshed, so a date that has not arrived is missing
+   * for good — which is what the wording is written to survive.
+   */
+  async download(): Promise<void> {
+    this.saving.set(true);
+    try {
+      const doc = await this.pdf.createCertificate(this.data.nft, this.record());
+      doc.save(`certificate-${this.data.tokenId}.pdf`);
+    } catch {
+      this.snackBar.open(this.translate.instant('download.error'), 'Ok!', {
+        duration: SNACKBAR_DURATION_MS,
+        verticalPosition: 'top',
+      });
+    } finally {
+      this.saving.set(false);
+    }
+  }
 
   /**
    * The day it was written, in the reader's own language.

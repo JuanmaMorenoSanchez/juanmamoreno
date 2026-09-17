@@ -5,10 +5,14 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { CertificateDialogComponent } from './certificate-dialog.component';
+import { PdfService } from '@shared/services/pdf/pdf.service';
 import { CertificateService, MintRecord } from './certificate.service';
 
 describe('CertificateDialogComponent', () => {
+  let pdf: { createCertificate: ReturnType<typeof vi.fn> };
+
   const setup = async (record: MintRecord | null) => {
+    pdf = { createCertificate: vi.fn().mockResolvedValue({ save: vi.fn() }) };
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [CertificateDialogComponent],
@@ -17,12 +21,14 @@ describe('CertificateDialogComponent', () => {
         provideHttpClientTesting(),
         provideTranslateService(),
         { provide: CertificateService, useValue: { recordFor: () => of(record) } },
+        { provide: PdfService, useValue: pdf },
         {
           provide: MAT_DIALOG_DATA,
           useValue: {
             artworkName: 'Secuestro en la rave',
             tokenId: '152',
             details: '2024, Oil on canvas, 130 x 130 cm.',
+            nft: { tokenId: '152', name: 'Secuestro en la rave' },
           },
         },
       ],
@@ -31,13 +37,13 @@ describe('CertificateDialogComponent', () => {
     TestBed.inject(TranslateService).setTranslation('en', {
       certificate: {
         title: 'Certificate of authenticity',
-        recordedOn: 'The artist recorded this painting on Ethereum on {{date}}.',
-        recorded: 'The artist recorded this painting on Ethereum.',
+        recordedOn: 'The artist irreversibly recorded this painting on Ethereum on {{date}}.',
+        recorded: 'The artist irreversibly recorded this painting on Ethereum.',
         token: 'Certificate',
         contract: 'Contract',
         transaction: 'Transaction',
         view: 'View on Etherscan',
-        notOwnership: 'It is not a transfer of ownership.',
+        download: 'Download the certificate',
       },
       close: 'Close',
     });
@@ -88,17 +94,21 @@ describe('CertificateDialogComponent', () => {
     const fixture = await setup(null);
 
     const text = fixture.nativeElement.textContent;
-    expect(text).toContain('The artist recorded this painting on Ethereum.');
+    expect(text).toContain('The artist irreversibly recorded this painting on Ethereum.');
     expect(text).not.toContain('{{date}}');
     // No transaction to point at, so no link offering one.
     expect(hrefs(fixture).some((href) => href?.includes('/tx/'))).toBe(false);
   });
 
-  // The one wrong conclusion a token beside a painting invites.
-  it('always says it is not ownership of the painting', async () => {
-    for (const record of [mint, null]) {
-      const fixture = await setup(record);
-      expect(fixture.nativeElement.textContent).toContain('not a transfer of ownership');
-    }
+  it('prints the certificate with what it knows when it knows it', async () => {
+    const fixture = await setup(mint);
+
+    fixture.nativeElement.querySelector('button')?.click();
+    await fixture.whenStable();
+
+    expect(pdf.createCertificate).toHaveBeenCalledWith(
+      expect.objectContaining({ tokenId: '152' }),
+      mint
+    );
   });
 });

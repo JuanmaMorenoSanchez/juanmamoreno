@@ -33,6 +33,9 @@ export enum SortMethod {
  */
 export const CERTIFICATES_CONTRACT = '0x6E8b1D55B3fb934149b1125964a9c01a87995548';
 
+/** Where a painting's own page lives, printed on the certificate. */
+export const ARTWORK_PAGE_BASE = 'https://juanmamoreno.com/artwork';
+
 /** Where a token or a contract is read by anybody who wants to check. */
 export const ETHERSCAN = 'https://etherscan.io';
 

@@ -65,15 +65,23 @@ export function fitToPrintBox(
   return { width, height };
 }
 
-// Fits the image to the box (in mm) at print density and re-encodes as JPEG.
+/**
+ * Fits the image to the box (in mm) at print density and re-encodes as JPEG.
+ *
+ * The quality is worth choosing rather than fixing. A dossier is many pages of
+ * paintings and eight tenths is the right trade; a certificate is one painting
+ * on one page, kept and looked at closely, and the extra bytes buy something
+ * there that they do not buy thirty times over.
+ */
 export function compressImage(
   img: HTMLImageElement,
   maxWidthMm: number,
-  maxHeightMm: number
+  maxHeightMm: number,
+  quality = 0.8
 ): string {
   const { width, height } = fitToPrintBox(img, maxWidthMm, maxHeightMm);
   const canvas = drawToCanvas(img, width, height);
-  return canvas.toDataURL('image/jpeg', 0.8);
+  return canvas.toDataURL('image/jpeg', quality);
 }
 
 // Cover treatment: random square crop (zoomed into the artwork) converted

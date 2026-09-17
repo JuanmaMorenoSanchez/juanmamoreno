@@ -33,11 +33,17 @@
       <dd><a [href]="tx" target="_blank" rel="noopener noreferrer">Etherscan ↗</a></dd>
     }
   </dl>
-
-  <p class="certificate-caveat">{{ 'certificate.notOwnership' | translate }}</p>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
+  <!--
+    The printed certificate, which carries the token, the contract and the
+    transaction written out in full: an address shortened to 0x6E8b…5548 is a
+    tidy label on screen and useless on paper.
+  -->
+  <button mat-button type="button" (click)="download()" [disabled]="saving()">
+    {{ 'certificate.download' | translate }}
+  </button>
   <a mat-button [href]="tokenLink" target="_blank" rel="noopener noreferrer">
     {{ 'certificate.view' | translate }}
   </a>
