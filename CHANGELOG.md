@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.67.1
+
+- **fix** — the blurred preview no longer leaves a gap down each side of the
+  painting until the full image arrives. The frame is the shape the painting was
+  measured as until a file decodes, and a photograph is never quite that shape;
+  fitted, the difference showed as two empty strips that closed a moment later.
+  The preview fills the frame now instead of fitting inside it, which on
+  something already blurred costs two per cent of crop nobody can see. Measuring
+  the preview first cannot solve this — the page is prerendered with the
+  thumbnail in it, so the gap is there on the first paint, before any javascript
+  has run.
+
 ## 1.67.0
 
 - **feat** — the cv, the statement, the technical sheet and the certificate are

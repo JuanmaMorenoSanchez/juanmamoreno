@@ -338,6 +338,27 @@ there was only ever one.
 `/MediaBox` is 210×297mm on the four and the dossier's builder is the only
 caller that asks for no format, which is the square
 
+### R107 — The blurred preview never leaves a gap beside the painting · met
+It fills the frame rather than fitting inside it.
+
+The frame is the shape the painting was **measured** as until a real file
+decodes and says otherwise, and a photograph is never quite that shape — a
+canvas measured 130 x 130 against a photograph 0.9756 wide. Fitted, that
+difference is an empty strip down each side of the preview which closes when
+the full image lands.
+
+Measuring the preview and reshaping the frame to it cannot fix this, which was
+the first attempt: the page is prerendered with the thumbnail already in it, so
+the preview is painted on the first frame, before any javascript has run at
+all. Nothing done after hydration can get in front of that.
+
+Filling is the right trade for a blurred placeholder specifically. Two per cent
+of crop on something already blurred and scaled cannot be seen; a moving edge
+can. On the picture itself, fitting is still right and still used.
+*Proven by:* `background-size: cover` on `.preview-layer`, and measured in
+Chrome on a throttled connection — the frame holds the measured shape while the
+preview shows, and the preview has no edge inside it to move
+
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
 for sale. The offer carries where to ask — the painting's own page, which is

@@ -72,11 +72,22 @@
 
   // Low-res thumbnail shown until the first hi-res layer is ready. Blurred to
   // hide its pixelation; fades out once a real image is up.
+  //
+  // Filled rather than fitted, which is the one thing here that is not obvious.
+  // The frame is the shape the painting was measured as until a real file
+  // decodes and says otherwise, and a photograph is never quite that shape: a
+  // canvas measured 130 x 130 against a photograph 0.9756 wide, fitted, is a
+  // gap down each side that closes when the full image lands. Fitting is the
+  // right choice for a picture somebody is looking at and the wrong one for a
+  // blurred placeholder, where two per cent of crop cannot be seen and a moving
+  // edge can. The page is prerendered with this thumbnail already in it, so the
+  // gap was there from the first paint and no amount of measuring after
+  // hydration could have got in front of it.
   .preview-layer {
     position: absolute;
     inset: 0;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     background-position: center;
     filter: blur(10px);
     transform: scale(1.02);
