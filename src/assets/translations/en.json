@@ -307,8 +307,6 @@
     "transaction": "Transaction",
     "view": "View on Etherscan",
     "download": "Download the certificate",
-    "pdfHeading": "Certificate of authenticity",
-    "pdfRecordedOn": "Recorded on Ethereum on {{date}}",
-    "pdfRecorded": "Recorded on Ethereum"
+    "pdfHeading": "Certificate of authenticity"
   }
 }

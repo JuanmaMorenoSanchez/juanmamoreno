@@ -23,8 +23,8 @@ export class PdfWriter {
   readonly doc: jsPDF;
   y: number;
 
-  constructor(JsPdf: JsPdfConstructor) {
-    this.doc = new JsPdf({ unit: 'mm', format: PDF_PAGE.format });
+  constructor(JsPdf: JsPdfConstructor, format: [number, number] = PDF_PAGE.format) {
+    this.doc = new JsPdf({ unit: 'mm', format });
     this.y = PDF_PAGE.margin;
   }
 

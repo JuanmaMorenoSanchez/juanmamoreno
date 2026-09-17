@@ -306,14 +306,37 @@ that has been printed has left the internet behind. So the page carries the
 token, the contract address and the transaction hash written out in full, over
 the painting at print density and at a higher jpeg quality than a catalogue
 page — one painting on one page, kept and looked at closely, is worth the bytes
-that thirty of them are not.
+that thirty of them are not. It carries the same sentence the panel does, in
+full, rather than a shortened one written for paper.
+
+**One page, always** (R106). Everything but the painting is measured first and
+the painting is given what is left, which is the opposite of how it was built:
+a fixed share of the page for the image put it on two sheets, because the
+sentence runs to five or six lines and one line either way decided it. The
+address at the foot is pinned to the bottom margin rather than written in the
+flow, so a rounding error in a line height cannot carry it onto a second sheet
+on its own.
 
 Every artwork has one. The catalogue is read out of the contract, so a painting
 on this site is a painting with a certificate, and there is no empty state.
 *Proven by:* `certificate-dialog.component.spec.ts` (4 tests, including the
 panel with no date), and driven in Chrome against a running site: the seal
-opens the panel, the three links are right, and the download produces a 313 kB
-pdf — none of which jsdom can see, since it has no canvas to draw one with
+opens the panel, the three links are right, and the download produces a pdf
+whose `/MediaBox` reads 210×297mm over a single page — none of which jsdom can
+see, since it has no canvas to draw one with
+
+### R106 — Paper that goes in a folder is A4; the book is square · met
+The cv, the statement, the technical sheet and the certificate are 210×297. The
+dossier, and only the dossier, keeps the 210×210 it was designed as.
+
+The square is right for the one of them that is a book of paintings and wrong
+for the four that are documents: a cv is posted to a gallery, a certificate is
+filed with the papers for a painting, and a square sheet in a folder of A4 is
+the one that gets bent. They had all inherited the dossier's format because
+there was only ever one.
+*Proven by:* every one of them downloaded from a running site and read back —
+`/MediaBox` is 210×297mm on the four and the dossier's builder is the only
+caller that asks for no format, which is the square
 
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is

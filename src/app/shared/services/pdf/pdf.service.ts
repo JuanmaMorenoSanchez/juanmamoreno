@@ -12,7 +12,7 @@ import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
 import type { jsPDF } from 'jspdf';
 import { compressImage, grayscaleZoomedSquare, loadFirstAvailableImage } from './pdf-image.utils';
-import { PDF_COLORS, PDF_TYPE } from './pdf-theme';
+import { PDF_COLORS, PDF_PAGE, PDF_TYPE } from './pdf-theme';
 import { PdfWriter } from './pdf-writer';
 
 // Height reserved under an artwork for its caption lines (mm)
@@ -23,8 +23,16 @@ const CAPTION_CHAR_SPACE = 0.4;
 const TEXT_COLUMN_WIDTH = 130;
 // One painting on one page, kept: worth more than a catalogue page's eight tenths
 const CERTIFICATE_IMAGE_QUALITY = 0.92;
-// How much of the page the painting may take, leaving room for what is written
-const CERTIFICATE_IMAGE_SHARE = 0.46;
+// The reading column for the certificate's one long sentence (mm)
+const CERTIFICATE_COLUMN = 140;
+// The painting never shrinks past this, however much there is to say (mm)
+const MIN_IMAGE_HEIGHT = 70;
+// The one vertical rhythm the certificate is built on (mm)
+const GAP = 7;
+// Between one fact and the next (mm)
+const FACT_GAP = 3;
+// Slack in the arithmetic, so a rounded line height cannot cost a second page
+const CERTIFICATE_SLACK = 12;
 
 @Injectable({
   providedIn: 'root',
@@ -41,13 +49,13 @@ export class PdfService {
     return (this.jspdf ??= await import('jspdf'));
   }
 
-  private async newWriter(): Promise<PdfWriter> {
+  private async newWriter(format?: [number, number]): Promise<PdfWriter> {
     const { jsPDF } = await this.loadJspdf();
-    return new PdfWriter(jsPDF);
+    return new PdfWriter(jsPDF, format);
   }
 
   public async createTechnicalSheet(nft: Nft): Promise<jsPDF> {
-    const writer = await this.newWriter();
+    const writer = await this.newWriter(PDF_PAGE.a4);
     await this.addArtworkPage(writer, nft);
     return writer.doc;
   }
@@ -68,24 +76,47 @@ export class PdfService {
     nft: Nft,
     record: { txHash: string; mintedAt: string } | null
   ): Promise<jsPDF> {
-    const writer = await this.newWriter();
+    const writer = await this.newWriter(PDF_PAGE.a4);
     const { doc, pageWidth, contentWidth } = writer;
     const t = (key: string, params?: Record<string, string>) =>
       this.translateService.instant(key, params) as string;
 
+    const on = record ? this.certificateDate(record.mintedAt) : null;
+    const said = on ? t('certificate.recordedOn', { date: on }) : t('certificate.recorded');
+    const details = this.getTraitsAsText(nft);
+    const facts: [string, string][] = [
+      [t('certificate.token'), `#${nft.tokenId}`],
+      [t('certificate.contract'), CERTIFICATES_CONTRACT],
+      ...(record ? ([[t('certificate.transaction'), record.txHash]] as [string, string][]) : []),
+    ];
+
+    // Everything but the painting is measured first, and the painting is given
+    // what is left. The other way round — a fixed share of the page for the
+    // image — is what put this on two pages: the sentence is six or seven lines
+    // and one line either way decided it.
+    const written =
+      this.heightOf(writer, nft.name ?? '', PDF_TYPE.size.title, contentWidth) +
+      this.heightOf(writer, details, PDF_TYPE.size.caption, contentWidth) +
+      GAP +
+      this.heightOf(writer, said, PDF_TYPE.size.body, CERTIFICATE_COLUMN) +
+      GAP +
+      facts.length * (PDF_TYPE.lineHeight.caption * 2 + FACT_GAP) +
+      CERTIFICATE_SLACK;
+
+    const room = writer.pageHeight - 2 * writer.margin - PDF_TYPE.lineHeight.heading - GAP - GAP;
+    const forImage = Math.max(MIN_IMAGE_HEIGHT, room - written);
+
     writer.heading(t('certificate.pdfHeading'), { align: 'center' });
-    writer.space(6);
+    writer.space(GAP);
 
     const img = await loadFirstAvailableImage(this.artworkService.getNftFetchableUrls(nft.image));
-    const maxImageHeight = writer.pageHeight * CERTIFICATE_IMAGE_SHARE;
-    const compressed = compressImage(img, contentWidth, maxImageHeight, CERTIFICATE_IMAGE_QUALITY);
-
+    const compressed = compressImage(img, contentWidth, forImage, CERTIFICATE_IMAGE_QUALITY);
     const { width, height } = doc.getImageProperties(compressed);
     const ratio = width / height;
     let renderedWidth = contentWidth;
     let renderedHeight = renderedWidth / ratio;
-    if (renderedHeight > maxImageHeight) {
-      renderedHeight = maxImageHeight;
+    if (renderedHeight > forImage) {
+      renderedHeight = forImage;
       renderedWidth = renderedHeight * ratio;
     }
     doc.addImage(
@@ -96,45 +127,54 @@ export class PdfService {
       renderedWidth,
       renderedHeight
     );
-    writer.space(renderedHeight + 10);
+    writer.space(renderedHeight + GAP);
 
     writer.paragraph(nft.name ?? '', {
       size: PDF_TYPE.size.title,
       style: 'italic',
       align: 'center',
     });
-    writer.paragraph(this.getTraitsAsText(nft), {
+    writer.paragraph(details, {
       size: PDF_TYPE.size.caption,
       color: PDF_COLORS.soft,
       align: 'center',
       charSpace: CAPTION_CHAR_SPACE,
     });
-    writer.space(6);
+    writer.space(GAP);
 
-    const on = record ? this.certificateDate(record.mintedAt) : null;
-    writer.paragraph(
-      on ? t('certificate.pdfRecordedOn', { date: on }) : t('certificate.pdfRecorded'),
-      {
-        size: PDF_TYPE.size.body,
-        align: 'center',
-      }
-    );
-    writer.space(6);
+    // A narrower column than the page, so a sixty-word sentence is read rather
+    // than scanned across the full width of an A4.
+    writer.paragraph(said, {
+      size: PDF_TYPE.size.body,
+      maxWidth: CERTIFICATE_COLUMN,
+      x: (pageWidth - CERTIFICATE_COLUMN) / 2,
+    });
+    writer.space(GAP);
 
-    this.certificateFact(writer, t('certificate.token'), `#${nft.tokenId}`);
-    this.certificateFact(writer, t('certificate.contract'), CERTIFICATES_CONTRACT);
-    if (record) {
-      this.certificateFact(writer, t('certificate.transaction'), record.txHash);
+    for (const [label, value] of facts) {
+      this.certificateFact(writer, label, value);
     }
 
-    writer.space(6);
-    writer.paragraph(`${ARTWORK_PAGE_BASE}/${nft.tokenId}`, {
-      size: PDF_TYPE.size.small,
-      color: PDF_COLORS.faint,
-      align: 'center',
-    });
+    // Pinned to the foot rather than written in the flow: it is the last line
+    // on the page and the one that would otherwise carry a rounding error over
+    // onto a second sheet.
+    writer.textAt(
+      `${ARTWORK_PAGE_BASE}/${nft.tokenId}`,
+      writer.centerX,
+      writer.pageHeight - writer.margin,
+      { size: PDF_TYPE.size.small, color: PDF_COLORS.faint, align: 'center' }
+    );
 
     return writer.doc;
+  }
+
+  /** How tall a piece of text will be once wrapped, before anything is drawn. */
+  private heightOf(writer: PdfWriter, text: string, size: number, width: number): number {
+    writer.doc.setFontSize(size);
+    const lines = writer.doc.splitTextToSize(text, width) as string[];
+    const lineHeight =
+      size >= PDF_TYPE.size.body ? PDF_TYPE.lineHeight.body : PDF_TYPE.lineHeight.caption;
+    return lines.length * lineHeight;
   }
 
   /** A label above its value, the value never abbreviated. */
@@ -225,13 +265,13 @@ export class PdfService {
   }
 
   public async createStatement(): Promise<jsPDF> {
-    const writer = await this.newWriter();
+    const writer = await this.newWriter(PDF_PAGE.a4);
     this.addStatement(writer);
     return writer.doc;
   }
 
   public async createCV(): Promise<jsPDF> {
-    const writer = await this.newWriter();
+    const writer = await this.newWriter(PDF_PAGE.a4);
     this.addCv(writer);
     return writer.doc;
   }

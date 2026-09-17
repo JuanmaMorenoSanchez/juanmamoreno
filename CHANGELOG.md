@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.67.0
+
+- **feat** — the cv, the statement, the technical sheet and the certificate are
+  A4. They had all inherited the dossier's square page, which is right for a
+  book of paintings and wrong for a document that gets filed with other paper.
+  The dossier stays square.
+- **fix** — the certificate is one page. It was two: the image took a fixed
+  share of the page and whatever was left had to hold a sentence that runs to
+  five or six lines, so one line either way decided it. Now the writing is
+  measured first and the painting is given what remains, and the address at the
+  foot is pinned to the bottom margin instead of being written in the flow.
+- **feat** — the printed certificate carries the whole sentence the panel
+  shows, rather than the short one that had been written for it.
+
 ## 1.66.0
 
 - **feat** — the certificate can be printed. A download in the panel writes a
