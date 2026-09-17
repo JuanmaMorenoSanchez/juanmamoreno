@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.64.0
+
+- **fix** — a Spanish reader following a link from Instagram no longer lands on
+  a 404. The redirect that sends a language-free address to its Spanish twin
+  built `/es/?utm_source=…` for anything arriving at the root with parameters
+  on it, and the router reads `/es/` as two segments, matches nothing and draws
+  the 404 page. The bare address had always worked, which is why this was
+  invisible from inside and universal from outside: every link Instagram and
+  Facebook hand out carries tracking parameters.
+- **feat** — `/latest` is the artist's own page now, behind the admin guard and
+  in the admin menu as "Latest IG posts", never prerendered and disallowed to
+  crawlers. It was the public landing for the link in the Instagram profile;
+  that link points at the root of the site instead.
+
 ## 1.63.0
 
 - **feat** — an artwork page now tells a machine which catalogue the painting

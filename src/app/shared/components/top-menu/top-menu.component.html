@@ -128,6 +128,7 @@
   <a mat-menu-item routerLink="/studio">Studio</a>
   <a mat-menu-item routerLink="/publish">Reels waiting</a>
   <a mat-menu-item routerLink="/pendingmint">Certificates waiting</a>
+  <a mat-menu-item routerLink="/latest">Latest IG posts</a>
   <button mat-menu-item type="button" (click)="signOut()">Sign out</button>
 </mat-menu>
 
@@ -145,9 +146,6 @@
     [matMenuTriggerFor]="yearsMenu"
   >
     {{ 'menu.byYear' | translate }}
-  </button>
-  <button [attr.aria-label]="'latest' | translate" mat-menu-item [routerLink]="lang.link('latest')">
-    {{ 'latest' | translate }}
   </button>
 </mat-menu>
 

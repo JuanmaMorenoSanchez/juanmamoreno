@@ -19,12 +19,30 @@ export const spanishRoute: CanActivateFn = () => {
 
 export const englishRoute: CanActivateFn = (_route, state) => {
   if (wantsSpanish()) {
-    return inject(Router).parseUrl(`/es${state.url === '/' ? '' : state.url}`);
+    return inject(Router).parseUrl(`/es${spanishAddressFor(state.url)}`);
   }
 
   inject(TranslateService).use(ALLOWED_LANGUAGES.ENGLISH);
   return true;
 };
+
+/**
+ * What to hang off `/es`, given the address the reader asked for.
+ *
+ * The slash goes when there is nothing after it but a query or a fragment,
+ * because the router reads `/es/` as the segments ["es", ""], which matches no
+ * route and draws the 404 page.
+ *
+ * A bare `/` was already handled. `/?utm_source=ig` was not, and became
+ * `/es/?utm_source=ig` — so every Spanish reader who followed the link in the
+ * Instagram profile was shown a 404, while the same link with nothing appended
+ * worked perfectly. Every link Instagram and Facebook hand out carries tracking
+ * parameters, which is what made this invisible from the inside and universal
+ * from the outside.
+ */
+function spanishAddressFor(url: string): string {
+  return url.replace(/^\/(?=$|[?#])/, '');
+}
 
 /**
  * For the pages whose address carries no language: apply whatever the reader

@@ -1040,23 +1040,39 @@ had it — it copies the address rather than hiding itself.
 *Proven by:* `share-button.component.spec.ts` (5 tests),
 `e2e/navigation.test.mjs` "passing a painting on" (2 tests)
 
-### R59 — There is a way from Instagram to a painting's page · met
-`/latest` shows the paintings most recently put on Instagram, newest first,
-each linking to its own page. The account gets one clickable link and a caption
-cannot carry another, so this is the whole of the route from a painting
-somebody has just scrolled past to the page about it.
+### R59 — The artist can see what has lately gone to Instagram · met
+`/latest` shows the paintings most recently posted, newest first, each linking
+to its own page, in the order they actually went out rather than the order the
+catalogue is in.
 
-The order comes from what was actually posted rather than from the catalogue,
-so it is the sequence the reader has just seen — which is what makes a painting
-findable, since they are looking for the one from a moment ago. The page is
-prerendered in both languages and readable with javascript switched off, then
-refreshed in the browser so it does not go stale between deploys.
+**It was the public landing for the link in the Instagram profile, and is not
+any more.** The profile link points at the root of the site instead, by the
+artist's decision; this is his page now, behind the same guard as the studio,
+out of the sitemap and disallowed to crawlers. What was given up with it is
+real and worth writing down: a follower who has just scrolled past a painting
+no longer has a route to that painting's page, only to the front of the site.
+The account still gets one clickable link and a caption still cannot carry
+another.
 
 A failed request is told apart from an empty account: the page says nothing has
 been posted only when that is what was answered. Answering a failure the same
 way would put a claim that there are no paintings over a page that had twelve.
-*Proven by:* `latest.component.spec.ts` (8 tests, including the failed request),
-`e2e/navigation.test.mjs` "where the profile link lands" (2 tests)
+*Proven by:* `latest.component.spec.ts` (8 tests, including the failed request)
+
+### R104 — A Spanish reader is never sent to an address that does not exist · met
+The guard that redirects a language-free address to its Spanish twin builds
+`/es` and never `/es/`, which the router reads as the segments `["es", ""]` —
+matching no route and drawing the 404 page.
+
+The bare `/` was always handled. `/?utm_source=ig` was not: it became
+`/es/?utm_source=ig`, and the reader was shown a 404. This was the whole of the
+traffic from Instagram and Facebook, both of which append tracking parameters
+to every link they hand out, so the address worked whenever it was typed by
+hand and failed for everybody who actually followed it. It was found in Search
+Console rather than by anybody using the site.
+*Proven by:* `language.guard.spec.ts` (5 tests, including the tracking
+parameters and a fragment), each of which fails against the expression it
+replaced
 
 ### R60 — A painting points back at the post about it · met
 Each artwork page carries a link to its own Instagram post, which is the

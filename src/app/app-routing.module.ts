@@ -45,21 +45,6 @@ const contentRoutes: Routes = [
     data: { description: 'seo.generative.description', hideBreadcrumb: true },
   },
   {
-    /**
-     * Where the link in the Instagram profile lands.
-     *
-     * The account gets one clickable link and a caption cannot carry another,
-     * so this is the whole of the route from a painting somebody has just
-     * scrolled past to the page about it. Indexable, and in the sitemap: a
-     * page of the newest work, each entry linking to its own page, is worth
-     * something to a reader arriving any other way too.
-     */
-    path: 'latest',
-    loadComponent: () => import('@features/latest/latest.component').then((m) => m.LatestComponent),
-    title: 'seo.latest.title',
-    data: { breadcrumb: 'Latest', description: 'seo.latest.description' },
-  },
-  {
     path: 'cv',
     loadComponent: () => import('@features/cv/cv.component').then((m) => m.CvComponent),
     title: 'seo.cv.title',
@@ -145,6 +130,17 @@ export const routes: Routes = [
     data: { title: 'Pending mints', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/pendingmint', redirectTo: '/pendingmint' },
+  // The last dozen paintings in the order they went to Instagram, each linking
+  // to its own page. It was the public landing for the link in the profile,
+  // which now points at the root instead; kept because it is the quickest way
+  // to see what has gone out and in what order, and his alone like the rest.
+  {
+    path: 'latest',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () => import('@features/latest/latest.component').then((m) => m.LatestComponent),
+    data: { title: 'Latest IG posts', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/latest', redirectTo: '/latest' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {
