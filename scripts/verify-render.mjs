@@ -175,6 +175,35 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
     }
   }
 
+  // 6d. The page about running this product says nothing it should not.
+  //
+  //     It is the only page written to be read by somebody outside the work,
+  //     and the only one whose subject is how the machinery is built — which
+  //     makes it the one page where a useful detail and a dangerous one look
+  //     alike. The service's own repository is private and stays unnamed; so do
+  //     the addresses behind a guard, the names of credentials, and the cloud
+  //     it runs on. This is a check rather than care, because the copy will be
+  //     edited later by somebody who has forgotten this paragraph.
+  if (/^(es\/)?about-certificates-project$/.test(route)) {
+    const said = ` ${text} ${[...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).join(' ')} `;
+    const neverHere = [
+      'x-cron-hash',
+      'CRON_PASS',
+      'POLIGON',
+      'juanmamoreno-backend',
+      'juanmamoreno-contracts',
+      'juanmamoreno-reels',
+      'juanmamoreno-backups',
+      'europe-west1',
+      '/pendingmint',
+      '/studio',
+      '/door',
+    ];
+    for (const secret of neverHere) {
+      if (said.includes(secret)) fail(route, `names ${secret}, which is not for a public page`);
+    }
+  }
+
   // 7. Nothing in the page shows the build asked the reverse image search.
   //
   //    Angular carries the answers a build fetched into the markup, so a page

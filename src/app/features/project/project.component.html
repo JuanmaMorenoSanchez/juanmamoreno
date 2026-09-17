@@ -1,0 +1,102 @@
+<div class="container margin-top project">
+  <h1 class="project-title">{{ 'project.title' | translate }}</h1>
+  <p class="project-lead">{{ 'project.lead' | translate }}</p>
+
+  <!--
+    Counted rather than claimed. Every one of these is a number the build prints
+    or a line somebody can go and count in a file this page links to.
+  -->
+  <dl class="project-figures">
+    @for (figure of figures; track figure.label) {
+      <div class="project-figure">
+        <dt>{{ figure.value }}</dt>
+        <dd>{{ figure.label | translate }}</dd>
+      </div>
+    }
+  </dl>
+
+  <section class="project-section">
+    <h2>{{ 'project.product.title' | translate }}</h2>
+    <p>{{ 'project.product.a' | translate }}</p>
+    <p>{{ 'project.product.b' | translate }}</p>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.rot.title' | translate }}</h2>
+    <p>{{ 'project.rot.a' | translate }}</p>
+    <p>{{ 'project.rot.b' | translate }}</p>
+    <p class="project-note">{{ 'project.rot.c' | translate }}</p>
+    <p>{{ 'project.rot.d' | translate }}</p>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.decisions.title' | translate }}</h2>
+    <div class="project-decisions">
+      @for (decision of decisions; track decision.key) {
+        <article class="project-decision">
+          <h3>{{ 'project.decisions.' + decision.key + '.name' | translate }}</h3>
+          <dl>
+            <dt>{{ 'project.decisions.chose' | translate }}</dt>
+            <dd>{{ 'project.decisions.' + decision.key + '.chose' | translate }}</dd>
+            <dt>{{ 'project.decisions.instead' | translate }}</dt>
+            <dd>{{ 'project.decisions.' + decision.key + '.instead' | translate }}</dd>
+            <dt>{{ 'project.decisions.cost' | translate }}</dt>
+            <dd>{{ 'project.decisions.' + decision.key + '.cost' | translate }}</dd>
+          </dl>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.measured.title' | translate }}</h2>
+    <p>{{ 'project.measured.a' | translate }}</p>
+    <p>{{ 'project.measured.b' | translate }}</p>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.constraint.title' | translate }}</h2>
+    <p>{{ 'project.constraint.a' | translate }}</p>
+    <p class="project-note">{{ 'project.constraint.b' | translate }}</p>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.open.title' | translate }}</h2>
+    <ul class="project-open">
+      <li>{{ 'project.open.a' | translate }}</li>
+      <li>{{ 'project.open.b' | translate }}</li>
+      <li>{{ 'project.open.c' | translate }}</li>
+    </ul>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.how.title' | translate }}</h2>
+    <p>{{ 'project.how.a' | translate }}</p>
+    <p>{{ 'project.how.b' | translate }}</p>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.links.title' | translate }}</h2>
+    <ul class="project-links">
+      <li>
+        <a [href]="repo" target="_blank" rel="noopener noreferrer">
+          {{ 'project.links.repo' | translate }}
+        </a>
+      </li>
+      <li>
+        <a [href]="requirements" target="_blank" rel="noopener noreferrer">
+          {{ 'project.links.requirements' | translate }}
+        </a>
+      </li>
+      <li>
+        <a [href]="changelog" target="_blank" rel="noopener noreferrer">
+          {{ 'project.links.changelog' | translate }}
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="lang.link('artworks')">{{ 'project.links.site' | translate }}</a>
+      </li>
+    </ul>
+    <p class="project-note">{{ 'project.links.note' | translate }}</p>
+  </section>
+</div>

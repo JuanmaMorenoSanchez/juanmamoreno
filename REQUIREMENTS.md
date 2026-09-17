@@ -374,6 +374,36 @@ throttled connection: a square canvas, a portrait crop and a painting whose
 photograph matches its measurements all hold one shape from first paint to
 full image
 
+### R108 — There is a page about how the product is run · met
+`/about-certificates-project`, in both languages, prerendered like everything
+else and deliberately absent from the menu.
+
+It is written for somebody deciding whether to hire the person running this,
+which is a different reader from the one the rest of the site is for — so it
+arrives with the address in hand rather than being come across by a gallery.
+It leads on counted figures rather than adjectives: requirements, releases, and
+the twenty-five requirements that admit to having no automated proof. Each
+decision it describes names what was chosen, what was chosen instead, and what
+that cost; the one that went wrong is third rather than last, because burying
+it at the end would be a way of hiding it politely.
+
+**It says plainly that most of the code is written by an agent**, to a
+specification and a review. That is the page's argument rather than its
+disclaimer: an agent will let a requirement rot, a cost run or an abstraction
+spread, and the requirements file and its proofs are what make working that way
+safe.
+
+**The build refuses it if it says anything it should not.** It is the only page
+whose subject is the machinery, which makes it the one page where a useful
+detail and a dangerous one look alike: the service's repository is private and
+stays unnamed, as do the addresses behind a guard, the names of credentials and
+the cloud it runs on. Checked rather than trusted, because the copy will be
+edited later by somebody who has forgotten why.
+*Proven by:* `project.component.spec.ts` (3 tests, including that only the
+public repository is linked), and `scripts/verify-render.mjs`, which fails the
+build on a named list of things that page may never contain — verified by
+planting one in the built page and watching it fail
+
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
 for sale. The offer carries where to ask — the painting's own page, which is

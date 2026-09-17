@@ -45,6 +45,23 @@ const contentRoutes: Routes = [
     data: { description: 'seo.generative.description', hideBreadcrumb: true },
   },
   {
+    /**
+     * How the product is run, for somebody deciding whether to hire the person
+     * running it. Written out in both languages like everything else, and left
+     * out of the menu on purpose: a gallery arriving at the catalogue has no
+     * use for it, and this is a page to be sent rather than come across.
+     */
+    path: 'about-certificates-project',
+    loadComponent: () =>
+      import('@features/project/project.component').then((m) => m.ProjectComponent),
+    title: 'seo.project.title',
+    // No breadcrumb: this is not a step in the catalogue's trail, and the label
+    // would be looked up as a translation key, and `project` is the block of
+    // copy for this very page: an object, which renders as [object Object].
+    // The build caught it, which is the job the render check exists for.
+    data: { description: 'seo.project.description', hideBreadcrumb: true },
+  },
+  {
     path: 'cv',
     loadComponent: () => import('@features/cv/cv.component').then((m) => m.CvComponent),
     title: 'seo.cv.title',

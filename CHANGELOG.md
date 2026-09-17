@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.69.0
+
+- **feat** — a page about how this product is run, at
+  `/about-certificates-project`, in both languages and out of the menu. Written
+  for somebody deciding whether to hire the person running it: counted figures
+  rather than adjectives, decisions with what each one cost, the one that solved
+  the wrong end, and the constraint that turned out to be a human step rather
+  than anything technical. It says outright that most of the code is written by
+  an agent to a specification and a review, which is the argument rather than
+  the disclaimer.
+- **feat** — the build refuses that page if it names the private repository, an
+  address behind a guard, a credential or the cloud it runs on. It is the only
+  page whose subject is the machinery, so it is the one page where a useful
+  detail and a dangerous one look alike.
+
 ## 1.68.0
 
 - **feat** — a painting's frame is the right shape before anything loads, so

@@ -247,6 +247,10 @@
     "texts": {
       "title": "Texts",
       "description": "Criticism, interviews and press about the painter Juanma Moreno Sánchez."
+    },
+    "project": {
+      "title": "Owning this product",
+      "description": "How a two-repository product is specified, decided and kept honest: 147 requirements, each with a proof, and a build that fails when one stops being true."
     }
   },
   "privacy": {
@@ -308,5 +312,92 @@
     "view": "View on Etherscan",
     "download": "Download the certificate",
     "pdfHeading": "Certificate of authenticity"
+  },
+  "project": {
+    "title": "Owning this product",
+    "lead": "I am a developer, tech lead and designer who moved to the side of the table where the decisions are made. This is the product I own: a working painter’s public catalogue, and the private pipeline that feeds it. Every requirement in it says why it exists and what proves it still works — and the build fails when a proof stops being true.",
+    "figures": {
+      "requirements": "requirements, each with a reason and a proof",
+      "releases": "releases, one line each, newest first",
+      "unproven": "of them honest about having no automated proof",
+      "operator": "person operates the whole thing"
+    },
+    "product": {
+      "title": "What the product is",
+      "a": "A catalogue of 192 paintings, written out as 400 static pages in English and Spanish, so every one of them is readable with no JavaScript at all. Behind it, a service prepares photographs, drafts and translates an essay for each painting, renders video for social networks, and records each work on Ethereum.",
+      "b": "One person operates it. That constraint decides everything on this page: there is no team to absorb a bad call, no QA to catch a regression, and nothing may require a human at three in the morning."
+    },
+    "rot": {
+      "title": "Requirements that cannot quietly rot",
+      "a": "A changelog is a record of the past and cannot become false. A requirements document is a claim about the present, and it can — quietly, and usually does.",
+      "b": "So every entry names the thing that proves it. A script reads the file before each deploy and refuses the build if a number is used twice, if an entry has no proof, if a proof names a file that has been deleted, or if it quotes a test that has since been renamed.",
+      "c": "It exists because four requirements spent fifteen releases marked “met · proven by” test specs that had been deleted several versions earlier. Nobody lied. Nobody noticed. That is the failure a requirements document is supposed to prevent and the one it is worst at preventing.",
+      "d": "It also reports — without failing the build — the requirements whose only proof is prose. Twenty-five of the site’s hundred and one are on that list. This page says so because the tool says so."
+    },
+    "decisions": {
+      "title": "Decisions, with what they cost",
+      "chose": "Chose",
+      "instead": "Instead of",
+      "cost": "Which costs",
+      "prices": {
+        "name": "Publish no prices at all",
+        "chose": "An enquiry, answered by the artist",
+        "instead": "A public price list, or a figure on request",
+        "cost": "Friction for a buyer who wants a number now. A published price is also an anchor far easier to set than to move. There is a test that fails if a price ever appears in the markup."
+      },
+      "model": {
+        "name": "The cheaper model writes the essays",
+        "chose": "The model that costs about a fifth as much per essay",
+        "instead": "The better writer, measured at three to four times the price",
+        "cost": "Prose that needs more editing. The better path and its fallback were kept, so reversing the decision is one variable rather than a rewrite."
+      },
+      "reel": {
+        "name": "A video every night — which solved the wrong end",
+        "chose": "Doubling how often a video is produced",
+        "instead": "Looking at what happened to the ones already made",
+        "cost": "Nothing, and that is the point: six finished videos were waiting on a human and exactly one had ever been published. The constraint was downstream the whole time. Worth more on this page than a decision that went well."
+      },
+      "freeze": {
+        "name": "Nothing irreversible happens without being asked",
+        "chose": "Asking every time, and reading silence as no",
+        "instead": "A setting, or a confirmation people learn to click through",
+        "cost": "A question the operator will answer hundreds of times. Some records on this product cannot be unmade; a prompt is cheaper than any of them."
+      },
+      "key": {
+        "name": "No signing key on the server",
+        "chose": "Signing each record by hand, on a phone",
+        "instead": "Automatic signing, which the pipeline could do unattended",
+        "cost": "A manual step per record, and a queue that waits for it. A server that cannot sign cannot be made to sign by anyone who reaches it."
+      }
+    },
+    "measured": {
+      "title": "Measured, not argued",
+      "a": "The brief for the essays was rewritten this month from evidence rather than taste. Twenty-two essays had been rewritten by hand before publishing; a hundred and thirty-six had not. Measured against each other, the edited ones ran 188 to 633 words, median 442. The untouched ones ran 613 to 874, median 748. The ranges barely overlap — and nothing else about them differed: the same sentence length, the same structure, the same argument. The brief had been asking for 650 to 900 words. It now asks for 380 to 560.",
+      "b": "An earlier decision was corrected the same way. A search feature re-ran on every read, so a build of 186 pages was 186 billed calls to a paid API, and a few days of building came to roughly ninety euros before anyone read the meter. The feature stopped doing that, and a check now fails any build that reaches a paid API at all — the cost cannot recur by accident."
+    },
+    "constraint": {
+      "title": "Finding the real constraint",
+      "a": "157 essays written. 20 reviewed. Only a reviewed essay can be published, so everything upstream is automated and producing while everything downstream waits on one human step — and the work had been going into making the upstream faster.",
+      "b": "Noticing that, and saying it out loud instead of shipping the next feature, is the job."
+    },
+    "open": {
+      "title": "What is still open",
+      "a": "The review queue that would unblock all of it is designed and not built.",
+      "b": "137 finished essays are unread, which means unpublished.",
+      "c": "Twenty-five requirements have no automated proof and are listed on every build."
+    },
+    "how": {
+      "title": "How this is built, plainly",
+      "a": "Most of the code here is written by an AI agent, working to a specification I write and a review I do. That is the point rather than a footnote.",
+      "b": "An agent will happily let a requirement rot, an abstraction spread, a cost run or a feature arrive that nobody asked for. The requirements file, the named proofs and the checks that fail a build are what make working this way safe. My part is deciding what gets built, why, in what order, and what is not worth doing — and being able to show the reasoning afterwards."
+    },
+    "links": {
+      "title": "The evidence",
+      "repo": "The source, public",
+      "requirements": "The requirements file",
+      "changelog": "The changelog",
+      "site": "The product itself",
+      "note": "The service behind the catalogue is in a private repository and is deliberately not linked or described here."
+    }
   }
 }
