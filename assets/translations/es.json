@@ -221,10 +221,6 @@
       "title": "Generativo",
       "description": "Arte generativo interactivo de Juanma Moreno Sánchez, generado en el navegador."
     },
-    "latest": {
-      "title": "Lo último",
-      "description": "Las piezas más recientes publicadas por Juanma Moreno Sánchez, de la más nueva a la más antigua."
-    },
     "cv": {
       "title": "CV",
       "description": "Exposiciones, premios, residencias y biografía del artista Juanma Moreno Sánchez."

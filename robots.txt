@@ -2,11 +2,13 @@ User-agent: *
 Disallow: /studio
 Disallow: /door
 Disallow: /publish
+Disallow: /latest
 # The Spanish addresses redirect to these rather than 404ing, so they are three
 # more ways in and want disallowing too.
 Disallow: /es/studio
 Disallow: /es/door
 Disallow: /es/publish
+Disallow: /es/latest
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a

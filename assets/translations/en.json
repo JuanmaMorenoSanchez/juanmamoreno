@@ -221,10 +221,6 @@
       "title": "Generative",
       "description": "Interactive generative artwork by Juanma Moreno Sánchez, drawn live in the browser."
     },
-    "latest": {
-      "title": "Latest",
-      "description": "The paintings most recently posted by Juanma Moreno Sánchez, newest first."
-    },
     "cv": {
       "title": "CV",
       "description": "Exhibitions, awards, residencies and biography of the artist Juanma Moreno Sánchez."
