@@ -247,6 +247,10 @@
     "texts": {
       "title": "Textos",
       "description": "Crítica, entrevistas y prensa sobre el pintor Juanma Moreno Sánchez."
+    },
+    "project": {
+      "title": "Cómo dirijo este producto",
+      "description": "Cómo se especifica, se decide y se mantiene honesto un producto de dos repositorios: 147 requisitos, cada uno con su prueba, y una compilación que falla cuando una deja de ser cierta."
     }
   },
   "privacy": {
@@ -308,5 +312,92 @@
     "view": "Ver en Etherscan",
     "download": "Descargar el certificado",
     "pdfHeading": "Certificado de autenticidad"
+  },
+  "project": {
+    "title": "Cómo dirijo este producto",
+    "lead": "Soy desarrollador, tech lead y diseñador, y me he movido al lado de la mesa donde se toman las decisiones. Este es el producto que dirijo: el catálogo público de un pintor en activo y la tubería privada que lo alimenta. Cada requisito dice por qué existe y qué demuestra que sigue funcionando, y la compilación falla cuando una de esas pruebas deja de ser cierta.",
+    "figures": {
+      "requirements": "requisitos, cada uno con un motivo y una prueba",
+      "releases": "versiones publicadas, una línea cada una",
+      "unproven": "de ellos admiten no tener prueba automática",
+      "operator": "persona opera todo el sistema"
+    },
+    "product": {
+      "title": "Qué es el producto",
+      "a": "Un catálogo de 192 pinturas, escrito como 400 páginas estáticas en inglés y español, de modo que todas se leen sin una sola línea de JavaScript. Detrás, un servicio prepara las fotografías, redacta y traduce un ensayo para cada cuadro, renderiza vídeo para las redes y registra cada obra en Ethereum.",
+      "b": "Lo opera una sola persona. Esa restricción decide todo lo que hay en esta página: no hay equipo que absorba una mala decisión, ni QA que atrape una regresión, y nada puede exigir a un humano a las tres de la mañana."
+    },
+    "rot": {
+      "title": "Requisitos que no pueden pudrirse en silencio",
+      "a": "Un changelog es un registro del pasado y no puede volverse falso. Un documento de requisitos es una afirmación sobre el presente, y sí puede: en silencio, y casi siempre lo hace.",
+      "b": "Por eso cada entrada nombra aquello que la demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene prueba, si una prueba nombra un archivo borrado o si cita un test que se ha renombrado.",
+      "c": "Existe porque cuatro requisitos pasaron quince versiones marcados como «cumplido · demostrado por» unas pruebas borradas varias versiones antes. Nadie mintió. Nadie se dio cuenta. Ese es exactamente el fallo que un documento de requisitos debería impedir y el que peor impide.",
+      "d": "También informa —sin tumbar la compilación— de los requisitos cuya única prueba es prosa. Veinticinco de los ciento uno del sitio están en esa lista. Esta página lo dice porque la herramienta lo dice."
+    },
+    "decisions": {
+      "title": "Decisiones, y lo que cuestan",
+      "chose": "Elegí",
+      "instead": "En vez de",
+      "cost": "Lo que cuesta",
+      "prices": {
+        "name": "No publicar ningún precio",
+        "chose": "Una consulta, que responde el artista",
+        "instead": "Una lista de precios pública, o una cifra bajo petición",
+        "cost": "Fricción para quien quiere un número ya. Un precio publicado es además un ancla mucho más fácil de poner que de mover. Hay un test que falla si un precio aparece alguna vez en el marcado."
+      },
+      "model": {
+        "name": "Los ensayos los escribe el modelo más barato",
+        "chose": "El modelo que cuesta una quinta parte por ensayo",
+        "instead": "El que escribe mejor, medido entre tres y cuatro veces más caro",
+        "cost": "Una prosa que exige más edición. El camino bueno y su plan B se conservaron, así que revertir la decisión es cambiar una variable y no reescribir nada."
+      },
+      "reel": {
+        "name": "Un vídeo cada noche: resolví el extremo equivocado",
+        "chose": "Duplicar la frecuencia con que se produce un vídeo",
+        "instead": "Mirar qué pasaba con los que ya estaban hechos",
+        "cost": "Nada, y ese es el asunto: seis vídeos terminados esperaban a un humano y solo uno se había publicado nunca. El cuello de botella estaba aguas abajo todo el tiempo. Vale más en esta página que una decisión que salió bien."
+      },
+      "freeze": {
+        "name": "Nada irreversible ocurre sin preguntar",
+        "chose": "Preguntar siempre, y entender el silencio como un no",
+        "instead": "Un ajuste, o una confirmación que se aprende a saltar",
+        "cost": "Una pregunta que el operador responderá cientos de veces. Algunos registros de este producto no se pueden deshacer; una pregunta es más barata que cualquiera de ellos."
+      },
+      "key": {
+        "name": "Ninguna clave de firma en el servidor",
+        "chose": "Firmar cada registro a mano, desde el móvil",
+        "instead": "Firma automática, que la tubería podría hacer sola",
+        "cost": "Un paso manual por registro y una cola que lo espera. Un servidor que no puede firmar no puede ser obligado a firmar por quien llegue hasta él."
+      }
+    },
+    "measured": {
+      "title": "Medido, no discutido",
+      "a": "Las instrucciones para los ensayos se reescribieron este mes a partir de datos y no de gusto. Veintidós ensayos se habían reescrito a mano antes de publicarlos; ciento treinta y seis no. Comparados entre sí, los editados iban de 188 a 633 palabras, mediana 442. Los intactos iban de 613 a 874, mediana 748. Los dos rangos apenas se solapan, y no se diferenciaban en nada más: misma longitud de frase, misma estructura, mismo argumento. Las instrucciones pedían entre 650 y 900 palabras. Ahora piden entre 380 y 560.",
+      "b": "Una decisión anterior se corrigió igual. Una búsqueda se relanzaba en cada lectura, así que compilar 186 páginas eran 186 llamadas facturadas a una API de pago, y unos días de compilaciones sumaron unos noventa euros antes de que nadie mirara el contador. Aquello dejó de hacerse, y ahora una comprobación tumba cualquier compilación que llame a una API de pago: el gasto ya no puede repetirse por accidente."
+    },
+    "constraint": {
+      "title": "Encontrar el cuello de botella real",
+      "a": "157 ensayos escritos. 20 revisados. Solo un ensayo revisado puede publicarse, así que todo lo anterior está automatizado y produciendo mientras todo lo posterior espera a un único paso humano, y el trabajo se había estado yendo en hacer más rápido lo anterior.",
+      "b": "Darse cuenta de eso, y decirlo en voz alta en lugar de sacar la siguiente funcionalidad, es el trabajo."
+    },
+    "open": {
+      "title": "Lo que sigue abierto",
+      "a": "La cola de revisión que lo desbloquearía está diseñada y sin construir.",
+      "b": "137 ensayos terminados están sin leer, y por tanto sin publicar.",
+      "c": "Veinticinco requisitos no tienen prueba automática y salen listados en cada compilación."
+    },
+    "how": {
+      "title": "Cómo está hecho esto, sin rodeos",
+      "a": "Casi todo el código lo escribe un agente de IA, a partir de una especificación que escribo yo y una revisión que hago yo. Eso es lo importante, no una nota al pie.",
+      "b": "Un agente deja encantado que un requisito se pudra, que una abstracción se extienda, que un coste se dispare o que aparezca una funcionalidad que nadie pidió. El archivo de requisitos, las pruebas nombradas y las comprobaciones que tumban una compilación son lo que hace que trabajar así sea seguro. Mi parte es decidir qué se construye, por qué, en qué orden y qué no merece la pena, y poder enseñar el razonamiento después."
+    },
+    "links": {
+      "title": "Las pruebas",
+      "repo": "El código, público",
+      "requirements": "El archivo de requisitos",
+      "changelog": "El changelog",
+      "site": "El producto en sí",
+      "note": "El servicio que hay detrás del catálogo vive en un repositorio privado y, deliberadamente, ni se enlaza ni se describe aquí."
+    }
   }
 }
