@@ -297,5 +297,15 @@
     "achtung": {
       "note": "A review of the Zunino show of fifteen paintings from a decade of work, on how the artist treats the gestures and viral images of social media as modern rituals — somewhere between the mystical and the absurd."
     }
+  },
+  "certificate": {
+    "title": "Certificate of authenticity",
+    "recordedOn": "The artist recorded this painting on Ethereum on {{date}}: its title, medium, size, year and a photograph, written into the chain itself rather than linked from it, so the record outlives this website, the painting, and the artist.",
+    "recorded": "The artist recorded this painting on Ethereum: its title, medium, size, year and a photograph, written into the chain itself rather than linked from it, so the record outlives this website, the painting, and the artist.",
+    "token": "Certificate",
+    "contract": "Contract",
+    "transaction": "Transaction",
+    "view": "View on Etherscan",
+    "notOwnership": "This is the artist's own record of the work. It is not a transfer of ownership: holding the token does not convey ownership of the painting."
   }
 }
