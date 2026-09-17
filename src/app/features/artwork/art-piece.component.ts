@@ -34,6 +34,7 @@ import { PostedArtworksService } from '@shared/services/posted-artworks.service'
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
+import { CertificateButtonComponent } from './components/certificate-button/certificate-button.component';
 import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
@@ -65,6 +66,7 @@ const NO_DESCRIPTION = 'No description available';
     BackButtonComponent,
     ShareButtonComponent,
     ArtworkCriticComponent,
+    CertificateButtonComponent,
   ],
 })
 export class ArtPieceComponent {
@@ -292,6 +294,8 @@ export class ArtPieceComponent {
         // The same answer the dot beside the caption gives, so the two cannot
         // disagree about a painting.
         sold: this.sold(),
+        // Its certificate carries the same number.
+        tokenId: nft.tokenId,
       });
     });
   }

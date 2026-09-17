@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { CERTIFICATES_CONTRACT, certificateUrl } from '@domain/artwork/artwork.constants';
 import { TranslateService } from '@ngx-translate/core';
 
 const SITE_NAME = 'Juanma Moreno Sánchez';
@@ -35,6 +36,8 @@ export interface ArtworkStructuredData {
   unit: string;
   /** Whether the painting has been sold, which is the red dot on the page. */
   sold: boolean;
+  /** Its certificate, which is the token of the same number. */
+  tokenId: string;
 }
 
 /**
@@ -157,13 +160,21 @@ export class SeoTitleStrategy extends TitleStrategy {
    * radius and a colour, which survives neither being turned into plain text
    * nor being read aloud. Here it is a word from a fixed vocabulary.
    *
+   * The certificate is named as an identifier rather than described, and linked
+   * with `sameAs`. A claim that a painting is the artist's own is worth little
+   * from the artist's own website; the same claim written into Ethereum, with
+   * the address to go and read it, is one an agent can follow and check without
+   * asking him or trusting this page. Both are ordinary schema.org properties,
+   * so nothing has to understand a blockchain to follow them.
+   *
    * What is deliberately absent is the price. Not an oversight, and not a gap
    * to be filled in later: what a painting costs is answered by the artist to
    * whoever asks, so the offer carries the address to ask at and no figure at
    * all. Putting a number here would undo that.
    */
   setArtworkStructuredData(artwork: ArtworkStructuredData): void {
-    const { name, url, image, description, year, medium, width, height, unit, sold } = artwork;
+    const { name, url, image, description, year, medium, width, height, unit, sold, tokenId } =
+      artwork;
     const distance = (value: string) =>
       value && unit ? { '@type': 'Distance', name: `${value} ${unit}` } : undefined;
     const spanish = url.includes('/es/');
@@ -182,6 +193,12 @@ export class SeoTitleStrategy extends TitleStrategy {
       width: distance(width),
       height: distance(height),
       creator: { '@type': 'Person', name: SITE_NAME, url: SITE_URL },
+      identifier: {
+        '@type': 'PropertyValue',
+        propertyID: 'Ethereum ERC-721',
+        value: `${CERTIFICATES_CONTRACT}:${tokenId}`,
+      },
+      sameAs: certificateUrl(tokenId),
       isPartOf: {
         '@type': 'Collection',
         '@id': `${base}/artworks#catalogue`,

@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ 'certificate.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <p class="certificate-work">
+    <i>{{ data.artworkName }}</i
+    >. {{ data.details }}
+  </p>
+
+  <!--
+    The date is the one part that has to be fetched, so the sentence is written
+    twice: with it when it is known, and without it otherwise. A certificate
+    whose date never arrived still says everything else truthfully.
+  -->
+  @if (recordedDate(); as on) {
+    <p>{{ 'certificate.recordedOn' | translate: { date: on } }}</p>
+  } @else {
+    <p>{{ 'certificate.recorded' | translate }}</p>
+  }
+
+  <dl class="certificate-facts">
+    <dt>{{ 'certificate.token' | translate }}</dt>
+    <dd>
+      <a [href]="tokenLink" target="_blank" rel="noopener noreferrer">#{{ data.tokenId }}</a>
+    </dd>
+
+    <dt>{{ 'certificate.contract' | translate }}</dt>
+    <dd>
+      <a [href]="contractLink" target="_blank" rel="noopener noreferrer">{{ shortContract }}</a>
+    </dd>
+
+    @if (transactionLink(); as tx) {
+      <dt>{{ 'certificate.transaction' | translate }}</dt>
+      <dd><a [href]="tx" target="_blank" rel="noopener noreferrer">Etherscan ↗</a></dd>
+    }
+  </dl>
+
+  <p class="certificate-caveat">{{ 'certificate.notOwnership' | translate }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <a mat-button [href]="tokenLink" target="_blank" rel="noopener noreferrer">
+    {{ 'certificate.view' | translate }}
+  </a>
+  <button mat-button mat-dialog-close type="button">{{ 'close' | translate }}</button>
+</mat-dialog-actions>

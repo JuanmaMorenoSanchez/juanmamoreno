@@ -1,0 +1,27 @@
+.certificate-work {
+  margin: 0 0 1rem;
+}
+
+.certificate-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 1.25rem 0 0;
+
+  dt {
+    opacity: 0.7;
+  }
+
+  dd {
+    margin: 0;
+    word-break: break-all;
+  }
+}
+
+// Quieter than the rest, but never hidden: a token beside a painting invites
+// one wrong conclusion, and this is the sentence that answers it.
+.certificate-caveat {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}

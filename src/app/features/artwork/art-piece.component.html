@@ -14,6 +14,16 @@
         @if (frontalViewNft()) {
           <app-pdf-button [nfts]="[frontalViewNft()!]"></app-pdf-button>
         }
+        <!--
+          Last, and quiet. It is the least urgent thing in this row and the one
+          nobody arrives looking for — but it is the only place the site says
+          the painting is written down somewhere that outlasts the site.
+        -->
+        <app-certificate-button
+          [tokenId]="tokenId()"
+          [artworkName]="nft().name"
+          [details]="technicalLine()"
+        ></app-certificate-button>
         <app-links-button [tokenId]="tokenId()"></app-links-button>
       </ng-container>
     }

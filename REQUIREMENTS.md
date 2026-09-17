@@ -247,6 +247,13 @@ It names the catalogue the painting belongs to, at one address every page
 repeats, so that the hundred and eighty-six of them describe one body of work
 rather than a hundred and eighty-six unrelated paintings by the same person.
 
+It names the painting's certificate — `identifier` for the token, `sameAs` for
+where to read it. A claim that a painting is the artist's own, made on the
+artist's own website, is worth what any such claim is worth; the same claim
+written into Ethereum, with the address to go and read it, is one that can be
+followed and checked without asking him. Both are ordinary schema.org
+properties, so nothing has to understand a blockchain to follow them (R105).
+
 And it says whether the painting has sold, in a word from a fixed vocabulary.
 On the page that is a red dot, which is a colour and a border radius: it
 survives neither being read aloud nor being turned into plain text, and those
@@ -265,8 +272,36 @@ a page where that call did not run.
 *Proven by:* `seo-title.strategy.spec.ts` "describes the artwork and who made
 it", "places the artwork in a trail from the home page", "places the artwork in
 the catalogue the rest of the paintings are in", "says the painting can still be
-bought", "says a sold painting has sold"; and `scripts/verify-render.mjs`, which
-fails the build
+bought", "says a sold painting has sold", "names the certificate on the chain,
+and where to read it"; and `scripts/verify-render.mjs`, which fails the build
+
+### R105 — A painting says where it is written down · met
+A seal in the row of icons above the painting, and behind it what the chain
+holds: the work's own line — title, year, medium, size — the day the artist
+recorded it, the certificate's number, the contract it lives in, and the
+transaction that carries the date. All three link out to Etherscan, so nothing
+on this page has to be taken on trust.
+
+**A seal rather than a lock or a tick, and the difference is the point.** A lock
+would say the record is sealed, and no token is frozen. A tick would say
+somebody else checked it, and nobody did. This is the artist's own account of
+his own painting, written where he cannot quietly rewrite it — which is what a
+certificate of authenticity has always been, and all it has ever been.
+
+So the last line says what it is not: holding the token is not owning the
+painting. A token beside a painting invites exactly one wrong conclusion, and
+answering it is better than leaving it to be drawn.
+
+The date is the only part fetched, and the panel is written twice — with it and
+without it — because everything else is known without asking anybody. The date
+is shown in UTC rather than the reader's own zone: a block timestamp is UTC and
+Etherscan shows UTC, and a panel whose purpose is to be checked against
+Etherscan must not name a different day than Etherscan does.
+
+Every artwork has one. The catalogue is read out of the contract, so a painting
+on this site is a painting with a certificate, and there is no empty state.
+*Proven by:* `certificate-dialog.component.spec.ts` (4 tests, including the
+panel with no date and that it always says it is not ownership)
 
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is

@@ -142,6 +142,7 @@ describe('SeoTitleStrategy', () => {
       height: '130',
       unit: 'cm',
       sold: false,
+      tokenId: '152',
     };
 
     it('describes the artwork and who made it', async () => {
@@ -243,6 +244,28 @@ describe('SeoTitleStrategy', () => {
      * address to ask at. What a painting costs is answered by the artist to
      * whoever asks him, and nothing here is allowed to answer it first.
      */
+    /**
+     * A claim that a painting is his, made on his own website, is worth what
+     * any such claim is worth. The same claim written into Ethereum, with the
+     * address to go and read it, is one that can be followed and checked
+     * without asking him — and both of these are ordinary schema.org
+     * properties, so nothing has to understand a blockchain to follow them.
+     */
+    it('names the certificate on the chain, and where to read it', async () => {
+      await navigateTo('/about');
+      strategy.setArtworkStructuredData(artwork);
+
+      const data = jsonLd('artwork-structured-data');
+      expect(data.identifier).toEqual({
+        '@type': 'PropertyValue',
+        propertyID: 'Ethereum ERC-721',
+        value: '0x6E8b1D55B3fb934149b1125964a9c01a87995548:152',
+      });
+      expect(data.sameAs).toBe(
+        'https://etherscan.io/nft/0x6E8b1D55B3fb934149b1125964a9c01a87995548/152'
+      );
+    });
+
     it('never says what anything costs', async () => {
       await navigateTo('/about');
       strategy.setArtworkStructuredData(artwork);

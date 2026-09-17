@@ -26,6 +26,21 @@ export enum SortMethod {
 
 // HIDDENCERTIFICATES is now in backend
 
+/**
+ * Where the certificates live: an ERC-721 on Ethereum mainnet holding one token
+ * per catalogue record, each carrying the work's own metadata and a thumbnail
+ * written into the chain rather than linked from it.
+ */
+export const CERTIFICATES_CONTRACT = '0x6E8b1D55B3fb934149b1125964a9c01a87995548';
+
+/** Where a token or a contract is read by anybody who wants to check. */
+export const ETHERSCAN = 'https://etherscan.io';
+
+/** The address of one certificate, for a reader and for a crawler alike. */
+export function certificateUrl(tokenId: string): string {
+  return `${ETHERSCAN}/nft/${CERTIFICATES_CONTRACT}/${tokenId}`;
+}
+
 export const SOLDCERTIFICATES = [
   '23',
   '24',

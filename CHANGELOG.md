@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.65.0
+
+- **feat** — a painting says where it is written down. A seal joins the icons
+  above it, and behind it is what Ethereum holds: the work's own line, the day
+  the artist recorded it, the certificate number, the contract, and the
+  transaction that carries the date — each linking out to Etherscan so none of
+  it has to be taken on trust. The last line says what it is not, because a
+  token beside a painting invites exactly one wrong conclusion. The date is the
+  only part fetched, and the panel reads correctly without it.
+- **feat** — the same provenance in the page's structured data, as `identifier`
+  and `sameAs`. A claim made on the artist's own website is worth what any such
+  claim is worth; the same one written into Ethereum, with the address to read
+  it, can be followed and checked without asking him.
+
 ## 1.64.0
 
 - **fix** — a Spanish reader following a link from Instagram no longer lands on
