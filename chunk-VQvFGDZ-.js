@@ -1,3 +1,0 @@
-import{Zr as y$1,pn as de}from"./chunk-DyYb3Cbq.js";import{s as St}from"./chunk-BPnDgTYp.js";import{N as e}from"./main-IFHDUPZW.js";var y=(()=>{class t{constructor(){this.http=y$1(St)}sendContactMessage(e$1){return this.http.post(`${e.backendUrl}contact`,e$1)}sendQuoteRequest({email:e,message:n,artworkName:o,tokenId:r,mode:p}){let i=p===`info`?`Availability enquiry`:`Price request`,f=`${i}: ${o} (#${r})`,d=`${i} for "${o}" (id ${r}).
-
-${n.trim()?n.trim():`(no additional message)`}`;return this.sendContactMessage({name:f,email:e,message:d})}static{this.ɵfac=function(n){return new(n||t)}}static{this.ɵprov=de({token:t,factory:t.ɵfac,providedIn:`root`})}}return t})();export{y as t};
