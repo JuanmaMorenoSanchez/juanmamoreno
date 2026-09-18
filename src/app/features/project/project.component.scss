@@ -66,60 +66,11 @@
   opacity: 0.85;
 }
 
-.project-decisions {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.project-decision {
-  padding: 1.25rem;
-  border: 1px solid currentColor;
-
-  h3 {
-    margin: 0 0 0.85rem;
-    font-size: 1rem;
-  }
-
-  dl {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.4rem 1rem;
-    margin: 0;
-  }
-
-  dt {
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    white-space: nowrap;
-    padding-top: 0.15rem;
-  }
-
-  dd {
-    margin: 0;
-    line-height: 1.55;
-  }
-}
-
 .project-open,
 .project-links {
   margin: 0 0 1rem;
   padding-left: 1.1rem;
   line-height: 1.7;
-}
-
-// One column on a phone: a two-column definition list with a long value in it
-// is unreadable at that width.
-@media (max-width: 34rem) {
-  .project-decision dl {
-    grid-template-columns: 1fr;
-    gap: 0.15rem;
-  }
-
-  .project-decision dt {
-    padding-top: 0.6rem;
-  }
 }
 
 // Numbered, and each one a short case rather than a bullet: they are the three

@@ -1,6 +1,7 @@
 <div class="container margin-top project">
   <h1 class="project-title">{{ 'project.title' | translate }}</h1>
   <p class="project-lead">{{ 'project.lead' | translate }}</p>
+  <p class="project-lead">{{ 'project.lead2' | translate }}</p>
 
   <!--
     Counted rather than claimed. Every one of these is a number the build prints
@@ -50,25 +51,6 @@
     <p>{{ 'project.rot.b' | translate }}</p>
     <p class="project-note">{{ 'project.rot.c' | translate }}</p>
     <p>{{ 'project.rot.d' | translate }}</p>
-  </section>
-
-  <section class="project-section">
-    <h2>{{ 'project.decisions.title' | translate }}</h2>
-    <div class="project-decisions">
-      @for (decision of decisions; track decision.key) {
-        <article class="project-decision">
-          <h3>{{ 'project.decisions.' + decision.key + '.name' | translate }}</h3>
-          <dl>
-            <dt>{{ 'project.decisions.chose' | translate }}</dt>
-            <dd>{{ 'project.decisions.' + decision.key + '.chose' | translate }}</dd>
-            <dt>{{ 'project.decisions.instead' | translate }}</dt>
-            <dd>{{ 'project.decisions.' + decision.key + '.instead' | translate }}</dd>
-            <dt>{{ 'project.decisions.cost' | translate }}</dt>
-            <dd>{{ 'project.decisions.' + decision.key + '.cost' | translate }}</dd>
-          </dl>
-        </article>
-      }
-    </div>
   </section>
 
   <section class="project-section">

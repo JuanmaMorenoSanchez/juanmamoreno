@@ -15,11 +15,6 @@ export interface ProjectFigure {
   label: string;
 }
 
-export interface ProjectDecision {
-  /** Translation keys under `project.decisions.<name>`. */
-  key: string;
-}
-
 /**
  * Counted on 17 September 2026:
  * - requirements: 101 in this repository + 46 in the service's own
@@ -31,19 +26,6 @@ export const PROJECT_FIGURES: ProjectFigure[] = [
   { value: '180', label: 'project.figures.releases' },
   { value: '25', label: 'project.figures.unproven' },
   { value: '1', label: 'project.figures.operator' },
-];
-
-/**
- * In the order they are worth reading, which is not the order they happened.
- * The one that went wrong is third rather than last: it is the most useful of
- * them and burying it at the end would be a way of hiding it politely.
- */
-export const PROJECT_DECISIONS: ProjectDecision[] = [
-  { key: 'prices' },
-  { key: 'model' },
-  { key: 'reel' },
-  { key: 'freeze' },
-  { key: 'key' },
 ];
 
 /**

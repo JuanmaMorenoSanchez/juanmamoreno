@@ -15,16 +15,26 @@ describe('ProjectComponent', () => {
     await fixture.whenStable();
   });
 
-  it('shows every decision, each with what it cost', () => {
-    const decisions = fixture.nativeElement.querySelectorAll('.project-decision');
+  /**
+   * Where he is coming from, what it is for, then how it is built. The argument
+   * about keeping requirements honest comes after all three, because it means
+   * nothing to a reader who does not yet know what "it" is.
+   */
+  it('says what the product is for before how it is kept honest', () => {
+    const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((node: Element) =>
+      node.textContent?.trim()
+    );
 
-    expect(decisions).toHaveLength(5);
-    // Chose, instead of, and what it costs: a decision with no cost shown is a
-    // boast, and the page is an argument that the trade-off is the work.
-    for (const decision of decisions) {
-      expect(decision.querySelectorAll('dt')).toHaveLength(3);
-      expect(decision.querySelectorAll('dd')).toHaveLength(3);
-    }
+    expect(headings.slice(0, 3)).toEqual([
+      'project.about.title',
+      'project.product.title',
+      'project.architecture.title',
+    ]);
+    expect(headings.indexOf('project.rot.title')).toBeGreaterThan(2);
+  });
+
+  it('gives each of the three aims its own case', () => {
+    expect(fixture.nativeElement.querySelectorAll('.project-goals li')).toHaveLength(3);
   });
 
   it('leads with counted figures rather than adjectives', () => {

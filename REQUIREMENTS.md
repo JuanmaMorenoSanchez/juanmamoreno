@@ -387,9 +387,7 @@ things, in the order they were built — then how it is put together, and only
 then the argument about how it is kept honest, which means nothing until the
 reader knows what "it" is. It leads on counted figures rather than adjectives:
 requirements, releases, and the twenty-five requirements that admit to having no
-automated proof. Each decision it describes names what was chosen, what was
-chosen instead, and what that cost; the one that went wrong is third rather than
-last, because burying it at the end would be a way of hiding it politely.
+automated proof.
 
 **It says plainly that most of the code is written by an agent**, to a
 specification and a review. That is the page's argument rather than its
@@ -403,8 +401,8 @@ detail and a dangerous one look alike: the service's repository is private and
 stays unnamed, as do the addresses behind a guard, the names of credentials and
 the cloud it runs on. Checked rather than trusted, because the copy will be
 edited later by somebody who has forgotten why.
-*Proven by:* `project.component.spec.ts` (3 tests, including that only the
-public repository is linked), and `scripts/verify-render.mjs`, which fails the
+*Proven by:* `project.component.spec.ts` (4 tests, including the order the
+sections come in and that only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
 build on a named list of things that page may never contain — verified by
 planting one in the built page and watching it fail
 

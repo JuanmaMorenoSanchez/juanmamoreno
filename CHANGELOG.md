@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.73.0
+
+- **feat** — the product page opens in the artist's own words, in both
+  languages: what the product is based on, and how each requirement proving
+  itself is what heads off the greatest risk in a project implemented and
+  deployed largely by agents. Where he is coming from is his text too, including
+  why he worked close to product owners as a developer.
+- **chore** — the section of decisions and what each cost is removed, at his
+  request, along with everything that drew it.
+
 ## 1.72.0
 
 - **feat** — the page about running this product is rewritten to its author's

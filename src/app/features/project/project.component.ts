@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   PROJECT_CHANGELOG,
-  PROJECT_DECISIONS,
   PROJECT_FIGURES,
   PROJECT_GOALS,
   PROJECT_REPO,
@@ -38,7 +37,6 @@ export class ProjectComponent {
 
   protected readonly figures = PROJECT_FIGURES;
   protected readonly goals = PROJECT_GOALS;
-  protected readonly decisions = PROJECT_DECISIONS;
   protected readonly repo = PROJECT_REPO;
   protected readonly requirements = PROJECT_REQUIREMENTS;
   protected readonly changelog = PROJECT_CHANGELOG;
