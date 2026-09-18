@@ -385,9 +385,18 @@ arrives with the address in hand rather than being come across by a gallery.
 It opens with where he is coming from, then what the product is for — three
 things, in the order they were built — then how it is put together, and only
 then the argument about how it is kept honest, which means nothing until the
-reader knows what "it" is. It leads on counted figures rather than adjectives:
-requirements, releases, and the twenty-five requirements that admit to having no
-automated proof.
+reader knows what "it" is. It leads on two counted figures rather than
+adjectives: the requirements written down across both halves, and the one person
+who operates the whole of it.
+
+**How it is put together is drawn, not only described.** Prose cannot show a
+shape, and the shape is the argument: everything fans out from a single private
+service, and the one arrow that leaves the machinery altogether is the
+signature, which a person gives from a phone. The picture is inline svg in one
+colour taken from `currentColor`, so it reads on either ground; every word in it
+is a translation key, so the diagram is bilingual, searchable and readable
+aloud, like the page around it. It names what each part does and never what it
+is bought from.
 
 **It says plainly that most of the code is written by an agent**, to a
 specification and a review. That is the page's argument rather than its
@@ -401,8 +410,9 @@ detail and a dangerous one look alike: the service's repository is private and
 stays unnamed, as do the addresses behind a guard, the names of credentials and
 the cloud it runs on. Checked rather than trusted, because the copy will be
 edited later by somebody who has forgotten why.
-*Proven by:* `project.component.spec.ts` (4 tests, including the order the
-sections come in and that only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
+*Proven by:* `project.component.spec.ts` (5 tests, including the order the
+sections come in, that every label in the diagram is a translation key, and that
+only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
 build on a named list of things that page may never contain — verified by
 planting one in the built page and watching it fail
 

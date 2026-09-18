@@ -37,12 +37,30 @@ describe('ProjectComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('.project-goals li')).toHaveLength(3);
   });
 
+  /**
+   * The picture is bilingual like everything else, so none of its words may be
+   * baked into it: a label drawn rather than written cannot be read aloud,
+   * searched, or translated.
+   */
+  it('draws the architecture with words the page can translate', () => {
+    const svg = fixture.nativeElement.querySelector('.project-diagram svg');
+
+    expect(svg?.getAttribute('aria-label')).toBe('project.diagram.caption');
+    const labels = [...svg.querySelectorAll('text')].map((node: Element) =>
+      node.textContent?.trim()
+    );
+    expect(labels).toContain('project.diagram.service');
+    expect(labels).toContain('project.diagram.chain');
+    // The step a person takes, which is the point of drawing it at all.
+    expect(labels).toContain('project.diagram.signs');
+  });
+
   it('leads with counted figures rather than adjectives', () => {
     const figures = [...fixture.nativeElement.querySelectorAll('.project-figure dt')].map(
       (node: Element) => node.textContent?.trim()
     );
 
-    expect(figures).toEqual(['147', '180', '25', '1']);
+    expect(figures).toEqual(['147', '1']);
   });
 
   /**

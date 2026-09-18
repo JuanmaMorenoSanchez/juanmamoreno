@@ -18,13 +18,10 @@ export interface ProjectFigure {
 /**
  * Counted on 17 September 2026:
  * - requirements: 101 in this repository + 46 in the service's own
- * - releases: entries in the two changelogs, 109 + 71
- * - without an automated proof: reported by the build's own requirements check
+ * - operator: one, which is the whole point of the second figure
  */
 export const PROJECT_FIGURES: ProjectFigure[] = [
   { value: '147', label: 'project.figures.requirements' },
-  { value: '180', label: 'project.figures.releases' },
-  { value: '25', label: 'project.figures.unproven' },
   { value: '1', label: 'project.figures.operator' },
 ];
 

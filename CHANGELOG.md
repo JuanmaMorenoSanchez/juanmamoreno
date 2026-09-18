@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.74.0
+
+- **feat** — the product page draws the architecture rather than only
+  describing it: reader and artist, the pages they each get, the private
+  service everything fans out from, what it reaches for, and the one arrow
+  that leaves the machinery — the transaction the artist signs on a phone.
+  Inline svg, one colour, every label a translation key, and nothing in it
+  named after what it is bought from.
+- **feat** — the page is in his own words throughout, in both languages; the
+  section about what the work cost is gone, and it now leads on two figures
+  instead of four.
+
 ## 1.73.0
 
 - **feat** — the product page opens in the artist's own words, in both
