@@ -154,7 +154,14 @@
       "germany": "Germany",
       "mexico": "Mexico",
       "italy": "Italy"
-    }
+    },
+    "placeLine": "Alcalá la Real (Jaén), 1986. Lives in Madrid. Represented by Galería Zunino (Seville).",
+    "proseDownload": "Download the biography",
+    "proseWrite": "Write the biography",
+    "proseRewrite": "Write it again",
+    "proseWritten": "The biography has been written.",
+    "proseFailed": "The biography could not be written.",
+    "proseInDossier": "Biography instead of the list"
   },
   "statement": {
     "title": "Statement",

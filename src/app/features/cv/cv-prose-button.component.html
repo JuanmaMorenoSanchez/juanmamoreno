@@ -1,0 +1,34 @@
+<!--
+  Nothing at all for a reader until one has been written: an empty offer is
+  worse than no offer, and the page is complete without it.
+-->
+@if (written()) {
+  <button
+    mat-icon-button
+    type="button"
+    [disabled]="busy()"
+    (click)="download()"
+    [matTooltip]="'cv.proseDownload' | translate"
+    [attr.aria-label]="'cv.proseDownload' | translate"
+  >
+    @if (busy()) {
+      <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+    } @else {
+      <mat-icon>menu_book</mat-icon>
+    }
+  </button>
+}
+
+<!-- His: it costs a call, and he reads it before anybody else does. -->
+@if (isArtist()) {
+  <button
+    mat-icon-button
+    type="button"
+    [disabled]="busy()"
+    (click)="rewrite()"
+    [matTooltip]="(written() ? 'cv.proseRewrite' : 'cv.proseWrite') | translate"
+    [attr.aria-label]="(written() ? 'cv.proseRewrite' : 'cv.proseWrite') | translate"
+  >
+    <mat-icon>auto_awesome</mat-icon>
+  </button>
+}

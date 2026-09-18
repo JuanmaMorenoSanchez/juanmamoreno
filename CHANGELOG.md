@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.71.0
+
+- **feat** — the cv can be read as a life rather than a table. A button beside
+  the download offers the same career as three or four paragraphs, and a dossier
+  can carry either. A gallery wants the list, which is scanned rather than read;
+  somebody deciding whether to open the list at all wants the paragraph.
+  Downloading is anybody's and writing it is his — it costs a model call, and it
+  is a biography of a living person written by a machine.
+- **feat** — the cv downloaded on its own now opens with his name and the line
+  that places him: Alcalá la Real (Jaén), 1986, living in Madrid, represented by
+  Galería Zunino. Inside a dossier it does not, because the cover has said both
+  already.
+
 ## 1.70.0
 
 - **feat** — the theme, the language and the way into the workshop are icons at

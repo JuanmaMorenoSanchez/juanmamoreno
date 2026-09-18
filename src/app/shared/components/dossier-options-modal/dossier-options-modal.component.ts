@@ -6,6 +6,7 @@ import {
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
+  MAT_DIALOG_DATA,
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
@@ -38,10 +39,21 @@ export class DossierOptionsModalComponent {
   customText = '';
   includeContact = false;
   includeCv = false;
+  /** The biography in place of the list, when one has been written. */
+  cvAsProse = false;
   includeStatement = false;
   isSubmitting = false;
 
   private dialogRef = inject<MatDialogRef<DossierOptionsModalComponent>>(MatDialogRef);
+
+  /**
+   * What the page that opened this already knows. One thing so far — whether a
+   * biography has been written — and the switch that would use it is not
+   * offered when it has not.
+   */
+  protected readonly data = inject<{ proseAvailable?: boolean }>(MAT_DIALOG_DATA, {
+    optional: true,
+  }) ?? { proseAvailable: false };
 
   submit() {
     this.isSubmitting = true;
@@ -50,6 +62,7 @@ export class DossierOptionsModalComponent {
       customText: this.customText,
       includeContact: this.includeContact,
       includeCv: this.includeCv,
+      cvAsProse: this.cvAsProse,
       includeStatement: this.includeStatement,
     };
     this.dialogRef.close(options);

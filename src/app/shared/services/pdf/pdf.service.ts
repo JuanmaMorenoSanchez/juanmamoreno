@@ -6,6 +6,7 @@ import {
   VALIDTRAITS,
 } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
+import { ARTIST } from '@domain/artwork/mint-vocabulary';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
@@ -217,7 +218,15 @@ export class PdfService {
     includeStatement?: boolean,
     customTitle?: string,
     customText?: string,
-    onProgress?: (fraction: number) => void
+    onProgress?: (fraction: number) => void,
+    /**
+     * The biography, when this dossier is to carry one instead of the list.
+     *
+     * Passed in rather than fetched here: the api holds it and the page that
+     * opened this dialog has already asked. Null is the ordinary case and the
+     * one every dossier had before.
+     */
+    cvProse?: string | null
   ): Promise<jsPDF> {
     const writer = await this.newWriter();
     // Report progress (0..1) after each section so the button can show a
@@ -252,7 +261,10 @@ export class PdfService {
     }
     if (includeCv) {
       writer.newPage();
-      this.addCv(writer);
+      // A list is scanned and a biography is read. Which of the two a dossier
+      // wants depends on who is opening it, and only he knows that.
+      if (cvProse) this.addCvProse(writer, cvProse);
+      else this.addCv(writer);
       step();
     }
     if (includeContact) {
@@ -270,10 +282,50 @@ export class PdfService {
     return writer.doc;
   }
 
+  /**
+   * The cv on its own, which needs a heading the dossier's version does not.
+   *
+   * Inside a dossier the name is on the cover and the reader has been through
+   * twenty pages of his paintings to get here. On its own it is a sheet of
+   * years and places arriving in an inbox with nothing around it, so it opens
+   * with who it belongs to and the one line that places him.
+   */
   public async createCV(): Promise<jsPDF> {
     const writer = await this.newWriter(PDF_PAGE.a4);
+
+    writer.paragraph(ARTIST, { size: PDF_TYPE.size.coverArtist, style: 'bold' });
+    writer.space(2);
+    writer.paragraph(this.translateService.instant('cv.placeLine') as string, {
+      size: PDF_TYPE.size.body,
+      color: PDF_COLORS.soft,
+    });
+    writer.space(8);
+
     this.addCv(writer);
     return writer.doc;
+  }
+
+  /**
+   * The cv as a biography, for a dossier that would rather be read than
+   * scanned. Written by the api and stored there; this only sets it.
+   */
+  public async createCvProse(prose: string): Promise<jsPDF> {
+    const writer = await this.newWriter(PDF_PAGE.a4);
+
+    writer.paragraph(ARTIST, { size: PDF_TYPE.size.coverArtist, style: 'bold' });
+    writer.space(8);
+    this.addCvProse(writer, prose);
+
+    return writer.doc;
+  }
+
+  /** The biography, set as a reading column like the statement is. */
+  private addCvProse(writer: PdfWriter, prose: string): void {
+    this.beginTextColumn(writer);
+    for (const paragraph of prose.split(/\n{2,}/).filter((part) => part.trim())) {
+      writer.paragraph(paragraph.trim(), this.textColumnStyle(writer));
+      writer.space(3);
+    }
   }
 
   // --- Cover: black & white zoomed crop of a random artwork, full bleed ---

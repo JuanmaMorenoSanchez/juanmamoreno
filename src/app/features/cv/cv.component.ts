@@ -6,12 +6,20 @@ import { CV_OBJECT, DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { Timeline, TimelineItem } from '@domain/cv/timeline.entity';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '../../shared/components/pdf-button/pdf-button.component';
+import { CvProseButtonComponent } from './cv-prose-button.component';
 
 @Component({
   selector: 'app-cv',
   templateUrl: './cv.component.html',
   styleUrls: ['./cv.component.scss'],
-  imports: [MatGridList, MatGridTile, PdfButtonComponent, MatDivider, TranslatePipe],
+  imports: [
+    MatGridList,
+    MatGridTile,
+    PdfButtonComponent,
+    CvProseButtonComponent,
+    MatDivider,
+    TranslatePipe,
+  ],
 })
 export class CvComponent {
   private breakpointObserver = inject(BreakpointObserver);

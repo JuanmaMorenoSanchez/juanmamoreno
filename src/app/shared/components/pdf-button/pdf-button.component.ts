@@ -10,6 +10,8 @@ import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { DossierOptionsModalComponent } from '@shared/components/dossier-options-modal/dossier-options-modal.component';
 import { SNACKBAR_DURATION_MS } from '@shared/constants/common.constants';
+import { CvProseService } from '@shared/services/cv-prose.service';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { PdfService } from '@shared/services/pdf/pdf.service';
 import type { jsPDF } from 'jspdf';
 
@@ -23,6 +25,8 @@ export class PdfButtonComponent {
   private translateService = inject(TranslateService);
   private pdfService = inject(PdfService);
   private dialog = inject(MatDialog);
+  private cvProse = inject(CvProseService);
+  private language = inject(LanguageUrlService);
   private snackBar = inject(MatSnackBar);
 
   nfts = input<Nft[]>([]);
@@ -69,13 +73,17 @@ export class PdfButtonComponent {
             `${nft.name || 'juanmamoreno'}.pdf`
           );
         } else {
-          this.openDossierDialog();
+          void this.openDossierDialog();
         }
         break;
     }
   }
 
-  private openDossierDialog(): void {
+  private async openDossierDialog(): Promise<void> {
+    // Asked for before the dialog opens, so the switch that uses it is only
+    // offered when there is something behind it.
+    const prose = (await this.cvProse.read(this.language.inSpanish() ? 'es' : 'en'))?.body ?? null;
+
     const dialogRef = this.dialog.open(DossierOptionsModalComponent, {
       data: {
         includeContact: true,
@@ -83,12 +91,14 @@ export class PdfButtonComponent {
         includeStatement: true,
         customTitle: '',
         customText: '',
+        proseAvailable: Boolean(prose),
       },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const { includeContact, includeCv, includeStatement, customTitle, customText } = result;
+        const { includeContact, includeCv, cvAsProse, includeStatement, customTitle, customText } =
+          result;
         this.saveDocument(
           this.pdfService.createDossier(
             this.nfts(),
@@ -97,7 +107,8 @@ export class PdfButtonComponent {
             includeStatement,
             customTitle,
             customText,
-            (fraction) => this.progress.set(fraction)
+            (fraction) => this.progress.set(fraction),
+            cvAsProse ? prose : null
           ),
           'dossier-juanmamoreno.pdf'
         );

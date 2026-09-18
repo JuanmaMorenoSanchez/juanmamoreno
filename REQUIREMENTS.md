@@ -430,6 +430,33 @@ three carries an icon and a label and no word, that a reader is shown the door
 and nothing behind it, and that the theme names what it will switch to rather
 than what is already showing)
 
+### R110 — The cv can be read as a life rather than a table · met
+Beside the download on the cv page, a second button offers the same career as
+three or four paragraphs. A dossier can carry either.
+
+They are two things for two readers. A gallery wants the list — it is scanned,
+not read, and being a table is the point of it. Somebody deciding whether to
+open the list at all wants the paragraph.
+
+**Downloading is anybody's; writing it is his.** The api writes it and keeps it,
+because it costs a model call and a cv changes a few times a year, so writing
+one per visit would pay again for an answer nobody had changed — and a public
+page that spends money per press is one somebody eventually holds F5 on. It is
+also a biography of a living person written by a machine, so he reads it before
+anybody else does. Until he has written one the page offers nothing, because an
+empty offer is worse than no offer.
+
+The list is rendered here and sent with the request. The cv lives in this
+repository and nowhere else, and a copy on the server would be a second thing to
+remember to update — the stale one being the one nobody was looking at.
+
+**The cv downloaded on its own opens with his name and one line placing him**;
+inside a dossier it does not, because the cover has already said both and the
+reader has come through twenty pages of paintings to reach it.
+*Proven by:* `cv-prose.service.spec.ts` (5 tests, including what the list looks
+like by the time a model sees it), and the downloaded cv read back from the
+file: A4, and carrying the name, the year, the city and the gallery
+
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
 for sale. The offer carries where to ask — the painting's own page, which is

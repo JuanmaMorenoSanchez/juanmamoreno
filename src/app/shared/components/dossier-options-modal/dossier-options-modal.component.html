@@ -8,7 +8,18 @@
     </div>
 
     <div class="pdf-options-group">
-      <mat-slide-toggle [(ngModel)]="includeCv">{{ 'dossier.includeCv' | translate }}</mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="includeCv">{{
+        'dossier.includeCv' | translate
+      }}</mat-slide-toggle>
+      <!--
+        Only when there is one to use. Offering the choice with nothing behind it
+        would be a switch that silently does nothing.
+      -->
+      @if (includeCv && data.proseAvailable) {
+        <mat-slide-toggle class="pdf-options-nested" [(ngModel)]="cvAsProse">
+          {{ 'cv.proseInDossier' | translate }}
+        </mat-slide-toggle>
+      }
     </div>
 
     <div class="pdf-options-group">

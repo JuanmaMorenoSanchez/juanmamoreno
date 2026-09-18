@@ -9,7 +9,11 @@
   @if (!isCreating()) {
     <mat-icon>assignment</mat-icon>
   } @else if (progress() > 0) {
-    <mat-progress-spinner diameter="24" mode="determinate" [value]="progressPercent()"></mat-progress-spinner>
+    <mat-progress-spinner
+      diameter="24"
+      mode="determinate"
+      [value]="progressPercent()"
+    ></mat-progress-spinner>
   } @else {
     <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
   }
