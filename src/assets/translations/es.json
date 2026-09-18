@@ -320,20 +320,43 @@
   },
   "project": {
     "title": "Cómo dirijo este producto",
-    "lead": "Soy desarrollador, tech lead y diseñador, y me he movido al lado de la mesa donde se toman las decisiones. Este es el producto que dirijo: el catálogo público de un pintor en activo y la tubería privada que lo alimenta. Cada requisito dice por qué existe y qué demuestra que sigue funcionando, y la compilación falla cuando una de esas pruebas deja de ser cierta.",
+    "lead": "Un producto que especifico, decido y del que respondo: certificados de autenticidad que no dependen de nadie, un catálogo que cualquiera puede leer, y las herramientas que mantienen a los dos en marcha. Cada requisito dice por qué existe y qué demuestra que sigue funcionando, y la compilación falla cuando una de esas pruebas deja de ser cierta.",
     "figures": {
       "requirements": "requisitos, cada uno con un motivo y una prueba",
       "releases": "versiones publicadas, una línea cada una",
       "unproven": "de ellos admiten no tener prueba automática",
       "operator": "persona opera todo el sistema"
     },
+    "about": {
+      "title": "De dónde vengo",
+      "a": "Diez años como desarrollador full stack, dos como tech lead y dos como diseñador, sobre un fondo de creación artística más que de industria del software.",
+      "b": "Trabajando como desarrollador siempre fui del tipo al que le interesa más definir y diseñar la solución que implementarla. El problema técnico era la parte entretenida; decidir qué merecía la pena construir, y por qué, era la que me importaba.",
+      "c": "Ahora que los agentes se han hecho cargo de casi toda la implementación y de casi todo el problem solving, pivotar hacia producto no es un cambio de rumbo. Es el mismo trabajo sin la mitad que nunca fue lo mío, y es donde creo que puedo aportar valor."
+    },
     "product": {
-      "title": "Qué es el producto",
-      "a": "Un catálogo de 192 pinturas, escrito como 400 páginas estáticas en inglés y español, de modo que todas se leen sin una sola línea de JavaScript. Detrás, un servicio prepara las fotografías, redacta y traduce un ensayo para cada cuadro, renderiza vídeo para las redes y registra cada obra en Ethereum.",
-      "b": "Lo opera una sola persona. Esa restricción decide todo lo que hay en esta página: no hay equipo que absorba una mala decisión, ni QA que atrape una regresión, y nada puede exigir a un humano a las tres de la mañana."
+      "title": "El producto, y para qué es",
+      "lead": "Tres cosas, en el orden en que se construyeron.",
+      "one": {
+        "name": "Certificados que no dependen de nadie",
+        "body": "Un certificado de autenticidad para cada obra física, escrito en una cadena pública en la que solo el autor tiene la llave. Sin intermediario en quien confiar, sin cuota que seguir pagando y sin nada que caduque si a una empresa deja de interesarle. El registro está escrito dentro de la propia cadena y no enlazado desde ella, de modo que sobrevive a esta web, a la galería y al propio artista."
+      },
+      "two": {
+        "name": "Un catálogo que cualquiera puede leer",
+        "body": "La obra —física y generativa— dispuesta para que cualquiera la recorra, la filtre y se lleve lo que necesite: la ficha técnica, el certificado en pdf, un ensayo sobre el cuadro, dónde aparece esa pintura en internet. 192 pinturas escritas como 400 páginas estáticas en inglés y español, todas legibles sin una sola línea de JavaScript."
+      },
+      "three": {
+        "name": "La herramienta que el autor usa de verdad",
+        "body": "El trabajo de cada semana, automatizado de principio a fin: corregir la fotografía de un cuadro, recortarla al marco, escribir y traducir el texto, registrar la obra en la cadena y publicar las imágenes y el vídeo que se generaron para ella. Lo que era una tarde es ahora unas pocas decisiones y una firma."
+      }
+    },
+    "architecture": {
+      "title": "Cómo está montado",
+      "a": "El sitio es estático en sentido estricto. Cada página, en los dos idiomas, se escribe en disco antes de publicarse y se sirve como archivo: no hay servidor que renderice nada, y por tanto no hay servidor que se caiga, que parchear ni que costear. La compilación se niega a publicarse si alguna página ha salido mal.",
+      "b": "Detrás, un servicio privado en contenedor hace lo que no puede ser estático: prepara las fotografías, escribe y traduce los ensayos, renderiza el vídeo, publica en las redes y arma las transacciones. Lo que produce va a una base de datos documental, y lo grande a almacenamiento de objetos.",
+      "c": "La cadena es Ethereum. Cada certificado es un token cuyo contenido —título, técnica, medidas, año y una fotografía pequeña— está escrito dentro de la cadena en lugar de apuntado desde ella, así que nada tiene que seguir en línea para que el registro se pueda leer. Las imágenes en resolución web viven en un almacenamiento que se paga una sola vez. La clave que firma no está en ningún servidor: cada certificado se firma a mano, desde el móvil, que es lo único que no se puede automatizar y lo único que no se debe."
     },
     "rot": {
-      "title": "Requisitos que no pueden pudrirse en silencio",
+      "title": "No perder el control, que es el riesgo de trabajar así",
       "a": "Un changelog es un registro del pasado y no puede volverse falso. Un documento de requisitos es una afirmación sobre el presente, y sí puede: en silencio, y casi siempre lo hace.",
       "b": "Por eso cada entrada nombra aquello que la demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene prueba, si una prueba nombra un archivo borrado o si cita un test que se ha renombrado.",
       "c": "Existe porque cuatro requisitos pasaron quince versiones marcados como «cumplido · demostrado por» unas pruebas borradas varias versiones antes. Nadie mintió. Nadie se dio cuenta. Ese es exactamente el fallo que un documento de requisitos debería impedir y el que peor impide.",

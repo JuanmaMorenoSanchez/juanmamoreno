@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.72.0
+
+- **feat** — the page about running this product is rewritten to its author's
+  outline. It now opens with where he is coming from — ten years building, two
+  leading, two designing, over a background in art rather than software — then
+  what the product is for as three numbered aims, then how it is put together,
+  and only then the argument about keeping control, which means nothing until a
+  reader knows what "it" is.
+- **feat** — the architecture is described without naming anything that runs it.
+  "A containerised service", "a document database", "object storage": which
+  cloud, which database and which indexer are nobody's business and are exactly
+  what makes a page like this useful to the wrong reader. The build now refuses
+  the page if any of those names appears in it, which was checked by planting
+  each one and watching it fail.
+
 ## 1.71.3
 
 - **chore** — the biography button is commented out of the cv page. What the

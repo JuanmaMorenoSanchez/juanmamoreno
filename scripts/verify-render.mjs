@@ -197,6 +197,16 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       'europe-west1',
       '/pendingmint',
       '/studio',
+      // Named now that the page describes the architecture. Which cloud it runs
+      // on, which database, which indexer and which model are nobody's business
+      // and are exactly the details that make a page like this useful to the
+      // wrong reader. The prose says "a document database", "object storage",
+      // "a containerised service" and means it.
+      'Google Cloud',
+      'gcloud',
+      'Cloud Run',
+      'Firestore',
+      'Alchemy',
       // Not /door. It was on this list when it was an address only its owner
       // knew; it is now the sign-in icon at the end of the bar on every page,
       // offered to everybody on purpose. Its security was never the secrecy of

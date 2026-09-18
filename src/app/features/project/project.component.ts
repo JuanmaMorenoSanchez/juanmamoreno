@@ -4,6 +4,7 @@ import {
   PROJECT_CHANGELOG,
   PROJECT_DECISIONS,
   PROJECT_FIGURES,
+  PROJECT_GOALS,
   PROJECT_REPO,
   PROJECT_REQUIREMENTS,
 } from '@domain/project/project.constants';
@@ -36,6 +37,7 @@ export class ProjectComponent {
   protected readonly lang = inject(LanguageUrlService);
 
   protected readonly figures = PROJECT_FIGURES;
+  protected readonly goals = PROJECT_GOALS;
   protected readonly decisions = PROJECT_DECISIONS;
   protected readonly repo = PROJECT_REPO;
   protected readonly requirements = PROJECT_REQUIREMENTS;

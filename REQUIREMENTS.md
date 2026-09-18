@@ -381,11 +381,15 @@ else and deliberately absent from the menu.
 It is written for somebody deciding whether to hire the person running this,
 which is a different reader from the one the rest of the site is for — so it
 arrives with the address in hand rather than being come across by a gallery.
-It leads on counted figures rather than adjectives: requirements, releases, and
-the twenty-five requirements that admit to having no automated proof. Each
-decision it describes names what was chosen, what was chosen instead, and what
-that cost; the one that went wrong is third rather than last, because burying
-it at the end would be a way of hiding it politely.
+
+It opens with where he is coming from, then what the product is for — three
+things, in the order they were built — then how it is put together, and only
+then the argument about how it is kept honest, which means nothing until the
+reader knows what "it" is. It leads on counted figures rather than adjectives:
+requirements, releases, and the twenty-five requirements that admit to having no
+automated proof. Each decision it describes names what was chosen, what was
+chosen instead, and what that cost; the one that went wrong is third rather than
+last, because burying it at the end would be a way of hiding it politely.
 
 **It says plainly that most of the code is written by an agent**, to a
 specification and a review. That is the page's argument rather than its

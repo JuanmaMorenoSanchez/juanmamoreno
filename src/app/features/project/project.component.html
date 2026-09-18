@@ -16,9 +16,32 @@
   </dl>
 
   <section class="project-section">
+    <h2>{{ 'project.about.title' | translate }}</h2>
+    <p>{{ 'project.about.a' | translate }}</p>
+    <p>{{ 'project.about.b' | translate }}</p>
+    <p>{{ 'project.about.c' | translate }}</p>
+  </section>
+
+  <section class="project-section">
     <h2>{{ 'project.product.title' | translate }}</h2>
-    <p>{{ 'project.product.a' | translate }}</p>
-    <p>{{ 'project.product.b' | translate }}</p>
+    <p>{{ 'project.product.lead' | translate }}</p>
+
+    <!-- Numbered, because they were built in this order and each needed the one before. -->
+    <ol class="project-goals">
+      @for (goal of goals; track goal) {
+        <li>
+          <h3>{{ 'project.product.' + goal + '.name' | translate }}</h3>
+          <p>{{ 'project.product.' + goal + '.body' | translate }}</p>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.architecture.title' | translate }}</h2>
+    <p>{{ 'project.architecture.a' | translate }}</p>
+    <p>{{ 'project.architecture.b' | translate }}</p>
+    <p>{{ 'project.architecture.c' | translate }}</p>
   </section>
 
   <section class="project-section">

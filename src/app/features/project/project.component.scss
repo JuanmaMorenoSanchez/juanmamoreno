@@ -121,3 +121,23 @@
     padding-top: 0.6rem;
   }
 }
+
+// Numbered, and each one a short case rather than a bullet: they are the three
+// answers to "what is it for", which is the question a recruiter opens with.
+.project-goals {
+  margin: 1.25rem 0 0;
+  padding-left: 1.4rem;
+
+  li {
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}

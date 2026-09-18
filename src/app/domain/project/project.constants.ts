@@ -46,6 +46,13 @@ export const PROJECT_DECISIONS: ProjectDecision[] = [
   { key: 'key' },
 ];
 
+/**
+ * What the product is for, in the order the three were built: the certificates
+ * first, the catalogue that shows them second, and the tooling that keeps both
+ * fed third. Each needed the one before it to exist.
+ */
+export const PROJECT_GOALS = ['one', 'two', 'three'] as const;
+
 /** The public half. The service is in a private repository and stays unnamed. */
 export const PROJECT_REPO = 'https://github.com/JuanmaMorenoSanchez/juanmamoreno';
 export const PROJECT_REQUIREMENTS = `${PROJECT_REPO}/blob/master/REQUIREMENTS.md`;
