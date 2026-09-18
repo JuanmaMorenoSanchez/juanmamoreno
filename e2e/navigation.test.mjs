@@ -189,12 +189,10 @@ describe('reading the site the way you like it', () => {
     const page = await openPage(browser, '/artworks');
     await page.waitForSelector('app-top-menu', READY);
 
-    // A level down since the bar was thinned out: the theme, the language and
-    // the way into the studio are settings rather than places, and they live
-    // behind "More" now.
-    await page.locator('app-top-menu button.more-menu:visible').first().click();
+    // In the bar itself: the theme, the language and the way into the studio
+    // are icons at the end of it, where they were behind a "More" tab.
     await page.waitForSelector('button.theme-toggle', READY);
-    await page.locator('button.theme-toggle:visible').first().click();
+    await page.locator('app-top-menu button.theme-toggle:visible').first().click();
     await page.waitForFunction(
       () => document.documentElement.dataset.theme === 'dark',
       undefined,

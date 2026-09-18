@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.71.1
+
+- **fix** — the browser test for the remembered theme clicked a "More" tab that
+  no longer exists. The toggle moved into the bar in 1.70.0 and the unit tests
+  were updated with it, but the end-to-end suite is not part of the deploy and
+  was not run: it drives a real browser against a running site, so nothing
+  noticed until it was run by hand.
+
 ## 1.71.0
 
 - **feat** — the cv can be read as a life rather than a table. A button beside
