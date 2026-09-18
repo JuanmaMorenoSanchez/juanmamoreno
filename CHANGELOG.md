@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.71.3
+
+- **chore** — the biography button is commented out of the cv page. What the
+  brief writes is correct about the facts and empty of the person, which is
+  worse than no biography. Everything behind it stays — the api still writes and
+  keeps one, and a dossier can still carry it — so turning it back on is
+  uncommenting one line, once the brief writes something worth reading.
+
 ## 1.71.2
 
 - **fix** — the three setting icons in the bar are smaller, 36px against the

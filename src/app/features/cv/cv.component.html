@@ -6,7 +6,14 @@
       <h2 class="catalog-heading">
         CV
         <app-pdf-button [downloadFileType]="downloadType"></app-pdf-button>
-        <app-cv-prose-button></app-cv-prose-button>
+        <!--
+          Off for now. The biography it writes reads as soulless: correct about
+          the facts and empty of the person, which is worse than no biography.
+          Everything behind it stays — the api still writes and keeps one, and a
+          dossier can still carry it — so turning it back on is uncommenting
+          this line once the brief writes something worth reading.
+        -->
+        <!-- <app-cv-prose-button></app-cv-prose-button> -->
       </h2>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="descColSpan">
