@@ -320,68 +320,76 @@
   },
   "project": {
     "title": "juanmamoreno.com, the product",
-    "lead": "It is built on certificates of authenticity that depend on nobody but its own administrator, a catalogue anybody can browse, and a set of tools that automate the digital workflows that come of making art.",
+    "lead": "It is built on on-chain certificates of authenticity owned by the artist, a catalogue anybody can browse, and a set of tools that automate the digital workflows that come out of his work.",
+    "lead2": "The solution delegates implementation, along with the test and deployment pipelines, to AI agents. The flow is automated: the product owner puts requirements to the agent, and the agent implements them, runs the unit tests and the end-to-end tests, makes sure the requirements that were already there still hold, and deploys the front end and the services.",
     "figures": {
-      "requirements": "requirements, each with a reason and a proof",
-      "releases": "releases, one line each, newest first",
-      "unproven": "of them honest about having no automated proof",
+      "requirements": "requirements, each with a reason and unit and end-to-end tests that keep it alive",
       "operator": "person operates the whole thing"
     },
     "about": {
       "title": "Where I am coming from",
       "a": "Ten years as a full-stack developer, two as a tech lead and two as a designer, over a background in artistic creation and design.",
-      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than implementing it. Deciding what was worth building, and why, was the part that mattered to me. That is why I usually worked close to the product owners.",
-      "c": "Now that agents have taken over almost all of the implementation and almost all of the problem-solving, moving toward product is the natural progression for me."
+      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than implementing it. Deciding what was worth building, and why, was what mattered most to me. That is why I usually worked close to the product owners.",
+      "c": "Now that agents have taken over almost all of the implementation, and almost all of the problem-solving, moving toward product design is the natural progression for me."
     },
     "product": {
       "title": "The product, and what it is for",
       "lead": "Three things, in the order they were built.",
       "one": {
-        "name": "Certificates that depend on nobody",
-        "body": "A certificate of authenticity for every physical work, written to a public chain where the artist alone holds the key. No intermediary to trust, no subscription to keep paying, and nothing that lapses if a company loses interest. The record is written into the chain itself rather than linked from it, so it survives the website, the gallery and the artist."
+        "name": "Certificates of authenticity",
+        "body": "A certificate of authenticity for every physical work, written to a public chain (Ethereum) where the artist alone holds the key. No intermediary to trust, no fees and no dependencies. The record is written inside the chain rather than linked from it, so the certificates are a thing of their own that outlives this app and even the artist."
       },
       "two": {
         "name": "A catalogue anybody can read",
-        "body": "The work — physical and generative — laid out so that anyone can move through it, narrow it, and take away what they need: the technical sheet, the certificate as a pdf, an essay about the painting, where that painting turns up elsewhere on the internet. 192 paintings written out as 400 static pages in English and Spanish, every one of them readable with no JavaScript at all."
+        "body": "The work — physical and generative — laid out so that anyone can move through it, narrow it, generate the technical sheet as a pdf, download a certificate of authenticity as a pdf, an essay about the painting, or a list of links to where that painting turns up on the internet. 192 on-chain paintings come to some 400 static pages in English and Spanish, every one of them readable with no JavaScript at all."
       },
       "three": {
-        "name": "The tooling the artist actually uses",
-        "body": "The week-to-week work, automated end to end: correcting the photograph of a canvas, cutting it to the frame, writing and translating the text, recording the work on the chain, and posting the images and the video that were generated for it. What used to be an evening is now a few decisions and a signature."
+        "name": "A tool for the artist",
+        "body": "The week-to-week work, automated: correcting the photograph of a canvas, cutting it to the frame, taking the glare off, setting the levels, then writing and translating the text, recording the work on the chain, and publishing the images and the video that were generated for it. All of it is built so that the human part is as small as it can be."
       }
     },
     "architecture": {
       "title": "How it is put together",
-      "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as files — there is no server rendering anything, which means no server to fall over, to patch, or to pay for. The build refuses to publish itself if a page came out wrong.",
-      "b": "Behind it, a private containerised service does the work that cannot be static: preparing photographs, writing and translating the essays, rendering video, publishing to the social networks, and assembling the transactions. What it produces goes into a document database, and anything large into object storage.",
-      "c": "The chain is Ethereum. Each certificate is a token whose content — title, medium, dimensions, year and a small photograph — is written inside the chain rather than pointed at from it, so nothing needs to stay online for the record to be readable. The web-resolution images sit in storage paid for once. The key that signs is on no server at all: every certificate is signed by hand, from a phone, which is the one thing that cannot be automated and the one thing that should not be."
+      "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as a file: there is no server rendering anything, and so no server to fall over, to patch or to pay for. The build refuses to publish itself if a page has come out wrong.",
+      "b": "Behind it, a private containerised service does the rest: it prepares the photographs and the thumbnails, writes and translates the essays using language models, renders the video, runs reverse image searches, publishes to the social networks and assembles the chain transactions. What it produces goes to a document database, and the large files to a bucket.",
+      "c": "The blockchain is Ethereum. Each certificate is a token whose content — title, medium, dimensions, year and a small photograph — is written inside the chain rather than pointed at from it, so nothing has to stay online for the record to be readable. The web-resolution images live in permanent decentralised storage."
+    },
+    "diagram": {
+      "caption": "Who asks what of whom, and who signs.",
+      "reader": "Reader",
+      "site": "Static site",
+      "siteSub": "400 pages · 2 languages",
+      "artist": "Artist",
+      "studio": "Studio",
+      "studioSub": "private pages",
+      "service": "Private service",
+      "serviceSub": "in a container",
+      "models": "Language models",
+      "modelsSub": "essays and translation",
+      "db": "Document database",
+      "dbSub": "catalogue and texts",
+      "bucket": "Bucket",
+      "bucketSub": "video and originals",
+      "social": "Social networks",
+      "socialSub": "image and video",
+      "permanent": "Permanent storage",
+      "permanentSub": "web-resolution images",
+      "vision": "Reverse search",
+      "visionSub": "where the work appears",
+      "phone": "The artist's phone",
+      "chain": "Ethereum",
+      "chainSub": "certificates contract",
+      "reads": "reads",
+      "unsigned": "unsigned transaction",
+      "signs": "signs",
+      "builds": "builds the pages"
     },
     "rot": {
-      "title": "Keeping control, which is the risk in working this way",
-      "a": "A changelog is a record of the past and cannot become false. A requirements document is a claim about the present, and it can — quietly, and usually does.",
-      "b": "So every entry names the thing that proves it. A script reads the file before each deploy and refuses the build if a number is used twice, if an entry has no proof, if a proof names a file that has been deleted, or if it quotes a test that has since been renamed.",
-      "c": "It exists because four requirements spent fifteen releases marked “met · proven by” test specs that had been deleted several versions earlier. Nobody lied. Nobody noticed. That is the failure a requirements document is supposed to prevent and the one it is worst at preventing.",
-      "d": "It also reports — without failing the build — the requirements whose only proof is prose. Twenty-five of the site’s hundred and one are on that list. This page says so because the tool says so."
-    },
-    "measured": {
-      "title": "Measured, not argued",
-      "a": "The brief for the essays was rewritten this month from evidence rather than taste. Twenty-two essays had been rewritten by hand before publishing; a hundred and thirty-six had not. Measured against each other, the edited ones ran 188 to 633 words, median 442. The untouched ones ran 613 to 874, median 748. The ranges barely overlap — and nothing else about them differed: the same sentence length, the same structure, the same argument. The brief had been asking for 650 to 900 words. It now asks for 380 to 560.",
-      "b": "An earlier decision was corrected the same way. A search feature re-ran on every read, so a build of 186 pages was 186 billed calls to a paid API, and a few days of building came to roughly ninety euros before anyone read the meter. The feature stopped doing that, and a check now fails any build that reaches a paid API at all — the cost cannot recur by accident."
-    },
-    "constraint": {
-      "title": "Finding the real constraint",
-      "a": "157 essays written. 20 reviewed. Only a reviewed essay can be published, so everything upstream is automated and producing while everything downstream waits on one human step — and the work had been going into making the upstream faster.",
-      "b": "Noticing that, and saying it out loud instead of shipping the next feature, is the job."
-    },
-    "open": {
-      "title": "What is still open",
-      "a": "The review queue that would unblock all of it is designed and not built.",
-      "b": "137 finished essays are unread, which means unpublished.",
-      "c": "Twenty-five requirements have no automated proof and are listed on every build."
-    },
-    "how": {
-      "title": "How this is built, plainly",
-      "a": "Most of the code here is written by an AI agent, working to a specification I write and a review I do. That is the point rather than a footnote.",
-      "b": "An agent will happily let a requirement rot, an abstraction spread, a cost run or a feature arrive that nobody asked for. The requirements file, the named proofs and the checks that fail a build are what make working this way safe. My part is deciding what gets built, why, in what order, and what is not worth doing — and being able to show the reasoning afterwards."
+      "title": "Keeping control",
+      "intro": "In my view, losing control of the requirements, of whether they still hold, and of how they were implemented is the main risk we take on when working with agents. So the work has been channelled along these lines:",
+      "a": "REQUIREMENTS DOCUMENT: a requirements document is a claim about the present. Those claims are checked by naming the thing that proves them. A script reads the file before every deploy and refuses the build if a number is used twice, if an entry has no test, if a test names a file that has been deleted, or if it quotes a test that has been renamed.",
+      "b": "It also reports, of course, the requirements whose only proof is the text itself — since this is a one-person project, any Agile task-management tool has been done without entirely.",
+      "c": "GUIDANCE DOCUMENT: a guidance document for language models that sets limits and states a preference about how to work. The idea is not to delegate sensitive decisions one hundred per cent — those about architecture, development practice or writing tests, for instance."
     },
     "links": {
       "title": "The evidence",
@@ -390,7 +398,6 @@
       "changelog": "The changelog",
       "site": "The product itself",
       "note": "The service behind the catalogue is in a private repository and is deliberately not linked or described here."
-    },
-    "lead2": "Every requirement is self-explanatory and proves for itself that it still works; the build fails when one of those proofs stops being true. That is how the project sets out to head off the greatest risk facing one implemented and deployed largely by AI agents."
+    }
   }
 }

@@ -320,68 +320,76 @@
   },
   "project": {
     "title": "juanmamoreno.com, el producto",
-    "lead": "Está basado en certificados de autenticidad que no dependen de nadie más que del propio admin, un catálogo que cualquiera puede navegar y una serie de herramientas que automatizan los flujos digitales derivados del trabajo artístico.",
+    "lead": "Está basado en certificados de autenticidad on-chain propiedad del artista, un catálogo que cualquiera puede navegar y una serie de herramientas que automatizan los flujos digitales derivados de su trabajo.",
+    "lead2": "La solución delega la implementación de las soluciones, así como los pipelines de test y despliegues, en agentes de IA. El flujo está automatizado, de forma que el product owner introduce requisitos en el agente, y éste implementa, ejecuta tests unitarios, tests e2e, asegura que los requisitos preexistentes siguen funcionando, y despliega el frontend y los servicios.",
     "figures": {
-      "requirements": "requisitos, cada uno con un motivo y una prueba",
-      "releases": "versiones publicadas, una línea cada una",
-      "unproven": "de ellos admiten no tener prueba automática",
+      "requirements": "requisitos, cada uno con un motivo y unos tests unitarios y e2e que aseguran su pervivencia",
       "operator": "persona opera todo el sistema"
     },
     "about": {
       "title": "De dónde vengo",
       "a": "Diez años como desarrollador full stack, dos como tech lead y dos como diseñador, sobre un background de creación artística y diseño.",
-      "b": "Trabajando como desarrollador siempre fui del tipo al que le interesa más definir y diseñar la solución que implementarla. Decidir qué merecía la pena construir, y por qué, era lo que me importaba. Es por ello por lo que normalmente trabajaba cerca de los product owners.",
-      "c": "Ahora que los agentes se han hecho cargo de casi toda la implementación y de casi todo el problem solving, pivotar hacia producto es la progresión natural para mí."
+      "b": "Trabajando como desarrollador siempre fui del tipo al que le interesa más definir y diseñar la solución que implementarla. Decidir qué merecía la pena construir, y por qué, era lo que más me importaba. Es por ello por lo que normalmente trabajaba cerca de los product owners.",
+      "c": "Ahora que los agentes se han hecho cargo de casi toda la implementación, y de casi todo el problem solving, pivotar hacia el diseño de producto es la progresión natural para mí."
     },
     "product": {
       "title": "El producto, y para qué es",
       "lead": "Tres cosas, en el orden en que se construyeron.",
       "one": {
-        "name": "Certificados que no dependen de nadie",
-        "body": "Un certificado de autenticidad para cada obra física, escrito en una cadena pública en la que solo el autor tiene la llave. Sin intermediario en quien confiar, sin cuota que seguir pagando y sin nada que caduque si a una empresa deja de interesarle. El registro está escrito dentro de la propia cadena y no enlazado desde ella, de modo que sobrevive a esta web, a la galería y al propio artista."
+        "name": "Certificados de autenticidad",
+        "body": "Un certificado de autenticidad para cada obra física, escrito en una cadena pública (Ethereum) en la que solo el autor tiene la llave. Sin intermediario en quien confiar, sin cuotas ni dependencias. El registro está escrito dentro de la propia cadena y no enlazado desde ella, de modo que los certificados son una entidad autónoma que sobrevive a esta app e incluso al propio artista."
       },
       "two": {
         "name": "Un catálogo que cualquiera puede leer",
-        "body": "La obra —física y generativa— dispuesta para que cualquiera la recorra, la filtre y se lleve lo que necesite: la ficha técnica, el certificado en pdf, un ensayo sobre el cuadro, dónde aparece esa pintura en internet. 192 pinturas escritas como 400 páginas estáticas en inglés y español, todas legibles sin una sola línea de JavaScript."
+        "body": "La obra —física y generativa— dispuesta para que cualquiera la recorra, la filtre, genere la ficha técnica en pdf, descargue un certificado de autenticidad en pdf, un ensayo sobre el cuadro, o una lista de enlaces donde aparece esa pintura en internet. 192 pinturas on-chain son unas 400 páginas estáticas en inglés y español, todas legibles sin una sola línea de JavaScript."
       },
       "three": {
-        "name": "La herramienta que el autor usa de verdad",
-        "body": "El trabajo de cada semana, automatizado de principio a fin: corregir la fotografía de un cuadro, recortarla al marco, escribir y traducir el texto, registrar la obra en la cadena y publicar las imágenes y el vídeo que se generaron para ella. Lo que era una tarde es ahora unas pocas decisiones y una firma."
+        "name": "Una herramienta para el artista",
+        "body": "El trabajo de cada semana, automatizado: corregir la fotografía de un cuadro, recortarla al marco, eliminar brillos, ajustar los niveles, luego escribir y traducir el texto, registrar la obra en la cadena de bloques y publicar las imágenes y el vídeo que se generaron para ella. Todo está pensado para que la intervención humana sea la mínima posible."
       }
     },
     "architecture": {
       "title": "Cómo está montado",
       "a": "El sitio es estático en sentido estricto. Cada página, en los dos idiomas, se escribe en disco antes de publicarse y se sirve como archivo: no hay servidor que renderice nada, y por tanto no hay servidor que se caiga, que parchear ni que costear. La compilación se niega a publicarse si alguna página ha salido mal.",
-      "b": "Detrás, un servicio privado en contenedor hace lo que no puede ser estático: prepara las fotografías, escribe y traduce los ensayos, renderiza el vídeo, publica en las redes y arma las transacciones. Lo que produce va a una base de datos documental, y lo grande a almacenamiento de objetos.",
-      "c": "La cadena es Ethereum. Cada certificado es un token cuyo contenido —título, técnica, medidas, año y una fotografía pequeña— está escrito dentro de la cadena en lugar de apuntado desde ella, así que nada tiene que seguir en línea para que el registro se pueda leer. Las imágenes en resolución web viven en un almacenamiento que se paga una sola vez. La clave que firma no está en ningún servidor: cada certificado se firma a mano, desde el móvil, que es lo único que no se puede automatizar y lo único que no se debe."
+      "b": "Detrás, un servicio privado en contenedor hace lo demás: prepara las fotografías y las miniaturas, escribe y traduce los ensayos usando modelos de lenguaje, renderiza el vídeo, hace búsquedas inversas de imágenes, publica en las redes sociales y arma las transacciones del blockchain. Lo que produce va a una base de datos documental, y los archivos grandes a un bucket.",
+      "c": "El blockchain usado es Ethereum. Cada certificado es un token cuyo contenido —título, técnica, medidas, año y una fotografía pequeña— está escrito dentro de la cadena en lugar de apuntado desde ella, así que nada tiene que seguir en línea para que el registro se pueda leer. Las imágenes en resolución web viven en un almacenamiento permanente descentralizado."
+    },
+    "diagram": {
+      "caption": "Quién pide qué a quién, y quién firma.",
+      "reader": "Lector",
+      "site": "Sitio estático",
+      "siteSub": "400 páginas · 2 idiomas",
+      "artist": "Artista",
+      "studio": "Estudio",
+      "studioSub": "páginas privadas",
+      "service": "Servicio privado",
+      "serviceSub": "en contenedor",
+      "models": "Modelos de lenguaje",
+      "modelsSub": "ensayos y traducción",
+      "db": "Base documental",
+      "dbSub": "catálogo y textos",
+      "bucket": "Bucket",
+      "bucketSub": "vídeo y originales",
+      "social": "Redes sociales",
+      "socialSub": "imagen y vídeo",
+      "permanent": "Almacenamiento permanente",
+      "permanentSub": "imágenes en resolución web",
+      "vision": "Búsqueda inversa",
+      "visionSub": "dónde aparece la obra",
+      "phone": "Móvil del artista",
+      "chain": "Ethereum",
+      "chainSub": "contrato de certificados",
+      "reads": "lee",
+      "unsigned": "transacción sin firmar",
+      "signs": "firma",
+      "builds": "compila las páginas"
     },
     "rot": {
-      "title": "No perder el control, que es el riesgo de trabajar así",
-      "a": "Un changelog es un registro del pasado y no puede volverse falso. Un documento de requisitos es una afirmación sobre el presente, y sí puede: en silencio, y casi siempre lo hace.",
-      "b": "Por eso cada entrada nombra aquello que la demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene prueba, si una prueba nombra un archivo borrado o si cita un test que se ha renombrado.",
-      "c": "Existe porque cuatro requisitos pasaron quince versiones marcados como «cumplido · demostrado por» unas pruebas borradas varias versiones antes. Nadie mintió. Nadie se dio cuenta. Ese es exactamente el fallo que un documento de requisitos debería impedir y el que peor impide.",
-      "d": "También informa —sin tumbar la compilación— de los requisitos cuya única prueba es prosa. Veinticinco de los ciento uno del sitio están en esa lista. Esta página lo dice porque la herramienta lo dice."
-    },
-    "measured": {
-      "title": "Medido, no discutido",
-      "a": "Las instrucciones para los ensayos se reescribieron este mes a partir de datos y no de gusto. Veintidós ensayos se habían reescrito a mano antes de publicarlos; ciento treinta y seis no. Comparados entre sí, los editados iban de 188 a 633 palabras, mediana 442. Los intactos iban de 613 a 874, mediana 748. Los dos rangos apenas se solapan, y no se diferenciaban en nada más: misma longitud de frase, misma estructura, mismo argumento. Las instrucciones pedían entre 650 y 900 palabras. Ahora piden entre 380 y 560.",
-      "b": "Una decisión anterior se corrigió igual. Una búsqueda se relanzaba en cada lectura, así que compilar 186 páginas eran 186 llamadas facturadas a una API de pago, y unos días de compilaciones sumaron unos noventa euros antes de que nadie mirara el contador. Aquello dejó de hacerse, y ahora una comprobación tumba cualquier compilación que llame a una API de pago: el gasto ya no puede repetirse por accidente."
-    },
-    "constraint": {
-      "title": "Encontrar el cuello de botella real",
-      "a": "157 ensayos escritos. 20 revisados. Solo un ensayo revisado puede publicarse, así que todo lo anterior está automatizado y produciendo mientras todo lo posterior espera a un único paso humano, y el trabajo se había estado yendo en hacer más rápido lo anterior.",
-      "b": "Darse cuenta de eso, y decirlo en voz alta en lugar de sacar la siguiente funcionalidad, es el trabajo."
-    },
-    "open": {
-      "title": "Lo que sigue abierto",
-      "a": "La cola de revisión que lo desbloquearía está diseñada y sin construir.",
-      "b": "137 ensayos terminados están sin leer, y por tanto sin publicar.",
-      "c": "Veinticinco requisitos no tienen prueba automática y salen listados en cada compilación."
-    },
-    "how": {
-      "title": "Cómo está hecho esto, sin rodeos",
-      "a": "Casi todo el código lo escribe un agente de IA, a partir de una especificación que escribo yo y una revisión que hago yo. Eso es lo importante, no una nota al pie.",
-      "b": "Un agente deja encantado que un requisito se pudra, que una abstracción se extienda, que un coste se dispare o que aparezca una funcionalidad que nadie pidió. El archivo de requisitos, las pruebas nombradas y las comprobaciones que tumban una compilación son lo que hace que trabajar así sea seguro. Mi parte es decidir qué se construye, por qué, en qué orden y qué no merece la pena, y poder enseñar el razonamiento después."
+      "title": "No perder el control",
+      "intro": "En mi opinión, perder el control de los requisitos, de su permanencia y de cómo se han implementado es el principal riesgo que asumimos al trabajar con agentes. Por ello se ha intentado encauzar este trabajo por las siguientes vías:",
+      "a": "DOCUMENTO DE REQUISITOS: un documento de requisitos es una afirmación sobre el presente. La veracidad de esas afirmaciones se contrasta nombrando aquello que las demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene test, si un test nombra un archivo borrado o si cita un test que se ha renombrado.",
+      "b": "También informa, obviamente, de los requisitos cuya única prueba es el propio texto, ya que, dado que es un proyecto unipersonal, se ha prescindido por completo de cualquier herramienta Agile de gestión de tareas.",
+      "c": "DOCUMENTO DE GUÍA: un documento de guía para modelos de lenguaje que pone límites y expresa una preferencia sobre cómo trabajar. La idea es no delegar al 100% decisiones sensibles, como por ejemplo las relativas a arquitectura, prácticas de desarrollo o creación de tests."
     },
     "links": {
       "title": "Las pruebas",
@@ -390,7 +398,6 @@
       "changelog": "El changelog",
       "site": "El producto en sí",
       "note": "El servicio que hay detrás del catálogo vive en un repositorio privado y, deliberadamente, ni se enlaza ni se describe aquí."
-    },
-    "lead2": "Cada requisito es autoexplicativo y se demuestra a sí mismo que sigue funcionando; la compilación falla cuando una de esas pruebas deja de ser cierta. De esta forma el proyecto intenta atajar el mayor riesgo que tiene un proyecto implementado y desplegado fundamentalmente por agentes de IA."
+    }
   }
 }
