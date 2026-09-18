@@ -63,3 +63,22 @@ mat-toolbar-row {
     margin-left: 0.9rem;
   }
 }
+
+// Quieter than the words beside them. An icon at full weight in a row of text
+// reads as the most important thing in the bar, which is the opposite of what
+// these three are: they are settings, and the paintings are the point.
+//
+// Smaller rather than fainter, so they stay legible in both grounds and keep a
+// touch target worth aiming at.
+.bar-setting {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}

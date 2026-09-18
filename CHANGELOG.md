@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.71.2
+
+- **fix** — the three setting icons in the bar are smaller, 36px against the
+  40px of the words beside them. At full weight an icon in a row of text reads
+  as the most important thing there, which is the opposite of what they are.
+
 ## 1.71.1
 
 - **fix** — the browser test for the remembered theme clicked a "More" tab that
