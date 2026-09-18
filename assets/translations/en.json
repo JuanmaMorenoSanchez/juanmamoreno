@@ -319,8 +319,8 @@
     "pdfHeading": "Certificate of authenticity"
   },
   "project": {
-    "title": "Owning this product",
-    "lead": "A product I specify, decide and answer for: certificates of authenticity that depend on nobody, a catalogue anybody can read, and the tooling that keeps both fed. Every requirement in it says why it exists and what proves it still works — and the build fails when a proof stops being true.",
+    "title": "juanmamoreno.com, the product",
+    "lead": "It is built on certificates of authenticity that depend on nobody but its own administrator, a catalogue anybody can browse, and a set of tools that automate the digital workflows that come of making art.",
     "figures": {
       "requirements": "requirements, each with a reason and a proof",
       "releases": "releases, one line each, newest first",
@@ -329,9 +329,9 @@
     },
     "about": {
       "title": "Where I am coming from",
-      "a": "Ten years as a full-stack developer, two as a tech lead and two as a designer, over a background in making art rather than in shipping software.",
-      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than about building it. The technical problem was the entertaining part; deciding what was worth building, and why, was the part that mattered to me.",
-      "c": "Now that agents have taken over most of the implementation and most of the problem-solving, moving toward product is not a change of direction. It is the same work without the half that was never the point for me — and it is where I can be worth something."
+      "a": "Ten years as a full-stack developer, two as a tech lead and two as a designer, over a background in artistic creation and design.",
+      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than implementing it. Deciding what was worth building, and why, was the part that mattered to me. That is why I usually worked close to the product owners.",
+      "c": "Now that agents have taken over almost all of the implementation and almost all of the problem-solving, moving toward product is the natural progression for me."
     },
     "product": {
       "title": "The product, and what it is for",
@@ -362,42 +362,6 @@
       "c": "It exists because four requirements spent fifteen releases marked “met · proven by” test specs that had been deleted several versions earlier. Nobody lied. Nobody noticed. That is the failure a requirements document is supposed to prevent and the one it is worst at preventing.",
       "d": "It also reports — without failing the build — the requirements whose only proof is prose. Twenty-five of the site’s hundred and one are on that list. This page says so because the tool says so."
     },
-    "decisions": {
-      "title": "Decisions, with what they cost",
-      "chose": "Chose",
-      "instead": "Instead of",
-      "cost": "Which costs",
-      "prices": {
-        "name": "Publish no prices at all",
-        "chose": "An enquiry, answered by the artist",
-        "instead": "A public price list, or a figure on request",
-        "cost": "Friction for a buyer who wants a number now. A published price is also an anchor far easier to set than to move. There is a test that fails if a price ever appears in the markup."
-      },
-      "model": {
-        "name": "The cheaper model writes the essays",
-        "chose": "The model that costs about a fifth as much per essay",
-        "instead": "The better writer, measured at three to four times the price",
-        "cost": "Prose that needs more editing. The better path and its fallback were kept, so reversing the decision is one variable rather than a rewrite."
-      },
-      "reel": {
-        "name": "A video every night — which solved the wrong end",
-        "chose": "Doubling how often a video is produced",
-        "instead": "Looking at what happened to the ones already made",
-        "cost": "Nothing, and that is the point: six finished videos were waiting on a human and exactly one had ever been published. The constraint was downstream the whole time. Worth more on this page than a decision that went well."
-      },
-      "freeze": {
-        "name": "Nothing irreversible happens without being asked",
-        "chose": "Asking every time, and reading silence as no",
-        "instead": "A setting, or a confirmation people learn to click through",
-        "cost": "A question the operator will answer hundreds of times. Some records on this product cannot be unmade; a prompt is cheaper than any of them."
-      },
-      "key": {
-        "name": "No signing key on the server",
-        "chose": "Signing each record by hand, on a phone",
-        "instead": "Automatic signing, which the pipeline could do unattended",
-        "cost": "A manual step per record, and a queue that waits for it. A server that cannot sign cannot be made to sign by anyone who reaches it."
-      }
-    },
     "measured": {
       "title": "Measured, not argued",
       "a": "The brief for the essays was rewritten this month from evidence rather than taste. Twenty-two essays had been rewritten by hand before publishing; a hundred and thirty-six had not. Measured against each other, the edited ones ran 188 to 633 words, median 442. The untouched ones ran 613 to 874, median 748. The ranges barely overlap — and nothing else about them differed: the same sentence length, the same structure, the same argument. The brief had been asking for 650 to 900 words. It now asks for 380 to 560.",
@@ -426,6 +390,7 @@
       "changelog": "The changelog",
       "site": "The product itself",
       "note": "The service behind the catalogue is in a private repository and is deliberately not linked or described here."
-    }
+    },
+    "lead2": "Every requirement is self-explanatory and proves for itself that it still works; the build fails when one of those proofs stops being true. That is how the project sets out to head off the greatest risk facing one implemented and deployed largely by AI agents."
   }
 }
