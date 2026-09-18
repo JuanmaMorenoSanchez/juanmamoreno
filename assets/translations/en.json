@@ -320,20 +320,43 @@
   },
   "project": {
     "title": "Owning this product",
-    "lead": "I am a developer, tech lead and designer who moved to the side of the table where the decisions are made. This is the product I own: a working painter’s public catalogue, and the private pipeline that feeds it. Every requirement in it says why it exists and what proves it still works — and the build fails when a proof stops being true.",
+    "lead": "A product I specify, decide and answer for: certificates of authenticity that depend on nobody, a catalogue anybody can read, and the tooling that keeps both fed. Every requirement in it says why it exists and what proves it still works — and the build fails when a proof stops being true.",
     "figures": {
       "requirements": "requirements, each with a reason and a proof",
       "releases": "releases, one line each, newest first",
       "unproven": "of them honest about having no automated proof",
       "operator": "person operates the whole thing"
     },
+    "about": {
+      "title": "Where I am coming from",
+      "a": "Ten years as a full-stack developer, two as a tech lead and two as a designer, over a background in making art rather than in shipping software.",
+      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than about building it. The technical problem was the entertaining part; deciding what was worth building, and why, was the part that mattered to me.",
+      "c": "Now that agents have taken over most of the implementation and most of the problem-solving, moving toward product is not a change of direction. It is the same work without the half that was never the point for me — and it is where I can be worth something."
+    },
     "product": {
-      "title": "What the product is",
-      "a": "A catalogue of 192 paintings, written out as 400 static pages in English and Spanish, so every one of them is readable with no JavaScript at all. Behind it, a service prepares photographs, drafts and translates an essay for each painting, renders video for social networks, and records each work on Ethereum.",
-      "b": "One person operates it. That constraint decides everything on this page: there is no team to absorb a bad call, no QA to catch a regression, and nothing may require a human at three in the morning."
+      "title": "The product, and what it is for",
+      "lead": "Three things, in the order they were built.",
+      "one": {
+        "name": "Certificates that depend on nobody",
+        "body": "A certificate of authenticity for every physical work, written to a public chain where the artist alone holds the key. No intermediary to trust, no subscription to keep paying, and nothing that lapses if a company loses interest. The record is written into the chain itself rather than linked from it, so it survives the website, the gallery and the artist."
+      },
+      "two": {
+        "name": "A catalogue anybody can read",
+        "body": "The work — physical and generative — laid out so that anyone can move through it, narrow it, and take away what they need: the technical sheet, the certificate as a pdf, an essay about the painting, where that painting turns up elsewhere on the internet. 192 paintings written out as 400 static pages in English and Spanish, every one of them readable with no JavaScript at all."
+      },
+      "three": {
+        "name": "The tooling the artist actually uses",
+        "body": "The week-to-week work, automated end to end: correcting the photograph of a canvas, cutting it to the frame, writing and translating the text, recording the work on the chain, and posting the images and the video that were generated for it. What used to be an evening is now a few decisions and a signature."
+      }
+    },
+    "architecture": {
+      "title": "How it is put together",
+      "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as files — there is no server rendering anything, which means no server to fall over, to patch, or to pay for. The build refuses to publish itself if a page came out wrong.",
+      "b": "Behind it, a private containerised service does the work that cannot be static: preparing photographs, writing and translating the essays, rendering video, publishing to the social networks, and assembling the transactions. What it produces goes into a document database, and anything large into object storage.",
+      "c": "The chain is Ethereum. Each certificate is a token whose content — title, medium, dimensions, year and a small photograph — is written inside the chain rather than pointed at from it, so nothing needs to stay online for the record to be readable. The web-resolution images sit in storage paid for once. The key that signs is on no server at all: every certificate is signed by hand, from a phone, which is the one thing that cannot be automated and the one thing that should not be."
     },
     "rot": {
-      "title": "Requirements that cannot quietly rot",
+      "title": "Keeping control, which is the risk in working this way",
       "a": "A changelog is a record of the past and cannot become false. A requirements document is a claim about the present, and it can — quietly, and usually does.",
       "b": "So every entry names the thing that proves it. A script reads the file before each deploy and refuses the build if a number is used twice, if an entry has no proof, if a proof names a file that has been deleted, or if it quotes a test that has since been renamed.",
       "c": "It exists because four requirements spent fifteen releases marked “met · proven by” test specs that had been deleted several versions earlier. Nobody lied. Nobody noticed. That is the failure a requirements document is supposed to prevent and the one it is worst at preventing.",
