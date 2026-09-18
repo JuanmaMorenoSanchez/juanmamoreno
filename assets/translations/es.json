@@ -40,8 +40,8 @@
     "contact": "Contacto",
     "byYear": "Por año",
     "texts": "Textos",
-    "more": "Más",
-    "language": "Idioma"
+    "language": "Idioma",
+    "signIn": "Entrar"
   },
   "traits": {
     "medium": "Técnica",
@@ -69,9 +69,7 @@
   },
   "theme": {
     "toDark": "Cambiar a modo oscuro",
-    "toLight": "Cambiar a modo claro",
-    "light": "Claro",
-    "dark": "Oscuro"
+    "toLight": "Cambiar a modo claro"
   },
   "contact": {
     "title": "Contacto",
@@ -156,7 +154,14 @@
       "germany": "Alemania",
       "mexico": "México",
       "italy": "Italia"
-    }
+    },
+    "placeLine": "Alcalá la Real (Jaén), 1986. Reside en Madrid. Representado por la Galería Zunino (Sevilla).",
+    "proseDownload": "Descargar la biografía",
+    "proseWrite": "Escribir la biografía",
+    "proseRewrite": "Escribirla de nuevo",
+    "proseWritten": "La biografía ya está escrita.",
+    "proseFailed": "No se ha podido escribir la biografía.",
+    "proseInDossier": "Biografía en vez de la lista"
   },
   "statement": {
     "title": "Statement",
