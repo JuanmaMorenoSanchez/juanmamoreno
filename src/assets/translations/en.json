@@ -40,8 +40,8 @@
     "contact": "Contact",
     "byYear": "By Year",
     "texts": "Texts",
-    "more": "More",
-    "language": "Language"
+    "language": "Language",
+    "signIn": "Sign in"
   },
   "traits": {
     "medium": "Medium",
@@ -69,9 +69,7 @@
   },
   "theme": {
     "toDark": "Switch to dark",
-    "toLight": "Switch to light",
-    "light": "Light",
-    "dark": "Dark"
+    "toLight": "Switch to light"
   },
   "contact": {
     "title": "Contact",

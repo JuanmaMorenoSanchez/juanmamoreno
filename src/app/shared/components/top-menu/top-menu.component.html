@@ -61,63 +61,65 @@
     {{ 'menu.contact' | translate }}
   </button>
   <!--
-    Everything that is not a place to go.
+    Everything that is not a place to go, as icons at the end of the bar.
 
-    The bar had grown to eight items, three of which were settings rather than
-    pages: which ground the site is read on, which language it is read in, and
-    the artist's own way into his workshop. Gathered here they stop competing
-    with the paintings for the reader's eye, and the bar reads as a list of
-    places again.
-  -->
-  <button class="more-menu" mat-button [matMenuTriggerFor]="moreMenu">
-    {{ 'menu.more' | translate }}
-    <mat-icon>arrow_drop_down</mat-icon>
-  </button>
-</ng-template>
-
-<mat-menu #moreMenu="matMenu">
-  <!--
-    Named for what it will do rather than for where it is, which is why the icon
-    and the word always agree: in the dark it offers the sun and says "Light".
+    They were gathered behind a "More" tab so that three settings would stop
+    competing with six pages for the reader's eye. As icons they no longer do:
+    a word in a row of words asks to be read, and a symbol at the end of it does
+    not. The tab is gone and its contents are back in the open, which is one
+    press shorter for every one of them.
   -->
   <button
-    class="theme-toggle"
-    mat-menu-item
+    class="bar-setting theme-toggle"
+    mat-icon-button
     type="button"
     (click)="theme.toggle()"
+    [matTooltip]="(theme.isDark() ? 'theme.toLight' : 'theme.toDark') | translate"
     [attr.aria-label]="(theme.isDark() ? 'theme.toLight' : 'theme.toDark') | translate"
     [attr.aria-pressed]="theme.isDark()"
   >
+    <!-- Named for what it will do: in the dark it offers the sun. -->
     <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-    <span>{{ (theme.isDark() ? 'theme.light' : 'theme.dark') | translate }}</span>
   </button>
 
-  <button class="language-menu" mat-menu-item [matMenuTriggerFor]="languageMenu">
+  <button
+    class="bar-setting language-menu"
+    mat-icon-button
+    [matMenuTriggerFor]="languageMenu"
+    [matTooltip]="'menu.language' | translate"
+    [attr.aria-label]="'menu.language' | translate"
+  >
     <mat-icon>language</mat-icon>
-    <span>{{ currentLangLabel }}</span>
   </button>
 
   <!--
-    Only ever on the artist's own browser: a reader has never signed in here, so
-    as far as this browser is concerned there is nobody to sign in or out.
-
-    Signed in, it opens everything that is his: the pages behind the guard and
-    the way out. Every private address is reached from here, so there is one
-    place to add the next one and one place a reader can be certain does not
-    appear for them.
+    Signed in, the last icon opens everything that is his: every private address
+    in the site hangs off this one menu, so there is one place to add the next
+    and one place a reader can be certain is not theirs. Signed out it is the
+    door, which is the only way in.
   -->
   @if (signedIn()) {
-    <button class="studio-session" mat-menu-item [matMenuTriggerFor]="adminMenu">
+    <button
+      class="bar-setting studio-session"
+      mat-icon-button
+      [matMenuTriggerFor]="adminMenu"
+      matTooltip="Admin"
+      aria-label="Admin"
+    >
       <mat-icon>construction</mat-icon>
-      <span>Admin</span>
     </button>
-  } @else if (knownHere()) {
-    <a class="studio-session" mat-menu-item routerLink="/door">
-      <mat-icon>login</mat-icon>
-      <span>Sign in</span>
+  } @else {
+    <a
+      class="bar-setting studio-session"
+      mat-icon-button
+      routerLink="/door"
+      [matTooltip]="'menu.signIn' | translate"
+      [attr.aria-label]="'menu.signIn' | translate"
+    >
+      <mat-icon>person</mat-icon>
     </a>
   }
-</mat-menu>
+</ng-template>
 
 <!--
   Not translated, and alone among the menus in that. These pages exist at one

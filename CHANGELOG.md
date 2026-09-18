@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.70.0
+
+- **feat** — the theme, the language and the way into the workshop are icons at
+  the end of the bar instead of items behind a "More" tab. A word in a row of
+  words asks to be read; a symbol at the end of one does not, which is the work
+  the tab was doing. Each is a press shorter now.
+- **feat** — the last of those icons is the workshop menu when signed in and the
+  door when not. The door used to appear only on a browser that had signed in
+  before, so that signing out could not take away the way back; shown to
+  everybody, there is no state left where the way back is hidden.
+- **feat** — the list of Instagram posts is packed tighter: tiles of 7rem rather
+  than 11, with less air between them, so a normal window holds five or six a
+  row instead of three. It is a dozen paintings somebody is scanning for one
+  they half remember, and more of them in the eye at once is the point of it.
+
 ## 1.69.0
 
 - **feat** — a page about how this product is run, at

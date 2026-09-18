@@ -50,7 +50,6 @@ describe('TopMenuComponent language switcher', () => {
 
   it('shows the language of the address it is on', () => {
     expect(component.activeLanguage).toBe(ALLOWED_LANGUAGES.ENGLISH);
-    expect(component.currentLangLabel).toBe('EN');
   });
 
   it('goes to the Spanish address and remembers the choice', () => {
@@ -86,7 +85,6 @@ describe('TopMenuComponent language switcher', () => {
       component.selectLanguage(ALLOWED_LANGUAGES.SPANISH);
 
       expect(component.activeLanguage).toBe(ALLOWED_LANGUAGES.SPANISH);
-      expect(component.currentLangLabel).toBe('ES');
     });
   });
 
@@ -153,13 +151,12 @@ describe('TopMenuComponent workshop menu', () => {
      * three of them were not places to go. So the admin entry is only in the
      * document once "More" has been opened, which is what this does.
      */
-    const openMore = (): HTMLElement | null => {
-      host.querySelector<HTMLElement>('.more-menu')?.click();
-      fixture.detectChanges();
-      return document.querySelector<HTMLElement>('.studio-session');
-    };
+    // In the bar itself now, rather than behind a "More" tab that had to be
+    // opened before anything could be asked about it.
+    const sessionButton = (): HTMLElement | null =>
+      host.querySelector<HTMLElement>('.studio-session');
 
-    return { fixture, host, openMore, signOut };
+    return { fixture, host, sessionButton, signOut };
   }
 
   /**
@@ -181,27 +178,28 @@ describe('TopMenuComponent workshop menu', () => {
   afterEach(() => TestBed.resetTestingModule());
 
   /**
-   * The whole point. A reader has never signed in here, so as far as this
-   * browser is concerned there is nobody — and none of these addresses is
-   * offered to them.
+   * The whole point. A reader is offered the door and nothing else: every
+   * private address hangs off the menu that is not drawn for them, so there is
+   * nothing here to tell them one exists.
    */
-  it('is not there for a reader', async () => {
-    const { openMore, host } = await setup({ signedIn: false, knownHere: false });
-    const trigger = openMore();
+  it('shows a reader the door and none of what is behind it', async () => {
+    const { sessionButton, host } = await setup({ signedIn: false, knownHere: false });
+    const trigger = sessionButton();
 
-    expect(trigger).toBeNull();
+    expect(trigger?.getAttribute('href')).toBe('/door');
+    expect(trigger?.getAttribute('aria-haspopup')).not.toBe('menu');
     expect(host.textContent).not.toContain('Admin');
     expect(document.body.textContent).not.toContain('Studio');
-    expect(host.textContent).not.toContain('Studio');
     expect(host.textContent).not.toContain('Reels');
   });
 
-  // Signed in: one item, holding everything that is his.
+  // Signed in: one icon, holding everything that is his.
   it('gathers the private pages and the way out', async () => {
-    const { openMore } = await setup({ signedIn: true, knownHere: true });
-    const trigger = openMore();
+    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const trigger = sessionButton();
 
-    expect(trigger?.textContent).toContain('Admin');
+    // Named by its label rather than its text: the bar carries icons now.
+    expect(trigger?.getAttribute('aria-label')).toBe('Admin');
     expect(itemsOf(trigger)).toEqual([
       'Studio',
       'Reels waiting',
@@ -212,8 +210,8 @@ describe('TopMenuComponent workshop menu', () => {
   });
 
   it('links each of them to its own address', async () => {
-    const { openMore } = await setup({ signedIn: true, knownHere: true });
-    const trigger = openMore();
+    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const trigger = sessionButton();
     trigger?.click();
 
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
@@ -223,8 +221,8 @@ describe('TopMenuComponent workshop menu', () => {
   });
 
   it('signs out from inside it', async () => {
-    const { openMore, signOut } = await setup({ signedIn: true, knownHere: true });
-    const trigger = openMore();
+    const { sessionButton, signOut } = await setup({ signedIn: true, knownHere: true });
+    const trigger = sessionButton();
     trigger?.click();
 
     const out = [...document.querySelectorAll('.mat-mdc-menu-item')].find((item) =>
@@ -237,14 +235,15 @@ describe('TopMenuComponent workshop menu', () => {
 
   /**
    * A lapsed session on his own browser. The menu goes with the session — the
-   * pages behind it would refuse him anyway — but the way back in stays, or
-   * signing out would take away the way back.
+   * pages behind it would refuse him anyway — and the door is what is left,
+   * which is the same thing a reader is shown. It is no longer a state of its
+   * own: the door is offered to everybody, so signing out can never take away
+   * the way back.
    */
-  it('offers the way back in, and nothing else, once the session has lapsed', async () => {
-    const { openMore, host } = await setup({ signedIn: false, knownHere: true });
-    const trigger = openMore();
+  it('leaves the door once the session has lapsed', async () => {
+    const { sessionButton, host } = await setup({ signedIn: false, knownHere: true });
+    const trigger = sessionButton();
 
-    expect(trigger?.textContent).toContain('Sign in');
     expect(trigger?.getAttribute('href')).toBe('/door');
     expect(host.textContent).not.toContain('Admin');
   });
@@ -293,49 +292,39 @@ describe('TopMenuComponent more menu', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   }
 
-  const openMore = (host: HTMLElement, fixture: { detectChanges(): void }) => {
-    host.querySelector<HTMLElement>('.more-menu')?.click();
-    fixture.detectChanges();
-  };
-
-  it('keeps the settings out of the bar itself', async () => {
+  it('puts the settings at the end of the bar, as icons', async () => {
     const { host } = await setup();
 
-    expect(host.querySelector('.more-menu')).toBeTruthy();
-    // None of the three is in the toolbar any more.
-    expect(host.querySelector('.theme-toggle')).toBeNull();
-    expect(host.querySelector('.language-menu')).toBeNull();
-    expect(host.querySelector('.studio-session')).toBeNull();
-  });
-
-  it('gathers the theme and the language behind it', async () => {
-    const { host, fixture } = await setup();
-    openMore(host, fixture);
-
-    expect(document.querySelector('.theme-toggle')).toBeTruthy();
-    expect(document.querySelector('.language-menu')).toBeTruthy();
+    // No tab to open: all three are in the toolbar.
+    expect(host.querySelector('.more-menu')).toBeNull();
+    for (const setting of ['.theme-toggle', '.language-menu', '.studio-session']) {
+      const found = host.querySelector(setting);
+      expect(found).toBeTruthy();
+      // An icon and a label, and no word taking a place in a row of words: all
+      // the text the button has is the icon's own ligature.
+      const icon = found?.querySelector('mat-icon')?.textContent?.trim();
+      expect(icon).toBeTruthy();
+      expect(found?.getAttribute('aria-label')).toBeTruthy();
+      expect(found?.textContent?.trim()).toBe(icon);
+    }
   });
 
   it('names the theme it will switch to, not the one already showing', async () => {
-    // The icon and the word have to agree, or the item reads as a label for the
-    // current state and clicking it does the opposite of what it says.
-    const { host, fixture } = await setup();
-    openMore(host, fixture);
+    // The icon and the label have to agree, or it reads as a description of the
+    // current state and pressing it does the opposite of what it says.
+    const { host } = await setup();
 
-    const item = document.querySelector('.theme-toggle');
-    const icon = item?.querySelector('mat-icon')?.textContent?.trim();
-    const word = item?.querySelector('span')?.textContent?.trim();
+    const item = host.querySelector('.theme-toggle');
 
     // Light ground by default, so it offers the dark one.
-    expect(icon).toBe('dark_mode');
-    expect(word).toBe('theme.dark');
+    expect(item?.querySelector('mat-icon')?.textContent?.trim()).toBe('dark_mode');
+    expect(item?.getAttribute('aria-label')).toBe('theme.toDark');
   });
 
   it('opens the languages as a submenu rather than listing them in the bar', async () => {
     const { host, fixture } = await setup();
-    openMore(host, fixture);
 
-    const language = document.querySelector<HTMLElement>('.language-menu');
+    const language = host.querySelector<HTMLElement>('.language-menu');
     expect(language?.getAttribute('aria-haspopup')).toBe('menu');
 
     language?.click();

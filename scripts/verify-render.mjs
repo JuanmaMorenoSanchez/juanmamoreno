@@ -197,7 +197,11 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       'europe-west1',
       '/pendingmint',
       '/studio',
-      '/door',
+      // Not /door. It was on this list when it was an address only its owner
+      // knew; it is now the sign-in icon at the end of the bar on every page,
+      // offered to everybody on purpose. Its security was never the secrecy of
+      // the address — the guard decides what is drawn and the api decides what
+      // happens — and leaving it here would fail the build on the menu.
     ];
     for (const secret of neverHere) {
       if (said.includes(secret)) fail(route, `names ${secret}, which is not for a public page`);

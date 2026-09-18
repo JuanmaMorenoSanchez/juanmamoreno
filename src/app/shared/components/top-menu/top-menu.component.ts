@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatTooltip } from '@angular/material/tooltip';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
 import { Router, RouterLink } from '@angular/router';
@@ -35,6 +36,7 @@ import { ThemeService } from '@shared/services/theme.service';
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
+    MatTooltip,
     TranslatePipe,
   ],
 })
@@ -50,19 +52,20 @@ export class TopMenuComponent {
   /**
    * The way in and out of the studio, for the one person it belongs to.
    *
-   * Two different questions. `signedIn` decides whether the workshop menu is
-   * drawn at all — every private address in the site hangs off it, so a reader
-   * is never shown one. `knownHere` is the weaker one: this browser has signed
-   * in at some point, which is what offers the way back after a session lapses.
-   * The marker survives signing out on purpose, or signing out would take away
-   * the way back in.
+   * Whether the workshop menu is drawn at all. Every private address in the
+   * site hangs off it, so a reader is never shown one — they are offered the
+   * door instead, which is the only way in and tells nobody anything.
+   *
+   * It used to be two questions. The weaker one — has this browser ever signed
+   * in — decided whether to offer the way back after a session had lapsed, and
+   * nothing asks it now: the door is there for everybody, so there is no longer
+   * a state in which the way back is hidden.
    *
    * Neither is a security boundary. The guard on each route decides what is
    * drawn and the backend decides what happens; this decides what is offered.
    */
   private auth = inject(AdminAuthService);
   protected readonly signedIn = computed(() => this.auth.isAdmin());
-  protected readonly knownHere = computed(() => this.auth.knownHere());
 
   protected signOut(): void {
     this.auth.signOut();
@@ -103,9 +106,6 @@ export class TopMenuComponent {
   }
 
   // Short display code for the collapsed switcher ('es-ES' -> 'ES').
-  get currentLangLabel(): string {
-    return this.activeLanguage.slice(0, 2).toUpperCase();
-  }
 
   // The language lives in the address now (/artwork/5 vs /es/artwork/5), so
   // switching it means going to the other page rather than swapping the words

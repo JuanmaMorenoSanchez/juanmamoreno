@@ -404,6 +404,32 @@ public repository is linked), and `scripts/verify-render.mjs`, which fails the
 build on a named list of things that page may never contain — verified by
 planting one in the built page and watching it fail
 
+### R109 — The bar is pages, then three icons · met
+Six places to go, then the theme, the language and the way into the workshop —
+each an icon with a label and no word.
+
+They had been gathered behind a "More" tab so that three settings would stop
+competing with six pages for the reader's eye. As icons they no longer compete:
+a word in a row of words asks to be read and a symbol at the end of one does
+not, so the tab was doing work its own contents could do. Every one of them is
+a press shorter for it.
+
+The last icon is the only one that changes. **Signed in it opens the workshop
+menu** — every private address in the site hangs off that one menu, so there is
+one place to add the next and one place a reader can be certain is not theirs.
+**Signed out it is the door**, which is the only way in and tells nobody
+anything: the guard on each route decides what is drawn and the api decides
+what happens, so an unmarked door costs nothing.
+
+That replaced a third state, where the door appeared only on a browser that had
+signed in before. It was there so that signing out could not take away the way
+back; with the door shown to everybody there is no state left in which the way
+back is hidden.
+*Proven by:* `top-menu.component.spec.ts` (14 tests, including that each of the
+three carries an icon and a label and no word, that a reader is shown the door
+and nothing behind it, and that the theme names what it will switch to rather
+than what is already showing)
+
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
 for sale. The offer carries where to ask — the painting's own page, which is
@@ -875,19 +901,18 @@ that has never signed in here. That is every reader of the catalogue.
 including that a reader loads nothing), and the browser probe
 
 ### R39 — The way in and out is his alone · met
-Signed in, the menu carries one extra item — **Admin** — and every address
+Signed in, the last icon in the bar opens the workshop menu, and every address
 behind the guard hangs off it: the studio, the reels waiting to be published,
-and the way out. One place to add the next private page, and one item a reader
+and the way out. One place to add the next private page, and one menu a reader
 can be certain does not appear for them. It sits in the same template as the
 rest of the menu, so on a narrow screen it travels into the drawer with
 everything else.
 
-Two different questions decide what is shown. Being signed in decides whether
-Admin is drawn at all. Having signed in *at some point* is the weaker one,
-and all it does is offer "Sign in" once a session has lapsed — but only on a
-browser that has signed in here before, so a reader is never offered a login to
-somewhere that is not theirs. That marker survives signing out, or signing out
-would take away the way back.
+Signed out, the same icon is the door (R109). It used to appear only on a
+browser that had signed in here before — so that signing out could not take
+away the way back — and it is now shown to everybody, which leaves no state in
+which the way back is hidden. An unmarked door costs nothing: what is behind it
+is a Google sign-in, and knowing the address gets nobody through it.
 
 Not translated, alone among the menus: these pages exist at one address rather
 than two and are written in one language, so a Spanish label would promise a
@@ -895,11 +920,11 @@ Spanish page that is not there.
 
 None of it is a security boundary — the guard on each route decides what is
 drawn and the backend decides what happens. This decides only what is offered.
-*Proven by:* `top-menu.component.spec.ts` "is not there for a reader", "gathers
+*Proven by:* `top-menu.component.spec.ts` "shows a reader the door and none of
+what is behind it", "leaves the door once the session has lapsed", "gathers
 the private pages and the way out", "links each of them to its own address",
-"signs out from inside it", "offers the way back in, and nothing else, once the
-session has lapsed"; `admin-auth.service.spec.ts` (the marker outliving a
-sign-out), and the browser probe across all three states
+"signs out from inside it"; `admin-auth.service.spec.ts` (the marker outliving
+a sign-out), and the browser probe across both states
 
 ### R37 — The artist can see which essays he has been over · met
 The catalogue can be narrowed to the artworks whose essay has been corrected by
