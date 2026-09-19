@@ -311,6 +311,7 @@
     "title": "Certificado de autenticidad",
     "recordedOn": "El artista registró esta pintura de forma irreversible en Ethereum el {{date}}: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
     "recorded": "El artista registró esta pintura de forma irreversible en Ethereum: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
+    "onlyAuthorship": "Este documento garantiza solamente la autoría de la obra física, siendo el autor Juanma Moreno Sánchez, al vincularla de forma permanente e irreversible con un bloque del blockchain Ethereum usando un contrato de su propiedad que sólo él mismo puede firmar. Este certificado no proporciona ningún tipo de información sobre la propiedad de la obra.",
     "token": "Certificado",
     "contract": "Contrato",
     "transaction": "Transacción",
