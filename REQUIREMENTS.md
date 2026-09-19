@@ -401,9 +401,10 @@ is bought from.
 **It has a section about readers that are not people**, because the shape it
 has just described is what makes that possible: a site written to disk is a site
 a machine can read without running it, and [R111](#r111) is that taken one step
-further. It says what ships today, what the interface an assistant could call
-will be, and the two limits decided before any of it was written — read-only but
-for one way of making contact, and nothing served that costs money per request.
+further. It says what the catalogue publishes for machines, and what an assistant can
+now call — the address, the three tools, and the two limits the interface was
+built to: read-only but for one way of making contact, and nothing served that
+costs money per request. Proved in the service’s own repository, at B50.
 
 **It says plainly that most of the code is written by an agent**, to a
 specification and a review. That is the page's argument rather than its

@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.76.0
+
+- **feat** — the catalogue can now be called as well as read, and both the
+  product page and the file assistants read first say so: the address, the
+  three read-only tools, and the rule that no price is served by any of them.
+
 ## 1.75.0
 
 - **feat** — the whole catalogue is published as one file, `/catalogue.json`,

@@ -32,6 +32,15 @@ HTML and needs no JavaScript to read.
 - The images named in the catalogue are web resolution and permanently stored.
   Full-resolution originals and video are not public.
 
+## For assistants that can call tools
+
+This catalogue is also an MCP server, at https://backend.juanmamoreno.com/mcp
+(streamable HTTP, no session, no key). Three read-only tools:
+`search_paintings` by year, size, medium, availability or subject;
+`get_painting` for one work with its published essay; and
+`verify_certificate` to check a certificate against Ethereum. Nothing there
+writes, and no price is served by any of them.
+
 ## Notes
 
 - Structured data: each artwork page carries schema.org VisualArtwork markup with creator, date, medium and dimensions.
