@@ -357,6 +357,7 @@
     "diagram": {
       "caption": "Quién pide qué a quién, y quién firma.",
       "reader": "Lector",
+      "readerSub": "personas y agentes",
       "site": "Sitio estático",
       "siteSub": "400 páginas · 2 idiomas",
       "artist": "Artista",
@@ -383,6 +384,13 @@
       "unsigned": "transacción sin firmar",
       "signs": "firma",
       "builds": "compila las páginas"
+    },
+    "agents": {
+      "title": "Lectores que no son personas",
+      "a": "El sitio ya se dejó legible para las máquinas: como cada página se escribe en disco antes de publicarse, el texto está en el HTML y no hace falta ejecutar nada para leerlo; cada obra lleva sus datos estructurados; y el archivo que gobierna a los rastreadores nombra uno por uno a los de los modelos de lenguaje y los deja entrar. Legible, sin embargo, no es utilizable: para comparar diez cuadros había que pedir diez páginas y descifrarlas.",
+      "b": "Ahora el catálogo entero se publica además como un solo archivo: título, año, técnica, medidas, si está disponible, el texto en los dos idiomas, la imagen, las dos direcciones de la página y el token del certificado. Lo escribe la compilación a partir de las propias páginas, así que no puede contradecirlas, y la compilación se niega a publicarse si el archivo deja de coincidir con lo que se ha construido.",
+      "c": "El paso siguiente es una interfaz que un asistente pueda llamar —el protocolo MCP— para buscar en el catálogo, leer una obra y comprobar un certificado en la cadena. Dos decisiones se han tomado antes de escribir nada: será de solo lectura salvo una única vía de contacto, y no servirá nada que cueste dinero por petición —ni originales a resolución completa ni vídeo, sólo la imagen a resolución web—, de manera que un agente metido en un bucle no pueda disparar una factura.",
+      "d": "Los precios no están ni estarán en ninguno de los dos sitios. No es un descuido: cada precio lo da el artista para la obra concreta, y un agente que respondiera con una cifra terminaría la conversación que el catálogo existe para empezar."
     },
     "rot": {
       "title": "No perder el control",

@@ -357,6 +357,7 @@
     "diagram": {
       "caption": "Who asks what of whom, and who signs.",
       "reader": "Reader",
+      "readerSub": "people and agents",
       "site": "Static site",
       "siteSub": "400 pages · 2 languages",
       "artist": "Artist",
@@ -383,6 +384,13 @@
       "unsigned": "unsigned transaction",
       "signs": "signs",
       "builds": "builds the pages"
+    },
+    "agents": {
+      "title": "Readers that are not people",
+      "a": "The site was already made legible to machines: because every page is written to disk before it is published, the text is in the HTML and nothing has to run to read it; each work carries its structured data; and the file that governs crawlers names the language models’ own crawlers one by one and lets them in. Legible, though, is not usable: comparing ten paintings meant asking for ten pages and picking them apart.",
+      "b": "The whole catalogue is now published as a single file as well: title, year, medium, dimensions, whether it is available, the text in both languages, the image, both addresses of the page and the certificate token. The build writes it from the pages themselves, so it cannot contradict them, and the build refuses to publish if the file stops agreeing with what was made.",
+      "c": "The next step is an interface an assistant can call — the MCP protocol — to search the catalogue, read one work and check a certificate against the chain. Two decisions were taken before a line of it was written: it will be read-only but for a single way of making contact, and it will serve nothing that costs money per request — no full-resolution originals and no video, only the web-resolution image — so that an agent caught in a loop cannot set off a bill.",
+      "d": "Prices are in neither, and will not be. That is not an oversight: every price is quoted by the artist for the particular work, and an agent that answered with a figure would end the conversation the catalogue exists to begin."
     },
     "rot": {
       "title": "Keeping control",
