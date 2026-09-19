@@ -1,0 +1,731 @@
+{
+  "name": "Juanma Moreno Sánchez",
+  "url": "https://juanmamoreno.com",
+  "born": 1986,
+  "summary": {
+    "en": "Alcalá la Real (Jaén), 1986. Lives in Madrid. Represented by Galería Zunino (Seville).",
+    "es": "Alcalá la Real (Jaén), 1986. Reside en Madrid. Representado por la Galería Zunino (Sevilla)."
+  },
+  "representation": {
+    "name": "Zunino Gallery",
+    "url": "https://galeriazunino.com/"
+  },
+  "statement": {
+    "en": [
+      "Nearly all my paintings begin on a screen and end on canvas. There is a reason for that: I belong to the last generation, the millennials, that studied without screens, with paper and pen, and then had to make its way in a digital environment. The same doubleness runs through my working life. I divide my time between the craft of art and the design and development of software, the most ethereal of the crafts.",
+      "Painting is a practice as old as humanity itself. And a painter can work a surface as much as he wants; painting’s only limits are space and time. In theory those are infinite resources, but from a human point of view they are finite: the space we can take in, and the time of one life.",
+      "Giving time and space to an image that originally had neither (a scroll is not a physical place, and the time given to an image there is minimal) changes its meaning completely. In giving it that time, that importance, you recontextualise the image, and open up the chance of finding new meanings in it. The craft itself does the same work: a casual moment fixed in oil takes on another dimension.",
+      "As a general rule, the larger the work and the more time given to it, the better.",
+      "For years I found them by chance on the internet, which was already a more or less infinite visual world before generative AI arrived. Between 2019 and 2023 I began using neural networks (StyleGAN, BigBiGAN) while they still “failed” considerably. That margin of error, the so-called “loss”, produced monsters no human could have come up with. My interest in painting them comes out of that fascination. Those tools have since reached a formal competence that interests me a good deal less: because they get it right too often. AI since 2023 is boring for being predictable, in the same way a predictable conversation or a predictable book is boring. The better it gets, the worse. The so-called “AI slop” floods our daily lives with images that are all alike and have no character whatsoever.",
+      "“No mistakes, just happy accidents”, as Bob Ross used to say. What serves an artist is the accident, the singular. The software that deforms an image until it aberrates. Failure is working material.",
+      "“I have done many things because I have failed at all of them. I start from failure as one of the Fine Arts.” The line is from the multifaceted Pepín Tre, and it explains fairly well why I end up in such different techniques and registers. Genius and inspiration are comfortable clichés long past their sell-by date; what actually pushes you to try something else is the last thing having failed. Success, real or perceived, is paralysing. Or so I want to believe."
+    ],
+    "es": [
+      "Casi todas mis pinturas empiezan en una pantalla y terminan en un lienzo, por algo soy de la última generación (la milenial) que estudió sin pantallas, con papel y bolígrafo, aunque luego haya tenido que buscarse la vida en un entorno digital. Esta dualidad también se da en lo laboral; reparto el tiempo entre la artesanía del arte y el diseño y desarrollo de software, la más etérea de las artesanías.",
+      "La pintura es una práctica tan vieja como la propia humanidad. Y un pintor puede trabajar una superficie tanto como quiera; los únicos límites de la pintura son el espacio y el tiempo. Estos son recursos infinitos en teoría pero finitos desde el punto de vista humano (el espacio que podemos abarcar y el tiempo de una vida).",
+      "Dedicar tiempo y espacio a una imagen que originalmente no lo tiene (un scroll no es un lugar físico, y el tiempo que se le dedica es mínimo) cambia su significado por completo. Al darle ese tiempo, esa importancia, estás recontextualizando la imagen, dando la oportunidad de encontrar nuevos significados. La propia artesanía hace ese mismo trabajo: un momento casual fijado al óleo toma otra dimensión.",
+      "Como norma general, cuanto más grande la obra y más tiempo se le dedique, tanto mejor.",
+      "Durante años las encontraba por casualidad en internet, que ya era un mundo visual prácticamente infinito antes de que llegaran las IAs generativas. Entre 2019 y 2023 empecé a usar redes neuronales (StyleGAN, BigBiGAN) cuando todavía “fallaban” considerablemente. Ese margen de error, el llamado “loss”, producía monstruos que no se le podrían haber ocurrido a ningún humano. Fruto de esa fascinación viene mi interés por pintarlas. Hoy esas herramientas han alcanzado una suficiencia formal que me interesa bastante menos: porque aciertan demasiado. La IA desde 2023 es aburrida por lo predecible, del mismo modo que es aburrida una conversación predecible o un libro predecible. Cuanto mejor, peor. El llamado “AI slop” inunda nuestra vida diaria de imágenes uniformes y carentes de toda personalidad.",
+      "“No mistakes, just happy accidents”, que decía Bob Ross. Lo que sirve al artista es el accidente, lo singular. El software que deforma una imagen hasta que aberra. El fallo es material de trabajo.",
+      "«He hecho muchas cosas porque he fracasado en todas ellas. Parto del fracaso como una de las Bellas Artes.» La cita es del polifacético Pepín Tre y explica bastante bien por qué acabo metido en técnicas y registros tan distintos. El genio y la inspiración son clichés cómodos y caducadísimos; lo que de verdad empuja a probar otra cosa es que la anterior fracase. El éxito, real o percibido, paraliza. O eso quiero creer yo."
+    ]
+  },
+  "cv": {
+    "en": [
+      {
+        "section": "Solo shows",
+        "items": [
+          {
+            "year": 2024,
+            "title": "El valle inquietante",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2021,
+            "title": "El sueño de los robots",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2019,
+            "title": "33. El desengaño",
+            "venue": "La 13 dada trouch Gallery",
+            "city": "Huelva",
+            "country": "Spain"
+          },
+          {
+            "year": 2017,
+            "title": "#blessed",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2017,
+            "title": "I was there",
+            "venue": "La silla eléctrica",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2016,
+            "title": "Never Gone Forever",
+            "venue": "Gallo Rojo",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2014,
+            "title": "Pintura Aumentada",
+            "venue": "Red House",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2013,
+            "title": "Historias aparentemente inconexas",
+            "venue": "Aula Magna de Capuchinos",
+            "city": "Alcalá la Real",
+            "country": "Spain"
+          },
+          {
+            "year": 2012,
+            "title": "Juanma Moreno",
+            "venue": "No-Lugar",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2008,
+            "title": "Transeúntes",
+            "venue": "Harz Mensa",
+            "city": "Halle Saale",
+            "country": "Germany"
+          }
+        ]
+      },
+      {
+        "section": "Collective exhibitions (selection)",
+        "items": [
+          {
+            "year": 2024,
+            "title": "Outsiders. Vol. 1",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2024,
+            "title": "Anna Jonsson & Juanma Moreno",
+            "venue": "El Estudio de Ignacio del Río",
+            "city": "Villanueva del Rosario",
+            "country": "Spain"
+          },
+          {
+            "year": 2023,
+            "title": "Pintores pensando la pintura",
+            "venue": "Espacio 75 Art Gallery",
+            "city": "Madrid",
+            "country": "Spain"
+          },
+          {
+            "year": 2023,
+            "title": "Nocturnos",
+            "venue": "Sala Pescadería Vieja / CAC Vélez-Málaga",
+            "city": "Jerez de la Frontera / Vélez-Málaga",
+            "country": "Spain"
+          },
+          {
+            "year": 2023,
+            "title": "Los únicos que saben de arte son los artistas",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2022,
+            "title": "Discovery Art Fair Cologne",
+            "city": "Cologne",
+            "country": "Germany"
+          },
+          {
+            "year": 2021,
+            "title": "Lucca Art Fair",
+            "country": "Online"
+          },
+          {
+            "year": 2021,
+            "title": "Figuración Fantástica Sevillana",
+            "venue": "Galería Impulso",
+            "city": "Querétaro",
+            "country": "Mexico"
+          },
+          {
+            "year": 2020,
+            "title": "Interpaisajes",
+            "venue": "Eldevenir & Zunino Gallery",
+            "country": "Online"
+          },
+          {
+            "year": 2019,
+            "title": "72 horas",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2019,
+            "title": "Homenaje a Dolores Montijano",
+            "venue": "Aula Magna de Capuchinos",
+            "city": "Alcalá la Real",
+            "country": "Spain"
+          },
+          {
+            "year": 2019,
+            "title": "Redes de fe",
+            "venue": "Galería Renace Art",
+            "city": "Jaen",
+            "country": "Spain"
+          },
+          {
+            "year": 2018,
+            "title": "Todo encaja",
+            "venue": "Zunino gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2017,
+            "title": "Lodo",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2015,
+            "title": "Escozor",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2015,
+            "title": "A paloma muerta",
+            "venue": "Estudio22",
+            "city": "Logroño",
+            "country": "Spain"
+          },
+          {
+            "year": 2015,
+            "title": "Nemoart festival, digital art",
+            "venue": "Casa Museo Niceto Alcalá Zamora",
+            "city": "Priego de Córdoba",
+            "country": "Spain"
+          },
+          {
+            "year": 2015,
+            "title": "Promoción equis",
+            "venue": "Cienfuegos",
+            "city": "Málaga",
+            "country": "Spain"
+          },
+          {
+            "year": 2015,
+            "title": "En azúcar de sandía",
+            "venue": "Suricatta Gallery",
+            "city": "Jerez de la Frontera",
+            "country": "Spain"
+          },
+          {
+            "year": 2014,
+            "title": "El tamaño no importa",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2014,
+            "title": "MULTI/TUTTI/FEST",
+            "venue": "Cienfuegos",
+            "city": "Málaga",
+            "country": "Spain"
+          },
+          {
+            "year": 2013,
+            "title": "Plato del día",
+            "venue": "Red House",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2013,
+            "title": "Lo mejorcito de cada casa",
+            "venue": "No-Lugar",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2011,
+            "title": "Weisser TV",
+            "venue": "129 Gallery",
+            "city": "Berlin",
+            "country": "Germany"
+          },
+          {
+            "year": 2011,
+            "title": "Mehr Licht, tributo a Chema Alvargonzalez",
+            "venue": "GlogauAIR Project Space",
+            "city": "Berlin",
+            "country": "Germany"
+          },
+          {
+            "year": 2011,
+            "title": "Modern Classic, influence of the past in today's art",
+            "venue": "Your Mum",
+            "city": "Berlin",
+            "country": "Germany"
+          },
+          {
+            "year": 2010,
+            "title": "The Mac Gyver Problem",
+            "venue": "Galerie im Regierungsviertel/The Forgotten Bar",
+            "city": "Berlin",
+            "country": "Germany"
+          },
+          {
+            "year": 2009,
+            "title": "XXL-Art, nuevas tendencias de la figuración en gran formato",
+            "venue": "Damián Bayón Art Center",
+            "city": "Santa Fe",
+            "country": "Spain"
+          },
+          {
+            "year": 2009,
+            "title": "La más elegante del invernadero III",
+            "venue": "Galería Jesús Puerto",
+            "city": "Granada",
+            "country": "Spain"
+          }
+        ]
+      },
+      {
+        "section": "Artistic awards and residencies (selection)",
+        "items": [
+          {
+            "year": 2014,
+            "title": "The Pollock-Krasner Foundation award",
+            "city": "New York",
+            "country": "USA"
+          },
+          {
+            "year": 2012,
+            "title": "Antonio Gala Foundation Residence Program",
+            "city": "Córdoba",
+            "country": "Spain"
+          },
+          {
+            "year": 2010,
+            "title": "GlogauAIR Residence Program",
+            "city": "Berlín",
+            "country": "Germany"
+          },
+          {
+            "year": 2006,
+            "title": "Lefranc&Bourgueois art award",
+            "city": "Granada",
+            "country": "Spain"
+          }
+        ]
+      },
+      {
+        "section": "Conferences",
+        "items": [
+          {
+            "year": 2025,
+            "title": "Towards a New AI Winter",
+            "venue": "International University of Andalucia",
+            "city": "Baeza",
+            "country": "Spain"
+          }
+        ]
+      },
+      {
+        "section": "Education",
+        "items": [
+          {
+            "year": 2009,
+            "title": "Bachelor on arts degree",
+            "venue": "University of Granada",
+            "city": "Granada",
+            "country": "Spain"
+          },
+          {
+            "year": 2008,
+            "title": "LLP Erasmus Scholarship",
+            "venue": "Burg Giebichenstein, Hochschule für Kunst und Design",
+            "city": "Halle Saale",
+            "country": "Germany"
+          }
+        ]
+      }
+    ],
+    "es": [
+      {
+        "section": "Exposiciones individuales",
+        "items": [
+          {
+            "year": 2024,
+            "title": "El valle inquietante",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2021,
+            "title": "El sueño de los robots",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2019,
+            "title": "33. El desengaño",
+            "venue": "La 13 dada trouch Gallery",
+            "city": "Huelva",
+            "country": "España"
+          },
+          {
+            "year": 2017,
+            "title": "#blessed",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2017,
+            "title": "I was there",
+            "venue": "La silla eléctrica",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2016,
+            "title": "Never Gone Forever",
+            "venue": "Gallo Rojo",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2014,
+            "title": "Pintura Aumentada",
+            "venue": "Red House",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2013,
+            "title": "Historias aparentemente inconexas",
+            "venue": "Aula Magna de Capuchinos",
+            "city": "Alcalá la Real",
+            "country": "España"
+          },
+          {
+            "year": 2012,
+            "title": "Juanma Moreno",
+            "venue": "No-Lugar",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2008,
+            "title": "Transeúntes",
+            "venue": "Harz Mensa",
+            "city": "Halle Saale",
+            "country": "Alemania"
+          }
+        ]
+      },
+      {
+        "section": "Exposiciones colectivas (selección)",
+        "items": [
+          {
+            "year": 2024,
+            "title": "Outsiders. Vol. 1",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2024,
+            "title": "Anna Jonsson & Juanma Moreno",
+            "venue": "El Estudio de Ignacio del Río",
+            "city": "Villanueva del Rosario",
+            "country": "España"
+          },
+          {
+            "year": 2023,
+            "title": "Pintores pensando la pintura",
+            "venue": "Espacio 75 Art Gallery",
+            "city": "Madrid",
+            "country": "España"
+          },
+          {
+            "year": 2023,
+            "title": "Nocturnos",
+            "venue": "Sala Pescadería Vieja / CAC Vélez-Málaga",
+            "city": "Jerez de la Frontera / Vélez-Málaga",
+            "country": "España"
+          },
+          {
+            "year": 2023,
+            "title": "Los únicos que saben de arte son los artistas",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2022,
+            "title": "Discovery Art Fair Cologne",
+            "city": "Cologne",
+            "country": "Alemania"
+          },
+          {
+            "year": 2021,
+            "title": "Lucca Art Fair",
+            "country": "Online"
+          },
+          {
+            "year": 2021,
+            "title": "Figuración Fantástica Sevillana",
+            "venue": "Galería Impulso",
+            "city": "Querétaro",
+            "country": "México"
+          },
+          {
+            "year": 2020,
+            "title": "Interpaisajes",
+            "venue": "Eldevenir & Zunino Gallery",
+            "country": "Online"
+          },
+          {
+            "year": 2019,
+            "title": "72 horas",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2019,
+            "title": "Homenaje a Dolores Montijano",
+            "venue": "Aula Magna de Capuchinos",
+            "city": "Alcalá la Real",
+            "country": "España"
+          },
+          {
+            "year": 2019,
+            "title": "Redes de fe",
+            "venue": "Galería Renace Art",
+            "city": "Jaen",
+            "country": "España"
+          },
+          {
+            "year": 2018,
+            "title": "Todo encaja",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2017,
+            "title": "Lodo",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2015,
+            "title": "Escozor",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2015,
+            "title": "A paloma muerta",
+            "venue": "Estudio22",
+            "city": "Logroño",
+            "country": "España"
+          },
+          {
+            "year": 2015,
+            "title": "Nemoart festival, digital art",
+            "venue": "Casa Museo Niceto Alcalá Zamora",
+            "city": "Priego de Córdoba",
+            "country": "España"
+          },
+          {
+            "year": 2015,
+            "title": "Promoción equis",
+            "venue": "Cienfuegos",
+            "city": "Málaga",
+            "country": "España"
+          },
+          {
+            "year": 2015,
+            "title": "En azúcar de sandía",
+            "venue": "Suricatta Gallery",
+            "city": "Jerez de la Frontera",
+            "country": "España"
+          },
+          {
+            "year": 2014,
+            "title": "El tamaño no importa",
+            "venue": "Un gato en bicicleta",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2014,
+            "title": "MULTI/TUTTI/FEST",
+            "venue": "Cienfuegos",
+            "city": "Málaga",
+            "country": "España"
+          },
+          {
+            "year": 2013,
+            "title": "Plato del día",
+            "venue": "Red House",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2013,
+            "title": "Lo mejorcito de cada casa",
+            "venue": "No-Lugar",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2011,
+            "title": "Weisser TV",
+            "venue": "129 Gallery",
+            "city": "Berlin",
+            "country": "Alemania"
+          },
+          {
+            "year": 2011,
+            "title": "Mehr Licht, tributo a Chema Alvargonzalez",
+            "venue": "GlogauAIR Project Space",
+            "city": "Berlin",
+            "country": "Alemania"
+          },
+          {
+            "year": 2011,
+            "title": "Modern Classic, influence of the past in today's art",
+            "venue": "Your Mum",
+            "city": "Berlin",
+            "country": "Alemania"
+          },
+          {
+            "year": 2010,
+            "title": "The Mac Gyver Problem",
+            "venue": "Galerie im Regierungsviertel/The Forgotten Bar",
+            "city": "Berlin",
+            "country": "Alemania"
+          },
+          {
+            "year": 2009,
+            "title": "XXL-Art, nuevas tendencias de la figuración en gran formato",
+            "venue": "Damián Bayón Art Center",
+            "city": "Santa Fe",
+            "country": "España"
+          },
+          {
+            "year": 2009,
+            "title": "La más elegante del invernadero III",
+            "venue": "Galería Jesús Puerto",
+            "city": "Granada",
+            "country": "España"
+          }
+        ]
+      },
+      {
+        "section": "Premios y becas (selección)",
+        "items": [
+          {
+            "year": 2014,
+            "title": "The Pollock-Krasner Foundation award",
+            "city": "New York",
+            "country": "USA"
+          },
+          {
+            "year": 2012,
+            "title": "Fundación Antonio Gala para jóvenes creadores",
+            "city": "Córdoba",
+            "country": "España"
+          },
+          {
+            "year": 2010,
+            "title": "GlogauAIR Residence Program",
+            "city": "Berlín",
+            "country": "Alemania"
+          },
+          {
+            "year": 2006,
+            "title": "Becas Lefranc&Bourgueois",
+            "city": "Granada",
+            "country": "España"
+          }
+        ]
+      },
+      {
+        "section": "Conferencias",
+        "items": [
+          {
+            "year": 2025,
+            "title": "¿Hacia un nuevo invierno de la IA?",
+            "venue": "Universidad Internacional de Andalucía",
+            "city": "Baeza",
+            "country": "España"
+          }
+        ]
+      },
+      {
+        "section": "Educacion",
+        "items": [
+          {
+            "year": 2009,
+            "title": "Licenciado en Bellas Artes",
+            "venue": "Universidad de Granada",
+            "city": "Granada",
+            "country": "España"
+          },
+          {
+            "year": 2008,
+            "title": "Beca LLP Erasmus",
+            "venue": "Burg Giebichenstein, Hochschule für Kunst und Design",
+            "city": "Halle Saale",
+            "country": "Alemania"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": {
+    "cv": {
+      "en": "https://juanmamoreno.com/cv/",
+      "es": "https://juanmamoreno.com/es/cv/"
+    },
+    "statement": {
+      "en": "https://juanmamoreno.com/about/",
+      "es": "https://juanmamoreno.com/es/about/"
+    },
+    "catalogue": "https://juanmamoreno.com/catalogue.json",
+    "contact": "https://juanmamoreno.com/contact/"
+  },
+  "generated": "2026-09-19",
+  "pricing": "Not published. Every price is quoted by the artist for the particular work: https://juanmamoreno.com/contact"
+}
