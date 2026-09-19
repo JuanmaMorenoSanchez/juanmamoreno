@@ -1718,6 +1718,36 @@ missing, if it lists a different number of paintings than were built, if it
 names one that was not built, or if it carries a price or an address that costs
 money — each of the four proved by planting it and watching the build fail
 
+### R112 — Who the artist is, published like the catalogue · met
+`/artist.json`, beside `/catalogue.json` and written by the same build: where he
+was born and works, the gallery that represents him, his statement in his own
+words, and the career — solo shows, collective shows, awards and residencies,
+conferences, education — each entry with its year, venue and place, in both
+languages.
+
+It exists because the catalogue answers what the paintings are and nothing about
+whose they are, which is half of what anybody deciding to buy one wants to know.
+An assistant asked about a living painter with no source for the career answers
+from whatever it remembers of the name, which is nothing, or invents something.
+The facts that settle it — the Pollock-Krasner award, the Antonio Gala
+residency, the gallery — were on the cv page and reachable only by reading it.
+
+**Built out of the cv page's own data, not a copy of it.** The generator reads
+`CV_OBJECT` and `STATEMENT_OBJECT` from the source and resolves their keys
+through the same dictionaries the page uses, so a show added to the cv is in the
+file at the next build and a show that is not on the cv cannot be in it. Two
+facts it will not restate are taken from the sentences that already carry them:
+the gallery out of `contact.representedBy`, the year of birth out of
+`cv.shortBio` — and the build fails rather than guessing if either sentence is
+rewritten past recognition.
+
+The same two rules as [R111](#r111): no price, and no address that is served at
+a cost.
+*Proven by:* `scripts/verify-render.mjs`, which fails the build if the file is
+missing, if either language has lost its career, its statement or its summary,
+if the gallery is no longer named, or if a price or a billed address appears in
+it — each proved by planting it and watching the build fail
+
 ### R92 — A raw file can be corrected without leaving the studio · met
 A browser cannot develop a raw: demosaicing a sensor's own readings needs the
 camera's colour profile and a great deal of arithmetic, and none of it is built

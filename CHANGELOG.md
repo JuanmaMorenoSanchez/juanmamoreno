@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.77.0
+
+- **feat** — who the artist is is published too, at `/artist.json`: the
+  statement, the gallery, and the career with every show, award and residency,
+  in both languages, written by the build out of the cv page's own data. The
+  catalogue said what the paintings were and nothing about whose they are, so
+  an assistant asked about the painter had nothing to answer from.
+
 ## 1.76.0
 
 - **feat** — the catalogue can now be called as well as read, and both the

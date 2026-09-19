@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "1.76.0",
+  "version": "1.77.0",
   "packageManager": "pnpm@12.4.1",
   "scripts": {
     "ng": "ng",
@@ -14,7 +14,7 @@
     "predeploy": "pnpm run lint && pnpm test",
     "deploy": "pnpm run build && ng deploy --no-build --dir=dist/juanmamoreno/browser --cname=juanmamoreno.com",
     "lint": "ng lint",
-    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/generate-catalogue-feed.mjs && node scripts/verify-render.mjs && node scripts/verify-requirements.mjs",
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/generate-catalogue-feed.mjs && node scripts/generate-artist-file.mjs && node scripts/verify-render.mjs && node scripts/verify-requirements.mjs",
     "prebuild": "node scripts/write-version.mjs && node scripts/generate-artworks-fallback.mjs",
     "verify:requirements": "node scripts/verify-requirements.mjs",
     "prepare": "git config core.hooksPath .githooks || true"

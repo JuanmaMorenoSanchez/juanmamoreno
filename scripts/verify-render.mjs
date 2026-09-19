@@ -282,6 +282,32 @@ if (!feedText) {
   }
 }
 
+// 10. The file that says who the artist is, beside the one that says what the
+//     paintings are. It is built from the cv page's own data, so the check is
+//     that it still has a career in it in both languages, and the same two
+//     rules every published file here is held to.
+const artistPath = join(OUTPUT_DIR, 'artist.json');
+const artistText = await readFile(artistPath, 'utf8').catch(() => null);
+if (!artistText) {
+  fail('artist.json', 'was not written; it is part of the build');
+} else {
+  const artist = JSON.parse(artistText);
+
+  for (const language of ['en', 'es']) {
+    const sections = artist.cv?.[language] ?? [];
+    const entries = sections.reduce((count, section) => count + (section.items?.length ?? 0), 0);
+    if (!entries) fail('artist.json', `has no ${language} cv entries`);
+    if (!artist.statement?.[language]?.length) fail('artist.json', `has no ${language} statement`);
+    if (!artist.summary?.[language]) fail('artist.json', `has no ${language} summary`);
+  }
+  if (!artist.representation?.url) fail('artist.json', 'no longer names the gallery');
+
+  const billedThere = artistText.match(/storage\.googleapis\.com|\.mp4|\.mov/);
+  if (billedThere) fail('artist.json', `names ${billedThere[0]}, which is served at a cost`);
+  const pricedThere = artistText.match(/"(price|priceCurrency|lowPrice|highPrice)"\s*:|[€$£]\s?\d/);
+  if (pricedThere) fail('artist.json', `carries ${pricedThere[0]}; prices are quoted by hand`);
+}
+
 const english = checked.filter((r) => !(r === 'es' || r.startsWith('es/'))).length;
 console.log(
   `verify-render: ${checked.length} pages (${english} en / ${checked.length - english} es)`
