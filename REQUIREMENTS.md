@@ -294,6 +294,17 @@ its block permanently and no one can unmake it. What is not fixed is what
 none are — so the sentence describes the act, which is irreversible, rather than
 the mutability of the current metadata.
 
+**It says what it does not certify, on the screen and on the paper.** A record
+of who made a painting reads, to anybody who has not thought about it, like a
+record of who owns it — and this one is a token, which makes the misreading
+easier still. So the last thing in the panel and the last thing on the printed
+page is the artist’s own sentence: that it guarantees the authorship of the
+physical work and nothing else, by binding it permanently and irreversibly to a
+block of Ethereum through a contract he owns and only he can sign, and that it
+gives no information of any kind about who owns the work. It is set small and
+quiet, because it is a qualification and not the subject, and it is on the paper
+as well as the screen because the paper is what outlives the website.
+
 The date is the only part fetched, and the panel is written twice — with it and
 without it — because everything else is known without asking anybody. The date
 is shown in UTC rather than the reader's own zone: a block timestamp is UTC and
@@ -319,11 +330,13 @@ on its own.
 
 Every artwork has one. The catalogue is read out of the contract, so a painting
 on this site is a painting with a certificate, and there is no empty state.
-*Proven by:* `certificate-dialog.component.spec.ts` (4 tests, including the
-panel with no date), and driven in Chrome against a running site: the seal
-opens the panel, the three links are right, and the download produces a pdf
-whose `/MediaBox` reads 210×297mm over a single page — none of which jsdom can
-see, since it has no canvas to draw one with
+*Proven by:* `certificate-dialog.component.spec.ts` (5 tests, including the
+panel with no date and the sentence saying what the certificate does not
+certify), and driven in Chrome against a running site: the seal opens the panel,
+the three links are right, and the download produces a pdf whose `/MediaBox`
+reads 210×297mm over a single page, carrying that sentence in the language the
+page was read in — none of which jsdom can see, since it has no canvas to draw
+one with
 
 ### R106 — Paper that goes in a folder is A4; the book is square · met
 The cv, the statement, the technical sheet and the certificate are 210×297. The

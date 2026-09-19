@@ -84,6 +84,7 @@ export class PdfService {
 
     const on = record ? this.certificateDate(record.mintedAt) : null;
     const said = on ? t('certificate.recordedOn', { date: on }) : t('certificate.recorded');
+    const caveat = t('certificate.onlyAuthorship');
     const details = this.getTraitsAsText(nft);
     const facts: [string, string][] = [
       [t('certificate.token'), `#${nft.tokenId}`],
@@ -102,6 +103,8 @@ export class PdfService {
       this.heightOf(writer, said, PDF_TYPE.size.body, CERTIFICATE_COLUMN) +
       GAP +
       facts.length * (PDF_TYPE.lineHeight.caption * 2 + FACT_GAP) +
+      GAP +
+      this.heightOf(writer, caveat, PDF_TYPE.size.small, CERTIFICATE_COLUMN) +
       CERTIFICATE_SLACK;
 
     const room = writer.pageHeight - 2 * writer.margin - PDF_TYPE.lineHeight.heading - GAP - GAP;
@@ -155,6 +158,18 @@ export class PdfService {
     for (const [label, value] of facts) {
       this.certificateFact(writer, label, value);
     }
+
+    // What the certificate is not. Small and quiet, but on the paper: this is
+    // the document somebody is left holding, and a record of authorship read
+    // as a record of ownership is the one way it could mislead.
+    writer.space(GAP);
+    writer.paragraph(caveat, {
+      size: PDF_TYPE.size.small,
+      color: PDF_COLORS.soft,
+      maxWidth: CERTIFICATE_COLUMN,
+      x: (pageWidth - CERTIFICATE_COLUMN) / 2,
+      align: 'center',
+    });
 
     // Pinned to the foot rather than written in the flow: it is the last line
     // on the page and the one that would otherwise carry a rounding error over

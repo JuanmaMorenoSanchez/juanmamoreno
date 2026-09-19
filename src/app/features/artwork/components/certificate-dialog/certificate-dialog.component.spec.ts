@@ -44,6 +44,9 @@ describe('CertificateDialogComponent', () => {
         transaction: 'Transaction',
         view: 'View on Etherscan',
         download: 'Download the certificate',
+        onlyAuthorship:
+          'This document certifies only the authorship of the physical work. It gives no ' +
+          'information of any kind about the ownership of the work.',
       },
       close: 'Close',
     });
@@ -98,6 +101,21 @@ describe('CertificateDialogComponent', () => {
     expect(text).not.toContain('{{date}}');
     // No transaction to point at, so no link offering one.
     expect(hrefs(fixture).some((href) => href?.includes('/tx/'))).toBe(false);
+  });
+
+  /**
+   * What the certificate is not, on the screen that offers it as well as on the
+   * paper it prints: a record of who made the painting is not a record of who
+   * owns it, and nobody should have to infer that from what a sentence leaves
+   * out.
+   */
+  it('says what the certificate does not certify', async () => {
+    const fixture = await setup(null);
+
+    const caveat = fixture.nativeElement.querySelector('.certificate-caveat')?.textContent ?? '';
+
+    expect(caveat).toContain('authorship of the physical work');
+    expect(caveat).toContain('ownership');
   });
 
   it('prints the certificate with what it knows when it knows it', async () => {

@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.78.0
+
+- **feat** — the certificate says what it does not certify: the authorship of
+  the physical work and nothing about who owns it, in the artist’s own words,
+  at the foot of the panel and at the foot of the printed page. The printed one
+  is still a single sheet — the painting gives up the room the sentence needs.
+
 ## 1.77.0
 
 - **feat** — who the artist is is published too, at `/artist.json`: the
