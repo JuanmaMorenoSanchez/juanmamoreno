@@ -33,6 +33,24 @@ describe('ProjectComponent', () => {
     expect(headings.indexOf('project.rot.title')).toBeGreaterThan(2);
   });
 
+  /**
+   * What the catalogue publishes for machines is a consequence of the shape
+   * described just above it, so it reads after the architecture and before the
+   * argument about requirements rotting.
+   */
+  it('puts the machine readers after the architecture that allows them', () => {
+    const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((node: Element) =>
+      node.textContent?.trim()
+    );
+
+    expect(headings.indexOf('project.agents.title')).toBe(
+      headings.indexOf('project.architecture.title') + 1
+    );
+    expect(headings.indexOf('project.agents.title')).toBeLessThan(
+      headings.indexOf('project.rot.title')
+    );
+  });
+
   it('gives each of the three aims its own case', () => {
     expect(fixture.nativeElement.querySelectorAll('.project-goals li')).toHaveLength(3);
   });

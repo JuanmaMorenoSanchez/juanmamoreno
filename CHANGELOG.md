@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.75.0
+
+- **feat** — the whole catalogue is published as one file, `/catalogue.json`,
+  written by the build out of the pages themselves: every painting once, with
+  its measurements, availability, both texts, both addresses and its
+  certificate. An assistant comparing ten paintings asks once instead of
+  fetching ten pages. No price in it, and no address that costs money to
+  serve — both refused by the build rather than left to good intentions.
+- **feat** — the product page says what the catalogue publishes for machines,
+  and the two limits decided before the interface an assistant could call is
+  written: read-only but for one way of making contact, and nothing served per
+  request that carries a bill.
+
 ## 1.74.0
 
 - **feat** — the product page draws the architecture rather than only

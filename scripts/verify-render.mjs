@@ -246,6 +246,42 @@ for (const [route, target] of pointsElsewhere) {
     fail(route, `names ${target} as the original, which is itself a copy`);
 }
 
+// 9. The catalogue file that is written for readers which are not people.
+//
+//    It is built from these same pages, so the only way it can disagree with
+//    them is by being stale — which is what the count catches. The two other
+//    rules are the ones that cost money to break: a price in it would answer
+//    the question the site exists to start a conversation about, and a link
+//    into object storage would let an agent in a loop run a bill up. Checked
+//    here rather than trusted to the script that writes it, because a
+//    generator that has stopped being run fails silently.
+const feedPath = join(OUTPUT_DIR, 'catalogue.json');
+const feedText = await readFile(feedPath, 'utf8').catch(() => null);
+if (!feedText) {
+  fail('catalogue.json', 'was not written; the catalogue feed is part of the build');
+} else {
+  const feed = JSON.parse(feedText);
+  const paintings = checked.filter(
+    (route) => /^artwork\/\d+$/.test(route) && !pointsElsewhere.some(([from]) => from === route)
+  ).length;
+
+  if (feed.count !== paintings)
+    fail('catalogue.json', `lists ${feed.count} paintings, but ${paintings} pages were built`);
+  if (feed.artworks?.length !== feed.count)
+    fail('catalogue.json', `says ${feed.count} and carries ${feed.artworks?.length}`);
+
+  const billed = feedText.match(/storage\.googleapis\.com|\.mp4|\.mov/);
+  if (billed) fail('catalogue.json', `names ${billed[0]}, which is served at a cost`);
+
+  const priced = feedText.match(/"(price|priceCurrency|lowPrice|highPrice)"\s*:|[€$£]\s?\d/);
+  if (priced) fail('catalogue.json', `carries ${priced[0]}; prices are quoted by hand`);
+
+  for (const artwork of feed.artworks ?? []) {
+    const route = `artwork/${artwork.id}`;
+    if (!built.has(route)) fail('catalogue.json', `lists ${route}, which was not built`);
+  }
+}
+
 const english = checked.filter((r) => !(r === 'es' || r.startsWith('es/'))).length;
 console.log(
   `verify-render: ${checked.length} pages (${english} en / ${checked.length - english} es)`

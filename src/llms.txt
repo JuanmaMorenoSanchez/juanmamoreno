@@ -20,6 +20,18 @@ HTML and needs no JavaScript to read.
 - [CV](https://juanmamoreno.com/cv): solo and collective exhibitions, awards, residencies, conferences, education.
 - [Contact](https://juanmamoreno.com/contact): enquiries about a specific piece, including price and availability.
 
+## Data
+
+- [Catalogue](https://juanmamoreno.com/catalogue.json): every painting in one
+  file — title, year, medium, dimensions, availability, the short text in both
+  languages, the web-resolution image, both page addresses and the certificate
+  token. Written by the build from the pages themselves, so it cannot disagree
+  with them. Prefer it to fetching pages one by one.
+- No prices are published anywhere, in the file or on the pages. Every price is
+  quoted by the artist for the particular work: https://juanmamoreno.com/contact
+- The images named in the catalogue are web resolution and permanently stored.
+  Full-resolution originals and video are not public.
+
 ## Notes
 
 - Structured data: each artwork page carries schema.org VisualArtwork markup with creator, date, medium and dimensions.

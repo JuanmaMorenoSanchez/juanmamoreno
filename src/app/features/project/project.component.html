@@ -76,7 +76,8 @@
 
         <!-- Who reads what is public, and who works on what is not. -->
         <rect class="dg-box" x="20" y="24" width="130" height="46" rx="4" />
-        <text class="dg-label" x="85" y="52">{{ 'project.diagram.reader' | translate }}</text>
+        <text class="dg-label" x="85" y="45">{{ 'project.diagram.reader' | translate }}</text>
+        <text class="dg-sub" x="85" y="61">{{ 'project.diagram.readerSub' | translate }}</text>
 
         <rect class="dg-box" x="250" y="16" width="210" height="62" rx="4" />
         <text class="dg-label" x="355" y="42">{{ 'project.diagram.site' | translate }}</text>
@@ -177,6 +178,19 @@
       </svg>
       <figcaption>{{ 'project.diagram.caption' | translate }}</figcaption>
     </figure>
+  </section>
+
+  <!--
+    Consequence of the shape above rather than a feature of its own: a site
+    written to disk is a site a machine can read without running it, and the
+    catalogue file is that taken one step further.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.agents.title' | translate }}</h2>
+    <p>{{ 'project.agents.a' | translate }}</p>
+    <p>{{ 'project.agents.b' | translate }}</p>
+    <p>{{ 'project.agents.c' | translate }}</p>
+    <p>{{ 'project.agents.d' | translate }}</p>
   </section>
 
   <section class="project-section">

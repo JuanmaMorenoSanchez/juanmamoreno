@@ -398,6 +398,13 @@ is a translation key, so the diagram is bilingual, searchable and readable
 aloud, like the page around it. It names what each part does and never what it
 is bought from.
 
+**It has a section about readers that are not people**, because the shape it
+has just described is what makes that possible: a site written to disk is a site
+a machine can read without running it, and [R111](#r111) is that taken one step
+further. It says what ships today, what the interface an assistant could call
+will be, and the two limits decided before any of it was written — read-only but
+for one way of making contact, and nothing served that costs money per request.
+
 **It says plainly that most of the code is written by an agent**, to a
 specification and a review. That is the page's argument rather than its
 disclaimer: an agent will let a requirement rot, a cost run or an abstraction
@@ -1684,6 +1691,31 @@ is for.
 which is why a thumbnail can stand for the original" and "is unmoved by the
 whole picture being lighter or darker") and `image-match.service.spec.ts`
 (5 tests, including "says nothing before it has read the collection").
+
+### R111 — The catalogue is one file, for readers that are not people · met
+`/catalogue.json`: every painting once — title, year, medium, dimensions,
+availability, the short text in both languages, the web-resolution image, both
+addresses of its page, and the certificate token. An assistant asked to compare
+ten paintings was fetching ten pages and parsing them; this is the same facts in
+one request.
+
+**Written by the build out of the pages themselves**, not from the api. The
+structured data in each page is what the site really published and has already
+been checked, so the file cannot drift from the catalogue, cannot learn a field
+the pages refuse to carry, and costs nothing to produce: no call to the service
+and none to anything billed. A painting photographed twice is one entry, decided
+the same way the sitemap decides it — by which page names itself the original.
+
+**Two things it may never contain, checked rather than intended.** A price:
+every price is quoted by hand for the particular work, and a file that answered
+the question would end the conversation the catalogue exists to start. And any
+address that is served at a cost — the full-resolution originals and the video
+sit behind a bill, so an agent in a loop must not be able to reach them from
+here. The images named are the permanently stored copies at web resolution.
+*Proven by:* `scripts/verify-render.mjs`, which fails the build if the file is
+missing, if it lists a different number of paintings than were built, if it
+names one that was not built, or if it carries a price or an address that costs
+money — each of the four proved by planting it and watching the build fail
 
 ### R92 — A raw file can be corrected without leaving the studio · met
 A browser cannot develop a raw: demosaicing a sensor's own readings needs the
