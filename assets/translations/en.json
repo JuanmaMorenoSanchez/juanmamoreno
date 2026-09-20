@@ -15,7 +15,9 @@
     "both": "All",
     "sold": "Sold",
     "available": "Available",
-    "remove": "Remove the availability filter"
+    "remove": "Remove the availability filter",
+    "explain": "Only you see this. Mark the work as sold or available.",
+    "failed": "Could not save"
   },
   "paintings": "Paintings",
   "submit": "Submit",

@@ -15,7 +15,9 @@
     "both": "Todas",
     "sold": "Vendidas",
     "available": "Disponibles",
-    "remove": "Quitar el filtro de disponibilidad"
+    "remove": "Quitar el filtro de disponibilidad",
+    "explain": "Solo tú ves esto. Marca la obra como vendida o disponible.",
+    "failed": "No se pudo guardar"
   },
   "paintings": "Pinturas",
   "submit": "Enviar",
