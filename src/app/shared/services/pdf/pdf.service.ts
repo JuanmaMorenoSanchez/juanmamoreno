@@ -168,7 +168,6 @@ export class PdfService {
       color: PDF_COLORS.soft,
       maxWidth: CERTIFICATE_COLUMN,
       x: (pageWidth - CERTIFICATE_COLUMN) / 2,
-      align: 'center',
     });
 
     // Pinned to the foot rather than written in the flow: it is the last line

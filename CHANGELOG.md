@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.78.1
+
+- **fix** — the certificate's disclaimer ran off the left of the printed page.
+  Centred text is placed by its middle, so giving it the left edge of its
+  column put half the paragraph beyond the paper; it now sits in that column
+  like the sentence above it.
+
 ## 1.78.0
 
 - **feat** — the certificate says what it does not certify: the authorship of

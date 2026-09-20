@@ -335,8 +335,10 @@ panel with no date and the sentence saying what the certificate does not
 certify), and driven in Chrome against a running site: the seal opens the panel,
 the three links are right, and the download produces a pdf whose `/MediaBox`
 reads 210×297mm over a single page, carrying that sentence in the language the
-page was read in — none of which jsdom can see, since it has no canvas to draw
-one with
+page was read in, and no line of it drawn left of the margin — which is how it
+shipped once, centred on the left edge of its own column and running half off
+the sheet, a fault the page count cannot see. None of it is visible to jsdom,
+which has no canvas to draw a pdf with
 
 ### R106 — Paper that goes in a folder is A4; the book is square · met
 The cv, the statement, the technical sheet and the certificate are 210×297. The
