@@ -83,7 +83,7 @@ export class QuoteDialogComponent {
 
   onSubmit(): void {
     if (!this.checkFormValidity()) return;
-    const { email, message } = this.model();
+    const { email, message, honeypot } = this.model();
     this.isLoading.set(true);
     this.mailService
       .sendQuoteRequest({
@@ -92,6 +92,7 @@ export class QuoteDialogComponent {
         artworkName: this.data.artworkName,
         tokenId: this.data.tokenId,
         mode: this.data.mode,
+        honeypot,
       })
       .subscribe({
         next: (res) => this.handleResponse(res),

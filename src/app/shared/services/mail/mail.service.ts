@@ -8,6 +8,8 @@ export type QuoteMode = 'price' | 'info';
 
 export interface QuoteRequest {
   email: string;
+  /** The field nobody can see, carried through to the api like the rest. */
+  honeypot?: string;
   /** The visitor's optional free text. */
   message: string;
   artworkName: string;
@@ -24,10 +26,19 @@ export interface QuoteRequest {
 export class MailService {
   private http = inject(HttpClient);
 
+  /**
+   * The honeypot goes with it.
+   *
+   * Both forms draw a field nobody can see and refuse to submit when something
+   * has filled it — which only ever caught a sender that had loaded the page.
+   * Sending it means the api can catch the rest, and answer them as though
+   * nothing had happened.
+   */
   sendContactMessage(formData: {
     name: string;
     email: string;
     message: string;
+    honeypot?: string;
   }): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(`${environment.backendUrl}contact`, formData);
   }
@@ -45,11 +56,12 @@ export class MailService {
     artworkName,
     tokenId,
     mode,
+    honeypot,
   }: QuoteRequest): Observable<ApiResponse<string>> {
     const label = mode === 'info' ? 'Availability enquiry' : 'Price request';
     const name = `${label}: ${artworkName} (#${tokenId})`;
     const extra = message.trim() ? message.trim() : '(no additional message)';
     const composed = `${label} for "${artworkName}" (id ${tokenId}).\n\n${extra}`;
-    return this.sendContactMessage({ name, email, message: composed });
+    return this.sendContactMessage({ name, email, message: composed, honeypot });
   }
 }

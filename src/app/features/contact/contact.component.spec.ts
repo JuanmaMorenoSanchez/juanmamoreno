@@ -91,6 +91,24 @@ describe('ContactComponent', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  /**
+   * The browser refusing to submit only ever stopped a sender that had loaded
+   * the page. Sending the field means the api can refuse the rest, which is
+   * most of them.
+   */
+  it('sends the hidden field along with the message, empty as it should be', () => {
+    component.contactForm.name().value.set('John');
+    component.contactForm.email().value.set('john@example.com');
+    component.contactForm.message().value.set('Hello!');
+    const sending = vi
+      .spyOn(component['contactService'], 'sendContactMessage')
+      .mockReturnValue(of({ success: true, message: 'Sent' } as ApiResponse<string>));
+
+    component.onSubmit();
+
+    expect(sending).toHaveBeenCalledWith(expect.objectContaining({ honeypot: '' }));
+  });
+
   it('should not submit the form when honeypot is filled (spam)', () => {
     component.contactForm.name().value.set('Bot');
     component.contactForm.email().value.set('bot@example.com');

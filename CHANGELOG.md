@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.79.1
+
+- **fix** — both forms send the field nobody can see along with the message, so
+  the api can refuse what fills it. The browser refusing to submit only ever
+  stopped a sender that had loaded the page, which is not how a form like this
+  is abused.
+
 ## 1.79.0
 
 - **feat** — a painting can be marked sold, or unmarked, from its own page: a

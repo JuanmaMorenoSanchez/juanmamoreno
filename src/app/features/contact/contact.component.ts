@@ -65,9 +65,9 @@ export class ContactComponent {
 
   onSubmit() {
     if (this.checkFormValidity()) {
-      const { name, email, message } = this.model();
+      const { name, email, message, honeypot } = this.model();
       this.prepareSubmission();
-      this.contactService.sendContactMessage({ name, email, message }).subscribe({
+      this.contactService.sendContactMessage({ name, email, message, honeypot }).subscribe({
         next: (res) => this.handleResponse(res),
         error: () => this.handleSubmissionError(),
       });
