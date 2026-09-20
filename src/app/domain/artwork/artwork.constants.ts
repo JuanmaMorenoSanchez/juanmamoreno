@@ -44,36 +44,13 @@ export function certificateUrl(tokenId: string): string {
   return `${ETHERSCAN}/nft/${CERTIFICATES_CONTRACT}/${tokenId}`;
 }
 
-export const SOLDCERTIFICATES = [
-  '23',
-  '24',
-  '25',
-  '26',
-  '30',
-  '34',
-  '37',
-  '58',
-  '59',
-  '61',
-  '64',
-  '66',
-  '70',
-  '71',
-  '72',
-  '74',
-  '75',
-  '77',
-  '94', // ?
-  '97',
-  '112',
-  '114',
-  '115',
-  '118',
-  '117',
-  '126',
-  '136',
-  '159',
-  '161',
-  '163',
-  '165',
-];
+/**
+ * Which paintings are sold is no longer written here.
+ *
+ * It was a list of token ids in this file, so a sale meant an edit, a commit
+ * and a deploy — four hundred pages rebuilt to turn on one dot, and no way to
+ * record a sale in the room it was sold in. It is now one document per
+ * painting in the api, written by the artist from the painting's own page, and
+ * read through `AvailabilityService`. The list as it stood on the day it moved
+ * is the seed in the service's repository, so nothing was lost.
+ */

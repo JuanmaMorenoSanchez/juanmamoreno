@@ -8510,3 +8510,46 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
     },
   ],
 };
+
+/**
+ * What was sold when this build was made.
+ *
+ * Which paintings are sold is the api's answer now, not a list in this
+ * repository — but the red dot is drawn in the first frame, before any request
+ * can have returned, and a page that paints every painting as available while
+ * it waits lies in the direction that costs an enquiry. So the answer is
+ * written down here at build time and corrected from the api a moment later.
+ */
+export const SOLD_AT_LAST_BUILD: string[] = [
+  '23',
+  '24',
+  '25',
+  '26',
+  '30',
+  '34',
+  '37',
+  '58',
+  '59',
+  '61',
+  '64',
+  '66',
+  '70',
+  '71',
+  '72',
+  '74',
+  '75',
+  '77',
+  '94',
+  '97',
+  '112',
+  '114',
+  '115',
+  '117',
+  '118',
+  '126',
+  '136',
+  '159',
+  '161',
+  '163',
+  '165',
+];

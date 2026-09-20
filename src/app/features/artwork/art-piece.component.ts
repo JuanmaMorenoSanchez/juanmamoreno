@@ -18,7 +18,9 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { SOLDCERTIFICATES, VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
+import { VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
+import { SoldToggleComponent } from './components/sold-toggle/sold-toggle.component';
+import { AvailabilityService } from '@shared/services/availability.service';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { metaDescription } from '@domain/seo/meta-description';
@@ -67,6 +69,7 @@ const NO_DESCRIPTION = 'No description available';
     ShareButtonComponent,
     ArtworkCriticComponent,
     CertificateButtonComponent,
+    SoldToggleComponent,
   ],
 })
 export class ArtPieceComponent {
@@ -117,6 +120,7 @@ export class ArtPieceComponent {
    * posted before the address of a post was kept has none recorded.
    */
   private readonly postedArtworks = inject(PostedArtworksService);
+  private readonly availability = inject(AvailabilityService);
   readonly instagramPost = signal<string | null>(null);
 
   readonly descriptions = signal<Descriptions | null>(null);
@@ -166,7 +170,7 @@ export class ArtPieceComponent {
     const nft = this.nft();
     return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];
   });
-  readonly sold: Signal<boolean> = computed(() => SOLDCERTIFICATES.includes(this.tokenId()));
+  readonly sold: Signal<boolean> = computed(() => this.availability.isSold(this.tokenId()));
 
   // The essay is set to the width the viewer gives the artwork itself, so the
   // text block sits exactly under the image rather than under the container.

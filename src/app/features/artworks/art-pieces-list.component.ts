@@ -18,7 +18,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { SOLDCERTIFICATES, SortMethod } from '@domain/artwork/artwork.constants';
+import { SortMethod } from '@domain/artwork/artwork.constants';
+import { AvailabilityService } from '@shared/services/availability.service';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
@@ -139,6 +140,7 @@ export class ArtPiecesListComponent {
    * filtering its contents would leave a heading over an empty row.
    */
   private readonly availability = inject(AvailabilityFilterService).availability;
+  private readonly whatIsSold = inject(AvailabilityService);
 
   private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
@@ -252,7 +254,7 @@ export class ArtPiecesListComponent {
   }
 
   public isSold(nft: Nft): boolean {
-    return SOLDCERTIFICATES.includes(nft.tokenId);
+    return this.whatIsSold.isSold(nft.tokenId);
   }
 
   public getOrderNumber(nft: Nft): number | null {

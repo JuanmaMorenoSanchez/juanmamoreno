@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.79.0
+
+- **feat** — a painting can be marked sold, or unmarked, from its own page: a
+  switch beside the technical line that only the artist sees, writing to the
+  api. Which paintings are sold is no longer a list in this repository, so a
+  sale is one tap from a gallery rather than an edit, a commit and a deploy.
+
 ## 1.78.1
 
 - **fix** — the certificate's disclaimer ran off the left of the printed page.

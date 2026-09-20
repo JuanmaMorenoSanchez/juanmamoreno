@@ -1763,6 +1763,40 @@ missing, if either language has lost its career, its statement or its summary,
 if the gallery is no longer named, or if a price or a billed address appears in
 it — each proved by planting it and watching the build fail
 
+### R113 — A sale is recorded on the painting's own page · met
+A switch beside the technical line of an artwork page, drawn only for the signed
+in artist, turning the red dot on and off. What it writes is in the api, so the
+answer changes for everybody the moment he sets it — no edit, no commit, no
+deploy.
+
+**Where it is, and where it deliberately is not.** It sits next to the dot it
+turns on, under the painting it is about, beside the line that gives the year,
+the medium and the size. Not in the row of icons above it, which is what any
+reader may press and where a state-changing control would be the one button that
+does something. Not on the catalogue grid either, where marking a sale would be
+quicker and where a mistaken tap on a tile would tell the world a painting is
+sold, with nothing on the page to confirm which tile was tapped. Here there is
+one painting, named and measured, and its own dot answers immediately.
+
+**Sold-ness is no longer compiled into the site.** It was a list of token ids in
+`artwork.constants.ts`, read by the catalogue, the artwork page, the quote
+button and the printed sheet. All four now ask one service, which asks the api
+once a visit and shares the answer.
+
+**The page starts with an answer rather than with nothing.** The build writes
+what was sold at build time into the bundled fallback, so the dot is right in
+the prerendered html before any request can have returned, and right again a
+moment later if a painting has sold since. A page that paints every work as
+available while it waits lies for half a second in the direction that costs an
+enquiry. If the api cannot be reached at all, what the build wrote down stands.
+*Proven by:* `availability.service.spec.ts` (8 tests, including that the build's
+answer is used before the api replies and kept when the api cannot be reached,
+that a refused write leaves the page saying what is true, and that the question
+is asked once however many components ask it) and
+`sold-toggle.component.spec.ts` (5, including that a reader is not shown it at
+all), with the guard on the api itself proved in the service's own repository,
+at B51
+
 ### R92 — A raw file can be corrected without leaving the studio · met
 A browser cannot develop a raw: demosaicing a sensor's own readings needs the
 camera's colour profile and a great deal of arithmetic, and none of it is built

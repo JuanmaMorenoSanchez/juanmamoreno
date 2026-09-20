@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import {
   ARTWORK_PAGE_BASE,
   CERTIFICATES_CONTRACT,
-  SOLDCERTIFICATES,
   VALIDTRAITS,
 } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
@@ -11,6 +10,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
+import { AvailabilityService } from '@shared/services/availability.service';
 import type { jsPDF } from 'jspdf';
 import { compressImage, grayscaleZoomedSquare, loadFirstAvailableImage } from './pdf-image.utils';
 import { PDF_COLORS, PDF_PAGE, PDF_TYPE } from './pdf-theme';
@@ -41,6 +41,7 @@ const CERTIFICATE_SLACK = 12;
 export class PdfService {
   private artworkService = inject(ARTWORK_PORT);
   private translateService = inject(TranslateService);
+  private availability = inject(AvailabilityService);
 
   // The jsPDF module is loaded on demand so it stays out of the initial
   // bundle; cached after first use so repeat downloads don't re-import.
@@ -416,7 +417,7 @@ export class PdfService {
       charSpace: CAPTION_CHAR_SPACE,
     });
 
-    if (SOLDCERTIFICATES.includes(nft.tokenId)) {
+    if (this.availability.isSold(nft.tokenId)) {
       const detailsWidth = writer.textWidth(details, {
         size: PDF_TYPE.size.caption,
         charSpace: CAPTION_CHAR_SPACE,

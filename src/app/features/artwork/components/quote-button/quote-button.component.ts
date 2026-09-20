@@ -3,7 +3,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { SOLDCERTIFICATES } from '@domain/artwork/artwork.constants';
+import { AvailabilityService } from '@shared/services/availability.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QuoteDialogComponent, QuoteDialogData } from '../quote-dialog/quote-dialog.component';
 
@@ -24,11 +24,12 @@ import { QuoteDialogComponent, QuoteDialogData } from '../quote-dialog/quote-dia
 })
 export class QuoteButtonComponent {
   private dialog = inject(MatDialog);
+  private availability = inject(AvailabilityService);
 
   readonly tokenId = input.required<string>();
   readonly artworkName = input.required<string>();
 
-  readonly sold = computed(() => SOLDCERTIFICATES.includes(this.tokenId()));
+  readonly sold = computed(() => this.availability.isSold(this.tokenId()));
 
   open(): void {
     const data: QuoteDialogData = {

@@ -69,6 +69,11 @@
             <span [matTooltip]="'sold' | translate" class="dot" aria-hidden="true"></span>
             <span class="visually-hidden">{{ 'sold' | translate }}</span>
           }
+          <!--
+            The artist's own switch, next to the dot it turns on. Nobody else
+            is shown it, and the api refuses anybody else who asks.
+          -->
+          <app-sold-toggle [tokenId]="tokenId()"></app-sold-toggle>
         </small>
       </h3>
       <!--
