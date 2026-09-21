@@ -1557,10 +1557,25 @@ a way to discard one that was a mistake.
 
 A certificate leaves the list only once its transaction has landed. Removed any
 earlier it would be gone from both places at once.
+
+**The page says when it does not know.** "Nothing is waiting" and "the api did
+not answer" were the same blank page: every failure was caught and written down
+as an empty list, so a certificate sitting there perfectly well looked like no
+certificate at all, and the only way to find out was to reload and watch the
+page change its mind. They are three answers now — asking, could not ask, and
+nothing — and the middle one offers to ask again.
+
+It asks twice before giving up. The service behind it scales to nothing when
+nobody is using it, so the first request after a quiet hour is a container
+starting up — which is exactly when this page is opened, because it is opened to
+write something that has been waiting since yesterday.
 *Proven by:* `pending-mint.component.ts`, reached only through `adminOnly` in
 `app-routing.module.ts` and, like the studio, listed in `app.routes.server.ts` as
-client-rendered so no copy of it is ever written into the published site. The
-waiting and the writing are the backend's B34.
+client-rendered so no copy of it is ever written into the published site;
+`pending-mint.component.spec.ts` (15 tests, four of them on this: that a
+failure is not reported as an empty list, that it asks a second time, and that
+it can be asked again by hand). The waiting and the writing are the backend's
+B34.
 
 ### R85 — A dependency cannot arrive unwatched · met
 Two rules, both enforced by pnpm on every install rather than only when

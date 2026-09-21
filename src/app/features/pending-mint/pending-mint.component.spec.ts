@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
@@ -243,5 +243,89 @@ describe('PendingMintComponent — correcting what a certificate says', () => {
 
     expect(page.editing()).toBe(null);
     expect(page.draft()['name']).toBe('');
+  });
+});
+
+/**
+ * What the page says when it does not know.
+ *
+ * It used to say exactly what it says when there is nothing waiting: an empty
+ * page. So a certificate sitting there perfectly well looked like no
+ * certificate at all, and the only way to tell was to reload and see whether
+ * the page changed its mind.
+ */
+describe('PendingMintComponent — when the api does not answer', () => {
+  /** The same harness, with an api that can be made to fail. */
+  const asking = (answer: () => Promise<PendingMint[]>) => {
+    TestBed.configureTestingModule({
+      imports: [PendingMintComponent],
+      providers: [
+        provideTranslateService(),
+        { provide: MintApiService, useValue: { waiting: answer, amend: () => Promise.resolve() } },
+      ],
+    });
+    const fixture = TestBed.createComponent(PendingMintComponent);
+    fixture.detectChanges();
+    return fixture;
+  };
+
+  const settle = async (fixture: ComponentFixture<PendingMintComponent>, ms = 2000) => {
+    await new Promise((wake) => setTimeout(wake, ms));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return fixture.nativeElement.textContent as string;
+  };
+
+  it('says plainly that nothing is waiting when nothing is', async () => {
+    const fixture = asking(() => Promise.resolve([]));
+
+    expect(await settle(fixture, 0)).toContain('Nothing is waiting. Prepare a certificate');
+  });
+
+  /**
+   * The bug this page had: every failure was caught and written down as an
+   * empty list, so the page reported, with confidence, something it did not
+   * know.
+   */
+  it('does not claim nothing is waiting when it could not ask', async () => {
+    const fixture = asking(() => Promise.reject(new Error('no answer')));
+
+    const said = await settle(fixture);
+
+    expect(said).not.toContain('Nothing is waiting. Prepare a certificate');
+    expect(said).toContain('did not answer');
+  });
+
+  /**
+   * The service scales to nothing when nobody is using it, so the first request
+   * after a quiet hour is a container starting up — which is exactly when this
+   * page is opened, because it is opened to write something that has been
+   * waiting.
+   */
+  it('asks a second time before giving up', async () => {
+    let asked = 0;
+    const fixture = asking(() => {
+      asked += 1;
+      return asked === 1 ? Promise.reject(new Error('waking up')) : Promise.resolve([waiting]);
+    });
+
+    const said = await settle(fixture);
+
+    expect(asked).toBe(2);
+    expect(said).toContain('Rockets win III');
+    expect(said).not.toContain('did not answer');
+  });
+
+  it('can be asked again by hand once it has given up', async () => {
+    let fail = true;
+    const fixture = asking(() =>
+      fail ? Promise.reject(new Error('no answer')) : Promise.resolve([waiting]),
+    );
+    await settle(fixture);
+
+    fail = false;
+    fixture.nativeElement.querySelector('.pending-retry').click();
+
+    expect(await settle(fixture, 0)).toContain('Rockets win III');
   });
 });

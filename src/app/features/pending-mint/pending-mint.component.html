@@ -8,7 +8,7 @@
   -->
   <app-mint-gate
     label="Write them now"
-    [disabled]="busy() || !waiting().length"
+    [disabled]="busy() || !waiting()?.length"
     (mint)="mintAll()"
   />
 
@@ -48,9 +48,24 @@
     <p class="pending-problem" role="alert">{{ problem() }}</p>
   }
 
-  @if (waiting().length) {
+  <!--
+    Three answers, not two. "Nothing is waiting" and "the api did not answer"
+    used to be the same blank page, which is how a certificate that was sitting
+    there perfectly well looked like no certificate at all.
+  -->
+  @if (asking()) {
+    <p class="pending-note" role="status"><span class="pending-spin"></span>Asking…</p>
+  } @else if (!waiting()) {
+    <p class="pending-problem" role="alert">
+      The api did not answer, so what is waiting is unknown — nothing here means nothing was
+      heard, not that nothing is waiting.
+      <button type="button" class="pending-retry" (click)="load()">Ask again</button>
+    </p>
+  }
+
+  @if (waiting()?.length) {
     <ul class="pending-list">
-      @for (mint of waiting(); track mint.tokenId) {
+      @for (mint of waiting()!; track mint.tokenId) {
         <li class="pending-item">
           <img
             class="pending-thumb"
@@ -222,7 +237,8 @@
         </li>
       }
     </ul>
-  } @else {
+  } @else if (waiting()) {
+    <!-- Only when the api actually said so. Not knowing is said above. -->
     <p class="pending-note">Nothing is waiting. Prepare a certificate in the studio.</p>
   }
 </div>

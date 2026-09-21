@@ -18,6 +18,9 @@ import {
 import { WalletService } from '@shared/services/wallet.service';
 
 /** What an untouched edit form holds, before a certificate is read into it. */
+/** How long to wait before asking again, when the first ask failed. */
+const RETRY_AFTER_MS = 1500;
+
 const EMPTY_FACTS: MintFacts = {
   name: '',
   medium: MEDIUMS[0],
@@ -59,7 +62,20 @@ export class PendingMintComponent {
   protected readonly inBaseApp =
     'https://go.cb-w.com/dapp?cb_url=' + encodeURIComponent('https://juanmamoreno.com/pendingmint');
 
-  protected readonly waiting = signal<PendingMint[]>([]);
+  /**
+   * The certificates waiting, or nothing at all when the question could not be
+   * asked.
+   *
+   * Undefined and empty are different answers and have to look different. They
+   * did not: every failure — a service waking from cold, a token a second out
+   * of date, a network that blinked — was caught and written down as an empty
+   * list, so a page that could not reach the api and a page with nothing on it
+   * were the same page. The reels list learned this a while ago; this one had
+   * not.
+   */
+  protected readonly waiting = signal<PendingMint[] | undefined>(undefined);
+  /** True while the first answer is still coming. */
+  protected readonly asking = signal(true);
   protected readonly busy = signal(false);
 
   protected readonly mediums = MEDIUMS;
@@ -102,7 +118,7 @@ export class PendingMintComponent {
    */
   protected readonly reshaped = computed(() => {
     const token = this.editing();
-    const was = this.waiting().find((one) => one.tokenId === token);
+    const was = (this.waiting() ?? []).find((one) => one.tokenId === token);
     if (!was) return false;
     const draft = this.draft();
     return (
@@ -307,10 +323,28 @@ export class PendingMintComponent {
     this.load();
   }
 
-  private load(): void {
-    this.api
-      .waiting()
-      .then((list) => this.waiting.set(list))
-      .catch(() => this.waiting.set([]));
+  /**
+   * Asks what is waiting, and says so when it could not ask.
+   *
+   * One retry, after a moment. The service this asks scales to nothing when
+   * nobody is using it, so the first request after a quiet hour is a container
+   * starting up — which is exactly when this page is opened, because it is
+   * opened to write a certificate that has been waiting. A second attempt costs
+   * a second and turns the common failure into no failure at all.
+   */
+  protected async load(retry = true): Promise<void> {
+    this.asking.set(true);
+    try {
+      this.waiting.set(await this.api.waiting());
+    } catch {
+      if (retry) {
+        await new Promise((wake) => setTimeout(wake, RETRY_AFTER_MS));
+        return this.load(false);
+      }
+      // Not an empty list: the question went unanswered, and the page says so.
+      this.waiting.set(undefined);
+    } finally {
+      this.asking.set(false);
+    }
   }
 }

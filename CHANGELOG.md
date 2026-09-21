@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.80.1
+
+- **fix** — `/pendingmint` no longer reports "nothing is waiting" when what
+  actually happened is that it could not reach the api. Every failure was being
+  written down as an empty list, so a certificate waiting perfectly well looked
+  like none at all until the page was reloaded. It now asks twice before giving
+  up — the service sleeps when nobody is using it — and says plainly when it
+  could not ask, with a way to ask again.
+
 ## 1.80.0
 
 - **feat** — a painting can be photographed again: preparing a frontal view for

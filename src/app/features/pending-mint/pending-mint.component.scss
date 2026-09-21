@@ -180,3 +180,13 @@
     color: var(--jm-error);
   }
 }
+
+.pending-retry {
+  margin-left: 0.5rem;
+  font: inherit;
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+}
