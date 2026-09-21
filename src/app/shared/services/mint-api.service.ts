@@ -36,6 +36,21 @@ export interface MintFacts {
   description?: string;
 }
 
+/**
+ * What the api says about the frontal view a painting already has.
+ *
+ * `taken` is the only field that is always there. The rest describe the
+ * certificate holding the slot, and what a photograph replacing it would have
+ * to carry: a certificate with no version counts as version zero, so the first
+ * replacement is version one.
+ */
+export interface FrontalViewStanding {
+  taken: boolean;
+  tokenId?: string;
+  version?: number;
+  nextVersion?: number;
+}
+
 /** A mint call, encoded by the api and ready for a wallet to sign. */
 export interface SignableTransaction {
   to: string;
@@ -119,6 +134,33 @@ export class MintApiService {
   }
 
   /** Prepares one from the studio form: images, metadata, a token id. */
+  /**
+   * Whether this painting already has a frontal view, and what a replacement
+   * would have to be written as.
+   *
+   * The api answers rather than the studio working it out, because the studio
+   * can only see the chain: a replacement prepared an hour ago and not yet
+   * signed is on neither, and two of those would both be version one.
+   */
+  public frontalView(of: {
+    name: string;
+    height: string;
+    width: string;
+    unit: string;
+    imageType: string;
+  }): Promise<FrontalViewStanding> {
+    const asked = new URLSearchParams(of).toString();
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<FrontalViewStanding>>(`${this.base}/frontal-view?${asked}`, this.authorised())
+        // An api that answered nothing is an api that did not say the slot was
+        // taken, and the studio asks before it prepares: the worst a false
+        // "free" can do is skip a question the artist can still answer by
+        // looking at the painting's page.
+        .pipe(map((answer) => answer.data ?? { taken: false }))
+    );
+  }
+
   public prepare(form: FormData): Promise<PendingMint> {
     return firstValueFrom(
       this.http

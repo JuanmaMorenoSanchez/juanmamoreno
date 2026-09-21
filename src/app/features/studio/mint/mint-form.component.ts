@@ -6,10 +6,16 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import type { Nft } from '@domain/artwork/artwork.entity';
 import { titlesLike } from '@domain/artwork/title-check';
 import { MatIcon } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { StudioHandoffService } from '../studio-handoff.service';
+import {
+  ReplaceFrontalDialogComponent,
+  type ReplaceFrontalQuestion,
+} from './replace-frontal-dialog.component';
 import {
   ARTIST,
   IMAGE_TYPES,
@@ -48,6 +54,7 @@ export class MintFormComponent {
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
   private readonly handoff = inject(StudioHandoffService);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly mediums = MEDIUMS;
   protected readonly imageTypes = IMAGE_TYPES;
@@ -216,8 +223,65 @@ export class MintFormComponent {
    * reported "nothing was stored" over a certificate that had been stored
    * perfectly well, which sent the artist back to prepare it a second time.
    */
+  /**
+   * Whether this photograph is meant to replace the one the painting has.
+   *
+   * Asked before anything is prepared, because what a certificate says about
+   * itself is settled before it is written and not after. A painting can be
+   * photographed again — a better light, a straighter wall — and only one of
+   * those photographs can be the frontal view the catalogue shows.
+   *
+   * Nothing is rewritten either way: the certificate being replaced keeps
+   * saying what it said, and the site simply stops calling it the frontal view.
+   * Answering no cancels the mint rather than writing a second rival, which
+   * would leave the catalogue choosing between two by guessing.
+   *
+   * Returns the version to write, or null when the artist said no — and
+   * undefined when there is nothing to ask about, which is almost always.
+   */
+  private async versionToWrite(): Promise<string | null | undefined> {
+    if (this.imageType() !== IMAGE_TYPES[0]) return undefined;
+
+    const standing = await this.api
+      .frontalView({
+        name: this.name().trim(),
+        height: normaliseMeasurement(this.height()),
+        width: normaliseMeasurement(this.width()),
+        unit: this.unit(),
+        imageType: this.imageType(),
+      })
+      // A question that could not be asked is not an answer of "yes, replace".
+      .catch(() => ({ taken: false }) as const);
+
+    if (!standing.taken) return undefined;
+
+    const replace = await firstValueFrom(
+      this.dialog
+        .open<ReplaceFrontalDialogComponent, ReplaceFrontalQuestion, boolean>(
+          ReplaceFrontalDialogComponent,
+          {
+            data: {
+              name: this.name().trim(),
+              tokenId: standing.tokenId,
+              nextVersion: standing.nextVersion,
+            },
+          }
+        )
+        .afterClosed()
+    );
+
+    // Closed with the escape key is not a yes.
+    return replace ? String(standing.nextVersion) : null;
+  }
+
   protected async prepare(signNow = false): Promise<void> {
     if (!this.ready()) return;
+
+    const version = await this.versionToWrite();
+    if (version === null) {
+      this.say('Nothing was prepared. Change the image type, or the title, and try again.', 'bad');
+      return;
+    }
 
     this.busy.set(true);
 
@@ -243,6 +307,9 @@ export class MintFormComponent {
     body.append('unit', this.unit());
     body.append('year', this.year());
     body.append('imageType', this.imageType());
+    // Only when replacing. An ordinary certificate carries no version trait,
+    // which is version zero, which is what two hundred of them already say.
+    if (version) body.append('version', version);
     if (this.description().trim()) body.append('description', this.description().trim());
 
     try {

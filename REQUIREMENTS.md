@@ -1797,6 +1797,43 @@ is asked once however many components ask it) and
 all), with the guard on the api itself proved in the service's own repository,
 at B51
 
+### R114 — Replacing a painting's photograph is asked about, before anything is written · met
+A painting can be photographed again, and only one of those photographs can be
+the frontal view the catalogue shows. When the studio is about to prepare a
+frontal view for a painting that already has one — same title, same size — it
+asks, in a dialog, whether this photograph replaces it.
+
+**Asked before preparing, not after.** What a certificate says about itself is
+settled before it is written, and a certificate is written once. The answer
+decides a `Version` trait: the highest version is the frontal view, and a
+certificate carrying none is version zero, which is what every certificate so
+far is.
+
+**Answering no prepares nothing at all.** The alternative is a second
+unversioned frontal view, which leaves two rivals for one slot and a catalogue
+choosing between them by guessing. Cancelling leaves the form as it stands, so
+the image type or the title can be changed and the work carried on.
+
+**The dialog says what will happen to the old one**, because the thing people
+assume is the thing that is not true: nothing is rewritten. The superseded
+certificate keeps saying "Frontal view" on the chain — it did when it was
+written — and only the catalogue changes its mind, listing it as work in
+progress from then on. No second signature, and no record altered after the
+fact.
+
+The api is asked rather than the browser working it out, because the browser
+can only see the chain and a replacement prepared an hour ago and not yet signed
+is on neither. A question the api cannot answer is not taken as a yes: the
+studio carries on without a version, which is the behaviour it always had.
+
+The catalogue's half of this was already built — `getLatestVersion` picks the
+highest and `viewLabel` marks the rest as work in progress — and needed nothing.
+*Proven by:* `mint-form.component.spec.ts` (7 tests, including that nothing is
+asked when the painting has no frontal view, that a dialog dismissed with the
+escape key is a no, that saying no prepares nothing, and that a version counts
+on from whatever the painting is already at), with the api's half proved in the
+service's own repository, at B56
+
 ### R92 — A raw file can be corrected without leaving the studio · met
 A browser cannot develop a raw: demosaicing a sensor's own readings needs the
 camera's colour profile and a great deal of arithmetic, and none of it is built

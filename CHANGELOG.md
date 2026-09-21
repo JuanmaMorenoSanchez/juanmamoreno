@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.80.0
+
+- **feat** — a painting can be photographed again: preparing a frontal view for
+  a painting that already has one now asks whether it replaces it, and writes a
+  version when it does. Saying no prepares nothing. The old certificate is not
+  rewritten — the catalogue simply stops calling it the frontal view and lists
+  it as work in progress.
+
 ## 1.79.1
 
 - **fix** — both forms send the field nobody can see along with the message, so
