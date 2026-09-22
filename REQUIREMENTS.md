@@ -408,6 +408,22 @@ Some of his Spanish is deliberately in English — tests, blockchain, dev, produ
 owner, mint, bucket, storage — and those words stay as he wrote them in both
 columns. Translating them would be correcting him about his own trade.
 
+**It shows the thing itself, and the addresses of it.** Four photographs of
+the site, taken from the build that published them, each opening the real page
+in a new tab — an article about something that exists should be one press away
+from the thing. And two maps: the routes a reader can walk to, and the endpoints
+the service answers.
+
+**Both maps leave out everything behind the credential, and say so.** A map is
+a useful thing to publish and a list of the doors is not, so the administration
+routes are one sentence at the foot rather than a list — a partial map that
+admits to being partial, instead of a gap nobody can see. The one address the
+maps do print that used to fail the build is `/vision/search`: the check that
+watches for a build having asked the billed image search was reading the whole
+page, and a page that merely names the address is not a build that called it.
+It reads the transferred state now, which is where asking actually leaves its
+mark, and is the stricter reading rather than the looser one.
+
 **How it is put together is drawn, not only described.** Prose cannot show a
 shape, and the shape is his argument: a site written to disk, a cloud that is a
 service and three things around it, and — outside both boxes — the chain and the
@@ -439,10 +455,11 @@ detail and a dangerous one look alike: the service's repository is private and
 stays unnamed, as do the addresses behind a guard, the names of credentials and
 the cloud it runs on. Checked rather than trusted, because the copy will be
 edited later by somebody who has forgotten why.
-*Proven by:* `project.component.spec.ts` (6 tests, including the order the
+*Proven by:* `project.component.spec.ts` (8 tests, including the order the
 sections come in — his order — that a block written as several paragraphs
-renders as several, that every label in the diagram is a translation key, and
-that only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
+renders as several, that the maps name no address behind the credential, that
+each photograph opens the live page in a new tab, and that only the public
+repository is linked), and `scripts/verify-render.mjs`, which fails the
 build on a named list of things that page may never contain — verified by
 planting one in the built page and watching it fail
 

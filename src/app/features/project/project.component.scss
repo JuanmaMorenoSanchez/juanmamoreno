@@ -163,3 +163,80 @@
   fill: currentColor;
   opacity: 0.55;
 }
+
+// Four photographs of the site, two across on a screen wide enough and one on
+// a phone. They are an aside rather than the subject, so they are quiet until
+// a pointer is over one.
+.project-shots {
+  margin: 2rem 0 0;
+}
+
+.project-shots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+
+  a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    opacity: 0.92;
+    transition: opacity 0.2s ease;
+  }
+
+  a:hover img,
+  a:focus-visible img {
+    opacity: 1;
+  }
+
+  span {
+    display: block;
+    margin: 0.4rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    opacity: 0.75;
+  }
+}
+
+// A row in one of the two maps: the address, and what is at it. The address is
+// set in the typewriter face because it is a thing to be typed.
+.dg-at {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  fill: currentColor;
+  text-anchor: start;
+}
+
+.dg-row {
+  font-size: 10px;
+  fill: currentColor;
+  opacity: 0.7;
+  text-anchor: start;
+}
+
+// A line of small print set from the left: the note under a map's title, and
+// the second line of a zone name too long to sit on one. The shared rule above
+// centres text, and a centred label given the left edge of its box as its
+// position runs half of itself off the picture.
+.dg-note {
+  font-size: 9px;
+  fill: currentColor;
+  opacity: 0.65;
+  text-anchor: start;
+}
+
+.dg-group-label-long {
+  font-size: 7.5px;
+  letter-spacing: 0.1em;
+  fill: currentColor;
+  opacity: 0.55;
+  text-anchor: start;
+}

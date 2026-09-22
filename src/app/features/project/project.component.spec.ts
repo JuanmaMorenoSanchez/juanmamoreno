@@ -90,6 +90,39 @@ describe('ProjectComponent', () => {
   });
 
   /**
+   * A map is a useful thing to publish and a list of the doors is not. The
+   * addresses behind the credential are left off, and the map says so rather
+   * than leaving a gap nobody can see.
+   */
+  it('maps only the addresses anybody may walk to', () => {
+    const drawn = fixture.nativeElement.textContent as string;
+
+    expect(drawn).toContain('/artworks');
+    expect(drawn).toContain('GET /availability');
+    expect(drawn).toContain('project.map.guarded');
+    expect(drawn).not.toContain('/studio');
+    expect(drawn).not.toContain('/pendingmint');
+    expect(drawn).not.toContain('/publish');
+  });
+
+  /**
+   * The article is about a thing that exists, so a reader deciding whether
+   * that is true should be one press from finding out — in a new tab, because
+   * the photographs are an aside and this page is what is being read.
+   */
+  it('shows the real pages, and opens them where they are', () => {
+    const shots = [...fixture.nativeElement.querySelectorAll('.project-shots-grid a')];
+
+    expect(shots).toHaveLength(4);
+    for (const shot of shots as HTMLAnchorElement[]) {
+      expect(shot.getAttribute('href')).toContain('https://juanmamoreno.com/');
+      expect(shot.getAttribute('target')).toBe('_blank');
+      expect(shot.getAttribute('rel')).toContain('noopener');
+      expect(shot.querySelector('img')?.getAttribute('alt')).toBeTruthy();
+    }
+  });
+
+  /**
    * The repository this page ships in is public and the service's is not.
    * Linking the private one would offer a recruiter a 404 and tell everybody
    * else where to knock.

@@ -2,9 +2,12 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   PROJECT_CHANGELOG,
+  PROJECT_ENDPOINTS,
+  PROJECT_FILES,
   PROJECT_GOALS,
   PROJECT_REPO,
   PROJECT_REQUIREMENTS,
+  PROJECT_ROUTES,
 } from '@domain/project/project.constants';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageUrlService } from '@shared/services/language-url.service';
@@ -36,6 +39,28 @@ export class ProjectComponent {
   private readonly translate = inject(TranslateService);
 
   protected readonly goals = PROJECT_GOALS;
+  protected readonly routes = PROJECT_ROUTES;
+  protected readonly files = PROJECT_FILES;
+  protected readonly endpoints = PROJECT_ENDPOINTS;
+
+  /**
+   * The four photographs, and the page each one is of.
+   *
+   * They open the live site rather than a copy of it: the article is about
+   * something that exists, and a reader deciding whether that is true should be
+   * one press away from finding out. In a new tab, because they are an aside
+   * and this page is the thing being read.
+   */
+  protected readonly shots = [
+    { name: 'home', label: 'project.shots.home', href: 'https://juanmamoreno.com/' },
+    { name: 'catalogue', label: 'project.shots.catalogue', href: 'https://juanmamoreno.com/artworks' },
+    { name: 'artwork', label: 'project.shots.artwork', href: 'https://juanmamoreno.com/artwork/152' },
+    {
+      name: 'certificate',
+      label: 'project.shots.certificate',
+      href: 'https://juanmamoreno.com/artwork/152',
+    },
+  ] as const;
   protected readonly repo = PROJECT_REPO;
   protected readonly requirements = PROJECT_REQUIREMENTS;
   protected readonly changelog = PROJECT_CHANGELOG;

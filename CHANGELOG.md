@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.82.0
+
+- **feat** — the product page shows the product: four photographs of the real
+  site, taken from the build that published them, each opening the page it is a
+  photograph of in a new tab.
+- **feat** — two maps on the same page: the routes a reader can walk to, and
+  the endpoints the service answers. Both leave out everything behind the
+  credential and say that they do.
+- **chore** — the zone in the architecture diagram is named for what it holds:
+  on-chain and immutable distributed storage.
+- **fix** — the build check that watches for a page having asked the billed
+  image search reads the transferred state rather than the whole page. Naming
+  the address in a map of the endpoints is not the same as having called it.
+
 ## 1.81.0
 
 - **feat** — the product page is his text as he last edited it, in his order:

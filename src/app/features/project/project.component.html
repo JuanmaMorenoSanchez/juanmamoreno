@@ -48,6 +48,35 @@
         </li>
       }
     </ol>
+
+    <!--
+      Photographs of the thing itself, taken from the build that published it.
+      Each opens the page it is a photograph of, in a new tab: a page about a
+      product that exists should be one click from the product.
+    -->
+    <figure class="project-shots">
+      <div class="project-shots-grid">
+        @for (shot of shots; track shot.name) {
+          <a
+            [href]="shot.href"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="(shot.label | translate) + ' — ' + ('project.shots.opens' | translate)"
+          >
+            <img
+              [src]="'assets/images/product/' + shot.name + '.jpg'"
+              [alt]="shot.label | translate"
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="820"
+            />
+            <span>{{ shot.label | translate }}</span>
+          </a>
+        }
+      </div>
+      <figcaption>{{ 'project.shots.caption' | translate }}</figcaption>
+    </figure>
   </section>
 
   <section class="project-section">
@@ -140,8 +169,16 @@
           all: they are outside both boxes above.
         -->
         <rect class="dg-group dg-dashed" x="486" y="118" width="200" height="212" rx="6" />
-        <text class="dg-group-label" x="496" y="136">
+        <!--
+          Two lines, because what this zone is called is a sentence rather than
+          a word: it is the part of the system nobody — including him — can
+          alter, which is the whole reason it is drawn outside the other box.
+        -->
+        <text class="dg-group-label" x="496" y="134">
           {{ 'project.diagram.outside' | translate }}
+        </text>
+        <text class="dg-group-label-long" x="492" y="146">
+          {{ 'project.diagram.outsideTwo' | translate }}
         </text>
 
         <rect class="dg-box dg-hub" x="500" y="152" width="172" height="58" rx="4" />
@@ -165,6 +202,68 @@
         <text class="dg-edge-label" x="476" y="270">{{ 'project.diagram.images' | translate }}</text>
       </svg>
       <figcaption>{{ 'project.diagram.caption' | translate }}</figcaption>
+    </figure>
+
+    <!--
+      The addresses, in two lists: the ones a reader can walk to, and the ones
+      the service answers. Both are drawn from data rather than typed here, and
+      both leave out everything behind the credential — which the map says out
+      loud, because a gap nobody can see is not the same as a list that admits
+      to being partial.
+    -->
+    <figure class="project-diagram">
+      <svg
+        viewBox="0 0 700 340"
+        role="img"
+        [attr.aria-label]="'project.map.title' | translate"
+      >
+        <text class="dg-group-label" x="14" y="16">{{ 'project.map.title' | translate }}</text>
+        <text class="dg-note" x="14" y="34">
+          {{ 'project.map.bothLanguages' | translate }}
+        </text>
+
+        <rect class="dg-group" x="8" y="46" width="684" height="236" rx="6" />
+        @for (route of routes; track route.at) {
+          <text class="dg-at" x="24" [attr.y]="72 + $index * 22">{{ route.at }}</text>
+          <text class="dg-row" x="280" [attr.y]="72 + $index * 22">{{ route.label | translate }}</text>
+        }
+
+        <rect class="dg-group dg-dashed" x="8" y="294" width="684" height="38" rx="6" />
+        <text class="dg-row" x="24" y="318">{{ 'project.map.guarded' | translate }}</text>
+      </svg>
+      <figcaption>{{ 'project.map.title' | translate }}</figcaption>
+    </figure>
+
+    <figure class="project-diagram">
+      <svg
+        viewBox="0 0 700 440"
+        role="img"
+        [attr.aria-label]="'project.map.endpointsTitle' | translate"
+      >
+        <text class="dg-group-label" x="14" y="16">
+          {{ 'project.map.endpointsTitle' | translate }}
+        </text>
+
+        <rect class="dg-group" x="8" y="28" width="684" height="120" rx="6" />
+        <text class="dg-group-label" x="24" y="48">{{ 'project.map.filesTitle' | translate }}</text>
+        @for (file of files; track file.at) {
+          <text class="dg-at" x="24" [attr.y]="72 + $index * 20">{{ file.at }}</text>
+          <text class="dg-row" x="280" [attr.y]="72 + $index * 20">{{ file.label | translate }}</text>
+        }
+
+        <rect class="dg-group" x="8" y="160" width="684" height="228" rx="6" />
+        <text class="dg-group-label" x="24" y="180">{{ 'project.map.publicApi' | translate }}</text>
+        @for (endpoint of endpoints; track endpoint.at) {
+          <text class="dg-at" x="24" [attr.y]="204 + $index * 20">{{ endpoint.at }}</text>
+          <text class="dg-row" x="280" [attr.y]="204 + $index * 20">
+            {{ endpoint.label | translate }}
+          </text>
+        }
+
+        <rect class="dg-group dg-dashed" x="8" y="398" width="684" height="34" rx="6" />
+        <text class="dg-row" x="24" y="420">{{ 'project.map.credentialed' | translate }}</text>
+      </svg>
+      <figcaption>{{ 'project.map.endpointsTitle' | translate }}</figcaption>
     </figure>
   </section>
 

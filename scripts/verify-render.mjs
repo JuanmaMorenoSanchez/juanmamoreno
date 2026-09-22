@@ -228,7 +228,18 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   //    the meter. The endpoint no longer searches — and this stays, because a
   //    build must not be able to make that mistake affordable again by
   //    accident.
-  if (/vision\/search/.test(html))
+  //    Looked for in what the build *carried*, not in what the page *says*.
+  //    Angular writes the answers it fetched into a script of transferred
+  //    state, which is where asking leaves its mark; the page about this
+  //    product prints the address as a line in a map of the endpoints, which is
+  //    a page naming a thing rather than a build having called it. Checking the
+  //    whole html failed that page for describing itself accurately — and this
+  //    is the stricter reading, not the looser one: a build that asked cannot
+  //    hide the answer outside a script.
+  const carried = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)]
+    .map((found) => found[1])
+    .join(' ');
+  if (/vision\/search/.test(carried))
     fail(route, 'the build asked the reverse image search; that belongs in the browser');
 
   // 8. The navigation is in the page's own language.
