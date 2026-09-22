@@ -322,93 +322,81 @@
     "pdfHeading": "Certificate of authenticity"
   },
   "project": {
-    "title": "juanmamoreno.com, the product",
-    "lead": "It is built on on-chain certificates of authenticity owned by the artist, a catalogue anybody can browse, and a set of tools that automate the digital workflows that come out of his work.",
-    "lead2": "The solution delegates implementation, along with the test and deployment pipelines, to AI agents. The flow is automated: the product owner puts requirements to the agent, and the agent implements them, runs the unit tests and the end-to-end tests, makes sure the requirements that were already there still hold, and deploys the front end and the services.",
-    "figures": {
-      "requirements": "requirements, each with a reason and unit and end-to-end tests that keep it alive",
-      "operator": "person operates the whole thing"
+    "title": "juanmamoreno.com, the product definition",
+    "lead": "The core of the application is a catalogue of artwork. The catalogue consists of a number of pieces which are, at the same time, their own certificate of authenticity. The authenticity of each piece is guaranteed by the fact that every one of them is minted on the Ethereum blockchain with a contract only the author of the works holds the key to. The information in the catalogue — the certificates of authenticity — is therefore immutable and independent of the app.\n\nSo the catalogue is visible and navigable by any user or agent, while the tools that manage it can only be used by the artist, who is at the same time the site’s only administrator.\n\nThe app lets the administrator manage the catalogue — mint new certificates on the blockchain, mark a work sold or available — automates posts to several social networks as image and as video, and makes it easy to edit the photographs of the certificates without depending on an external tool. Alongside that there are a number of automated tasks: writing the descriptive texts, the periodic reverse image search across the web, and generating PDFs such as dossiers, technical sheets and certificates of authenticity.\n\nThe site is optimised to be found by AI agents, and includes a small MCP for reading the catalogue data, whose connector the author uses in various automated flows with Claude Cowork — finding opportunities that fit the catalogue, for instance.",
+    "rot": {
+      "title": "Keeping control",
+      "intro": "The solution delegates the implementation, as well as the test and deployment pipelines, to AI agents. The flow is automated: the product owner puts requirements to the agent, and the agent implements them, runs the unit tests and the e2e tests, makes sure the pre-existing requirements still hold, and only then deploys the frontend and the services and releases a new version.\n\nIn my opinion, keeping control of the requirements — of their permanence, and of how they have been implemented — is the main risk we take on when we delegate to agents. So this work has been channelled along the following lines:",
+      "a": "REQUIREMENTS DOCUMENT: a requirements document is a statement about the present. The truth of those statements is tested by naming what proves them. A script reads the file before every deploy and refuses the build if a number is used twice, if an entry has no test, if a test names a deleted file, or if it cites a test that has been renamed.",
+      "b": "It is also the reference document for the app’s requirements whose only proof is the text itself — since this is a one-person project, any Agile task-management tool has been dispensed with entirely; here it reads as redundant.",
+      "c": "AGENTS: a guidance document for language models that sets limits and states a preference about how to work. The idea is not to delegate one hundred per cent of the sensitive decisions about architecture, design, development practices or writing tests."
     },
     "about": {
-      "title": "Where I am coming from",
-      "a": "Ten years as a full-stack developer, two as a tech lead and two as a designer, over a background in artistic creation and design.",
-      "b": "Working as a developer I was always the kind who cared more about defining and designing the solution than implementing it. Deciding what was worth building, and why, was what mattered most to me. That is why I usually worked close to the product owners.",
-      "c": "Now that agents have taken over almost all of the implementation, and almost all of the problem-solving, moving toward product design is the natural progression for me."
+      "title": "Where I come from",
+      "a": "Ten years as a full stack developer, tech lead and designer, on an artistic background and a wide knowledge of cultural creation and management.",
+      "b": "Working as a software developer I was always the kind who is more interested in defining and designing the solution than in implementing it. Deciding what was worth building, and why, was what mattered most to me. Which is why I usually worked close to the product owners.",
+      "c": "Now that the agents have taken over almost all of the implementation, and almost all of the problem solving, pivoting towards product design is the natural progression for me."
     },
     "product": {
-      "title": "The product, and what it is for",
-      "lead": "Three things, in the order they were built.",
+      "title": "Product description",
+      "lead": "Three things: certificates of authenticity, catalogue, and a toolbox for the artist.",
       "one": {
         "name": "Certificates of authenticity",
-        "body": "A certificate of authenticity for every physical work, written to a public chain (Ethereum) where the artist alone holds the key. No intermediary to trust, no fees and no dependencies. The record is written inside the chain rather than linked from it, so the certificates are a thing of their own that outlives this app and even the artist."
+        "body": "Each physical work corresponds to N NFTs, written on a public blockchain (Ethereum). Each NFT holds the work’s metadata, along with a thumbnail (2kb) in base64 and links to a web-resolution image on distributed storage and to a high-resolution image held in a cloud bucket. The NFTs — certificates of authenticity from here on — are minted by a contract the artist owns and only he can sign. With no intermediaries and no dependencies, the artist-admin owns the whole chain. This infrastructure is designed with one main aim: to be independent and immutable, and to outlive this app and even the author himself."
       },
       "two": {
-        "name": "A catalogue anybody can read",
-        "body": "The work — physical and generative — laid out so that anyone can move through it, narrow it, generate the technical sheet as a pdf, download a certificate of authenticity as a pdf, an essay about the painting, or a list of links to where that painting turns up on the internet. 192 on-chain paintings come to some 400 static pages in English and Spanish, every one of them readable with no JavaScript at all."
+        "name": "The catalogue",
+        "body": "On top of this collection of certificates, a number of features have been built so that any user can browse the catalogue, search, filter, download certificates and technical sheets as PDFs, run reverse image searches across the web, check whether a work is available for sale, get in touch with the artist, ask for a quote…\n\nHere the main challenge is performance. For that, the on-chain data is cached and the images load in succession from lowest to highest resolution, so that browsing is quick even while loading images that in some cases are over 10MB."
       },
       "three": {
-        "name": "A tool for the artist",
-        "body": "The week-to-week work, automated: correcting the photograph of a canvas, cutting it to the frame, taking the glare off, setting the levels, then writing and translating the text, recording the work on the chain, and publishing the images and the video that were generated for it. All of it is built so that the human part is as small as it can be."
+        "name": "Toolbox for the artist",
+        "body": "Every week’s work, automated: edit the photograph of a painting, crop it to the frame, take the glare off, adjust the levels, then write and translate a short essay, add the work to the on-chain catalogue and publish the images and the video generated for it to social networks. All of it is automated so that human intervention is as small as possible and the artist can concentrate on what matters, which is the work in the studio and not the management of it."
       }
     },
     "architecture": {
       "title": "How it is put together",
-      "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as a file: there is no server rendering anything, and so no server to fall over, to patch or to pay for. The build refuses to publish itself if a page has come out wrong.",
-      "b": "Behind it, a private containerised service does the rest: it prepares the photographs and the thumbnails, writes and translates the essays using language models, renders the video, runs reverse image searches, publishes to the social networks and assembles the chain transactions. What it produces goes to a document database, and the large files to a bucket.",
-      "c": "The blockchain is Ethereum. Each certificate is a token whose content — title, medium, dimensions, year and a small photograph — is written inside the chain rather than pointed at from it, so nothing has to stay online for the record to be readable. The web-resolution images live in permanent decentralised storage."
-    },
-    "diagram": {
-      "caption": "Who asks what of whom, and who signs.",
-      "reader": "Reader",
-      "readerSub": "people and agents",
-      "site": "Static site",
-      "siteSub": "400 pages · 2 languages",
-      "artist": "Artist",
-      "studio": "Studio",
-      "studioSub": "private pages",
-      "service": "Private service",
-      "serviceSub": "in a container",
-      "models": "Language models",
-      "modelsSub": "essays and translation",
-      "db": "Document database",
-      "dbSub": "catalogue and texts",
-      "bucket": "Bucket",
-      "bucketSub": "video and originals",
-      "social": "Social networks",
-      "socialSub": "image and video",
-      "permanent": "Permanent storage",
-      "permanentSub": "web-resolution images",
-      "vision": "Reverse search",
-      "visionSub": "where the work appears",
-      "phone": "The artist's phone",
-      "chain": "Ethereum",
-      "chainSub": "certificates contract",
-      "reads": "reads",
-      "unsigned": "unsigned transaction",
-      "signs": "signs",
-      "builds": "builds the pages"
+      "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as a file: there is no server rendering anything, and therefore no server to fall over, to patch or to pay for. The whole system is designed for the cost to be minimal — a couple of euros a month, roughly.",
+      "b": "The cloud architecture is, in essence, a service serving an API, a number of cloud AI services (for reverse image searches across the internet, and for generating texts from images and descriptions), a database for the app’s information and the cache of the certificates, and a bucket for the high-resolution images and the videos.",
+      "c": "Outside the scope of the cloud and the frontend app sit the on-chain data (the certificates and the contract) and the permanent distributed storage of the web-resolution images."
     },
     "agents": {
-      "title": "Readers that are not people",
-      "a": "The site was already made legible to machines: because every page is written to disk before it is published, the text is in the HTML and nothing has to run to read it; each work carries its structured data; and the file that governs crawlers names the language models’ own crawlers one by one and lets them in. Legible, though, is not usable: comparing ten paintings meant asking for ten pages and picking them apart.",
-      "b": "The whole catalogue is now published as a single file as well: title, year, medium, dimensions, whether it is available, the text in both languages, the image, both addresses of the page and the certificate token. The build writes it from the pages themselves, so it cannot contradict them, and the build refuses to publish if the file stops agreeing with what was made.",
-      "c": "That interface now exists: the service speaks the MCP protocol at backend.juanmamoreno.com/mcp, and an assistant that adds it once can, in the middle of a conversation, search the work by year, size, medium or availability, read one of them with its essay, and check a certificate against the chain. Three tools, all of them reading: none writes, sends, or costs money per request. It answers from the same file the site publishes, so it cannot say anything the site does not already say in public, and an essay goes out only once I have been over it.",
-      "d": "Prices are in neither, and will not be. That is not an oversight: every price is quoted by the artist for the particular work, and an agent that answered with a figure would end the conversation the catalogue exists to begin."
-    },
-    "rot": {
-      "title": "Keeping control",
-      "intro": "In my view, losing control of the requirements, of whether they still hold, and of how they were implemented is the main risk we take on when working with agents. So the work has been channelled along these lines:",
-      "a": "REQUIREMENTS DOCUMENT: a requirements document is a claim about the present. Those claims are checked by naming the thing that proves them. A script reads the file before every deploy and refuses the build if a number is used twice, if an entry has no test, if a test names a file that has been deleted, or if it quotes a test that has been renamed.",
-      "b": "It also reports, of course, the requirements whose only proof is the text itself — since this is a one-person project, any Agile task-management tool has been done without entirely.",
-      "c": "GUIDANCE DOCUMENT: a guidance document for language models that sets limits and states a preference about how to work. The idea is not to delegate sensitive decisions one hundred per cent — those about architecture, development practice or writing tests, for instance."
+      "title": "Agents and crawlers",
+      "a": "Every page is written to disk before it is published, the text is in the HTML and nothing has to run to read it; each work carries its structured data; and the file that governs crawlers names the language models’ own crawlers one by one and lets them in.",
+      "b": "The whole catalogue is published as a single json file as well: title, year, medium, measurements…, the text in both languages, the image, both addresses of the page and the certificate token. The build writes it from the pages themselves, so it cannot contradict them, and the build refuses to publish if the file stops matching what was built.",
+      "c": "The service speaks the MCP protocol at backend.juanmamoreno.com/mcp, for anyone who wants to widen their agent’s context with the catalogue’s information. Realistically, the only use of the MCP so far is widening the context of my own agents, so that the processes I automate day to day can work with a wider context and spend fewer tokens."
     },
     "links": {
-      "title": "The evidence",
-      "repo": "The source, public",
+      "title": "Tests",
+      "repo": "The code, public",
       "requirements": "The requirements file",
       "changelog": "The changelog",
       "site": "The product itself",
-      "note": "The service behind the catalogue is in a private repository and is deliberately not linked or described here."
+      "note": "The service behind the catalogue lives in a private repository and, deliberately, is neither linked nor described here, for security."
+    },
+    "diagram": {
+      "caption": "What is inside the cloud, and what is outside it.",
+      "reader": "User or agent",
+      "reads": "browses",
+      "artist": "Artist (admin)",
+      "manages": "manages",
+      "site": "The site",
+      "siteSub": "static · 2 languages",
+      "api": "API",
+      "cloud": "CLOUD",
+      "service": "Service",
+      "ai": "AI services",
+      "aiSub": "reverse search and texts",
+      "db": "Database",
+      "dbSub": "app data and cache",
+      "bucket": "Bucket",
+      "bucketSub": "high resolution and video",
+      "outside": "OUTSIDE THE SCOPE",
+      "mint": "mint",
+      "chain": "Ethereum",
+      "chainSub": "contract and certificates",
+      "images": "images",
+      "permanent": "Distributed storage",
+      "permanentSub": "web-resolution images"
     }
   }
 }
