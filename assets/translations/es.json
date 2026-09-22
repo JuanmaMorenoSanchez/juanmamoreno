@@ -83,6 +83,10 @@
     "message": "Mensaje",
     "messagePlaceholder": "Me interesa..."
   },
+  "whatsapp": {
+    "askPrice": "Preguntar por WhatsApp",
+    "askInfo": "Preguntar por esta obra por WhatsApp"
+  },
   "quote": {
     "askPrice": "Preguntar precio",
     "askInfo": "Preguntar por esta obra",
