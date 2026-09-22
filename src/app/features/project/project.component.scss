@@ -164,17 +164,10 @@
   opacity: 0.55;
 }
 
-// Four photographs of the site, two across on a screen wide enough and one on
-// a phone. They are an aside rather than the subject, so they are quiet until
-// a pointer is over one.
-.project-shots {
-  margin: 2rem 0 0;
-}
-
-.project-shots-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 1rem;
+// One photograph of the site, under the paragraph it illustrates. Quiet until
+// a pointer is over it: it is an aside, and the text is what is being read.
+.project-shot {
+  margin: 1.25rem 0 0;
 
   a {
     display: block;
@@ -197,8 +190,7 @@
     opacity: 1;
   }
 
-  span {
-    display: block;
+  figcaption {
     margin: 0.4rem 0 0;
     font-size: 0.78rem;
     line-height: 1.35;

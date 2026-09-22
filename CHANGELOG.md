@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.82.1
+
+- **fix** — the four photographs are spread through the product page, each
+  under the paragraph it illustrates, instead of gathered in a block at the
+  foot where the reader met them after the text that gave them a reason.
+
 ## 1.82.0
 
 - **feat** — the product page shows the product: four photographs of the real

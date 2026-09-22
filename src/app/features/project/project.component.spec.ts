@@ -110,8 +110,8 @@ describe('ProjectComponent', () => {
    * that is true should be one press from finding out — in a new tab, because
    * the photographs are an aside and this page is what is being read.
    */
-  it('shows the real pages, and opens them where they are', () => {
-    const shots = [...fixture.nativeElement.querySelectorAll('.project-shots-grid a')];
+  it('shows the real pages through the article, and opens them where they are', () => {
+    const shots = [...fixture.nativeElement.querySelectorAll('.project-shot a')];
 
     expect(shots).toHaveLength(4);
     for (const shot of shots as HTMLAnchorElement[]) {

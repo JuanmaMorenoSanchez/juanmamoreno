@@ -408,10 +408,14 @@ Some of his Spanish is deliberately in English — tests, blockchain, dev, produ
 owner, mint, bucket, storage — and those words stay as he wrote them in both
 columns. Translating them would be correcting him about his own trade.
 
-**It shows the thing itself, and the addresses of it.** Four photographs of
-the site, taken from the build that published them, each opening the real page
-in a new tab — an article about something that exists should be one press away
-from the thing. And two maps: the routes a reader can walk to, and the endpoints
+**It shows the thing itself, and the addresses of it.** Four photographs of the
+site, taken from the build that published them, each opening the real page in a
+new tab — an article about something that exists should be one press away from
+the thing. Each sits under the paragraph it illustrates rather than in a block
+at the foot: the home page under the opening, the certificate under the
+certificates, the catalogue under the catalogue, and a painting's own page
+beside the section about the data that page carries. Gathered together they
+were a gallery of screenshots, read after the text that gave them a reason. And two maps: the routes a reader can walk to, and the endpoints
 the service answers.
 
 **Both maps leave out everything behind the credential, and say so.** A map is
