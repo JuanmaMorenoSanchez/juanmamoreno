@@ -19,11 +19,16 @@
           nobody arrives looking for — but it is the only place the site says
           the painting is written down somewhere that outlasts the site.
         -->
+        <!--
+          The painting's certificate, whichever photograph is on screen. Every
+          photograph is its own token with its own certificate, and opening the
+          one for a detail is opening a certificate of a photograph of a corner.
+        -->
         <app-certificate-button
-          [tokenId]="tokenId()"
-          [artworkName]="nft().name"
-          [details]="technicalLine()"
-          [nft]="nft()"
+          [tokenId]="certificateNft().tokenId"
+          [artworkName]="certificateNft().name"
+          [details]="certificateLine()"
+          [nft]="certificateNft()"
         ></app-certificate-button>
         <app-links-button [tokenId]="tokenId()"></app-links-button>
       </ng-container>

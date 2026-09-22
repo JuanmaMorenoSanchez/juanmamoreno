@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.82.3
+
+- **fix** — the seal opens the painting's certificate rather than the
+  photograph's. Pressing it while looking at a detail or a canvas caught
+  half-finished gave a certificate of that photograph, with that photograph
+  printed in it; it now opens the frontal view, and the current one where a
+  painting has been photographed again.
+
 ## 1.82.2
 
 - **chore** — the zone outside the cloud in the architecture diagram is called

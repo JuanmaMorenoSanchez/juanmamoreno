@@ -328,11 +328,23 @@ address at the foot is pinned to the bottom margin rather than written in the
 flow, so a rounding error in a line height cannot carry it onto a second sheet
 on its own.
 
+**It is the painting's certificate, whichever photograph is on screen.** Every
+photograph of an artwork is its own token with its own certificate, and the seal
+used to open whichever one was being looked at — so pressing it on a detail gave
+a certificate of that detail, with the detail's own photograph printed in it,
+which is a true document about the wrong thing. It opens the frontal view now,
+and the current one where a painting has been photographed again ([R114](#r114)),
+falling back to what is on screen only for an artwork that has no frontal view
+at all.
+
 Every artwork has one. The catalogue is read out of the contract, so a painting
 on this site is a painting with a certificate, and there is no empty state.
 *Proven by:* `certificate-dialog.component.spec.ts` (5 tests, including the
 panel with no date and the sentence saying what the certificate does not
-certify), and driven in Chrome against a running site: the seal opens the panel,
+certify), `art-piece.component.spec.ts` (4 on which certificate the seal opens:
+the painting rather than the detail being looked at, the current frontal view
+where there is more than one, the painting's own measurements, and the fallback
+for an artwork with no frontal view), and driven in Chrome against a running site: the seal opens the panel,
 the three links are right, and the download produces a pdf whose `/MediaBox`
 reads 210×297mm over a single page, carrying that sentence in the language the
 page was read in, and no line of it drawn left of the margin — which is how it

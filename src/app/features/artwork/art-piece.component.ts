@@ -152,8 +152,25 @@ export class ArtPieceComponent {
    * under the title. Handed to the share button, so passing a painting on
    * says what it is rather than only where it lives.
    */
-  readonly technicalLine: Signal<string> = computed(() => {
-    const nft = this.nft();
+  readonly technicalLine: Signal<string> = computed(() => this.lineFor(this.nft()));
+
+  /**
+   * The certificate is the painting's, not the photograph's.
+   *
+   * Every photograph of an artwork is its own token with its own certificate,
+   * and the seal used to open whichever one was on screen — so pressing it
+   * while looking at a detail or a canvas caught half-finished produced a
+   * certificate of that photograph, with that photograph in it. What anybody
+   * pressing it wants is the certificate *of the painting*: the frontal view,
+   * and the current one where a painting has been photographed again.
+   *
+   * Falls back to what is on screen, which is what it always did, for the case
+   * that has no frontal view at all.
+   */
+  readonly certificateNft: Signal<Nft> = computed(() => this.frontalViewNft() ?? this.nft());
+  readonly certificateLine: Signal<string> = computed(() => this.lineFor(this.certificateNft()));
+
+  private lineFor(nft: Nft | undefined): string {
     if (!nft) return '';
     const year = this.getTraitValue(nft, VALIDTRAITS.YEAR);
     const medium = this.translateService.instant(this.getTraitValue(nft, VALIDTRAITS.MEDIUM));
@@ -164,7 +181,7 @@ export class ArtPieceComponent {
     // not, and its absence beats a wrong guess at one.
     const size = height && width ? `${height} x ${width}${unit ? ` ${unit}` : ''}` : '';
     return [year, medium, size].filter(Boolean).join(', ');
-  });
+  }
 
   readonly qualityUrls: Signal<string[]> = computed(() => {
     const nft = this.nft();

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { VALIDTRAITS, VIEW_TYPES } from '@domain/artwork/artwork.constants';
+import { Artwork } from '@domain/artwork/artwork';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
@@ -218,5 +219,125 @@ describe('ArtPieceComponent — moving to the next painting', () => {
     answerAbout('5', 'This is about painting five.');
 
     expect(fixture.componentInstance.description()).toBe(NOTHING_KNOWN);
+  });
+});
+
+/**
+ * Every photograph of a painting is its own token with its own certificate,
+ * and the seal used to open whichever one was on screen — so pressing it while
+ * looking at a detail produced a certificate of that detail, with the detail's
+ * own photograph in it. What it should always open is the certificate of the
+ * painting.
+ */
+describe('ArtPieceComponent — which certificate the seal opens', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  const photograph = (tokenId: string, imageType: string, version?: string): Nft => ({
+    tokenId,
+    name: 'Secuestro en la rave',
+    image: { thumbnailUrl: `https://cdn.test/${tokenId}` },
+    raw: {
+      metadata: {
+        attributes: [
+          { trait_type: VALIDTRAITS.IMAGETYPE, value: imageType },
+          { trait_type: VALIDTRAITS.YEAR, value: '2024' },
+          { trait_type: VALIDTRAITS.HEIGHT, value: '130' },
+          { trait_type: VALIDTRAITS.WIDTH, value: '130' },
+          { trait_type: VALIDTRAITS.MEDIUM, value: 'Oil on canvas' },
+          ...(version ? [{ trait_type: VALIDTRAITS.VERSION, value: version }] : []),
+        ],
+      },
+    },
+  });
+
+  /** The real logic, so the answer is the catalogue's rather than a stub's. */
+  const artworkLogic = new Artwork();
+
+  const showing = (photographs: Nft[], index: number) => {
+    TestBed.configureTestingModule({
+      imports: [ArtPieceComponent],
+      providers: [
+        provideTranslateService(),
+        provideRouter([]),
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtworkViewsObservable: () => of(photographs),
+            getArtPiecesObservable: () => of([]),
+            getArtPieceDescriptions: () => of(null),
+            getNftFetchableUrls: () => [],
+            getLatestVersion: (nfts: Nft[]) => artworkLogic.getLatestVersion(nfts),
+            filterFrontalArtworks: (nfts: Nft[]) => artworkLogic.filterFrontalArtworks(nfts),
+            getTraitValue: (nft: Nft, trait: VALIDTRAITS) =>
+              artworkLogic.getTraitValue(nft, trait),
+            countCatalogueArtworksInYear: () => 0,
+            isFrontalView: () => true,
+            sortByYear: (nfts: Nft[]) => nfts,
+          },
+        },
+        {
+          provide: PostedArtworksService,
+          useValue: { getInstagramPermalink: () => of(null) },
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(new Map([['id', photographs[0].tokenId]])),
+            snapshot: { paramMap: new Map() },
+          },
+        },
+      ],
+    });
+    TestBed.overrideComponent(ArtPieceComponent, { set: { template: '', imports: [] } });
+
+    const fixture = TestBed.createComponent(ArtPieceComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.displayingIndex.set(index);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  it('opens the painting, not the detail being looked at', () => {
+    const page = showing(
+      [
+        photograph('152', VIEW_TYPES.FRONTAL),
+        photograph('153', VIEW_TYPES.DETAIL),
+        photograph('154', VIEW_TYPES.PROGRESS),
+      ],
+      1
+    );
+
+    expect(page.nft().tokenId).toBe('153');
+    expect(page.certificateNft().tokenId).toBe('152');
+  });
+
+  /** A painting photographed again: the certificate is the photograph it is now. */
+  it('opens the current frontal view where there is more than one', () => {
+    const page = showing(
+      [
+        photograph('152', VIEW_TYPES.FRONTAL),
+        photograph('200', VIEW_TYPES.FRONTAL, '1'),
+        photograph('153', VIEW_TYPES.DETAIL),
+      ],
+      2
+    );
+
+    expect(page.certificateNft().tokenId).toBe('200');
+  });
+
+  it("says the painting’s measurements, whichever photograph is on screen", () => {
+    const page = showing(
+      [photograph('152', VIEW_TYPES.FRONTAL), photograph('153', VIEW_TYPES.DETAIL)],
+      1
+    );
+
+    expect(page.certificateLine()).toContain('130 x 130');
+  });
+
+  /** Nothing to fall back from: a painting with no frontal view at all. */
+  it('falls back to what is on screen when there is no frontal view', () => {
+    const page = showing([photograph('153', VIEW_TYPES.DETAIL)], 0);
+
+    expect(page.certificateNft().tokenId).toBe('153');
   });
 });
