@@ -9,5 +9,10 @@ export const environment = {
   // does not authorise anything. Empty until one is created, and the door says
   // so rather than failing silently.
   googleClientId: '164035848667-t6fv2d02rfhojassdhh3cv0q3qk44mde.apps.googleusercontent.com',
+  // Whether the artwork pages offer "ask on WhatsApp". The number itself is
+  // nowhere in this repository: the button links to the service, which holds it
+  // in a secret and redirects. This only says whether the service has one yet —
+  // a button that leads to a 404 is worse than no button.
+  whatsappEnquiries: false,
   backendUrlFallback: '/api/',
 };

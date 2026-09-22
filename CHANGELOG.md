@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.83.0
+
+- **feat** — every artwork page can be asked about on WhatsApp, beside the
+  cart, with the painting and the page already written into the message. No
+  telephone number is in this repository or in any page it produces: the button
+  links to the service, which holds the number in a secret and redirects. Off
+  until the service has one.
+
 ## 1.82.3
 
 - **fix** — the seal opens the painting's certificate rather than the

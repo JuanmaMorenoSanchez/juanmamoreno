@@ -41,6 +41,7 @@ import { DownloadButtonComponent } from '@shared/components/download-button/down
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { LinksButtonComponent } from './components/links-button/links-button.component';
 import { QuoteButtonComponent } from './components/quote-button/quote-button.component';
+import { WhatsappButtonComponent } from './components/whatsapp-button/whatsapp-button.component';
 import { TraitPipe } from './pipes/traits.pipe';
 
 // Sentinel returned when an artwork has no generated description yet.
@@ -61,6 +62,7 @@ const NO_DESCRIPTION = 'No description available';
     PdfButtonComponent,
     LinksButtonComponent,
     QuoteButtonComponent,
+    WhatsappButtonComponent,
     MatDivider,
     ArtPiecesListComponent,
     TranslatePipe,
@@ -295,9 +297,7 @@ export class ArtPieceComponent {
       // the original, so search has one address for one work rather than up to
       // seven that it must choose between.
       const original = this.canonicalTokenFor(nft);
-      this.seo.pointCanonicalAt(
-        this.language.link(`artwork/${original}`)
-      );
+      this.seo.pointCanonicalAt(this.language.link(`artwork/${original}`));
       this.seo.setArtworkStructuredData({
         name: nft.name,
         // The page's own address, in the page's own language. Written without

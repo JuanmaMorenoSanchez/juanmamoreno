@@ -1,0 +1,10 @@
+// Sized and inked like a mat-icon, because it stands in a row of them. The
+// glyph is drawn from a 24-unit grid and Material's icon buttons are built
+// around exactly that, so nothing here is a magic number — it is the same 24px
+// the icons beside it occupy.
+.whatsapp-glyph {
+  width: 24px;
+  height: 24px;
+  display: block;
+  fill: currentColor;
+}

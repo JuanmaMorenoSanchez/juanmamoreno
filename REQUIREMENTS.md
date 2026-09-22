@@ -1911,3 +1911,37 @@ sensor.
 of a NEF), and measured end to end in Chrome on a real 21.4 MB NEF: three
 embedded JPEGs, the largest decoding to 6016 × 4000, found in 32 ms.
 
+### R115 — A painting can be asked about on WhatsApp, without publishing a telephone number · met
+Beside the cart on every artwork page, a link that opens WhatsApp with the
+message already written: which painting, in the language the page was read in,
+and the address of the page it was sent from. It asks; it does not quote. The
+site's position on money is that people ask, and this is the shortest way to.
+
+**No telephone number is anywhere in this repository, in its history, or in any
+of the pages the build writes out.** That is the whole design. A `wa.me` link in
+four hundred prerendered files is a telephone number in four hundred places,
+found by everything that crawls the web without any of it ever looking at a
+painting; and a number committed here could never be taken back, because this
+repository is public. The button links to the service instead, which holds the
+number in a secret and redirects to it. Only somebody who actually follows the
+link reaches a telephone — and if it is ever abused, changing one secret changes
+every page without rebuilding anything.
+
+It is a plain anchor rather than a click handler, so it works on a page with no
+JavaScript running like the rest of the site, and on a telephone it hands over
+to the WhatsApp app and leaves the painting where it was.
+
+**Two switches, and it is off until both are on.** `whatsappEnquiries` here, and
+the number on the service. The site is built hours before anybody reads it, so a
+button that leads to a service with no number configured is a button that leads
+to a 404 — worse than no button.
+
+The mark is drawn in the page as one path taking the same ink as the icons
+beside it, not fetched and not a font. The icon font carries no brand marks, and
+this is the one glyph that has to be recognised on sight or the button does not
+do its job.
+*Proven by:* `whatsapp-button.component.spec.ts` (5 tests, including "carries no
+telephone number, only an address on the service", "says which painting, and in
+which language the page was read", "is an anchor carrying the mark, not a
+button" and "renders nothing at all until the service has a number"), and
+`B58` on the service's side, which is where the number is

@@ -9,6 +9,12 @@
     @if (nft()) {
       <ng-container viewer-actions>
         <app-quote-button [tokenId]="tokenId()" [artworkName]="nft().name"></app-quote-button>
+        <!--
+          The same question by the other route: the form is for somebody at a
+          desk, this is for somebody standing in front of the painting with a
+          telephone in their hand. Beside the cart because it is the same ask.
+        -->
+        <app-whatsapp-button [tokenId]="tokenId()"></app-whatsapp-button>
         <app-share-button [artworkName]="nft().name" [details]="technicalLine()"></app-share-button>
         <app-download-button [links]="qualityUrls()" [name]="nft().name"></app-download-button>
         @if (frontalViewNft()) {

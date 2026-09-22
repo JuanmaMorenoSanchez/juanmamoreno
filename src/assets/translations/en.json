@@ -83,6 +83,10 @@
     "message": "Message",
     "messagePlaceholder": "I'm interested in..."
   },
+  "whatsapp": {
+    "askPrice": "Ask on WhatsApp",
+    "askInfo": "Ask about this piece on WhatsApp"
+  },
   "quote": {
     "askPrice": "Ask price",
     "askInfo": "Ask about this piece",
