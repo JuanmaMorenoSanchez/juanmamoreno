@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.82.2
+
+- **chore** — the zone outside the cloud in the architecture diagram is called
+  ON-CHAIN, on one line, as he asked.
+
 ## 1.82.1
 
 - **fix** — the four photographs are spread through the product page, each

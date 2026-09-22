@@ -214,21 +214,12 @@
   text-anchor: start;
 }
 
-// A line of small print set from the left: the note under a map's title, and
-// the second line of a zone name too long to sit on one. The shared rule above
-// centres text, and a centred label given the left edge of its box as its
-// position runs half of itself off the picture.
+// A line of small print set from the left: the note under a map's title. The
+// shared rule above centres text, and a centred label given the left edge of
+// its box as its position runs half of itself off the picture.
 .dg-note {
   font-size: 9px;
   fill: currentColor;
   opacity: 0.65;
-  text-anchor: start;
-}
-
-.dg-group-label-long {
-  font-size: 7.5px;
-  letter-spacing: 0.1em;
-  fill: currentColor;
-  opacity: 0.55;
   text-anchor: start;
 }
