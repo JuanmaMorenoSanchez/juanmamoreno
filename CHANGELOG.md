@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.81.0
+
+- **feat** — the product page is his text as he last edited it, in his order:
+  keeping control of the requirements first, then where he comes from, what the
+  product is, how it is built, the agents, and the tests. The two figures and
+  the second opening paragraph are gone because he took them out, and a block
+  written as several paragraphs now renders as several.
+- **feat** — the architecture diagram is redrawn from what he wrote and nothing
+  else: the static site, the cloud with its service, AI services, database and
+  bucket, and — outside both — the chain and the permanent distributed storage.
+
 ## 1.80.1
 
 - **fix** — `/pendingmint` no longer reports "nothing is waiting" when what

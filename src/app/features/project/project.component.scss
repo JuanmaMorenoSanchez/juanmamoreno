@@ -16,31 +16,6 @@
   margin: 0 0 2.5rem;
 }
 
-// The counted things, side by side and equal: none of them is the headline.
-.project-figures {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 1.5rem;
-  margin: 0 0 3rem;
-  padding: 1.5rem 0;
-  border-top: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
-}
-
-.project-figure {
-  dt {
-    font-size: 2rem;
-    line-height: 1.1;
-  }
-
-  dd {
-    margin: 0.35rem 0 0;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    opacity: 0.75;
-  }
-}
-
 .project-section {
   margin: 0 0 2.75rem;
 
@@ -177,4 +152,14 @@
   text-anchor: start;
   opacity: 1;
   font-size: 10px;
+}
+
+// The name of a zone in the diagram: the cloud, and what is outside it. Set
+// small and spaced, like the headings on the page, so it reads as a label on
+// the box rather than as another thing inside it.
+.dg-group-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  fill: currentColor;
+  opacity: 0.55;
 }

@@ -1,29 +1,12 @@
 /**
  * The shape of the page about running this product, as data.
  *
- * Only the structure and the figures live here; every word is a translation
- * key, because the page is read in two languages like the rest of the site.
+ * Only the structure lives here; every word is a translation key, because the
+ * page is read in two languages like the rest of the site — and because the
+ * text is the artist's own, edited in a file and put back where it came from.
  *
- * The numbers are counted rather than claimed, and the commands that count them
- * are named beside each one so the page can be checked instead of believed.
+ * It used to hold two counted figures as well. He took them off the page.
  */
-
-export interface ProjectFigure {
-  /** Counted, not estimated. */
-  value: string;
-  /** The translation key for what it counts. */
-  label: string;
-}
-
-/**
- * Counted on 17 September 2026:
- * - requirements: 101 in this repository + 46 in the service's own
- * - operator: one, which is the whole point of the second figure
- */
-export const PROJECT_FIGURES: ProjectFigure[] = [
-  { value: '147', label: 'project.figures.requirements' },
-  { value: '1', label: 'project.figures.operator' },
-];
 
 /**
  * What the product is for, in the order the three were built: the certificates

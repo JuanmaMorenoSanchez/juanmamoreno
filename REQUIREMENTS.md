@@ -397,17 +397,23 @@ It is written for somebody deciding whether to hire the person running this,
 which is a different reader from the one the rest of the site is for — so it
 arrives with the address in hand rather than being come across by a gallery.
 
-It opens with where he is coming from, then what the product is for — three
-things, in the order they were built — then how it is put together, and only
-then the argument about how it is kept honest, which means nothing until the
-reader knows what "it" is. It leads on two counted figures rather than
-adjectives: the requirements written down across both halves, and the one person
-who operates the whole of it.
+**Every word of it is his.** The text is exported to a file, edited by him, and
+put back where it came from — which is why the order of the page is his too: how
+the work is kept honest comes first, before where he is coming from and before
+what was built, because that is the part somebody deciding whether to hire him
+is reading for. A block he wrote as four paragraphs renders as four, because a
+blank line is a paragraph in the file he is handed.
+
+Some of his Spanish is deliberately in English — tests, blockchain, dev, product
+owner, mint, bucket, storage — and those words stay as he wrote them in both
+columns. Translating them would be correcting him about his own trade.
 
 **How it is put together is drawn, not only described.** Prose cannot show a
-shape, and the shape is the argument: everything fans out from a single private
-service, and the one arrow that leaves the machinery altogether is the
-signature, which a person gives from a phone. The picture is inline svg in one
+shape, and the shape is his argument: a site written to disk, a cloud that is a
+service and three things around it, and — outside both boxes — the chain and the
+permanent storage, which are the two nobody can take away. The picture says
+what his three paragraphs say and nothing else: an arrow he did not describe is
+a claim he did not make. The picture is inline svg in one
 colour taken from `currentColor`, so it reads on either ground; every word in it
 is a translation key, so the diagram is bilingual, searchable and readable
 aloud, like the page around it. It names what each part does and never what it
@@ -433,9 +439,10 @@ detail and a dangerous one look alike: the service's repository is private and
 stays unnamed, as do the addresses behind a guard, the names of credentials and
 the cloud it runs on. Checked rather than trusted, because the copy will be
 edited later by somebody who has forgotten why.
-*Proven by:* `project.component.spec.ts` (5 tests, including the order the
-sections come in, that every label in the diagram is a translation key, and that
-only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
+*Proven by:* `project.component.spec.ts` (6 tests, including the order the
+sections come in — his order — that a block written as several paragraphs
+renders as several, that every label in the diagram is a translation key, and
+that only the public repository is linked), and `scripts/verify-render.mjs`, which fails the
 build on a named list of things that page may never contain — verified by
 planting one in the built page and watching it fail
 

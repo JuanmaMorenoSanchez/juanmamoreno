@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { ProjectComponent } from './project.component';
 
 describe('ProjectComponent', () => {
@@ -16,28 +16,26 @@ describe('ProjectComponent', () => {
   });
 
   /**
-   * Where he is coming from, what it is for, then how it is built. The argument
-   * about keeping requirements honest comes after all three, because it means
-   * nothing to a reader who does not yet know what "it" is.
+   * His order, which is not the obvious one: how the work is kept honest comes
+   * before where he is coming from and before what was built. He moved it
+   * there, and it is the part a person deciding whether to hire him is
+   * actually reading for.
    */
-  it('says what the product is for before how it is kept honest', () => {
+  it('reads in the order he put the sections in', () => {
     const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((node: Element) =>
       node.textContent?.trim()
     );
 
-    expect(headings.slice(0, 3)).toEqual([
+    expect(headings).toEqual([
+      'project.rot.title',
       'project.about.title',
       'project.product.title',
       'project.architecture.title',
+      'project.agents.title',
+      'project.links.title',
     ]);
-    expect(headings.indexOf('project.rot.title')).toBeGreaterThan(2);
   });
 
-  /**
-   * What the catalogue publishes for machines is a consequence of the shape
-   * described just above it, so it reads after the architecture and before the
-   * argument about requirements rotting.
-   */
   it('puts the machine readers after the architecture that allows them', () => {
     const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((node: Element) =>
       node.textContent?.trim()
@@ -45,9 +43,6 @@ describe('ProjectComponent', () => {
 
     expect(headings.indexOf('project.agents.title')).toBe(
       headings.indexOf('project.architecture.title') + 1
-    );
-    expect(headings.indexOf('project.agents.title')).toBeLessThan(
-      headings.indexOf('project.rot.title')
     );
   });
 
@@ -69,16 +64,29 @@ describe('ProjectComponent', () => {
     );
     expect(labels).toContain('project.diagram.service');
     expect(labels).toContain('project.diagram.chain');
-    // The step a person takes, which is the point of drawing it at all.
-    expect(labels).toContain('project.diagram.signs');
+    // The two zones, which are the point of drawing it at all: what is inside
+    // the cloud, and what is deliberately outside it.
+    expect(labels).toContain('project.diagram.cloud');
+    expect(labels).toContain('project.diagram.outside');
   });
 
-  it('leads with counted figures rather than adjectives', () => {
-    const figures = [...fixture.nativeElement.querySelectorAll('.project-figure dt')].map(
+  /**
+   * He writes in a file where a blank line is a new paragraph, and several of
+   * these blocks have four. Rendered as one string that is a wall of text with
+   * two invisible line breaks in it.
+   */
+  it('renders a block he wrote as several paragraphs as several paragraphs', () => {
+    TestBed.inject(TranslateService).setTranslation('en', {
+      project: { lead: ['First thing.', 'Second thing.', 'Third thing.'].join('\n\n') },
+    });
+    TestBed.inject(TranslateService).use('en');
+    fixture.detectChanges();
+
+    const paragraphs = [...fixture.nativeElement.querySelectorAll('.project-lead')].map(
       (node: Element) => node.textContent?.trim()
     );
 
-    expect(figures).toEqual(['147', '1']);
+    expect(paragraphs).toEqual(['First thing.', 'Second thing.', 'Third thing.']);
   });
 
   /**

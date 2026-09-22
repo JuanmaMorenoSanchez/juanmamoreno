@@ -1,26 +1,36 @@
 <div class="container margin-top project">
   <h1 class="project-title">{{ 'project.title' | translate }}</h1>
-  <p class="project-lead">{{ 'project.lead' | translate }}</p>
-  <p class="project-lead">{{ 'project.lead2' | translate }}</p>
 
   <!--
-    Counted rather than claimed. Both are numbers the build prints or a line
-    somebody can go and count in a file this page links to.
+    His own text throughout, and several of these blocks are more than one
+    paragraph. A translated string with blank lines in it renders as one run-on
+    paragraph, so every body is split where he left the blank line.
   -->
-  <dl class="project-figures">
-    @for (figure of figures; track figure.label) {
-      <div class="project-figure">
-        <dt>{{ figure.value }}</dt>
-        <dd>{{ figure.label | translate }}</dd>
-      </div>
+  @for (paragraph of paragraphs('project.lead'); track $index) {
+    <p class="project-lead">{{ paragraph }}</p>
+  }
+
+  <!--
+    Second, where he put it: what keeps the requirements honest comes before
+    where he is coming from and before what the product is. It is the part of
+    this that is about how the work is done rather than about what was made.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.rot.title' | translate }}</h2>
+    @for (key of ['intro', 'a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.rot.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
     }
-  </dl>
+  </section>
 
   <section class="project-section">
     <h2>{{ 'project.about.title' | translate }}</h2>
-    <p>{{ 'project.about.a' | translate }}</p>
-    <p>{{ 'project.about.b' | translate }}</p>
-    <p>{{ 'project.about.c' | translate }}</p>
+    @for (key of ['a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.about.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
   </section>
 
   <section class="project-section">
@@ -32,7 +42,9 @@
       @for (goal of goals; track goal) {
         <li>
           <h3>{{ 'project.product.' + goal + '.name' | translate }}</h3>
-          <p>{{ 'project.product.' + goal + '.body' | translate }}</p>
+          @for (paragraph of paragraphs('project.product.' + goal + '.body'); track $index) {
+            <p>{{ paragraph }}</p>
+          }
         </li>
       }
     </ol>
@@ -40,23 +52,26 @@
 
   <section class="project-section">
     <h2>{{ 'project.architecture.title' | translate }}</h2>
-    <p>{{ 'project.architecture.a' | translate }}</p>
-    <p>{{ 'project.architecture.b' | translate }}</p>
-    <p>{{ 'project.architecture.c' | translate }}</p>
+    @for (key of ['a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.architecture.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
 
     <!--
-      Drawn rather than described, because the one thing prose cannot show is
-      the shape: that everything fans out from a single service, and that the
-      one arrow leaving the machinery entirely is the signature.
+      The three zones he describes and nothing he does not: the site that is
+      written to disk, the cloud that is a service and three things around it,
+      and the two that sit outside both — the chain and the permanent storage.
+      Drawn because the one thing his three paragraphs cannot show is that the
+      last two are outside the box.
 
-      Inline svg in a single colour, taking its ink from `currentColor` so it
-      reads on either ground without a second copy of the picture. Every label
-      is a translation key — the diagram is bilingual like the page around it,
-      and no text is baked into an image where nothing can search it.
+      Inline svg in a single colour taken from `currentColor`, so it reads on
+      either ground, and every word in it is a translation key, so the picture
+      is bilingual, searchable and readable aloud like the page around it.
     -->
     <figure class="project-diagram">
       <svg
-        viewBox="0 0 700 500"
+        viewBox="0 0 700 380"
         role="img"
         [attr.aria-label]="'project.diagram.caption' | translate"
       >
@@ -74,131 +89,92 @@
           </marker>
         </defs>
 
-        <!-- Who reads what is public, and who works on what is not. -->
-        <rect class="dg-box" x="20" y="24" width="130" height="46" rx="4" />
-        <text class="dg-label" x="85" y="45">{{ 'project.diagram.reader' | translate }}</text>
-        <text class="dg-sub" x="85" y="61">{{ 'project.diagram.readerSub' | translate }}</text>
+        <!-- Who the catalogue is for, and who runs it. -->
+        <rect class="dg-box" x="14" y="20" width="132" height="44" rx="4" />
+        <text class="dg-label" x="80" y="47">{{ 'project.diagram.reader' | translate }}</text>
 
-        <rect class="dg-box" x="250" y="16" width="210" height="62" rx="4" />
-        <text class="dg-label" x="355" y="42">{{ 'project.diagram.site' | translate }}</text>
-        <text class="dg-sub" x="355" y="60">{{ 'project.diagram.siteSub' | translate }}</text>
+        <rect class="dg-box" x="14" y="92" width="132" height="44" rx="4" />
+        <text class="dg-label" x="80" y="119">{{ 'project.diagram.artist' | translate }}</text>
 
-        <line class="dg-edge" x1="152" y1="47" x2="244" y2="47" marker-end="url(#dg-arrow)" />
-        <text class="dg-edge-label" x="198" y="40">{{ 'project.diagram.reads' | translate }}</text>
+        <line class="dg-edge" x1="148" y1="42" x2="196" y2="42" marker-end="url(#dg-arrow)" />
+        <text class="dg-edge-label" x="172" y="35">{{ 'project.diagram.reads' | translate }}</text>
 
-        <rect class="dg-box" x="20" y="120" width="130" height="46" rx="4" />
-        <text class="dg-label" x="85" y="148">{{ 'project.diagram.artist' | translate }}</text>
+        <polyline
+          class="dg-edge"
+          points="148,114 172,114 172,56 196,56"
+          marker-end="url(#dg-arrow)"
+        />
+        <text class="dg-edge-label" x="182" y="108">
+          {{ 'project.diagram.manages' | translate }}
+        </text>
 
-        <rect class="dg-box" x="250" y="112" width="210" height="62" rx="4" />
-        <text class="dg-label" x="355" y="138">{{ 'project.diagram.studio' | translate }}</text>
-        <text class="dg-sub" x="355" y="156">{{ 'project.diagram.studioSub' | translate }}</text>
+        <!-- Written to disk before it is published, in both languages. -->
+        <rect class="dg-box dg-hub" x="200" y="18" width="240" height="56" rx="4" />
+        <text class="dg-label" x="320" y="40">{{ 'project.diagram.site' | translate }}</text>
+        <text class="dg-sub" x="320" y="58">{{ 'project.diagram.siteSub' | translate }}</text>
 
-        <line class="dg-edge" x1="152" y1="143" x2="244" y2="143" marker-end="url(#dg-arrow)" />
-        <line class="dg-edge" x1="340" y1="176" x2="330" y2="204" marker-end="url(#dg-arrow)" />
+        <line class="dg-edge" x1="320" y1="76" x2="320" y2="112" marker-end="url(#dg-arrow)" />
+        <text class="dg-edge-label" x="330" y="98">{{ 'project.diagram.api' | translate }}</text>
+
+        <!-- The cloud: a service, and the three things around it. -->
+        <rect class="dg-group" x="186" y="118" width="268" height="212" rx="6" />
+        <text class="dg-group-label" x="196" y="136">{{ 'project.diagram.cloud' | translate }}</text>
+
+        <rect class="dg-box" x="200" y="146" width="240" height="44" rx="4" />
+        <text class="dg-label" x="320" y="173">{{ 'project.diagram.service' | translate }}</text>
+
+        <rect class="dg-box" x="200" y="204" width="114" height="56" rx="4" />
+        <text class="dg-label" x="257" y="226">{{ 'project.diagram.ai' | translate }}</text>
+        <text class="dg-sub" x="257" y="242">{{ 'project.diagram.aiSub' | translate }}</text>
+
+        <rect class="dg-box" x="326" y="204" width="114" height="56" rx="4" />
+        <text class="dg-label" x="383" y="226">{{ 'project.diagram.db' | translate }}</text>
+        <text class="dg-sub" x="383" y="242">{{ 'project.diagram.dbSub' | translate }}</text>
+
+        <rect class="dg-box" x="200" y="272" width="240" height="46" rx="4" />
+        <text class="dg-label" x="320" y="292">{{ 'project.diagram.bucket' | translate }}</text>
+        <text class="dg-sub" x="320" y="308">{{ 'project.diagram.bucketSub' | translate }}</text>
 
         <!--
-          Where the pages come from. The site holds no data of its own: the
-          service is read once, at build time, and four hundred files fall out
-          of it. Nothing is asked of anything at the moment somebody visits.
+          The two nobody can take away, and the reason this is worth drawing at
+          all: they are outside both boxes above.
         -->
-        <polyline
-          class="dg-edge dg-dashed"
-          points="440,206 478,206 478,47 464,47"
-          marker-end="url(#dg-arrow)"
-        />
-        <text class="dg-edge-label dg-builds-label" x="484" y="120">
-          {{ 'project.diagram.builds' | translate }}
+        <rect class="dg-group dg-dashed" x="486" y="118" width="200" height="212" rx="6" />
+        <text class="dg-group-label" x="496" y="136">
+          {{ 'project.diagram.outside' | translate }}
         </text>
 
-        <!-- Everything that cannot be a static file happens here. -->
-        <rect class="dg-box dg-hub" x="190" y="208" width="270" height="62" rx="4" />
-        <text class="dg-label" x="325" y="234">{{ 'project.diagram.service' | translate }}</text>
-        <text class="dg-sub" x="325" y="252">{{ 'project.diagram.serviceSub' | translate }}</text>
+        <rect class="dg-box dg-hub" x="500" y="152" width="172" height="58" rx="4" />
+        <text class="dg-label" x="586" y="176">{{ 'project.diagram.chain' | translate }}</text>
+        <text class="dg-sub" x="586" y="194">{{ 'project.diagram.chainSub' | translate }}</text>
 
-        <!-- What it reaches for, and where what it makes ends up. -->
-        <rect class="dg-group" x="14" y="298" width="464" height="148" rx="6" />
-        <line class="dg-edge" x1="325" y1="272" x2="325" y2="294" marker-end="url(#dg-arrow)" />
+        <rect class="dg-box" x="500" y="248" width="172" height="58" rx="4" />
+        <text class="dg-label" x="586" y="272">{{ 'project.diagram.permanent' | translate }}</text>
+        <text class="dg-sub" x="586" y="290">{{ 'project.diagram.permanentSub' | translate }}</text>
 
-        <rect class="dg-box" x="26" y="310" width="136" height="56" rx="4" />
-        <text class="dg-label" x="94" y="332">{{ 'project.diagram.models' | translate }}</text>
-        <text class="dg-sub" x="94" y="348">{{ 'project.diagram.modelsSub' | translate }}</text>
-
-        <rect class="dg-box" x="178" y="310" width="136" height="56" rx="4" />
-        <text class="dg-label" x="246" y="332">{{ 'project.diagram.db' | translate }}</text>
-        <text class="dg-sub" x="246" y="348">{{ 'project.diagram.dbSub' | translate }}</text>
-
-        <rect class="dg-box" x="330" y="310" width="136" height="56" rx="4" />
-        <text class="dg-label" x="398" y="332">{{ 'project.diagram.bucket' | translate }}</text>
-        <text class="dg-sub" x="398" y="348">{{ 'project.diagram.bucketSub' | translate }}</text>
-
-        <rect class="dg-box" x="26" y="380" width="136" height="56" rx="4" />
-        <text class="dg-label" x="94" y="402">{{ 'project.diagram.social' | translate }}</text>
-        <text class="dg-sub" x="94" y="418">{{ 'project.diagram.socialSub' | translate }}</text>
-
-        <rect class="dg-box" x="178" y="380" width="136" height="56" rx="4" />
-        <text class="dg-label" x="246" y="402">{{ 'project.diagram.permanent' | translate }}</text>
-        <text class="dg-sub" x="246" y="418">{{ 'project.diagram.permanentSub' | translate }}</text>
-
-        <rect class="dg-box" x="330" y="380" width="136" height="56" rx="4" />
-        <text class="dg-label" x="398" y="402">{{ 'project.diagram.vision' | translate }}</text>
-        <text class="dg-sub" x="398" y="418">{{ 'project.diagram.visionSub' | translate }}</text>
+        <line class="dg-edge" x1="442" y1="168" x2="494" y2="178" marker-end="url(#dg-arrow)" />
+        <text class="dg-edge-label" x="468" y="160">{{ 'project.diagram.mint' | translate }}</text>
 
         <!--
-          The one thing that leaves the machinery. The service can assemble the
-          transaction and can do nothing with it: the key is on a phone, and the
-          signature is a person.
+          From the cloud rather than from the bucket. He says the cloud keeps
+          the high-resolution images and the video in a bucket, and that the
+          web-resolution copies live on permanent distributed storage; he does
+          not say the one feeds the other, and an arrow from that box would.
         -->
-        <polyline
-          class="dg-edge dg-dashed"
-          points="462,239 590,239 590,304"
-          marker-end="url(#dg-arrow)"
-        />
-        <text class="dg-edge-label" x="590" y="226">
-          {{ 'project.diagram.unsigned' | translate }}
-        </text>
-
-        <rect class="dg-box" x="500" y="310" width="180" height="56" rx="4" />
-        <text class="dg-label" x="590" y="343">{{ 'project.diagram.phone' | translate }}</text>
-
-        <line
-          class="dg-edge dg-signs"
-          x1="590"
-          y1="368"
-          x2="590"
-          y2="404"
-          marker-end="url(#dg-arrow)"
-        />
-        <text class="dg-edge-label dg-signs-label" x="600" y="390">
-          {{ 'project.diagram.signs' | translate }}
-        </text>
-
-        <rect class="dg-box dg-hub" x="500" y="408" width="180" height="56" rx="4" />
-        <text class="dg-label" x="590" y="430">{{ 'project.diagram.chain' | translate }}</text>
-        <text class="dg-sub" x="590" y="446">{{ 'project.diagram.chainSub' | translate }}</text>
+        <line class="dg-edge" x1="458" y1="278" x2="494" y2="278" marker-end="url(#dg-arrow)" />
+        <text class="dg-edge-label" x="476" y="270">{{ 'project.diagram.images' | translate }}</text>
       </svg>
       <figcaption>{{ 'project.diagram.caption' | translate }}</figcaption>
     </figure>
   </section>
 
-  <!--
-    Consequence of the shape above rather than a feature of its own: a site
-    written to disk is a site a machine can read without running it, and the
-    catalogue file is that taken one step further.
-  -->
   <section class="project-section">
     <h2>{{ 'project.agents.title' | translate }}</h2>
-    <p>{{ 'project.agents.a' | translate }}</p>
-    <p>{{ 'project.agents.b' | translate }}</p>
-    <p>{{ 'project.agents.c' | translate }}</p>
-    <p>{{ 'project.agents.d' | translate }}</p>
-  </section>
-
-  <section class="project-section">
-    <h2>{{ 'project.rot.title' | translate }}</h2>
-    <p>{{ 'project.rot.intro' | translate }}</p>
-    <p>{{ 'project.rot.a' | translate }}</p>
-    <p>{{ 'project.rot.b' | translate }}</p>
-    <p>{{ 'project.rot.c' | translate }}</p>
+    @for (key of ['a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.agents.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
   </section>
 
   <section class="project-section">

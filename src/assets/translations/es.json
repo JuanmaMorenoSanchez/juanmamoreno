@@ -322,93 +322,81 @@
     "pdfHeading": "Certificado de autenticidad"
   },
   "project": {
-    "title": "juanmamoreno.com, el producto",
-    "lead": "Está basado en certificados de autenticidad on-chain propiedad del artista, un catálogo que cualquiera puede navegar y una serie de herramientas que automatizan los flujos digitales derivados de su trabajo.",
-    "lead2": "La solución delega la implementación de las soluciones, así como los pipelines de test y despliegues, en agentes de IA. El flujo está automatizado, de forma que el product owner introduce requisitos en el agente, y éste implementa, ejecuta tests unitarios, tests e2e, asegura que los requisitos preexistentes siguen funcionando, y despliega el frontend y los servicios.",
-    "figures": {
-      "requirements": "requisitos, cada uno con un motivo y unos tests unitarios y e2e que aseguran su pervivencia",
-      "operator": "persona opera todo el sistema"
+    "title": "juanmamoreno.com, definición del producto",
+    "lead": "El núcleo de la aplicación es un catálogo de obra artística. El catálogo consiste en un número de piezas, que son, al mismo tiempo, su propio certificado de autenticidad. La autenticidad de cada pieza se garantiza por el hecho de que todas ellas están minteadas en el blockchain Ethereum con un contrato del que solo el propio autor de las obras tiene la llave. La información del catálogo/certificados de autenticidad es pues inmutable e independiente al app\n\nPor tanto, el catálogo es visible y navegable para cualquier usuario o agente, pero las herramientas relaccionadas con su gestión solo pueden ser usadas por el propio artista, que es, al mismo tiempo, el único usuario administrador del sitio.\n\nEl app permite al administrador gestionar el catálogo, (mintear nuevos certificados en el blockchain, marcar como vendido/disponible), automatiza posts en diferentes redes sociales en formato imagen y vídeo, y permite editar las fotografías de los certificados fácilmente sin depender de una herramienta externa. Por otra parte, hay una serie de tareas automatizadas, tales como la generación automática de textos descriptivos, la periódica búsqueda inversa de las imágenes en la red, así como la generación en pdf de documentos tales como dossieres, fichas técnicas, certificados de autenticidad...\n\nEl sitio está optimizado para ser descubierto por agentes de IA, e incluye un pequeño MCP para leer datos del catálogo, cuyo conector el autor usa en diversos flujos automatizos con Claude Cowork (como por ejemplo, buscar oportunidades que se ajusten al catálogo).",
+    "rot": {
+      "title": "Mantener el control",
+      "intro": "La solución delega la implementación de las soluciones, así como los pipelines de test y despliegues, en agentes de IA. El flujo está automatizado, de forma que el product owner introduce requisitos en el agente, y éste implementa, ejecuta tests unitarios, tests e2e, asegura que los requisitos preexistentes siguen funcionando, y sólo entonces despliega el frontend y los servicios y hace release de una nueva versión.\n\nEn mi opinión, mantener el control de los requisitos, de su permanencia y de cómo se han implementado es el principal riesgo que asumimos al delegar en agentes. Por ello se ha intentado encauzar este trabajo por las siguientes vías:",
+      "a": "DOCUMENTO DE REQUISITOS: un documento de requisitos es una afirmación sobre el presente. La veracidad de esas afirmaciones se contrasta nombrando aquello que las demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene test, si un test nombra un archivo borrado o si cita un test que se ha renombrado.",
+      "b": "También es el documento de referencia de los requisitos del app cuya única prueba es el propio texto, ya que, dado que es un proyecto unipersonal, se ha prescindido por completo de cualquier herramienta Agile de gestión de tareas, en este caso se percibe como redundante.",
+      "c": "AGENTS: un documento de guía para modelos de lenguaje que pone límites y expresa una preferencia sobre cómo trabajar. La idea es no delegar al 100% decisiones sensibles de arquitectura, diseño, prácticas de desarrollo o creación de tests."
     },
     "about": {
       "title": "De dónde vengo",
-      "a": "Diez años como desarrollador full stack, dos como tech lead y dos como diseñador, sobre un background de creación artística y diseño.",
-      "b": "Trabajando como desarrollador siempre fui del tipo al que le interesa más definir y diseñar la solución que implementarla. Decidir qué merecía la pena construir, y por qué, era lo que más me importaba. Es por ello por lo que normalmente trabajaba cerca de los product owners.",
+      "a": "Diez años como desarrollador full stack, tech lead y diseñador, sobre un background artístico y amplio conocimiento del ámbito de la creación y gestión cultural.",
+      "b": "Trabajando como desarrollador de software siempre fui del tipo al que le interesa más definir y diseñar la solución que implementarla. Decidir qué merecía la pena construir, y por qué, era lo que más me importaba. Es por ello por lo que normalmente trabajaba cerca de los product owners.",
       "c": "Ahora que los agentes se han hecho cargo de casi toda la implementación, y de casi todo el problem solving, pivotar hacia el diseño de producto es la progresión natural para mí."
     },
     "product": {
-      "title": "El producto, y para qué es",
-      "lead": "Tres cosas, en el orden en que se construyeron.",
+      "title": "Descripción del producto",
+      "lead": "Tres cosas; certificados de autenticidad, catálogo, y toolbox para el artista.",
       "one": {
         "name": "Certificados de autenticidad",
-        "body": "Un certificado de autenticidad para cada obra física, escrito en una cadena pública (Ethereum) en la que solo el autor tiene la llave. Sin intermediario en quien confiar, sin cuotas ni dependencias. El registro está escrito dentro de la propia cadena y no enlazado desde ella, de modo que los certificados son una entidad autónoma que sobrevive a esta app e incluso al propio artista."
+        "body": "Cada obra física corresponde con N NFTs, escritos en un blockchan público (Ethereum). Cada NFT incluye los metadatos de la obra, así como una imagen en miniatura (2kb) en base64 y links a una imagen en resolución web en un storage distribuído y a una imagen en alta resolución almacenada en un bucket cloud. Los NFTs, en adelante, certificados de autenticidad, están minteados por un contrato propiedad del propio artista, que solo él puede firmar. Sin intermediarios ni dependencias, el artista-admin es propietario de toda la cadena. Esta infraestuctura está diseñada con el principal objetivo de ser independiente e inmutable y sobrevivir a este app e incluso al autor mismo."
       },
       "two": {
-        "name": "Un catálogo que cualquiera puede leer",
-        "body": "La obra —física y generativa— dispuesta para que cualquiera la recorra, la filtre, genere la ficha técnica en pdf, descargue un certificado de autenticidad en pdf, un ensayo sobre el cuadro, o una lista de enlaces donde aparece esa pintura en internet. 192 pinturas on-chain son unas 400 páginas estáticas en inglés y español, todas legibles sin una sola línea de JavaScript."
+        "name": "El catálogo",
+        "body": "Sobre esta colección de certificados se han desarrollado una serie de features para que cualquier usuario pueda navegar el catálogo, buscar, filtrar, descargar certificados y fichas técnicas en pdf, hacer búsquedas inversas de las imágenes en la red, consultar su disponibilidad para la venta, contactar con el artista, pedir presupuesto,...\n\nAquí, el principal reto es la performance. Para ello, los datos onchain se cachean, y las imágenes se cargan en orden sucesivo de menos a más resoulución, de forma que la navegación es rápida pese a estar cargando en algunos casos imágenes de +10MB"
       },
       "three": {
-        "name": "Una herramienta para el artista",
-        "body": "El trabajo de cada semana, automatizado: corregir la fotografía de un cuadro, recortarla al marco, eliminar brillos, ajustar los niveles, luego escribir y traducir el texto, registrar la obra en la cadena de bloques y publicar las imágenes y el vídeo que se generaron para ella. Todo está pensado para que la intervención humana sea la mínima posible."
+        "name": "Toolbox para el artista",
+        "body": "El trabajo de cada semana, automatizado: editar la fotografía de un cuadro, recortarla al marco, eliminar brillos, ajustar los niveles, luego escribir y traducir un pequeño ensayo, añadir la obra al catálogo on-chain y publicar las imágenes y el vídeo que se generaron para ella en redes sociales. Todo está automatizado para que la intervención humana sea la mínima posible y el artista pueda centrarse en lo importante, que es la propia creación en el taller, y no la gestión."
       }
     },
     "architecture": {
       "title": "Cómo está montado",
-      "a": "El sitio es estático en sentido estricto. Cada página, en los dos idiomas, se escribe en disco antes de publicarse y se sirve como archivo: no hay servidor que renderice nada, y por tanto no hay servidor que se caiga, que parchear ni que costear. La compilación se niega a publicarse si alguna página ha salido mal.",
-      "b": "Detrás, un servicio privado en contenedor hace lo demás: prepara las fotografías y las miniaturas, escribe y traduce los ensayos usando modelos de lenguaje, renderiza el vídeo, hace búsquedas inversas de imágenes, publica en las redes sociales y arma las transacciones del blockchain. Lo que produce va a una base de datos documental, y los archivos grandes a un bucket.",
-      "c": "El blockchain usado es Ethereum. Cada certificado es un token cuyo contenido —título, técnica, medidas, año y una fotografía pequeña— está escrito dentro de la cadena en lugar de apuntado desde ella, así que nada tiene que seguir en línea para que el registro se pueda leer. Las imágenes en resolución web viven en un almacenamiento permanente descentralizado."
-    },
-    "diagram": {
-      "caption": "Quién pide qué a quién, y quién firma.",
-      "reader": "Lector",
-      "readerSub": "personas y agentes",
-      "site": "Sitio estático",
-      "siteSub": "400 páginas · 2 idiomas",
-      "artist": "Artista",
-      "studio": "Estudio",
-      "studioSub": "páginas privadas",
-      "service": "Servicio privado",
-      "serviceSub": "en contenedor",
-      "models": "Modelos de lenguaje",
-      "modelsSub": "ensayos y traducción",
-      "db": "Base documental",
-      "dbSub": "catálogo y textos",
-      "bucket": "Bucket",
-      "bucketSub": "vídeo y originales",
-      "social": "Redes sociales",
-      "socialSub": "imagen y vídeo",
-      "permanent": "Almacenamiento permanente",
-      "permanentSub": "imágenes en resolución web",
-      "vision": "Búsqueda inversa",
-      "visionSub": "dónde aparece la obra",
-      "phone": "Móvil del artista",
-      "chain": "Ethereum",
-      "chainSub": "contrato de certificados",
-      "reads": "lee",
-      "unsigned": "transacción sin firmar",
-      "signs": "firma",
-      "builds": "compila las páginas"
+      "a": "El sitio es estático en sentido estricto. Cada página, en los dos idiomas, se escribe en disco antes de publicarse y se sirve como archivo: no hay servidor que renderice nada, y por tanto no hay servidor que se caiga, que parchear ni que costear. Tod el sistema está pensado para que el coste sea mínimo, un par de euros al mes, aproximadamente.",
+      "b": "La arquitectura de Cloud es, en esencia, un servicio que sirve una API, una serie de servicios Cloud de IA (para hacer búsquedas inversas de imágenes en Internet, para generar textos basados en imágenes y descripciones), una base de datos para la información del app y el cache de los certificados, un bucket para las imágenes en altas resolución y los vídeos",
+      "c": "Fuera del scope del cloud y el app de frontend quedarían los datos on-chain (los certificados y el contrato) y el almacenamiento distribuído permanente de las imágenes en resolución web."
     },
     "agents": {
-      "title": "Lectores que no son personas",
-      "a": "El sitio ya se dejó legible para las máquinas: como cada página se escribe en disco antes de publicarse, el texto está en el HTML y no hace falta ejecutar nada para leerlo; cada obra lleva sus datos estructurados; y el archivo que gobierna a los rastreadores nombra uno por uno a los de los modelos de lenguaje y los deja entrar. Legible, sin embargo, no es utilizable: para comparar diez cuadros había que pedir diez páginas y descifrarlas.",
-      "b": "Ahora el catálogo entero se publica además como un solo archivo: título, año, técnica, medidas, si está disponible, el texto en los dos idiomas, la imagen, las dos direcciones de la página y el token del certificado. Lo escribe la compilación a partir de las propias páginas, así que no puede contradecirlas, y la compilación se niega a publicarse si el archivo deja de coincidir con lo que se ha construido.",
-      "c": "Esa interfaz ya existe: el servicio atiende el protocolo MCP en backend.juanmamoreno.com/mcp, y un asistente que la añada una vez puede, en mitad de una conversación, buscar entre las obras por año, tamaño, técnica o disponibilidad, leer una de ellas con su ensayo, y comprobar un certificado contra la cadena. Tres herramientas, las tres de lectura: ninguna escribe, envía ni cuesta dinero por petición. Responde desde el mismo archivo que publica el sitio, así que no puede decir nada que la web no diga ya en público, y los ensayos salen sólo cuando yo he pasado por ellos.",
-      "d": "Los precios no están ni estarán en ninguno de los dos sitios. No es un descuido: cada precio lo da el artista para la obra concreta, y un agente que respondiera con una cifra terminaría la conversación que el catálogo existe para empezar."
-    },
-    "rot": {
-      "title": "No perder el control",
-      "intro": "En mi opinión, perder el control de los requisitos, de su permanencia y de cómo se han implementado es el principal riesgo que asumimos al trabajar con agentes. Por ello se ha intentado encauzar este trabajo por las siguientes vías:",
-      "a": "DOCUMENTO DE REQUISITOS: un documento de requisitos es una afirmación sobre el presente. La veracidad de esas afirmaciones se contrasta nombrando aquello que las demuestra. Un script lee el archivo antes de cada despliegue y rechaza la compilación si un número se usa dos veces, si una entrada no tiene test, si un test nombra un archivo borrado o si cita un test que se ha renombrado.",
-      "b": "También informa, obviamente, de los requisitos cuya única prueba es el propio texto, ya que, dado que es un proyecto unipersonal, se ha prescindido por completo de cualquier herramienta Agile de gestión de tareas.",
-      "c": "DOCUMENTO DE GUÍA: un documento de guía para modelos de lenguaje que pone límites y expresa una preferencia sobre cómo trabajar. La idea es no delegar al 100% decisiones sensibles, como por ejemplo las relativas a arquitectura, prácticas de desarrollo o creación de tests."
+      "title": "Agentes y crawlers",
+      "a": "Cada página se escribe en disco antes de publicarse, el texto está en el HTML y no hace falta ejecutar nada para leerlo; cada obra lleva sus datos estructurados; y el archivo que gobierna a los rastreadores nombra uno por uno a los de los modelos de lenguaje y los deja entrar.",
+      "b": "El catálogo entero se publica además como un solo archivo json: título, año, técnica, medidas,... , el texto en los dos idiomas, la imagen, las dos direcciones de la página y el token del certificado. Lo escribe la compilación a partir de las propias páginas, así que no puede contradecirlas, y la compilación se niega a publicarse si el archivo deja de coincidir el build.",
+      "c": "El servicio atiende el protocolo MCP en backend.juanmamoreno.com/mcp, para quien quiera ampliar el contexto de su agente con la información del catálogo. Siendo realistas, el único uso del MCP hasta la fecha es el de ampliar el contexto de mis propios agentes, con el fin de que los procesos que automatizo en mi día a día puedan tener un contexto más amplio y consumir menos tokens."
     },
     "links": {
-      "title": "Las pruebas",
+      "title": "Tests",
       "repo": "El código, público",
       "requirements": "El archivo de requisitos",
       "changelog": "El changelog",
       "site": "El producto en sí",
-      "note": "El servicio que hay detrás del catálogo vive en un repositorio privado y, deliberadamente, ni se enlaza ni se describe aquí."
+      "note": "El servicio que hay detrás del catálogo vive en un repositorio privado y, deliberadamente, ni se enlaza ni se describe aquí por seguridad."
+    },
+    "diagram": {
+      "caption": "Lo que hay dentro del cloud, y lo que queda fuera.",
+      "reader": "Usuario o agente",
+      "reads": "navega",
+      "artist": "Artista (admin)",
+      "manages": "gestiona",
+      "site": "El sitio",
+      "siteSub": "estático · 2 idiomas",
+      "api": "API",
+      "cloud": "CLOUD",
+      "service": "Servicio",
+      "ai": "Servicios de IA",
+      "aiSub": "búsqueda inversa y textos",
+      "db": "Base de datos",
+      "dbSub": "datos del app y cache",
+      "bucket": "Bucket",
+      "bucketSub": "alta resolución y vídeo",
+      "outside": "FUERA DEL SCOPE",
+      "mint": "mint",
+      "chain": "Ethereum",
+      "chainSub": "contrato y certificados",
+      "images": "imágenes",
+      "permanent": "Storage distribuido",
+      "permanentSub": "imágenes en resolución web"
     }
   }
 }

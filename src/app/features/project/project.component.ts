@@ -2,12 +2,11 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   PROJECT_CHANGELOG,
-  PROJECT_FIGURES,
   PROJECT_GOALS,
   PROJECT_REPO,
   PROJECT_REQUIREMENTS,
 } from '@domain/project/project.constants';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 
 /**
@@ -34,10 +33,33 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
 })
 export class ProjectComponent {
   protected readonly lang = inject(LanguageUrlService);
+  private readonly translate = inject(TranslateService);
 
-  protected readonly figures = PROJECT_FIGURES;
   protected readonly goals = PROJECT_GOALS;
   protected readonly repo = PROJECT_REPO;
   protected readonly requirements = PROJECT_REQUIREMENTS;
   protected readonly changelog = PROJECT_CHANGELOG;
+
+  /**
+   * One block of his writing, as the paragraphs he wrote.
+   *
+   * The page is his text, edited in a file where a blank line is a new
+   * paragraph — which is how anybody writes, and how the file he is handed says
+   * he may. Rendered as one string that is what it stops being: four paragraphs
+   * become a single wall with two invisible line breaks in it.
+   *
+   * Read through `instant` rather than the pipe because what is wanted is the
+   * text itself and not a rendering of it. Every heading on the page still goes
+   * through the pipe, so a language change marks this view dirty and these are
+   * asked again with it.
+   */
+  protected paragraphs(key: string): string[] {
+    const written = this.translate.instant(key) as unknown;
+    return typeof written === 'string'
+      ? written
+          .split(/\n{2,}/)
+          .map((paragraph) => paragraph.trim())
+          .filter(Boolean)
+      : [];
+  }
 }
