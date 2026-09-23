@@ -1,6 +1,8 @@
 export const environment = {
   production: false,
-  homeTokenId: '2',
+  // The painting on the landing page. Empty falls back to the newest frontal
+  // view, which is what this was before anything read it.
+  homeTokenId: '202',
   adminAdress: '0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9',
   backendUrl: '/api/',
   // The one account the studio opens for. Anything else is refused.

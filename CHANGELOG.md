@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.84.0
+
+- **feat** — the landing page shows the painting `homeTokenId` names, and is set
+  to 202, *Electricidad estática II*. The setting was in both environment files
+  already and nothing read it; the page took the newest frontal view by year,
+  which cannot reach a particular painting when six of them share a year and
+  nothing breaks the tie. Empty still falls back to the newest, and a name the
+  catalogue does not have is ignored rather than obeyed.
+
 ## 1.83.0
 
 - **feat** — every artwork page can be asked about on WhatsApp, beside the

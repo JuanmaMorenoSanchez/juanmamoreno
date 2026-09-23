@@ -20,6 +20,7 @@ import { SORT } from '@shared/constants/order.constants';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { environment } from '@environments/environment';
 import { Subscription, takeLast } from 'rxjs';
 
 /**
@@ -67,9 +68,20 @@ export class HomeComponent implements AfterViewInit {
     initialValue: [] as Nft[],
   });
 
-  // The newest frontal-view artwork, used as the featured hero. Auto-picking
-  // "latest" keeps the landing curated with zero manual upkeep. Same frontal +
-  // sort-by-year logic the detail page uses to order pieces.
+  /**
+   * The painting on the landing page.
+   *
+   * One he has chosen, when `homeTokenId` names one, and otherwise the newest
+   * frontal view — the automatic pick that keeps the page curated with no
+   * upkeep at all, and the right answer whenever he has not said otherwise.
+   *
+   * A name that is not in the catalogue is ignored rather than obeyed. The
+   * catalogue arrives after the page does and a token can be retired, and
+   * neither is a reason for the landing page to have no painting on it.
+   *
+   * Same frontal-view and sort-by-year logic the detail page uses to order
+   * pieces, so what counts as "the painting" is decided in one place.
+   */
   readonly featured = computed<Nft | undefined>(() => {
     const all = this.artPieces();
     if (!all.length) return undefined;
@@ -82,7 +94,12 @@ export class HomeComponent implements AfterViewInit {
     const frontals = all.filter((piece) =>
       this.artworkService.isFrontalView(piece, byName.get(piece.name) ?? [])
     );
-    return this.artworkService.sortByYear(frontals, SORT.DESC)[0];
+
+    const chosen = environment.homeTokenId
+      ? frontals.find((piece) => piece.tokenId === environment.homeTokenId)
+      : undefined;
+
+    return chosen ?? this.artworkService.sortByYear(frontals, SORT.DESC)[0];
   });
 
   // Blur-up (same idea as the artwork viewer's preview layer): the small

@@ -1945,3 +1945,30 @@ telephone number, only an address on the service", "says which painting, and in
 which language the page was read", "is an anchor carrying the mark, not a
 button" and "renders nothing at all until the service has a number"), and
 `B58` on the service's side, which is where the number is
+
+### R116 — The landing page shows the painting he chose · met
+`homeTokenId` names it, and the landing page puts that one up. Empty falls back
+to the newest frontal view, which is what the page did before.
+
+It is not a new mechanism so much as a setting that was already there. The name
+sat in both environment files and **nothing read it** — the page picked the
+newest frontal view by year and took the first of them. That was written as
+"zero manual upkeep" and is the right default, but it cannot reach a particular
+painting: six works share the year 2026 and nothing breaks that tie, so the
+first of them wins however recently the last was painted.
+
+**A name that is not in the catalogue is ignored rather than obeyed.** The
+catalogue arrives after the page does, and a token can be retired; neither is a
+reason for the landing page to have no painting on it. It falls back to the
+newest in both cases, and to nothing at all only before any catalogue has
+arrived.
+
+It is a build-time setting rather than something read at runtime because the
+page is written out as static html: what it names has to be decided before the
+page is rendered, and changing it is a rebuild either way.
+*Proven by:* `home.component.spec.ts` (4 tests: "puts up the painting that has
+been named", "falls back to the newest when none is named", "falls back rather
+than showing nothing when the name is not in the catalogue" and "has nothing to
+show before the catalogue arrives, and does not throw"), and the prerendered
+output of the build, where both `index.html` and `es/index.html` link
+`artwork/202`
