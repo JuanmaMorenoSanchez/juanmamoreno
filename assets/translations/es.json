@@ -293,7 +293,7 @@
     "nothingYet": "Todavía no se ha publicado nada."
   },
   "textsPage": {
-    "intro": "Textos sobre la obra, publicados en otros medios. Cada entrada enlaza al original: son de quienes los escribieron y de los medios que los publicaron.",
+    "intro": "Textos sobre el autor y/o la obra, publicados en medios.",
     "kind": {
       "essay": "Texto curatorial",
       "press": "Prensa",
@@ -315,8 +315,8 @@
   },
   "certificate": {
     "title": "Certificado de autenticidad",
-    "recordedOn": "El artista registró esta pintura de forma irreversible en Ethereum el {{date}}: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
-    "recorded": "El artista registró esta pintura de forma irreversible en Ethereum: su título, técnica, medidas, año y una fotografía, están escritos dentro de la propia cadena y no enlazados desde ella, de modo que el registro sobrevive a esta web, a la pintura y al propio artista.",
+    "recordedOn": "El artista registró la fotografía y ficha técnica de la pieza de forma irreversible en Ethereum el {{date}}: los datos están escritos dentro de la propia cadena y no enlazados desde ella, de modo que este registro sobrevive a esta web, a la pintura y al propio artista.",
+    "recorded": "El artista registró la fotografía y ficha técnica de la pieza de forma irreversible en Ethereum: los datos están escritos dentro de la propia cadena y no enlazados desde ella, de modo que este registro sobrevive a esta web, a la pintura y al propio artista.",
     "onlyAuthorship": "Este documento garantiza solamente la autoría de la obra física, siendo el autor Juanma Moreno Sánchez, al vincularla de forma permanente e irreversible con un bloque del blockchain Ethereum usando un contrato de su propiedad que sólo él mismo puede firmar. Este certificado no proporciona ningún tipo de información sobre la propiedad de la obra.",
     "token": "Certificado",
     "contract": "Contrato",
