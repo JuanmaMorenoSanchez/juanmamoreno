@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.85.0
+
+- **feat** — a painting can be certified with a note for its essay: a "For the
+  essay" box on the mint form, written while the painting is still fresh and
+  read months later by whatever writes its text. The one field there that never
+  reaches the chain and never reaches the site, and the hint says so. Nothing is
+  sent when nothing is typed.
+
 ## 1.84.0
 
 - **feat** — the landing page shows the painting `homeTokenId` names, and is set

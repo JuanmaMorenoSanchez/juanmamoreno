@@ -51,7 +51,8 @@
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   font: inherit;
   padding: 0.5rem 0.6rem;
   border: 1px solid rgba(128, 128, 128, 0.45);
@@ -61,8 +62,14 @@
   min-width: 0;
 }
 
+/* Down only: dragged wider it escapes the column it sits in. */
+.field textarea {
+  resize: vertical;
+}
+
 .field input:focus-visible,
 .field select:focus-visible,
+.field textarea:focus-visible,
 .mint-button:focus-visible,
 .mint-error {
   margin: 0.8rem 0 0;

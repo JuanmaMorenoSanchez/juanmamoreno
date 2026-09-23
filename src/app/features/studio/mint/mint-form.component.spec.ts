@@ -29,6 +29,7 @@ describe('MintFormComponent, replacing a frontal view', () => {
     height: ReturnType<typeof signal<string>>;
     width: ReturnType<typeof signal<string>>;
     imageType: ReturnType<typeof signal<string>>;
+    clues: ReturnType<typeof signal<string>>;
   };
   let api: { frontalView: ReturnType<typeof vi.fn>; prepare: ReturnType<typeof vi.fn> };
   let dialog: { open: ReturnType<typeof vi.fn> };
@@ -169,5 +170,52 @@ describe('MintFormComponent, replacing a frontal view', () => {
     expect(dialog.open).not.toHaveBeenCalled();
     expect(api.prepare).toHaveBeenCalled();
     expect((api.prepare.mock.calls[0][0] as FormData).get('version')).toBeNull();
+  });
+
+  /**
+   * What the painting was made alongside, kept for the essay that is written
+   * months later. It is typed on this form because this is the one moment the
+   * painting is still fresh, and it is not part of the certificate because a
+   * certificate is public and permanent and this is neither.
+   */
+  describe('the note for the essay', () => {
+    const sentAs = (field: string) => (api.prepare.mock.calls[0][0] as FormData).get(field);
+
+    it('sends what was typed', async () => {
+      await setup({ taken: false });
+      component.clues.set('Pintado escuchando Spiegel im Spiegel.');
+
+      await component.prepare();
+
+      expect(sentAs('clues')).toBe('Pintado escuchando Spiegel im Spiegel.');
+    });
+
+    /** Almost every certificate, and it must look exactly as it did before. */
+    it('sends no field at all when nothing was typed', async () => {
+      await setup({ taken: false });
+
+      await component.prepare();
+
+      expect(sentAs('clues')).toBeNull();
+      expect(sentAs('name')).toBe('Secuestro en la rave');
+    });
+
+    it('sends nothing for a note of only spaces', async () => {
+      await setup({ taken: false });
+      component.clues.set('    ');
+
+      await component.prepare();
+
+      expect(sentAs('clues')).toBeNull();
+    });
+
+    it('trims it', async () => {
+      await setup({ taken: false });
+      component.clues.set('  Una canción.  ');
+
+      await component.prepare();
+
+      expect(sentAs('clues')).toBe('Una canción.');
+    });
   });
 });

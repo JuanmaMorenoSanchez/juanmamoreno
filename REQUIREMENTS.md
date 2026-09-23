@@ -1972,3 +1972,24 @@ than showing nothing when the name is not in the catalogue" and "has nothing to
 show before the catalogue arrives, and does not throw"), and the prerendered
 output of the build, where both `index.html` and `es/index.html` link
 `artwork/202`
+
+### R117 — A painting can be certified with a note for its essay · met
+A "For the essay" box on the mint form, beneath the description: optional, free
+text, and the one field there that is not written to Ethereum.
+
+The hint on it says so — *optional, private — never on the chain, never on the
+site* — because the difference matters and the form gives no other clue. Every
+other field becomes a certificate that is public, permanent and cannot be
+amended; this one is a private note kept for whatever writes the painting's
+essay months later, and the studio is the only place it is ever shown.
+
+It is on this form rather than anywhere else because this is the one moment the
+painting is still fresh. The essay is not asked for until long after, by which
+time the song that was on has been forgotten.
+
+**Nothing is sent when nothing is typed**, and a note of only spaces is no note,
+so a certificate prepared without one is prepared exactly as it was before.
+*Proven by:* `mint-form.component.spec.ts` "the note for the essay" (4 tests:
+"sends what was typed", "sends no field at all when nothing was typed", which
+also checks the rest of the form is unchanged, "sends nothing for a note of only
+spaces" and "trims it")

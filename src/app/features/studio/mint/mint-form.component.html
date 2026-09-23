@@ -52,6 +52,27 @@
         autocomplete="off"
       />
     </label>
+
+    <!--
+      Not part of the certificate, and the hint says so because the difference
+      matters: everything else on this form is written to Ethereum and cannot
+      be taken back, and this is a private note that never leaves the database.
+      It is here rather than anywhere else because this is the one moment the
+      painting is still fresh — the essay is not written for months.
+    -->
+    <label class="field field-wide">
+      <span class="field-label">
+        For the essay
+        <em class="field-hint">optional, private — never on the chain, never on the site</em>
+      </span>
+      <textarea
+        rows="3"
+        [value]="clues()"
+        (input)="set('clues', $event)"
+        placeholder="A song you had on, a painting you were arguing with, what was happening that week…"
+        autocomplete="off"
+      ></textarea>
+    </label>
   </div>
 
   <!--

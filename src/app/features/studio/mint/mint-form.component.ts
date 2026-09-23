@@ -71,6 +71,15 @@ export class MintFormComponent {
   protected readonly imageType = signal(IMAGE_TYPES[0]);
   protected readonly description = signal('');
 
+  /**
+   * What the painting was made alongside, for the essay written months later.
+   *
+   * Not part of the certificate and never on the site: it is kept apart from
+   * the record, because a certificate is public and permanent and a note about
+   * what he was going through is neither.
+   */
+  protected readonly clues = signal('');
+
   protected readonly busy = signal(false);
   protected readonly waiting = signal<PendingMint[]>([]);
 
@@ -168,10 +177,13 @@ export class MintFormComponent {
     void this.images.learn();
   }
 
-  protected set(which: 'name' | 'description', event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    if (which === 'name') this.name.set(value);
-    else this.description.set(value);
+  protected set(which: 'name' | 'description' | 'clues', event: Event): void {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    ({
+      name: () => this.name.set(value),
+      description: () => this.description.set(value),
+      clues: () => this.clues.set(value),
+    })[which]();
   }
 
   protected choose(which: 'medium' | 'unit' | 'year' | 'imageType', event: Event): void {
@@ -311,6 +323,7 @@ export class MintFormComponent {
     // which is version zero, which is what two hundred of them already say.
     if (version) body.append('version', version);
     if (this.description().trim()) body.append('description', this.description().trim());
+    if (this.clues().trim()) body.append('clues', this.clues().trim());
 
     try {
       const result = await this.api.prepare(body);
@@ -352,6 +365,7 @@ export class MintFormComponent {
     this.height.set('');
     this.width.set('');
     this.description.set('');
+    this.clues.set('');
   }
 
   private loadWaiting(): void {
