@@ -315,8 +315,8 @@
   },
   "certificate": {
     "title": "Certificate of authenticity",
-    "recordedOn": "The artist irreversibly recorded this painting on Ethereum on {{date}}: its title, medium, size, year and a photograph are written into the chain itself and not linked from it, so the record outlives this website, the painting, and the artist himself.",
-    "recorded": "The artist irreversibly recorded this painting on Ethereum: its title, medium, size, year and a photograph are written into the chain itself and not linked from it, so the record outlives this website, the painting, and the artist himself.",
+    "recordedOn": "The artist irreversibly recorded the photograph and technical record of the work on Ethereum on {{date}}: the data is written into the chain itself and not linked from it, so this record outlives this website, the painting, and the artist himself.",
+    "recorded": "The artist irreversibly recorded the photograph and technical record of the work on Ethereum: the data is written into the chain itself and not linked from it, so this record outlives this website, the painting, and the artist himself.",
     "onlyAuthorship": "This document certifies only the authorship of the physical work, its author being Juanma Moreno Sánchez, by binding it permanently and irreversibly to a block of the Ethereum blockchain using a contract he owns and which only he can sign. This certificate gives no information of any kind about the ownership of the work.",
     "token": "Certificate",
     "contract": "Contract",
