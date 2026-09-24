@@ -97,8 +97,15 @@ export class PdfButtonComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const { includeContact, includeCv, cvAsProse, includeStatement, customTitle, customText } =
-          result;
+        const {
+          includeContact,
+          includeCv,
+          cvAsProse,
+          includeStatement,
+          customTitle,
+          customText,
+          prices,
+        } = result;
         this.saveDocument(
           this.pdfService.createDossier(
             this.nfts(),
@@ -108,7 +115,8 @@ export class PdfButtonComponent {
             customTitle,
             customText,
             (fraction) => this.progress.set(fraction),
-            cvAsProse ? prose : null
+            cvAsProse ? prose : null,
+            prices ?? null
           ),
           'dossier-juanmamoreno.pdf'
         );

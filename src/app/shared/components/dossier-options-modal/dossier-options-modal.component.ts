@@ -13,6 +13,7 @@ import {
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { DEFAULT_MULTIPLIER, usableMultiplier } from '@domain/artwork/pricing';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -44,6 +45,29 @@ export class DossierOptionsModalComponent {
   includeStatement = false;
   isSubmitting = false;
 
+  /**
+   * Whether this dossier carries prices, and the two numbers that make them.
+   *
+   * Off by default and never remembered: no price is stored anywhere in this
+   * application, so the multipliers are typed afresh every time. They start at
+   * the number he uses most, which is the only sense in which a price persists.
+   */
+  includePrices = false;
+  paintingMultiplier: number | null = DEFAULT_MULTIPLIER;
+  paperMultiplier: number | null = DEFAULT_MULTIPLIER;
+
+  /** Both have to be a positive number before a priced dossier can be made. */
+  get multipliersUsable(): boolean {
+    return (
+      usableMultiplier(Number(this.paintingMultiplier)) &&
+      usableMultiplier(Number(this.paperMultiplier))
+    );
+  }
+
+  protected get canSubmit(): boolean {
+    return !this.isSubmitting && (!this.includePrices || this.multipliersUsable);
+  }
+
   private dialogRef = inject<MatDialogRef<DossierOptionsModalComponent>>(MatDialogRef);
 
   /**
@@ -64,6 +88,15 @@ export class DossierOptionsModalComponent {
       includeCv: this.includeCv,
       cvAsProse: this.cvAsProse,
       includeStatement: this.includeStatement,
+      // Null rather than a pair of numbers when the switch is off, so that what
+      // is handed on says "this dossier has no prices" rather than carrying
+      // multipliers nobody asked to use.
+      prices: this.includePrices
+        ? {
+            painting: Number(this.paintingMultiplier),
+            paper: Number(this.paperMultiplier),
+          }
+        : null,
     };
     this.dialogRef.close(options);
   }

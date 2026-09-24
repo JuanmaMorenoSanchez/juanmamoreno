@@ -2008,3 +2008,68 @@ could not be read", "still sends a note he typed while the stored one was
 unreachable", "does not overwrite a note he began typing before the stored one
 arrived" and "sends an empty note when the box is cleared, which is how it is
 taken back"), and `mint-api.service.spec.ts` "the note for the essay" (3 tests)
+
+### R118 — A dossier is made on a page of its own, by the one person who needs one · met
+`/dossier`, behind the admin guard and linked from the workshop menu. The
+catalogue no longer makes dossiers at all.
+
+It used to be made from `/artworks`, by right-clicking paintings. Three things
+were wrong with that and the third is the one that settles it: the gesture was
+undiscoverable and nothing on the page mentioned it; right-click means "show me
+the menu" everywhere else, and the page took it away; and it put a tool for
+making a sales document on the page every reader of the site sees. The catalogue
+is a catalogue again — no `contextmenu` handler, no selection overlay, no
+numbered badge, no download button among the filters.
+
+**The grid is dense on purpose.** Choosing twenty paintings out of a hundred and
+sixty-seven is done by eye, and the catalogue's tiles are sized for looking at
+one painting rather than for finding one among many. **Order is the point**: a
+dossier is read in sequence, so clicking adds a painting at the end and clicking
+again takes it out and closes the gap. Only frontal views are offered — a
+detail shot is not a painting to choose — and a sold one carries the same red
+dot the catalogue draws and the dossier prints.
+
+Each tile is a button rather than a link, because this grid chooses paintings
+and does not navigate, and it says `aria-pressed` so that what a sighted reader
+sees in the numbering is available to anyone who cannot see it.
+*Proven by:* `dossier.component.spec.ts` (14 tests in two groups — the class,
+including "offers only the frontal views", "keeps the paintings in the order
+they were chosen, not catalogue order" and "closes the gap when one is taken
+out"; and the page as it actually renders, including "makes each tile a button
+that says whether it is chosen" and "numbers the tiles in the order they were
+clicked"), `top-menu.component.spec.ts`, which lists the workshop menu and its
+addresses, and Chrome driven against a running site: `/dossier` answers with
+`/door` to anyone not signed in, and right-clicking a catalogue tile produces
+none of the 166 selection overlays it used to
+
+### R119 — A dossier can carry prices, and no price is ever stored · met
+A switch in the dossier options, **off by default**, revealing two multipliers
+that start at 11. Height plus width in centimetres, times one of them: the first
+for paintings, the second for work on paper. Both must be a positive number,
+decimals allowed, or the dossier cannot be built.
+
+**Nothing about a price is written down anywhere.** Not on a certificate, not in
+the catalogue, not in the api, not in the browser between one dossier and the
+next. The multipliers are typed afresh every time and exist for as long as the
+document takes to build. That is the requirement, not an implementation detail:
+a price is a thing said to one gallery on one afternoon.
+
+**A sold painting never carries a price**, however the dossier was asked for. It
+keeps the red dot it has always had — a figure beside a painting that has gone
+is an offer that cannot be honoured. The two are exclusive: a page has a dot or
+a price, never both and never neither by accident.
+
+Which multiplier a work is priced with is read from the medium the certificate
+carries. Oil, acrylic and mixed media are paintings; watercolour and drawing are
+work on paper. **A medium the rule does not know is priced as a painting**
+rather than left blank: 104 of the 167 are oil, a gap where a figure should be
+is worse than a figure he can see and correct, and a new medium is likelier to
+be a new way of painting than a new kind of drawing.
+*Proven by:* `pricing.spec.ts` (24 tests, including every one of the eight
+mediums in the collection sorted into its band, "prices something it has never
+seen as a painting", "reads a comma decimal, which is what the certificates
+carry", "answers nothing for a measurement it cannot read" and "does not ask the
+machine how to write a number"), and `dossier-options-modal.component.spec.ts`
+(9 tests, including "starts with prices off", "says a dossier has no prices when
+the switch was never touched", "refuses a multiplier of zero" and "builds a
+dossier with no prices even when the numbers are nonsense")

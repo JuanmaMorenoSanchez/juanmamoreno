@@ -27,11 +27,6 @@
             }
           </mat-chip>
         }
-        @if (selectedNfts().length) {
-          <mat-chip>
-            <app-pdf-button [nfts]="selectedNfts()"></app-pdf-button>
-          </mat-chip>
-        }
       </mat-chip-set>
     </div>
 
@@ -87,7 +82,6 @@
       >
         @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
           <mat-grid-tile
-            (contextmenu)="toggleNftSelection($event, artPiece)"
             role="listitem"
             [animate.enter]="tileEnterClass(i)"
             [style.animation-delay.ms]="tileEnterDelay(i)"
@@ -109,11 +103,6 @@
               (click)="handleArtPieceClick(artPiece.tokenId)"
             >
               <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
-                @if (isSelected(artPiece)) {
-                  <div class="overlay">
-                    <span class="order-number">{{ getOrderNumber(artPiece) }}</span>
-                  </div>
-                }
                 <!--
               The artwork's own thumbnail url is the starting point rather than
               nothing: it needs no race to work out, so the tile carries a

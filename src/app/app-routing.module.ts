@@ -147,6 +147,17 @@ export const routes: Routes = [
     data: { title: 'Pending mints', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/pendingmint', redirectTo: '/pendingmint' },
+  // Where a dossier is made. It used to be made from the catalogue, by
+  // right-clicking paintings — a gesture nothing mentioned, on a page every
+  // reader sees, for a document only he has any use for.
+  {
+    path: 'dossier',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/dossier/dossier.component').then((m) => m.DossierComponent),
+    data: { title: 'Dossier', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/dossier', redirectTo: '/dossier' },
   // The last dozen paintings in the order they went to Instagram, each linking
   // to its own page. It was the public landing for the link in the profile,
   // which now points at the root instead; kept because it is the quickest way

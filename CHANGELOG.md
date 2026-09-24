@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.87.0
+
+- **feat** — dossiers are made at `/dossier`, behind the admin guard and linked
+  from the workshop menu, on a dense grid where clicking sets the order. The
+  catalogue no longer makes them: the right-click gesture, the selection overlay
+  and the download button are gone from the page every reader sees.
+- **feat** — a dossier can carry prices. A switch, off by default, reveals two
+  multipliers starting at 11: height plus width in centimetres times the first
+  for paintings, the second for work on paper. No price is stored anywhere —
+  not on a certificate, not in the api, not between one dossier and the next —
+  and a sold painting keeps its red dot instead of a figure.
+
 ## 1.86.0
 
 - **feat** — the "For the essay" note can be written or changed on the

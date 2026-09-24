@@ -28,6 +28,40 @@
       </mat-slide-toggle>
     </div>
 
+    <!--
+      Prices are a property of this one document and of nothing else. No price
+      is written to a certificate, kept in the catalogue or saved by the api,
+      so the two numbers behind them are typed afresh every time rather than
+      remembered — and the switch starts off.
+    -->
+    <div class="pdf-options-group">
+      <mat-slide-toggle [(ngModel)]="includePrices">
+        {{ 'dossier.includePrices' | translate }}
+      </mat-slide-toggle>
+
+      @if (includePrices) {
+        <div class="pdf-options-nested pdf-multipliers">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'dossier.paintingMultiplier' | translate }}</mat-label>
+            <input matInput type="number" min="0" step="0.1" [(ngModel)]="paintingMultiplier" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'dossier.paperMultiplier' | translate }}</mat-label>
+            <input matInput type="number" min="0" step="0.1" [(ngModel)]="paperMultiplier" />
+          </mat-form-field>
+
+          <p class="pdf-options-hint">{{ 'dossier.multiplierHint' | translate }}</p>
+
+          @if (!multipliersUsable) {
+            <p class="pdf-options-problem" role="alert">
+              {{ 'dossier.multiplierProblem' | translate }}
+            </p>
+          }
+        </div>
+      }
+    </div>
+
     <div class="pdf-options-group">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'dossier.customTitle' | translate }}</mat-label>
@@ -62,7 +96,7 @@
     mat-raised-button
     [attr.aria-label]="'download.portfolio' | translate"
     color="primary"
-    [disabled]="isSubmitting"
+    [disabled]="!canSubmit"
     (click)="submit()"
   >
     {{ 'download.portfolio' | translate }}

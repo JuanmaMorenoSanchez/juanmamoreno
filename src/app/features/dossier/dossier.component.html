@@ -1,0 +1,80 @@
+<section class="dossier-page">
+  <header class="dossier-head">
+    <h1>Dossier</h1>
+    <p class="dossier-lead">
+      Click paintings in the order they should appear. Click one again to take it out.
+    </p>
+  </header>
+
+  <!--
+    Pinned, because choosing runs down a long grid and the count and the button
+    are what the choosing is for. On a phone it sits under the heading instead.
+  -->
+  <div class="dossier-bar">
+    <span class="dossier-count">
+      @if (chosenCount()) {
+        {{ chosenCount() }} chosen
+      } @else {
+        Nothing chosen yet
+      }
+    </span>
+
+    <span class="dossier-bar-actions">
+      <button type="button" class="dossier-link" (click)="chooseAll()">All</button>
+      <button type="button" class="dossier-link" [disabled]="!chosenCount()" (click)="clear()">
+        Clear
+      </button>
+      @if (canGenerate()) {
+        <app-pdf-button [nfts]="chosen()"></app-pdf-button>
+      }
+    </span>
+  </div>
+
+  @if (!paintings().length) {
+    <p class="dossier-empty">Waiting for the catalogue…</p>
+  }
+
+  <ul class="dossier-grid" role="list">
+    @for (painting of paintings(); track painting.tokenId) {
+      <li>
+        <!--
+          A button rather than a link: this grid chooses paintings, it does not
+          go anywhere, and an anchor that navigates nowhere is a lie to anyone
+          using a keyboard or a screen reader.
+        -->
+        <button
+          type="button"
+          class="dossier-tile"
+          [class.is-chosen]="positionOf(painting)"
+          [attr.aria-pressed]="!!positionOf(painting)"
+          [attr.aria-label]="
+            painting.name + ', ' + yearOf(painting) + (isSold(painting) ? ', sold' : '')
+          "
+          (click)="toggle(painting)"
+        >
+          <img [src]="thumbOf(painting)" [alt]="painting.name" loading="lazy" decoding="async" />
+
+          @if (positionOf(painting); as position) {
+            <span class="dossier-position" aria-hidden="true">{{ position }}</span>
+          }
+
+          <!-- The same dot the catalogue draws, and the one the dossier prints. -->
+          @if (isSold(painting)) {
+            <span class="dossier-sold" aria-hidden="true"></span>
+          }
+
+          <span class="dossier-caption">
+            <strong>{{ painting.name }}</strong>
+            <small>{{ yearOf(painting) }}</small>
+          </span>
+        </button>
+      </li>
+    }
+  </ul>
+
+  <p class="dossier-note">
+    <mat-icon inline>info</mat-icon>
+    Prices are switched on in the options, never stored, and never shown for a painting that has
+    sold — that one keeps its red dot.
+  </p>
+</section>

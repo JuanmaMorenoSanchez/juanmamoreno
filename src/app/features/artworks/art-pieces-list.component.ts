@@ -25,7 +25,6 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { SORT } from '@shared/constants/order.constants';
 import {
   PREFERENCE_KEYS,
@@ -48,7 +47,6 @@ import { Observable, map, of, switchMap } from 'rxjs';
     MatChip,
     MatIcon,
     MatTooltip,
-    PdfButtonComponent,
     MatGridList,
     MatGridTile,
     MatCard,
@@ -208,7 +206,6 @@ export class ArtPiecesListComponent {
         return this.artworkService.sortByYear(artPieces!, sortOrder);
     }
   });
-  public selectedNfts: WritableSignal<Nft[]> = signal([]);
 
   public onImageVisible(tokenId: string): void {
     const nft = this.artPieces()?.find((p) => p.tokenId === tokenId);
@@ -235,31 +232,8 @@ export class ArtPiecesListComponent {
       });
   }
 
-  public toggleNftSelection(event: MouseEvent, nft: Nft): void {
-    event.preventDefault();
-    const currentSelection = this.selectedNfts();
-    const index = currentSelection.findIndex((selected) => selected.tokenId === nft.tokenId);
-
-    if (index === -1) {
-      this.selectedNfts.set([...currentSelection, nft]);
-    } else {
-      const updatedSelection = [...currentSelection];
-      updatedSelection.splice(index, 1);
-      this.selectedNfts.set(updatedSelection);
-    }
-  }
-
-  public isSelected(nft: Nft): boolean {
-    return this.selectedNfts().some((selected) => selected.tokenId === nft.tokenId);
-  }
-
   public isSold(nft: Nft): boolean {
     return this.whatIsSold.isSold(nft.tokenId);
-  }
-
-  public getOrderNumber(nft: Nft): number | null {
-    const index = this.selectedNfts().findIndex((selected) => selected.tokenId === nft.tokenId);
-    return index !== -1 ? index + 1 : null;
   }
 
   public toggleSortOrder(): void {

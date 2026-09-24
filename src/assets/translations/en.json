@@ -119,7 +119,12 @@
     "customTitle": "Custom title",
     "customTitlePlaceholder": "Enter a title",
     "customText": "Custom text",
-    "customTextPlaceholder": "Add custom text"
+    "customTextPlaceholder": "Add custom text",
+    "includePrices": "Include prices",
+    "paintingMultiplier": "Painting multiplier",
+    "paperMultiplier": "Drawing / watercolour multiplier",
+    "multiplierHint": "Height plus width, in cm, times this number. Paintings use the first, work on paper the second. Nothing is saved.",
+    "multiplierProblem": "Both multipliers have to be a positive number."
   },
   "error": {
     "noValue": "You must enter a value",

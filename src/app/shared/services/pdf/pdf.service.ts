@@ -6,6 +6,7 @@ import {
 } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTIST } from '@domain/artwork/mint-vocabulary';
+import { formatPrice, Multipliers, priceOf } from '@domain/artwork/pricing';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CV_OBJECT } from '@domain/cv/cv.constants';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
@@ -18,6 +19,8 @@ import { PdfWriter } from './pdf-writer';
 
 // Height reserved under an artwork for its caption lines (mm)
 const CAPTION_BLOCK = 16;
+// The extra line a priced artwork page needs under its caption (mm)
+const PRICE_LINE = 5;
 // Letter spacing of the caption details line (mm)
 const CAPTION_CHAR_SPACE = 0.4;
 // Narrow reading column used by text pages (mm)
@@ -241,7 +244,16 @@ export class PdfService {
      * opened this dialog has already asked. Null is the ordinary case and the
      * one every dossier had before.
      */
-    cvProse?: string | null
+    cvProse?: string | null,
+    /**
+     * The two numbers this dossier's prices are made with, or null for a
+     * dossier without prices — which is every dossier unless he asked.
+     *
+     * Passed in and never stored. No price is written to a certificate, kept in
+     * the catalogue or saved by the api; it exists for as long as this document
+     * takes to build and nowhere afterwards.
+     */
+    prices?: Multipliers | null
   ): Promise<jsPDF> {
     const writer = await this.newWriter();
     // Report progress (0..1) after each section so the button can show a
@@ -271,7 +283,7 @@ export class PdfService {
     }
     for (const nft of nfts) {
       writer.newPage();
-      await this.addArtworkPage(writer, nft);
+      await this.addArtworkPage(writer, nft, prices ?? null);
       step();
     }
     if (includeCv) {
@@ -381,9 +393,38 @@ export class PdfService {
 
   // --- Artwork plate: centered image, museum-label caption underneath ---
 
-  private async addArtworkPage(writer: PdfWriter, nft: Nft): Promise<void> {
+  private async addArtworkPage(
+    writer: PdfWriter,
+    nft: Nft,
+    prices: Multipliers | null = null
+  ): Promise<void> {
     const { doc, pageWidth, pageHeight, margin, contentWidth } = writer;
-    const maxImageHeight = pageHeight - 2 * margin - CAPTION_BLOCK;
+
+    /**
+     * Sold, or what it costs — never both.
+     *
+     * A sold painting carries no price however the dossier was asked for: a
+     * figure beside a painting that has gone is an offer that cannot be
+     * honoured. It gets the dot it has always had instead.
+     *
+     * Worked out before the image is measured, because a price needs a line of
+     * its own and the painting is given whatever the caption does not use.
+     */
+    const sold = this.availability.isSold(nft.tokenId);
+    const price =
+      prices && !sold
+        ? priceOf(
+            {
+              height: this.artworkService.getTraitValue(nft, VALIDTRAITS.HEIGHT),
+              width: this.artworkService.getTraitValue(nft, VALIDTRAITS.WIDTH),
+            },
+            this.artworkService.getTraitValue(nft, VALIDTRAITS.MEDIUM),
+            prices
+          )
+        : null;
+
+    const captionBlock = CAPTION_BLOCK + (price === null ? 0 : PRICE_LINE);
+    const maxImageHeight = pageHeight - 2 * margin - captionBlock;
 
     const img = await loadFirstAvailableImage(this.artworkService.getNftFetchableUrls(nft.image));
     const compressed = compressImage(img, contentWidth, maxImageHeight);
@@ -402,7 +443,9 @@ export class PdfService {
     const y = margin + (maxImageHeight - renderedHeight) / 2;
     doc.addImage(compressed, 'JPEG', x, y, renderedWidth, renderedHeight);
 
-    const titleY = pageHeight - margin - 6;
+    // The caption is pinned to the foot and grows upward, so the price sits
+    // inside the margin rather than in it, above the page number.
+    const titleY = pageHeight - margin - 6 - (price === null ? 0 : PRICE_LINE);
     const detailsY = titleY + 5;
     writer.textAt(nft.name ?? '', writer.centerX, titleY, {
       size: PDF_TYPE.size.title,
@@ -417,14 +460,25 @@ export class PdfService {
       charSpace: CAPTION_CHAR_SPACE,
     });
 
-    if (this.availability.isSold(nft.tokenId)) {
+    if (sold) {
       const detailsWidth = writer.textWidth(details, {
         size: PDF_TYPE.size.caption,
         charSpace: CAPTION_CHAR_SPACE,
       });
       doc.setFillColor(PDF_COLORS.accent);
       doc.circle(writer.centerX + detailsWidth / 2 + 4, detailsY - 1, 1.2, 'F');
+      return;
     }
+
+    // Nothing rather than a blank line: a measurement that cannot be read as a
+    // number has no price, and none of the 167 currently does that.
+    if (price === null) return;
+
+    writer.textAt(formatPrice(price), writer.centerX, detailsY + PRICE_LINE, {
+      size: PDF_TYPE.size.caption,
+      align: 'center',
+      charSpace: CAPTION_CHAR_SPACE,
+    });
   }
 
   // --- Text pages: narrow reading column, airy line height ---
