@@ -84,6 +84,46 @@ describe('MintApiService', () => {
     await expect(promise).resolves.toMatchObject({ tokenId: 197 });
   });
 
+  /**
+   * The note for a painting's essay, asked for on its own rather than arriving
+   * with the certificate — a private note is not a field on a certificate, not
+   * even on one that has not been written yet.
+   */
+  describe('the note for the essay', () => {
+    it('asks for it under the certificate it belongs to', async () => {
+      const promise = api.clues(198);
+      http.expectOne(`${base}/pending/198/clues`).flush(envelope({ clues: 'Una canción.' }));
+
+      expect(await promise).toBe('Una canción.');
+    });
+
+    it('answers with nothing for a painting he left no note on', async () => {
+      const promise = api.clues(198);
+      http.expectOne(`${base}/pending/198/clues`).flush(envelope({ clues: '' }));
+
+      expect(await promise).toBe('');
+    });
+
+    /** The correction carries it, and an empty one is how a note is taken back. */
+    it('sends it with a correction', async () => {
+      const promise = api.amend(198, {
+        name: 'A title',
+        medium: 'Oil on canvas',
+        height: '25',
+        width: '20',
+        unit: 'cm',
+        year: '2026',
+        imageType: 'Frontal view',
+        clues: '',
+      });
+      const sent = http.expectOne(`${base}/pending/198`);
+      sent.flush(envelope(waiting(198)));
+
+      await promise;
+      expect(sent.request.body.clues).toBe('');
+    });
+  });
+
   it('discards one by its own id', async () => {
     const promise = api.discard(197);
     const request = http.expectOne(`${base}/pending/197`);

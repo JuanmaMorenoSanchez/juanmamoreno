@@ -34,6 +34,15 @@ export interface MintFacts {
   year: string;
   imageType: string;
   description?: string;
+  /**
+   * The note for this painting's essay.
+   *
+   * Three things can be meant, and the api reads them differently: absent
+   * leaves whatever is stored alone, empty takes the note back, and anything
+   * else replaces it. So a correction that could not read the existing note
+   * must leave this out rather than send an empty string.
+   */
+  clues?: string;
 }
 
 /**
@@ -209,6 +218,24 @@ export class MintApiService {
         )
         .pipe(map(MintApiService.unwrap<{ written: boolean; shown: boolean }>))
     );
+  }
+
+  /**
+   * The note he wrote for this painting's essay, if he wrote one.
+   *
+   * Asked for on its own rather than arriving with the certificate, because a
+   * private note is not a field on a certificate — not even on one that has
+   * not been written yet.
+   */
+  public clues(tokenId: number): Promise<string> {
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<{ clues: string }>>(
+          `${this.base}/pending/${tokenId}/clues`,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<{ clues: string }>))
+    ).then((answer) => answer?.clues ?? '');
   }
 
   /**

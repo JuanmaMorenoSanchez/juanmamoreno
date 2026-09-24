@@ -151,6 +151,26 @@
                 />
               </label>
 
+              <!--
+                The one field here that is not written to Ethereum, and the
+                hint says so. A certificate can wait weeks for a cheap morning,
+                and what the painting was made alongside is exactly the sort of
+                thing remembered the day after it was prepared.
+              -->
+              <label class="pending-field pending-wide">
+                <span>
+                  For the essay
+                  <em class="pending-hint">private — never on the chain, never on the site</em>
+                </span>
+                <textarea
+                  rows="3"
+                  autocomplete="off"
+                  [value]="draft().clues"
+                  (input)="write('clues', $event)"
+                  placeholder="A song you had on, a painting you were arguing with…"
+                ></textarea>
+              </label>
+
               @if (reshaped()) {
                 <!--
                   A word, never a refusal. The measurements on the certificate

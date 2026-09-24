@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.86.0
+
+- **feat** — the "For the essay" note can be written or changed on the
+  correction form too, for as long as the certificate is waiting, and emptying
+  the box takes it back. A correction that could not read the stored note leaves
+  it alone rather than sending an empty one, so fixing a title cannot throw the
+  note away.
+
 ## 1.85.0
 
 - **feat** — a painting can be certified with a note for its essay: a "For the

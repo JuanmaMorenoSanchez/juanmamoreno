@@ -127,7 +127,8 @@
   color: var(--catalog-faint);
 
   input,
-  select {
+  select,
+  textarea {
     padding: 0.35rem 0.4rem;
     border: 1px solid var(--catalog-faint);
     background: transparent;
@@ -137,6 +138,20 @@
     text-transform: none;
     color: var(--catalog-ink);
   }
+
+  /* Down only: dragged wider it escapes the column it sits in. */
+  textarea {
+    resize: vertical;
+  }
+}
+
+/* Lower case inside a label the rest of which is not, so it reads as an aside. */
+.pending-hint {
+  margin-left: 0.4rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-style: italic;
+  opacity: 0.8;
 }
 
 .pending-wide {

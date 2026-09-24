@@ -1983,13 +1983,28 @@ other field becomes a certificate that is public, permanent and cannot be
 amended; this one is a private note kept for whatever writes the painting's
 essay months later, and the studio is the only place it is ever shown.
 
-It is on this form rather than anywhere else because this is the one moment the
-painting is still fresh. The essay is not asked for until long after, by which
-time the song that was on has been forgotten.
+**The same box is on the correction form**, so a note can be written or changed
+for as long as the certificate is waiting. A certificate can sit for weeks
+before a cheap morning, and what a painting was made alongside is exactly the
+sort of thing remembered the day after it was prepared. Emptying the box takes
+the note back.
+
+**A correction that could not read the stored note says nothing about it.** An
+empty box means "take it back", so saving a title correction while the request
+for the existing note had failed would otherwise throw that note away without
+saying so. The field is simply left out of the correction, which the api reads
+as "leave it alone" — unless he typed a note himself, which is an answer whether
+or not the old one ever arrived. A note that arrives late does not land on top
+of one he has started writing.
 
 **Nothing is sent when nothing is typed**, and a note of only spaces is no note,
 so a certificate prepared without one is prepared exactly as it was before.
 *Proven by:* `mint-form.component.spec.ts` "the note for the essay" (4 tests:
 "sends what was typed", "sends no field at all when nothing was typed", which
 also checks the rest of the form is unchanged, "sends nothing for a note of only
-spaces" and "trims it")
+spaces" and "trims it"), `pending-mint.component.spec.ts` "the note for the
+essay" (7 tests, including "says nothing about the note when the stored one
+could not be read", "still sends a note he typed while the stored one was
+unreachable", "does not overwrite a note he began typing before the stored one
+arrived" and "sends an empty note when the box is cleared, which is how it is
+taken back"), and `mint-api.service.spec.ts` "the note for the essay" (3 tests)

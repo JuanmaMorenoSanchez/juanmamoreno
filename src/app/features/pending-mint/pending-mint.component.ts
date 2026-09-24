@@ -30,6 +30,7 @@ const EMPTY_FACTS: MintFacts = {
   year: String(mintableYears()[0]),
   imageType: IMAGE_TYPES[0],
   description: '',
+  clues: '',
 };
 
 /**
@@ -127,9 +128,21 @@ export class PendingMintComponent {
     );
   });
 
+  /**
+   * Whether the note stored for the certificate being corrected has been read.
+   *
+   * False until it arrives, and false for good if it could not be fetched —
+   * and that is the whole reason it exists. An empty box means "take the note
+   * back", so saving a correction whose box is empty only because a request
+   * failed would silently throw away what he wrote. While this is false and he
+   * has typed nothing, the correction says nothing about the note at all.
+   */
+  protected readonly cluesKnown = signal(false);
+
   protected edit(mint: PendingMint): void {
     this.problem.set('');
     this.outcome.set('');
+    this.cluesKnown.set(false);
     this.draft.set({
       name: mint.name,
       medium: this.trait(mint, 'Medium'),
@@ -139,17 +152,33 @@ export class PendingMintComponent {
       year: this.trait(mint, 'Year'),
       imageType: this.trait(mint, 'Image Type'),
       description: mint.description,
+      clues: '',
     });
     this.editing.set(mint.tokenId);
+
+    // Fetched rather than waited for, so the form opens at once. What comes
+    // back is dropped if he has moved to another certificate meanwhile, or has
+    // already started writing a note himself.
+    this.api
+      .clues(mint.tokenId)
+      .then((clues) => {
+        if (this.editing() !== mint.tokenId) return;
+        this.cluesKnown.set(true);
+        if (!this.draft().clues?.trim()) {
+          this.draft.update((draft) => ({ ...draft, clues }));
+        }
+      })
+      .catch(() => undefined);
   }
 
   protected stopEditing(): void {
     this.editing.set(null);
+    this.cluesKnown.set(false);
     this.draft.set(EMPTY_FACTS);
   }
 
-  protected write(field: 'name' | 'description', event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected write(field: 'name' | 'description' | 'clues', event: Event): void {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
     this.draft.update((draft) => ({ ...draft, [field]: value }));
   }
 
@@ -177,11 +206,17 @@ export class PendingMintComponent {
     this.saving.set(true);
     this.problem.set('');
     try {
-      const draft = this.draft();
+      // The note is lifted out rather than spread, because leaving it out is a
+      // thing this has to be able to say. An empty box takes the note back, so
+      // a box that is empty only because the note could not be read must say
+      // nothing about it at all — otherwise correcting a title would quietly
+      // throw away what he wrote. A note he typed is sent either way.
+      const { clues, ...draft } = this.draft();
       const amended = await this.api.amend(tokenId, {
         ...draft,
         height: normaliseMeasurement(draft.height),
         width: normaliseMeasurement(draft.width),
+        ...(this.cluesKnown() || clues?.trim() ? { clues: clues ?? '' } : {}),
       });
       this.outcome.set(`Certificate ${tokenId} now reads “${amended.name}”.`);
       this.stopEditing();

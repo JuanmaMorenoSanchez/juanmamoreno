@@ -31,10 +31,15 @@ const waiting: PendingMint = {
 /** What the api was asked to store, so a test can read it back. */
 let amended: Array<{ tokenId: number; facts: Record<string, unknown> }>;
 let refuse: string | null;
+/** What the api says is stored as the note for the essay, and whether it can say. */
+let storedClues: string;
+let refuseClues: boolean;
 
 function setup(list: PendingMint[] = [waiting]) {
   amended = [];
   refuse = null;
+  storedClues = '';
+  refuseClues = false;
   TestBed.configureTestingModule({
     imports: [PendingMintComponent],
     providers: [
@@ -46,6 +51,8 @@ function setup(list: PendingMint[] = [waiting]) {
         provide: MintApiService,
         useValue: {
           waiting: () => Promise.resolve(list),
+          clues: () =>
+            refuseClues ? Promise.reject(new Error('no')) : Promise.resolve(storedClues),
           amend: (tokenId: number, facts: Record<string, unknown>) => {
             if (refuse) return Promise.reject({ error: { message: refuse } });
             amended.push({ tokenId, facts });
@@ -66,7 +73,8 @@ type Editing = {
   draft: () => Record<string, string>;
   edit(mint: PendingMint): void;
   stopEditing(): void;
-  write(field: 'name' | 'description', event: Event): void;
+  write(field: 'name' | 'description' | 'clues', event: Event): void;
+  cluesKnown: () => boolean;
   pick(field: 'medium' | 'unit' | 'year' | 'imageType', event: Event): void;
   measure(field: 'height' | 'width', event: Event): void;
   save(): Promise<void>;
@@ -327,5 +335,117 @@ describe('PendingMintComponent — when the api does not answer', () => {
     fixture.nativeElement.querySelector('.pending-retry').click();
 
     expect(await settle(fixture, 0)).toContain('Rockets win III');
+  });
+});
+
+/**
+ * The note for the essay, corrected along with everything else.
+ *
+ * A certificate can wait weeks for a cheap morning, and what the painting was
+ * made alongside is exactly the sort of thing remembered the day after it was
+ * prepared. It is the one field on this form that is never written to the chain.
+ */
+describe('PendingMintComponent — the note for the essay', () => {
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  it('reads the stored note into the form', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    storedClues = 'Pintado escuchando Spiegel im Spiegel.';
+
+    page.edit(waiting);
+    await settle();
+
+    expect(page.draft()['clues']).toBe('Pintado escuchando Spiegel im Spiegel.');
+  });
+
+  it('sends what was typed', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+
+    page.edit(waiting);
+    await settle();
+    page.write('clues', typed('Una canción.'));
+    await page.save();
+
+    expect(amended[0].facts['clues']).toBe('Una canción.');
+  });
+
+  /** Emptying the box is how a note is taken back, and it has to reach the api. */
+  it('sends an empty note when the box is cleared, which is how it is taken back', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    storedClues = 'Something he no longer wants kept.';
+
+    page.edit(waiting);
+    await settle();
+    page.write('clues', typed(''));
+    await page.save();
+
+    expect(amended[0].facts['clues']).toBe('');
+  });
+
+  /**
+   * The one that would cost him something. An empty box means "take the note
+   * back", so a correction whose box is empty only because the request for the
+   * stored note failed must say nothing about the note at all — otherwise
+   * fixing a typo in a title would quietly throw away what he wrote.
+   */
+  it('says nothing about the note when the stored one could not be read', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    refuseClues = true;
+
+    page.edit(waiting);
+    await settle();
+    page.write('name', typed('A corrected title'));
+    await page.save();
+
+    expect(page.cluesKnown()).toBe(false);
+    expect('clues' in amended[0].facts).toBe(false);
+    expect(amended[0].facts['name']).toBe('A corrected title');
+  });
+
+  /**
+   * Unless he typed one, which is an answer whether or not the old note ever
+   * arrived.
+   */
+  it('still sends a note he typed while the stored one was unreachable', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    refuseClues = true;
+
+    page.edit(waiting);
+    await settle();
+    page.write('clues', typed('Written anyway.'));
+    await page.save();
+
+    expect(amended[0].facts['clues']).toBe('Written anyway.');
+  });
+
+  /** A note arriving late must not land on top of what he has started writing. */
+  it('does not overwrite a note he began typing before the stored one arrived', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    storedClues = 'The old note.';
+
+    page.edit(waiting);
+    page.write('clues', typed('His new note.'));
+    await settle();
+
+    expect(page.draft()['clues']).toBe('His new note.');
+  });
+
+  it('forgets the note when the correction is abandoned', async () => {
+    const fixture = setup();
+    const page = inside(fixture);
+    storedClues = 'A note.';
+
+    page.edit(waiting);
+    await settle();
+    page.stopEditing();
+
+    expect(page.draft()['clues']).toBe('');
+    expect(page.cluesKnown()).toBe(false);
   });
 });
