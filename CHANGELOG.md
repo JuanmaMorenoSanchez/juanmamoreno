@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.87.1
+
+- **fix** — a price over 999 printed as "1 /000 €". The thousands separator was
+  a narrow no-break space, which jsPDF's built-in WinAnsi fonts cannot draw: one
+  character outside the encoding forces the whole string to two bytes, and the
+  pair `20 2F` renders as a space and a slash. It is an ordinary no-break space
+  now, which stays inside the encoding, and the separator is pinned by a test.
+
 ## 1.87.0
 
 - **feat** — dossiers are made at `/dossier`, behind the admin guard and linked

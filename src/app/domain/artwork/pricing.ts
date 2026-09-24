@@ -92,12 +92,20 @@ export function priceOf(
  * A price as a dossier prints it.
  *
  * Spaced thousands and a trailing euro sign, which is how it is written in
- * Spain and how the rest of the document writes its numbers. Deliberately not
- * `toLocaleString`: a dossier must read the same whatever the machine that
- * made it is set to.
+ * Spain and reads the same to an English eye — a dot or a comma means the
+ * opposite thing either side of the Channel, and a space means one thing
+ * everywhere. Deliberately not `toLocaleString`: a dossier must read the same
+ * whatever the machine that made it is set to.
+ *
+ * **The space is U+00A0 and may not be U+202F.** The narrow no-break space is
+ * the typographically correct one and it is unprintable here: jsPDF's built-in
+ * fonts are WinAnsi, a character outside it forces the whole string into
+ * two-byte encoding, and the pair `20 2F` is then drawn as a space and a
+ * slash — so "1 000 €" reached a dossier reading "1 /000 €". U+00A0 is inside
+ * WinAnsi, stays one byte, and keeps the euro sign working with it.
  */
 export function formatPrice(amount: number): string {
   const digits = String(Math.round(amount));
-  const spaced = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const spaced = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
   return `${spaced} €`;
 }

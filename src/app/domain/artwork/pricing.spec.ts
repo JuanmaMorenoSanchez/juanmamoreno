@@ -113,14 +113,44 @@ describe('what a painting is asked for', () => {
   describe('how it is printed', () => {
     /** Spaced thousands, as the rest of the document writes numbers. */
     it('spaces the thousands and ends in a euro sign', () => {
-      expect(formatPrice(2822)).toBe('2 822 €');
+      expect(formatPrice(2822)).toBe('2\u00a0822 €');
       expect(formatPrice(950)).toBe('950 €');
-      expect(formatPrice(12500)).toBe('12 500 €');
+      expect(formatPrice(12500)).toBe('12\u00a0500 €');
     });
 
     /** The same on any machine, whatever its locale is set to. */
     it('does not ask the machine how to write a number', () => {
-      expect(formatPrice(1000)).toBe('1 000 €');
+      expect(formatPrice(1000)).toBe('1\u00a0000 €');
+    });
+
+    /**
+     * The one that shipped broken, and the reason this is pinned rather than
+     * left to taste.
+     *
+     * The separator was U+202F, the narrow no-break space, which is the
+     * typographically correct character and is unprintable in a dossier:
+     * jsPDF's built-in fonts are WinAnsi, one character outside it forces the
+     * whole string into two-byte encoding, and the pair `20 2F` is drawn as a
+     * space and a slash. Every price over 999 reached the page as "1 /000 €".
+     */
+    it('separates with a space the pdf fonts can actually draw', () => {
+      const printed = formatPrice(1000);
+
+      expect(printed).not.toContain('\u202f');
+      expect(printed).not.toContain('/');
+      // Everything but the euro sign has to sit inside WinAnsi, which is what
+      // "one byte" means for these fonts.
+      for (const character of printed.replace('€', '')) {
+        expect(character.charCodeAt(0)).toBeLessThanOrEqual(0xff);
+      }
+    });
+
+    it('needs no separator below a thousand', () => {
+      expect(formatPrice(999)).toBe('999 €');
+    });
+
+    it('separates every group in a larger number', () => {
+      expect(formatPrice(1234567)).toBe('1\u00a0234\u00a0567 €');
     });
   });
 

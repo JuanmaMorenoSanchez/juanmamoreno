@@ -2065,11 +2065,18 @@ work on paper. **A medium the rule does not know is priced as a painting**
 rather than left blank: 104 of the 167 are oil, a gap where a figure should be
 is worse than a figure he can see and correct, and a new medium is likelier to
 be a new way of painting than a new kind of drawing.
-*Proven by:* `pricing.spec.ts` (24 tests, including every one of the eight
+Thousands are separated by a no-break space, and **by U+00A0 rather than the
+narrow U+202F that typography would ask for.** jsPDF's built-in fonts are
+WinAnsi; one character outside it forces the whole string into two-byte
+encoding, and the pair `20 2F` is then drawn as a space and a slash. It shipped
+that way once, and every price over 999 reached the page reading "1 /000 €".
+*Proven by:* `pricing.spec.ts` (27 tests, including every one of the eight
 mediums in the collection sorted into its band, "prices something it has never
 seen as a painting", "reads a comma decimal, which is what the certificates
-carry", "answers nothing for a measurement it cannot read" and "does not ask the
-machine how to write a number"), and `dossier-options-modal.component.spec.ts`
+carry", "answers nothing for a measurement it cannot read", "does not ask the
+machine how to write a number" and "separates with a space the pdf fonts can
+actually draw", which pins every character to one WinAnsi byte), and
+`dossier-options-modal.component.spec.ts`
 (9 tests, including "starts with prices off", "says a dossier has no prices when
 the switch was never touched", "refuses a multiplier of zero" and "builds a
 dossier with no prices even when the numbers are nonsense")
