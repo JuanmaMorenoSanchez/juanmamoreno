@@ -119,7 +119,12 @@
     "customTitle": "Título personalizado",
     "customTitlePlaceholder": "Escribe un título",
     "customText": "Texto personalizado",
-    "customTextPlaceholder": "Añade un texto personalizado"
+    "customTextPlaceholder": "Añade un texto personalizado",
+    "includePrices": "Incluir precios",
+    "paintingMultiplier": "Multiplicador de pintura",
+    "paperMultiplier": "Multiplicador de dibujo / acuarela",
+    "multiplierHint": "Alto más ancho, en cm, por este número. Las pinturas usan el primero; la obra sobre papel, el segundo. No se guarda nada.",
+    "multiplierProblem": "Los dos multiplicadores tienen que ser un número positivo."
   },
   "error": {
     "noValue": "Debes escribir algo",
