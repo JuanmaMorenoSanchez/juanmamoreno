@@ -2080,3 +2080,44 @@ actually draw", which pins every character to one WinAnsi byte), and
 (9 tests, including "starts with prices off", "says a dossier has no prices when
 the switch was never touched", "refuses a multiplier of zero" and "builds a
 dossier with no prices even when the numbers are nonsense")
+
+### R120 — A certificate already on the chain can be corrected from the studio · met
+`/certificates`, behind the admin guard and in the workshop menu. One row per
+**token**, not per painting: a painting photographed three times has three
+certificates, and the one with the wrong measurements need not be the one the
+catalogue shows — which an artwork page could never express, and is half the
+reason this is a page of its own.
+
+**Kept apart from `/pendingmint` deliberately.** That page's whole framing is
+that everything on it is a draft and throwing one away costs nothing. Nothing
+here is a draft: every row is a public permanent record, and two of the three
+things this page offers cannot be undone by anybody, the artist included.
+
+**Nothing is signed by the server.** `amend`, `freeze` and `burn` are owner-only
+and the key on the server is the minter, which the contract will not obey. The
+api encodes a call and the wallet in this browser signs it — the path minting
+already takes.
+
+**The chain decides what is offered, and is asked before anything is.** Frozen,
+and who holds the token, are not in the catalogue. When the chain cannot be
+reached nothing at all is offered, rather than offering everything and finding
+out at the moment of signing. **A wallet the contract will not obey is refused
+before a transaction is even built**, because signing with the wrong one pays
+gas to be told no.
+
+**The photograph is not among the things that can change**, and the form says
+so: the flattened picture lives nowhere but the browser that made it.
+
+**Freezing asks for confirmation; destroying asks for the number to be typed
+back.** A yes/no is too cheap for a token that can never be reissued. Destroying
+is not offered at all for a certificate somebody else holds.
+*Proven by:* `certificates.component.spec.ts` (14 tests, including "offers
+nothing when the chain cannot be reached", "can be neither corrected, sealed nor
+destroyed" for a frozen one, "can still be corrected" and "can never be
+destroyed, however the number is typed" for one a collector holds, "stays
+refused until the number is typed back", "refuses to sign with a wallet the
+contract will not obey" and the two dismissed confirmations),
+`mint-api.service.spec.ts` "one that is already written" (5 tests),
+`top-menu.component.spec.ts` for the menu and its addresses, and Chrome driven
+against a running site, where `/certificates` answers `/door` to anyone not
+signed in

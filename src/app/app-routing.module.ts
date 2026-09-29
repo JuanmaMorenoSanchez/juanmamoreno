@@ -158,6 +158,17 @@ export const routes: Routes = [
     data: { title: 'Dossier', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/dossier', redirectTo: '/dossier' },
+  // The certificates that are already written. Apart from /pendingmint on
+  // purpose: nothing here is a draft, and two of the three things this page can
+  // do cannot be undone by anybody.
+  {
+    path: 'certificates',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/certificates/certificates.component').then((m) => m.CertificatesComponent),
+    data: { title: 'Certificates', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/certificates', redirectTo: '/certificates' },
   // The last dozen paintings in the order they went to Instagram, each linking
   // to its own page. It was the public landing for the link in the profile,
   // which now points at the root instead; kept because it is the quickest way

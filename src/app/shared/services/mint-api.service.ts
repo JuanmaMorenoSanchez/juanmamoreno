@@ -78,6 +78,18 @@ export interface SignableTransaction {
   maxPriorityFeePerGas?: string;
 }
 
+/** What the chain says about a certificate that is already written. */
+export interface CertificateStanding {
+  tokenId: number;
+  /** Frozen is forever; nothing can be done to it once this is true. */
+  frozen: boolean;
+  /** Who holds the token now, which is not always the artist. */
+  holder: string;
+  /** The address the contract obeys — the cold key, never the server's. */
+  owner: string;
+  heldByOwner: boolean;
+}
+
 /** What came of asking for the waiting certificates to be written. */
 export interface MintOutcome {
   minted: number[];
@@ -256,6 +268,78 @@ export class MintApiService {
           this.authorised()
         )
         .pipe(map(MintApiService.unwrap<PendingMint>))
+    );
+  }
+
+  /**
+   * What the chain says about a certificate already written.
+   *
+   * Three facts decide what may be done to it and none is in the catalogue:
+   * whether it is frozen, who holds it, and which address the contract obeys.
+   */
+  public standing(tokenId: number): Promise<CertificateStanding> {
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<CertificateStanding>>(
+          `${this.base}/minted/${tokenId}`,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<CertificateStanding>))
+    );
+  }
+
+  /**
+   * The call that corrects a certificate on the chain, for the wallet to sign.
+   *
+   * The api signs nothing: `amend` is owner-only and the key on the server is
+   * the minter, which the contract will not obey.
+   */
+  public amendTransaction(tokenId: number, facts: MintFacts): Promise<SignableTransaction> {
+    return firstValueFrom(
+      this.http
+        .post<ApiResponse<SignableTransaction>>(
+          `${this.base}/minted/${tokenId}/amend-transaction`,
+          facts,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<SignableTransaction>))
+    );
+  }
+
+  /** The call that makes a certificate permanent. There is no way back. */
+  public freezeTransaction(tokenId: number): Promise<SignableTransaction> {
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<SignableTransaction>>(
+          `${this.base}/minted/${tokenId}/freeze-transaction`,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<SignableTransaction>))
+    );
+  }
+
+  /** The call that destroys a certificate minted by mistake. */
+  public burnTransaction(tokenId: number): Promise<SignableTransaction> {
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<SignableTransaction>>(
+          `${this.base}/minted/${tokenId}/burn-transaction`,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<SignableTransaction>))
+    );
+  }
+
+  /** Reads the catalogue again once something on the chain has changed. */
+  public settled(tokenId: number): Promise<{ shown: boolean }> {
+    return firstValueFrom(
+      this.http
+        .post<ApiResponse<{ shown: boolean }>>(
+          `${this.base}/minted/${tokenId}/settled`,
+          {},
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<{ shown: boolean }>))
     );
   }
 

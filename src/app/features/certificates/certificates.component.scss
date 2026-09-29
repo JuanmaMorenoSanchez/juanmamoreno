@@ -1,0 +1,240 @@
+.certs-page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  color: var(--catalog-ink);
+}
+
+.certs-head h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.certs-lead {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.certs-search {
+  display: block;
+  margin: 1rem 0;
+
+  input {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--catalog-faint);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+}
+
+.certs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certs-row {
+  border-bottom: 1px solid var(--catalog-faint);
+
+  &.is-open {
+    background: color-mix(in srgb, var(--catalog-faint) 25%, transparent);
+  }
+}
+
+.certs-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.5rem 0.3rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  img {
+    width: 2.6rem;
+    height: 2.6rem;
+    object-fit: cover;
+    border-radius: 2px;
+    background: var(--catalog-faint);
+    flex: none;
+  }
+}
+
+.certs-what {
+  min-width: 0;
+
+  strong {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  small {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.65;
+  }
+}
+
+.certs-panel {
+  padding: 0.3rem 0.3rem 1.2rem;
+}
+
+.certs-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.7rem;
+  margin: 0.6rem 0;
+}
+
+.certs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--catalog-faint);
+
+  input,
+  select {
+    padding: 0.35rem 0.4rem;
+    border: 1px solid var(--catalog-faint);
+    background: transparent;
+    font: inherit;
+    font-size: 0.85rem;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--catalog-ink);
+  }
+}
+
+.certs-wide {
+  grid-column: 1 / -1;
+}
+
+.certs-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.8rem 0 0;
+}
+
+.certs-link {
+  border: 0;
+  background: none;
+  padding: 0.25rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Everything below this line cannot be undone, so it is kept apart from above. */
+.certs-grave {
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  border: 1px solid #b3261e;
+  border-radius: 3px;
+
+  h2 {
+    margin: 0 0 0.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b3261e;
+  }
+}
+
+.certs-grave-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 0.8rem;
+
+  small {
+    flex-basis: 100%;
+    font-size: 0.72rem;
+    opacity: 0.75;
+  }
+}
+
+.certs-typed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+
+  input {
+    width: 7rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--catalog-faint);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.certs-danger {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #b3261e;
+  border-radius: 3px;
+  background: transparent;
+  color: #b3261e;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.certs-frozen,
+.certs-problem {
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #b3261e;
+}
+
+.certs-note,
+.certs-stage,
+.certs-outcome,
+.certs-empty {
+  margin: 0.5rem 0;
+  font-size: 0.78rem;
+  opacity: 0.75;
+  word-break: break-word;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

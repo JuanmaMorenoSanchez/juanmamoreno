@@ -1,0 +1,235 @@
+<section class="certs-page">
+  <header class="certs-head">
+    <h1>Certificates</h1>
+    <p class="certs-lead">
+      Every certificate already written to Ethereum, one row per token. A correction is a
+      transaction your wallet signs — nothing here is signed by the server.
+    </p>
+  </header>
+
+  <label class="certs-search">
+    <span class="visually-hidden">Search by number, title or year</span>
+    <input
+      type="search"
+      autocomplete="off"
+      placeholder="Number, title or year…"
+      [value]="search()"
+      (input)="search_($event)"
+    />
+  </label>
+
+  @if (!certificates().length) {
+    <p class="certs-empty">Nothing matches.</p>
+  }
+
+  <ul class="certs-list" role="list">
+    @for (nft of certificates(); track nft.tokenId) {
+      <li class="certs-row" [class.is-open]="editing() === +nft.tokenId">
+        <button type="button" class="certs-summary" (click)="open(nft)" [disabled]="busy()">
+          <img [src]="thumbOf(nft)" [alt]="nft.name" loading="lazy" decoding="async" />
+          <span class="certs-what">
+            <strong>{{ nft.tokenId }} · {{ nft.name }}</strong>
+            <small>
+              {{ trait(nft, validTraits.MEDIUM) }} · {{ trait(nft, validTraits.HEIGHT) }} ×
+              {{ trait(nft, validTraits.WIDTH) }} {{ trait(nft, validTraits.UNIT) }} · {{ trait(nft, validTraits.YEAR) }}
+            </small>
+          </span>
+        </button>
+
+        @if (editing() === +nft.tokenId) {
+          <div class="certs-panel">
+            @if (stage()) {
+              <p class="certs-stage" role="status">{{ stage() }}</p>
+            }
+
+            @if (standing(); as chain) {
+              <!--
+                Frozen is the end of the road: nothing below is possible, by
+                anybody, ever. Said here rather than by a reverted transaction.
+              -->
+              @if (chain.frozen) {
+                <p class="certs-frozen" role="alert">
+                  This certificate is frozen. It can never be corrected or destroyed again, by
+                  anyone.
+                </p>
+              }
+
+              @if (!chain.heldByOwner) {
+                <p class="certs-note">
+                  Held by {{ chain.holder }}, not by you. It can still be corrected — the record
+                  is yours — but it will not be destroyed from here.
+                </p>
+              }
+            }
+
+            @if (draft(); as facts) {
+              <div class="certs-fields">
+                <label class="certs-field certs-wide">
+                  <span>Title</span>
+                  <input
+                    type="text"
+                    autocomplete="off"
+                    [value]="facts.name"
+                    [disabled]="busy()"
+                    (input)="write($event)"
+                  />
+                </label>
+
+                <label class="certs-field">
+                  <span>Medium</span>
+                  <select [value]="facts.medium" [disabled]="busy()" (change)="pick('medium', $event)">
+                    @for (option of mediums; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label class="certs-field certs-narrow">
+                  <span>Height</span>
+                  <input
+                    type="text"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    [value]="facts.height"
+                    [disabled]="busy()"
+                    (input)="measure('height', $event)"
+                  />
+                </label>
+
+                <label class="certs-field certs-narrow">
+                  <span>Width</span>
+                  <input
+                    type="text"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    [value]="facts.width"
+                    [disabled]="busy()"
+                    (input)="measure('width', $event)"
+                  />
+                </label>
+
+                <label class="certs-field certs-narrow">
+                  <span>Unit</span>
+                  <select [value]="facts.unit" [disabled]="busy()" (change)="pick('unit', $event)">
+                    @for (option of units; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label class="certs-field certs-narrow">
+                  <span>Year</span>
+                  <select [value]="facts.year" [disabled]="busy()" (change)="pick('year', $event)">
+                    @for (option of years; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label class="certs-field">
+                  <span>Image type</span>
+                  <select
+                    [value]="facts.imageType"
+                    [disabled]="busy()"
+                    (change)="pick('imageType', $event)"
+                  >
+                    @for (option of imageTypes; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </label>
+              </div>
+
+              <!--
+                The photograph is not here on purpose. `amend` rewrites the whole
+                record and the api carries the existing image across byte for
+                byte; the flattened picture the studio made lives nowhere but the
+                browser that made it, so a different picture is a different
+                certificate.
+              -->
+              <p class="certs-note">
+                The photograph cannot be changed — a different picture is a different
+                certificate.
+              </p>
+
+              <p class="certs-actions">
+                <app-mint-gate
+                  label="Correct on chain"
+                  [disabled]="!canCorrect() || busy()"
+                  (mint)="correct()"
+                ></app-mint-gate>
+                <button type="button" class="certs-link" (click)="close()" [disabled]="busy()">
+                  Close
+                </button>
+              </p>
+            }
+
+            <!--
+              Both of these are irreversible, so they sit apart from correcting
+              and behind their own confirmations.
+            -->
+            @if (standing(); as chain) {
+              @if (!chain.frozen) {
+                <div class="certs-grave">
+                  <h2>Permanent things</h2>
+
+                  <p class="certs-grave-row">
+                    <button
+                      type="button"
+                      class="certs-danger"
+                      [disabled]="!canSeal() || busy()"
+                      (click)="seal()"
+                    >
+                      Freeze for ever
+                    </button>
+                    <small>
+                      Makes it permanent. Nobody can undo this — not you, not with the owner key.
+                    </small>
+                  </p>
+
+                  @if (chain.heldByOwner) {
+                    <p class="certs-grave-row">
+                      <label class="certs-typed">
+                        <span>Type {{ editing() }} to destroy it</span>
+                        <input
+                          type="text"
+                          autocomplete="off"
+                          [value]="burnConfirmation()"
+                          [disabled]="busy()"
+                          (input)="confirmBurn($event)"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        class="certs-danger"
+                        [disabled]="!canDestroy() || busy()"
+                        (click)="destroy()"
+                      >
+                        Destroy
+                      </button>
+                      <small>
+                        Burns the token. The painting leaves the catalogue, the number is never
+                        reissued, and any printed certificate points at a page that will not
+                        exist.
+                      </small>
+                    </p>
+                  }
+                </div>
+              }
+            }
+
+            @if (sent(); as hash) {
+              <p class="certs-note">Sent as {{ hash }}.</p>
+            }
+            @if (outcome()) {
+              <p class="certs-outcome" role="status">{{ outcome() }}</p>
+            }
+            @if (problem()) {
+              <p class="certs-problem" role="alert">{{ problem() }}</p>
+            }
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</section>

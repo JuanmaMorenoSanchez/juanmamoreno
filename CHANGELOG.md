@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.88.0
+
+- **feat** — `/certificates`, where a certificate already on the chain can be
+  corrected, frozen or destroyed. One row per token rather than per painting.
+  Nothing is signed by the server: the api encodes an owner-only call and the
+  wallet in the browser signs it, and a wallet the contract will not obey is
+  refused before the transaction is built. The chain is asked what may be done
+  before anything is offered, freezing asks for confirmation, destroying asks
+  for the number to be typed back, and a certificate a collector holds can be
+  corrected but never destroyed.
+
 ## 1.87.1
 
 - **fix** — a price over 999 printed as "1 /000 €". The thousands separator was

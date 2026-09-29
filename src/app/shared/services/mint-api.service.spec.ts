@@ -124,6 +124,67 @@ describe('MintApiService', () => {
     });
   });
 
+  /**
+   * A certificate already on the chain. All three calls are owner-only, so the
+   * api hands back an unsigned transaction and never a receipt.
+   */
+  describe('one that is already written', () => {
+    const standing = {
+      tokenId: 42,
+      frozen: false,
+      holder: '0x1111111111111111111111111111111111111111',
+      owner: '0x1111111111111111111111111111111111111111',
+      heldByOwner: true,
+    };
+    const call = { to: '0xabc', data: '0xdead', chainId: 1, tokenId: 42 };
+
+    it('asks the chain what may be done to it', async () => {
+      const promise = api.standing(42);
+      http.expectOne(`${base}/minted/42`).flush(envelope(standing));
+
+      expect((await promise).heldByOwner).toBe(true);
+    });
+
+    it('sends the corrected facts and gets a call back to sign', async () => {
+      const promise = api.amendTransaction(42, {
+        name: 'Piso de estudiantes',
+        medium: 'Oil on canvas',
+        height: '140,5',
+        width: '116',
+        unit: 'cm',
+        year: '2014',
+        imageType: 'Frontal view',
+      });
+      const sent = http.expectOne(`${base}/minted/42/amend-transaction`);
+      sent.flush(envelope(call));
+
+      expect(sent.request.method).toBe('POST');
+      expect(sent.request.body.height).toBe('140,5');
+      expect((await promise).data).toBe('0xdead');
+    });
+
+    it('asks for the freeze call by its own address', async () => {
+      const promise = api.freezeTransaction(42);
+      http.expectOne(`${base}/minted/42/freeze-transaction`).flush(envelope(call));
+
+      expect((await promise).chainId).toBe(1);
+    });
+
+    it('asks for the burn call by its own address', async () => {
+      const promise = api.burnTransaction(42);
+      http.expectOne(`${base}/minted/42/burn-transaction`).flush(envelope(call));
+
+      expect((await promise).to).toBe('0xabc');
+    });
+
+    it('tells the api to read the catalogue again once it has landed', async () => {
+      const promise = api.settled(42);
+      http.expectOne(`${base}/minted/42/settled`).flush(envelope({ shown: true }));
+
+      expect((await promise).shown).toBe(true);
+    });
+  });
+
   it('discards one by its own id', async () => {
     const promise = api.discard(197);
     const request = http.expectOne(`${base}/pending/197`);
