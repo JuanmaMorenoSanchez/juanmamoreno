@@ -1,0 +1,70 @@
+@if (years().length) {
+  <figure class="chart">
+    <figcaption class="chart-caption">
+      <strong>{{ total() }}</strong>
+      {{ 'project.chart.caption' | translate: { span: span() } }}
+    </figcaption>
+
+    <!--
+      role="img" with the headline as its label: a screen reader is told what
+      the picture says rather than read nineteen rectangles. The same numbers
+      are in the table below, which is the part that can actually be read.
+    -->
+    <svg
+      class="chart-plot"
+      [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height"
+      preserveAspectRatio="none"
+      role="img"
+      [attr.aria-label]="'project.chart.caption' | translate: { span: span() }"
+    >
+      @for (one of years(); track one.year; let at = $index) {
+        @if (one.count) {
+          <rect
+            class="chart-bar"
+            [attr.x]="columnX(at)"
+            [attr.y]="columnY(one)"
+            [attr.width]="columnWidth()"
+            [attr.height]="columnHeight(one)"
+            rx="2"
+          />
+        }
+      }
+    </svg>
+
+    <!-- Every fifth year; nineteen labels do not fit and a crowded axis says less. -->
+    <ol class="chart-axis" aria-hidden="true">
+      @for (one of years(); track one.year) {
+        <li [class.is-named]="labelled().has(one.year)">
+          @if (labelled().has(one.year)) {
+            {{ one.year }}
+          }
+        </li>
+      }
+    </ol>
+
+    <!--
+      The numbers themselves, for anyone who cannot use the picture. Hidden from
+      sight rather than left out: a chart nobody can read is a chart that says
+      nothing to the people most likely to need the figure.
+    -->
+    <table class="visually-hidden">
+      <caption>
+        {{ 'project.chart.caption' | translate: { span: span() } }}
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'traits.year' | translate }}</th>
+          <th scope="col">{{ 'paintings' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (one of years(); track one.year) {
+          <tr>
+            <th scope="row">{{ one.year }}</th>
+            <td>{{ one.count }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </figure>
+}

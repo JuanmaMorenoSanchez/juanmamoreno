@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { AdminAuthService } from './admin-auth.service';
 import { environment } from '@environments/environment';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -31,6 +32,13 @@ export interface PostedArtwork {
 @Injectable({ providedIn: 'root' })
 export class PostedArtworksService {
   private http = inject(HttpClient);
+  private auth = inject(AdminAuthService);
+
+  /** An expired token is never sent: `bearerToken` gives null once it is stale. */
+  private authorised(): { headers: Record<string, string> } {
+    const token = this.auth.bearerToken();
+    return { headers: token ? { Authorization: `Bearer ${token}` } : {} };
+  }
 
   /**
    * Undefined when the question could not be asked, an empty list when the
@@ -47,6 +55,40 @@ export class PostedArtworksService {
         map((response) => response?.data ?? []),
         catchError(() => of(undefined))
       );
+  }
+
+  /**
+   * Which networks each painting has been posted to, keyed by token.
+   *
+   * Asked of the whole collection by the api rather than of the latest few, so
+   * a painting that went out two years ago still wears its marks.
+   *
+   * An empty answer when the question could not be asked: a list with no marks
+   * on it is a smaller wrong than a list that will not draw.
+   */
+  getNetworks(): Observable<Record<string, string[]>> {
+    return this.http
+      .get<ApiResponse<Record<string, string[]>>>(`${environment.backendUrl}posts/networks`)
+      .pipe(
+        map((response) => response?.data ?? {}),
+        catchError(() => of({}))
+      );
+  }
+
+  /**
+   * Forgets that a painting was posted to one network.
+   *
+   * For a post that no longer exists. It touches nothing on any network — it
+   * removes the api's record that the painting went out, which puts it back in
+   * that network's queue.
+   */
+  forgetPost(tokenId: string, network: string): Observable<{ forgotten: number }> {
+    return this.http
+      .delete<ApiResponse<{ forgotten: number }>>(
+        `${environment.backendUrl}posts/${tokenId}?network=${encodeURIComponent(network)}`,
+        this.authorised()
+      )
+      .pipe(map((response) => response?.data ?? { forgotten: 0 }));
   }
 
   getInstagramPermalink(tokenId: string): Observable<string | null> {

@@ -1,12 +1,21 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
+import { firstValueFrom } from 'rxjs';
 import { CertificatePanelComponent } from './certificate-panel.component';
+import { NETWORKS } from './networks';
 
 /** How the list is arranged. */
 type Order = 'newest' | 'posted';
@@ -35,6 +44,7 @@ type Order = 'newest' | 'posted';
   imports: [PdfButtonComponent, CertificatePanelComponent],
 })
 export class CatalogueAdminComponent {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly artworkService = inject(ARTWORK_PORT);
   private readonly availability = inject(AvailabilityService);
 
@@ -44,8 +54,86 @@ export class CatalogueAdminComponent {
     initialValue: [] as Nft[],
   });
 
+  private readonly posts = inject(PostedArtworksService);
+
   /** Undefined until the api has answered, and if it never does. */
-  private readonly posted = toSignal(inject(PostedArtworksService).getLatest(60));
+  private readonly posted = toSignal(this.posts.getLatest(60));
+
+  /**
+   * Which networks each painting has been on, asked of the whole collection.
+   *
+   * A plain signal filled by a subscription rather than anything derived:
+   * it has to be re-asked after a post is forgotten, and that is a thing that
+   * happens rather than a thing to compute. An empty answer is the api not
+   * answering — a list with no marks is a smaller wrong than one that will not
+   * draw.
+   */
+  private readonly networks = signal<Record<string, string[]>>({});
+
+  constructor() {
+    this.askNetworks();
+  }
+
+  private askNetworks(): void {
+    this.posts
+      .getNetworks()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((on) => this.networks.set(on));
+  }
+
+  /**
+   * The marks a row wears, in a fixed order so the row does not reshuffle.
+   *
+   * Instagram's feed and its reels are separate on purpose: they are two
+   * different things to have done with a painting, and one mark for both meant
+   * the studio could not tell them apart.
+   */
+  protected readonly allNetworks = NETWORKS;
+
+  protected onNetwork(nft: Nft, network: string): boolean {
+    return (this.networks()[nft.tokenId] ?? []).includes(network);
+  }
+
+  protected networksOf(nft: Nft): string[] {
+    const on = this.networks()[nft.tokenId] ?? [];
+    return NETWORKS.filter((network) => on.includes(network.id)).map((network) => network.id);
+  }
+
+  protected readonly forgetting = signal<string | null>(null);
+
+  /**
+   * Forgets a post that no longer exists, and asks again.
+   *
+   * Confirmed first: it puts the painting back in that network's queue, so the
+   * nightly run will post it again — which is right for a post that was
+   * deleted and wrong for one that is still up.
+   */
+  protected async forget(nft: Nft, network: string): Promise<void> {
+    const name = NETWORKS.find((one) => one.id === network)?.label ?? network;
+    if (
+      !confirm(
+        `Forget that "${nft.name}" went to ${name}?
+
+` +
+          'Nothing is deleted on the network itself — this removes the record that it went ' +
+          'out, which puts the painting back in that queue and it will be posted again.'
+      )
+    ) {
+      return;
+    }
+
+    this.forgetting.set(`${nft.tokenId}:${network}`);
+    try {
+      await firstValueFrom(this.posts.forgetPost(nft.tokenId, network));
+      this.askNetworks();
+    } finally {
+      this.forgetting.set(null);
+    }
+  }
+
+  protected isForgetting(nft: Nft, network: string): boolean {
+    return this.forgetting() === `${nft.tokenId}:${network}`;
+  }
 
   protected readonly term = signal('');
   protected readonly order = signal<Order>('newest');

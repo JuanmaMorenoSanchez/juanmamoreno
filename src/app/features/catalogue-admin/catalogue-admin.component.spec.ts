@@ -7,6 +7,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { CatalogueAdminComponent } from './catalogue-admin.component';
 
 const painting = (tokenId: string, name: string, year = '2026'): Nft => ({
@@ -33,6 +34,8 @@ const catalogue = [
   painting('42', 'Newest'),
 ];
 
+let forgetPost: ReturnType<typeof vi.fn>;
+
 type Page = {
   rows: () => Nft[];
   term: { set(value: string): void };
@@ -53,6 +56,10 @@ type Page = {
   toggleChosen(nft: Nft): void;
   clear(): void;
   chooseAll(): void;
+  allNetworks: ReadonlyArray<{ id: string; mark: string; label: string }>;
+  onNetwork(nft: Nft, network: string): boolean;
+  networksOf(nft: Nft): string[];
+  forget(nft: Nft, network: string): Promise<void>;
 };
 
 /**
@@ -64,8 +71,10 @@ type Page = {
  */
 function setup(
   posted: Array<{ tokenId: string; permalink: string | null }> | undefined,
-  sold: string[] = []
+  sold: string[] = [],
+  networks: Record<string, string[]> = {}
 ) {
+  forgetPost = vi.fn(() => of({ forgotten: 1 }));
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [CatalogueAdminComponent],
@@ -83,7 +92,14 @@ function setup(
           getNftOptimalUrl: (image: { thumbnailUrl?: string }) => image?.thumbnailUrl ?? '',
         },
       },
-      { provide: PostedArtworksService, useValue: { getLatest: () => of(posted) } },
+      {
+        provide: PostedArtworksService,
+        useValue: {
+          getLatest: () => of(posted),
+          getNetworks: () => of(networks),
+          forgetPost: forgetPost,
+        },
+      },
       { provide: AvailabilityService, useValue: { isSold: (id: string) => sold.includes(id) } },
     ],
   });
@@ -264,5 +280,76 @@ describe('CatalogueAdminComponent', () => {
 
     expect(page.isSold(catalogue[2])).toBe(true);
     expect(page.isSold(catalogue[0])).toBe(false);
+  });
+
+  /**
+   * One mark per network on a row.
+   *
+   * Instagram's feed and its reels are separate marks on purpose: they are two
+   * different things to have done with a painting, and while both wore the same
+   * mark the studio could not tell them apart.
+   */
+  describe('where a painting has been', () => {
+    const on = { '42': ['instagram', 'instagram reel video', 'threads'], '7': ['bluesky'] };
+
+    it('tells the feed and a reel apart', () => {
+      const page = setup([], [], on);
+
+      expect(page.onNetwork(catalogue[2], 'instagram')).toBe(true);
+      expect(page.onNetwork(catalogue[2], 'instagram reel video')).toBe(true);
+      expect(page.onNetwork(catalogue[0], 'instagram')).toBe(false);
+      expect(page.onNetwork(catalogue[0], 'bluesky')).toBe(true);
+    });
+
+    it('marks the other networks too', () => {
+      const page = setup([], [], on);
+
+      expect(page.networksOf(catalogue[2])).toContain('threads');
+      expect(page.networksOf(catalogue[0])).toEqual(['bluesky']);
+    });
+
+    /** Fixed, so a row does not reshuffle as answers arrive. */
+    it('keeps the marks in one order', () => {
+      const page = setup([], [], on);
+
+      expect(page.networksOf(catalogue[2])).toEqual([
+        'instagram',
+        'instagram reel video',
+        'threads',
+      ]);
+    });
+
+    it('marks nothing for a painting that has never gone out', () => {
+      const page = setup([], [], on);
+
+      expect(page.networksOf(catalogue[1])).toEqual([]);
+    });
+  });
+
+  /**
+   * For a post that no longer exists. It puts the painting back in that
+   * network's queue, so it is confirmed first — right for a post that was
+   * deleted, wrong for one that is still up.
+   */
+  describe('forgetting a post', () => {
+    const on = { '42': ['instagram reel video'] };
+
+    it('forgets the network it was asked about', async () => {
+      const page = setup([], [], on);
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+      await page.forget(catalogue[2], 'instagram reel video');
+
+      expect(forgetPost).toHaveBeenCalledWith('42', 'instagram reel video');
+    });
+
+    it('does nothing when the confirmation is dismissed', async () => {
+      const page = setup([], [], on);
+      vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+      await page.forget(catalogue[2], 'instagram reel video');
+
+      expect(forgetPost).not.toHaveBeenCalled();
+    });
   });
 });

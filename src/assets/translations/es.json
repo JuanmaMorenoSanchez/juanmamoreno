@@ -441,7 +441,17 @@
       "catalogue": "El catálogo, con sus filtros",
       "artwork": "Una obra, con su ficha y su ensayo",
       "certificate": "El certificado de autenticidad de esa obra",
-      "opens": "abre la página"
+      "opens": "abre la página",
+      "texts": "Lo que se ha escrito sobre la obra, y dónde",
+      "cv": "El cv, guardado como datos y no como documento"
+    },
+    "chart": {
+      "title": "El catálogo",
+      "caption": "pinturas en el catálogo, {{span}}, por el año en que se pintó cada una."
+    },
+    "admin": {
+      "title": "La mitad que nadie ve",
+      "body": "Detrás de un inicio de sesión hay una segunda mitad de la aplicación que ningún lector ve: ahí el artista prepara un certificado, corrige uno ya escrito, elige las obras con las que se arma un dossier y ve dónde se ha publicado cada pieza. Es el mismo catálogo, con lo que se puede hacer con cada obra encima. Esas direcciones no se nombran aquí a propósito, y el build rechaza esta página si aparecen."
     }
   }
 }

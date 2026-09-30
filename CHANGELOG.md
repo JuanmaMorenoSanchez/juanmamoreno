@@ -5,6 +5,25 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.90.0
+
+- **feat** — every network wears its own mark on a catalogue row, and Instagram
+  wears two: a painting on the feed and a painting filmed as a reel are two
+  different things to have done with it. Threads, Bluesky and Facebook are
+  marked beside them.
+- **feat** — a post that no longer exists can be forgotten from a row, which
+  puts the painting back in that network's queue. Confirmed first, and nothing
+  is touched on the network itself.
+- **feat** — the product page counts the catalogue it describes: a column per
+  year, computed at build time from the same catalogue the site reads, drawn as
+  svg so it is there without JavaScript, with the figures in a table beside it.
+- **feat** — two more photographs through the product page, and a section on the
+  half of the application no reader sees — described, never addressed.
+- **fix** — the build's list of addresses that may not appear on the product
+  page covered the two that existed when it was written. It covers every guarded
+  address now, matched as whole paths so `/catalogue` does not fire on the
+  public `/catalogue.json`.
+
 ## 1.89.0
 
 - **feat** — the three guarded pages that each listed the catalogue are one:

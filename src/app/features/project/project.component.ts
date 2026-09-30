@@ -12,6 +12,7 @@ import {
 } from '@domain/project/project.constants';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageUrlService } from '@shared/services/language-url.service';
+import { CatalogueChartComponent } from './catalogue-chart.component';
 
 /**
  * How this product is run, for somebody deciding whether to hire the person
@@ -33,7 +34,7 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
   selector: 'app-project',
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss',
-  imports: [NgTemplateOutlet, RouterLink, TranslatePipe],
+  imports: [NgTemplateOutlet, RouterLink, TranslatePipe, CatalogueChartComponent],
 })
 export class ProjectComponent {
   protected readonly lang = inject(LanguageUrlService);
@@ -78,6 +79,18 @@ export class ProjectComponent {
       name: 'artwork',
       label: 'project.shots.artwork',
       href: 'https://juanmamoreno.com/artwork/152',
+    },
+    {
+      at: 'three',
+      name: 'texts',
+      label: 'project.shots.texts',
+      href: 'https://juanmamoreno.com/texts',
+    },
+    {
+      at: 'agents',
+      name: 'cv',
+      label: 'project.shots.cv',
+      href: 'https://juanmamoreno.com/cv',
     },
   ] as const;
 

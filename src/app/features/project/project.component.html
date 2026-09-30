@@ -85,6 +85,16 @@
 
   </section>
 
+  <!--
+    The one drawing on this page that is not a diagram of how it works but a
+    measurement of what it holds — counted from the catalogue at build time, so
+    it cannot drift from the site it describes.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.chart.title' | translate }}</h2>
+    <app-catalogue-chart />
+  </section>
+
   <section class="project-section">
     <h2>{{ 'project.architecture.title' | translate }}</h2>
     @for (key of ['a', 'b', 'c']; track key) {
@@ -275,6 +285,19 @@
 
     <!-- The page carrying the structured data this section is about. -->
     <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('artwork') }" />
+    <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('agents') }" />
+  </section>
+
+  <!--
+    Described, never addressed. The build refuses this page if it names an
+    address behind the guard, which is the rule that keeps a useful detail and
+    a dangerous one from looking alike here.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.admin.title' | translate }}</h2>
+    @for (paragraph of paragraphs('project.admin.body'); track $index) {
+      <p>{{ paragraph }}</p>
+    }
   </section>
 
   <section class="project-section">

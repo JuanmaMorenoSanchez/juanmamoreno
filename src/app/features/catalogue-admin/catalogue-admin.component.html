@@ -99,21 +99,31 @@
             </span>
           </button>
 
-          @if (permalinkOf(nft); as permalink) {
-            <a
-              class="cat-ig"
-              [href]="permalink"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="See the post on Instagram"
-            >
-              IG
-            </a>
-          } @else if (wasPosted(nft)) {
-            <span class="cat-ig is-quiet" title="Posted before the address of a post was kept">
-              IG
-            </span>
-          }
+          <!--
+            One mark per network, in a fixed order so a row does not reshuffle
+            as answers arrive. The feed and a reel are separate marks: they are
+            two different things to have done with a painting.
+          -->
+          <span class="cat-marks">
+            @for (network of allNetworks; track network.id) {
+              @if (onNetwork(nft, network.id)) {
+                @if (network.id === 'instagram' && permalinkOf(nft)) {
+                  <a
+                    class="cat-mark"
+                    [href]="permalinkOf(nft)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [title]="'See the post on ' + network.label"
+                    >{{ network.mark }}</a
+                  >
+                } @else {
+                  <span class="cat-mark" [title]="'Posted to ' + network.label">{{
+                    network.mark
+                  }}</span>
+                }
+              }
+            }
+          </span>
 
           <!--
             One click, because choosing twenty out of a hundred and sixty-seven
@@ -138,6 +148,28 @@
 
         @if (opened() === nft.tokenId) {
           <div class="cat-panel">
+            <!--
+              For a post that no longer exists. Forgetting one puts the painting
+              back in that network's queue, so it is confirmed first — right for
+              a post that was deleted, wrong for one that is still up.
+            -->
+            @if (networksOf(nft).length) {
+              <p class="cat-forget">
+                <span>Posted to:</span>
+                @for (network of networksOf(nft); track network) {
+                  <button
+                    type="button"
+                    class="cat-forget-one"
+                    [disabled]="isForgetting(nft, network)"
+                    (click)="forget(nft, network)"
+                  >
+                    {{ network }} ✕
+                  </button>
+                }
+                <small>Forgetting one puts the painting back in that queue.</small>
+              </p>
+            }
+
             <app-certificate-panel [painting]="nft"></app-certificate-panel>
           </div>
         }

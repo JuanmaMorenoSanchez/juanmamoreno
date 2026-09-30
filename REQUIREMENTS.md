@@ -1322,10 +1322,22 @@ which a page showing only the last twelve could not answer.
 A failed request is told apart from an empty account: it says nothing has been
 posted only when that is what was answered. Answering a failure the same way
 would put a claim that nothing has gone out over a list that had a dozen.
+**Every network wears its own mark, and Instagram wears two.** A painting on the
+feed and a painting filmed as a reel are two different things to have done with
+it, and while both wore one mark the studio could not tell them apart. Threads,
+Bluesky and Facebook are marked beside them, in a fixed order so a row does not
+reshuffle as answers arrive.
+
+**A post that no longer exists can be forgotten**, which puts the painting back
+in that network's queue. It is confirmed first: right for a post that was
+deleted, wrong for one that is still up. Nothing is touched on the network — it
+removes the api's record that the painting went out.
 *Proven by:* `catalogue-admin.component.spec.ts` "what has lately gone to
 Instagram" (4 tests, including "keeps the ones that have never been posted,
 after the rest" and "says nothing has been posted only when that is what was
-answered")
+answered"), its "where a painting has been" (4 tests, including "tells the feed
+and a reel apart" and "keeps the marks in one order") and its "forgetting a
+post" (2 tests)
 
 ### R104 — A Spanish reader is never sent to an address that does not exist · met
 The guard that redirects a language-free address to its Spanish twin builds
@@ -2106,3 +2118,34 @@ number is typed" for one a collector holds, "refuses to destroy until the number
 is typed back", "refuses to sign with a wallet the contract will not obey" and
 the two dismissed confirmations), and `mint-api.service.spec.ts` "one that is
 already written" (5 tests)
+
+### R121 — The product page shows the catalogue it describes, and counts it · met
+A column per year, from the first painting in the catalogue to the last, on the
+page a recruiter reads.
+
+**Counted at build time from the same catalogue the rest of the site reads.**
+Nothing is written down, so the drawing cannot drift from the page around it — a
+chart with last year's figures typed into it is worse than no chart. One painting
+per column and not one certificate: a painting photographed three times is one
+painting, which is the number a reader means.
+
+**Drawn as svg in the page**, because this site is written to disk before it is
+published and read without JavaScript. A chart that needed a script to appear
+would be a blank rectangle in the one place the page is making a claim about how
+it is built. A year with nothing in it keeps its place and draws no column, so
+the axis is time rather than a list of the years that have work in them.
+
+The same numbers are in a table beside it for anyone who cannot use the picture,
+and the marks are one hue because there is one series.
+
+**The half of the application nobody sees is described and never addressed.**
+The build refuses this page if it names an address behind the guard, and that
+list now covers every guarded address rather than the two that existed when it
+was written — matched as whole paths, so `/catalogue` does not fire on the
+public `/catalogue.json`.
+*Proven by:* `catalogue-chart.component.spec.ts` (8 tests, including "counts
+paintings, not photographs of them", "keeps an empty year in the run", "draws no
+column for a year with nothing in it" and "names every fifth year and the last"),
+`project.component.spec.ts`, which fixes the order of his sections and the count
+of the photographs through the article, and `verify-render.mjs`, which fails the
+build on a guarded address

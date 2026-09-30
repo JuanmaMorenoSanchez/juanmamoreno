@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { ProjectComponent } from './project.component';
 
 describe('ProjectComponent', () => {
@@ -9,7 +11,21 @@ describe('ProjectComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ProjectComponent],
-      providers: [provideRouter([]), provideTranslateService()],
+      providers: [
+        provideRouter([]),
+        provideTranslateService(),
+        // The page counts the catalogue now, for the chart of what it holds.
+        // An empty one is the honest fixture here: this spec is about his
+        // words and their order, and the chart draws nothing without paintings.
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of([]),
+            getTraitValue: () => '',
+            isFrontalView: () => true,
+          },
+        },
+      ],
     });
     fixture = TestBed.createComponent(ProjectComponent);
     await fixture.whenStable();
@@ -30,8 +46,14 @@ describe('ProjectComponent', () => {
       'project.rot.title',
       'project.about.title',
       'project.product.title',
+      // Two sections that are not his writing: a measurement of the catalogue,
+      // and the half of the application no reader sees. They sit where they
+      // are so his argument still runs — what the thing holds after what it is
+      // for, and what is behind the guard after how it is built.
+      'project.chart.title',
       'project.architecture.title',
       'project.agents.title',
+      'project.admin.title',
       'project.links.title',
     ]);
   });
@@ -113,7 +135,9 @@ describe('ProjectComponent', () => {
   it('shows the real pages through the article, and opens them where they are', () => {
     const shots = [...fixture.nativeElement.querySelectorAll('.project-shot a')];
 
-    expect(shots).toHaveLength(4);
+    // Six now rather than four: the text was a long way between pictures, and
+    // this is the page somebody reads to decide whether to hire him.
+    expect(shots).toHaveLength(6);
     for (const shot of shots as HTMLAnchorElement[]) {
       expect(shot.getAttribute('href')).toContain('https://juanmamoreno.com/');
       expect(shot.getAttribute('target')).toBe('_blank');

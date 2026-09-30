@@ -197,6 +197,11 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       'europe-west1',
       '/pendingmint',
       '/studio',
+      // Every guarded address, not the two that existed when this was written.
+      // /catalogue arrived later and was not on this list, which is how a list
+      // of secrets fails: quietly, by not growing.
+      '/catalogue',
+      '/publish',
       // Named now that the page describes the architecture. Which cloud it runs
       // on, which database, which indexer and which model are nobody's business
       // and are exactly the details that make a page like this useful to the
@@ -214,7 +219,13 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       // happens — and leaving it here would fail the build on the menu.
     ];
     for (const secret of neverHere) {
-      if (said.includes(secret)) fail(route, `names ${secret}, which is not for a public page`);
+      // An address is matched as a whole path, not as a substring: `/catalogue`
+      // must not fire on `/catalogue.json`, which is a public file this page
+      // names on purpose. Everything that is not a path stays a substring.
+      const named = secret.startsWith('/')
+        ? new RegExp(`${secret}(?![\\w.-])`).test(said)
+        : said.includes(secret);
+      if (named) fail(route, `names ${secret}, which is not for a public page`);
     }
   }
 
