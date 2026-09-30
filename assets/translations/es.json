@@ -441,8 +441,6 @@
       "artwork": "Una obra, con su ficha y su ensayo",
       "certificate": "El certificado de autenticidad de esa obra",
       "opens": "abre la página",
-      "texts": "Lo que se ha escrito sobre la obra, y dónde",
-      "cv": "El cv, guardado como datos y no como documento",
       "admin": "La página desde la que se gestiona el catálogo, tras un inicio de sesión"
     },
     "admin": {
