@@ -360,7 +360,6 @@
       }
     },
     "architecture": {
-      "title": "Cómo está montado",
       "a": "El sitio es estático en sentido estricto. Cada página, en los dos idiomas, se escribe en disco antes de publicarse y se sirve como archivo: no hay servidor que renderice nada, y por tanto no hay servidor que se caiga, que parchear ni que costear. Tod el sistema está pensado para que el coste sea mínimo, un par de euros al mes, aproximadamente.",
       "b": "La arquitectura de Cloud es, en esencia, un servicio que sirve una API, una serie de servicios Cloud de IA (para hacer búsquedas inversas de imágenes en Internet, para generar textos basados en imágenes y descripciones), una base de datos para la información del app y el cache de los certificados, un bucket para las imágenes en altas resolución y los vídeos",
       "c": "Fuera del scope del cloud y el app de frontend quedarían los datos on-chain (los certificados y el contrato) y el almacenamiento distribuído permanente de las imágenes en resolución web."
@@ -444,10 +443,6 @@
       "opens": "abre la página",
       "texts": "Lo que se ha escrito sobre la obra, y dónde",
       "cv": "El cv, guardado como datos y no como documento"
-    },
-    "chart": {
-      "title": "El catálogo",
-      "caption": "pinturas en el catálogo, {{span}}, por el año en que se pintó cada una."
     },
     "admin": {
       "title": "La mitad que nadie ve",
