@@ -441,7 +441,17 @@
       "catalogue": "The catalogue, with its filters",
       "artwork": "One work, with its details and its essay",
       "certificate": "That work’s certificate of authenticity",
-      "opens": "opens the page"
+      "opens": "opens the page",
+      "texts": "What has been written about the work, and where",
+      "cv": "The cv, kept as data rather than as a document"
+    },
+    "chart": {
+      "title": "The catalogue",
+      "caption": "paintings in the catalogue, {{span}}, by the year each was painted."
+    },
+    "admin": {
+      "title": "The half nobody sees",
+      "body": "Behind a sign-in there is a second half of the application that no reader sees: the artist prepares a certificate there, corrects one already written, chooses the paintings a dossier is built from, and sees where each painting has been published. It is the same catalogue, with what can be done to a painting attached to it. Those addresses are not named here on purpose, and the build refuses this page if they appear in it."
     }
   }
 }
