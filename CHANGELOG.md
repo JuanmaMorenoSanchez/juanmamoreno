@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.91.1
+
+- **fix** — a certificate form showed the first option of every dropdown instead
+  of what the certificate says: a 2010 watercolour opened reading "Oil on
+  canvas, 2026". `[value]` on a `<select>` is applied before `@for` has rendered
+  its options. Pressing *Correct on chain* would have written those onto a
+  permanent record. Fixed on both forms, and pinned by tests that render the
+  form rather than ask the class — the only place the fault was visible.
+- **fix** — the network icons read at one weight. The one that is a link was
+  drawn at full strength while the rest were dimmed, and a filled glyph carries
+  more ink at 16px than a stroked one.
+- **feat** — the product page carries the site under its first paragraph and the
+  page the catalogue is managed from under its third, which is the paragraph
+  about managing it. That one is shown and never linked: an anchor to a page the
+  reader cannot open is a promise the page cannot keep.
+
 ## 1.91.0
 
 - **feat** — the networks on a catalogue row are their own icons rather than two

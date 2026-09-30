@@ -181,15 +181,17 @@
   gap: 0.2rem;
 }
 
+/*
+  Every mark the same weight. Two things were making them differ: the one that
+  is a link was drawn at full strength while the rest were dimmed, and a filled
+  glyph — the butterfly, the f — reads heavier at 16px than a stroked one. So
+  the opacity is the same for all of them and the difference a link makes is
+  the cursor, not the colour.
+*/
 .cat-mark {
   display: inline-flex;
-  color: inherit;
-  opacity: 0.55;
-}
-
-/* The one that leads somewhere is the one that looks live. */
-a.cat-mark {
-  opacity: 1;
+  color: var(--catalog-ink);
+  opacity: 0.6;
 }
 
 .cat-forget {

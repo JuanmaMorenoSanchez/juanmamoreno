@@ -91,6 +91,14 @@ export class ProjectComponent {
       label: 'project.shots.cv',
       href: 'https://juanmamoreno.com/cv',
     },
+    // The one page here nobody else can open, so it has nowhere to lead: it is
+    // shown rather than linked, and its address is not named.
+    {
+      at: 'admin',
+      name: 'catalogue-admin',
+      label: 'project.shots.admin',
+      href: '',
+    },
   ] as const;
 
   /** The photograph that belongs at this point in the page, if one does. */

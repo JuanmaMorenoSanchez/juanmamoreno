@@ -17,7 +17,7 @@ const painting: Nft = {
   raw: {
     metadata: {
       attributes: [
-        { trait_type: VALIDTRAITS.MEDIUM, value: 'Oil on canvas' },
+        { trait_type: VALIDTRAITS.MEDIUM, value: 'Watercolor on paper' },
         { trait_type: VALIDTRAITS.HEIGHT, value: '999' },
         { trait_type: VALIDTRAITS.WIDTH, value: '116' },
         { trait_type: VALIDTRAITS.UNIT, value: 'cm' },
@@ -224,6 +224,71 @@ describe('CertificatePanelComponent', () => {
 
       expect(panel.problem()).toContain('rejected');
       expect(api.settled).not.toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * What the form actually shows, drawn rather than asked of the class.
+   *
+   * This is where a real fault hid: `[value]` on a `<select>` is applied before
+   * `@for` has rendered its options, so the select falls back to its first
+   * option and the form reads "Oil on canvas, 2026" over a watercolour from
+   * 2010. Nothing about the component's state was wrong — only the picture of
+   * it — and pressing Correct would have written the first option onto a
+   * permanent record.
+   */
+  describe('the form as it is drawn', () => {
+    const rendered = async () => {
+      const standing = { tokenId: 42, frozen: false, holder: OWNER, owner: OWNER, heldByOwner: true };
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [CertificatePanelComponent],
+        providers: [
+          {
+            provide: ARTWORK_PORT,
+            useValue: {
+              getTraitValue: (nft: Nft, key: string) =>
+                nft.raw?.metadata?.attributes?.find(
+                  (a: { trait_type: string }) => a.trait_type === key
+                )?.value ?? '',
+            },
+          },
+          {
+            provide: MintApiService,
+            useValue: { standing: vi.fn().mockResolvedValue(standing) },
+          },
+          { provide: WalletService, useValue: { available: () => true } },
+        ],
+      });
+      const fixture = TestBed.createComponent(CertificatePanelComponent);
+      fixture.componentRef.setInput('painting', painting);
+      fixture.detectChanges();
+      await settle();
+      fixture.detectChanges();
+      return fixture;
+    };
+
+    it('shows the medium the certificate carries, not the first one on the list', async () => {
+      const fixture = await rendered();
+      const selects = [...fixture.nativeElement.querySelectorAll('select')] as HTMLSelectElement[];
+
+      expect(selects[0].value).toBe('Watercolor on paper');
+    });
+
+    it('shows the year the painting was made, not the current one', async () => {
+      const fixture = await rendered();
+      const selects = [...fixture.nativeElement.querySelectorAll('select')] as HTMLSelectElement[];
+
+      // Medium, unit, year, image type — in the order the form lays them out.
+      expect(selects[2].value).toBe('2014');
+    });
+
+    it('shows the measurements it was written with', async () => {
+      const fixture = await rendered();
+      const inputs = [...fixture.nativeElement.querySelectorAll('input')] as HTMLInputElement[];
+
+      expect(inputs.map((one) => one.value)).toContain('999');
+      expect(inputs.map((one) => one.value)).toContain('116');
     });
   });
 });

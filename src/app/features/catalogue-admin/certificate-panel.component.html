@@ -38,7 +38,7 @@
       <span>Medium</span>
       <select [value]="facts.medium" [disabled]="busy()" (change)="pick('medium', $event)">
         @for (option of mediums; track option) {
-          <option [value]="option">{{ option }}</option>
+          <option [value]="option" [selected]="option === facts.medium">{{ option }}</option>
         }
       </select>
     </label>
@@ -71,7 +71,7 @@
       <span>Unit</span>
       <select [value]="facts.unit" [disabled]="busy()" (change)="pick('unit', $event)">
         @for (option of units; track option) {
-          <option [value]="option">{{ option }}</option>
+          <option [value]="option" [selected]="option === facts.unit">{{ option }}</option>
         }
       </select>
     </label>
@@ -80,7 +80,7 @@
       <span>Year</span>
       <select [value]="facts.year" [disabled]="busy()" (change)="pick('year', $event)">
         @for (option of years; track option) {
-          <option [value]="option">{{ option }}</option>
+          <option [value]="option" [selected]="option === facts.year">{{ option }}</option>
         }
       </select>
     </label>
@@ -89,7 +89,7 @@
       <span>Image type</span>
       <select [value]="facts.imageType" [disabled]="busy()" (change)="pick('imageType', $event)">
         @for (option of imageTypes; track option) {
-          <option [value]="option">{{ option }}</option>
+          <option [value]="option" [selected]="option === facts.imageType">{{ option }}</option>
         }
       </select>
     </label>

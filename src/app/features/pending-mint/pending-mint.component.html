@@ -93,7 +93,7 @@
                 <span>Medium</span>
                 <select [value]="draft().medium" (change)="pick('medium', $event)">
                   @for (option of mediums; track option) {
-                    <option [value]="option">{{ option }}</option>
+                    <option [value]="option" [selected]="option === draft().medium">{{ option }}</option>
                   }
                 </select>
               </label>
@@ -101,7 +101,7 @@
                 <span>Photograph is</span>
                 <select [value]="draft().imageType" (change)="pick('imageType', $event)">
                   @for (option of imageTypes; track option) {
-                    <option [value]="option">{{ option }}</option>
+                    <option [value]="option" [selected]="option === draft().imageType">{{ option }}</option>
                   }
                 </select>
               </label>
@@ -129,7 +129,7 @@
                 <span>Unit</span>
                 <select [value]="draft().unit" (change)="pick('unit', $event)">
                   @for (option of units; track option) {
-                    <option [value]="option">{{ option }}</option>
+                    <option [value]="option" [selected]="option === draft().unit">{{ option }}</option>
                   }
                 </select>
               </label>
@@ -137,7 +137,7 @@
                 <span>Year</span>
                 <select [value]="draft().year" (change)="pick('year', $event)">
                   @for (option of years(); track option) {
-                    <option [value]="option">{{ option }}</option>
+                    <option [value]="option" [selected]="option === draft().year">{{ option }}</option>
                   }
                 </select>
               </label>

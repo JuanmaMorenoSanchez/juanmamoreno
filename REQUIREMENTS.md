@@ -1322,6 +1322,11 @@ which a page showing only the last twelve could not answer.
 A failed request is told apart from an empty account: it says nothing has been
 posted only when that is what was answered. Answering a failure the same way
 would put a claim that nothing has gone out over a list that had a dozen.
+**Every icon reads at one weight.** Two things had made them differ: the one
+that is a link was drawn at full strength while the rest were dimmed, and a
+filled glyph carries more ink at 16px than a stroked one of the same colour, so
+the butterfly and the f looked heavier than the others.
+
 **Every network wears its own icon, and Instagram wears two.** Drawn in the page
 rather than fetched — the decision the WhatsApp button already made, for the
 same reasons: no third party on a page that has none, no request that can fail,
@@ -2137,13 +2142,37 @@ because they follow from it.
 **A chart of paintings per year was here and has gone.** It measured the work
 rather than the machinery, which is not what this page is for.
 
+**The pictures sit inside the lead, each under the paragraph it belongs to** —
+the site under the sentence about the catalogue, the page it is managed from
+under the sentence about managing it. That last one is **shown and never
+linked**: an anchor to a page the reader cannot open is a promise this page
+cannot keep, and its address is not named here anyway.
+
 **The half of the application nobody sees is described and never addressed.**
 The build refuses this page if it names an address behind the guard, and that
 list now covers every guarded address rather than the two that existed when it
 was written — matched as whole paths, so `/catalogue` does not fire on the
 public `/catalogue.json`.
 *Proven by:* `project.component.spec.ts` "shows how it is put together before it
-argues anything" and "puts the machine readers after it", which compare
-positions in the document rather than counting headings, plus the section order
-and the count of photographs through the article; and `verify-render.mjs`, which
+argues anything", "puts the machine readers after it" — both comparing positions
+in the document rather than counting headings — "shows the page it manages the
+catalogue from without linking it", the section order, and that every picture
+that is a link opens a page anybody may walk to; and `verify-render.mjs`, which
 fails the build on a guarded address
+
+### R122 — A form shows what the certificate says, not the first thing on its list · met
+Every `<select>` on the two certificate forms says which of its options is the
+chosen one, rather than the select being handed a value.
+
+**This is written down because it shipped broken and would have corrupted a
+permanent record.** `[value]` on a `<select>` is applied before `@for` has
+rendered any options, so the select fell back to the first one: a watercolour
+from 2010 opened its form reading "Oil on canvas" and "2026", and nothing about
+the component's state was wrong — only the picture of it. Pressing *Correct on
+chain* would have written the first option onto the chain, and the artist would
+have been looking at a form that had already told him it said something else.
+*Proven by:* `certificate-panel.component.spec.ts` "the form as it is drawn"
+(3 tests: "shows the medium the certificate carries, not the first one on the
+list", "shows the year the painting was made, not the current one" and "shows
+the measurements it was written with"), which render the form rather than ask
+the class — the only place this fault was visible

@@ -4,24 +4,38 @@
   reader had already read past the thing each one illustrates. Each now sits
   under its own paragraph, and opens the page it is a photograph of.
 -->
+<ng-template #shotImage let-item>
+  <img
+    [src]="'assets/images/product/' + item.name + '.jpg'"
+    [alt]="item.label | translate"
+    loading="lazy"
+    decoding="async"
+    width="1200"
+    height="820"
+  />
+</ng-template>
+
 <ng-template #shot let-item>
   <figure class="project-shot">
-    <a
-      [href]="item.href"
-      target="_blank"
-      rel="noopener noreferrer"
-      [attr.aria-label]="(item.label | translate) + ' — ' + ('project.shots.opens' | translate)"
-    >
-      <img
-        [src]="'assets/images/product/' + item.name + '.jpg'"
-        [alt]="item.label | translate"
-        loading="lazy"
-        decoding="async"
-        width="1200"
-        height="820"
-      />
-      <figcaption>{{ item.label | translate }} ↗</figcaption>
-    </a>
+    <!--
+      A picture of a page anybody can open is a link to it; a picture of the one
+      page nobody else can open is not. An anchor that leads nowhere is a
+      promise the page cannot keep, and its address is not named here anyway.
+    -->
+    @if (item.href) {
+      <a
+        [href]="item.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="(item.label | translate) + ' — ' + ('project.shots.opens' | translate)"
+      >
+        <ng-container *ngTemplateOutlet="shotImage; context: { $implicit: item }" />
+        <figcaption>{{ item.label | translate }} ↗</figcaption>
+      </a>
+    } @else {
+      <ng-container *ngTemplateOutlet="shotImage; context: { $implicit: item }" />
+      <figcaption>{{ item.label | translate }}</figcaption>
+    }
   </figure>
 </ng-template>
 
@@ -33,11 +47,21 @@
     paragraph. A translated string with blank lines in it renders as one run-on
     paragraph, so every body is split where he left the blank line.
   -->
-  @for (paragraph of paragraphs('project.lead'); track $index) {
+  <!--
+    The pictures sit inside the lead rather than after it, each one under the
+    paragraph it belongs to: the site itself under the sentence about the
+    catalogue, and the page he manages it from under the sentence about
+    managing it.
+  -->
+  @for (paragraph of paragraphs('project.lead'); track $index; let at = $index) {
     <p class="project-lead">{{ paragraph }}</p>
+    @if (at === 0) {
+      <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('home') }" />
+    }
+    @if (at === 2) {
+      <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('admin') }" />
+    }
   }
-
-  <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('home') }" />
 
   <!--
     How it is put together, in the opening rather than in a section of its own.

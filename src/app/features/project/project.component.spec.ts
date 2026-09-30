@@ -14,9 +14,6 @@ describe('ProjectComponent', () => {
       providers: [
         provideRouter([]),
         provideTranslateService(),
-        // The page counts the catalogue now, for the chart of what it holds.
-        // An empty one is the honest fixture here: this spec is about his
-        // words and their order, and the chart draws nothing without paintings.
         {
           provide: ARTWORK_PORT,
           useValue: {
@@ -27,6 +24,17 @@ describe('ProjectComponent', () => {
         },
       ],
     });
+
+    // A real lead, because the pictures are placed by which paragraph they sit
+    // under. Without it the lead is one line — the key itself — and a test
+    // about where a picture goes would pass by never drawing it.
+    const translate = TestBed.inject(TranslateService);
+    const lead = ['One.', 'Two.', 'Three, about managing it.', 'Four.'].join(
+      String.fromCharCode(10, 10)
+    );
+    translate.setTranslation('en', { project: { lead } });
+    translate.use('en');
+
     fixture = TestBed.createComponent(ProjectComponent);
     await fixture.whenStable();
   });
@@ -151,9 +159,9 @@ describe('ProjectComponent', () => {
   it('shows the real pages through the article, and opens them where they are', () => {
     const shots = [...fixture.nativeElement.querySelectorAll('.project-shot a')];
 
-    // Six now rather than four: the text was a long way between pictures, and
-    // this is the page somebody reads to decide whether to hire him.
-    expect(shots).toHaveLength(6);
+    // The ones that lead somewhere. The page a reader cannot open is shown
+    // without a link, because an anchor to nowhere is a promise it cannot keep.
+    expect(shots.length).toBeGreaterThanOrEqual(4);
     for (const shot of shots as HTMLAnchorElement[]) {
       expect(shot.getAttribute('href')).toContain('https://juanmamoreno.com/');
       expect(shot.getAttribute('target')).toBe('_blank');
@@ -175,5 +183,16 @@ describe('ProjectComponent', () => {
     expect(links.some((href) => href?.endsWith('/juanmamoreno'))).toBe(true);
     expect(links.some((href) => href?.includes('juanmamoreno-backend'))).toBe(false);
     expect(links.some((href) => href?.includes('juanmamoreno-contracts'))).toBe(false);
+  });
+
+  /**
+   * The one page nobody else can open is shown and never linked, and its
+   * address is never named — the build fails this page if it is.
+   */
+  it('shows the page it manages the catalogue from without linking it', () => {
+    const image = fixture.nativeElement.querySelector('img[src$="catalogue-admin.jpg"]');
+
+    expect(image).not.toBeNull();
+    expect(image.closest('a')).toBeNull();
   });
 });

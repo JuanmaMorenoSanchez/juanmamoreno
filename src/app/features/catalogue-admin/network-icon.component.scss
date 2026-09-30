@@ -18,8 +18,17 @@ svg {
   stroke-linejoin: round;
 }
 
+/*
+  A filled shape at 16px carries more ink than a stroked one of the same colour,
+  which is what made the butterfly and the f look darker than the rest. Drawing
+  them a little lighter is what makes the row read as one set.
+*/
 .dot,
 .solid {
   fill: currentColor;
   stroke: none;
+}
+
+.solid {
+  opacity: 0.86;
 }
