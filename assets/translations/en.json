@@ -291,11 +291,8 @@
     "message": "Oops! The page you are looking for does not exist. Try one of these instead:"
   },
   "texts": "Texts",
-  "latest": "Latest",
   "latestPage": {
-    "intro": "The paintings most recently shown on Instagram, newest first. Each one leads to its own page — the other views of it, its size, what has been written about it.",
-    "onInstagram": "See the post",
-    "nothingYet": "Nothing has been posted yet."
+    "onInstagram": "See the post"
   },
   "textsPage": {
     "intro": "Writing about the artist and/or the work, published in media.",
