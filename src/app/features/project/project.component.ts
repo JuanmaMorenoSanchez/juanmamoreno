@@ -59,6 +59,9 @@ export class ProjectComponent {
    * one press away from finding out. In a new tab, because they are an aside
    * and this page is the thing being read.
    */
+  /** What a shot is drawn at when it does not say otherwise. */
+  protected readonly shotHeight = 820;
+
   private readonly photographs = [
     { at: 'home', name: 'home', label: 'project.shots.home', href: 'https://juanmamoreno.com/' },
     {
@@ -92,12 +95,16 @@ export class ProjectComponent {
       href: 'https://juanmamoreno.com/cv',
     },
     // The one page here nobody else can open, so it has nowhere to lead: it is
-    // shown rather than linked, and its address is not named.
+    // shown rather than linked, and its address is not named. Taller than the
+    // rest, which is why every shot carries its own height: the browser
+    // reserves space from these before the file arrives, and one wrong number
+    // is a page that jumps as it loads.
     {
       at: 'admin',
       name: 'catalogue-admin',
       label: 'project.shots.admin',
       href: '',
+      height: 1115,
     },
   ] as const;
 

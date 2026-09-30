@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.91.2
+
+- **chore** — the picture of the page the catalogue is managed from shows the
+  whole of it, form included; only the blank page margin either side is trimmed.
+- **fix** — every picture on the product page carries its own height. They were
+  all declared 820 tall and one of them is 1115, so the browser reserved the
+  wrong space and the page jumped as it loaded.
+- **chore** — a margin under every picture there, so one does not end where the
+  next paragraph begins.
+
 ## 1.91.1
 
 - **fix** — a certificate form showed the first option of every dropdown instead

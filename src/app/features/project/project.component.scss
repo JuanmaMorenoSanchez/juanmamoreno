@@ -71,7 +71,7 @@
 // One colour, taking its ink from the text around it, so the picture reads on
 // either ground without a second copy of it existing.
 .project-diagram {
-  margin: 2rem 0 0;
+  margin: 2rem 0 2.5rem;
 
   svg {
     width: 100%;
@@ -167,7 +167,8 @@
 // One photograph of the site, under the paragraph it illustrates. Quiet until
 // a pointer is over it: it is an aside, and the text is what is being read.
 .project-shot {
-  margin: 1.25rem 0 0;
+  /* A picture that ends where the next paragraph begins reads as part of it. */
+  margin: 1.25rem 0 2rem;
 
   a {
     display: block;

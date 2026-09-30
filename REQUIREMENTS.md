@@ -2148,6 +2148,12 @@ under the sentence about managing it. That last one is **shown and never
 linked**: an anchor to a page the reader cannot open is a promise this page
 cannot keep, and its address is not named here anyway.
 
+Every picture carries its own height rather than one figure for all of them.
+The browser reserves space from that number before the file arrives, and the
+tallest of them is 1115 where the rest are 820 — one wrong number is a page
+that jumps as it loads. Each ends with a margin under it, because a picture
+that stops where the next paragraph starts reads as part of it.
+
 **The half of the application nobody sees is described and never addressed.**
 The build refuses this page if it names an address behind the guard, and that
 list now covers every guarded address rather than the two that existed when it
