@@ -2142,11 +2142,17 @@ because they follow from it.
 **A chart of paintings per year was here and has gone.** It measured the work
 rather than the machinery, which is not what this page is for.
 
-**The pictures sit inside the lead, each under the paragraph it belongs to** —
-the site under the sentence about the catalogue, the page it is managed from
-under the sentence about managing it. That last one is **shown and never
-linked**: an anchor to a page the reader cannot open is a promise this page
-cannot keep, and its address is not named here anyway.
+**Five pictures, each under the text it illustrates and none of them decoration**
+— the site under the sentence about what the site is, the certificate beside the
+aim about certificates, the catalogue beside the aim about browsing it, the page
+the work is done from beside the aim about the week's work being automated, and
+an artwork page beside the section on structured data. A screenshot of the texts
+page and one of the cv were here and added nothing to the paragraphs they sat
+under; they are gone rather than kept for the sake of the rhythm.
+
+The page the work is done from is **shown and never linked**: an anchor to a
+page the reader cannot open is a promise this page cannot keep, and its address
+is not named here anyway.
 
 Every picture carries its own height rather than one figure for all of them.
 The browser reserves space from that number before the file arrives, and the

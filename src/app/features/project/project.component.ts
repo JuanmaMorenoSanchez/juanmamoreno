@@ -82,25 +82,17 @@ export class ProjectComponent {
       label: 'project.shots.artwork',
       href: 'https://juanmamoreno.com/artwork/152',
     },
-    {
-      at: 'three',
-      name: 'texts',
-      label: 'project.shots.texts',
-      href: 'https://juanmamoreno.com/texts',
-    },
-    {
-      at: 'agents',
-      name: 'cv',
-      label: 'project.shots.cv',
-      href: 'https://juanmamoreno.com/cv',
-    },
+    // Beside the third aim, which is the week's work automated — the
+    // photograph edited, the essay written, the piece added to the chain. That
+    // is what this page is, so the picture says what the text says.
+    //
     // The one page here nobody else can open, so it has nowhere to lead: it is
     // shown rather than linked, and its address is not named. Taller than the
     // rest, which is why every shot carries its own height: the browser
     // reserves space from these before the file arrives, and one wrong number
     // is a page that jumps as it loads.
     {
-      at: 'admin',
+      at: 'three',
       name: 'catalogue-admin',
       label: 'project.shots.admin',
       href: '',

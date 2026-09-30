@@ -47,19 +47,11 @@
     paragraph. A translated string with blank lines in it renders as one run-on
     paragraph, so every body is split where he left the blank line.
   -->
-  <!--
-    The pictures sit inside the lead rather than after it, each one under the
-    paragraph it belongs to: the site itself under the sentence about the
-    catalogue, and the page he manages it from under the sentence about
-    managing it.
-  -->
+  <!-- The site itself, under the sentence about what the site is. -->
   @for (paragraph of paragraphs('project.lead'); track $index; let at = $index) {
     <p class="project-lead">{{ paragraph }}</p>
     @if (at === 0) {
       <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('home') }" />
-    }
-    @if (at === 2) {
-      <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('admin') }" />
     }
   }
 
@@ -303,7 +295,6 @@
 
     <!-- The page carrying the structured data this section is about. -->
     <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('artwork') }" />
-    <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('agents') }" />
   </section>
 
   <!--

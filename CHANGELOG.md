@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.91.3
+
+- **chore** — the product page carries five pictures, each under the text it
+  illustrates. The page the catalogue is managed from moved beside the aim about
+  the week's work being automated, which is what that page does; the screenshots
+  of the texts page and the cv are gone, because neither said anything the
+  paragraph above it did not.
+
 ## 1.91.2
 
 - **chore** — the picture of the page the catalogue is managed from shows the
