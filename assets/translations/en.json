@@ -442,7 +442,8 @@
       "certificate": "That work’s certificate of authenticity",
       "opens": "opens the page",
       "texts": "What has been written about the work, and where",
-      "cv": "The cv, kept as data rather than as a document"
+      "cv": "The cv, kept as data rather than as a document",
+      "admin": "The page the catalogue is managed from, behind a sign-in"
     },
     "admin": {
       "title": "The half nobody sees",
