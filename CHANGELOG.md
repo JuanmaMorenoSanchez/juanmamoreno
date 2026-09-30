@@ -5,6 +5,30 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.89.0
+
+- **feat** — the three guarded pages that each listed the catalogue are one:
+  `/catalogue`. What had lately gone to Instagram is an order rather than a
+  page, a dossier is built by choosing rows, and opening a row is the way into
+  that certificate. They were the same list wearing different clothes, and
+  choosing between them meant knowing which of three things you wanted to do to
+  a painting you had not found yet.
+- **fix** — the pictures in that list are drawn at 48px. The image on the chain
+  is 64–192px wide and the old grid drew it at 112, enlarging the smallest ones
+  nearly twice; now nothing is ever scaled up.
+- **chore** — the correcting, freezing and destroying of a certificate is its
+  own component rather than part of a list: it is a state machine — connect,
+  build, sign, settle — and a list that also held that was a list nobody could
+  read.
+- **fix** — `/latest` used the translate pipe for a page that had no Spanish
+  twin. Its two orphaned keys are gone; the one the public artwork page shares
+  stays.
+- **fix** — the mouse-navigation e2e waits for the tile to be laid out before
+  measuring it. `waitForSelector` answers when the element is in the document,
+  which under a full suite's load is before the grid has placed it — the
+  assertion this suite has now failed on twice, on commits that touched none of
+  it.
+
 ## 1.88.0
 
 - **feat** — `/certificates`, where a certificate already on the chain can be

@@ -1304,23 +1304,28 @@ had it — it copies the address rather than hiding itself.
 `e2e/navigation.test.mjs` "passing a painting on" (2 tests)
 
 ### R59 — The artist can see what has lately gone to Instagram · met
-`/latest` shows the paintings most recently posted, newest first, each linking
-to its own page, in the order they actually went out rather than the order the
+An order on `/catalogue`, not a page: **Recently posted** puts what has been on
+Instagram first, in the order it actually went out rather than the order the
 catalogue is in.
 
-**It was the public landing for the link in the Instagram profile, and is not
-any more.** The profile link points at the root of the site instead, by the
-artist's decision; this is his page now, behind the same guard as the studio,
-out of the sitemap and disallowed to crawlers. What was given up with it is
-real and worth writing down: a follower who has just scrolled past a painting
-no longer has a route to that painting's page, only to the front of the site.
-The account still gets one clickable link and a caption still cannot carry
-another.
+It had a page of its own, and before that it was the public landing for the link
+in the Instagram profile. The profile link points at the root of the site now,
+by the artist's decision, and what was given up with it is real and worth
+writing down: a follower who has just scrolled past a painting no longer has a
+route to that painting's page. The account still gets one clickable link and a
+caption still cannot carry another.
 
-A failed request is told apart from an empty account: the page says nothing has
-been posted only when that is what was answered. Answering a failure the same
-way would put a claim that there are no paintings over a page that had twelve.
-*Proven by:* `latest.component.spec.ts` (8 tests, including the failed request)
+**The ones that have never been posted stay in the list**, after the rest,
+because when the question is what to post next they are the interesting ones —
+which a page showing only the last twelve could not answer.
+
+A failed request is told apart from an empty account: it says nothing has been
+posted only when that is what was answered. Answering a failure the same way
+would put a claim that nothing has gone out over a list that had a dozen.
+*Proven by:* `catalogue-admin.component.spec.ts` "what has lately gone to
+Instagram" (4 tests, including "keeps the ones that have never been posted,
+after the rest" and "says nothing has been posted only when that is what was
+answered")
 
 ### R104 — A Spanish reader is never sent to an address that does not exist · met
 The guard that redirects a language-free address to its Spanish twin builds
@@ -2009,38 +2014,27 @@ unreachable", "does not overwrite a note he began typing before the stored one
 arrived" and "sends an empty note when the box is cleared, which is how it is
 taken back"), and `mint-api.service.spec.ts` "the note for the essay" (3 tests)
 
-### R118 — A dossier is made on a page of its own, by the one person who needs one · met
-`/dossier`, behind the admin guard and linked from the workshop menu. The
-catalogue no longer makes dossiers at all.
+### R118 — A dossier is built from the artist's own catalogue · met
+On `/catalogue`, behind the admin guard. The public catalogue no longer makes
+dossiers at all.
 
 It used to be made from `/artworks`, by right-clicking paintings. Three things
-were wrong with that and the third is the one that settles it: the gesture was
-undiscoverable and nothing on the page mentioned it; right-click means "show me
-the menu" everywhere else, and the page took it away; and it put a tool for
-making a sales document on the page every reader of the site sees. The catalogue
-is a catalogue again — no `contextmenu` handler, no selection overlay, no
-numbered badge, no download button among the filters.
+were wrong with that and the third settles it: the gesture was undiscoverable
+and nothing on the page mentioned it; right-click means "show me the menu"
+everywhere else, and the page took it away; and it put a tool for making a sales
+document on the page every reader of the site sees. The public catalogue is a
+catalogue again — no `contextmenu` handler, no selection overlay, no numbered
+badge, no download button among the filters.
 
-**The grid is dense on purpose.** Choosing twenty paintings out of a hundred and
-sixty-seven is done by eye, and the catalogue's tiles are sized for looking at
-one painting rather than for finding one among many. **Order is the point**: a
-dossier is read in sequence, so clicking adds a painting at the end and clicking
-again takes it out and closes the gap. Only frontal views are offered — a
-detail shot is not a painting to choose — and a sold one carries the same red
-dot the catalogue draws and the dossier prints.
-
-Each tile is a button rather than a link, because this grid chooses paintings
-and does not navigate, and it says `aria-pressed` so that what a sighted reader
-sees in the numbering is available to anyone who cannot see it.
-*Proven by:* `dossier.component.spec.ts` (14 tests in two groups — the class,
-including "offers only the frontal views", "keeps the paintings in the order
-they were chosen, not catalogue order" and "closes the gap when one is taken
-out"; and the page as it actually renders, including "makes each tile a button
-that says whether it is chosen" and "numbers the tiles in the order they were
-clicked"), `top-menu.component.spec.ts`, which lists the workshop menu and its
-addresses, and Chrome driven against a running site: `/dossier` answers with
-`/door` to anyone not signed in, and right-clicking a catalogue tile produces
-none of the 166 selection overlays it used to
+**Order is the point**: a dossier is read in sequence, so choosing adds a
+painting at the end and choosing again takes it out and closes the gap. It is
+**one click**, on a button of its own, because choosing twenty out of a hundred
+and sixty-seven is the one thing here done in bulk — and opening a row is a
+different gesture, since that one leads to a permanent record being rewritten.
+*Proven by:* `catalogue-admin.component.spec.ts` "building a dossier" (5 tests,
+including "keeps the paintings in the order they were chosen" and "closes the
+gap when one is taken out") and its "opening one" (3 tests, which prove the two
+gestures stay apart)
 
 ### R119 — A dossier can carry prices, and no price is ever stored · met
 A switch in the dossier options, **off by default**, revealing two multipliers
@@ -2082,16 +2076,10 @@ the switch was never touched", "refuses a multiplier of zero" and "builds a
 dossier with no prices even when the numbers are nonsense")
 
 ### R120 — A certificate already on the chain can be corrected from the studio · met
-`/certificates`, behind the admin guard and in the workshop menu. One row per
-**token**, not per painting: a painting photographed three times has three
-certificates, and the one with the wrong measurements need not be the one the
-catalogue shows — which an artwork page could never express, and is half the
-reason this is a page of its own.
-
-**Kept apart from `/pendingmint` deliberately.** That page's whole framing is
-that everything on it is a draft and throwing one away costs nothing. Nothing
-here is a draft: every row is a public permanent record, and two of the three
-things this page offers cannot be undone by anybody, the artist included.
+Opening a row on `/catalogue` opens what may be done to that certificate. One
+row per **token**, not per painting: a painting photographed three times has
+three certificates, and the one with the wrong measurements need not be the one
+the catalogue shows — which an artwork page could never express.
 
 **Nothing is signed by the server.** `amend`, `freeze` and `burn` are owner-only
 and the key on the server is the minter, which the contract will not obey. The
@@ -2111,13 +2099,10 @@ so: the flattened picture lives nowhere but the browser that made it.
 **Freezing asks for confirmation; destroying asks for the number to be typed
 back.** A yes/no is too cheap for a token that can never be reissued. Destroying
 is not offered at all for a certificate somebody else holds.
-*Proven by:* `certificates.component.spec.ts` (14 tests, including "offers
-nothing when the chain cannot be reached", "can be neither corrected, sealed nor
-destroyed" for a frozen one, "can still be corrected" and "can never be
-destroyed, however the number is typed" for one a collector holds, "stays
-refused until the number is typed back", "refuses to sign with a wallet the
-contract will not obey" and the two dismissed confirmations),
-`mint-api.service.spec.ts` "one that is already written" (5 tests),
-`top-menu.component.spec.ts` for the menu and its addresses, and Chrome driven
-against a running site, where `/certificates` answers `/door` to anyone not
-signed in
+*Proven by:* `certificate-panel.component.spec.ts` (13 tests, including "offers
+nothing when the chain cannot be reached", "offers nothing at all for a frozen
+certificate", "can still be corrected" and "can never be destroyed, however the
+number is typed" for one a collector holds, "refuses to destroy until the number
+is typed back", "refuses to sign with a wallet the contract will not obey" and
+the two dismissed confirmations), and `mint-api.service.spec.ts` "one that is
+already written" (5 tests)

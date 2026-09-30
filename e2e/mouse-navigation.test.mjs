@@ -45,6 +45,12 @@ let cannotRun = null;
  */
 async function clickWithDriftingMouse(page, selector) {
   const link = page.locator(selector).first();
+  // Waited for rather than assumed. `waitForSelector` answers as soon as the
+  // element is in the document, which under a full suite's load is before the
+  // grid has laid it out — and `boundingBox` then answers null for something
+  // that is about to be perfectly clickable. This suite has failed on that
+  // assertion twice now, on commits that touched none of it.
+  await link.waitFor({ state: 'visible', ...READY });
   await link.scrollIntoViewIfNeeded();
   const href = await link.getAttribute('href');
   const box = await link.boundingBox();

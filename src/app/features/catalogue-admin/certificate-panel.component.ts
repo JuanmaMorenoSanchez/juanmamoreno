@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  type OnInit,
+  signal,
+} from '@angular/core';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
@@ -20,66 +27,43 @@ import {
 } from '@shared/services/mint-api.service';
 import { WalletService } from '@shared/services/wallet.service';
 
-/** What is being asked of the chain, so the page can say so and refuse two at once. */
+/** What is being asked of the chain, so the panel can say so and refuse two at once. */
 type Doing = null | 'correcting' | 'sealing' | 'destroying';
 
 /**
- * The certificates that are already written.
+ * What can be done to one certificate that is already on the chain.
  *
- * Deliberately not part of `/pendingmint`, whose whole framing is that
- * everything on it is a draft and throwing one away costs nothing. Nothing here
- * is a draft: every row is a public, permanent record, and two of the three
- * things this page can do cannot be undone by anybody, the artist included.
+ * Its own component rather than part of the list, because it is a state machine
+ * — connect, build, sign, settle — and a list that also held that would be a
+ * list nobody could read. It is given a painting and owns everything that
+ * follows from opening it.
  *
- * One row per token rather than per painting. A painting photographed three
- * times has three certificates, and the one with the wrong measurements may not
- * be the one the catalogue shows — which an artwork page could never express,
- * and is half the reason this page exists.
- *
- * Nothing here is signed by the server. `amend`, `freeze` and `burn` are all
+ * **Nothing here is signed by the server.** `amend`, `freeze` and `burn` are
  * owner-only and the key on the server is the minter, which the contract will
  * not obey, so the api encodes a call and the wallet in this browser signs it.
  */
 @Component({
-  selector: 'app-certificates',
-  templateUrl: './certificates.component.html',
-  styleUrl: './certificates.component.scss',
+  selector: 'app-certificate-panel',
+  templateUrl: './certificate-panel.component.html',
+  styleUrl: './certificate-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MintGateComponent],
 })
-export class CertificatesComponent {
+export class CertificatePanelComponent implements OnInit {
   private readonly artworkService = inject(ARTWORK_PORT);
   private readonly api = inject(MintApiService);
   protected readonly wallet = inject(WalletService);
 
-  /** The trait names, so the template can ask for them by name and not by string. */
-  protected readonly validTraits = VALIDTRAITS;
+  readonly painting = input.required<Nft>();
 
+  protected readonly validTraits = VALIDTRAITS;
   protected readonly mediums = MEDIUMS;
   protected readonly units = UNITS;
   protected readonly imageTypes = IMAGE_TYPES;
   protected readonly years = mintableYears().map(String);
 
-  private readonly all = toSignal(this.artworkService.getArtPiecesObservable(), {
-    initialValue: [] as Nft[],
-  });
+  protected readonly tokenId = computed(() => Number(this.painting().tokenId));
 
-  protected readonly search = signal('');
-
-  /** Every certificate, newest first, narrowed by number, title or year. */
-  protected readonly certificates = computed<Nft[]>(() => {
-    const term = this.search().trim().toLowerCase();
-    const rows = [...this.all()].sort((a, b) => Number(b.tokenId) - Number(a.tokenId));
-    if (!term) return rows;
-    return rows.filter(
-      (nft) =>
-        String(nft.tokenId) === term ||
-        (nft.name ?? '').toLowerCase().includes(term) ||
-        this.trait(nft, VALIDTRAITS.YEAR).includes(term)
-    );
-  });
-
-  protected readonly editing = signal<number | null>(null);
   protected readonly draft = signal<MintFacts | null>(null);
   protected readonly standing = signal<CertificateStanding | null>(null);
   protected readonly doing = signal<Doing>(null);
@@ -93,58 +77,40 @@ export class CertificatesComponent {
 
   protected readonly busy = computed(() => this.doing() !== null);
 
-  protected trait(nft: Nft, key: VALIDTRAITS): string {
-    return this.artworkService.getTraitValue(nft, key);
+  /**
+   * Read once, when the panel is made.
+   *
+   * Not in the constructor: a required input has no value there, and reading
+   * one throws NG0950. The panel is made by opening a row and destroyed by
+   * closing it, so there is nothing to react to afterwards either.
+   */
+  ngOnInit(): void {
+    void this.load();
   }
 
-  protected thumbOf(nft: Nft): string {
-    return nft.image?.thumbnailUrl ?? nft.image?.cachedUrl ?? '';
-  }
-
-  protected search_(event: Event): void {
-    this.search.set((event.target as HTMLInputElement).value);
-  }
-
-  protected async open(nft: Nft): Promise<void> {
-    const tokenId = Number(nft.tokenId);
-    this.reset();
-    this.editing.set(tokenId);
+  private async load(): Promise<void> {
+    const nft = this.painting();
+    const trait = (key: VALIDTRAITS) => this.artworkService.getTraitValue(nft, key);
     this.draft.set({
       name: nft.name ?? '',
-      medium: this.trait(nft, VALIDTRAITS.MEDIUM),
-      height: this.trait(nft, VALIDTRAITS.HEIGHT),
-      width: this.trait(nft, VALIDTRAITS.WIDTH),
-      unit: this.trait(nft, VALIDTRAITS.UNIT) || UNITS[0],
-      year: this.trait(nft, VALIDTRAITS.YEAR),
-      imageType: this.trait(nft, VALIDTRAITS.IMAGETYPE),
+      medium: trait(VALIDTRAITS.MEDIUM),
+      height: trait(VALIDTRAITS.HEIGHT),
+      width: trait(VALIDTRAITS.WIDTH),
+      unit: trait(VALIDTRAITS.UNIT) || UNITS[0],
+      year: trait(VALIDTRAITS.YEAR),
+      imageType: trait(VALIDTRAITS.IMAGETYPE),
     });
 
     // Asked of the chain rather than of the catalogue: whether it is frozen and
     // who holds it decide what may be offered, and neither is in a snapshot.
     this.stage.set('Asking the chain about this certificate…');
     try {
-      this.standing.set(await this.api.standing(tokenId));
+      this.standing.set(await this.api.standing(this.tokenId()));
     } catch {
       this.problem.set('The chain could not be reached, so nothing is offered for this one.');
     } finally {
       this.stage.set('');
     }
-  }
-
-  protected close(): void {
-    this.editing.set(null);
-    this.reset();
-  }
-
-  private reset(): void {
-    this.draft.set(null);
-    this.standing.set(null);
-    this.doing.set(null);
-    this.stage.set('');
-    this.outcome.set('');
-    this.problem.set('');
-    this.sent.set(null);
-    this.burnConfirmation.set('');
   }
 
   protected write(event: Event): void {
@@ -187,8 +153,7 @@ export class CertificatesComponent {
    * only once its number has been typed back.
    *
    * The contract would allow more — `burn` checks that the token exists and
-   * nothing else — so one sold to a collector could be destroyed from here. The
-   * api refuses that and so does this.
+   * nothing else — so one sold to a collector could be destroyed from here.
    */
   protected readonly canDestroy = computed(() => {
     const standing = this.standing();
@@ -196,17 +161,16 @@ export class CertificatesComponent {
       standing &&
         !standing.frozen &&
         standing.heldByOwner &&
-        this.burnConfirmation().trim() === String(this.editing())
+        this.burnConfirmation().trim() === String(this.tokenId())
     );
   });
 
   protected async correct(): Promise<void> {
-    const tokenId = this.editing();
     const draft = this.draft();
-    if (tokenId === null || !draft || !this.canCorrect()) return;
+    if (!draft || !this.canCorrect()) return;
 
-    await this.sign('correcting', tokenId, () =>
-      this.api.amendTransaction(tokenId, {
+    await this.sign('correcting', () =>
+      this.api.amendTransaction(this.tokenId(), {
         ...draft,
         height: normaliseMeasurement(draft.height),
         width: normaliseMeasurement(draft.width),
@@ -215,11 +179,10 @@ export class CertificatesComponent {
   }
 
   protected async seal(): Promise<void> {
-    const tokenId = this.editing();
-    if (tokenId === null || !this.canSeal()) return;
+    if (!this.canSeal()) return;
     if (
       !confirm(
-        `Freeze certificate ${tokenId}?\n\n` +
+        `Freeze certificate ${this.tokenId()}?\n\n` +
           'This is permanent. Nobody can undo it — not you, not with the owner key, not ' +
           'ever. The certificate can never be corrected or destroyed again.'
       )
@@ -227,15 +190,14 @@ export class CertificatesComponent {
       return;
     }
 
-    await this.sign('sealing', tokenId, () => this.api.freezeTransaction(tokenId));
+    await this.sign('sealing', () => this.api.freezeTransaction(this.tokenId()));
   }
 
   protected async destroy(): Promise<void> {
-    const tokenId = this.editing();
-    if (tokenId === null || !this.canDestroy()) return;
+    if (!this.canDestroy()) return;
     if (
       !confirm(
-        `Destroy certificate ${tokenId}?\n\n` +
+        `Destroy certificate ${this.tokenId()}?\n\n` +
           'The token is burned and the painting leaves the catalogue. Its number is never ' +
           'reissued, and any certificate already printed points at a page that will no ' +
           'longer exist.'
@@ -244,7 +206,7 @@ export class CertificatesComponent {
       return;
     }
 
-    await this.sign('destroying', tokenId, () => this.api.burnTransaction(tokenId));
+    await this.sign('destroying', () => this.api.burnTransaction(this.tokenId()));
   }
 
   /**
@@ -255,7 +217,6 @@ export class CertificatesComponent {
    */
   private async sign(
     what: Exclude<Doing, null>,
-    tokenId: number,
     build: () => Promise<SignableTransaction>
   ): Promise<void> {
     this.doing.set(what);
@@ -284,11 +245,11 @@ export class CertificatesComponent {
       this.sent.set(await this.wallet.send(transaction));
 
       this.stage.set('Sent. Waiting for the chain…');
-      await this.api.settled(tokenId);
+      await this.api.settled(this.tokenId());
       this.stage.set('');
-      this.outcome.set(this.said(what, tokenId));
+      this.outcome.set(this.said(what));
 
-      const after = await this.api.standing(tokenId).catch(() => null);
+      const after = await this.api.standing(this.tokenId()).catch(() => null);
       if (after) this.standing.set(after);
     } catch (failure: unknown) {
       const message =
@@ -301,9 +262,11 @@ export class CertificatesComponent {
     }
   }
 
-  private said(what: Exclude<Doing, null>, tokenId: number): string {
-    if (what === 'correcting') return `Certificate ${tokenId} is corrected on chain.`;
-    if (what === 'sealing') return `Certificate ${tokenId} is frozen. Nothing can change it again.`;
-    return `Certificate ${tokenId} is destroyed.`;
+  private said(what: Exclude<Doing, null>): string {
+    if (what === 'correcting') return `Certificate ${this.tokenId()} is corrected on chain.`;
+    if (what === 'sealing') {
+      return `Certificate ${this.tokenId()} is frozen. Nothing can change it again.`;
+    }
+    return `Certificate ${this.tokenId()} is destroyed.`;
   }
 }

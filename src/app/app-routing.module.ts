@@ -147,39 +147,20 @@ export const routes: Routes = [
     data: { title: 'Pending mints', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/pendingmint', redirectTo: '/pendingmint' },
-  // Where a dossier is made. It used to be made from the catalogue, by
-  // right-clicking paintings — a gesture nothing mentioned, on a page every
-  // reader sees, for a document only he has any use for.
+  // The catalogue as the artist sees it: one page where there were three —
+  // what had lately gone to Instagram, the certificates that could be
+  // corrected, and the paintings a dossier was built from. All three were the
+  // same list wearing different clothes.
   {
-    path: 'dossier',
+    path: 'catalogue',
     canActivate: [readerLanguage, adminOnly],
     loadComponent: () =>
-      import('@features/dossier/dossier.component').then((m) => m.DossierComponent),
-    data: { title: 'Dossier', hideBreadcrumb: true, noindex: true },
+      import('@features/catalogue-admin/catalogue-admin.component').then(
+        (m) => m.CatalogueAdminComponent
+      ),
+    data: { title: 'Catalogue', hideBreadcrumb: true, noindex: true },
   },
-  { path: 'es/dossier', redirectTo: '/dossier' },
-  // The certificates that are already written. Apart from /pendingmint on
-  // purpose: nothing here is a draft, and two of the three things this page can
-  // do cannot be undone by anybody.
-  {
-    path: 'certificates',
-    canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/certificates/certificates.component').then((m) => m.CertificatesComponent),
-    data: { title: 'Certificates', hideBreadcrumb: true, noindex: true },
-  },
-  { path: 'es/certificates', redirectTo: '/certificates' },
-  // The last dozen paintings in the order they went to Instagram, each linking
-  // to its own page. It was the public landing for the link in the profile,
-  // which now points at the root instead; kept because it is the quickest way
-  // to see what has gone out and in what order, and his alone like the rest.
-  {
-    path: 'latest',
-    canActivate: [readerLanguage, adminOnly],
-    loadComponent: () => import('@features/latest/latest.component').then((m) => m.LatestComponent),
-    data: { title: 'Latest IG posts', hideBreadcrumb: true, noindex: true },
-  },
-  { path: 'es/latest', redirectTo: '/latest' },
+  { path: 'es/catalogue', redirectTo: '/catalogue' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

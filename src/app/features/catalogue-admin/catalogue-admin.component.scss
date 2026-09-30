@@ -1,0 +1,234 @@
+.cat-page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  color: var(--catalog-ink);
+}
+
+.cat-head h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.cat-lead {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.cat-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 4px;
+  background: var(--catalog-paper, #fff);
+}
+
+.cat-search {
+  flex: 1 1 12rem;
+  min-width: 0;
+
+  input {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--catalog-faint);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+  }
+}
+
+.cat-orders {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.cat-order {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &.is-on {
+    background: var(--catalog-ink);
+    color: var(--catalog-paper, #fff);
+    border-color: var(--catalog-ink);
+  }
+}
+
+.cat-dossier {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.cat-count {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.cat-link {
+  border: 0;
+  background: none;
+  padding: 0.25rem;
+  font: inherit;
+  font-size: 0.78rem;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cat-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cat-row {
+  border-bottom: 1px solid var(--catalog-faint);
+
+  &.is-open {
+    background: color-mix(in srgb, var(--catalog-faint) 22%, transparent);
+  }
+}
+
+.cat-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 0.3rem;
+}
+
+.cat-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.3rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/*
+  The picture on the chain is 64–192px wide. Drawn at 48 it is always scaled
+  down and never up, which is the whole point: any larger and the smallest ones
+  are visibly enlarged.
+*/
+.cat-thumb {
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--catalog-faint);
+}
+
+.cat-what {
+  min-width: 0;
+
+  strong {
+    display: block;
+    font-weight: 500;
+    font-size: 0.88rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.62;
+  }
+}
+
+.cat-sold {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.3rem;
+  border-radius: 50%;
+  background: var(--catalog-accent);
+  vertical-align: middle;
+}
+
+.cat-ig {
+  flex: none;
+  padding: 0.15rem 0.35rem;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 3px;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.85;
+
+  &.is-quiet {
+    opacity: 0.4;
+  }
+}
+
+.cat-choose {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &.is-chosen {
+    background: var(--catalog-ink);
+    color: var(--catalog-paper, #fff);
+    border-color: var(--catalog-ink);
+    font-weight: 600;
+  }
+}
+
+.cat-panel {
+  padding: 0.2rem 0.3rem 1.2rem;
+}
+
+.cat-empty {
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

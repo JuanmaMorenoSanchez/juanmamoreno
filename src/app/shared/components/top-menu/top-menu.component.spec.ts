@@ -204,9 +204,7 @@ describe('TopMenuComponent workshop menu', () => {
       'Studio',
       'Reels waiting',
       'Certificates waiting',
-      'Certificates',
-      'Dossier',
-      'Latest IG posts',
+      'Catalogue',
       'Sign out',
     ]);
   });
@@ -219,14 +217,7 @@ describe('TopMenuComponent workshop menu', () => {
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
       a.getAttribute('href'),
     );
-    expect(links).toEqual([
-      '/studio',
-      '/publish',
-      '/pendingmint',
-      '/certificates',
-      '/dossier',
-      '/latest',
-    ]);
+    expect(links).toEqual(['/studio', '/publish', '/pendingmint', '/catalogue']);
   });
 
   it('signs out from inside it', async () => {

@@ -1,0 +1,176 @@
+@if (stage()) {
+  <p class="panel-stage" role="status">{{ stage() }}</p>
+}
+
+@if (standing(); as chain) {
+  <!--
+    Frozen is the end of the road: nothing below is possible, by anybody, ever.
+    Said here rather than by a reverted transaction.
+  -->
+  @if (chain.frozen) {
+    <p class="panel-frozen" role="alert">
+      Frozen. This certificate can never be corrected or destroyed again, by anyone.
+    </p>
+  }
+
+  @if (!chain.heldByOwner) {
+    <p class="panel-note">
+      Held by {{ chain.holder }}, not by you. It can still be corrected — the record is yours —
+      but it will not be destroyed from here.
+    </p>
+  }
+}
+
+@if (draft(); as facts) {
+  <div class="panel-fields">
+    <label class="panel-field panel-wide">
+      <span>Title</span>
+      <input
+        type="text"
+        autocomplete="off"
+        [value]="facts.name"
+        [disabled]="busy()"
+        (input)="write($event)"
+      />
+    </label>
+
+    <label class="panel-field">
+      <span>Medium</span>
+      <select [value]="facts.medium" [disabled]="busy()" (change)="pick('medium', $event)">
+        @for (option of mediums; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="panel-field">
+      <span>Height</span>
+      <input
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        [value]="facts.height"
+        [disabled]="busy()"
+        (input)="measure('height', $event)"
+      />
+    </label>
+
+    <label class="panel-field">
+      <span>Width</span>
+      <input
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        [value]="facts.width"
+        [disabled]="busy()"
+        (input)="measure('width', $event)"
+      />
+    </label>
+
+    <label class="panel-field">
+      <span>Unit</span>
+      <select [value]="facts.unit" [disabled]="busy()" (change)="pick('unit', $event)">
+        @for (option of units; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="panel-field">
+      <span>Year</span>
+      <select [value]="facts.year" [disabled]="busy()" (change)="pick('year', $event)">
+        @for (option of years; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="panel-field">
+      <span>Image type</span>
+      <select [value]="facts.imageType" [disabled]="busy()" (change)="pick('imageType', $event)">
+        @for (option of imageTypes; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <!--
+    The photograph is not here on purpose. `amend` rewrites the whole record and
+    the api carries the existing image across byte for byte; the flattened
+    picture the studio made lives nowhere but the browser that made it, so a
+    different picture is a different certificate.
+  -->
+  <p class="panel-note">
+    The photograph cannot be changed — a different picture is a different certificate.
+  </p>
+
+  <p class="panel-actions">
+    <app-mint-gate
+      label="Correct on chain"
+      [disabled]="!canCorrect() || busy()"
+      (mint)="correct()"
+    ></app-mint-gate>
+  </p>
+}
+
+<!--
+  Both of these are irreversible, so they sit apart from correcting and behind
+  their own confirmations.
+-->
+@if (standing(); as chain) {
+  @if (!chain.frozen) {
+    <div class="panel-grave">
+      <h3>Permanent things</h3>
+
+      <p class="panel-grave-row">
+        <button
+          type="button"
+          class="panel-danger"
+          [disabled]="!canSeal() || busy()"
+          (click)="seal()"
+        >
+          Freeze for ever
+        </button>
+        <small>Makes it permanent. Nobody can undo this — not you, not with the owner key.</small>
+      </p>
+
+      @if (chain.heldByOwner) {
+        <p class="panel-grave-row">
+          <label class="panel-typed">
+            <span>Type {{ tokenId() }} to destroy it</span>
+            <input
+              type="text"
+              autocomplete="off"
+              [value]="burnConfirmation()"
+              [disabled]="busy()"
+              (input)="confirmBurn($event)"
+            />
+          </label>
+          <button
+            type="button"
+            class="panel-danger"
+            [disabled]="!canDestroy() || busy()"
+            (click)="destroy()"
+          >
+            Destroy
+          </button>
+          <small>
+            Burns the token. The painting leaves the catalogue, the number is never reissued, and
+            any printed certificate points at a page that will not exist.
+          </small>
+        </p>
+      }
+    </div>
+  }
+}
+
+@if (sent(); as hash) {
+  <p class="panel-note">Sent as {{ hash }}.</p>
+}
+@if (outcome()) {
+  <p class="panel-outcome" role="status">{{ outcome() }}</p>
+}
+@if (problem()) {
+  <p class="panel-problem" role="alert">{{ problem() }}</p>
+}

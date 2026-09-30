@@ -1,0 +1,147 @@
+<section class="cat-page">
+  <header class="cat-head">
+    <h1>Catalogue</h1>
+    <p class="cat-lead">
+      Every certificate, newest first. Open one to correct it; use + to build a dossier.
+    </p>
+  </header>
+
+  <!--
+    Choosing runs down a long list, so the count and the button follow it. The
+    search and the order live here too rather than scrolling away.
+  -->
+  <div class="cat-bar">
+    <label class="cat-search">
+      <span class="visually-hidden">Search by number, title or year</span>
+      <input
+        type="search"
+        autocomplete="off"
+        placeholder="Number, title or year…"
+        [value]="term()"
+        (input)="search($event)"
+      />
+    </label>
+
+    <span class="cat-orders" role="group" aria-label="Order">
+      <button
+        type="button"
+        class="cat-order"
+        [class.is-on]="order() === 'newest'"
+        [attr.aria-pressed]="order() === 'newest'"
+        (click)="arrange('newest')"
+      >
+        Newest
+      </button>
+      <button
+        type="button"
+        class="cat-order"
+        [class.is-on]="order() === 'posted'"
+        [attr.aria-pressed]="order() === 'posted'"
+        (click)="arrange('posted')"
+      >
+        Recently posted
+      </button>
+    </span>
+
+    <span class="cat-dossier">
+      @if (chosenCount()) {
+        <span class="cat-count">{{ chosenCount() }} for the dossier</span>
+        <button type="button" class="cat-link" (click)="clear()">Clear</button>
+      } @else {
+        <button type="button" class="cat-link" (click)="chooseAll()">Choose all</button>
+      }
+      @if (canGenerate()) {
+        <app-pdf-button [nfts]="chosen()"></app-pdf-button>
+      }
+    </span>
+  </div>
+
+  @if (order() === 'posted' && nothingPosted()) {
+    <p class="cat-empty" role="status">Nothing has been posted to Instagram yet.</p>
+  }
+
+  @if (!rows().length) {
+    <p class="cat-empty">Nothing matches.</p>
+  }
+
+  <ul class="cat-list" role="list">
+    @for (nft of rows(); track nft.tokenId) {
+      <li class="cat-row" [class.is-open]="opened() === nft.tokenId">
+        <div class="cat-line">
+          <button
+            type="button"
+            class="cat-summary"
+            [attr.aria-expanded]="opened() === nft.tokenId"
+            (click)="toggleOpen(nft)"
+          >
+            <!--
+              The picture on the chain is between 64 and 192 pixels wide, so it
+              is drawn well under that. Shown any larger it is visibly enlarged,
+              which is what a list of a hundred and sixty-seven looked like.
+            -->
+            <img class="cat-thumb" [src]="thumbOf(nft)" [alt]="nft.name" loading="lazy" decoding="async" />
+
+            <span class="cat-what">
+              <strong>
+                {{ nft.tokenId }} · {{ nft.name }}
+                @if (isSold(nft)) {
+                  <span class="cat-sold" aria-label="sold"></span>
+                }
+              </strong>
+              <small>
+                {{ trait(nft, validTraits.MEDIUM) }} · {{ trait(nft, validTraits.HEIGHT) }} ×
+                {{ trait(nft, validTraits.WIDTH) }} {{ trait(nft, validTraits.UNIT) }} ·
+                {{ trait(nft, validTraits.YEAR) }}
+                @if (trait(nft, validTraits.IMAGETYPE); as view) {
+                  · {{ view }}
+                }
+              </small>
+            </span>
+          </button>
+
+          @if (permalinkOf(nft); as permalink) {
+            <a
+              class="cat-ig"
+              [href]="permalink"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="See the post on Instagram"
+            >
+              IG
+            </a>
+          } @else if (wasPosted(nft)) {
+            <span class="cat-ig is-quiet" title="Posted before the address of a post was kept">
+              IG
+            </span>
+          }
+
+          <!--
+            One click, because choosing twenty out of a hundred and sixty-seven
+            is the one thing here done in bulk. Opening a row is the other
+            click, and the two must not be the same gesture.
+          -->
+          <button
+            type="button"
+            class="cat-choose"
+            [class.is-chosen]="positionOf(nft)"
+            [attr.aria-pressed]="!!positionOf(nft)"
+            [attr.aria-label]="
+              positionOf(nft)
+                ? nft.name + ' is number ' + positionOf(nft) + ' in the dossier'
+                : 'Add ' + nft.name + ' to the dossier'
+            "
+            (click)="toggleChosen(nft)"
+          >
+            {{ positionOf(nft) ?? '+' }}
+          </button>
+        </div>
+
+        @if (opened() === nft.tokenId) {
+          <div class="cat-panel">
+            <app-certificate-panel [painting]="nft"></app-certificate-panel>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</section>

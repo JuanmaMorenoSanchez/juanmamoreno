@@ -291,11 +291,8 @@
     "message": "¡Vaya! La página que buscas no existe. Prueba con una de estas:"
   },
   "texts": "Textos",
-  "latest": "Lo último",
   "latestPage": {
-    "intro": "Las piezas más recientes publicadas en Instagram, de la más nueva a la más antigua. Cada una lleva a su propia página: las otras vistas, el tamaño, lo que se ha escrito sobre ella.",
-    "onInstagram": "Ver la publicación",
-    "nothingYet": "Todavía no se ha publicado nada."
+    "onInstagram": "Ver la publicación"
   },
   "textsPage": {
     "intro": "Textos sobre el autor y/o la obra, publicados en medios.",

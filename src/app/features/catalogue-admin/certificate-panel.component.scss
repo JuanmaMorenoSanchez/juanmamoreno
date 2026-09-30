@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+
+.panel-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.7rem;
+  margin: 0.6rem 0;
+}
+
+.panel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+
+  input,
+  select {
+    padding: 0.35rem 0.4rem;
+    border: 1px solid var(--catalog-faint);
+    background: transparent;
+    font: inherit;
+    font-size: 0.85rem;
+    letter-spacing: normal;
+    text-transform: none;
+    opacity: 1;
+    color: var(--catalog-ink);
+  }
+}
+
+.panel-wide {
+  grid-column: 1 / -1;
+}
+
+.panel-actions {
+  margin: 0.8rem 0 0;
+}
+
+/* Everything below this line cannot be undone, so it is kept apart from above. */
+.panel-grave {
+  margin-top: 1.4rem;
+  padding: 0.8rem;
+  border: 1px solid #b3261e;
+  border-radius: 3px;
+
+  h3 {
+    margin: 0 0 0.6rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b3261e;
+  }
+}
+
+.panel-grave-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+
+  small {
+    flex-basis: 100%;
+    font-size: 0.72rem;
+    opacity: 0.75;
+  }
+}
+
+.panel-typed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+
+  input {
+    width: 7rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--catalog-faint);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.panel-danger {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #b3261e;
+  border-radius: 3px;
+  background: transparent;
+  color: #b3261e;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.panel-frozen,
+.panel-problem {
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #b3261e;
+}
+
+.panel-note,
+.panel-stage,
+.panel-outcome {
+  margin: 0.5rem 0;
+  font-size: 0.76rem;
+  opacity: 0.75;
+  word-break: break-word;
+}
