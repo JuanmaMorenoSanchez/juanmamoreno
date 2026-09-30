@@ -1322,7 +1322,12 @@ which a page showing only the last twelve could not answer.
 A failed request is told apart from an empty account: it says nothing has been
 posted only when that is what was answered. Answering a failure the same way
 would put a claim that nothing has gone out over a list that had a dozen.
-**Every network wears its own mark, and Instagram wears two.** A painting on the
+**Every network wears its own icon, and Instagram wears two.** Drawn in the page
+rather than fetched — the decision the WhatsApp button already made, for the
+same reasons: no third party on a page that has none, no request that can fail,
+no licence to keep track of. A reel is a frame with a play triangle rather than
+a faithful copy of a small corporate glyph, because what the row has to say is
+"this one is the video" and that reads at 16px where detail does not. A painting on the
 feed and a painting filmed as a reel are two different things to have done with
 it, and while both wore one mark the studio could not tell them apart. Threads,
 Bluesky and Facebook are marked beside them, in a fixed order so a row does not
@@ -2119,33 +2124,26 @@ is typed back", "refuses to sign with a wallet the contract will not obey" and
 the two dismissed confirmations), and `mint-api.service.spec.ts` "one that is
 already written" (5 tests)
 
-### R121 — The product page shows the catalogue it describes, and counts it · met
-A column per year, from the first painting in the catalogue to the last, on the
-page a recruiter reads.
+### R121 — The product page opens on how the thing is put together · met
+The diagram of the services and the paragraphs that explain it are in the
+opening, before the first section heading, rather than waiting in a section of
+their own three screens down.
 
-**Counted at build time from the same catalogue the rest of the site reads.**
-Nothing is written down, so the drawing cannot drift from the page around it — a
-chart with last year's figures typed into it is worse than no chart. One painting
-per column and not one certificate: a painting photographed three times is one
-painting, which is the number a reader means.
+It is the page somebody reads to find out how this is built, so the shape of it
+comes before the argument about it — and the drawing says in one look what four
+paragraphs take a screen to say. The machine readers still come after it,
+because they follow from it.
 
-**Drawn as svg in the page**, because this site is written to disk before it is
-published and read without JavaScript. A chart that needed a script to appear
-would be a blank rectangle in the one place the page is making a claim about how
-it is built. A year with nothing in it keeps its place and draws no column, so
-the axis is time rather than a list of the years that have work in them.
-
-The same numbers are in a table beside it for anyone who cannot use the picture,
-and the marks are one hue because there is one series.
+**A chart of paintings per year was here and has gone.** It measured the work
+rather than the machinery, which is not what this page is for.
 
 **The half of the application nobody sees is described and never addressed.**
 The build refuses this page if it names an address behind the guard, and that
 list now covers every guarded address rather than the two that existed when it
 was written — matched as whole paths, so `/catalogue` does not fire on the
 public `/catalogue.json`.
-*Proven by:* `catalogue-chart.component.spec.ts` (8 tests, including "counts
-paintings, not photographs of them", "keeps an empty year in the run", "draws no
-column for a year with nothing in it" and "names every fifth year and the last"),
-`project.component.spec.ts`, which fixes the order of his sections and the count
-of the photographs through the article, and `verify-render.mjs`, which fails the
-build on a guarded address
+*Proven by:* `project.component.spec.ts` "shows how it is put together before it
+argues anything" and "puts the machine readers after it", which compare
+positions in the document rather than counting headings, plus the section order
+and the count of photographs through the article; and `verify-render.mjs`, which
+fails the build on a guarded address

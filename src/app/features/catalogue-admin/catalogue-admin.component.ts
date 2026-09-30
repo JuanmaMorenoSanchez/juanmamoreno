@@ -15,6 +15,7 @@ import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { firstValueFrom } from 'rxjs';
 import { CertificatePanelComponent } from './certificate-panel.component';
+import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
 
 /** How the list is arranged. */
@@ -41,7 +42,7 @@ type Order = 'newest' | 'posted';
   templateUrl: './catalogue-admin.component.html',
   styleUrl: './catalogue-admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PdfButtonComponent, CertificatePanelComponent],
+  imports: [PdfButtonComponent, CertificatePanelComponent, NetworkIconComponent],
 })
 export class CatalogueAdminComponent {
   private readonly destroyRef = inject(DestroyRef);
@@ -185,7 +186,11 @@ export class CatalogueAdminComponent {
       });
     }
 
-    return [...found].sort((a, b) => Number(b.tokenId) - Number(a.tokenId));
+    return [...found].sort(
+      (a, b) =>
+        Number(this.trait(b, VALIDTRAITS.YEAR)) - Number(this.trait(a, VALIDTRAITS.YEAR)) ||
+        Number(b.tokenId) - Number(a.tokenId)
+    );
   });
 
   protected readonly opened = signal<string | null>(null);

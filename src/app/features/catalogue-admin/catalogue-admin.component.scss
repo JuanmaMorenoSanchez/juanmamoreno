@@ -182,18 +182,13 @@
 }
 
 .cat-mark {
-  padding: 0.12rem 0.3rem;
-  border: 1px solid var(--catalog-faint);
-  border-radius: 3px;
-  font-size: 0.6rem;
-  letter-spacing: 0.05em;
-  text-decoration: none;
+  display: inline-flex;
   color: inherit;
-  opacity: 0.8;
+  opacity: 0.55;
 }
 
+/* The one that leads somewhere is the one that looks live. */
 a.cat-mark {
-  border-color: currentColor;
   opacity: 1;
 }
 

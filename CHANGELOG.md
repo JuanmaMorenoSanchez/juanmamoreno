@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.91.0
+
+- **feat** — the networks on a catalogue row are their own icons rather than two
+  letters, drawn in the page as the WhatsApp mark already is. Instagram and a
+  reel stay distinct: a frame with a play triangle is what says "this one is the
+  video" at 16px.
+- **feat** — the catalogue lists by the year the painting was made, latest
+  first. A token id is the order the paintings were certified, which is the
+  order he got round to them.
+- **feat** — the product page opens on how the thing is put together: the
+  diagram and its paragraphs are in the opening rather than in a section three
+  screens down, which is what somebody reads that page to find out.
+- **chore** — the chart of paintings per year and the section around it are
+  gone. They measured the work rather than the machinery.
+
 ## 1.90.0
 
 - **feat** — every network wears its own mark on a catalogue row, and Instagram

@@ -46,26 +46,42 @@ describe('ProjectComponent', () => {
       'project.rot.title',
       'project.about.title',
       'project.product.title',
-      // Two sections that are not his writing: a measurement of the catalogue,
-      // and the half of the application no reader sees. They sit where they
-      // are so his argument still runs — what the thing holds after what it is
-      // for, and what is behind the guard after how it is built.
-      'project.chart.title',
-      'project.architecture.title',
+      // How it is put together has no heading of its own any more: it is in
+      // the opening, before any of this. The one section here that is not his
+      // writing is the half of the application no reader sees, and it sits
+      // after the machine readers rather than between them and the
+      // architecture, which is an adjacency he is arguing.
       'project.agents.title',
       'project.admin.title',
       'project.links.title',
     ]);
   });
 
-  it('puts the machine readers after the architecture that allows them', () => {
-    const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((node: Element) =>
-      node.textContent?.trim()
-    );
+  /**
+   * How it is put together opens the page rather than waiting for a section.
+   *
+   * This is read to find out how the thing is built, so the shape of it comes
+   * before the argument about it — and the drawing says in one look what four
+   * paragraphs take a screen to say.
+   */
+  it('shows how it is put together before it argues anything', () => {
+    const diagram = fixture.nativeElement.querySelector('.project-diagram');
+    const firstHeading = fixture.nativeElement.querySelector('h2');
 
-    expect(headings.indexOf('project.agents.title')).toBe(
-      headings.indexOf('project.architecture.title') + 1
-    );
+    expect(diagram).not.toBeNull();
+    // Earlier in the document than the first section heading.
+    expect(diagram.compareDocumentPosition(firstHeading) & Node.DOCUMENT_POSITION_FOLLOWING).
+      toBeTruthy();
+  });
+
+  /** The machine readers still come after the architecture that allows them. */
+  it('puts the machine readers after it', () => {
+    const diagram = fixture.nativeElement.querySelector('.project-diagram');
+    const agents = [...fixture.nativeElement.querySelectorAll('h2')].find(
+      (node: Element) => node.textContent?.trim() === 'project.agents.title'
+    ) as Element;
+
+    expect(diagram.compareDocumentPosition(agents) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('gives each of the three aims its own case', () => {

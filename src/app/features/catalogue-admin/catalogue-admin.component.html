@@ -114,12 +114,15 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     [title]="'See the post on ' + network.label"
-                    >{{ network.mark }}</a
                   >
+                    <app-network-icon [network]="network.id" />
+                    <span class="visually-hidden">{{ network.label }}</span>
+                  </a>
                 } @else {
-                  <span class="cat-mark" [title]="'Posted to ' + network.label">{{
-                    network.mark
-                  }}</span>
+                  <span class="cat-mark" [title]="'Posted to ' + network.label">
+                    <app-network-icon [network]="network.id" />
+                    <span class="visually-hidden">{{ network.label }}</span>
+                  </span>
                 }
               }
             }

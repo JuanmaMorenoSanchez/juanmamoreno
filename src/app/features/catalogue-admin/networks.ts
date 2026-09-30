@@ -7,19 +7,19 @@
  * could not tell them apart.
  *
  * The ids are the strings the api records, spelled exactly as it spells them:
- * `instagram reel video` is what the nightly run writes, spaces and all.
+ * `instagram reel video` is what the nightly run writes, spaces and all. Each
+ * one's mark is drawn by `NetworkIconComponent`.
  */
 export interface Network {
   id: string;
-  /** Two or three letters, because a row has six of these and no room for words. */
-  mark: string;
+  /** Read out where the icon cannot be seen, and shown on hover. */
   label: string;
 }
 
 export const NETWORKS: readonly Network[] = [
-  { id: 'instagram', mark: 'IG', label: 'Instagram' },
-  { id: 'instagram reel video', mark: 'RE', label: 'an Instagram reel' },
-  { id: 'threads', mark: 'TH', label: 'Threads' },
-  { id: 'bluesky', mark: 'BS', label: 'Bluesky' },
-  { id: 'facebook', mark: 'FB', label: 'Facebook' },
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'instagram reel video', label: 'an Instagram reel' },
+  { id: 'threads', label: 'Threads' },
+  { id: 'bluesky', label: 'Bluesky' },
+  { id: 'facebook', label: 'Facebook' },
 ];

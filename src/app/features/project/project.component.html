@@ -40,63 +40,11 @@
   <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('home') }" />
 
   <!--
-    Second, where he put it: what keeps the requirements honest comes before
-    where he is coming from and before what the product is. It is the part of
-    this that is about how the work is done rather than about what was made.
+    How it is put together, in the opening rather than in a section of its own.
+    This page is read to find out how the thing is built, so the shape of it
+    comes before the argument about it — and the drawing is the fastest way to
+    say what four paragraphs would.
   -->
-  <section class="project-section">
-    <h2>{{ 'project.rot.title' | translate }}</h2>
-    @for (key of ['intro', 'a', 'b', 'c']; track key) {
-      @for (paragraph of paragraphs('project.rot.' + key); track $index) {
-        <p>{{ paragraph }}</p>
-      }
-    }
-  </section>
-
-  <section class="project-section">
-    <h2>{{ 'project.about.title' | translate }}</h2>
-    @for (key of ['a', 'b', 'c']; track key) {
-      @for (paragraph of paragraphs('project.about.' + key); track $index) {
-        <p>{{ paragraph }}</p>
-      }
-    }
-  </section>
-
-  <section class="project-section">
-    <h2>{{ 'project.product.title' | translate }}</h2>
-    <p>{{ 'project.product.lead' | translate }}</p>
-
-    <!-- Numbered, because they were built in this order and each needed the one before. -->
-    <ol class="project-goals">
-      @for (goal of goals; track goal) {
-        <li>
-          <h3>{{ 'project.product.' + goal + '.name' | translate }}</h3>
-          @for (paragraph of paragraphs('project.product.' + goal + '.body'); track $index) {
-            <p>{{ paragraph }}</p>
-          }
-          @if (shotOf(goal)) {
-            <ng-container
-              *ngTemplateOutlet="shot; context: { $implicit: shotOf(goal) }"
-            />
-          }
-        </li>
-      }
-    </ol>
-
-  </section>
-
-  <!--
-    The one drawing on this page that is not a diagram of how it works but a
-    measurement of what it holds — counted from the catalogue at build time, so
-    it cannot drift from the site it describes.
-  -->
-  <section class="project-section">
-    <h2>{{ 'project.chart.title' | translate }}</h2>
-    <app-catalogue-chart />
-  </section>
-
-  <section class="project-section">
-    <h2>{{ 'project.architecture.title' | translate }}</h2>
     @for (key of ['a', 'b', 'c']; track key) {
       @for (paragraph of paragraphs('project.architecture.' + key); track $index) {
         <p>{{ paragraph }}</p>
@@ -273,6 +221,52 @@
       </svg>
       <figcaption>{{ 'project.map.endpointsTitle' | translate }}</figcaption>
     </figure>
+
+
+  <!--
+    Second, where he put it: what keeps the requirements honest comes before
+    where he is coming from and before what the product is. It is the part of
+    this that is about how the work is done rather than about what was made.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.rot.title' | translate }}</h2>
+    @for (key of ['intro', 'a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.rot.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.about.title' | translate }}</h2>
+    @for (key of ['a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.about.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
+  </section>
+
+  <section class="project-section">
+    <h2>{{ 'project.product.title' | translate }}</h2>
+    <p>{{ 'project.product.lead' | translate }}</p>
+
+    <!-- Numbered, because they were built in this order and each needed the one before. -->
+    <ol class="project-goals">
+      @for (goal of goals; track goal) {
+        <li>
+          <h3>{{ 'project.product.' + goal + '.name' | translate }}</h3>
+          @for (paragraph of paragraphs('project.product.' + goal + '.body'); track $index) {
+            <p>{{ paragraph }}</p>
+          }
+          @if (shotOf(goal)) {
+            <ng-container
+              *ngTemplateOutlet="shot; context: { $implicit: shotOf(goal) }"
+            />
+          }
+        </li>
+      }
+    </ol>
+
   </section>
 
   <section class="project-section">

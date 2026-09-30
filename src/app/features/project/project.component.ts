@@ -12,7 +12,6 @@ import {
 } from '@domain/project/project.constants';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageUrlService } from '@shared/services/language-url.service';
-import { CatalogueChartComponent } from './catalogue-chart.component';
 
 /**
  * How this product is run, for somebody deciding whether to hire the person
@@ -34,7 +33,7 @@ import { CatalogueChartComponent } from './catalogue-chart.component';
   selector: 'app-project',
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss',
-  imports: [NgTemplateOutlet, RouterLink, TranslatePipe, CatalogueChartComponent],
+  imports: [NgTemplateOutlet, RouterLink, TranslatePipe],
 })
 export class ProjectComponent {
   protected readonly lang = inject(LanguageUrlService);

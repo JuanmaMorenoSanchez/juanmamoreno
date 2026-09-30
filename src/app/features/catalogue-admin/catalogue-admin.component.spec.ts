@@ -30,6 +30,7 @@ const painting = (tokenId: string, name: string, year = '2026'): Nft => ({
 
 const catalogue = [
   painting('7', 'Oldest', '2019'),
+  // Same year, so the token id breaks the tie and 101 leads 42.
   painting('101', 'Middle'),
   painting('42', 'Newest'),
 ];
@@ -116,10 +117,24 @@ function setup(
  * click-ordering, and the way into a certificate.
  */
 describe('CatalogueAdminComponent', () => {
-  it('lists one row per token, newest first', () => {
+  /**
+   * By the year the painting was made, not by the number on its certificate.
+   *
+   * A token id is the order the paintings were certified, which is the order he
+   * got round to them — 2009 work certified last year sits among the new ones.
+   * The year is the number he thinks in.
+   */
+  it('lists one row per token, by the year the painting was made', () => {
     const page = setup([]);
 
     expect(page.rows().map((one) => one.tokenId)).toEqual(['101', '42', '7']);
+  });
+
+  it('puts an older painting below a newer one whatever its number', () => {
+    const page = setup([]);
+    const years = page.rows().map((one) => page.trait(one, VALIDTRAITS.YEAR));
+
+    expect(years).toEqual(['2026', '2026', '2019']);
   });
 
   it('finds one by its number, its title or its year', () => {

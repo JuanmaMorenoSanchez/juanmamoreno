@@ -360,7 +360,6 @@
       }
     },
     "architecture": {
-      "title": "How it is put together",
       "a": "The site is static in the strict sense. Every page, in both languages, is written to disk before it is published and served as a file: there is no server rendering anything, and therefore no server to fall over, to patch or to pay for. The whole system is designed for the cost to be minimal — a couple of euros a month, roughly.",
       "b": "The cloud architecture is, in essence, a service serving an API, a number of cloud AI services (for reverse image searches across the internet, and for generating texts from images and descriptions), a database for the app’s information and the cache of the certificates, and a bucket for the high-resolution images and the videos.",
       "c": "Outside the scope of the cloud and the frontend app sit the on-chain data (the certificates and the contract) and the permanent distributed storage of the web-resolution images."
@@ -444,10 +443,6 @@
       "opens": "opens the page",
       "texts": "What has been written about the work, and where",
       "cv": "The cv, kept as data rather than as a document"
-    },
-    "chart": {
-      "title": "The catalogue",
-      "caption": "paintings in the catalogue, {{span}}, by the year each was painted."
     },
     "admin": {
       "title": "The half nobody sees",
