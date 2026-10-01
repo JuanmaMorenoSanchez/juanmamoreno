@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.92.0
+
+- **feat** — the atelier: a guarded page that cuts one painting into parallax
+  layers. Name what to find, in your own words; a hosted model answers with a
+  mask for each, which is scaled up over the original and corrected with a
+  brush, because the model's two seconds get you most of the way and the last
+  of it is thirty seconds by hand. The stack is ordered and given depth by
+  hand too — which layer is in front is the one thing no model can read off a
+  painting. Every button that spends money says what the press costs, and the
+  day's running total sits at the top. A saved piece is a generative piece at
+  `/generative/<its id>` with no deploy, and can be recorded as a reel in the
+  browser, with the pointer replaced by a scripted path.
+
 ## 1.91.3
 
 - **chore** — the product page carries five pictures, each under the text it

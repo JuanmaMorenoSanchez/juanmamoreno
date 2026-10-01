@@ -161,6 +161,17 @@ export const routes: Routes = [
     data: { title: 'Catalogue', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/catalogue', redirectTo: '/catalogue' },
+  // The workshop where a painting is cut into parallax layers. His, like the
+  // studio and the reels, and with one reason the others have not got: every
+  // button on it spends money, so it is never reachable without the guard.
+  {
+    path: 'atelier',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/atelier/atelier.component').then((m) => m.AtelierComponent),
+    data: { title: 'Atelier', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/atelier', redirectTo: '/atelier' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

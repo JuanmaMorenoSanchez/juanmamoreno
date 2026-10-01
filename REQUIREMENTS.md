@@ -2188,3 +2188,56 @@ have been looking at a form that had already told him it said something else.
 list", "shows the year the painting was made, not the current one" and "shows
 the measurements it was written with"), which render the form rather than ask
 the class — the only place this fault was visible
+
+### R123 — A painting can be cut into layers that move apart · met
+The atelier takes one picture — a file from the laptop, or the address of one
+in the bucket — asks a model for a mask per thing named, cuts the full-size
+original with each, and saves the stack as a piece. Depth and stacking order
+are set by hand.
+
+Depth estimation is not used and should not be: monocular depth models are
+trained on photographs and predict stylised work as flat planes, so a painting
+is exactly the case they get wrong. Segmentation survives stylisation, and the
+one judgement no model can make — which layer is in front — is a drag of the
+hand.
+*Proven by:* `cutting.spec.ts` (16 tests) for the names the bucket will take,
+the working size a model is billed for, and the depth spread; and
+`atelier.component.spec.ts` "asks for a painting before it offers to do
+anything to one" and "uploads every file the manifest goes on to name", which
+is written down because it did not: the kept variants were listed as frames and
+never written, so a piece looked saved while a sketch reading it got filenames
+that were not in the bucket
+
+### R124 — Nothing in the atelier spends money without saying so first · met
+Every button that calls a model carries the price of one press, read from the
+api rather than written into the template. The day's running total is at the
+top of the page, a press the day cannot pay for is refused before it is made,
+and the ceiling is enforced on the server where it cannot be got round.
+
+**This is written down because the lesson was expensive once.** `/vision/search`
+re-ran a reverse image search on read, and a single build made 186 billed calls
+to it. What was missing was not care — it was something in front of the
+spending that answers no on its own.
+*Proven by:* `cost.component.spec.ts` "writes the price beside the button",
+"says nothing at all until it knows the price" and "marks a price the day can
+no longer cover"; `atelier.component.spec.ts` "shows what today has cost so
+far", "will not let a press be made that the day cannot pay for" and "offers no
+way to run the whole catalogue through it". The ceiling itself is enforced in
+the backend and proved there, by `spend-ledger.service.spec.ts` and the
+backend's `atelier.service.spec.ts` under B64 — this page refuses a press
+early so that one does not have to be made to find out, which is the part
+proved here.
+
+### R125 — A piece cut in the atelier is a generative piece without a deploy · met
+`/generative/<piece id>` draws a saved piece: the manifest is fetched, the
+layers are loaded and parallaxed by the same `Parallax` the hand-cut sketches
+use. A piece that does not exist draws a blank canvas rather than throwing
+sixty times a second.
+
+The hand-cut pieces are code and have to be registered; a piece is data, and
+registering each one would have meant a deploy per piece — which is why there
+were two sketches in ten months.
+*Proven by:* `piece.sketch.spec.ts` "puts the stack back in the order he set,
+whatever order it arrives in", "reads a manifest the api wrapped", "reads one
+that is not wrapped", "draws nothing, quietly, when there is no such piece" and
+"survives a manifest that is not json at all"

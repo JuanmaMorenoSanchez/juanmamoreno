@@ -1,0 +1,301 @@
+<div class="container margin-top atelier">
+  <h1 class="catalog-heading">Atelier</h1>
+
+  <!--
+    The day's allowance, in the open. Every button below spends money and the
+    ordinary way to find out how much is a bill at the end of the month, so the
+    running total sits at the top and the price of each press sits on its own
+    button.
+  -->
+  @if (prices(); as prices) {
+    <p class="atelier-spend" [class.atelier-spend-out]="!prices.left">
+      Today: <strong>${{ prices.spent.toFixed(2) }}</strong> of ${{ prices.ceiling.toFixed(2) }}
+      @if (!prices.left) {
+        <span> — the ceiling for today is reached. Nothing more will run until tomorrow.</span>
+      }
+      @if (!prices.configured) {
+        <span> — no model is configured, so nothing here will run at all.</span>
+      }
+    </p>
+  }
+
+  @if (stage()) {
+    <p class="atelier-note" role="status"><span class="atelier-spin"></span>{{ stage() }}</p>
+  }
+  @if (problem()) {
+    <p class="atelier-problem" role="alert">{{ problem() }}</p>
+  }
+  @if (saved()) {
+    <p class="atelier-note">{{ saved() }}</p>
+  }
+
+  <!-- 1. The painting ------------------------------------------------------ -->
+  <section class="atelier-step">
+    <h2>The painting</h2>
+    <p class="atelier-hint">
+      It stays in this browser. What goes out to a model is a copy at 1024px, and the mask that
+      comes back is scaled up over the original — so the layer that is saved is full size.
+    </p>
+
+    <div class="atelier-row">
+      <label class="atelier-file">
+        <input type="file" accept="image/*" (change)="choose($event)" />
+        <span>Choose a file</span>
+      </label>
+
+      <input
+        class="atelier-input atelier-wide"
+        type="url"
+        placeholder="…or the address of one in the bucket"
+        #url
+        (keyup.enter)="fetchByUrl(url.value)"
+      />
+      <button type="button" class="atelier-link" (click)="fetchByUrl(url.value)">Fetch</button>
+    </div>
+  </section>
+
+  @if (painting(); as painting) {
+    <!-- 2. Cutting --------------------------------------------------------- -->
+    <section class="atelier-step">
+      <h2>Cut it into layers</h2>
+      <p class="atelier-hint">
+        Name what to find, separated by commas, in your own words. One pass however many you name.
+      </p>
+
+      <div class="atelier-row">
+        <input
+          class="atelier-input atelier-wide"
+          type="text"
+          [value]="labels()"
+          (input)="labels.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="atelier-do"
+          [disabled]="busy() || !affordable()"
+          (click)="findLayers()"
+        >
+          Find layers <app-cost operation="segment" />
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. The stage ------------------------------------------------------- -->
+    <section class="atelier-step">
+      <h2>
+        @if (refining() !== undefined) {
+          Correcting the mask
+        } @else {
+          How it moves
+        }
+      </h2>
+      <p class="atelier-hint">
+        @if (refining() !== undefined) {
+          Paint to add to this layer, hold the erase toggle to take away. The model gets you most of
+          the way in two seconds; this is the thirty that make the edge stop looking cut out.
+        } @else {
+          Move the pointer over it. Nearer layers move more — which is the only thing here no model
+          can work out from a painting, so it is the one you set by hand.
+        }
+      </p>
+
+      <canvas
+        #stage
+        class="atelier-stage"
+        [class.atelier-painting]="refining() !== undefined"
+        width="900"
+        height="600"
+        (pointermove)="onPointerMove($event)"
+        (pointerdown)="onPointerDown($event)"
+        (pointerup)="onPointerUp($event)"
+        (pointerleave)="onPointerUp($event)"
+      ></canvas>
+
+      @if (refining() !== undefined) {
+        <div class="atelier-row atelier-brush">
+          <label>
+            Brush
+            <input
+              type="range"
+              min="5"
+              max="200"
+              [value]="brushSize()"
+              (input)="brushSize.set(+$any($event.target).value)"
+            />
+          </label>
+          <button
+            type="button"
+            class="atelier-link"
+            [class.atelier-on]="erasing()"
+            (click)="erasing.set(!erasing())"
+          >
+            {{ erasing() ? 'Erasing' : 'Adding' }}
+          </button>
+          <button type="button" class="atelier-link" (click)="refine(refining()!)">Done</button>
+        </div>
+      }
+    </section>
+
+    <!-- 4. The layers ------------------------------------------------------ -->
+    @if (layers().length) {
+      <section class="atelier-step">
+        <h2>The stack</h2>
+        <p class="atelier-hint">Front at the top. Move one back and it moves less.</p>
+
+        <ul class="atelier-layers">
+          @for (layer of layers(); track $index) {
+            <li class="atelier-layer" [class.atelier-selected]="refining() === $index">
+              <span class="atelier-layer-name">{{ layer.label }}</span>
+
+              <label class="atelier-depth">
+                depth
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  [value]="layer.depth"
+                  (input)="setDepth($index, $any($event.target).value)"
+                />
+                <small>{{ layer.depth }}</small>
+              </label>
+
+              <button type="button" class="atelier-link" (click)="move($index, -1)" title="Forward">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button type="button" class="atelier-link" (click)="move($index, 1)" title="Back">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button type="button" class="atelier-link" (click)="refine($index)">
+                {{ refining() === $index ? 'Stop' : 'Correct' }}
+              </button>
+              <button
+                type="button"
+                class="atelier-link"
+                [disabled]="busy() || !affordable()"
+                (click)="fillBehind($index)"
+                title="Paint in what is behind this layer, so moving it reveals paint rather than a hole"
+              >
+                Fill behind <app-cost operation="inpaint" />
+              </button>
+              <button type="button" class="atelier-link" (click)="remove($index)" title="Remove">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- 5. Keeping it ---------------------------------------------------- -->
+      <section class="atelier-step">
+        <h2>Keep it</h2>
+        <div class="atelier-row">
+          <input
+            class="atelier-input"
+            type="text"
+            placeholder="What this piece is called"
+            [value]="title()"
+            (input)="title.set($any($event.target).value)"
+          />
+          <span class="atelier-hint"
+            >saved as <code>{{ pieceId() }}</code></span
+          >
+          <button type="button" class="atelier-do" [disabled]="!canSave()" (click)="savePiece()">
+            Save the piece
+          </button>
+        </div>
+      </section>
+    }
+
+    <!-- 6. Variants -------------------------------------------------------- -->
+    <section class="atelier-step">
+      <h2>Variants</h2>
+      <p class="atelier-hint">
+        A frame set is the same painting with one thing changed — eyes open, half, closed — which is
+        what <code>FrameTimeline</code> flicks through. Ask for one change at a time and say to
+        leave the rest alone; a model asked for more will repaint more.
+      </p>
+
+      <div class="atelier-row">
+        <input
+          class="atelier-input atelier-wide"
+          type="text"
+          [value]="instruction()"
+          (input)="instruction.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="atelier-do"
+          [disabled]="busy() || !affordable()"
+          (click)="makeVariant()"
+        >
+          Make one <app-cost operation="edit" />
+        </button>
+      </div>
+
+      @if (variants().length) {
+        <ul class="atelier-variants">
+          @for (variant of variants(); track $index) {
+            <li [class.atelier-kept]="variant.kept">
+              <img [src]="variant.image.src" [alt]="variant.instruction" />
+              <small>{{ variant.instruction }}</small>
+              <span>
+                <button type="button" class="atelier-link" (click)="keep($index)">
+                  {{ variant.kept ? 'Kept' : 'Keep' }}
+                </button>
+                <button type="button" class="atelier-link" (click)="discardVariant($index)">
+                  Discard
+                </button>
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- 7. The reel -------------------------------------------------------- -->
+    @if (layers().length) {
+      <section class="atelier-step">
+        <h2>Make a reel of it</h2>
+        <p class="atelier-hint">
+          {{ reelSeconds }} seconds, recorded here in the browser, with the pointer replaced by a
+          slow scripted path — the interactivity becomes the camera move. Costs nothing: no model is
+          involved, only this page drawing.
+        </p>
+
+        <button type="button" class="atelier-do" [disabled]="busy()" (click)="record()">
+          Record {{ reelSeconds }} seconds
+        </button>
+
+        @if (recorded(); as recorded) {
+          <div class="atelier-recorded">
+            <video [src]="recorded" controls loop muted playsinline></video>
+            <a [href]="recorded" [download]="pieceId() + '.webm'" class="atelier-link">
+              Download it
+            </a>
+          </div>
+        }
+      </section>
+    }
+  }
+
+  <!-- 8. The shelf --------------------------------------------------------- -->
+  @if (pieces(); as pieces) {
+    @if (pieces.length) {
+      <section class="atelier-step">
+        <h2>On the shelf</h2>
+        <ul class="atelier-shelf">
+          @for (piece of pieces; track piece.id) {
+            <li>
+              <strong>{{ piece.title }}</strong>
+              <small>
+                {{ piece.layers.length }} layer{{ piece.layers.length === 1 ? '' : 's' }} ·
+                {{ piece.updatedAt | date: 'd MMM y' }}
+              </small>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</div>

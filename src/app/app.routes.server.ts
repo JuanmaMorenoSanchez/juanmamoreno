@@ -37,6 +37,8 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'es/publish', renderMode: RenderMode.Client },
   { path: 'es/pendingmint', renderMode: RenderMode.Client },
   { path: 'es/catalogue', renderMode: RenderMode.Client },
+  { path: 'atelier', renderMode: RenderMode.Client },
+  { path: 'es/atelier', renderMode: RenderMode.Client },
   // The generative pieces are p5-style canvases: nothing to prerender, and
   // they need a real browser to exist at all.
   { path: 'generative/:id', renderMode: RenderMode.Client },

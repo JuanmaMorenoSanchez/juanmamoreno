@@ -14,6 +14,8 @@ import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
+import { environment } from '@environments/environment';
+import { PieceSketch } from './sketches/piece.sketch';
 import { SKETCHES } from './sketches/registry';
 import { Frame, Pointer, Sketch } from './sketches/sketch';
 
@@ -111,7 +113,10 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.sketch?.dispose?.();
     this.sketch = null;
 
-    const entry = id ? SKETCHES[id] : undefined;
+    // A built-in sketch, or — failing that — a piece cut in the atelier. The
+    // hand-written ones are code and have to be registered; a piece is data,
+    // and registering each one would mean a deploy per piece.
+    const entry = id ? (SKETCHES[id] ?? pieceEntry(id)) : undefined;
     if (!entry) {
       this.notFound.set(true);
       return;
@@ -259,4 +264,19 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.sketch?.dispose?.();
     this.sketch = null;
   }
+}
+
+/**
+ * A piece made in the atelier, addressed by its id.
+ *
+ * Built unconditionally rather than after checking the piece exists: setup
+ * fetches the manifest and draws nothing if there is none, which is the same
+ * blank canvas a missing one would give, without a second round trip on every
+ * sketch that loads perfectly well.
+ */
+function pieceEntry(id: string): { label: string; factory: () => PieceSketch } {
+  return {
+    label: id,
+    factory: () => new PieceSketch(`${environment.backendUrl}atelier/public/${id}`),
+  };
 }

@@ -126,7 +126,7 @@ document is a claim about the present, and only fails if something checks it.
 - **Signals** for component state; **`ng-content` projection** and lazy-loaded routes are used throughout (`loadComponent`).
 - **Strict TypeScript**, including `noPropertyAccessFromIndexSignature` and `useDefineForClassFields: false`.
 - **Tests use Vitest globals** (`describe`/`it`/`expect` are ambient — no imports needed). `src/test-providers.ts` applies `provideZonelessChangeDetection()` to every `TestBed`. Config lives in `vitest-base.config.ts` and `tsconfig.spec.json`.
-- The `domain/generative/*` files are entirely commented-out dead code (old p5.js experiments) — ignore them.
+- `domain/generative/*` is live, tested, dependency-free motion logic — `Parallax` (depth → shift), `BeatClock`, `FrameTimeline`, particles — drawn by the Canvas 2D sketches in `features/generative/sketches`. There is no p5.js. A sketch's layers are either hand-cut pngs in `assets/images/canvases/` or a piece saved from the atelier, which `/generative/<piece id>` loads from its manifest without a deploy.
 
 ## Versioning and releases
 
