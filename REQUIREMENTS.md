@@ -2190,10 +2190,15 @@ the measurements it was written with"), which render the form rather than ask
 the class — the only place this fault was visible
 
 ### R123 — A painting can be cut into layers that move apart · met
-The atelier takes one picture — a file from the laptop, or the address of one
-in the bucket — asks a model for a mask per thing named, cuts the full-size
-original with each, and saves the stack as a piece. Depth and stacking order
-are set by hand.
+The atelier takes one picture — a catalogue number, or a file from the laptop —
+asks a model for a mask per thing named, cuts the full-size original with each,
+and saves the stack as a piece. Depth and stacking order are set by hand.
+
+A number is enough because the catalogue is already in the session and already
+holds where each painting's picture is and which copy is the best one; it is
+read through `ARTWORK_PORT` like everywhere else, so the atelier knows the name
+of no bucket. The file picker stays for the studio photographs that were never
+in the catalogue.
 
 Depth estimation is not used and should not be: monocular depth models are
 trained on photographs and predict stylised work as flat planes, so a painting
@@ -2208,7 +2213,11 @@ gives them" and "clamps a box that runs off the picture"; `stencil` "turns
 brightness into transparency", without which the whole bounding box is kept,
 because a probability map is opaque even where it is black; and
 `atelier.component.spec.ts` "asks for a painting before it offers to do
-anything to one" and "uploads every file the manifest goes on to name", which
+anything to one", "uploads every file the manifest goes on to name", and the
+six about naming a painting by its number — "finds the painting without being
+told where it lives", "says so plainly when there is no such painting",
+"tells a catalogue that has not arrived from a number that is wrong", and
+"offers the way round when the picture will not load", which
 is written down because it did not: the kept variants were listed as frames and
 never written, so a piece looked saved while a sketch reading it got filenames
 that were not in the bucket

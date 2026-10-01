@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.93.1
+
+- **chore** — the atelier takes a catalogue number where it took the address of
+  a file in the bucket. The catalogue is already in the session and already
+  knows where every painting's picture is and which copy is the best one, so
+  typing the address was copying out something the page was holding. The piece
+  is named after the painting too. Choosing a file by hand is still there, for
+  the studio photographs that were never in the catalogue.
+
 ## 1.93.0
 
 - **feat** — the atelier's masks come from Gemini, which answers with a

@@ -12,9 +12,11 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
+import { Nft } from '@domain/artwork/artwork.entity';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Parallax } from '@domain/generative/parallax';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AtelierService, Piece } from './atelier.service';
@@ -79,9 +81,20 @@ const REEL_HEIGHT = 1920;
 export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   private atelier = inject(AtelierService);
   private auth = inject(AdminAuthService);
+  private artworks = inject(ARTWORK_PORT);
   private destroyRef = inject(DestroyRef);
 
   private readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('stage');
+
+  /**
+   * The whole catalogue, which is how a token id becomes a picture.
+   *
+   * Already in the session by the time this page opens — every other page
+   * reads the same signal — so naming a painting costs no request.
+   */
+  private readonly catalogue = toSignal(this.artworks.getArtPiecesObservable(), {
+    initialValue: [] as Nft[],
+  });
 
   /** The painting being worked on, at whatever size it really is. */
   readonly painting = signal<HTMLImageElement | undefined>(undefined);
@@ -162,36 +175,53 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * A painting already in the bucket, by the address of its picture.
+   * A painting from the catalogue, by the number on its certificate.
    *
-   * Pasted rather than picked from a list: the originals are not catalogued
-   * anywhere the browser can read, and a box he pastes into works for a studio
-   * photograph as well as for a catalogued painting. It needs the bucket to
-   * allow this origin — if it does not, the canvas is tainted and nothing can
-   * be read back out of it, which is said plainly rather than failing at save.
+   * The address is not typed because it is not his to remember: the catalogue
+   * already knows where every painting's picture is, and `getNftQualityUrl`
+   * already knows which of them is the best one. Typing an address would be
+   * copying out something the page is holding.
+   *
+   * The original is what loads — several megabytes of it — because the layers
+   * cut from it are saved at full size. Only the copy sent to a model is small.
    */
-  async fetchByUrl(url: string): Promise<void> {
-    if (!url.trim()) return;
+  async fetchByToken(tokenId: string): Promise<void> {
+    const id = tokenId.trim().replace(/^#/, '');
+    if (!id) return;
 
     this.problem.set('');
-    this.busy.set(true);
-    this.stage.set('Fetching the painting…');
+    const nft = this.artworks.getNftById(id, this.catalogue());
+    if (!nft) {
+      this.problem.set(
+        this.catalogue().length
+          ? `There is no painting ${id} in the catalogue.`
+          : 'The catalogue has not arrived yet. Try again in a moment.'
+      );
+      return;
+    }
 
-    const image = await loadImage(url.trim(), true);
+    const url = this.artworks.getNftQualityUrl(nft.image);
+    if (!url) {
+      this.problem.set(`Painting ${id} has no picture on file.`);
+      return;
+    }
+
+    this.busy.set(true);
+    this.stage.set(`Fetching ${nft.name ?? id}…`);
+    const image = await loadImage(url, true);
     this.busy.set(false);
     this.stage.set('');
 
     if (!image) {
       this.problem.set(
-        'That address would not load, or the bucket does not allow this page to read it. ' +
-          'Downloading it and choosing the file works either way.'
+        `The picture for ${id} would not load. Downloading it and choosing the file works too.`
       );
       return;
     }
 
     this.painting.set(image);
-    this.source.set(url.trim().split('/').pop() ?? 'bucket');
-    if (!this.title()) this.title.set(this.source().replace(/\.[^.]+$/, ''));
+    this.source.set(id);
+    this.title.set(nft.name ?? `painting ${id}`);
     this.layers.set([]);
     this.variants.set([]);
   }

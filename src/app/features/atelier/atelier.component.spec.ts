@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { of } from 'rxjs';
 import { AtelierComponent } from './atelier.component';
@@ -9,6 +10,15 @@ import { AtelierService, Prices } from './atelier.service';
 describe('AtelierComponent', () => {
   let fixture: ComponentFixture<AtelierComponent>;
   let atelier: AtelierService;
+
+  const catalogue = [
+    {
+      tokenId: '182',
+      name: 'Escóndete',
+      image: { originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/182.jpg' },
+    },
+    { tokenId: '7', name: 'No picture', image: {} },
+  ];
 
   const priced: Prices = {
     prices: {
@@ -29,6 +39,15 @@ describe('AtelierComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of(catalogue),
+            getNftById: (id: string, nfts: { tokenId: string }[]) =>
+              nfts.find((nft) => nft.tokenId === id) ?? null,
+            getNftQualityUrl: (image: { originalUrl?: string }) => image.originalUrl ?? '',
+          },
+        },
       ],
     });
 
@@ -187,3 +206,142 @@ describe('AtelierComponent', () => {
 function stubCanvas(): HTMLCanvasElement {
   return document.createElement('canvas');
 }
+
+describe('AtelierComponent, naming a painting by its number', () => {
+  let fixture: ComponentFixture<AtelierComponent>;
+
+  const catalogue = [
+    {
+      tokenId: '182',
+      name: 'Escóndete',
+      image: { originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/182.jpg' },
+    },
+    { tokenId: '7', name: 'No picture', image: {} },
+  ];
+
+  function build(pieces: unknown[]): void {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AtelierComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of(pieces),
+            getNftById: (id: string, nfts: { tokenId: string }[]) =>
+              nfts.find((nft) => nft.tokenId === id) ?? null,
+            getNftQualityUrl: (image: { originalUrl?: string }) => image.originalUrl ?? '',
+          },
+        },
+      ],
+    });
+    fixture = TestBed.createComponent(AtelierComponent);
+    fixture.detectChanges();
+  }
+
+  function problem(): string {
+    return fixture.componentInstance.problem();
+  }
+
+  /**
+   * jsdom fetches nothing, so it fires neither `onload` nor `onerror` and a
+   * real `Image` simply never settles. Standing one in lets these tests assert
+   * what actually happens on a load rather than that one was attempted.
+   */
+  function imagesThat(outcome: 'load' | 'fail'): void {
+    class Stub {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      crossOrigin = '';
+      naturalWidth = 1200;
+      naturalHeight = 800;
+      set src(_value: string) {
+        setTimeout(() => (outcome === 'load' ? this.onload?.() : this.onerror?.()), 0);
+      }
+    }
+    globalThis.Image = Stub as unknown as typeof Image;
+  }
+
+  /**
+   * He types a number, not an address. The catalogue already knows where every
+   * painting's picture is and which copy is the best one, so asking him to
+   * copy that out would be asking him to repeat what the page is holding.
+   */
+  it('finds the painting without being told where it lives', async () => {
+    imagesThat('load');
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('182');
+
+    expect(problem()).toBe('');
+    expect(fixture.componentInstance.painting()).toBeTruthy();
+    // Named from the catalogue, so the piece is called what the painting is.
+    expect(fixture.componentInstance.title()).toBe('Escóndete');
+    expect(fixture.componentInstance.source()).toBe('182');
+  });
+
+  it('takes a number written the way he says it out loud', async () => {
+    imagesThat('load');
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('  #182 ');
+
+    expect(fixture.componentInstance.source()).toBe('182');
+  });
+
+  /**
+   * The catalogue can know where a picture is and the picture still not come:
+   * the bucket allows this origin, but a file can be missing or a network can
+   * drop. Choosing the file by hand works in every one of those cases, so the
+   * message says so rather than leaving a dead end.
+   */
+  it('offers the way round when the picture will not load', async () => {
+    imagesThat('fail');
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('182');
+
+    expect(problem()).toContain('would not load');
+    expect(problem()).toContain('choosing the file');
+    expect(fixture.componentInstance.painting()).toBeUndefined();
+  });
+
+  it('says so plainly when there is no such painting', async () => {
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('999');
+
+    expect(problem()).toBe('There is no painting 999 in the catalogue.');
+  });
+
+  /**
+   * An empty catalogue and a wrong number are different problems with the same
+   * symptom, and only one of them is worth retyping the number for.
+   */
+  it('tells a catalogue that has not arrived from a number that is wrong', async () => {
+    build([]);
+
+    await fixture.componentInstance.fetchByToken('182');
+
+    expect(problem()).toContain('not arrived yet');
+  });
+
+  it('says when the painting is known but has no picture on file', async () => {
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('7');
+
+    expect(problem()).toBe('Painting 7 has no picture on file.');
+  });
+
+  it('does nothing at all for an empty box', async () => {
+    build(catalogue);
+
+    await fixture.componentInstance.fetchByToken('   ');
+
+    expect(problem()).toBe('');
+  });
+});

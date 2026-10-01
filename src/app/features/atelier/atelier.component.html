@@ -44,13 +44,16 @@
       </label>
 
       <input
-        class="atelier-input atelier-wide"
-        type="url"
-        placeholder="…or the address of one in the bucket"
-        #url
-        (keyup.enter)="fetchByUrl(url.value)"
+        class="atelier-input atelier-id"
+        type="text"
+        inputmode="numeric"
+        placeholder="…or a catalogue number"
+        #token
+        (keyup.enter)="fetchByToken(token.value)"
       />
-      <button type="button" class="atelier-link" (click)="fetchByUrl(url.value)">Fetch</button>
+      <button type="button" class="atelier-link" (click)="fetchByToken(token.value)">
+        Fetch it
+      </button>
     </div>
   </section>
 
