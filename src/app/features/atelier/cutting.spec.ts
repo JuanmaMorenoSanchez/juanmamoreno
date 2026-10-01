@@ -1,8 +1,11 @@
 import {
+  boxToPixels,
   depthFor,
   layerFile,
+  MASK_THRESHOLD,
   scriptedPointer,
   slug,
+  stencil,
   WORKING_MAX_SIDE,
   workingSize,
 } from './cutting';
@@ -129,5 +132,119 @@ describe('scriptedPointer', () => {
 
   it('moves at all', () => {
     expect(scriptedPointer(0)).not.toEqual(scriptedPointer(1));
+  });
+});
+
+describe('boxToPixels', () => {
+  /**
+   * The model answers in thousandths of the picture, which is what lets a mask
+   * found on a 1024px working copy be used on the full-size original.
+   */
+  it('reads a box in thousandths onto a picture of any size', () => {
+    expect(boxToPixels([0, 0, 1000, 1000], 4000, 3000)).toEqual({
+      x: 0,
+      y: 0,
+      width: 4000,
+      height: 3000,
+    });
+    expect(boxToPixels([250, 500, 750, 1000], 4000, 3000)).toEqual({
+      x: 2000,
+      y: 750,
+      width: 2000,
+      height: 1500,
+    });
+  });
+
+  /** y comes first in the model's order, and swapping them would be invisible. */
+  it('keeps y before x, as the model gives them', () => {
+    const tall = boxToPixels([0, 0, 500, 1000], 1000, 1000);
+
+    expect(tall.height).toBe(500);
+    expect(tall.width).toBe(1000);
+  });
+
+  /**
+   * A model that says 1001 should cost a pixel of accuracy, not an exception:
+   * `getImageData` throws on a rectangle outside the canvas, which would take
+   * the whole page down on one sloppy answer.
+   */
+  it('clamps a box that runs off the picture', () => {
+    const over = boxToPixels([0, 0, 1200, 1200], 800, 600);
+
+    expect(over).toEqual({ x: 0, y: 0, width: 800, height: 600 });
+  });
+
+  it('never returns a negative size', () => {
+    const inverted = boxToPixels([900, 900, 100, 100], 1000, 1000);
+
+    expect(inverted.width).toBeGreaterThanOrEqual(0);
+    expect(inverted.height).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('stencil', () => {
+  /** Four pixels: black, dark grey, light grey, white. */
+  function pixels(): Uint8ClampedArray {
+    return new Uint8ClampedArray([
+      0, 0, 0, 255, 60, 60, 60, 255, 200, 200, 200, 255, 255, 255, 255, 255,
+    ]);
+  }
+
+  function alphas(data: Uint8ClampedArray): number[] {
+    return [data[3], data[7], data[11], data[15]];
+  }
+
+  /**
+   * The whole reason this function exists. `cutLayer` keeps the painting where
+   * the mask is *opaque*, and the model's mask is opaque everywhere — black
+   * included. Used as it arrives it would keep the entire box, which looks like
+   * a layer and is the whole rectangle.
+   */
+  it('turns brightness into transparency', () => {
+    const data = pixels();
+
+    stencil(data);
+
+    expect(alphas(data)).toEqual([0, 0, 255, 255]);
+  });
+
+  it('keeps the threshold where the model is more sure than not', () => {
+    const data = pixels();
+
+    stencil(data, MASK_THRESHOLD);
+
+    // 60 is below halfway and 200 above, so the dark grey goes and the light
+    // grey stays — hair and shadowed edges fall on this line.
+    expect(alphas(data)).toEqual([0, 0, 255, 255]);
+  });
+
+  it('takes a stricter threshold when asked', () => {
+    const data = pixels();
+
+    stencil(data, 220);
+
+    expect(alphas(data)).toEqual([0, 0, 0, 255]);
+  });
+
+  /** What survives is white, so the stencil is a stencil and not a grey wash. */
+  it('leaves what survives fully opaque white', () => {
+    const data = pixels();
+
+    stencil(data);
+
+    expect([data[12], data[13], data[14], data[15]]).toEqual([255, 255, 255, 255]);
+  });
+
+  /**
+   * A mask that arrives already transparent in places is respected: a pixel
+   * nothing was drawn into is not part of the layer, however bright the colour
+   * left in its channels.
+   */
+  it('does not resurrect a pixel that was never drawn', () => {
+    const untouched = new Uint8ClampedArray([255, 255, 255, 0]);
+
+    stencil(untouched);
+
+    expect(untouched[3]).toBe(0);
   });
 });

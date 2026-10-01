@@ -24,8 +24,16 @@ export interface Prices {
 
 export interface Cut {
   label: string;
-  /** A data url. */
+  /** The mask for the inside of `box`, as a data url. */
   mask: string;
+  /**
+   * `[y0, x0, y1, x1]`, each 0–1000 of the picture's size.
+   *
+   * The mask is only true inside this rectangle. Used without it, a mask of a
+   * head would be stretched across the whole painting — a wrong cut that looks
+   * like a right one.
+   */
+  box: [number, number, number, number];
 }
 
 export interface Layer {

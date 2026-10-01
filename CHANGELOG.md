@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.93.0
+
+- **feat** — the atelier's masks come from Gemini, which answers with a
+  probability map for the inside of a bounding box rather than a stencil for the
+  whole frame. Both of those have to be undone before a layer is cut: the box is
+  read onto the full-size painting, and brightness becomes transparency at a
+  threshold. Either one left out produces a layer that looks deliberate and is
+  the wrong part of the picture — a head stretched across a wall, or the whole
+  rectangle kept because a probability map is opaque even where it is black.
+
 ## 1.92.0
 
 - **feat** — the atelier: a guarded page that cuts one painting into parallax

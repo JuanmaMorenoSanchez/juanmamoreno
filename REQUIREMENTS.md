@@ -2200,8 +2200,13 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (16 tests) for the names the bucket will take,
-the working size a model is billed for, and the depth spread; and
+*Proven by:* `cutting.spec.ts` (28 tests) for the names the bucket will take,
+the working size a model is billed for, the depth spread, and the two things
+that have to be undone about one of the model's masks — `boxToPixels` "reads a
+box in thousandths onto a picture of any size", "keeps y before x, as the model
+gives them" and "clamps a box that runs off the picture"; `stencil` "turns
+brightness into transparency", without which the whole bounding box is kept,
+because a probability map is opaque even where it is black; and
 `atelier.component.spec.ts` "asks for a painting before it offers to do
 anything to one" and "uploads every file the manifest goes on to name", which
 is written down because it did not: the kept variants were listed as frames and

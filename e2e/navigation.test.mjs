@@ -45,11 +45,21 @@ describe('an artwork page', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artwork/5');
-    // The counter itself, not the heading. The heading is in the prerendered
+    // The counter's *text*, not the counter. The heading is in the prerendered
     // html and the counter arrives with the painting, so waiting on the first
     // and asserting on the second passed on a quiet machine and failed on a
     // busy one — the same fault the share control's check had.
+    //
+    // Waiting for the element was still not enough, and failed about one run in
+    // three on a loaded machine: `.counter` is in the dom before the catalogue
+    // answers, so it is briefly an empty box. What this test is about is the
+    // number in it, so that is what it waits for.
     await page.waitForSelector('.counter', READY);
+    await page.waitForFunction(
+      () => /\d+\s*\/\s*\d+/.test(document.querySelector('.counter')?.textContent ?? ''),
+      undefined,
+      READY
+    );
 
     // Token 5 is photographed more than once, so the pager counts above one.
     const text = await visibleText(page);

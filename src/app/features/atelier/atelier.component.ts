@@ -19,7 +19,15 @@ import { Parallax } from '@domain/generative/parallax';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AtelierService, Piece } from './atelier.service';
 import { CostComponent } from './cost.component';
-import { cutLayer, depthFor, layerFile, scriptedPointer, slug, workingSize } from './cutting';
+import {
+  cutLayer,
+  depthFor,
+  layerFile,
+  placeMask,
+  scriptedPointer,
+  slug,
+  workingSize,
+} from './cutting';
 
 /** One layer as it is being worked on, before it is a line in a manifest. */
 interface Draft {
@@ -225,7 +233,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const [index, cut] of cuts.entries()) {
           const mask = await loadImage(cut.mask);
           if (!mask) continue;
-          drafts.push(this.draftFrom(cut.label, mask, index, cuts.length));
+          drafts.push(this.draftFrom(cut.label, mask, cut.box, index, cuts.length));
         }
         this.layers.set(drafts);
         this.restack();
@@ -636,16 +644,31 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     this.layers.set(drafts);
   }
 
-  private draftFrom(label: string, mask: HTMLImageElement, index: number, total: number): Draft {
+  /**
+   * One layer from one of the model's masks.
+   *
+   * The mask covers a box and is a probability map, so it is placed and
+   * thresholded into a full-frame stencil before anything is cut with it. That
+   * stencil is also what the brush paints into, so a correction and a model's
+   * answer are the same kind of thing from here on.
+   */
+  private draftFrom(
+    label: string,
+    mask: HTMLImageElement,
+    box: [number, number, number, number],
+    index: number,
+    total: number
+  ): Draft {
     const painting = this.painting()!;
     const width = painting.naturalWidth;
     const height = painting.naturalHeight;
+    const placed = placeMask(mask, box, width, height);
 
     return {
       label,
       depth: depthFor(index, total),
-      mask: fullCanvas(mask, width, height),
-      cut: cutLayer(painting, mask, width, height),
+      mask: placed,
+      cut: cutLayer(painting, placed, width, height),
       saved: false,
     };
   }

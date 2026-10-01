@@ -21,6 +21,16 @@ export const WORKING_MAX_SIDE = 1024;
 /** Softness of a layer's edge, in pixels of the finished cut. */
 export const FEATHER_PX = 1.5;
 
+/**
+ * Where the edge of a layer is, on a mask that is a probability map.
+ *
+ * The model answers in greys: 255 is certainly the figure, 0 is certainly not,
+ * and the middle is where it is unsure — usually hair, an edge in shadow, or a
+ * brushstroke that goes both ways. Halfway is the honest reading, and the
+ * feather above softens whatever this leaves hard.
+ */
+export const MASK_THRESHOLD = 128;
+
 /** Lower-case, dashed, and nothing that could climb out of a folder. */
 export function slug(text: string, fallback = 'piece'): string {
   const made = text
@@ -119,4 +129,92 @@ export function scriptedPointer(seconds: number): { x: number; y: number } {
     x: Math.sin(seconds * 0.7) * 0.8,
     y: Math.cos(seconds * 0.43) * 0.55,
   };
+}
+
+/**
+ * Turns one of the model's masks into a full-frame stencil.
+ *
+ * Two things have to happen here, and getting either wrong produces a layer
+ * that looks deliberate and is wrong — which is worse than an obvious failure.
+ *
+ * **It covers a box, not the picture.** The mask is only true inside `box`,
+ * given as `[y0, x0, y1, x1]` in thousandths of the picture's size. Drawn over
+ * the whole frame it would stretch a head across a wall.
+ *
+ * **It is grey, not a stencil.** `cutLayer` keeps the painting where the mask
+ * is *opaque*, and a probability map is fully opaque everywhere — black included
+ * — so used directly it would keep the whole box. The brightness has to become
+ * the transparency.
+ */
+export function placeMask(
+  mask: CanvasImageSource,
+  box: readonly [number, number, number, number],
+  width: number,
+  height: number,
+  threshold = MASK_THRESHOLD
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext('2d');
+  if (!context) return canvas;
+
+  const at = boxToPixels(box, width, height);
+  context.drawImage(mask, at.x, at.y, at.width, at.height);
+
+  // Brightness becomes transparency, over the box alone: reading the whole
+  // frame would cost four bytes a pixel of a forty-megapixel painting to learn
+  // what we already know, which is that outside the box there is nothing.
+  if (at.width < 1 || at.height < 1) return canvas;
+
+  const region = context.getImageData(at.x, at.y, at.width, at.height);
+  stencil(region.data, threshold);
+  context.putImageData(region, at.x, at.y);
+
+  return canvas;
+}
+
+/**
+ * `[y0, x0, y1, x1]` in thousandths → a rectangle in pixels.
+ *
+ * Clamped to the picture, because a model that says 1001 should cost a pixel of
+ * accuracy rather than a thrown exception on `getImageData`.
+ */
+export function boxToPixels(
+  box: readonly [number, number, number, number],
+  width: number,
+  height: number
+): { x: number; y: number; width: number; height: number } {
+  const [y0, x0, y1, x1] = box;
+  const left = clamp(Math.round((x0 / 1000) * width), 0, width);
+  const top = clamp(Math.round((y0 / 1000) * height), 0, height);
+  const right = clamp(Math.round((x1 / 1000) * width), left, width);
+  const bottom = clamp(Math.round((y1 / 1000) * height), top, height);
+
+  return { x: left, y: top, width: right - left, height: bottom - top };
+}
+
+/**
+ * Makes a probability map into a stencil, in place.
+ *
+ * White becomes opaque white, anything below the threshold becomes nothing at
+ * all. Separate from the canvas work so the rule can be tested without one.
+ */
+export function stencil(data: Uint8ClampedArray, threshold = MASK_THRESHOLD): void {
+  for (let at = 0; at < data.length; at += 4) {
+    // Plain mean rather than a luminance weighting: these are greys, where the
+    // three channels agree, and a weighting would only matter if they did not.
+    const grey = (data[at] + data[at + 1] + data[at + 2]) / 3;
+    const keep = grey >= threshold && data[at + 3] > 0;
+
+    data[at] = 255;
+    data[at + 1] = 255;
+    data[at + 2] = 255;
+    data[at + 3] = keep ? 255 : 0;
+  }
+}
+
+function clamp(value: number, low: number, high: number): number {
+  return Math.min(Math.max(value, low), high);
 }
