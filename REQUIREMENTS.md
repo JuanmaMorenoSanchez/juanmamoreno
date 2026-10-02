@@ -2467,3 +2467,36 @@ than obeyed) and "the picture a shared link previews as" (3 tests, including
 that the original is never offered); and the built pages themselves, where
 `/artwork/195` and `/artwork/196` each carry their own painting while `/`,
 `/es/` and `/about` carry the landing page's
+
+### R133 — Rockets win plays a launch out of four paintings · met
+`/generative/rockets-win` shows the four states of one canvas in order — loaded,
+ignition, away, climbing — held for lengths that make a launch rather than a
+slideshow, and throws sparks and smoke over them.
+
+The long wait is most of the loop, and the two frames in the middle are over
+before they can be looked at: that is what makes them read as fast. Each frame
+arrives over the one before it, **except ignition**, which is a cut — softening
+that one is the single thing that would make the whole sequence look like a
+slideshow.
+
+The particles are not a fifth painting. The burst differs every time it fires
+and carries on into the next frame rather than stopping with it, which is what
+makes four stills read as one continuous thing. They are warm and faint because
+the paint is: a neutral grey at four tenths opacity sat on the painted plume as
+a flat lid and hid the best part of the picture. Sparks are drawn along the way
+they are going, not as dots — dots read as confetti at any size — and each
+leaves at its own heat, because every one leaving white read as a sparkler.
+
+Shaped for a phone, and filled rather than fitted: the paintings are four
+fifths as wide as they are tall and a phone is nearer a half, so fitting them
+would leave more empty screen than painting.
+
+Three of the four are the atelier's, fetched from the piece `rockets-win-i`
+they belong to rather than committed here.
+*Proven by:* `embers.spec.ts` (16 tests: the cone it throws into, that fire
+outnumbers smoke, that smoke outlives it, that the impulse dies away, that a
+step large enough to teleport everything is refused, and that a cool spark is a
+different colour from a hot one); `frame-timeline.spec.ts` "FrameTimeline.at"
+(7 tests, including that the frame being left wraps at the loop's seam, which is
+what a cross-fade fades out of); and `registry.spec.ts` "registers the sketch
+and not the piece it draws"

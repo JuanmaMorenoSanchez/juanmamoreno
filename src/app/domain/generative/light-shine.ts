@@ -75,7 +75,10 @@ export class LightShine {
     const cy = height * this.originY;
 
     const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    gradient.addColorStop(0, `rgba(${this.options.colorRgb}, ${this.options.peakAlpha * envelope})`);
+    gradient.addColorStop(
+      0,
+      `rgba(${this.options.colorRgb}, ${this.options.peakAlpha * envelope})`
+    );
     gradient.addColorStop(1, `rgba(${this.options.colorRgb}, 0)`);
 
     ctx.save();

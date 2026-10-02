@@ -35,8 +35,7 @@ describe('DustField', () => {
 
   it('imparts velocity to an otherwise still field on a gust', () => {
     const field = new DustField(800, 600, 60);
-    const totalSpeed = () =>
-      field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
+    const totalSpeed = () => field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
     expect(totalSpeed()).toBe(0);
     field.gust(400, 300, 50, 10000); // covers the whole canvas
     expect(totalSpeed()).toBeGreaterThan(0);
@@ -53,8 +52,7 @@ describe('DustField', () => {
 
   it('stir disturbs the field only above the speed threshold', () => {
     const field = new DustField(800, 600, 60);
-    const totalSpeed = () =>
-      field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
+    const totalSpeed = () => field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
     field.stir(400, 300, 0.3); // below DRAFT_MIN_SPEED
     expect(totalSpeed()).toBe(0);
     field.stir(400, 300, 5); // above threshold
@@ -63,8 +61,7 @@ describe('DustField', () => {
 
   it('puff disturbs the field', () => {
     const field = new DustField(800, 600, 60);
-    const totalSpeed = () =>
-      field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
+    const totalSpeed = () => field.list.reduce((s, m) => s + Math.abs(m.vx) + Math.abs(m.vy), 0);
     field.puff(400, 300);
     expect(totalSpeed()).toBeGreaterThan(0);
   });

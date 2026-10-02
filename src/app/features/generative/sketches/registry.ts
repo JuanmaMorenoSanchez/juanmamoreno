@@ -1,5 +1,6 @@
 import { BelieveSketch } from './believe.sketch';
 import { DustSketch } from './dust.sketch';
+import { RocketsWinSketch } from './rockets-win.sketch';
 import { SketchFactory } from './sketch';
 
 export interface SketchEntry {
@@ -25,6 +26,7 @@ export interface SketchEntry {
 export const SKETCHES: Record<string, SketchEntry> = {
   believe: { label: 'Believe', factory: () => new BelieveSketch() },
   hide: { label: 'Hide until everybody is dead', factory: () => new DustSketch() },
+  'rockets-win': { label: 'Rockets win', factory: () => new RocketsWinSketch() },
   // 'wind-direction': { label: 'Wind direction', factory: () => new WindDirectionSketch() },
 };
 
