@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.99.1
+
+- **fix** — the frame around a painting paints nothing. Its job is to reserve a
+  space, and a space that holds a colour is a panel: any moment the painting
+  does not fill it exactly, for any reason, there is a band of that colour
+  around the picture. That band was reported twice — blue while the blurred
+  preview filled the frame and stretched into it, grey once the preview was
+  fitted and the frame's own colour showed instead — and neither cause was ever
+  reproduced away from the artist's browser. Unfilled space shows the page now,
+  which is what unfilled space should look like. Fullscreen keeps its black,
+  where letterbox bars are deliberate.
+
 ## 1.99.0
 
 - **feat** — saving a piece no longer publishes it. `/generative/<id>` drew a

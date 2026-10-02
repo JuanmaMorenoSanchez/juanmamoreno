@@ -69,6 +69,42 @@ describe('an artwork page', () => {
 
     await page.close();
   });
+
+  /**
+   * The frame reserves a space and paints nothing into it.
+   *
+   * A space that holds a colour is a panel, so any moment the painting does not
+   * fill the frame exactly there is a visible band of that colour around the
+   * picture. That band was reported twice — blue while the blurred preview
+   * filled the frame and stretched into it, grey once the preview was fitted
+   * and the frame's own colour showed through instead — and neither cause was
+   * ever reproduced away from the artist's own browser. Unfilled space showing
+   * the page is what unfilled space is supposed to look like, whatever the
+   * cause turns out to be.
+   *
+   * Here rather than in a unit test because the rule is a stylesheet, and jsdom
+   * applies none.
+   */
+  it('reserves the painting a space without painting one', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/5');
+    await page.waitForSelector('.art-frame', READY);
+
+    const painted = await page.evaluate(() => {
+      const frame = document.querySelector('.art-frame');
+      return frame ? getComputedStyle(frame).backgroundColor : null;
+    });
+
+    // Fully transparent, however the browser spells it.
+    assert.match(
+      String(painted),
+      /rgba\(0,\s*0,\s*0,\s*0\)|transparent/,
+      `the frame paints ${painted}, which shows as a band wherever the painting does not fill it`
+    );
+
+    await page.close();
+  });
 });
 
 describe('the language a link lands you in', () => {

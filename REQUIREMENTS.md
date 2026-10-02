@@ -2404,3 +2404,25 @@ anything made from a discarded variant with it", "falls back to the painting
 when the chosen picture is discarded", "clears the bench when a different
 painting arrives", "says how big each picture on the bench is" and "says which
 picture the layers were cut from")
+
+### R131 — The frame reserves a space without painting one · met
+The box that holds an artwork's footprint declares no background outside
+fullscreen. Space it does not fill shows the page.
+
+**Because a space that holds a colour is a panel.** Any moment the painting does
+not fill the frame exactly there is a visible band of that colour around the
+picture, and that band was reported twice: blue while the blurred preview was
+filled to the frame and stretched into it, grey once the preview was fitted and
+the frame's own colour showed through instead.
+
+**Neither cause was ever reproduced.** Cold loads at four window sizes,
+navigation between views, the trait fallback and the thumbnail shapes all agreed
+every time — frame and painting identical to the pixel. So this does not fix the
+mismatch; it removes the only thing that made a mismatch visible, which holds
+whatever the cause turns out to be.
+
+Fullscreen keeps its black, where letterbox bars are deliberate and black is the
+right colour for them.
+*Proven by:* `navigation.test.mjs` "reserves the painting a space without
+painting one", which reads the computed background in a real browser — jsdom
+applies no component styles, so a unit test could not see this at all

@@ -22,6 +22,17 @@
 
   // Reserves the artwork's final footprint (aspect ratio from its traits)
   // before any image data arrives, so the content below never shifts.
+  //
+  // It paints nothing. Its job is to hold a space, and a space that holds a
+  // colour is a panel — so any moment the painting does not fill it exactly,
+  // for any reason, there is a visible band of that colour around the picture.
+  // That band was reported twice: blue when the blurred preview filled the
+  // frame and stretched into it, grey when the preview was fitted and the
+  // frame's own colour showed instead. Both times the band was this line.
+  //
+  // Unfilled space now shows the page, which is what unfilled space should look
+  // like. Fullscreen keeps its black below, where letterbox bars are deliberate
+  // and black is the right colour for them.
   .art-frame {
     position: relative;
     display: flex;
@@ -29,7 +40,6 @@
     justify-content: center;
     max-width: 100%;
     overflow: hidden;
-    background-color: var(--catalog-frame-bg);
 
     &:fullscreen {
       width: 100vw !important;
