@@ -82,6 +82,19 @@ export class ImageViewerComponent {
   readonly aspectRatio = computed(
     () => this.decodedAspectRatio() ?? this.artworkService.getAspectRatio(this.currentNft())
   );
+
+  /**
+   * Whether the frame is the shape of the photograph yet, rather than the shape
+   * of the canvas its traits describe.
+   *
+   * Until something has been measured these are two different shapes — a
+   * painting measured square, photographed slightly tall — and the blurred
+   * preview fitted into the wrong one sits in the middle of it with the frame's
+   * own grey either side of it and the blur's soft edge against that grey. So
+   * the preview waits for the shape it belongs in, which arrives with it: both
+   * come from the same thumbnail.
+   */
+  readonly shapeKnown = computed(() => this.decodedAspectRatio() !== null);
   readonly frameWidth = computed(() => `min(100%, calc(100vh * ${this.aspectRatio()}))`);
 
   // Brief directional nudge on prev/next so navigating between artworks reads

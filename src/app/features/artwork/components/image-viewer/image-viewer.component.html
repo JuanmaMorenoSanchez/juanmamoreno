@@ -84,10 +84,15 @@
         letterbox bars — which turned out to happen out of fullscreen too, any
         moment the frame is still the shape the painting was measured as. Fitted
         like the image it sits under, it cannot bleed anywhere.
+
+        And it waits for the frame to be the photograph's shape rather than the
+        canvas's. Fitted into the wrong shape it sits in the middle of the frame
+        with grey either side of it; the shape arrives with the thumbnail that
+        is measured to find it, so the wait is the length of one decode.
       -->
       <div
         class="preview-layer"
-        [class.visible]="hasPreview()"
+        [class.visible]="hasPreview() && shapeKnown()"
         [style.backgroundImage]="previewImage()"
       ></div>
 

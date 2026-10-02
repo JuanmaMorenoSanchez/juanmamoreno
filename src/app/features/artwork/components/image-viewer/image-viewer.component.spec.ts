@@ -195,6 +195,32 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
 
   it('shows the preview while there is nothing sharper', () => {
     component.previewImage.set('url(https://example.test/preview.jpg)');
+    component['decodedAspectRatio'].set(0.8);
+    fixture.detectChanges();
+
+    expect(preview()?.classList.contains('visible')).toBe(true);
+  });
+
+  /**
+   * Not until the frame is the photograph's shape.
+   *
+   * Before anything is measured the frame is the shape of the *canvas* the
+   * traits describe, which is not quite the shape of the photograph of it. The
+   * preview fitted into that sits in the middle of the frame with the frame's
+   * own grey either side and the blur's soft edge against it — which is what
+   * the artist saw, first as a blue border and then as a grey one. The shape
+   * arrives with the thumbnail that is measured to find it, so nothing is lost
+   * by waiting: both appear together.
+   */
+  it('waits for the frame to be the shape of the photograph', () => {
+    component.previewImage.set('url(https://example.test/preview.jpg)');
+    component['decodedAspectRatio'].set(null);
+    fixture.detectChanges();
+
+    expect(component.shapeKnown()).toBe(false);
+    expect(preview()?.classList.contains('visible')).toBe(false);
+
+    component['decodedAspectRatio'].set(0.8);
     fixture.detectChanges();
 
     expect(preview()?.classList.contains('visible')).toBe(true);
@@ -203,6 +229,7 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
   /** The change: it stays, so the sharp image resolves over it. */
   it('keeps the preview once the sharp image is up', () => {
     component.previewImage.set('url(https://example.test/preview.jpg)');
+    component['decodedAspectRatio'].set(0.8);
     component.layerA.set('https://example.test/full.jpg');
     fixture.detectChanges();
 
@@ -222,6 +249,7 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
    */
   it('keeps the preview in fullscreen too, now it cannot bleed', () => {
     component.previewImage.set('url(https://example.test/preview.jpg)');
+    component['decodedAspectRatio'].set(0.8);
     component.layerA.set('https://example.test/full.jpg');
     component.isFullScreen.set(true);
     fixture.detectChanges();

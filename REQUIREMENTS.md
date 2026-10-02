@@ -2300,10 +2300,18 @@ blurred paint: a second, wider, wrong copy of the painting beside the real one.
 That was taken for a fullscreen problem and guarded only there, and fullscreen
 was never the only place it happened. Fitted to the same box as the image, it
 cannot be visible beside it anywhere, in fullscreen or out.
+
+**And it waits for the frame to be the photograph's shape.** Fitting it solved
+the stretched paint and left the other half: fitted into a frame that is still
+the shape of the *canvas*, the preview sits in the middle with the frame's own
+grey either side of it and the blur's soft edge against that grey. The shape
+arrives with the thumbnail that is measured to find it, so waiting costs one
+decode and both appear together.
 *Proven by:* `image-viewer.component.spec.ts` "the blurred preview underneath"
-(4 tests: "keeps the preview once the sharp image is up", "keeps the preview in
-fullscreen too, now it cannot bleed", "shows the preview while there is nothing
-sharper" and "shows nothing when there is no preview to show")
+(5 tests: "keeps the preview once the sharp image is up", "keeps the preview in
+fullscreen too, now it cannot bleed", "waits for the frame to be the shape of
+the photograph", "shows the preview while there is nothing sharper" and "shows
+nothing when there is no preview to show")
 
 ### R127 — The frame holds its width while the painting loads · met
 An artwork's frame is measured once and then holds. The picture and the row of

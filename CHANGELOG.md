@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.98.2
+
+- **fix** — the blurred preview waits for the frame to be the shape of the
+  photograph rather than the shape of the canvas its traits describe. Fitted
+  into the wrong one it sat in the middle of the frame with the frame's own grey
+  either side and the blur's soft edge against it. Nothing is lost by waiting:
+  the shape arrives with the thumbnail that is measured to find it, so both
+  appear together.
+
 ## 1.98.1
 
 - **fix** — the blurred preview is fitted to the same box as the painting, not
