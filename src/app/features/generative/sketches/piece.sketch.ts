@@ -1,3 +1,4 @@
+import { environment } from '@environments/environment';
 import { Parallax } from '@domain/generative/parallax';
 import { Frame, loadImages, Sketch } from './sketch';
 
@@ -151,4 +152,14 @@ export function readManifest(body: unknown): PieceManifest {
  */
 export function orderedLayers(manifest: PieceManifest): PieceLayer[] {
   return [...(manifest.layers ?? [])].sort((a, b) => a.order - b.order);
+}
+
+/**
+ * A registration for one saved piece, by its id.
+ *
+ * Here rather than in the registry so that registering a piece is one line and
+ * knows nothing about where a manifest lives.
+ */
+export function pieceSketch(id: string): () => PieceSketch {
+  return () => new PieceSketch(`${environment.backendUrl}atelier/public/${id}`);
 }

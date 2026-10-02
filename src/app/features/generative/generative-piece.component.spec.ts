@@ -17,11 +17,14 @@ import { GenerativePieceComponent } from './generative-piece.component';
 function setup() {
   // jsdom has neither the Fullscreen API nor a 2d canvas context, and the
   // sketch would start an animation loop. None of that is what is under test.
-  vi.stubGlobal('ResizeObserver', class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  });
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  );
   HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
 
   TestBed.configureTestingModule({

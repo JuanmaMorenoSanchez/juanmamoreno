@@ -21,14 +21,6 @@
       <header class="derived-head">
         <strong>{{ piece.title }}</strong>
         <small>{{ piece.assets.length }} file{{ piece.assets.length === 1 ? '' : 's' }}</small>
-        <a
-          class="derived-link"
-          [href]="'/generative/' + piece.id"
-          target="_blank"
-          rel="noopener"
-          title="Open it as a generative piece"
-          >see it move ↗</a
-        >
         <button
           type="button"
           class="derived-remove"

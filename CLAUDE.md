@@ -126,7 +126,7 @@ document is a claim about the present, and only fails if something checks it.
 - **Signals** for component state; **`ng-content` projection** and lazy-loaded routes are used throughout (`loadComponent`).
 - **Strict TypeScript**, including `noPropertyAccessFromIndexSignature` and `useDefineForClassFields: false`.
 - **Tests use Vitest globals** (`describe`/`it`/`expect` are ambient — no imports needed). `src/test-providers.ts` applies `provideZonelessChangeDetection()` to every `TestBed`. Config lives in `vitest-base.config.ts` and `tsconfig.spec.json`.
-- `domain/generative/*` is live, tested, dependency-free motion logic — `Parallax` (depth → shift), `BeatClock`, `FrameTimeline`, particles — drawn by the Canvas 2D sketches in `features/generative/sketches`. There is no p5.js. A sketch's layers are either hand-cut pngs in `assets/images/canvases/` or a piece saved from the atelier, which `/generative/<piece id>` loads from its manifest without a deploy.
+- `domain/generative/*` is live, tested, dependency-free motion logic — `Parallax` (depth → shift), `BeatClock`, `FrameTimeline`, particles — drawn by the Canvas 2D sketches in `features/generative/sketches`. There is no p5.js. A sketch's layers are either hand-cut pngs in `assets/images/canvases/` or a piece saved from the atelier. **A saved piece is not a page until it is registered**: add a line to `sketches/registry.ts` using `pieceSketch('<piece id>')`, which is deliberate on purpose — it used to resolve for any unknown id, so every save published something nobody had decided to publish.
 
 ## Versioning and releases
 

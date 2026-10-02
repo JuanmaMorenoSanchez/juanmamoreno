@@ -9,7 +9,19 @@ export interface SketchEntry {
   factory: SketchFactory;
 }
 
-// Route id (`/generative/:id`) → sketch. Add new sketches here.
+/**
+ * Route id (`/generative/:id`) → sketch. Add new sketches here.
+ *
+ * A piece cut in the atelier is added here too, by hand, and that is the point:
+ * saving a piece used to make it a page at `/generative/<its id>` by existing,
+ * so every save published something nobody had decided to publish. It is one
+ * line and an import, and it is a decision:
+ *
+ *     import { pieceSketch } from './piece.sketch';
+ *     'rockets-win-i': { label: 'Rockets win I', factory: pieceSketch('rockets-win-i') },
+ *
+ * The id is the piece's own, as the catalogue page shows it.
+ */
 export const SKETCHES: Record<string, SketchEntry> = {
   believe: { label: 'Believe', factory: () => new BelieveSketch() },
   hide: { label: 'Hide until everybody is dead', factory: () => new DustSketch() },

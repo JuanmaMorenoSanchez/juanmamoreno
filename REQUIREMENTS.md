@@ -2267,19 +2267,23 @@ backend's `atelier.service.spec.ts` under B64 — this page refuses a press
 early so that one does not have to be made to find out, which is the part
 proved here.
 
-### R125 — A piece cut in the atelier is a generative piece without a deploy · met
-`/generative/<piece id>` draws a saved piece: the manifest is fetched, the
-layers are loaded and parallaxed by the same `Parallax` the hand-cut sketches
-use. A piece that does not exist draws a blank canvas rather than throwing
-sixty times a second.
+### R125 — A saved piece is not a page until somebody says so · met
+`/generative/<id>` draws a sketch that is in the registry and nothing else. A
+piece cut in the atelier is drawn there once a line is added for it, using
+`pieceSketch('<piece id>')` — one line and an import.
 
-The hand-cut pieces are code and have to be registered; a piece is data, and
-registering each one would have meant a deploy per piece — which is why there
-were two sketches in ten months.
-*Proven by:* `piece.sketch.spec.ts` "puts the stack back in the order he set,
-whatever order it arrives in", "reads a manifest the api wrapped", "reads one
-that is not wrapped", "draws nothing, quietly, when there is no such piece" and
-"survives a manifest that is not json at all"
+**It used to resolve for any id at all.** The viewer fell back to building a
+piece sketch for whatever it was given, so saving a piece published a page at a
+public address that nobody had decided to publish — the saving and the
+publishing were the same act, and only one of them was intended.
+
+The machinery is unchanged and still proved: a registered piece fetches its
+manifest, orders its layers and parallaxes them. What changed is that existing
+is no longer enough.
+*Proven by:* `registry.spec.ts` "does not answer for a piece nobody registered",
+which names the piece that is in the bucket today, "holds the sketches that are
+written by hand" and "lists exactly what it holds, for the menu"; and
+`piece.sketch.spec.ts`, which still proves the drawing
 
 ### R126 — A painting comes into focus, and does not wash out · met
 Wherever a painting is shown while a better file is still arriving — the hero on

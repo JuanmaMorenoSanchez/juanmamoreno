@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.99.0
+
+- **feat** — saving a piece no longer publishes it. `/generative/<id>` drew a
+  piece for any id it was handed, so the saving and the publishing were one act
+  and only one of them was meant. A piece is drawn there once a line is added
+  for it in the registry, `pieceSketch('<piece id>')` — one line, and a
+  decision. The drawing is unchanged; existing is no longer enough.
+
 ## 1.98.2
 
 - **fix** — the blurred preview waits for the frame to be the shape of the
