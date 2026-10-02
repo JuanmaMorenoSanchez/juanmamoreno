@@ -2206,8 +2206,11 @@ the class — the only place this fault was visible
 
 ### R123 — A painting can be cut into layers that move apart · met
 The atelier takes one picture — a catalogue number, or a file from the laptop —
-and then two things can be done with it, in either order and neither required:
-ask for a variant in words, or cut it into layers. A variant can be downloaded
+and puts it on a bench. The painting and every variant made from it sit there
+together, one of them chosen, and the two things that can be done — ask for a
+variant in words, or cut into layers — both act on whichever is chosen, in
+either order and neither required. So a variant can be cut up, and a variant of
+a variant asked for. A variant can be downloaded
 where it is made without being kept in the piece — the two are different
 intentions, and one worth using elsewhere is not always one worth saving here. Cutting asks a model for a
 mask per thing named and cuts the full-size original with each; depth and
@@ -2355,3 +2358,34 @@ every file for download, named as it is stored", "asks before throwing a piece
 away, and does nothing when refused", "takes the piece off the list once it is
 gone", "keeps the piece and says so when it would not go" and "asks for the
 listing once however many rows are built")
+
+### R130 — Every operation acts on the picture that is chosen · met
+The painting and every variant made from it sit on one bench, one of them
+chosen. Segmenting, filling in behind a layer and asking for another variant all
+act on the chosen one.
+
+**There was no such thing before.** The page had `painting` and a side-list of
+variants that nothing else could see, so every operation acted on the original
+whether that was what you meant or not — and a variant could not be cut up at
+all. There is no "the painting" now; there is what is on the bench.
+
+A stack is parked on the picture it was cut from rather than held once for the
+page, so clicking between pictures cannot destroy layers that were paid for. A
+variant records which picture it was made from, which is what makes a chain of
+them readable afterwards. Discarding one takes everything made from it along,
+because a variant of a discarded variant has nothing left to be a variant of,
+and the selection falls back to the painting — read before the bench changes,
+since asked afterwards it names whatever has slid into that position.
+
+The strip says how many pixels across each picture is. A variant comes back
+about a thousand where the painting is several thousand, so layers cut from one
+carry less paint: cut the painting for the best layers, cut a variant when what
+it changed is the point. Saying it on the strip puts the trade where the choice
+is made.
+*Proven by:* `atelier.component.spec.ts` "the bench" (8 tests: "cuts whichever
+picture is chosen, not always the painting", "keeps each stack with the picture
+it was cut from", "records which picture a variant was made from", "takes
+anything made from a discarded variant with it", "falls back to the painting
+when the chosen picture is discarded", "clears the bench when a different
+painting arrives", "says how big each picture on the bench is" and "says which
+picture the layers were cut from")

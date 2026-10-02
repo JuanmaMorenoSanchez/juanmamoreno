@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.98.0
+
+- **feat** — the atelier works on a bench rather than on "the painting". The
+  painting and every variant made from it sit in a strip, one of them chosen,
+  and asking for a variant, cutting into layers and filling in behind one all
+  act on whichever is chosen — so a variant can be cut up, and a variant of a
+  variant asked for. Each stack is parked on the picture it was cut from, so
+  clicking between them loses nothing that was paid for. The strip says how
+  many pixels across each one is, because a variant comes back about a thousand
+  where the painting is several thousand, and layers cut from one carry less
+  paint. Discarding a variant takes anything made from it along, since a variant
+  of a discarded variant has nothing left to be a variant of.
+
 ## 1.97.0
 
 - **feat** — a variant can be downloaded where it is made, kept or not. Keeping

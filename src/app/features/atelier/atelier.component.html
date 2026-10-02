@@ -58,7 +58,48 @@
   </section>
 
   @if (painting(); as painting) {
-    <!-- 2. The stage ----------------------------------------------------- -->
+    <!-- 2. On the bench --------------------------------------------------- -->
+    @if (bench().length > 1) {
+      <section class="atelier-step">
+        <h2>On the bench</h2>
+        <p class="atelier-hint">
+          Everything below acts on whichever of these is chosen — ask for a variant of it, cut it
+          into layers, fill in behind one. A stack stays with the picture it was cut from, so
+          clicking between them loses nothing. The sizes are worth a glance: a variant comes back
+          about a thousand pixels across where the painting is several thousand, so layers cut from
+          one carry less paint. Cut the painting for the best layers; cut a variant when what it
+          changed is the point.
+        </p>
+
+        <ul class="atelier-bench">
+          @for (item of bench(); track item.id; let i = $index) {
+            <li>
+              <button
+                type="button"
+                class="atelier-bench-pick"
+                [class.is-on]="onBench() === i"
+                [attr.aria-pressed]="onBench() === i"
+                (click)="select(i)"
+              >
+                <img [src]="item.image.src" [alt]="item.label" />
+                <span>{{ item.label }}</span>
+                <em>
+                  {{ widthOf(item) }}px
+                  @if (item.layers.length) {
+                    · {{ item.layers.length }} layer{{ item.layers.length === 1 ? '' : 's' }}
+                  }
+                  @if (item.kept) {
+                    · kept
+                  }
+                </em>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <!-- 3. The stage ----------------------------------------------------- -->
     <section class="atelier-step">
       <h2>
         @if (refining() !== undefined) {
@@ -114,7 +155,7 @@
       }
     </section>
 
-    <!-- 3. A variant, from words ----------------------------------------- -->
+    <!-- 4. A variant, from words ----------------------------------------- -->
     <section class="atelier-step">
       <h2>Variants</h2>
       <p class="atelier-hint">
@@ -147,7 +188,7 @@
               <img [src]="variant.image.src" [alt]="variant.instruction" />
               <small>{{ variant.instruction }}</small>
               <span>
-                <button type="button" class="atelier-link" (click)="keep($index)">
+                <button type="button" class="atelier-link" (click)="keep(variant)">
                   {{ variant.kept ? 'Kept' : 'Keep' }}
                 </button>
                 <!--
@@ -161,7 +202,7 @@
                 <a class="atelier-link" [href]="variant.image.src" [download]="variantName(variant)"
                   >Download</a
                 >
-                <button type="button" class="atelier-link" (click)="discardVariant($index)">
+                <button type="button" class="atelier-link" (click)="discardVariant(variant)">
                   Discard
                 </button>
               </span>
@@ -171,7 +212,7 @@
       }
     </section>
 
-    <!-- 4. Cutting it into layers ---------------------------------------- -->
+    <!-- 5. Cutting it into layers ---------------------------------------- -->
     <section class="atelier-step">
       <h2>Cut it into layers</h2>
       <p class="atelier-hint">
@@ -196,7 +237,7 @@
       </div>
     </section>
 
-    <!-- 5. The stack ----------------------------------------------------- -->
+    <!-- 6. The stack ----------------------------------------------------- -->
     @if (layers().length) {
       <section class="atelier-step">
         <h2>The stack</h2>
@@ -247,7 +288,7 @@
       </section>
     }
 
-    <!-- 6. Keeping it ----------------------------------------------------- -->
+    <!-- 7. Keeping it ----------------------------------------------------- -->
     @if (hasSomething()) {
       <section class="atelier-step">
         <h2>Keep it</h2>
@@ -260,8 +301,11 @@
             (input)="title.set($any($event.target).value)"
           />
           <span class="atelier-hint"
-            >saved as <code>{{ pieceId() }}</code></span
-          >
+            >saved as <code>{{ pieceId() }}</code>
+            @if (cutFrom(); as from) {
+              · layers cut from <strong>{{ from }}</strong>
+            }
+          </span>
           <button type="button" class="atelier-do" [disabled]="!canSave()" (click)="savePiece()">
             Save the piece
           </button>
@@ -269,7 +313,7 @@
       </section>
     }
 
-    <!-- 7. A reel of it -------------------------------------------------- -->
+    <!-- 8. A reel of it -------------------------------------------------- -->
     @if (layers().length) {
       <section class="atelier-step">
         <h2>Make a reel of it</h2>
@@ -295,7 +339,7 @@
     }
   }
 
-  <!-- 8. The shelf --------------------------------------------------------- -->
+  <!-- 9. The shelf --------------------------------------------------------- -->
   @if (pieces(); as pieces) {
     @if (pieces.length) {
       <section class="atelier-step">

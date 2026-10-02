@@ -7,6 +7,28 @@ import { of } from 'rxjs';
 import { AtelierComponent } from './atelier.component';
 import { AtelierService, Prices } from './atelier.service';
 
+/**
+ * A variant as it sits on the bench. `from` is always the painting here: the
+ * chains of them have their own test.
+ */
+function benchVariant(
+  id: string,
+  instruction: string,
+  kept: boolean,
+  image: HTMLImageElement = new Image()
+) {
+  return {
+    id,
+    label: instruction,
+    kind: 'variant' as const,
+    image,
+    instruction,
+    from: 'painting',
+    kept,
+    layers: [],
+  };
+}
+
 describe('AtelierComponent', () => {
   let fixture: ComponentFixture<AtelierComponent>;
   let atelier: AtelierService;
@@ -71,7 +93,7 @@ describe('AtelierComponent', () => {
    * the template only asks whether there is one.
    */
   function withPainting(): void {
-    fixture.componentInstance.painting.set(new Image());
+    fixture.componentInstance['putOnBench'](new Image(), 'the painting');
     fixture.detectChanges();
   }
 
@@ -180,14 +202,15 @@ describe('AtelierComponent', () => {
     };
 
     const component = fixture.componentInstance;
-    component.painting.set(new Image());
+    component['putOnBench'](new Image(), 'the painting');
     component.title.set('Believe');
-    component.layers.set([
+    component['setLayers']([
       { label: 'head', depth: 1, mask: stubCanvas(), cut: stubCanvas(), saved: false },
     ]);
-    component.variants.set([
-      { instruction: 'close her eyes', image: new Image(), kept: true },
-      { instruction: 'and smile', image: new Image(), kept: false },
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'close her eyes', true),
+      benchVariant('v2', 'and smile', false),
     ]);
     fixture.detectChanges();
 
@@ -414,7 +437,7 @@ describe('AtelierComponent, the stage', () => {
   it('shows the painting as soon as one is chosen', () => {
     const component = fixture.componentInstance;
     const painting = picture();
-    component.painting.set(painting);
+    component['putOnBench'](painting, 'the painting');
 
     const context = stubContext();
     component['drawParallax'](context, { width: 900, height: 600 } as HTMLCanvasElement, painting);
@@ -429,7 +452,7 @@ describe('AtelierComponent, the stage', () => {
    */
   it('says so when a pass finds nothing', async () => {
     const component = fixture.componentInstance;
-    component.painting.set(picture());
+    component['putOnBench'](picture(), 'the painting');
     component.labels.set('a dog');
     atelier.segment = () => of([]);
 
@@ -452,11 +475,12 @@ describe('AtelierComponent, the stage', () => {
    */
   it('offers every variant for download, kept or not', () => {
     const component = fixture.componentInstance;
-    component.painting.set(picture());
+    component['putOnBench'](picture(), 'the painting');
     component.source.set('182');
-    component.variants.set([
-      { instruction: 'close her eyes', image: picture(), kept: false },
-      { instruction: 'and smile', image: picture(), kept: true },
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'close her eyes', false, picture()),
+      benchVariant('v2', 'and smile', true, picture()),
     ]);
     fixture.detectChanges();
 
@@ -478,13 +502,13 @@ describe('AtelierComponent, the stage', () => {
     const component = fixture.componentInstance;
     component.source.set('182');
 
-    expect(
-      component.variantName({ instruction: '¡Close her EYES!', image: picture(), kept: false })
-    ).toBe('182-close-her-eyes.png');
+    expect(component.variantName(benchVariant('v1', '¡Close her EYES!', false, picture()))).toBe(
+      '182-close-her-eyes.png'
+    );
 
     // Nothing to go on either side still produces a name a browser will take.
     component.source.set('');
-    expect(component.variantName({ instruction: '¿¡!?', image: picture(), kept: false })).toBe(
+    expect(component.variantName(benchVariant('v1', '¿¡!?', false, picture()))).toBe(
       'painting-variant.png'
     );
   });
@@ -492,14 +516,248 @@ describe('AtelierComponent, the stage', () => {
   /** Nothing to keep is nothing to name, and variants alone are something. */
   it('offers to keep a piece of variants with no layers at all', () => {
     const component = fixture.componentInstance;
-    component.painting.set(picture());
+    component['putOnBench'](picture(), 'the painting');
     component.title.set('Believe');
 
     expect(component.hasSomething()).toBe(false);
 
-    component.variants.set([{ instruction: 'close her eyes', image: picture(), kept: true }]);
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'close her eyes', true, picture()),
+    ]);
 
     expect(component.hasSomething()).toBe(true);
     expect(component.canSave()).toBe(true);
+  });
+});
+
+describe('AtelierComponent, the bench', () => {
+  let fixture: ComponentFixture<AtelierComponent>;
+  let atelier: AtelierService;
+
+  const priced: Prices = {
+    prices: {
+      segment: { operation: 'segment', usd: 0.003, what: 'one pass' },
+      inpaint: { operation: 'inpaint', usd: 0.04, what: 'one fill' },
+      edit: { operation: 'edit', usd: 0.04, what: 'one variant' },
+    },
+    ceiling: 5,
+    spent: 0,
+    left: 5,
+    configured: true,
+  };
+
+  function picture(width = 4000): HTMLImageElement {
+    return { naturalWidth: width, naturalHeight: width * 0.75, src: 'x' } as HTMLImageElement;
+  }
+
+  const layer = () => ({
+    label: 'the figure',
+    depth: 1,
+    mask: document.createElement('canvas'),
+    cut: document.createElement('canvas'),
+    saved: false,
+  });
+
+  beforeEach(async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AtelierComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of([]),
+            getNftById: () => null,
+            getNftQualityUrl: () => '',
+          },
+        },
+      ],
+    });
+    atelier = TestBed.inject(AtelierService);
+    atelier.loadPrices = () => of(priced);
+    atelier.pieces = () => of([]);
+
+    // Its own, rather than whatever an earlier describe left on the global. The
+    // last one to set it made loads fail, which here meant a variant silently
+    // never arriving — a test depending on the order of other tests.
+    class Loads {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      crossOrigin = '';
+      naturalWidth = 1024;
+      naturalHeight = 768;
+      set src(_value: string) {
+        setTimeout(() => this.onload?.(), 0);
+      }
+    }
+    globalThis.Image = Loads as unknown as typeof Image;
+    HTMLCanvasElement.prototype.toBlob = function (callback: BlobCallback): void {
+      callback(new Blob(['a picture']));
+    };
+
+    fixture = TestBed.createComponent(AtelierComponent);
+    await fixture.whenStable();
+    atelier.prices.set(priced);
+    fixture.componentInstance['putOnBench'](picture(), 'the painting');
+    fixture.detectChanges();
+  });
+
+  /**
+   * The whole point of the restructure. Every operation used to act on the
+   * original whether that was what you meant or not, because the page had "the
+   * painting" and a side-list of variants that nothing else could see.
+   */
+  it('cuts whichever picture is chosen, not always the painting', async () => {
+    const component = fixture.componentInstance;
+    const variant = picture(1024);
+    component.bench.set([...component.bench(), benchVariant('v1', 'eyes closed', false, variant)]);
+    component.onBench.set(1);
+
+    let sent: Blob | undefined;
+    atelier.segment = (working) => {
+      sent = working;
+      return of([]);
+    };
+    component.labels.set('the figure');
+
+    await component.findLayers();
+
+    expect(sent).toBeDefined();
+    expect(component.painting()).toBe(variant);
+  });
+
+  /**
+   * Parked, not shared. Clicking between pictures cannot destroy layers that
+   * were paid for.
+   */
+  it('keeps each stack with the picture it was cut from', () => {
+    const component = fixture.componentInstance;
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'eyes closed', false, picture(1024)),
+    ]);
+
+    component['setLayers']([layer()]);
+    expect(component.layers()).toHaveLength(1);
+
+    component.select(1);
+    expect(component.layers()).toHaveLength(0);
+
+    component['setLayers']([layer(), layer()]);
+    expect(component.layers()).toHaveLength(2);
+
+    // Back to the painting: its own stack is still there, untouched.
+    component.select(0);
+    expect(component.layers()).toHaveLength(1);
+  });
+
+  /** A variant of a variant is the ordinary way to iterate on one. */
+  it('records which picture a variant was made from', async () => {
+    const component = fixture.componentInstance;
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'eyes closed', false, picture(1024)),
+    ]);
+    component.onBench.set(1);
+
+    atelier.edit = () => of({ image: 'data:image/png;base64,aa' });
+    component.instruction.set('and smiling');
+
+    await component.makeVariant();
+    await fixture.whenStable();
+    // The variant is appended after an image decodes, which the stubbed Image
+    // reports on a macrotask. Without this the assertion reads the bench as it
+    // was before the variant arrived.
+    await new Promise((settle) => setTimeout(settle, 0));
+
+    const made = component.bench().at(-1);
+    expect(made?.from).toBe('v1');
+    // And it is selected, because asking for one is asking to look at it.
+    expect(component.onBench()).toBe(component.bench().length - 1);
+  });
+
+  /**
+   * A variant of a discarded variant has nothing left to be a variant of, and
+   * leaving it behind leaves a picture whose lineage names something gone.
+   */
+  it('takes anything made from a discarded variant with it', () => {
+    const component = fixture.componentInstance;
+    const first = benchVariant('v1', 'eyes closed', false, picture(1024));
+    const second = { ...benchVariant('v2', 'and smiling', false, picture(1024)), from: 'v1' };
+    const third = {
+      ...benchVariant('v3', 'of the painting', false, picture(1024)),
+      from: 'painting',
+    };
+    component.bench.set([...component.bench(), first, second, third]);
+
+    component.discardVariant(first);
+
+    expect(component.bench().map((item) => item.id)).toEqual(['painting', 'v3']);
+  });
+
+  /** Nothing is left selected that is no longer on the bench. */
+  it('falls back to the painting when the chosen picture is discarded', () => {
+    const component = fixture.componentInstance;
+    const variant = benchVariant('v1', 'eyes closed', false, picture(1024));
+    component.bench.set([...component.bench(), variant]);
+    component.select(1);
+
+    component.discardVariant(variant);
+
+    expect(component.onBench()).toBe(0);
+    expect(component.painting()).toBeDefined();
+  });
+
+  /**
+   * A new painting clears the bench: the variants and stacks on it were made
+   * from a different picture and mean nothing beside this one.
+   */
+  it('clears the bench when a different painting arrives', () => {
+    const component = fixture.componentInstance;
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'eyes closed', false, picture(1024)),
+    ]);
+    component['setLayers']([layer()]);
+
+    component['putOnBench'](picture(), 'another painting');
+
+    expect(component.bench()).toHaveLength(1);
+    expect(component.variants()).toEqual([]);
+    expect(component.layers()).toEqual([]);
+    expect(component.onBench()).toBe(0);
+  });
+
+  /**
+   * The sizes are the trade, said where the choice is made: a variant comes
+   * back about a thousand pixels across where the painting is several thousand,
+   * so layers cut from one carry less paint.
+   */
+  it('says how big each picture on the bench is', () => {
+    const component = fixture.componentInstance;
+    component.bench.set([
+      ...component.bench(),
+      benchVariant('v1', 'eyes closed', false, picture(1024)),
+    ]);
+    fixture.detectChanges();
+
+    const strip = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(strip).toContain('4000px');
+    expect(strip).toContain('1024px');
+  });
+
+  /** Which picture a stack came from, where it is about to be given a name. */
+  it('says which picture the layers were cut from', () => {
+    const component = fixture.componentInstance;
+    component.title.set('Believe');
+    component['setLayers']([layer()]);
+    fixture.detectChanges();
+
+    expect(component.cutFrom()).toBe('the painting');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('layers cut from');
   });
 });

@@ -44,10 +44,32 @@ interface Draft {
 }
 
 /** One variant made by asking in words — a frame, once it is kept. */
-interface Variant {
-  instruction: string;
+/**
+ * One picture on the bench, and whatever has been cut from it.
+ *
+ * The page used to have `painting` and a side-list of variants that nothing
+ * else could see, so every operation acted on the original whether that was
+ * what you meant or not. There is no "the painting" now — there is a bench with
+ * pictures on it, one of them selected, and segment, fill, variant and cut all
+ * act on the selected one.
+ *
+ * A stack is parked here rather than held once for the page, so clicking
+ * between pictures cannot destroy layers that were paid for.
+ */
+interface Bench {
+  id: string;
+  /** 'the painting', or the sentence that made this one. */
+  label: string;
+  kind: 'painting' | 'variant';
   image: HTMLImageElement;
+  /** The variant's instruction, kept for naming a download. */
+  instruction?: string;
+  /** Which picture on the bench this was made from — the lineage. */
+  from?: string;
+  /** Variants only: whether it goes into the piece as a frame. */
   kept: boolean;
+  /** The layers cut from *this* picture. Parked, not shared. */
+  layers: Draft[];
 }
 
 /** How long a recorded reel runs, in seconds. */
@@ -97,13 +119,30 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   /** The painting being worked on, at whatever size it really is. */
-  readonly painting = signal<HTMLImageElement | undefined>(undefined);
+  /** Everything on the bench. The painting is first; variants follow it. */
+  readonly bench = signal<Bench[]>([]);
+  /** Which one every operation acts on. */
+  readonly onBench = signal(0);
+
+  private readonly current = computed(() => this.bench()[this.onBench()]);
+
+  /**
+   * The picture being worked on.
+   *
+   * A computed over the bench rather than a signal of its own, so that every
+   * place that already asked for "the painting" asks for the selected picture
+   * instead without being rewritten — which is also the point: there was never
+   * a good reason for those to mean different things.
+   */
+  readonly painting = computed(() => this.current()?.image);
   readonly title = signal('');
   readonly source = signal('');
   readonly labels = signal('the figure, the background');
 
-  readonly layers = signal<Draft[]>([]);
-  readonly variants = signal<Variant[]>([]);
+  /** The stack cut from whatever is selected. Parked on it, not on the page. */
+  readonly layers = computed(() => this.current()?.layers ?? []);
+  /** The pictures a sentence made, in the order they were made. */
+  readonly variants = computed(() => this.bench().filter((item) => item.kind === 'variant'));
   readonly instruction = signal('close her eyes, keep everything else exactly as it is');
 
   /** Which layer the brush is working on; nothing means the parallax preview. */
@@ -131,6 +170,9 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly hasSomething = computed(
     () => this.layers().length > 0 || this.variants().some((variant) => variant.kept)
   );
+
+  /** Which picture the stack about to be saved was cut from. */
+  readonly cutFrom = computed(() => (this.layers().length ? this.current()?.label : undefined));
   readonly canSave = computed(
     () => this.hasSomething() && this.title().trim().length > 0 && !this.busy()
   );
@@ -165,6 +207,42 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     cancelAnimationFrame(this.frame);
   }
 
+  /**
+   * Puts a picture on the bench and selects it.
+   *
+   * A new painting clears the bench: the variants and stacks on it were made
+   * from a different picture and mean nothing beside this one.
+   */
+  private putOnBench(image: HTMLImageElement, label: string): void {
+    this.bench.set([{ id: 'painting', label, kind: 'painting', image, kept: false, layers: [] }]);
+    this.onBench.set(0);
+    this.restack();
+  }
+
+  /** Writes a stack onto the picture it was cut from, and nowhere else. */
+  private setLayers(drafts: Draft[]): void {
+    const at = this.onBench();
+    this.bench.set(
+      this.bench().map((item, index) => (index === at ? { ...item, layers: drafts } : item))
+    );
+    this.restack();
+  }
+
+  /** Switches which picture everything acts on. Its stack comes with it. */
+  select(index: number): void {
+    if (index < 0 || index >= this.bench().length) return;
+
+    this.onBench.set(index);
+    this.refining.set(undefined);
+    this.problem.set('');
+    this.restack();
+  }
+
+  /** How many pixels across the selected picture is, for the strip to say. */
+  widthOf(item: Bench): number {
+    return item.image.naturalWidth;
+  }
+
   /** A file from the laptop. Always works, and never touches anyone's CORS. */
   async choose(event: Event): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -177,11 +255,9 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.painting.set(image);
     this.source.set(file.name);
     if (!this.title()) this.title.set(file.name.replace(/\.[^.]+$/, ''));
-    this.layers.set([]);
-    this.variants.set([]);
+    this.putOnBench(image, 'the file');
   }
 
   /**
@@ -229,11 +305,9 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.painting.set(image);
     this.source.set(id);
     this.title.set(nft.name ?? `painting ${id}`);
-    this.layers.set([]);
-    this.variants.set([]);
+    this.putOnBench(image, nft.name ?? `painting ${id}`);
   }
 
   /** One pass over the painting, finding everything he named. */
@@ -295,8 +369,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
 
-        this.layers.set(drafts);
-        this.restack();
+        this.setLayers(drafts);
       });
   }
 
@@ -346,8 +419,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           cut: full,
           saved: false,
         });
-        this.layers.set(drafts);
-        this.restack();
+        this.setLayers(drafts);
       });
   }
 
@@ -378,10 +450,27 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         const image = await loadImage(made.image);
         if (!image) return;
 
-        this.variants.set([
-          ...this.variants(),
-          { instruction: this.instruction().trim(), image, kept: false },
-        ]);
+        // Onto the bench rather than into a side-list, so it can be cut, filled
+        // and asked for another variant of in turn. `from` records which
+        // picture it was made of, which is what makes a chain of them readable
+        // afterwards — "eyes closed", then "and smiling" of that.
+        const instruction = this.instruction().trim();
+        const made_from = this.current()?.id ?? 'painting';
+        const next: Bench = {
+          id: `v${this.bench().length}`,
+          label: instruction,
+          kind: 'variant',
+          image,
+          instruction,
+          from: made_from,
+          kept: false,
+          layers: [],
+        };
+
+        this.bench.set([...this.bench(), next]);
+        // Selected, because asking for a variant is asking to look at it.
+        this.onBench.set(this.bench().length - 1);
+        this.restack();
       });
   }
 
@@ -393,18 +482,45 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
    * to download one rather than keep it in the piece is to use it somewhere
    * else, where the filename is all the description it has.
    */
-  variantName(variant: Variant): string {
-    return `${slug(this.source() || 'painting')}-${slug(variant.instruction, 'variant')}.png`;
+  variantName(variant: Bench): string {
+    return `${slug(this.source() || 'painting')}-${slug(variant.instruction ?? '', 'variant')}.png`;
   }
 
-  keep(index: number): void {
-    const variants = [...this.variants()];
-    variants[index] = { ...variants[index], kept: !variants[index].kept };
-    this.variants.set(variants);
+  /** Addressed by id rather than by position: the strip holds the painting too. */
+  keep(variant: Bench): void {
+    this.bench.set(
+      this.bench().map((item) => (item.id === variant.id ? { ...item, kept: !item.kept } : item))
+    );
   }
 
-  discardVariant(index: number): void {
-    this.variants.set(this.variants().filter((_, at) => at !== index));
+  /**
+   * Throws a variant off the bench, and anything made from it with it.
+   *
+   * A variant of a discarded variant has nothing left to be a variant of, and
+   * leaving it would leave a picture whose lineage names something that is not
+   * there. Selection falls back to the painting, which is always first.
+   */
+  discardVariant(variant: Bench): void {
+    const gone = new Set([variant.id]);
+    let grew = true;
+    while (grew) {
+      grew = false;
+      for (const item of this.bench()) {
+        if (item.from && gone.has(item.from) && !gone.has(item.id)) {
+          gone.add(item.id);
+          grew = true;
+        }
+      }
+    }
+
+    // Read before the bench changes. Asked afterwards, `current()` is already
+    // whatever has slid into that position — or nothing — so the selection
+    // stayed pointing at a picture that had gone.
+    const wasOn = this.current()?.id ?? '';
+
+    this.bench.set(this.bench().filter((item) => !gone.has(item.id)));
+    if (gone.has(wasOn)) this.onBench.set(0);
+    this.restack();
   }
 
   /** Moves a layer forward or back, which is the one thing no model can tell. */
@@ -414,12 +530,11 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     if (to < 0 || to >= drafts.length) return;
 
     [drafts[index], drafts[to]] = [drafts[to], drafts[index]];
-    this.layers.set(drafts);
-    this.restack();
+    this.setLayers(drafts);
   }
 
   remove(index: number): void {
-    this.layers.set(this.layers().filter((_, at) => at !== index));
+    this.setLayers(this.layers().filter((_, at) => at !== index));
     this.refining.set(undefined);
     this.restack();
   }
@@ -431,8 +546,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   setDepth(index: number, value: string): void {
     const drafts = [...this.layers()];
     drafts[index] = { ...drafts[index], depth: Number(value) };
-    this.layers.set(drafts);
-    this.restack();
+    this.setLayers(drafts);
   }
 
   /** Uploads every layer that has changed, then the manifest that names them. */
@@ -511,7 +625,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.layers.set(drafts.map((draft) => ({ ...draft, saved: true })));
+    this.setLayers(drafts.map((draft) => ({ ...draft, saved: true })));
     this.saved.set(`Saved as ${piece.id}.`);
     this.atelier
       .pieces(token)
@@ -724,7 +838,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       cut: cutLayer(painting, draft.mask, painting.naturalWidth, painting.naturalHeight),
       saved: false,
     };
-    this.layers.set(drafts);
+    this.setLayers(drafts);
   }
 
   /**
@@ -768,7 +882,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     const kept = this.variants().filter((variant) => variant.kept);
     if (!kept.length) return undefined;
 
-    return [{ label: 'variants', files: kept.map((variant, index) => variantFile(index)) }];
+    return [{ label: 'variants', files: kept.map((_, index) => variantFile(index)) }];
   }
 
   /** What a recorded reel is for: the frame Instagram wants. */
