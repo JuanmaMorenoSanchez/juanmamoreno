@@ -281,9 +281,17 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         // stage simply going back to the whole painting looks like a button
         // that did nothing.
         if (!drafts.length) {
+          // Two different things look like this, and the second is the one
+          // nobody would guess: the model this runs on is the cheap tier, and
+          // returning a mask is a capability rather than a matter of quality.
+          // One that has had it dropped answers with no masks for every
+          // painting and every word, which from here is indistinguishable from
+          // a painting with no sky in it.
           this.problem.set(
             `Nothing was found for ${labels.join(', ')}. The pass was paid for either way — ` +
-              `try naming what is in the painting more plainly.`
+              `try naming what is in the painting more plainly. If every pass comes back ` +
+              `empty whatever you name, it is the model rather than the paintings: ` +
+              `set ATELIER_SEGMENT_MODEL=gemini-3.8-flash.`
           );
         }
 

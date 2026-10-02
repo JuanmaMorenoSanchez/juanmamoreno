@@ -438,6 +438,10 @@ describe('AtelierComponent, the stage', () => {
 
     expect(component.problem()).toContain('Nothing was found for a dog');
     expect(component.problem()).toContain('paid for either way');
+    // Segmentation runs on the cheap tier, where returning a mask is a
+    // capability that can simply be absent. Every pass coming back empty means
+    // the model, not the paintings, and nothing on screen would say so.
+    expect(component.problem()).toContain('ATELIER_SEGMENT_MODEL');
     expect(component.layers()).toEqual([]);
   });
 

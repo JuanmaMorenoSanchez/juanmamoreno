@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.96.1
+
+- **chore** — a pass that finds nothing names the one cause nobody would guess.
+  Segmentation now runs on the cheap tier, where returning a mask is a
+  capability that can simply be absent — and a model without it answers with no
+  masks for every painting and every word, which on screen is indistinguishable
+  from a painting that has no sky in it.
+
 ## 1.96.0
 
 - **fix** — the atelier showed the painting you chose. It drew the layers and
