@@ -111,6 +111,54 @@ describe('ImageViewerComponent — the shape of the frame', () => {
    * at the exact moment the sharp image was fading in over the blur. The resize
    * is what the eye followed, so the fade read as a jump.
    */
+  /**
+   * The case the artist found: 195 and 196 but not 202, and only when arrived
+   * at directly rather than through the strip of other paintings.
+   *
+   * `getAspectRatio` prefers the shape of the on-chain thumbnail and falls back
+   * to the traits of the canvas. A canvas measured 20 x 25 is 0.8000; the
+   * photograph of it is 0.8056. Five pixels at this size, two and a half down
+   * each side, showing as a fade of blurred paint beside the picture — and
+   * which arrival path you took decided which of the two the frame kept,
+   * because the file was no longer allowed to correct it.
+   */
+  it('takes the shape from the sharp file when the frame is the canvas, not the photograph', async () => {
+    vi.spyOn(component, 'ratioOf').mockResolvedValue(null);
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+
+    // The traits' shape: a canvas of 20 x 25.
+    component['decodedAspectRatio'].set(0.8);
+    // The photograph: 3652 x 4533, which is 0.7% away — several pixels.
+    component['decode'] = async () => ({ width: 3652, height: 4533 });
+
+    await component['loadBestCandidate'](['https://example.test/full.jpg'], component['loadToken']);
+    await settle();
+
+    expect(component.aspectRatio()).toBeCloseTo(3652 / 4533, 4);
+  });
+
+  /**
+   * And a hair is left alone, which is the other half: the same photograph
+   * measured at two scalings differs by a pixel or two, and correcting that
+   * moved the frame at the exact moment the sharp image was fading in.
+   */
+  it('leaves the frame alone when the sharp file only rounds differently', async () => {
+    vi.spyOn(component, 'ratioOf').mockResolvedValue(null);
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+
+    component['decodedAspectRatio'].set(0.8056);
+    const settled = component.aspectRatio();
+    // 900 x 1117 is the same photograph, scaled: 0.8058, two ten-thousandths out.
+    component['decode'] = async () => ({ width: 900, height: 1117 });
+
+    await component['loadBestCandidate'](['https://example.test/full.jpg'], component['loadToken']);
+    await settle();
+
+    expect(component.aspectRatio()).toBe(settled);
+  });
+
   it('does not move the frame again when the sharp file arrives', async () => {
     vi.spyOn(component, 'ratioOf').mockResolvedValue(0.75);
     ref.setInput('nfts', [painting('1')]);

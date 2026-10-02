@@ -2333,12 +2333,24 @@ Measured in Chrome over three paintings, sampling the frame and the toolbar
 every 100ms: tokens 100 and 182 showed two widths each — `[889 892]` and
 `[900 901]` — and show one each now.
 
-A preview that cannot be decoded still leaves the sharp file free to correct
-the measurements, because one late settle beats a frame that is the wrong shape
-for good.
+**The sharp file corrects a shape that is materially wrong, and only that.**
+Holding the first measurement whatever it was turned out to preserve errors as
+well as prevent judder: `getAspectRatio` prefers the on-chain thumbnail's shape
+and falls back to the *traits of the canvas*, and a canvas measured 20 x 25 is
+0.8000 where the photograph of it is 0.8081 — a per cent, seven pixels at a
+nine-hundred-pixel frame, showing as a fade of blurred paint down each side.
+Which arrival path you took decided which of the two the frame kept: the strip
+of other paintings has the thumbnail loaded already, a direct visit does not.
+
+So the file, which is the photograph and therefore the authority, corrects a
+disagreement above half a per cent and ignores anything under it. Under it is
+the same photograph measured at two scalings, which is the pixel or two that
+moved the frame under the fade.
 *Proven by:* `image-viewer.component.spec.ts` "does not move the frame again
-when the sharp file arrives" and "still takes the shape from the sharp file when
-the preview could not be read"
+when the sharp file arrives", "still takes the shape from the sharp file when
+the preview could not be read", "takes the shape from the sharp file when the
+frame is the canvas, not the photograph" — which uses 195's own numbers — and
+"leaves the frame alone when the sharp file only rounds differently"
 
 ### R128 — The stage shows the painting, whatever has been done to it · met
 Choosing a picture shows it. A pass that finds nothing says so and leaves the

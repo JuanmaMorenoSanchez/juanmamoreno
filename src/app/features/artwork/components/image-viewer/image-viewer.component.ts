@@ -76,6 +76,17 @@ export class ImageViewerComponent {
   // after the user has already navigated away are discarded.
   private loadToken = 0;
 
+  /**
+   * How far the shape may be out before the sharp file corrects it.
+   *
+   * Below this is rounding — the same photograph measured at two scalings — and
+   * correcting it moves the frame under the fade for a pixel nobody can see.
+   * Above it is a different shape: the traits of the canvas rather than the
+   * proportions of the photograph of it, which runs to several pixels and shows
+   * as a band down each side.
+   */
+  private static readonly RATIO_TOLERANCE = 0.005;
+
   // Photographed files sometimes crop slightly differently from the measured
   // artwork, so the real ratio replaces the estimate once a file decodes.
   private readonly decodedAspectRatio = signal<number | null>(null);
@@ -250,14 +261,28 @@ export class ImageViewerComponent {
         continue; // this source failed or stalled: try the next best
       }
       if (token !== this.loadToken) return; // superseded by a newer artwork
-      // Only if nothing has measured this artwork yet. The preview is a
-      // thumbnail of this very photograph, so it has already given the same
-      // answer to within rounding — and setting it again here moved the frame
-      // at the exact moment the sharp image was fading in over the blur. The
-      // resize is what the eye followed, so the fade read as a jump rather
-      // than as the painting coming into focus.
-      if (this.decodedAspectRatio() === null && size.width > 0 && size.height > 0) {
-        this.decodedAspectRatio.set(size.width / size.height);
+      // The file is the photograph, so it is the authority on the shape — but
+      // only worth saying when it disagrees by enough to see.
+      //
+      // Saying it always moved the frame at the exact moment the sharp image
+      // was fading in over the blur, by the pixel or two that rounding on a
+      // different scaling of the same photograph produces, and the resize was
+      // what the eye followed. Never saying it left the frame on whatever
+      // measured first — which is sometimes the painting's *traits*, a canvas
+      // of 20 x 25 against a photograph of 0.8056, five pixels adrift at this
+      // size and visible as a fade of blur either side of the picture.
+      //
+      // So: a hair is rounding and is ignored; more than that is a different
+      // shape and is corrected.
+      if (size.width > 0 && size.height > 0) {
+        const measured = size.width / size.height;
+        const known = this.decodedAspectRatio();
+        if (
+          known === null ||
+          Math.abs(measured - known) / measured > ImageViewerComponent.RATIO_TOLERANCE
+        ) {
+          this.decodedAspectRatio.set(measured);
+        }
       }
       this.promote(url);
       this.loading.set(false);
