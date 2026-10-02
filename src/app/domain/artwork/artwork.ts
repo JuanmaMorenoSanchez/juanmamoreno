@@ -132,6 +132,46 @@ export class Artwork {
     return width > 0 && height > 0 ? width / height : FALLBACK_ASPECT_RATIO;
   }
 
+  /**
+   * The painting that stands for the whole site: the one on the landing page.
+   *
+   * `chosen` is the token he has named, when he has named one. A name that is
+   * not in the catalogue is ignored rather than obeyed — the catalogue arrives
+   * after the page does and a token can be retired, and neither is a reason for
+   * the landing page to have no painting on it. Failing that, the newest
+   * frontal view, which keeps the page curated with no upkeep at all.
+   *
+   * Here rather than in the landing page because two things ask it now: that
+   * page, and the picture a shared link previews as.
+   */
+  featuredArtwork(nfts: Array<Nft>, chosen?: string): Nft | undefined {
+    if (!nfts.length) return undefined;
+
+    const byName = new Map<string, Nft[]>();
+    for (const piece of nfts) {
+      const group = byName.get(piece.name);
+      if (group) group.push(piece);
+      else byName.set(piece.name, [piece]);
+    }
+    const frontals = nfts.filter((piece) =>
+      this.isFrontalView(piece, byName.get(piece.name) ?? [])
+    );
+
+    const named = chosen ? frontals.find((piece) => piece.tokenId === chosen) : undefined;
+    return named ?? this.sortByYear(frontals, SORT.DESC)[0];
+  }
+
+  /**
+   * The picture a shared link should preview as.
+   *
+   * The web-sized copy rather than the original: a link preview is fetched by
+   * somebody's phone over somebody's connection, and the originals run to
+   * thirteen megabytes, which messaging apps give up on and show nothing for.
+   */
+  getNftPreviewUrl(image: NftImage): string {
+    return image?.cachedUrl || image?.thumbnailUrl || '';
+  }
+
   getNftById(id: string, nfts: Array<Nft>): Nft | null {
     return nfts.find(({ tokenId }) => id === tokenId) || null;
   }

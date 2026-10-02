@@ -2438,3 +2438,32 @@ right colour for them.
 *Proven by:* `navigation.test.mjs` "reserves the painting a space without
 painting one", which reads the computed background in a real browser — jsdom
 applies no component styles, so a unit test could not see this at all
+
+### R132 — A shared link previews as one of his paintings · met
+Every page carries a preview picture. An artwork's page carries that painting;
+every other page carries the one on the landing page — the one he has named,
+or the newest frontal view when he has named none.
+
+**It carried a file baked into `index.html`**, a painting that is not in the
+catalogue any more, so sending anybody the site in WhatsApp showed them somebody
+else's work. Only artwork pages escaped it, because they set their own.
+
+Which painting is the landing page's is decided in one place and asked by two:
+that page, and this. The web-sized copy is offered rather than the original — a
+preview is fetched by somebody's phone over somebody's connection, and the
+originals run to thirteen megabytes, which messaging apps give up on and show
+nothing for.
+
+Two things make it work in a prerendered page. The catalogue is asked for the
+first time it is wanted rather than in the constructor: the router builds the
+title strategy, the artwork port reaches http, and http reaches the router — so
+asking at construction closed that loop and stopped the prerender with NG0200.
+And a page that names its own picture keeps it: the catalogue arrives after the
+first titling, and the refresh it triggers would otherwise put the landing
+page's painting on all two hundred artworks.
+*Proven by:* `artwork.spec.ts` "the painting that stands for the site" (4 tests,
+including that a named token which is not in the catalogue is ignored rather
+than obeyed) and "the picture a shared link previews as" (3 tests, including
+that the original is never offered); and the built pages themselves, where
+`/artwork/195` and `/artwork/196` each carry their own painting while `/`,
+`/es/` and `/about` carry the landing page's

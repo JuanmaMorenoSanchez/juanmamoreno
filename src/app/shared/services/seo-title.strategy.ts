@@ -1,8 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable, Injector } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CERTIFICATES_CONTRACT, certificateUrl } from '@domain/artwork/artwork.constants';
+import { Nft } from '@domain/artwork/artwork.entity';
+import { ArtworkPort } from '@domain/artwork/artwork.port';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { environment } from '@environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 
 const SITE_NAME = 'Juanma Moreno Sánchez';
@@ -54,6 +59,34 @@ export class SeoTitleStrategy extends TitleStrategy {
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
   private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
+  /**
+   * The catalogue, for the one thing this needs it for: which painting a shared
+   * link previews as.
+   *
+   * Asked for the first time it is wanted, not in the constructor. The router
+   * builds this strategy, and the artwork port reaches http, which reaches the
+   * router again — asking at construction closes that loop and the prerender
+   * stops with NG0200. By the first navigation everything exists.
+   *
+   * Optional throughout. This titles every page in the application, including
+   * in tests that have no reason to know what a painting is, and a picture for
+   * a link preview is not worth a page having no title.
+   */
+  private readonly injector = inject(Injector);
+  private artworks?: ArtworkPort | null;
+  private catalogue: Nft[] = [];
+
+  /**
+   * Whether the page showing has named its own picture.
+   *
+   * An artwork page does, once it knows which painting it is — which is after
+   * this has titled the route, and sometimes after the catalogue has arrived
+   * and asked to set the landing page's painting again. Without this, the
+   * second of those overwrote the first and every painting previewed as the
+   * one on the front page.
+   */
+  private pageNamedItsOwn = false;
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
     // Route `title` and `data.description` are translation keys, resolved in the
@@ -73,6 +106,9 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ property: 'og:url', content: url });
     this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
     this.meta.updateTag({ name: 'twitter:description', content: description });
+    // A new page, which has not named a picture yet.
+    this.pageNamedItsOwn = false;
+    this.setPreviewImage();
     this.setCanonical(url);
     this.setLanguageAlternates(snapshot.url);
     this.setLocale(snapshot.url);
@@ -330,6 +366,7 @@ export class SeoTitleStrategy extends TitleStrategy {
     // Without this every artwork shares the one image baked into index.html,
     // so each of them previews as the same picture of somebody else's painting.
     if (image) {
+      this.pageNamedItsOwn = true;
       this.meta.updateTag({ property: 'og:image', content: image });
       this.meta.updateTag({ name: 'twitter:image', content: image });
     }
@@ -369,6 +406,10 @@ export class SeoTitleStrategy extends TitleStrategy {
     const bare = route.replace(/^\/+|\/+$/g, '');
     const url = this.absoluteUrl(bare);
     this.meta.updateTag({ property: 'og:url', content: url });
+    // The picture is not touched here. This is a page refining where it lives,
+    // not a new page: an artwork calls it *after* naming its own painting, and
+    // clearing the claim here put the landing page's painting back on every one
+    // of them.
     this.setCanonical(url);
     this.setLanguageAlternates(bare);
   }
@@ -411,5 +452,52 @@ export class SeoTitleStrategy extends TitleStrategy {
       this.document.head.appendChild(link);
     }
     link.setAttribute('href', url);
+  }
+
+  /**
+   * The picture a shared link previews as, for every page that is not one
+   * painting's own.
+   *
+   * It was a file baked into `index.html` — a painting that is not in the
+   * catalogue any more — so a link to anything but an artwork page previewed in
+   * WhatsApp as somebody else's work. The landing page's painting is the
+   * honest answer: it is what the site puts first.
+   *
+   * An artwork page overrides this from its own component once it knows which
+   * painting it is, which happens after this runs. Navigating away from one
+   * puts this back, which is why it is set on every navigation rather than once.
+   */
+  private setPreviewImage(): void {
+    // The page knows better than the default does.
+    if (this.pageNamedItsOwn) return;
+    if (this.artworks === undefined) this.findTheCatalogue();
+
+    // Decoration, and best-effort: a picture for a link preview is not worth a
+    // page having no title because the catalogue was absent or came from
+    // somewhere that does not answer the whole port.
+    if (typeof this.artworks?.featuredArtwork !== 'function') return;
+
+    const featured = this.artworks.featuredArtwork(this.catalogue, environment.homeTokenId);
+    const image = featured ? this.artworks.getNftPreviewUrl(featured.image) : '';
+    if (!image) return;
+
+    this.meta.updateTag({ property: 'og:image', content: image });
+    this.meta.updateTag({ name: 'twitter:image', content: image });
+  }
+
+  /** Once, on the first navigation, and never again. */
+  private findTheCatalogue(): void {
+    this.artworks = this.injector.get(ARTWORK_PORT, null);
+    if (typeof this.artworks?.getArtPiecesObservable !== 'function') return;
+
+    this.artworks
+      .getArtPiecesObservable()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((nfts) => {
+        this.catalogue = nfts ?? [];
+        // The catalogue arrives after the first page is titled, so the picture
+        // it decides is set again when it does.
+        this.setPreviewImage();
+      });
   }
 }

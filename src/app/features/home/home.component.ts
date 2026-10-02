@@ -16,7 +16,6 @@ import { VersionService } from '@shared/services/version.service';
 import { APP_VERSION } from '../../../version';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
-import { SORT } from '@shared/constants/order.constants';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -82,25 +81,9 @@ export class HomeComponent implements AfterViewInit {
    * Same frontal-view and sort-by-year logic the detail page uses to order
    * pieces, so what counts as "the painting" is decided in one place.
    */
-  readonly featured = computed<Nft | undefined>(() => {
-    const all = this.artPieces();
-    if (!all.length) return undefined;
-    const byName = new Map<string, Nft[]>();
-    for (const piece of all) {
-      const group = byName.get(piece.name);
-      if (group) group.push(piece);
-      else byName.set(piece.name, [piece]);
-    }
-    const frontals = all.filter((piece) =>
-      this.artworkService.isFrontalView(piece, byName.get(piece.name) ?? [])
-    );
-
-    const chosen = environment.homeTokenId
-      ? frontals.find((piece) => piece.tokenId === environment.homeTokenId)
-      : undefined;
-
-    return chosen ?? this.artworkService.sortByYear(frontals, SORT.DESC)[0];
-  });
+  readonly featured = computed<Nft | undefined>(() =>
+    this.artworkService.featuredArtwork(this.artPieces(), environment.homeTokenId)
+  );
 
   // Blur-up (same idea as the artwork viewer's preview layer): the small
   // thumbnail is shown blurred at full hero size first — fast — then the

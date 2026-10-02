@@ -124,7 +124,11 @@ describe('Artwork', () => {
     it('orders a non-numeric year deterministically as 0', () => {
       const bad = nft('bad', [year('XXXX')]);
       expect(art.sortByYear([a, bad, b]).map((n) => n.tokenId)).toEqual(['bad', 'a', 'b']);
-      expect(art.sortByYear([a, bad, b], SORT.DESC).map((n) => n.tokenId)).toEqual(['b', 'a', 'bad']);
+      expect(art.sortByYear([a, bad, b], SORT.DESC).map((n) => n.tokenId)).toEqual([
+        'b',
+        'a',
+        'bad',
+      ]);
     });
   });
 
@@ -136,13 +140,17 @@ describe('Artwork', () => {
 
     it('ranks oil before watercolor before anything else (ascending)', () => {
       expect(art.sortByMedium([other, water, oil]).map((n) => n.tokenId)).toEqual([
-        'oil', 'water', 'other',
+        'oil',
+        'water',
+        'other',
       ]);
     });
 
     it('reverses order when descending', () => {
       expect(art.sortByMedium([oil, water, other], SORT.DESC).map((n) => n.tokenId)).toEqual([
-        'other', 'water', 'oil',
+        'other',
+        'water',
+        'oil',
       ]);
     });
 
@@ -167,7 +175,10 @@ describe('Artwork', () => {
 
     it('sorts by summed dimensions ascending then descending', () => {
       expect(art.sortBySize([big, small]).map((n) => n.tokenId)).toEqual(['small', 'big']);
-      expect(art.sortBySize([small, big], SORT.DESC).map((n) => n.tokenId)).toEqual(['big', 'small']);
+      expect(art.sortBySize([small, big], SORT.DESC).map((n) => n.tokenId)).toEqual([
+        'big',
+        'small',
+      ]);
     });
   });
 
@@ -317,13 +328,17 @@ describe('Artwork', () => {
 
     it('getNftQualityUrls orders original > cached > thumbnail', () => {
       expect(art.getNftQualityUrls(image)).toEqual([
-        'ipfs://original', 'https://cached', 'https://thumb',
+        'ipfs://original',
+        'https://cached',
+        'https://thumb',
       ]);
     });
 
     it('getNftFetchableUrls orders original > png > thumbnail', () => {
       expect(art.getNftFetchableUrls(image)).toEqual([
-        'ipfs://original', 'https://png', 'https://thumb',
+        'ipfs://original',
+        'https://png',
+        'https://thumb',
       ]);
     });
 
@@ -384,5 +399,74 @@ describe('getAspectRatio', () => {
     ]) {
       expect(Number.isNaN(art.getAspectRatio(withSize(w, h)))).toBe(false);
     }
+  });
+});
+
+describe('Artwork — the painting that stands for the site', () => {
+  const artwork = new Artwork();
+
+  // A frontal view with a year, which is what being featurable consists of:
+  // the rule filters to frontal views and then takes the newest.
+  const piece = (tokenId: string, painted: string, name = `Painting ${tokenId}`): Nft =>
+    nft(tokenId, [frontal(), year(painted)], {
+      name,
+      image: {
+        cachedUrl: `https://arweave.test/${tokenId}`,
+        thumbnailUrl: `data:thumb-${tokenId}`,
+      },
+    });
+
+  it('puts up the one he named', () => {
+    const chosen = artwork.featuredArtwork([piece('1', '2020'), piece('2', '2026')], '1');
+
+    expect(chosen?.tokenId).toBe('1');
+  });
+
+  /**
+   * The catalogue arrives after the page does and a token can be retired.
+   * Neither is a reason for the landing page to have no painting on it.
+   */
+  it('ignores a name that is not in the catalogue rather than obeying it', () => {
+    const chosen = artwork.featuredArtwork([piece('1', '2020'), piece('2', '2026')], '999');
+
+    expect(chosen?.tokenId).toBe('2');
+  });
+
+  it('puts up the newest when he has named nothing', () => {
+    const chosen = artwork.featuredArtwork([piece('1', '2020'), piece('2', '2026')]);
+
+    expect(chosen?.tokenId).toBe('2');
+  });
+
+  it('has nothing to put up before the catalogue arrives', () => {
+    expect(artwork.featuredArtwork([])).toBeUndefined();
+    expect(artwork.featuredArtwork([], '1')).toBeUndefined();
+  });
+});
+
+describe('Artwork — the picture a shared link previews as', () => {
+  const artwork = new Artwork();
+
+  /**
+   * A link preview is fetched by somebody's phone over somebody's connection,
+   * and the originals run to thirteen megabytes — which messaging apps give up
+   * on and show nothing for.
+   */
+  it('offers the web-sized copy, never the original', () => {
+    const url = artwork.getNftPreviewUrl({
+      originalUrl: 'https://storage.test/huge.jpg',
+      cachedUrl: 'https://arweave.test/web',
+      thumbnailUrl: 'data:tiny',
+    } as never);
+
+    expect(url).toBe('https://arweave.test/web');
+  });
+
+  it('falls back to the thumbnail when there is no web copy', () => {
+    expect(artwork.getNftPreviewUrl({ thumbnailUrl: 'data:tiny' } as never)).toBe('data:tiny');
+  });
+
+  it('offers nothing rather than something broken', () => {
+    expect(artwork.getNftPreviewUrl({} as never)).toBe('');
   });
 });

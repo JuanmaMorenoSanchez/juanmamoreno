@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
+import { Artwork } from '@domain/artwork/artwork';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { environment } from '@environments/environment';
@@ -41,6 +42,13 @@ function setup(catalogue: Nft[]) {
           Number(b.raw?.metadata?.attributes?.[0]?.value ?? 0) -
           Number(a.raw?.metadata?.attributes?.[0]?.value ?? 0)
       ),
+    // The real rule, running on this stub's own sorting and frontal view. The
+    // question these tests ask is which painting comes out of it, so stubbing
+    // the answer would be stubbing the test.
+    featuredArtwork: (nfts: Nft[], chosen?: string) =>
+      Artwork.prototype.featuredArtwork.call(port, nfts, chosen),
+    getNftPreviewUrl: (image: { cachedUrl?: string; thumbnailUrl?: string }) =>
+      image?.cachedUrl || image?.thumbnailUrl || '',
   };
 
   TestBed.resetTestingModule();
