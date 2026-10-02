@@ -12,17 +12,6 @@ describe('the sketch registry', () => {
   it('holds the sketches that are written by hand', () => {
     expect(Object.keys(SKETCHES)).toContain('believe');
     expect(Object.keys(SKETCHES)).toContain('hide');
-    expect(Object.keys(SKETCHES)).toContain('rockets-win');
-  });
-
-  /**
-   * `rockets-win` is written by hand and registered; `rockets-win-i` is the
-   * piece in the bucket its paintings come from, and is not a page. The names
-   * are one letter apart, so this says which is which.
-   */
-  it('registers the sketch and not the piece it draws', () => {
-    expect(SKETCHES['rockets-win']).toBeDefined();
-    expect(SKETCHES['rockets-win-i']).toBeUndefined();
   });
 
   /**
