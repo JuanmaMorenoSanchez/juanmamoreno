@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.96.0
+
+- **fix** — the atelier showed the painting you chose. It drew the layers and
+  nothing else, so choosing a picture gave a dark rectangle, and a pass that
+  found nothing left it dark and said nothing. Both were the first thing anybody
+  saw.
+- **feat** — the atelier no longer makes you cut a painting up first. A variant
+  asked for in words is a piece on its own; the stage, the variant and the
+  cutting are three things you reach in any order, and Keep it appears as soon
+  as there is anything to keep.
+- **feat** — a painting's row in the catalogue shows what has been made from it:
+  a thumbnail of every layer and frame on a chequer, each one a download, and a
+  button to throw the whole piece away after asking. It had all gone into a
+  bucket and was visible nowhere.
+
 ## 1.95.1
 
 - **fix** — the frame on an artwork page holds its width, so the painting comes

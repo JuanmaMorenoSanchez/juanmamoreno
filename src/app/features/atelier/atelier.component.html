@@ -58,32 +58,7 @@
   </section>
 
   @if (painting(); as painting) {
-    <!-- 2. Cutting --------------------------------------------------------- -->
-    <section class="atelier-step">
-      <h2>Cut it into layers</h2>
-      <p class="atelier-hint">
-        Name what to find, separated by commas, in your own words. One pass however many you name.
-      </p>
-
-      <div class="atelier-row">
-        <input
-          class="atelier-input atelier-wide"
-          type="text"
-          [value]="labels()"
-          (input)="labels.set($any($event.target).value)"
-        />
-        <button
-          type="button"
-          class="atelier-do"
-          [disabled]="busy() || !affordable()"
-          (click)="findLayers()"
-        >
-          Find layers <app-cost operation="segment" />
-        </button>
-      </div>
-    </section>
-
-    <!-- 3. The stage ------------------------------------------------------- -->
+    <!-- 2. The stage ----------------------------------------------------- -->
     <section class="atelier-step">
       <h2>
         @if (refining() !== undefined) {
@@ -139,7 +114,78 @@
       }
     </section>
 
-    <!-- 4. The layers ------------------------------------------------------ -->
+    <!-- 3. A variant, from words ----------------------------------------- -->
+    <section class="atelier-step">
+      <h2>Variants</h2>
+      <p class="atelier-hint">
+        A frame set is the same painting with one thing changed — eyes open, half, closed — which is
+        what <code>FrameTimeline</code> flicks through. Ask for one change at a time and say to
+        leave the rest alone; a model asked for more will repaint more.
+      </p>
+
+      <div class="atelier-row">
+        <input
+          class="atelier-input atelier-wide"
+          type="text"
+          [value]="instruction()"
+          (input)="instruction.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="atelier-do"
+          [disabled]="busy() || !affordable()"
+          (click)="makeVariant()"
+        >
+          Make one <app-cost operation="edit" />
+        </button>
+      </div>
+
+      @if (variants().length) {
+        <ul class="atelier-variants">
+          @for (variant of variants(); track $index) {
+            <li [class.atelier-kept]="variant.kept">
+              <img [src]="variant.image.src" [alt]="variant.instruction" />
+              <small>{{ variant.instruction }}</small>
+              <span>
+                <button type="button" class="atelier-link" (click)="keep($index)">
+                  {{ variant.kept ? 'Kept' : 'Keep' }}
+                </button>
+                <button type="button" class="atelier-link" (click)="discardVariant($index)">
+                  Discard
+                </button>
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- 4. Cutting it into layers ---------------------------------------- -->
+    <section class="atelier-step">
+      <h2>Cut it into layers</h2>
+      <p class="atelier-hint">
+        Name what to find, separated by commas, in your own words. One pass however many you name.
+      </p>
+
+      <div class="atelier-row">
+        <input
+          class="atelier-input atelier-wide"
+          type="text"
+          [value]="labels()"
+          (input)="labels.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="atelier-do"
+          [disabled]="busy() || !affordable()"
+          (click)="findLayers()"
+        >
+          Find layers <app-cost operation="segment" />
+        </button>
+      </div>
+    </section>
+
+    <!-- 5. The stack ----------------------------------------------------- -->
     @if (layers().length) {
       <section class="atelier-step">
         <h2>The stack</h2>
@@ -188,8 +234,10 @@
           }
         </ul>
       </section>
+    }
 
-      <!-- 5. Keeping it ---------------------------------------------------- -->
+    <!-- 6. Keeping it ----------------------------------------------------- -->
+    @if (hasSomething()) {
       <section class="atelier-step">
         <h2>Keep it</h2>
         <div class="atelier-row">
@@ -210,53 +258,7 @@
       </section>
     }
 
-    <!-- 6. Variants -------------------------------------------------------- -->
-    <section class="atelier-step">
-      <h2>Variants</h2>
-      <p class="atelier-hint">
-        A frame set is the same painting with one thing changed — eyes open, half, closed — which is
-        what <code>FrameTimeline</code> flicks through. Ask for one change at a time and say to
-        leave the rest alone; a model asked for more will repaint more.
-      </p>
-
-      <div class="atelier-row">
-        <input
-          class="atelier-input atelier-wide"
-          type="text"
-          [value]="instruction()"
-          (input)="instruction.set($any($event.target).value)"
-        />
-        <button
-          type="button"
-          class="atelier-do"
-          [disabled]="busy() || !affordable()"
-          (click)="makeVariant()"
-        >
-          Make one <app-cost operation="edit" />
-        </button>
-      </div>
-
-      @if (variants().length) {
-        <ul class="atelier-variants">
-          @for (variant of variants(); track $index) {
-            <li [class.atelier-kept]="variant.kept">
-              <img [src]="variant.image.src" [alt]="variant.instruction" />
-              <small>{{ variant.instruction }}</small>
-              <span>
-                <button type="button" class="atelier-link" (click)="keep($index)">
-                  {{ variant.kept ? 'Kept' : 'Keep' }}
-                </button>
-                <button type="button" class="atelier-link" (click)="discardVariant($index)">
-                  Discard
-                </button>
-              </span>
-            </li>
-          }
-        </ul>
-      }
-    </section>
-
-    <!-- 7. The reel -------------------------------------------------------- -->
+    <!-- 7. A reel of it -------------------------------------------------- -->
     @if (layers().length) {
       <section class="atelier-step">
         <h2>Make a reel of it</h2>

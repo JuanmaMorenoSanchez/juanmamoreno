@@ -2206,8 +2206,10 @@ the class — the only place this fault was visible
 
 ### R123 — A painting can be cut into layers that move apart · met
 The atelier takes one picture — a catalogue number, or a file from the laptop —
-asks a model for a mask per thing named, cuts the full-size original with each,
-and saves the stack as a piece. Depth and stacking order are set by hand.
+and then two things can be done with it, in either order and neither required:
+ask for a variant in words, or cut it into layers. Cutting asks a model for a
+mask per thing named and cuts the full-size original with each; depth and
+stacking order are set by hand. A piece is layers, or kept variants, or both.
 
 A number is enough because the catalogue is already in the session and already
 holds where each painting's picture is and which copy is the best one; it is
@@ -2228,7 +2230,8 @@ gives them" and "clamps a box that runs off the picture"; `stencil` "turns
 brightness into transparency", without which the whole bounding box is kept,
 because a probability map is opaque even where it is black; and
 `atelier.component.spec.ts` "asks for a painting before it offers to do
-anything to one", "uploads every file the manifest goes on to name", and the
+anything to one", "offers to keep a piece of variants with no layers at all",
+"uploads every file the manifest goes on to name", and the
 six about naming a painting by its number — "finds the painting without being
 told where it lives", "says so plainly when there is no such painting",
 "tells a catalogue that has not arrived from a number that is wrong", and
@@ -2314,3 +2317,37 @@ for good.
 *Proven by:* `image-viewer.component.spec.ts` "does not move the frame again
 when the sharp file arrives" and "still takes the shape from the sharp file when
 the preview could not be read"
+
+### R128 — The stage shows the painting, whatever has been done to it · met
+Choosing a picture shows it. A pass that finds nothing says so and leaves the
+painting on screen.
+
+**It drew the layers and nothing else.** With none — which is every moment
+between choosing a painting and cutting it — the stage cleared to a dark
+rectangle, so the first thing anybody did produced the first thing that looked
+broken. A pass that found no masks left it dark too, and said nothing, so a
+press that cost money was indistinguishable from a button that did nothing.
+*Proven by:* `atelier.component.spec.ts` "shows the painting as soon as one is
+chosen", which asserts what the stage asks of a context rather than looking at
+pixels, and "says so when a pass finds nothing"
+
+### R129 — What a painting has produced is visible beside it · met
+A painting's row in the catalogue lists every piece made from it: a thumbnail of
+each layer and frame, each one a download named as it is stored, and a control
+that throws the whole piece away after asking.
+
+The listing is fetched once and shared by every row — there are a couple of
+hundred rows and tens of pieces, so a request per row opened would be a request
+to list the same bucket again. A painting with nothing made from it and a
+listing that never arrived are told apart, because they look identical on a row
+with nothing on it and only one of them is fine.
+
+The confirmation is not a formality: these files are the only copy, since the
+cutting that made them was by hand.
+*Proven by:* `derived-assets.component.spec.ts` (8 tests: "shows only what came
+from this painting", "says nothing yet rather than drawing an empty frame",
+"tells a listing that failed from a painting with nothing made from it", "offers
+every file for download, named as it is stored", "asks before throwing a piece
+away, and does nothing when refused", "takes the piece off the list once it is
+gone", "keeps the piece and says so when it would not go" and "asks for the
+listing once however many rows are built")

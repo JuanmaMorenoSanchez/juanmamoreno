@@ -345,3 +345,113 @@ describe('AtelierComponent, naming a painting by its number', () => {
     expect(problem()).toBe('');
   });
 });
+
+describe('AtelierComponent, the stage', () => {
+  let fixture: ComponentFixture<AtelierComponent>;
+  let atelier: AtelierService;
+
+  const priced: Prices = {
+    prices: {
+      segment: { operation: 'segment', usd: 0.003, what: 'one pass' },
+      inpaint: { operation: 'inpaint', usd: 0.04, what: 'one fill' },
+      edit: { operation: 'edit', usd: 0.04, what: 'one variant' },
+    },
+    ceiling: 5,
+    spent: 0,
+    left: 5,
+    configured: true,
+  };
+
+  /** jsdom has no 2d context, and this is about what is asked of one. */
+  function stubContext(): CanvasRenderingContext2D & { drawn: unknown[] } {
+    const drawn: unknown[] = [];
+    return {
+      drawn,
+      clearRect: () => undefined,
+      drawImage: (source: unknown) => drawn.push(source),
+      globalAlpha: 1,
+    } as unknown as CanvasRenderingContext2D & { drawn: unknown[] };
+  }
+
+  /** A picture with a size, which `contain` needs to place anything. */
+  function picture(): HTMLImageElement {
+    return { naturalWidth: 1200, naturalHeight: 800 } as HTMLImageElement;
+  }
+
+  beforeEach(async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AtelierComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of([]),
+            getNftById: () => null,
+            getNftQualityUrl: () => '',
+          },
+        },
+      ],
+    });
+    atelier = TestBed.inject(AtelierService);
+    atelier.loadPrices = () => of(priced);
+    atelier.pieces = () => of([]);
+
+    fixture = TestBed.createComponent(AtelierComponent);
+    await fixture.whenStable();
+    atelier.prices.set(priced);
+    fixture.detectChanges();
+  });
+
+  /**
+   * The stage drew the layers and nothing else, so every moment between
+   * choosing a painting and cutting it up showed a dark rectangle — which is
+   * the first thing anybody does here, and so the first thing anybody saw.
+   */
+  it('shows the painting as soon as one is chosen', () => {
+    const component = fixture.componentInstance;
+    const painting = picture();
+    component.painting.set(painting);
+
+    const context = stubContext();
+    component['drawParallax'](context, { width: 900, height: 600 } as HTMLCanvasElement, painting);
+
+    expect(context.drawn).toEqual([painting]);
+  });
+
+  /**
+   * A pass can cost its money and find nothing — a painting with no sky in it,
+   * or words the model could not place. The stage going back to the whole
+   * painting looks exactly like a button that did nothing, so it is said.
+   */
+  it('says so when a pass finds nothing', async () => {
+    const component = fixture.componentInstance;
+    component.painting.set(picture());
+    component.labels.set('a dog');
+    atelier.segment = () => of([]);
+
+    await component.findLayers();
+    await fixture.whenStable();
+
+    expect(component.problem()).toContain('Nothing was found for a dog');
+    expect(component.problem()).toContain('paid for either way');
+    expect(component.layers()).toEqual([]);
+  });
+
+  /** Nothing to keep is nothing to name, and variants alone are something. */
+  it('offers to keep a piece of variants with no layers at all', () => {
+    const component = fixture.componentInstance;
+    component.painting.set(picture());
+    component.title.set('Believe');
+
+    expect(component.hasSomething()).toBe(false);
+
+    component.variants.set([{ instruction: 'close her eyes', image: picture(), kept: true }]);
+
+    expect(component.hasSomething()).toBe(true);
+    expect(component.canSave()).toBe(true);
+  });
+});

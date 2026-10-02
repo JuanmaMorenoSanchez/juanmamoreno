@@ -87,9 +87,8 @@ function setup(
         useValue: {
           getArtPiecesObservable: () => of(catalogue),
           getTraitValue: (nft: Nft, key: string) =>
-            nft.raw?.metadata?.attributes?.find(
-              (a: { trait_type: string }) => a.trait_type === key
-            )?.value ?? '',
+            nft.raw?.metadata?.attributes?.find((a: { trait_type: string }) => a.trait_type === key)
+              ?.value ?? '',
           getNftOptimalUrl: (image: { thumbnailUrl?: string }) => image?.thumbnailUrl ?? '',
         },
       },

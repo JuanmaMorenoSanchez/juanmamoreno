@@ -52,6 +52,24 @@ export interface Piece {
   updatedAt: string;
 }
 
+/** One file made from a painting, as the catalogue page lists it. */
+export interface DerivedAsset {
+  kind: 'layer' | 'frame';
+  file: string;
+  label: string;
+  url: string;
+}
+
+/** Everything made from one painting, under the piece it belongs to. */
+export interface DerivedPiece {
+  id: string;
+  /** The painting it came from — a token id, or a name for an upload. */
+  source: string;
+  title: string;
+  updatedAt: string;
+  assets: DerivedAsset[];
+}
+
 /**
  * The atelier, as the page talks to it.
  *
@@ -165,6 +183,38 @@ export class AtelierService {
       .pipe(
         map((response) => response?.data ?? []),
         catchError(() => of(undefined))
+      );
+  }
+
+  /**
+   * Everything made from the paintings, grouped by piece.
+   *
+   * Undefined when the question could not be asked, which the catalogue tells
+   * apart from "nothing has been made yet": one of them is a reason to try
+   * again and the other is not.
+   */
+  derived(token: string): Observable<DerivedPiece[] | undefined> {
+    return this.http
+      .get<ApiResponse<DerivedPiece[]>>(
+        `${environment.backendUrl}atelier/derived`,
+        this.authorised(token)
+      )
+      .pipe(
+        map((response) => response?.data ?? []),
+        catchError(() => of(undefined))
+      );
+  }
+
+  /** Throws away everything made from one painting. Answers false rather than throwing. */
+  forget(pieceId: string, token: string): Observable<boolean> {
+    return this.http
+      .delete<ApiResponse<unknown>>(
+        `${environment.backendUrl}atelier/pieces/${pieceId}`,
+        this.authorised(token)
+      )
+      .pipe(
+        map((response) => response?.success === true),
+        catchError(() => of(false))
       );
   }
 

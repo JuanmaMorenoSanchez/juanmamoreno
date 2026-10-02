@@ -15,6 +15,7 @@ import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { firstValueFrom } from 'rxjs';
 import { CertificatePanelComponent } from './certificate-panel.component';
+import { DerivedAssetsComponent } from './derived-assets.component';
 import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
 
@@ -42,7 +43,12 @@ type Order = 'newest' | 'posted';
   templateUrl: './catalogue-admin.component.html',
   styleUrl: './catalogue-admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PdfButtonComponent, CertificatePanelComponent, NetworkIconComponent],
+  imports: [
+    PdfButtonComponent,
+    CertificatePanelComponent,
+    DerivedAssetsComponent,
+    NetworkIconComponent,
+  ],
 })
 export class CatalogueAdminComponent {
   private readonly destroyRef = inject(DestroyRef);

@@ -81,9 +81,8 @@ async function setup({
         provide: ARTWORK_PORT,
         useValue: {
           getTraitValue: (nft: Nft, key: string) =>
-            nft.raw?.metadata?.attributes?.find(
-              (a: { trait_type: string }) => a.trait_type === key
-            )?.value ?? '',
+            nft.raw?.metadata?.attributes?.find((a: { trait_type: string }) => a.trait_type === key)
+              ?.value ?? '',
         },
       },
       { provide: MintApiService, useValue: api },
@@ -239,7 +238,13 @@ describe('CertificatePanelComponent', () => {
    */
   describe('the form as it is drawn', () => {
     const rendered = async () => {
-      const standing = { tokenId: 42, frozen: false, holder: OWNER, owner: OWNER, heldByOwner: true };
+      const standing = {
+        tokenId: 42,
+        frozen: false,
+        holder: OWNER,
+        owner: OWNER,
+        heldByOwner: true,
+      };
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [CertificatePanelComponent],

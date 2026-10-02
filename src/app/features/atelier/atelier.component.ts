@@ -121,8 +121,18 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly pieces = signal<Piece[] | undefined>(undefined);
 
   readonly pieceId = computed(() => slug(this.title() || this.source()));
+  /**
+   * Something to keep, and a name to keep it under.
+   *
+   * Either layers or kept variants will do. Cutting a painting into layers was
+   * the only way through this page, which forced a parallax on somebody who
+   * wanted one picture changed by a sentence.
+   */
+  readonly hasSomething = computed(
+    () => this.layers().length > 0 || this.variants().some((variant) => variant.kept)
+  );
   readonly canSave = computed(
-    () => this.layers().length > 0 && this.title().trim().length > 0 && !this.busy()
+    () => this.hasSomething() && this.title().trim().length > 0 && !this.busy()
   );
 
   /** Enough of the day's allowance left for another of these. */
@@ -265,6 +275,18 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           if (!mask) continue;
           drafts.push(this.draftFrom(cut.label, mask, cut.box, index, cuts.length));
         }
+
+        // A pass can cost its money and find nothing — a painting with no sky
+        // in it, or words the model could not place. Said out loud, because the
+        // stage simply going back to the whole painting looks like a button
+        // that did nothing.
+        if (!drafts.length) {
+          this.problem.set(
+            `Nothing was found for ${labels.join(', ')}. The pass was paid for either way — ` +
+              `try naming what is in the painting more plainly.`
+          );
+        }
+
         this.layers.set(drafts);
         this.restack();
       });
@@ -565,6 +587,17 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const fit = contain(painting, canvas.width, canvas.height);
     const drafts = this.layers();
+
+    // The painting itself, whenever it has not been cut up yet.
+    //
+    // Without this the stage cleared and drew the layers — of which there were
+    // none — so choosing a picture showed a dark rectangle, and a pass that
+    // found nothing left it dark. The first thing anybody does here is choose a
+    // painting, so it was the first thing anybody saw.
+    if (!drafts.length) {
+      context.drawImage(painting, fit.x, fit.y, fit.width, fit.height);
+      return;
+    }
 
     // Back to front, so the nearest layer is painted last and sits on top.
     for (let index = drafts.length - 1; index >= 0; index--) {

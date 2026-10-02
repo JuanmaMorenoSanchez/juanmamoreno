@@ -159,9 +159,9 @@ export class CertificatePanelComponent implements OnInit {
     const standing = this.standing();
     return Boolean(
       standing &&
-        !standing.frozen &&
-        standing.heldByOwner &&
-        this.burnConfirmation().trim() === String(this.tokenId())
+      !standing.frozen &&
+      standing.heldByOwner &&
+      this.burnConfirmation().trim() === String(this.tokenId())
     );
   });
 
