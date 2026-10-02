@@ -170,14 +170,23 @@ export class ImageViewerComponent {
     if (typeof Image === 'undefined') return Promise.resolve(null);
     return new Promise((resolve) => {
       const probe = new Image();
-      probe.onload = () =>
+      const answer = () =>
         resolve(
           probe.naturalWidth && probe.naturalHeight
             ? probe.naturalWidth / probe.naturalHeight
             : null
         );
+      probe.onload = answer;
       probe.onerror = () => resolve(null);
       probe.src = url;
+      // Already in the browser, which is the ordinary case: this thumbnail is
+      // in the prerendered html, so by the time the page hydrates it has been
+      // fetched and decoded. Setting `src` to something cached fires `load` on
+      // a later task, and a frame drawn in between is a frame drawn at the
+      // measured shape and then corrected — the resize this avoids. `complete`
+      // is true the moment the assignment resolves from cache, so the shape is
+      // known before anything is painted.
+      if (probe.complete) answer();
     });
   }
 
@@ -228,7 +237,13 @@ export class ImageViewerComponent {
         continue; // this source failed or stalled: try the next best
       }
       if (token !== this.loadToken) return; // superseded by a newer artwork
-      if (size.width > 0 && size.height > 0) {
+      // Only if nothing has measured this artwork yet. The preview is a
+      // thumbnail of this very photograph, so it has already given the same
+      // answer to within rounding — and setting it again here moved the frame
+      // at the exact moment the sharp image was fading in over the blur. The
+      // resize is what the eye followed, so the fade read as a jump rather
+      // than as the painting coming into focus.
+      if (this.decodedAspectRatio() === null && size.width > 0 && size.height > 0) {
         this.decodedAspectRatio.set(size.width / size.height);
       }
       this.promote(url);

@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.95.1
+
+- **fix** — the frame on an artwork page holds its width, so the painting comes
+  into focus instead of juddering. The shape was measured three times for every
+  painting — the canvas, then the preview, then the sharp file — and the frame's
+  width is derived from it, with the row of buttons bound to the same value. The
+  third measurement landed at the exact moment the sharp image was fading in, so
+  the eye followed a resize rather than the focus. Measured in Chrome across
+  three paintings: `[889 892]` and `[900 901]` became `[889]` and `[900]`.
+
 ## 1.95.0
 
 - **feat** — a painting comes into focus the same way everywhere. On an artwork

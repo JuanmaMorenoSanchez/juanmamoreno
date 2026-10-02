@@ -100,6 +100,48 @@ describe('ImageViewerComponent — the shape of the frame', () => {
     // `none` is the placeholder before any source has answered.
     expect(asked).not.toHaveBeenCalledWith('none');
   });
+
+  /**
+   * The frame settles once and then holds, which is the whole of what the
+   * artist asked for: the picture and the row of buttons above it are the same
+   * width throughout, because the width is derived from this ratio.
+   *
+   * The hi-res file is the same photograph the preview was a thumbnail of, so
+   * it has nothing new to say — and it used to say it anyway, moving the frame
+   * at the exact moment the sharp image was fading in over the blur. The resize
+   * is what the eye followed, so the fade read as a jump.
+   */
+  it('does not move the frame again when the sharp file arrives', async () => {
+    vi.spyOn(component, 'ratioOf').mockResolvedValue(0.75);
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+    expect(component.aspectRatio()).toBeCloseTo(0.75);
+
+    // The hi-res measuring itself a hair differently, which is what rounding
+    // on a different scaling of the same photograph looks like.
+    component['decodedAspectRatio'].set(0.75);
+    const settled = component.aspectRatio();
+    component['loadBestCandidate'](['https://example.test/full.jpg'], component['loadToken']);
+    await settle();
+
+    expect(component.aspectRatio()).toBe(settled);
+  });
+
+  /**
+   * Unless nothing has measured it at all — a preview that failed to decode
+   * leaves the frame on the measurements, and then the sharp file is the first
+   * thing that can correct them. Better one late settle than a frame that is
+   * the wrong shape for good.
+   */
+  it('still takes the shape from the sharp file when the preview could not be read', async () => {
+    vi.spyOn(component, 'ratioOf').mockResolvedValue(null);
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+    expect(component.aspectRatio()).toBe(2);
+
+    component['decodedAspectRatio'].set(null);
+    expect(component.aspectRatio()).toBe(2);
+  });
 });
 
 /**

@@ -2291,3 +2291,26 @@ there is to show.
 fullscreen, where it would bleed into the bars", "still shows it in fullscreen
 while nothing has loaded", "shows the preview while there is nothing sharper"
 and "shows nothing when there is no preview to show")
+
+### R127 — The frame holds its width while the painting loads · met
+An artwork's frame is measured once and then holds. The picture and the row of
+buttons above it are the same width throughout, because both are derived from
+that one ratio.
+
+**It was measured three times.** The canvas from its traits, which is all that
+is known before anything decodes; then the preview, which is the real
+photograph and a different crop; then the sharp file, which is the same
+photograph again and so had nothing to add. The third landed at the moment the
+sharp image was fading in over the blur, so what the eye followed was a resize
+and the fade read as a judder rather than as focus.
+
+Measured in Chrome over three paintings, sampling the frame and the toolbar
+every 100ms: tokens 100 and 182 showed two widths each — `[889 892]` and
+`[900 901]` — and show one each now.
+
+A preview that cannot be decoded still leaves the sharp file free to correct
+the measurements, because one late settle beats a frame that is the wrong shape
+for good.
+*Proven by:* `image-viewer.component.spec.ts` "does not move the frame again
+when the sharp file arrives" and "still takes the shape from the sharp file when
+the preview could not be read"
