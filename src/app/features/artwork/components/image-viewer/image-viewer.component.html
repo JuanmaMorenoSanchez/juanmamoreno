@@ -79,13 +79,15 @@
         it is, the sharp one simply resolves over it, which is what the home
         page does and the reason that one feels like a lens finding focus.
 
-        Still hidden in fullscreen, and for the reason it always was: the
-        preview is drawn `cover` where the painting is `contain`, so with
-        letterbox bars it would show blurred paint in them.
+        No longer a special case in fullscreen. It was hidden there because a
+        `cover` preview under a `contain` painting shows blurred paint in the
+        letterbox bars — which turned out to happen out of fullscreen too, any
+        moment the frame is still the shape the painting was measured as. Fitted
+        like the image it sits under, it cannot bleed anywhere.
       -->
       <div
         class="preview-layer"
-        [class.visible]="hasPreview() && (!hasImage() || !isFullScreen())"
+        [class.visible]="hasPreview()"
         [style.backgroundImage]="previewImage()"
       ></div>
 

@@ -2292,15 +2292,18 @@ preview at the moment the hi-res appeared crossed two opacities, so halfway
 through the swap both sat near half and the painting paled before returning.
 Leaving it underneath has nothing to cross.
 
-The one exception is fullscreen, where the preview is drawn `cover` and the
-painting `contain`: with letterbox bars it would show blurred paint in them. It
-is still shown there while nothing has loaded, because it is the only thing
-there is to show.
+**The preview is fitted, not filled, and there is no exception.** Filled, it
+covered the whole frame — so at any moment the frame is still the shape the
+painting was *measured* as rather than the shape the photograph is, the sharp
+image letterboxed inside it and the bars either side filled with stretched
+blurred paint: a second, wider, wrong copy of the painting beside the real one.
+That was taken for a fullscreen problem and guarded only there, and fullscreen
+was never the only place it happened. Fitted to the same box as the image, it
+cannot be visible beside it anywhere, in fullscreen or out.
 *Proven by:* `image-viewer.component.spec.ts` "the blurred preview underneath"
-(5 tests: "keeps the preview once the sharp image is up", "hides it in
-fullscreen, where it would bleed into the bars", "still shows it in fullscreen
-while nothing has loaded", "shows the preview while there is nothing sharper"
-and "shows nothing when there is no preview to show")
+(4 tests: "keeps the preview once the sharp image is up", "keeps the preview in
+fullscreen too, now it cannot bleed", "shows the preview while there is nothing
+sharper" and "shows nothing when there is no preview to show")
 
 ### R127 — The frame holds its width while the painting loads · met
 An artwork's frame is measured once and then holds. The picture and the row of

@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.98.1
+
+- **fix** — the blurred preview is fitted to the same box as the painting, not
+  filled to the frame. Filled, it covered the whole frame — so at any moment
+  the frame is still the shape the painting was *measured* as rather than the
+  shape the photograph is, the sharp image letterboxed inside it and the bars
+  either side filled with stretched blurred paint: a second, wider, wrong copy
+  beside the real one. It was only ever hidden in fullscreen for this reason,
+  and fullscreen was never the only place it happened. Fitted, it cannot bleed
+  anywhere, so fullscreen stops being a case.
+
 ## 1.98.0
 
 - **feat** — the atelier works on a bench rather than on "the painting". The

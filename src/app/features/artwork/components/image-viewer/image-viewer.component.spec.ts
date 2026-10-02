@@ -211,24 +211,18 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
   });
 
   /**
-   * Except in fullscreen. The preview is drawn `cover` where the painting is
-   * `contain`, so with letterbox bars it would show blurred paint in them.
+   * Fullscreen is no longer a case of its own.
+   *
+   * It was hidden there because a `cover` preview under a `contain` painting
+   * fills the letterbox bars with stretched blurred paint — which turned out to
+   * happen out of fullscreen too, at any moment the frame is still the shape
+   * the painting was *measured* as rather than the shape the photograph is.
+   * Fitted to the same box as the image, it cannot bleed anywhere, so it stays
+   * in both.
    */
-  it('hides it in fullscreen, where it would bleed into the bars', () => {
+  it('keeps the preview in fullscreen too, now it cannot bleed', () => {
     component.previewImage.set('url(https://example.test/preview.jpg)');
     component.layerA.set('https://example.test/full.jpg');
-    component.isFullScreen.set(true);
-    fixture.detectChanges();
-
-    expect(preview()?.classList.contains('visible')).toBe(false);
-  });
-
-  /**
-   * But fullscreen with nothing loaded yet is still a blurred preview rather
-   * than an empty black frame — it is the only thing there is to show.
-   */
-  it('still shows it in fullscreen while nothing has loaded', () => {
-    component.previewImage.set('url(https://example.test/preview.jpg)');
     component.isFullScreen.set(true);
     fixture.detectChanges();
 

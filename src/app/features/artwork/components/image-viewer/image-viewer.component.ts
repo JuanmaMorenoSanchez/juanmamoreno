@@ -46,8 +46,8 @@ export class ImageViewerComponent {
 
   // Low-res preview: grey placeholder -> progressive thumbnail, blurred, and
   // left underneath the sharp image rather than removed once it arrives, so
-  // the hi-res resolves over it instead of crossing it. In fullscreen it is
-  // hidden, where `cover` under `contain` would bleed into the letterbox bars.
+  // the hi-res resolves over it instead of crossing it. Fitted to the same box
+  // as the image, so it is never visible beside it.
   previewImage = signal<string>('none');
   readonly hasPreview = computed(() => this.previewImage() !== 'none');
 
