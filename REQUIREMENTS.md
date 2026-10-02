@@ -2481,10 +2481,16 @@ Taking "the painting" for the end of the sequence made a launch that went off
 twice.
 
 The long wait is most of the loop, and the two frames in the middle are over
-before they can be looked at: that is what makes them read as fast. Each frame
-arrives over the one before it, **except ignition**, which is a cut — softening
-that one is the single thing that would make the whole sequence look like a
-slideshow.
+before they can be looked at: that is what makes them read as fast.
+
+**Two of the four are cuts.** The first bloom does not fade in, because a rocket
+lighting is a cut and softening it is the single thing that would make the whole
+sequence look like a slideshow. And the loop does not fade back to the start:
+fading the loaded launcher in over four tenths of an eighteen-hundred
+millisecond step left the rocket climbing underneath it for another seven
+hundred, which does not read as a fade — it reads as the last frame refusing to
+leave. The two in the middle overlap, which reads as the thing moving rather
+than being replaced.
 
 The particles are not a fifth painting. The burst differs every time it fires
 and carries on into the next frame rather than stopping with it, which is what
@@ -2515,5 +2521,8 @@ outnumbers smoke, that smoke outlives it, that the impulse dies away, that a
 step large enough to teleport everything is refused, and that a cool spark is a
 different colour from a hot one); `frame-timeline.spec.ts` "FrameTimeline.at"
 (7 tests, including that the frame being left wraps at the loop's seam, which is
-what a cross-fade fades out of); and `registry.spec.ts` "registers the sketch
-and not the piece it draws"
+what a cross-fade fades out of); `rockets-win.sketch.spec.ts` (7 tests: that it cuts to the first bloom, that it
+cuts back to the start so the last frame does not linger, that the two in the
+middle dissolve, and that the frame it fits is a phone's whatever window it is
+given); and `registry.spec.ts` "registers the sketch and not the piece it
+draws"

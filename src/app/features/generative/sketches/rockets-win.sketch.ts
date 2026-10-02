@@ -57,11 +57,30 @@ const PHONE_RATIO = 9 / 16;
 /**
  * How long each frame takes to arrive, as a share of its own step.
  *
- * Ignition does not fade: a rocket lighting is a cut, and softening it is the
- * one thing that would make the whole sequence look like a slideshow. The
- * others overlap, which reads as the thing moving rather than being replaced.
+ * Two of them are cuts. The first bloom does not fade in, because a rocket
+ * lighting is a cut and softening it is the one thing that would make the whole
+ * sequence look like a slideshow. **And the loop does not fade back to the
+ * start**: fading in over four tenths of an eighteen-hundred-millisecond step
+ * left the rocket climbing underneath the empty launcher for another seven
+ * hundred, which does not read as a fade — it reads as the last frame refusing
+ * to leave. It is over, so it goes.
+ *
+ * The two in the middle overlap, which reads as the thing moving rather than
+ * being replaced.
  */
-const FADE: number[] = [0.4, 0, 0.3, 0.25];
+export const FADE: readonly number[] = [0, 0, 0.3, 0.25];
+
+/**
+ * How opaque the arriving frame is, this far into its step.
+ *
+ * Its own function so the rule can be read and tested without a canvas: which
+ * frames cut and which dissolve is the difference between a launch and a
+ * slideshow, and it is two numbers in an array.
+ */
+export function arriving(index: number, through: number): number {
+  const fade = FADE[index] ?? 0;
+  return fade > 0 ? Math.min(1, through / fade) : 1;
+}
 
 /**
  * Where the tube mouth is, as a share of the frame, and which way the exhaust
@@ -162,10 +181,9 @@ export class RocketsWinSketch implements Sketch {
     phone: Box,
     step: { index: number; previous: number; through: number }
   ): void {
-    const fade = FADE[step.index] ?? 0;
-    const arriving = fade > 0 ? Math.min(1, step.through / fade) : 1;
+    const shown = arriving(step.index, step.through);
 
-    if (arriving < 1) {
+    if (shown < 1) {
       const leaving = this.images[ORDER[step.previous]];
       if (leaving) coverDraw(ctx, leaving, phone);
     }
@@ -173,7 +191,7 @@ export class RocketsWinSketch implements Sketch {
     const current = this.images[ORDER[step.index]];
     if (!current) return;
 
-    ctx.globalAlpha = arriving;
+    ctx.globalAlpha = shown;
     coverDraw(ctx, current, phone);
     ctx.globalAlpha = 1;
   }
