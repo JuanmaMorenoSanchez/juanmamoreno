@@ -5,6 +5,64 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.102.0
+
+- **chore** — *Rockets win* is gone, and so is everything that existed for it:
+  the sketch, the ember simulation, and the method the timeline grew to tell a
+  cross-fade how far into a frame it was. Nothing else used any of it. The three
+  paintings it drew are untouched — they are assets of the piece `rockets-win-i`
+  and still listed under painting 195 in the catalogue.
+- **chore** — the five versions below shipped under the number 1.99.1. A bump
+  was written as a plain find-and-replace with no check that it found anything,
+  and once one of them failed every later one looked for a version that was
+  never there and quietly changed nothing. The code went out; only the label and
+  these notes stayed behind.
+
+## 1.101.2
+
+- **fix** — *Rockets win* cuts back to the start instead of fading. The loop
+  faded the loaded launcher in over four tenths of an eighteen-hundred
+  millisecond step, so the rocket went on climbing underneath it for another
+  seven hundred — which does not read as a fade, it reads as the last frame
+  refusing to leave.
+
+## 1.101.1
+
+- **fix** — *Rockets win* plays its paintings in the right order: the painting
+  itself is the **second** state, not the last. Its rocket is barely clear of
+  the tube and the bloom around it is still soft, where the variant that
+  followed it has the same moment a breath later with the bloom dense and white.
+- **fix** — the exhaust comes out of an area and in a scatter rather than along
+  a line. One emitter sliding up the frame draws a stripe however much the
+  particles scatter afterwards; it became several patches, spaced back down the
+  way the rocket came, each wandering every frame and spreading wider the
+  further back it is.
+
+## 1.101.0
+
+- **feat** — a new generative piece, *Rockets win*, at `/generative/rockets-win`.
+  Four paintings of one canvas held for lengths that make a launch rather than a
+  slideshow, with sparks and smoke over them. (Removed again in 1.102.0.)
+
+## 1.100.0
+
+- **feat** — a shared link previews as one of his paintings. Every page but an
+  artwork's own advertised a file baked into `index.html` — a painting that is
+  not in the catalogue any more — so sending anybody the site in WhatsApp showed
+  somebody else's work. The landing page's painting is the answer now, and an
+  artwork page keeps its own. The web-sized copy rather than the original: a
+  preview is fetched by somebody's phone, and thirteen megabytes is what a
+  messaging app gives up on and shows nothing for.
+
+## 1.99.2
+
+- **fix** — the frame takes its shape from the photograph when the shape it has
+  is the canvas. The traits of a canvas measured 20 x 25 are 0.8000 where the
+  photograph of it is 0.8081 — a per cent, seven pixels, a fade of blurred paint
+  down each side — and which arrival path you took decided which of the two the
+  frame kept. It corrects a disagreement above half a per cent now and ignores
+  anything under it, which is the same photograph measured at two scalings.
+
 ## 1.99.1
 
 - **fix** — the frame around a painting paints nothing. Its job is to reserve a
