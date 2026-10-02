@@ -2207,7 +2207,9 @@ the class — the only place this fault was visible
 ### R123 — A painting can be cut into layers that move apart · met
 The atelier takes one picture — a catalogue number, or a file from the laptop —
 and then two things can be done with it, in either order and neither required:
-ask for a variant in words, or cut it into layers. Cutting asks a model for a
+ask for a variant in words, or cut it into layers. A variant can be downloaded
+where it is made without being kept in the piece — the two are different
+intentions, and one worth using elsewhere is not always one worth saving here. Cutting asks a model for a
 mask per thing named and cuts the full-size original with each; depth and
 stacking order are set by hand. A piece is layers, or kept variants, or both.
 
@@ -2231,7 +2233,9 @@ brightness into transparency", without which the whole bounding box is kept,
 because a probability map is opaque even where it is black; and
 `atelier.component.spec.ts` "asks for a painting before it offers to do
 anything to one", "offers to keep a piece of variants with no layers at all",
-"uploads every file the manifest goes on to name", and the
+"offers every variant for download, kept or not", "names a downloaded variant
+after the painting and the instruction", "uploads every file the manifest goes
+on to name", and the
 six about naming a painting by its number — "finds the painting without being
 told where it lives", "says so plainly when there is no such painting",
 "tells a catalogue that has not arrived from a number that is wrong", and

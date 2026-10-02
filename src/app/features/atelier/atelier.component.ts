@@ -385,6 +385,18 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  /**
+   * What a variant is called once it is on his disk.
+   *
+   * Named after the painting and the sentence that made it, because a folder of
+   * `variant-0.png` is a folder nobody can read a week later — and the reason
+   * to download one rather than keep it in the piece is to use it somewhere
+   * else, where the filename is all the description it has.
+   */
+  variantName(variant: Variant): string {
+    return `${slug(this.source() || 'painting')}-${slug(variant.instruction, 'variant')}.png`;
+  }
+
   keep(index: number): void {
     const variants = [...this.variants()];
     variants[index] = { ...variants[index], kept: !variants[index].kept };

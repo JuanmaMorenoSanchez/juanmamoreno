@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.97.0
+
+- **feat** — a variant can be downloaded where it is made, kept or not. Keeping
+  one makes it a frame of the piece and downloading it takes it somewhere else
+  entirely, and a variant worth using elsewhere is not always one worth saving
+  here. Named after the painting and the sentence that made it, because the
+  filename is all the description a downloaded file has.
+
 ## 1.96.1
 
 - **chore** — a pass that finds nothing names the one cause nobody would guess.

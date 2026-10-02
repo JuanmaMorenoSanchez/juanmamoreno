@@ -445,6 +445,50 @@ describe('AtelierComponent, the stage', () => {
     expect(component.layers()).toEqual([]);
   });
 
+  /**
+   * A variant can go straight to disk without being kept in the piece. The two
+   * are different intentions, and one worth using elsewhere is not always one
+   * worth saving here.
+   */
+  it('offers every variant for download, kept or not', () => {
+    const component = fixture.componentInstance;
+    component.painting.set(picture());
+    component.source.set('182');
+    component.variants.set([
+      { instruction: 'close her eyes', image: picture(), kept: false },
+      { instruction: 'and smile', image: picture(), kept: true },
+    ]);
+    fixture.detectChanges();
+
+    const links = [...fixture.nativeElement.querySelectorAll('.atelier-variants a')];
+
+    expect(links).toHaveLength(2);
+    expect(links.map((a: HTMLAnchorElement) => a.getAttribute('download'))).toEqual([
+      '182-close-her-eyes.png',
+      '182-and-smile.png',
+    ]);
+  });
+
+  /**
+   * Named after the painting and the sentence that made it: a folder of
+   * `variant-0.png` is a folder nobody can read a week later, and the filename
+   * is all the description a downloaded file has.
+   */
+  it('names a downloaded variant after the painting and the instruction', () => {
+    const component = fixture.componentInstance;
+    component.source.set('182');
+
+    expect(
+      component.variantName({ instruction: '¡Close her EYES!', image: picture(), kept: false })
+    ).toBe('182-close-her-eyes.png');
+
+    // Nothing to go on either side still produces a name a browser will take.
+    component.source.set('');
+    expect(component.variantName({ instruction: '¿¡!?', image: picture(), kept: false })).toBe(
+      'painting-variant.png'
+    );
+  });
+
   /** Nothing to keep is nothing to name, and variants alone are something. */
   it('offers to keep a piece of variants with no layers at all', () => {
     const component = fixture.componentInstance;

@@ -150,6 +150,17 @@
                 <button type="button" class="atelier-link" (click)="keep($index)">
                   {{ variant.kept ? 'Kept' : 'Keep' }}
                 </button>
+                <!--
+                  Straight to disk, without keeping it in the piece first. The
+                  two are different intentions: keeping it makes it a frame of
+                  this piece, downloading it takes it somewhere else entirely —
+                  and a variant worth using elsewhere is not always one worth
+                  saving here. The image is already a data url, so the browser
+                  does the saving and nothing is asked of the api.
+                -->
+                <a class="atelier-link" [href]="variant.image.src" [download]="variantName(variant)"
+                  >Download</a
+                >
                 <button type="button" class="atelier-link" (click)="discardVariant($index)">
                   Discard
                 </button>
