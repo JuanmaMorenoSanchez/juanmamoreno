@@ -82,27 +82,40 @@ export class Embers {
   }
 
   /**
-   * Throws a burst out from one point, in a cone.
+   * Throws a burst out of an area, in roughly one direction.
    *
    * `aim` is the direction the exhaust goes, in radians, and `spread` how wide
-   * a cone around it. A rocket in a tube throws its exhaust back down the tube
-   * and out of the mouth, which is a narrow cone, not a sphere.
+   * a cone around it. `area` is the radius of the patch it comes *out of* —
+   * zero for a point, which is what this did at first and why it read as a fan
+   * drawn from one place rather than as something burning across a region.
+   *
+   * The angle is biased towards the middle rather than spread evenly across
+   * the cone: two random numbers averaged cluster, so most of it goes the way
+   * the rocket went and the edges stay ragged. An even spread across a cone
+   * looks like a shape, which is the thing that gives a particle effect away.
    */
-  burst(x: number, y: number, aim: number, spread: number, sparks: number): void {
+  burst(x: number, y: number, aim: number, spread: number, sparks: number, area = 0): void {
     for (let i = 0; i < sparks; i++) {
       if (this.pool.length >= CEILING) return;
 
       // Two in three are sparks: the burst should read as fire first and
       // weather into smoke, not start as a cloud.
       const kind: EmberKind = randInt(0, 2) === 0 ? 'smoke' : 'spark';
-      const angle = aim + rand(-spread, spread);
+      const angle = aim + (rand(-spread, spread) + rand(-spread, spread)) / 2;
+
+      // Somewhere in the patch, not at its centre. Square-rooted so the points
+      // land evenly over the disc rather than bunching in the middle of it.
+      const awayFrom = Math.sqrt(Math.random()) * area;
+      const around = rand(0, Math.PI * 2);
+      const fromX = x + Math.cos(around) * awayFrom;
+      const fromY = y + Math.sin(around) * awayFrom;
       const [low, high] = kind === 'spark' ? SPARK_SPEED : SMOKE_SPEED;
       const speed = rand(low, high) * this.scale;
       const [shortest, longest] = kind === 'spark' ? SPARK_LIFE : SMOKE_LIFE;
 
       this.pool.push({
-        x,
-        y,
+        x: fromX,
+        y: fromY,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         kind,

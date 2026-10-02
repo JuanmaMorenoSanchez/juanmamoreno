@@ -25,15 +25,17 @@ const ATELIER = 'https://storage.googleapis.com/juanmamoreno-atelier/atelier/roc
 const SOURCES: Record<string, string> = {
   // Loaded. Tubes full, nothing happening yet.
   loaded: `${ATELIER}/variant-0.png`,
-  // Ignition: the bloom at the mouth, rocket barely clear.
-  ignition: `${ATELIER}/variant-1.png`,
+  // The painting itself, and the first instant of fire: the rocket barely
+  // clear of the tube, the bloom around it still soft and spread. On the
+  // web-sized copy rather than the original, which is thirteen megabytes.
+  emerging: 'https://arweave.net/CwI44eqTk8G6KWgoczU7WFdsj9ZCTx6_xGSI1s0e8N4',
+  // Fully lit: the same moment a breath later, the bloom dense and white.
+  flash: `${ATELIER}/variant-1.png`,
   // Away: climbing, the trail behind it, one tube dark.
   away: `${ATELIER}/variant-2.png`,
-  // The painting itself, on the web-sized copy rather than the original — the
-  // original is thirteen megabytes and nothing here shows it at that size.
-  climb: 'https://arweave.net/CwI44eqTk8G6KWgoczU7WFdsj9ZCTx6_xGSI1s0e8N4',
 };
-const ORDER = ['loaded', 'ignition', 'away', 'climb'] as const;
+
+const ORDER = ['loaded', 'emerging', 'flash', 'away'] as const;
 
 /**
  * The launch, in milliseconds.
@@ -44,9 +46,9 @@ const ORDER = ['loaded', 'ignition', 'away', 'climb'] as const;
  */
 const LAUNCH: Keyframe[] = [
   { index: 0, ms: 1800 }, // loaded, waiting
-  { index: 1, ms: 130 }, // ignition
-  { index: 2, ms: 220 }, // away
-  { index: 3, ms: 900 }, // the climb
+  { index: 1, ms: 150 }, // the first bloom, rocket clearing the tube
+  { index: 2, ms: 150 }, // fully lit
+  { index: 3, ms: 900 }, // away, climbing
 ];
 
 /** A phone, which is the shape this is made for. */
@@ -59,18 +61,36 @@ const PHONE_RATIO = 9 / 16;
  * one thing that would make the whole sequence look like a slideshow. The
  * others overlap, which reads as the thing moving rather than being replaced.
  */
-const FADE: number[] = [0.35, 0, 0.25, 0.3];
+const FADE: number[] = [0.4, 0, 0.3, 0.25];
 
-/** Where the tube mouth is, as a share of the frame. Measured off the paintings. */
-const MOUTH_X = 0.56;
-const MOUTH_Y = 0.42;
-/** The exhaust goes up and to the right, along the tube. */
-const EXHAUST_AIM = -Math.PI / 2.35;
+/**
+ * Where the tube mouth is, as a share of the frame, and which way the exhaust
+ * goes. Read off the paintings rather than guessed: the painted flame leaves
+ * the tube low and right of centre and climbs to the right, and sparks that
+ * start above and left of it run up the launcher's body instead of out of it.
+ */
+const MOUTH_X = 0.62;
+const MOUTH_Y = 0.52;
+const EXHAUST_AIM = -Math.PI / 2.75;
 const EXHAUST_SPREAD = 0.55;
 
 /** Sparks thrown at ignition, and the trickle that follows while it climbs. */
 const IGNITION_SPARKS = 90;
-const TRAIL_SPARKS = 4;
+const TRAIL_SPARKS = 5;
+
+/**
+ * How many patches the trail is made of, and how wide each is.
+ *
+ * It was one patch moving along a line, which looked like a line: a single
+ * emitter sliding up the frame draws a stripe however much the particles
+ * scatter afterwards. Several patches, spaced along the way the rocket has
+ * come and each throwing a few, reads as burning gas filling a region — which
+ * is what is actually behind a rocket.
+ */
+const TRAIL_PATCHES = 3;
+const PATCH_WIDTH = 0.055;
+/** The patch at the mouth of the tube, where the most of it happens. */
+const IGNITION_AREA = 0.05;
 
 /**
  * How far up the exhaust has travelled by the end of the climb, as a share of
@@ -180,30 +200,45 @@ export class RocketsWinSketch implements Sketch {
       // Back to the beginning: the air clears before it fires again.
       if (step.index === 0) this.embers.clear();
       if (step.index === 1) {
-        this.embers.burst(mouth.x, mouth.y, EXHAUST_AIM, EXHAUST_SPREAD, IGNITION_SPARKS);
+        this.embers.burst(
+          mouth.x,
+          mouth.y,
+          EXHAUST_AIM,
+          EXHAUST_SPREAD,
+          IGNITION_SPARKS,
+          Math.min(phone.width, phone.height) * IGNITION_AREA
+        );
         this.flash = 1;
       }
       this.lastStep = step.index;
     }
 
-    // The trail leaves from wherever the rocket has got to, which by the last
-    // painting is most of the way up the frame.
+    // Several patches along the way the rocket has come, rather than one
+    // emitter sliding up a line. Each is a small area throwing a few, and
+    // where each one sits wanders a little every frame, so no two passes of
+    // the loop lay down the same shape.
     if (step.index === 2 || step.index === 3) {
-      const climbed =
-        (step.index === 2 ? step.through * 0.4 : 0.4 + step.through * 0.6) *
-        TRAIL_TRAVEL *
-        Math.min(phone.width, phone.height);
-      this.embers.burst(
-        // Along the aim, which is up and to the right — the way the painted
-        // rocket goes. Negated, it climbed up and to the left instead, away
-        // from the rocket it is supposed to be coming out of.
-        mouth.x + Math.cos(EXHAUST_AIM) * climbed,
-        mouth.y + Math.sin(EXHAUST_AIM) * climbed,
-        // Downward, behind it: exhaust goes the way the rocket came from.
-        EXHAUST_AIM + Math.PI,
-        EXHAUST_SPREAD * 0.8,
-        TRAIL_SPARKS
-      );
+      const scale = Math.min(phone.width, phone.height);
+      const reached =
+        (step.index === 2 ? step.through * 0.4 : 0.4 + step.through * 0.6) * TRAIL_TRAVEL * scale;
+
+      for (let patch = 0; patch < TRAIL_PATCHES; patch++) {
+        // Spread back down the path from where it has got to, with a wobble so
+        // the patches are not evenly spaced either.
+        const back = ((patch + Math.random() * 0.8) / TRAIL_PATCHES) * reached;
+        const along = reached - back;
+
+        this.embers.burst(
+          mouth.x + Math.cos(EXHAUST_AIM) * along,
+          mouth.y + Math.sin(EXHAUST_AIM) * along,
+          // Behind it, and wider the further back it is: exhaust spreads as it
+          // leaves, which is most of what makes a trail look like a trail.
+          EXHAUST_AIM + Math.PI,
+          EXHAUST_SPREAD * (0.7 + (back / Math.max(reached, 1)) * 1.3),
+          TRAIL_SPARKS,
+          scale * PATCH_WIDTH
+        );
+      }
     }
 
     this.embers.update(dt);

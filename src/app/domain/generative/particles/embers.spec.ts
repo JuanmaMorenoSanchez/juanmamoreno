@@ -47,6 +47,44 @@ describe('Embers', () => {
     }
   });
 
+  /**
+   * One emitter sliding along draws a stripe however much the particles
+   * scatter afterwards. Coming out of a patch is what makes it read as burning
+   * gas filling a region rather than as an effect on a line.
+   */
+  it('throws out of an area when given one', () => {
+    embers.burst(500, 500, up, 0.4, 80, 60);
+
+    const spread = embers.particles.map((e) => Math.hypot(e.x - 500, e.y - 500));
+    expect(Math.max(...spread)).toBeGreaterThan(20);
+    // Never outside the patch it was given.
+    expect(Math.max(...spread)).toBeLessThanOrEqual(60 + 1e-9);
+  });
+
+  it('throws from the exact point when given no area', () => {
+    embers.burst(500, 500, up, 0.4, 20);
+
+    for (const ember of embers.particles) {
+      expect(ember.x).toBe(500);
+      expect(ember.y).toBe(500);
+    }
+  });
+
+  /**
+   * Evenly spread across a cone looks like a shape, which is the thing that
+   * gives a particle effect away. Most of it should go the way the rocket
+   * went, with the edges ragged.
+   */
+  it('sends most of it the way it was aimed, not evenly across the cone', () => {
+    embers.burst(0, 0, up, 1, 400);
+
+    const offBy = embers.particles.map((e) => Math.abs(Math.atan2(e.vy, e.vx) - up));
+    const nearTheMiddle = offBy.filter((d) => d < 0.5).length;
+
+    // An even spread would put half of them inside half the cone.
+    expect(nearTheMiddle / offBy.length).toBeGreaterThan(0.6);
+  });
+
   it('scales its speeds to the frame, so a phone is not a drizzle', () => {
     const small = new Embers(100);
     small.burst(0, 0, up, 0.1, 60);
@@ -95,15 +133,18 @@ describe('Embers', () => {
    */
   it('refuses a step so large it would teleport everything', () => {
     embers.burst(0, 0, up, 0.05, 20);
-    const far = new Embers(SCALE);
-    far.burst(0, 0, up, 0.05, 20);
+    const watched = embers.particles[0];
+    const startedAt = watched.y;
+    const speed = Math.abs(watched.vy);
 
-    embers.update(0.05);
-    far.update(30);
+    // Half a minute away, handed over as one step.
+    embers.update(30);
 
-    expect(Math.abs(far.particles[0]?.y ?? 0)).toBeLessThanOrEqual(
-      Math.abs(embers.particles[0].y) * 1.5
-    );
+    // It moved no further than a single clamped step could carry it, and that
+    // is the whole point: the piece should be where it was, not off the frame.
+    // Compared against its own velocity rather than another burst's, which was
+    // two different sets of random numbers pretending to be a measurement.
+    expect(Math.abs(watched.y - startedAt)).toBeLessThanOrEqual(speed * 0.05 + SCALE * 0.02);
   });
 
   it('forgets everything when the loop starts again', () => {

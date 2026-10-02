@@ -2469,9 +2469,16 @@ that the original is never offered); and the built pages themselves, where
 `/es/` and `/about` carry the landing page's
 
 ### R133 — Rockets win plays a launch out of four paintings · met
-`/generative/rockets-win` shows the four states of one canvas in order — loaded,
-ignition, away, climbing — held for lengths that make a launch rather than a
-slideshow, and throws sparks and smoke over them.
+`/generative/rockets-win` shows the four states of one canvas in order —
+loaded, the first soft bloom with the rocket barely clear, fully lit, away —
+held for lengths that make a launch rather than a slideshow, and throws sparks
+and smoke over them.
+
+**The painting itself is the second state, not the last.** Its rocket is barely
+out of the tube and its bloom is still soft and spread, where the variant that
+follows has the same moment a breath later with the bloom dense and white.
+Taking "the painting" for the end of the sequence made a launch that went off
+twice.
 
 The long wait is most of the loop, and the two frames in the middle are over
 before they can be looked at: that is what makes them read as fast. Each frame
@@ -2487,13 +2494,23 @@ a flat lid and hid the best part of the picture. Sparks are drawn along the way
 they are going, not as dots — dots read as confetti at any size — and each
 leaves at its own heat, because every one leaving white read as a sparkler.
 
+**The exhaust comes out of an area, not a point, and in several patches rather
+than one.** A single emitter sliding along draws a stripe however much the
+particles scatter afterwards. The patches sit back down the path the rocket
+came, wander every frame so no two passes lay down the same shape, and spread
+wider the further back they are. Direction clusters around the rocket's rather
+than spreading evenly across a cone: evenly spread reads as a shape, which is
+what gives a particle effect away.
+
 Shaped for a phone, and filled rather than fitted: the paintings are four
 fifths as wide as they are tall and a phone is nearer a half, so fitting them
 would leave more empty screen than painting.
 
 Three of the four are the atelier's, fetched from the piece `rockets-win-i`
 they belong to rather than committed here.
-*Proven by:* `embers.spec.ts` (16 tests: the cone it throws into, that fire
+*Proven by:* `embers.spec.ts` (19 tests: that it throws out of an area when
+given one and from the exact point when not, that most of it goes the way it
+was aimed rather than evenly across the cone, the cone it throws into, that fire
 outnumbers smoke, that smoke outlives it, that the impulse dies away, that a
 step large enough to teleport everything is refused, and that a cool spark is a
 different colour from a hot one); `frame-timeline.spec.ts` "FrameTimeline.at"
