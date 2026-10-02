@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.95.0
+
+- **feat** — a painting comes into focus the same way everywhere. On an artwork
+  page the blurred preview was removed the moment the sharp image arrived,
+  which crossed two opacities: halfway through the swap both sat near half and
+  the painting visibly paled. It stays underneath now, so the sharp one
+  resolves over it, which is what the hero on the home page has always done.
+  Still hidden in fullscreen, where a `cover` preview under a `contain`
+  painting would show blurred paint in the letterbox bars. The catalogue grid
+  already sharpened rather than crossed; its timing now matches the other two.
+- **chore** — robots.txt names every guarded address. /pendingmint, /catalogue
+  and /atelier arrived after it was written and were never added, and /latest
+  was still disallowed after the route became part of /catalogue. The atelier
+  is in the admin menu, where it was reachable only by typing the address.
+
 ## 1.94.0
 
 - **feat** — the page a certificate is prepared on is at `/mint`, where it was

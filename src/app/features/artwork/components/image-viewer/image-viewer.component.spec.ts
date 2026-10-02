@@ -101,3 +101,102 @@ describe('ImageViewerComponent — the shape of the frame', () => {
     expect(asked).not.toHaveBeenCalledWith('none');
   });
 });
+
+/**
+ * Coming into focus, rather than washing out and back.
+ *
+ * The blurred preview used to be removed the moment the sharp image arrived,
+ * which crossed two opacities: halfway through, both sat near half and the
+ * painting visibly paled. Leaving it underneath makes the sharp one resolve
+ * over it — the same thing the hero on the home page does, which is the effect
+ * the artist asked for here.
+ */
+describe('ImageViewerComponent — the blurred preview underneath', () => {
+  let fixture: ComponentFixture<ImageViewerComponent>;
+  let component: ImageViewerComponent;
+  let ref: ComponentRef<ImageViewerComponent>;
+
+  const painting = (tokenId: string): Nft =>
+    ({ tokenId, name: 'A painting', image: {}, raw: { metadata: {} } }) as unknown as Nft;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [ImageViewerComponent],
+      providers: [
+        provideTranslateService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimations(),
+        provideRouter([]),
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getAspectRatio: () => 2,
+            getProgressiveImageUrls: () => of('https://example.test/preview.jpg'),
+            getNftQualityUrls: () => [],
+          },
+        },
+      ],
+    });
+
+    fixture = TestBed.createComponent(ImageViewerComponent);
+    component = fixture.componentInstance;
+    ref = fixture.componentRef;
+    ref.setInput('nfts', [painting('1')]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+  });
+
+  function preview(): HTMLElement | null {
+    return fixture.nativeElement.querySelector('.preview-layer');
+  }
+
+  it('shows the preview while there is nothing sharper', () => {
+    component.previewImage.set('url(https://example.test/preview.jpg)');
+    fixture.detectChanges();
+
+    expect(preview()?.classList.contains('visible')).toBe(true);
+  });
+
+  /** The change: it stays, so the sharp image resolves over it. */
+  it('keeps the preview once the sharp image is up', () => {
+    component.previewImage.set('url(https://example.test/preview.jpg)');
+    component.layerA.set('https://example.test/full.jpg');
+    fixture.detectChanges();
+
+    expect(component.hasImage()).toBe(true);
+    expect(preview()?.classList.contains('visible')).toBe(true);
+  });
+
+  /**
+   * Except in fullscreen. The preview is drawn `cover` where the painting is
+   * `contain`, so with letterbox bars it would show blurred paint in them.
+   */
+  it('hides it in fullscreen, where it would bleed into the bars', () => {
+    component.previewImage.set('url(https://example.test/preview.jpg)');
+    component.layerA.set('https://example.test/full.jpg');
+    component.isFullScreen.set(true);
+    fixture.detectChanges();
+
+    expect(preview()?.classList.contains('visible')).toBe(false);
+  });
+
+  /**
+   * But fullscreen with nothing loaded yet is still a blurred preview rather
+   * than an empty black frame — it is the only thing there is to show.
+   */
+  it('still shows it in fullscreen while nothing has loaded', () => {
+    component.previewImage.set('url(https://example.test/preview.jpg)');
+    component.isFullScreen.set(true);
+    fixture.detectChanges();
+
+    expect(preview()?.classList.contains('visible')).toBe(true);
+  });
+
+  it('shows nothing when there is no preview to show', () => {
+    component.previewImage.set('none');
+    fixture.detectChanges();
+
+    expect(preview()?.classList.contains('visible')).toBe(false);
+  });
+});

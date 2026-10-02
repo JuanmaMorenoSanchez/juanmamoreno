@@ -71,9 +71,21 @@
       [style.aspectRatio]="aspectRatio()"
       [style.width]="frameWidth()"
     >
+      <!--
+        Kept underneath the sharp image rather than faded out from under it.
+        Hiding it at the same moment the hi-res appeared crossed two opacities,
+        and halfway through the swap both sat near half — which reads as the
+        painting washing out and back rather than coming into focus. Left where
+        it is, the sharp one simply resolves over it, which is what the home
+        page does and the reason that one feels like a lens finding focus.
+
+        Still hidden in fullscreen, and for the reason it always was: the
+        preview is drawn `cover` where the painting is `contain`, so with
+        letterbox bars it would show blurred paint in them.
+      -->
       <div
         class="preview-layer"
-        [class.visible]="hasPreview() && !hasImage()"
+        [class.visible]="hasPreview() && (!hasImage() || !isFullScreen())"
         [style.backgroundImage]="previewImage()"
       ></div>
 

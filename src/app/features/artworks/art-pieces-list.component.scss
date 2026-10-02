@@ -86,7 +86,12 @@ mat-card {
   transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
   transition:
     transform 0.2s ease-out,
-    filter 0.45s ease;
+    // The same half-second and the same easing as the hero on the home page
+    // and the viewer on an artwork page, so a painting coming into focus looks
+    // the same wherever it happens. ease-in starts slowly and settles, which
+    // is a lens finding focus; `ease` moves fastest in the middle, which is a
+    // crossfade between two different things.
+    filter 0.5s ease-in;
 }
 
 // While the tile is still showing the image carried inside the certificate —

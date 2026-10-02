@@ -572,8 +572,12 @@ prompt.
 *Proven by:* `admin-auth.service.spec.ts` "remembers the session"
 
 ### R18 — The page a certificate is prepared on is not public · met
-`/mint`, `/door` and `/publish` are never prerendered, are excluded from the
-sitemap, are disallowed in robots.txt and carry `noindex`. `/studio`, which is
+`/mint`, `/door`, `/publish`, `/pendingmint`, `/catalogue` and `/atelier` are
+never prerendered, are excluded from the sitemap, are disallowed in robots.txt
+and carry `noindex`. Every one of them, not the three that existed when this
+was written: the last three arrived later and were missing from robots.txt
+until 1.95.0, which is the same way the build's own list of guarded addresses
+had failed — quietly, by not growing. `/studio`, which is
 what `/mint` was called before the atelier arrived and which still redirects to
 it, is disallowed too — it is still a way in.
 
@@ -2266,3 +2270,24 @@ were two sketches in ten months.
 whatever order it arrives in", "reads a manifest the api wrapped", "reads one
 that is not wrapped", "draws nothing, quietly, when there is no such piece" and
 "survives a manifest that is not json at all"
+
+### R126 — A painting comes into focus, and does not wash out · met
+Wherever a painting is shown while a better file is still arriving — the hero on
+the home page, the viewer on an artwork page, the tiles of the catalogue — the
+low-res image is blurred and the sharper one *resolves over it*. The blurred one
+is never faded out from under it.
+
+**The difference is visible and was wrong on the artwork page.** Removing the
+preview at the moment the hi-res appeared crossed two opacities, so halfway
+through the swap both sat near half and the painting paled before returning.
+Leaving it underneath has nothing to cross.
+
+The one exception is fullscreen, where the preview is drawn `cover` and the
+painting `contain`: with letterbox bars it would show blurred paint in them. It
+is still shown there while nothing has loaded, because it is the only thing
+there is to show.
+*Proven by:* `image-viewer.component.spec.ts` "the blurred preview underneath"
+(5 tests: "keeps the preview once the sharp image is up", "hides it in
+fullscreen, where it would bleed into the bars", "still shows it in fullscreen
+while nothing has loaded", "shows the preview while there is nothing sharper"
+and "shows nothing when there is no preview to show")

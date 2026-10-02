@@ -44,9 +44,10 @@ export class ImageViewerComponent {
 
   private currentNft = computed<Nft | undefined>(() => this.nfts()[this.displayIndex()]);
 
-  // Low-res preview shown only until the first hi-res image is ready: grey
-  // placeholder -> progressive thumbnail. Once a hi-res layer is up it is
-  // hidden, so it never bleeds through the letterbox bars in fullscreen.
+  // Low-res preview: grey placeholder -> progressive thumbnail, blurred, and
+  // left underneath the sharp image rather than removed once it arrives, so
+  // the hi-res resolves over it instead of crossing it. In fullscreen it is
+  // hidden, where `cover` under `contain` would bleed into the letterbox bars.
   previewImage = signal<string>('none');
   readonly hasPreview = computed(() => this.previewImage() !== 'none');
 

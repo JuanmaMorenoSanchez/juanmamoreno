@@ -1,18 +1,26 @@
 User-agent: *
+# Every guarded address, not the handful that existed when this was written.
+# /pendingmint, /catalogue and /atelier arrived later and were not here, which
+# is how a list like this fails: quietly, by not growing. /latest was here and
+# the route is gone — it became part of /catalogue.
 Disallow: /mint
 # /studio was this page's address until the atelier arrived; it still redirects
 # here, so it is still a way in and still wants disallowing.
 Disallow: /studio
 Disallow: /door
 Disallow: /publish
-Disallow: /latest
-# The Spanish addresses redirect to these rather than 404ing, so they are three
-# more ways in and want disallowing too.
+Disallow: /pendingmint
+Disallow: /catalogue
+Disallow: /atelier
+# The Spanish addresses redirect to these rather than 404ing, so they are as
+# many more ways in and want disallowing too.
 Disallow: /es/mint
 Disallow: /es/studio
 Disallow: /es/door
 Disallow: /es/publish
-Disallow: /es/latest
+Disallow: /es/pendingmint
+Disallow: /es/catalogue
+Disallow: /es/atelier
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a
