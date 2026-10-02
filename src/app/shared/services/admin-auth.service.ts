@@ -41,7 +41,7 @@ const GOOGLE_ISSUERS = ['accounts.google.com', 'https://accounts.google.com'];
  *
  * This decides what the interface shows. It is not a security boundary: the
  * site is static, the bundle is public and localStorage belongs to the reader,
- * so anyone can reach whatever /studio renders by editing their own browser.
+ * so anyone can reach whatever /mint renders by editing their own browser.
  * When the studio holds something worth protecting, the backend has to verify
  * this same token on every request — signature included, which a browser
  * cannot do for itself.

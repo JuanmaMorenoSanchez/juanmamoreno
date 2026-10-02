@@ -128,7 +128,7 @@ export class TopMenuComponent {
 
     // Nowhere to navigate to on a page that exists at one address only, so the
     // change happens where the reader is standing. Leaving early also avoids
-    // the round trip through /es/studio and back, which changed nothing and
+    // the round trip through /es/mint and back, which changed nothing and
     // read as a switcher that does not work.
     if (!this.lang.carriesLanguage()) {
       this.translateService.use(language);

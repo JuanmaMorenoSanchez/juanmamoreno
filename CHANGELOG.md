@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.94.0
+
+- **feat** — the page a certificate is prepared on is at `/mint`, where it was
+  at `/studio`. With the atelier next to it the two names read as the same room,
+  and they are not: one turns a photograph into a certificate, the other cuts a
+  painting into layers. The old address still redirects, because it is in his
+  bookmarks, and is still disallowed to crawlers and still refused to the
+  prerender — it is a way in whatever it is called.
+
 ## 1.93.1
 
 - **chore** — the atelier takes a catalogue number where it took the address of

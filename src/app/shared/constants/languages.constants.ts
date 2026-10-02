@@ -14,7 +14,7 @@ export enum ALLOWED_LANGUAGES {
  * choice still has to be honoured, so on these the switcher changes the words
  * where it stands instead of changing the address.
  */
-export const LANGUAGE_FREE_PATHS = ['studio', 'door'];
+export const LANGUAGE_FREE_PATHS = ['mint', 'door'];
 
 /** True for an address whose first segment is one of those pages. */
 export function carriesNoLanguage(url: string): boolean {

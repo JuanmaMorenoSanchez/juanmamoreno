@@ -78,8 +78,9 @@ describe('ProjectComponent', () => {
 
     expect(diagram).not.toBeNull();
     // Earlier in the document than the first section heading.
-    expect(diagram.compareDocumentPosition(firstHeading) & Node.DOCUMENT_POSITION_FOLLOWING).
-      toBeTruthy();
+    expect(
+      diagram.compareDocumentPosition(firstHeading) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   /** The machine readers still come after the architecture that allows them. */
@@ -146,7 +147,11 @@ describe('ProjectComponent', () => {
     expect(drawn).toContain('/artworks');
     expect(drawn).toContain('GET /availability');
     expect(drawn).toContain('project.map.guarded');
-    expect(drawn).not.toContain('/studio');
+    // As a whole path, not a substring: the page legitimately names the public
+    // `GET /certificates/mints`, and `/mint` sits inside it. This is the same
+    // trap `verify-render.mjs` carries a lookahead for, after `/catalogue`
+    // fired on the public `/catalogue.json`.
+    expect(drawn).not.toMatch(/\/mint(?![\w.-])/);
     expect(drawn).not.toContain('/pendingmint');
     expect(drawn).not.toContain('/publish');
   });

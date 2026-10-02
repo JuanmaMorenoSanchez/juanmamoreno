@@ -26,7 +26,7 @@ describe('TopMenuComponent language switcher', () => {
         // Enough of the real shape to navigate: a page inside the language
         // trees and one outside them.
         provideRouter([
-          { path: 'studio', children: [] },
+          { path: 'mint', children: [] },
           { path: 'about', children: [] },
           { path: 'es/about', children: [] },
         ]),
@@ -62,12 +62,12 @@ describe('TopMenuComponent language switcher', () => {
   });
 
   // The studio and the door exist at one address only, so there is no /es twin
-  // to move to. The switcher used to send the reader to /es/studio, be bounced
+  // to move to. The switcher used to send the reader to /es/mint, be bounced
   // straight back, and change nothing at all — which read as a switcher that
   // works everywhere except where its owner actually works.
   describe('on a page whose address carries no language', () => {
     beforeEach(async () => {
-      await router.navigateByUrl('/studio');
+      await router.navigateByUrl('/mint');
     });
 
     it('changes the language where it stands instead of navigating', () => {
@@ -119,7 +119,7 @@ describe('TopMenuComponent workshop menu', () => {
         provideHttpClientTesting(),
         provideAnimations(),
         provideRouter([
-          { path: 'studio', children: [] },
+          { path: 'mint', children: [] },
           { path: 'publish', children: [] },
           { path: 'door', children: [] },
         ]),
@@ -171,7 +171,7 @@ describe('TopMenuComponent workshop menu', () => {
     const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
     const opened = panels[panels.length - 1];
     return [...(opened?.querySelectorAll('.mat-mdc-menu-item') ?? [])].map((item) =>
-      (item.textContent ?? '').trim(),
+      (item.textContent ?? '').trim()
     );
   };
 
@@ -189,7 +189,7 @@ describe('TopMenuComponent workshop menu', () => {
     expect(trigger?.getAttribute('href')).toBe('/door');
     expect(trigger?.getAttribute('aria-haspopup')).not.toBe('menu');
     expect(host.textContent).not.toContain('Admin');
-    expect(document.body.textContent).not.toContain('Studio');
+    expect(document.body.textContent).not.toContain('Mint');
     expect(host.textContent).not.toContain('Reels');
   });
 
@@ -201,7 +201,7 @@ describe('TopMenuComponent workshop menu', () => {
     // Named by its label rather than its text: the bar carries icons now.
     expect(trigger?.getAttribute('aria-label')).toBe('Admin');
     expect(itemsOf(trigger)).toEqual([
-      'Studio',
+      'Mint',
       'Reels waiting',
       'Certificates waiting',
       'Catalogue',
@@ -215,9 +215,9 @@ describe('TopMenuComponent workshop menu', () => {
     trigger?.click();
 
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
-      a.getAttribute('href'),
+      a.getAttribute('href')
     );
-    expect(links).toEqual(['/studio', '/publish', '/pendingmint', '/catalogue']);
+    expect(links).toEqual(['/mint', '/publish', '/pendingmint', '/catalogue']);
   });
 
   it('signs out from inside it', async () => {
@@ -226,7 +226,7 @@ describe('TopMenuComponent workshop menu', () => {
     trigger?.click();
 
     const out = [...document.querySelectorAll('.mat-mdc-menu-item')].find((item) =>
-      (item.textContent ?? '').includes('Sign out'),
+      (item.textContent ?? '').includes('Sign out')
     );
     (out as HTMLElement)?.click();
 
@@ -333,13 +333,13 @@ describe('TopMenuComponent more menu', () => {
     const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
     const opened = panels[panels.length - 1];
     const offered = [...opened.querySelectorAll('.mat-mdc-menu-item')].map((i) =>
-      (i.textContent ?? '').trim(),
+      (i.textContent ?? '').trim()
     );
     // Compared against what the component actually offers rather than a list
     // written here: the labels and their order belong to the language
     // constants, and duplicating them would only test the duplicate.
     const expected = fixture.componentInstance['languages'].map(
-      (language: { label: string }) => language.label,
+      (language: { label: string }) => language.label
     );
     expect(offered).toEqual(expected);
     expect(offered.length).toBe(2);

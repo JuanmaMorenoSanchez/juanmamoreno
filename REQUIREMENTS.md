@@ -75,10 +75,10 @@ and beats the browser's own language.
 remembers the choice"
 
 ### R9b — The switcher works on every page · met
-Including the studio and the door, which exist at one address only and so have
-no twin to move to. There the switcher changes the words where it stands, the
-label follows, and the choice is still remembered. It used to navigate to
-`/es/studio`, be redirected straight back, and change nothing.
+Including the mint page and the door, which exist at one address only and so
+have no twin to move to. There the switcher changes the words where it stands,
+the label follows, and the choice is still remembered. It used to navigate to
+`/es/mint`, be redirected straight back, and change nothing.
 *Proven by:* `top-menu.component.spec.ts` "on a page whose address carries no
 language" (2 tests)
 
@@ -561,7 +561,7 @@ reproduced: the texts belong to the outlets that ran them.
 ## Studio
 
 ### R16 — One account, and only one · met
-`/studio` opens only for **morenosanchezjuanma@gmail.com**. Any other Google
+`/mint` opens only for **morenosanchezjuanma@gmail.com**. Any other Google
 account is refused, including a signed-in valid one. The token is checked for
 issuer, audience, verified address, address, and expiry.
 *Proven by:* `admin-auth.service.spec.ts` (13 tests), `admin.guard.spec.ts`
@@ -571,9 +571,15 @@ The token is kept in localStorage and a returning visit is signed in without a
 prompt.
 *Proven by:* `admin-auth.service.spec.ts` "remembers the session"
 
-### R18 — The studio is not public · met
-`/studio`, `/door` and `/publish` are never prerendered, are excluded from the
-sitemap, are disallowed in robots.txt and carry `noindex`.
+### R18 — The page a certificate is prepared on is not public · met
+`/mint`, `/door` and `/publish` are never prerendered, are excluded from the
+sitemap, are disallowed in robots.txt and carry `noindex`. `/studio`, which is
+what `/mint` was called before the atelier arrived and which still redirects to
+it, is disallowed too — it is still a way in.
+
+The page was renamed because `/studio` and `/atelier` read as the same room, and
+they are not: one turns a photograph into a certificate, the other cuts a
+painting into layers.
 *Proven by:* `app.routes.server.ts`, `robots.txt`, `verify-render` (none of them
 appears among the built pages)
 
@@ -1101,11 +1107,16 @@ the colour temperature, the tones, and the focus. A pass that found nothing
 wrong says so rather than staying silent.
 *Proven by:* the studio probe, which reads all five lines back
 
-### R65 — The studio has no Spanish twin, and does not 404 · met
-`/es/studio` and `/es/door` lead to the English pages rather than the 404. The
-studio is one person's workshop and is written in one language, but the language
-switcher builds its target from the address alone.
-*Proven by:* `app-routing.module.ts`, and the studio probe
+### R65 — The mint page has no Spanish twin, and does not 404 · met
+`/es/mint` and `/es/door` lead to the English pages rather than the 404. The
+page is one person's workshop and is written in one language, but the language
+switcher builds its target from the address alone. `/es/studio` and `/studio`
+land there too, so a bookmark of the old name still works.
+*Proven by:* `app-routing.module.spec.ts` "sends the Spanish address of every
+one-language page back to it", "still answers at the old address, by sending it
+to the new one", "no longer draws a page at the old address", and "declares them
+before the parent that would swallow them" — which is the fault that made every
+Spanish admin address a 404
 
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less

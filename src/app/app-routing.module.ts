@@ -105,13 +105,18 @@ const contentRoutes: Routes = [
 ];
 
 export const routes: Routes = [
-  // The studio has no Spanish twin — it is one person's workshop, written in
-  // one language — but the language switcher builds /es/<wherever you are>
-  // from the address alone, and /es/studio matched nothing and answered 404.
+  // The mint page has no Spanish twin — it is one person's workshop, written
+  // in one language — but the language switcher builds /es/<wherever you are>
+  // from the address alone, and /es/mint matched nothing and answered 404.
   // Sending it back to the page it is the translation of keeps the switcher
   // honest, and catches a bookmarked /es address too. Listed before the `es`
   // parent, which would otherwise claim the prefix and fail on the child.
-  { path: 'es/studio', redirectTo: '/studio' },
+  { path: 'es/mint', redirectTo: '/mint' },
+  // It was /studio until the atelier arrived and the two names read as the same
+  // room. The old address still answers, because it is in his bookmarks and a
+  // renamed page should not become a 404 for the one person who uses it.
+  { path: 'studio', redirectTo: '/mint' },
+  { path: 'es/studio', redirectTo: '/mint' },
   { path: 'es/door', redirectTo: '/door' },
   { path: 'es/publish', redirectTo: '/publish' },
   // Outside the language trees: these are not pages anyone reads, so they need
@@ -123,12 +128,12 @@ export const routes: Routes = [
     data: { title: 'Door', hideBreadcrumb: true, noindex: true },
   },
   {
-    path: 'studio',
+    path: 'mint',
     canActivate: [readerLanguage, adminOnly],
     loadComponent: () => import('@features/studio/studio.component').then((m) => m.StudioComponent),
-    data: { title: 'Studio', hideBreadcrumb: true, noindex: true },
+    data: { title: 'Mint', hideBreadcrumb: true, noindex: true },
   },
-  // Reels made overnight and waiting to be looked at. Alongside the studio and
+  // Reels made overnight and waiting to be looked at. Alongside the mint page and
   // for the same reasons: his, unreadable to anyone else, and not a page.
   {
     path: 'publish',

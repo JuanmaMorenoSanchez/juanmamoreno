@@ -197,6 +197,7 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       'europe-west1',
       '/pendingmint',
       '/studio',
+      '/mint',
       // Every guarded address, not the two that existed when this was written.
       // /catalogue arrived later and was not on this list, which is how a list
       // of secrets fails: quietly, by not growing.

@@ -22,23 +22,29 @@ export const serverRoutes: ServerRoute[] = [
   // Spanish one, and each is a page in its own right.
   { path: 'artwork/:id', renderMode: RenderMode.Prerender, getPrerenderParams: artworkParams },
   { path: 'es/artwork/:id', renderMode: RenderMode.Prerender, getPrerenderParams: artworkParams },
-  // Never prerendered. The studio's guard would run at build time, where there
-  // is no signed-in anyone, and a prerendered file would put the admin pages in
-  // the sitemap and in front of crawlers. Reached through the 404 fallback, so
+  // Never prerendered. The mint page's guard would run at build time, where
+  // there is no signed-in anyone, and a prerendered file would put the admin
+  // pages in the sitemap and in front of crawlers. Reached through the 404 fallback, so
   // the browser routes to them normally while the site has no page to show for
   // them at all.
   { path: 'door', renderMode: RenderMode.Client },
-  { path: 'studio', renderMode: RenderMode.Client },
+  { path: 'mint', renderMode: RenderMode.Client },
   { path: 'publish', renderMode: RenderMode.Client },
   { path: 'pendingmint', renderMode: RenderMode.Client },
   { path: 'catalogue', renderMode: RenderMode.Client },
   { path: 'es/door', renderMode: RenderMode.Client },
-  { path: 'es/studio', renderMode: RenderMode.Client },
+  { path: 'es/mint', renderMode: RenderMode.Client },
   { path: 'es/publish', renderMode: RenderMode.Client },
   { path: 'es/pendingmint', renderMode: RenderMode.Client },
   { path: 'es/catalogue', renderMode: RenderMode.Client },
   { path: 'atelier', renderMode: RenderMode.Client },
   { path: 'es/atelier', renderMode: RenderMode.Client },
+  // `/mint` was `/studio`, and the old address still redirects. A redirect has
+  // nothing to render, so left to the prerenderer it is written out as a file
+  // with no canonical, no hreflang and no text — which is what the build's own
+  // check caught when these two lines were missing.
+  { path: 'studio', renderMode: RenderMode.Client },
+  { path: 'es/studio', renderMode: RenderMode.Client },
   // The generative pieces are p5-style canvases: nothing to prerender, and
   // they need a real browser to exist at all.
   { path: 'generative/:id', renderMode: RenderMode.Client },

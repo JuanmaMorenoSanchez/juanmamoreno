@@ -1,5 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, PLATFORM_ID, inject, signal, viewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  PLATFORM_ID,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
@@ -43,7 +51,7 @@ export class DoorComponent implements AfterViewInit {
     if (!this.isBrowser) return;
 
     if (this.auth.isAdmin()) {
-      await this.router.navigateByUrl('/studio');
+      await this.router.navigateByUrl('/mint');
       return;
     }
 
@@ -76,7 +84,7 @@ export class DoorComponent implements AfterViewInit {
 
   private async onCredential(response: GoogleCredentialResponse): Promise<void> {
     if (this.auth.signIn(response.credential)) {
-      await this.router.navigateByUrl('/studio');
+      await this.router.navigateByUrl('/mint');
       return;
     }
     // Any other Google account lands here, including one that is signed in and
