@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.104.0
+
+- **feat** — signing in lands on `/activity` instead of `/mint`. It is the one
+  page whose answer he wants before picking a task, and every task is a link
+  away from it.
+- **chore** — the cron run is called the cron everywhere, rather than the night:
+  "Last cron", and "The last cron runs" over the list. The backup row says
+  "Last Firestore backup" rather than "everything written down", which named
+  what it was by not naming it.
+- **chore** — the list of other pages at the foot of the page is gone. Every one
+  of them is already reachable from the row that is about it, or from the menu.
+
 ## 1.103.0
 
 - **feat** — a guarded **Latest activity** page at `/activity`. Dates and counts

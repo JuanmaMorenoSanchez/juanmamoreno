@@ -16,9 +16,9 @@ import { Activity, ActivityApiService, CronRun, Heartbeat } from './activity.ser
 /**
  * Latest activity: whether the machine did its job.
  *
- * Everything this site does at night it does by itself, and until now it had no
+ * Everything this site does on a cron it does by itself, and until now it had no
  * way of saying so. Four separate things have broken quietly here — a bucket
- * name that vanished and turned the reel renderer off, a nightly run killed by
+ * name that vanished and turned the reel renderer off, a cron run killed by
  * its memory limit with no process left to report it, a reverse image search
  * billing 186 calls a build, and a version that stopped moving. The common
  * thread is not bad luck. It is that nothing was watching.

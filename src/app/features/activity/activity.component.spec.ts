@@ -15,8 +15,9 @@ describe('ActivityComponent', () => {
   const page = (over: Partial<Activity> = {}): Activity => ({
     runs: [{ id: 'a', startedAt: hoursAgo(9), finishedAt: hoursAgo(8), failures: 0, jobs: [] }],
     beats: [
-      { what: 'Last nightly run', at: hoursAgo(8), state: 'quiet' },
+      { what: 'Last cron', at: hoursAgo(8), state: 'quiet' },
       { what: 'Last posted to a network', at: hoursAgo(20), goTo: '/catalogue', state: 'quiet' },
+      { what: 'A reel waiting to be looked at', at: null, goTo: '/publish', state: 'quiet' },
     ],
     spend: { spent: 0.12, ceiling: 5, left: 4.88 },
     ...over,
@@ -57,7 +58,7 @@ describe('ActivityComponent', () => {
     build(
       page({
         beats: [
-          { what: 'Last nightly run', at: hoursAgo(50), state: 'late' },
+          { what: 'Last cron', at: hoursAgo(50), state: 'late' },
           { what: 'Last posted to a network', at: hoursAgo(2), goTo: '/catalogue', state: 'quiet' },
         ],
       })
@@ -65,7 +66,7 @@ describe('ActivityComponent', () => {
 
     const wrong = fixture.nativeElement.querySelector('.activity-wrong');
     expect(wrong).not.toBeNull();
-    expect(wrong.textContent).toContain('Last nightly run');
+    expect(wrong.textContent).toContain('Last cron');
     expect(wrong.textContent).not.toContain('Last posted');
     expect(text()).not.toContain('Everything is where it should be');
   });

@@ -74,12 +74,12 @@
     }
 
     <!--
-      The nights themselves. A line with no end is a run that started and did not
+      The cron runs themselves. A line with no end is a run that started and did not
       come back, which is the thing nothing else here can see: on 2 September the
       container was killed mid-way and there was no process left to report it.
     -->
     <section class="activity-step">
-      <h2>The last nights</h2>
+      <h2>The last cron runs</h2>
       @if (!runs().length) {
         <p class="activity-note">Nothing recorded yet. The next run will write the first line.</p>
       }
@@ -97,18 +97,6 @@
           </li>
         }
       </ul>
-    </section>
-
-    <!-- The rest of the workshop, from the page that watches it. -->
-    <section class="activity-step">
-      <h2>Elsewhere</h2>
-      <p class="activity-links">
-        <a routerLink="/catalogue">Catalogue</a>
-        <a routerLink="/publish">Reels waiting</a>
-        <a routerLink="/pendingmint">Certificates waiting</a>
-        <a routerLink="/mint">Mint</a>
-        <a routerLink="/atelier">Atelier</a>
-      </p>
     </section>
   }
 </div>

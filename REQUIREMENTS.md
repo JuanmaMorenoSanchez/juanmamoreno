@@ -2487,10 +2487,15 @@ dashboard that reads the same whether or not something is wrong is the failure
 it exists for. And when the api does not answer, it says so in those words
 rather than showing nothing — on this page, "all quiet" and "could not ask" are
 opposite answers that look identical if the second is left blank.
+
+**The door opens onto it.** Signing in used to land on `/mint`, which is one
+task out of six; this is the one page whose answer he wants before choosing a
+task, and every task is a link away from it.
 *Proven by:* `activity.component.spec.ts` (8 tests, including "puts what is
 wrong at the top, before anything else", "does not look calm when it could not
-ask" and "names a run that did not come back"); and `verify-render.mjs`, which
-requires `/activity` to stay out of the prerendered pages and out of the sitemap
+ask" and "names a run that did not come back"); `door.component.spec.ts` "opens
+onto the latest activity"; and `verify-render.mjs`, which requires `/activity`
+to stay out of the prerendered pages and out of the sitemap
 *Proven elsewhere by:* the backend's B67
 
 ### R134 — The catalogue can be put in the order Instagram puts it in · met

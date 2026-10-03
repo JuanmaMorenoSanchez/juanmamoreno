@@ -14,7 +14,7 @@ export interface Heartbeat {
   state: 'quiet' | 'late' | 'never';
 }
 
-/** One night's work. A line with no end never came back. */
+/** One cron run. A line with no end never came back. */
 export interface CronRun {
   id: string;
   startedAt: string;
@@ -66,7 +66,7 @@ export class ActivityApiService {
       );
   }
 
-  /** What each painting has done, as the nightly work last read it. */
+  /** What each painting has done, as the last cron read it. */
   insights(token: string): Observable<PostInsight[] | undefined> {
     return this.http
       .get<ApiResponse<PostInsight[]>>(

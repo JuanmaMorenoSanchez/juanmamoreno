@@ -14,6 +14,15 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 
 const GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 
+/**
+ * Where the door opens onto.
+ *
+ * Latest activity rather than any one task, because the first thing worth
+ * knowing on signing in is whether the machine has been doing its job — and
+ * every task is one link from there.
+ */
+const AFTER_SIGN_IN = '/activity';
+
 interface GoogleCredentialResponse {
   credential: string;
 }
@@ -51,7 +60,7 @@ export class DoorComponent implements AfterViewInit {
     if (!this.isBrowser) return;
 
     if (this.auth.isAdmin()) {
-      await this.router.navigateByUrl('/mint');
+      await this.router.navigateByUrl(AFTER_SIGN_IN);
       return;
     }
 
@@ -84,7 +93,7 @@ export class DoorComponent implements AfterViewInit {
 
   private async onCredential(response: GoogleCredentialResponse): Promise<void> {
     if (this.auth.signIn(response.credential)) {
-      await this.router.navigateByUrl('/mint');
+      await this.router.navigateByUrl(AFTER_SIGN_IN);
       return;
     }
     // Any other Google account lands here, including one that is signed in and
