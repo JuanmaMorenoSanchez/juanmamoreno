@@ -22,6 +22,7 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AtelierService, Piece } from './atelier.service';
 import { CostComponent } from './cost.component';
 import {
+  coverage,
   cutLayer,
   depthFor,
   layerFile,
@@ -225,6 +226,10 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bench.set(
       this.bench().map((item, index) => (index === at ? { ...item, layers: drafts } : item))
     );
+    // The brush was working on a layer of the old stack, which no longer
+    // exists. Left pointing at it the stage draws neither the correction nor
+    // the preview, which is a black rectangle that ignores the mouse.
+    this.refining.set(undefined);
     this.restack();
   }
 
@@ -344,10 +349,22 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.atelier.spend('segment');
         const drafts: Draft[] = [];
+        const empty: string[] = [];
         for (const [index, cut] of cuts.entries()) {
           const mask = await loadImage(cut.mask);
           if (!mask) continue;
-          drafts.push(this.draftFrom(cut.label, mask, cut.box, index, cuts.length));
+
+          const draft = this.draftFrom(cut.label, mask, cut.box, index, cuts.length);
+
+          // A mask that survives the threshold nowhere cuts a layer with
+          // nothing in it. Kept, it joins the stack and draws nothing: the
+          // stage goes black and the pointer moves layers nobody can see, so
+          // the page reads as broken rather than as a pass that found nothing.
+          if (coverage(draft.mask) <= 0) {
+            empty.push(cut.label);
+            continue;
+          }
+          drafts.push(draft);
         }
 
         // A pass can cost its money and find nothing — a painting with no sky
@@ -366,6 +383,13 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
               `try naming what is in the painting more plainly. If every pass comes back ` +
               `empty whatever you name, it is the model rather than the paintings: ` +
               `set ATELIER_SEGMENT_MODEL=gemini-3.8-flash.`
+          );
+        }
+
+        if (empty.length && drafts.length) {
+          this.problem.set(
+            `Nothing was cut for ${empty.join(', ')} — the mask came back empty. ` +
+              `The other ${drafts.length === 1 ? 'layer' : 'layers'} are on the stage.`
           );
         }
 

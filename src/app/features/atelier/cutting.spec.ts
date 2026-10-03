@@ -1,5 +1,6 @@
 import {
   boxToPixels,
+  coverage,
   depthFor,
   layerFile,
   MASK_THRESHOLD,
@@ -246,5 +247,26 @@ describe('stencil', () => {
     stencil(untouched);
 
     expect(untouched[3]).toBe(0);
+  });
+});
+
+/**
+ * What a stencil keeps, which is what decides whether a layer goes on the
+ * stage at all.
+ *
+ * Only the fail-safe is provable here: jsdom has no canvas, so the measuring
+ * itself cannot run, and a function that answered "plenty" when it could not
+ * see would put an invisible layer on the stage and black the page out. That is
+ * the failure this was written for, so answering nothing is the only safe
+ * answer when there is nothing to answer with.
+ *
+ * The measuring is verified in Chrome instead, where a flat mask at grey 127
+ * measures 0 and draws nothing, and at 129 measures a quarter of the frame.
+ */
+describe('coverage', () => {
+  it('claims nothing when it cannot measure at all', () => {
+    const unmeasurable = document.createElement('canvas');
+
+    expect(coverage(unmeasurable)).toBe(0);
   });
 });

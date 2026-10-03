@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.104.1
+
+- **fix** — cutting a painting into layers no longer blacks the stage out. A
+  mask that survives the threshold nowhere cuts a fully transparent layer, and
+  it was being stacked anyway: the painting disappeared and the pointer moved
+  layers nobody could see, so the page looked broken rather than unsuccessful.
+  Each stencil is measured before it is stacked — on a small copy, and on the
+  stencil rather than the cut, which holds a cross-origin painting and cannot be
+  read back. What cut nothing is named in the message instead.
+- **fix** — replacing the stack stops the brush. It otherwise still pointed at a
+  layer of the previous stack, and the stage then drew neither the correction nor
+  the preview: the same black rectangle, by the other route.
+
 ## 1.104.0
 
 - **feat** — signing in lands on `/activity` instead of `/mint`. It is the one

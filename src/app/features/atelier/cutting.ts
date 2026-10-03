@@ -116,6 +116,47 @@ export function cutLayer(
 }
 
 /**
+ * The side of the small copy a layer's coverage is measured on.
+ *
+ * Measuring the real thing is not an option: a layer of a forty-megapixel
+ * painting is 160 MB of pixel data to answer a yes-or-no question. Drawn down
+ * to this and averaged, anything big enough to be a layer still registers.
+ */
+export const COVERAGE_SIDE = 64;
+
+/**
+ * How much of a stencil actually keeps anything, from 0 to 1.
+ *
+ * This exists because an empty layer is indistinguishable from a layer. A mask
+ * that survives the threshold nowhere cuts a fully transparent layer, which
+ * joins the stack, draws nothing, and leaves the stage black — with the pointer
+ * moving layers nobody can see. The page then looks broken rather than
+ * unsuccessful, and the two want opposite responses from whoever is looking.
+ *
+ * Measured on the stencil and never on the cut: the cut holds the painting,
+ * which may have come from the bucket cross-origin, and reading pixels back out
+ * of a canvas it has touched throws rather than answering.
+ */
+export function coverage(stencilCanvas: CanvasImageSource, side = COVERAGE_SIDE): number {
+  const small = document.createElement('canvas');
+  small.width = side;
+  small.height = side;
+
+  const context = small.getContext('2d');
+  if (!context) return 0;
+
+  context.drawImage(stencilCanvas, 0, 0, side, side);
+
+  let kept = 0;
+  const { data } = context.getImageData(0, 0, side, side);
+  for (let at = 3; at < data.length; at += 4) {
+    if (data[at] > 0) kept++;
+  }
+
+  return kept / (side * side);
+}
+
+/**
  * Where a scripted pointer is at a moment, for recording without a hand on
  * the mouse.
  *

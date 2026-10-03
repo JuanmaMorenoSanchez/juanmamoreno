@@ -469,6 +469,50 @@ describe('AtelierComponent, the stage', () => {
   });
 
   /**
+   * The black stage.
+   *
+   * A mask that survives the threshold nowhere cuts a layer with nothing in it.
+   * Kept, it joined the stack and drew nothing — so the painting vanished, and
+   * the pointer moved layers nobody could see. The page read as broken rather
+   * than as a pass that had found nothing, and those want opposite responses
+   * from whoever is looking at it.
+   *
+   * Here the mask is unreadable, which is the same thing from this side: there
+   * is nothing to put on the stage either way. What must not happen is that it
+   * goes on the stage regardless.
+   */
+  it('does not stack a layer that cut nothing, and says which', async () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    component.labels.set('the sky');
+    atelier.segment = () =>
+      of([
+        {
+          label: 'the sky',
+          box: [250, 250, 750, 750] as [number, number, number, number],
+          mask: 'data:image/png;base64,iVBORw0KGgo=',
+        },
+      ]);
+
+    await component.findLayers();
+    await fixture.whenStable();
+
+    expect(component.layers()).toEqual([]);
+    expect(component.painting()).toBeDefined();
+  });
+
+  /** A new pass replaces the stack, so the brush cannot still be on the old one. */
+  it('stops correcting a layer that no longer exists', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    component.refining.set(2);
+
+    component['setLayers']([]);
+
+    expect(component.refining()).toBeUndefined();
+  });
+
+  /**
    * A variant can go straight to disk without being kept in the piece. The two
    * are different intentions, and one worth using elsewhere is not always one
    * worth saving here.

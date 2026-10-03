@@ -2222,19 +2222,35 @@ read through `ARTWORK_PORT` like everywhere else, so the atelier knows the name
 of no bucket. The file picker stays for the studio photographs that were never
 in the catalogue.
 
+**A layer that cut nothing never reaches the stage.** A mask that survives the
+threshold nowhere cuts a fully transparent layer; kept, it joined the stack and
+drew nothing, so the painting disappeared and the pointer moved layers nobody
+could see. The page read as broken rather than as a pass that found nothing, and
+those two want opposite responses from whoever is looking. Each stencil is now
+measured before it is stacked, on a small copy — measuring a layer of a
+forty-megapixel painting is 160 MB of pixel data to answer a yes-or-no question
+— and on the stencil rather than the cut, because the cut holds a painting that
+came from the bucket cross-origin and reading pixels back out of a canvas it has
+touched throws instead of answering. What cut nothing is named in the message;
+what cut something is stacked. Replacing the stack also stops the brush, which
+would otherwise still point at a layer of the stack before it and draw neither
+the correction nor the preview.
+
 Depth estimation is not used and should not be: monocular depth models are
 trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (28 tests) for the names the bucket will take,
+*Proven by:* `cutting.spec.ts` (26 tests) for the names the bucket will take,
 the working size a model is billed for, the depth spread, and the two things
 that have to be undone about one of the model's masks — `boxToPixels` "reads a
 box in thousandths onto a picture of any size", "keeps y before x, as the model
 gives them" and "clamps a box that runs off the picture"; `stencil` "turns
 brightness into transparency", without which the whole bounding box is kept,
 because a probability map is opaque even where it is black; and
-`atelier.component.spec.ts` "asks for a painting before it offers to do
+`atelier.component.spec.ts` "does not stack a layer that cut nothing, and says
+which" and "stops correcting a layer that no longer exists", which are the two
+ways the stage went black; "asks for a painting before it offers to do
 anything to one", "offers to keep a piece of variants with no layers at all",
 "offers every variant for download, kept or not", "names a downloaded variant
 after the painting and the instruction", "uploads every file the manifest goes
