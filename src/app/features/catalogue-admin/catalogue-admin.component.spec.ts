@@ -1,4 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
@@ -8,6 +10,8 @@ import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import { ActivityApiService, PostInsight } from '@features/activity/activity.service';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CatalogueAdminComponent } from './catalogue-admin.component';
 
 const painting = (tokenId: string, name: string, year = '2026'): Nft => ({
@@ -365,5 +369,152 @@ describe('CatalogueAdminComponent', () => {
 
       expect(forgetPost).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
+  let fixture: ComponentFixture<CatalogueAdminComponent>;
+
+  const painting = (tokenId: string, year: string): Nft =>
+    ({
+      tokenId,
+      name: `Painting ${tokenId}`,
+      image: {},
+      raw: { metadata: { attributes: [{ trait_type: VALIDTRAITS.YEAR, value: year }] } },
+    }) as unknown as Nft;
+
+  const catalogue = [painting('1', '2024'), painting('2', '2025'), painting('3', '2026')];
+
+  function build(insights: PostInsight[] | undefined): void {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [CatalogueAdminComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        { provide: ActivityApiService, useValue: { insights: () => of(insights) } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of(catalogue),
+            getTraitValue: (nft: Nft, trait: string) =>
+              String(
+                (nft.raw?.metadata?.attributes ?? []).find(
+                  (a: { trait_type: string }) => a.trait_type === trait
+                )?.value ?? ''
+              ),
+            isFrontalView: () => true,
+            getNftOptimalUrl: (image: { thumbnailUrl?: string }) => image?.thumbnailUrl ?? '',
+          },
+        },
+        {
+          provide: PostedArtworksService,
+          useValue: {
+            getLatest: () => of([]),
+            getNetworks: () => of([]),
+            forgetPost: () => of(true),
+          },
+        },
+        { provide: AvailabilityService, useValue: { isSold: () => false } },
+        provideTranslateService(),
+      ],
+    });
+    fixture = TestBed.createComponent(CatalogueAdminComponent);
+    fixture.detectChanges();
+  }
+
+  const insight = (tokenId: string, metrics: Record<string, number>): PostInsight => ({
+    tokenId,
+    mediaId: `m${tokenId}`,
+    metrics,
+    readAt: '2026-10-03T06:00:00.000Z',
+  });
+
+  const order = () =>
+    (fixture.componentInstance as unknown as { rows: () => Nft[] }).rows().map((n) => n.tokenId);
+
+  const arrange = (how: string) =>
+    (fixture.componentInstance as unknown as { arrange: (o: string) => void }).arrange(how);
+
+  it('puts the longest watched first', () => {
+    build([
+      insight('1', { ig_reels_avg_watch_time: 1000 }),
+      insight('3', { ig_reels_avg_watch_time: 9000 }),
+      insight('2', { ig_reels_avg_watch_time: 5000 }),
+    ]);
+
+    arrange('watched');
+
+    expect(order()).toEqual(['3', '2', '1']);
+  });
+
+  it('puts the furthest reached first', () => {
+    build([
+      insight('1', { reach: 50 }),
+      insight('2', { reach: 900 }),
+      insight('3', { reach: 120 }),
+    ]);
+
+    arrange('reach');
+
+    expect(order()).toEqual(['2', '3', '1']);
+  });
+
+  /**
+   * A painting with no number is not a painting with a nought. Never posted and
+   * posted-and-ignored are different things, and only one of them is a verdict
+   * — so the unmeasured go to the end rather than to the bottom of the ranking.
+   */
+  it('sends the unmeasured to the end rather than ranking them last', () => {
+    build([insight('2', { reach: 10 })]);
+
+    arrange('reach');
+
+    expect(order()[0]).toBe('2');
+    expect(order().slice(1).sort()).toEqual(['1', '3']);
+  });
+
+  /** A control that silently does nothing is worse than one that is not there. */
+  it('offers no metric ordering while there are no metrics', () => {
+    build([]);
+
+    const buttons = [...fixture.nativeElement.querySelectorAll('button')].map((b: HTMLElement) =>
+      b.textContent?.trim()
+    );
+    expect(buttons).not.toContain('Watched longest');
+  });
+
+  it('offers them once there is something to sort by', () => {
+    build([insight('1', { reach: 10 })]);
+
+    const buttons = [...fixture.nativeElement.querySelectorAll('button')].map((b: HTMLElement) =>
+      b.textContent?.trim()
+    );
+    expect(buttons).toContain('Watched longest');
+  });
+
+  /**
+   * "No numbers yet" and "could not ask" look identical in an empty column and
+   * only one of them is fine.
+   */
+  it('tells a listing that failed from a catalogue with no numbers', () => {
+    build(undefined);
+
+    const component = fixture.componentInstance as unknown as {
+      numbersUnknown: () => boolean;
+      noNumbers: () => boolean;
+    };
+    expect(component.numbersUnknown()).toBe(true);
+    expect(component.noNumbers()).toBe(true);
+  });
+
+  it('shows the watch time on the row, in seconds rather than milliseconds', () => {
+    build([insight('1', { ig_reels_avg_watch_time: 4200, reach: 300 })]);
+
+    const shown = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(shown).toContain('4.2s');
+    expect(shown).toContain('300 reached');
   });
 });

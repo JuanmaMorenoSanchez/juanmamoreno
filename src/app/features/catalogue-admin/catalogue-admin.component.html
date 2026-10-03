@@ -41,6 +41,41 @@
       >
         Recently posted
       </button>
+      <!--
+        What Instagram said, which is the point of having asked. Shown only once
+        there is something to sort by: a control that silently does nothing is
+        worse than one that is not there.
+      -->
+      @if (!noNumbers()) {
+        <button
+          type="button"
+          class="cat-order"
+          [class.is-on]="order() === 'watched'"
+          [attr.aria-pressed]="order() === 'watched'"
+          (click)="arrange('watched')"
+          title="Average watch time — whether a reel is being left early"
+        >
+          Watched longest
+        </button>
+        <button
+          type="button"
+          class="cat-order"
+          [class.is-on]="order() === 'reach'"
+          [attr.aria-pressed]="order() === 'reach'"
+          (click)="arrange('reach')"
+        >
+          Reached most
+        </button>
+        <button
+          type="button"
+          class="cat-order"
+          [class.is-on]="order() === 'liked'"
+          [attr.aria-pressed]="order() === 'liked'"
+          (click)="arrange('liked')"
+        >
+          Most interactions
+        </button>
+      }
     </span>
 
     <span class="cat-dossier">
@@ -154,6 +189,25 @@
             {{ positionOf(nft) ?? '+' }}
           </button>
         </div>
+
+        <!--
+          What this painting has done, where the row already says where it went.
+          Nothing at all is the ordinary answer — most paintings have been
+          posted once and reels are newer than most of the catalogue.
+        -->
+        @if (metric(nft, 'reach') !== undefined || watchSeconds(nft) !== undefined) {
+          <span class="cat-metrics">
+            @if (watchSeconds(nft); as watched) {
+              <span title="Average watch time">▶ {{ watched }}s</span>
+            }
+            @if (metric(nft, 'reach'); as reach) {
+              <span title="Reach">{{ reach }} reached</span>
+            }
+            @if (metric(nft, 'total_interactions'); as acted) {
+              <span title="Likes, comments, shares and saves">{{ acted }} interactions</span>
+            }
+          </span>
+        }
 
         @if (opened() === nft.tokenId) {
           <div class="cat-panel">

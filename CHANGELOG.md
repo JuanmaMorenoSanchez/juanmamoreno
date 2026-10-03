@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.103.0
+
+- **feat** — a guarded **Latest activity** page at `/activity`. Dates and counts
+  for everything the machine does by itself: the last nightly run and the
+  fortnight before it, the last backup, the last post, the oldest essay, a reel
+  waiting, and the day's spend against its ceiling. Anything not quiet goes to
+  the top, and every row links to wherever it is answered. It is here because
+  four things have broken quietly in this repository — a bucket name that
+  vanished and turned the reel renderer off, a run killed by its memory limit
+  with nothing left to report it, a search billing 186 calls a build, and a
+  version that stopped moving for six pushes.
+- **feat** — the catalogue sorts by reach, watch time and likes as well as by
+  date, from numbers the nightly work has already collected, so changing the
+  order asks Instagram nothing. A painting nobody has measured goes to the end
+  rather than ranking last.
+
 ## 1.102.0
 
 - **chore** — *Rockets win* is gone, and so is everything that existed for it:

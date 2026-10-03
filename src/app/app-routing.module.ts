@@ -177,6 +177,16 @@ export const routes: Routes = [
     data: { title: 'Atelier', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/atelier', redirectTo: '/atelier' },
+  // Whether the machine did its job. Everything else here is a place to do
+  // something; this is the one that says whether the doing happened.
+  {
+    path: 'activity',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/activity/activity.component').then((m) => m.ActivityComponent),
+    data: { title: 'Latest activity', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/activity', redirectTo: '/activity' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

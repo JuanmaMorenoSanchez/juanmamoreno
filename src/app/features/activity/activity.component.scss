@@ -1,0 +1,181 @@
+/*
+  A board, not a page: scanned rather than read, so what is wrong is at the top
+  and everything else is a row with a date on the right.
+*/
+.activity {
+  max-width: 48rem;
+}
+
+.activity-lead {
+  margin: 0 0 1.5rem;
+  max-width: 40rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.activity-step {
+  margin: 1.75rem 0;
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+}
+
+/* What is wrong, said once at the top in the only loud thing on the page. */
+.activity-wrong {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #b00020;
+  background: rgb(176 0 32 / 7%);
+
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 0.9rem;
+    color: #b00020;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: space-between;
+    font-size: 0.88rem;
+  }
+
+  span {
+    opacity: 0.7;
+  }
+}
+
+.activity-fine {
+  margin: 0 0 1.5rem;
+  padding: 0.6rem 1rem;
+  border-left: 3px solid rgb(0 0 0 / 25%);
+  background: rgb(0 0 0 / 4%);
+  font-size: 0.9rem;
+}
+
+.activity-beats,
+.activity-runs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-beat,
+.activity-run {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgb(0 0 0 / 9%);
+  font-size: 0.88rem;
+}
+
+.activity-what,
+.activity-run-when {
+  flex: 1 1 14rem;
+
+  em {
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 0.6rem;
+    background: rgb(0 0 0 / 8%);
+    font-style: normal;
+    font-size: 0.78em;
+  }
+}
+
+.activity-when,
+.activity-run-what {
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Anything not quiet. The only colour on a page that is otherwise grey. */
+.is-late {
+  .activity-what,
+  .activity-when,
+  .activity-run-when,
+  .activity-run-what {
+    color: #b00020;
+    opacity: 1;
+  }
+}
+
+.activity-go {
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.activity-spend {
+  margin: 0;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+
+  &.is-late {
+    color: #b00020;
+  }
+
+  a {
+    margin-left: 0.6rem;
+    font-size: 0.82rem;
+  }
+}
+
+.activity-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.activity-note {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.activity-problem {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.35rem;
+  background: rgb(176 0 32 / 10%);
+  color: #b00020;
+  font-size: 0.9rem;
+}
+
+.activity-retry {
+  margin-left: 0.5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.activity-spin {
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid rgb(0 0 0 / 25%);
+  border-top-color: rgb(0 0 0 / 70%);
+  border-radius: 50%;
+  animation: activity-turn 0.8s linear infinite;
+}
+
+@keyframes activity-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}

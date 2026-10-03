@@ -12,6 +12,7 @@ Disallow: /publish
 Disallow: /pendingmint
 Disallow: /catalogue
 Disallow: /atelier
+Disallow: /activity
 # The Spanish addresses redirect to these rather than 404ing, so they are as
 # many more ways in and want disallowing too.
 Disallow: /es/mint
@@ -21,6 +22,7 @@ Disallow: /es/publish
 Disallow: /es/pendingmint
 Disallow: /es/catalogue
 Disallow: /es/atelier
+Disallow: /es/activity
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a

@@ -14,13 +14,31 @@ import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.com
 import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { firstValueFrom } from 'rxjs';
+import { ActivityApiService } from '@features/activity/activity.service';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CertificatePanelComponent } from './certificate-panel.component';
 import { DerivedAssetsComponent } from './derived-assets.component';
 import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
 
 /** How the list is arranged. */
-type Order = 'newest' | 'posted';
+/**
+ * How the list is arranged.
+ *
+ * The three that end in a metric are what Instagram said: the reels were being
+ * tuned on taste, with the numbers that settle it sitting in an app nobody
+ * opened. `watched` is the one that answers the question the others cannot —
+ * whether a reel is being left early, which is the difference between a bad
+ * opening and a bad length.
+ */
+type Order = 'newest' | 'posted' | 'reach' | 'watched' | 'liked';
+
+/** Which stored metric each ordering reads. Instagram's own names. */
+const METRIC_OF: Partial<Record<Order, string>> = {
+  reach: 'reach',
+  watched: 'ig_reels_avg_watch_time',
+  liked: 'total_interactions',
+};
 
 /**
  * The catalogue, as the artist sees it.
@@ -169,6 +187,35 @@ export class CatalogueAdminComponent {
    * A painting photographed three times has three certificates, and the one
    * with the wrong measurements need not be the one the catalogue shows.
    */
+  /**
+   * What each painting has done on Instagram, as the nightly work last read it.
+   *
+   * Undefined until it answers, so "no numbers yet" and "could not ask" stay
+   * different things on a page where both look like an empty column.
+   */
+  private readonly insights = toSignal(
+    inject(ActivityApiService).insights(inject(AdminAuthService).bearerToken() ?? ''),
+    { initialValue: undefined }
+  );
+
+  /** By painting, for the row to read without searching a list each time. */
+  protected readonly metrics = computed(() => {
+    const byToken = new Map<string, Record<string, number>>();
+    for (const insight of this.insights() ?? []) byToken.set(insight.tokenId, insight.metrics);
+    return byToken;
+  });
+
+  /** One metric of one painting, or nothing — which is not zero. */
+  protected metric(nft: Nft, name: string): number | undefined {
+    return this.metrics().get(nft.tokenId)?.[name];
+  }
+
+  /** Watch time arrives in milliseconds and means nothing at that precision. */
+  protected watchSeconds(nft: Nft): string | undefined {
+    const ms = this.metric(nft, 'ig_reels_avg_watch_time');
+    return ms === undefined ? undefined : (ms / 1000).toFixed(1);
+  }
+
   protected readonly rows = computed<Nft[]>(() => {
     const term = this.term().trim().toLowerCase();
     const posted = this.postedIndex();
@@ -192,12 +239,33 @@ export class CatalogueAdminComponent {
       });
     }
 
+    // By what Instagram said, biggest first. A painting with no number is not a
+    // painting with a nought: it goes to the end rather than to the bottom of
+    // the ranking, because never posted and posted-and-ignored are different
+    // things and only one of them is a verdict.
+    const metric = METRIC_OF[this.order()];
+    if (metric) {
+      const known = this.metrics();
+      return [...found].sort((a, b) => {
+        const left = known.get(a.tokenId)?.[metric];
+        const right = known.get(b.tokenId)?.[metric];
+        if (left === undefined && right === undefined) return Number(b.tokenId) - Number(a.tokenId);
+        if (left === undefined) return 1;
+        if (right === undefined) return -1;
+        return right - left;
+      });
+    }
+
     return [...found].sort(
       (a, b) =>
         Number(this.trait(b, VALIDTRAITS.YEAR)) - Number(this.trait(a, VALIDTRAITS.YEAR)) ||
         Number(b.tokenId) - Number(a.tokenId)
     );
   });
+
+  /** Whether anything at all has numbers, so the controls can say why not. */
+  protected readonly noNumbers = computed(() => this.metrics().size === 0);
+  protected readonly numbersUnknown = computed(() => this.insights() === undefined);
 
   protected readonly opened = signal<string | null>(null);
 

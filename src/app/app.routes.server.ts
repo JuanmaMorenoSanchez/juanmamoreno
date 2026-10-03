@@ -39,6 +39,8 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'es/catalogue', renderMode: RenderMode.Client },
   { path: 'atelier', renderMode: RenderMode.Client },
   { path: 'es/atelier', renderMode: RenderMode.Client },
+  { path: 'activity', renderMode: RenderMode.Client },
+  { path: 'es/activity', renderMode: RenderMode.Client },
   // `/mint` was `/studio`, and the old address still redirects. A redirect has
   // nothing to render, so left to the prerenderer it is written out as a file
   // with no canonical, no hreflang and no text — which is what the build's own

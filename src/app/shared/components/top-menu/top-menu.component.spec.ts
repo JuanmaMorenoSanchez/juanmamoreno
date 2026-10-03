@@ -206,6 +206,7 @@ describe('TopMenuComponent workshop menu', () => {
       'Certificates waiting',
       'Catalogue',
       'Atelier',
+      'Latest activity',
       'Sign out',
     ]);
   });
@@ -218,7 +219,14 @@ describe('TopMenuComponent workshop menu', () => {
     const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
       a.getAttribute('href')
     );
-    expect(links).toEqual(['/mint', '/publish', '/pendingmint', '/catalogue', '/atelier']);
+    expect(links).toEqual([
+      '/mint',
+      '/publish',
+      '/pendingmint',
+      '/catalogue',
+      '/atelier',
+      '/activity',
+    ]);
   });
 
   it('signs out from inside it', async () => {

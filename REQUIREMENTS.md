@@ -2467,3 +2467,48 @@ than obeyed) and "the picture a shared link previews as" (3 tests, including
 that the original is never offered); and the built pages themselves, where
 `/artwork/195` and `/artwork/196` each carry their own painting while `/`,
 `/es/` and `/about` carry the landing page's
+
+### R133 — One page says whether the machine did its job · met
+Everything this site does at night it does by itself, and nothing was watching
+it. Four things have broken quietly here: a bucket name that vanished from a
+revision and turned the reel renderer off with a silence it was designed to
+keep, a nightly run killed by its memory limit with no process left to report
+it, a reverse image search billing 186 calls a build, and a version that stopped
+moving for six pushes. The common thread is not bad luck.
+
+`/activity` is a guarded page of dates and counts: the last run and the last
+fourteen before it, the last backup, the last post, the oldest essay, a reel
+waiting to be published, and what the day has cost against its ceiling. Each row
+links to wherever it is answered, so noticing and doing are one step apart. It
+changes nothing and spends nothing; its whole job is to be looked at.
+
+Two things it must get right. Anything not quiet goes to the top, because a
+dashboard that reads the same whether or not something is wrong is the failure
+it exists for. And when the api does not answer, it says so in those words
+rather than showing nothing — on this page, "all quiet" and "could not ask" are
+opposite answers that look identical if the second is left blank.
+*Proven by:* `activity.component.spec.ts` (8 tests, including "puts what is
+wrong at the top, before anything else", "does not look calm when it could not
+ask" and "names a run that did not come back"); and `verify-render.mjs`, which
+requires `/activity` to stay out of the prerendered pages and out of the sitemap
+*Proven elsewhere by:* the backend's B67
+
+### R134 — The catalogue can be put in the order Instagram puts it in · met
+He decides what to paint next partly from what the last ones did. That was a
+matter of opening Instagram and remembering.
+
+The catalogue sorts by reach, by watch time and by likes as well as by date,
+reading numbers the nightly work has already collected — so changing the order
+asks Instagram nothing. Watch time is the one that answers what the others
+cannot: whether a reel is being left early, which separates a bad opening from a
+bad length.
+
+A painting nobody has measured sorts to the end rather than ranking last. Those
+are two different facts, and ranking an unmeasured painting below a measured one
+with no reach at all would be inventing the one from the absence of the other.
+*Proven by:* `catalogue-admin.component.spec.ts` "arranging by what Instagram
+said" (8 tests, including "puts the furthest reached first", "puts the longest
+watched first", "sends the unmeasured to the end rather than ranking them last",
+"offers no metric ordering while there are no metrics" and "tells a listing that
+failed from a catalogue with no numbers")
+*Proven elsewhere by:* the backend's B68

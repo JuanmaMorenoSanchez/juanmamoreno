@@ -1,0 +1,114 @@
+<div class="container margin-top activity">
+  <h1 class="catalog-heading">Latest activity</h1>
+  <p class="activity-lead">
+    Whether the machine did its job. Everything here is a date and a count — nothing on this page
+    changes anything or spends anything.
+  </p>
+
+  @if (asking()) {
+    <p class="activity-note" role="status"><span class="activity-spin"></span>Asking…</p>
+  }
+
+  <!--
+    The one answer that must not look like "everything is quiet". A page about
+    whether things are running, saying nothing, is the failure it exists to
+    catch.
+  -->
+  @if (problem()) {
+    <p class="activity-problem" role="alert">
+      {{ problem() }}
+      <button type="button" class="activity-retry" (click)="load()">Ask again</button>
+    </p>
+  }
+
+  @if (activity()) {
+    <!-- What is wrong, first, so the page answers before it is read. -->
+    @if (wrong().length) {
+      <section class="activity-wrong" role="alert">
+        <h2>Worth looking at</h2>
+        <ul>
+          @for (beat of wrong(); track trackBeat($index, beat)) {
+            <li>
+              <strong>{{ beat.what }}</strong>
+              <span>{{ ago(beat.at) }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    } @else {
+      <p class="activity-fine">Everything is where it should be.</p>
+    }
+
+    <!-- Every heartbeat, with a way through to whatever it is about. -->
+    <section class="activity-step">
+      <h2>The machine</h2>
+      <ul class="activity-beats">
+        @for (beat of beats(); track trackBeat($index, beat)) {
+          <li class="activity-beat" [class.is-late]="beat.state !== 'quiet'">
+            <span class="activity-what">
+              {{ beat.what }}
+              @if (beat.count) {
+                <em>{{ beat.count }}</em>
+              }
+            </span>
+            <span class="activity-when" [attr.title]="beat.at ? (beat.at | date: 'medium') : null">
+              {{ ago(beat.at) }}
+            </span>
+            @if (beat.goTo) {
+              <a class="activity-go" [routerLink]="beat.goTo">go →</a>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- The money, which is the only thing here that can run away. -->
+    @if (spend(); as spend) {
+      <section class="activity-step">
+        <h2>Spending today</h2>
+        <p class="activity-spend" [class.is-late]="!spend.left">
+          <strong>${{ spend.spent.toFixed(2) }}</strong> of ${{ spend.ceiling.toFixed(2) }}
+          <a class="activity-go" routerLink="/atelier">atelier →</a>
+        </p>
+      </section>
+    }
+
+    <!--
+      The nights themselves. A line with no end is a run that started and did not
+      come back, which is the thing nothing else here can see: on 2 September the
+      container was killed mid-way and there was no process left to report it.
+    -->
+    <section class="activity-step">
+      <h2>The last nights</h2>
+      @if (!runs().length) {
+        <p class="activity-note">Nothing recorded yet. The next run will write the first line.</p>
+      }
+      <ul class="activity-runs">
+        @for (run of runs(); track run.id) {
+          <li class="activity-run" [class.is-late]="!cameBack(run) || run.failures">
+            <span class="activity-run-when">{{ run.startedAt | date: 'd MMM, HH:mm' }}</span>
+            @if (!cameBack(run)) {
+              <span class="activity-run-what">started and never came back</span>
+            } @else if (broke(run).length) {
+              <span class="activity-run-what">failed: {{ broke(run).join(', ') }}</span>
+            } @else {
+              <span class="activity-run-what">all {{ run.jobs?.length ?? 0 }} jobs fine</span>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- The rest of the workshop, from the page that watches it. -->
+    <section class="activity-step">
+      <h2>Elsewhere</h2>
+      <p class="activity-links">
+        <a routerLink="/catalogue">Catalogue</a>
+        <a routerLink="/publish">Reels waiting</a>
+        <a routerLink="/pendingmint">Certificates waiting</a>
+        <a routerLink="/mint">Mint</a>
+        <a routerLink="/atelier">Atelier</a>
+      </p>
+    </section>
+  }
+</div>
