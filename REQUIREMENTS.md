@@ -2222,6 +2222,20 @@ read through `ARTWORK_PORT` like everywhere else, so the atelier knows the name
 of no bucket. The file picker stays for the studio photographs that were never
 in the catalogue.
 
+**A box is not a shape, and neither is presented as one.** Asked for a mask, a
+chat model spells it out as base64 and returns a PNG header it cannot fill: the
+bytes are either undecodable or one flat colour. Checked against Vertex on a
+real painting, `gemini-3.1-flash-lite` returned a 163-byte PNG declaring
+800×1080 — a 52-byte image payload for 3.4 MB of pixels — and `gemini-3.8-flash`
+a 3144-byte file whose header fails its own CRC and whose image chunk claims
+more bytes than the file holds. A flat mask keeps its whole box, which cuts a
+rectangle of the painting: squares sliding over each other, which reads as a cut
+that went wrong rather than as a model that returned no shape. So a stencil that
+keeps its whole box is refused and named, and the message says it is the model
+and not the painting, because naming something else will not change it. Vertex's
+dedicated segmentation model, which returns a mask from an encoder rather than
+from a language model, answers 404 in this project.
+
 **A layer that cut nothing never reaches the stage.** A mask that survives the
 threshold nowhere cuts a fully transparent layer; kept, it joined the stack and
 drew nothing, so the painting disappeared and the pointer moved layers nobody
@@ -2241,7 +2255,9 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (26 tests) for the names the bucket will take,
+*Proven by:* `cutting.spec.ts` (30 tests, including `fillsItsBox` "knows a
+filled box from a shape inside one" and "reads the count against the box rather
+than the frame") for the names the bucket will take,
 the working size a model is billed for, the depth spread, and the two things
 that have to be undone about one of the model's masks — `boxToPixels` "reads a
 box in thousandths onto a picture of any size", "keeps y before x, as the model

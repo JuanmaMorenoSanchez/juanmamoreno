@@ -157,6 +157,36 @@ export function coverage(stencilCanvas: CanvasImageSource, side = COVERAGE_SIDE)
 }
 
 /**
+ * Whether a stencil is just its own bounding box, filled.
+ *
+ * A mask with no shape in it keeps everything inside the box and nothing
+ * outside, which cuts a rectangle of the painting. That is not a layer, and it
+ * is the failure that looks most like success: squares of picture sliding over
+ * each other read as a cut that went wrong rather than as a model that returned
+ * no shape at all.
+ *
+ * It is the model and never the painting. Asked for a mask, a chat model spells
+ * one out as base64 — and what comes back is a PNG header it cannot fill, so it
+ * is either undecodable or one flat colour. Both tiers tried did this.
+ *
+ * Compared against what the box itself covers, because a big subject and a
+ * small box look identical to a count of kept pixels alone.
+ */
+export function fillsItsBox(
+  kept: number,
+  box: readonly [number, number, number, number],
+  width: number,
+  height: number,
+  margin = 0.98
+): boolean {
+  const at = boxToPixels(box, width, height);
+  const share = (at.width * at.height) / (width * height);
+  if (share <= 0) return false;
+
+  return kept >= share * margin;
+}
+
+/**
  * Where a scripted pointer is at a moment, for recording without a hand on
  * the mouse.
  *

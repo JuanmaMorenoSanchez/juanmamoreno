@@ -1,6 +1,7 @@
 import {
   boxToPixels,
   coverage,
+  fillsItsBox,
   depthFor,
   layerFile,
   MASK_THRESHOLD,
@@ -268,5 +269,40 @@ describe('coverage', () => {
     const unmeasurable = document.createElement('canvas');
 
     expect(coverage(unmeasurable)).toBe(0);
+  });
+});
+
+/**
+ * A box is not a shape.
+ *
+ * Asked for a mask, a chat model spells one out as base64 and returns a PNG
+ * header it cannot fill — undecodable, or one flat colour. A flat one keeps its
+ * whole box, which cuts a rectangle of the painting: squares sliding over each
+ * other, which reads as a cut that went wrong rather than as a model that
+ * returned nothing.
+ */
+describe('fillsItsBox', () => {
+  const box = [250, 250, 750, 750] as const; // a quarter of the frame
+
+  it('knows a filled box from a shape inside one', () => {
+    expect(fillsItsBox(0.25, box, 1000, 1000)).toBe(true);
+    expect(fillsItsBox(0.12, box, 1000, 1000)).toBe(false);
+  });
+
+  /** Encoding and the feather move it a little; a shape moves it a lot. */
+  it('allows a box to fall a little short of its own area', () => {
+    expect(fillsItsBox(0.249, box, 1000, 1000)).toBe(true);
+  });
+
+  /** The same count means opposite things under a big box and a small one. */
+  it('reads the count against the box rather than the frame', () => {
+    const small = [0, 0, 100, 100] as const; // a hundredth of the frame
+
+    expect(fillsItsBox(0.01, small, 1000, 1000)).toBe(true);
+    expect(fillsItsBox(0.01, box, 1000, 1000)).toBe(false);
+  });
+
+  it('claims nothing for a box with no area at all', () => {
+    expect(fillsItsBox(1, [500, 500, 500, 500], 1000, 1000)).toBe(false);
   });
 });

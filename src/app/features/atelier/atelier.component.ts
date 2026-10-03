@@ -25,6 +25,7 @@ import {
   coverage,
   cutLayer,
   depthFor,
+  fillsItsBox,
   layerFile,
   placeMask,
   scriptedPointer,
@@ -350,18 +351,28 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         this.atelier.spend('segment');
         const drafts: Draft[] = [];
         const empty: string[] = [];
+        const squares: string[] = [];
         for (const [index, cut] of cuts.entries()) {
           const mask = await loadImage(cut.mask);
           if (!mask) continue;
 
           const draft = this.draftFrom(cut.label, mask, cut.box, index, cuts.length);
+          const kept = coverage(draft.mask);
 
           // A mask that survives the threshold nowhere cuts a layer with
           // nothing in it. Kept, it joins the stack and draws nothing: the
           // stage goes black and the pointer moves layers nobody can see, so
           // the page reads as broken rather than as a pass that found nothing.
-          if (coverage(draft.mask) <= 0) {
+          if (kept <= 0) {
             empty.push(cut.label);
+            continue;
+          }
+
+          // A mask that keeps its whole box cuts a rectangle of the painting,
+          // which is the failure that looks most like success — squares of
+          // picture sliding over each other.
+          if (fillsItsBox(kept, cut.box, painting.naturalWidth, painting.naturalHeight)) {
+            squares.push(cut.label);
             continue;
           }
           drafts.push(draft);
@@ -386,7 +397,15 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
 
-        if (empty.length && drafts.length) {
+        // A box is not a shape, and saying so is the whole point: this is the
+        // model and never the painting, so naming other things will not help.
+        if (squares.length) {
+          this.problem.set(
+            `The model returned a box rather than a shape for ${squares.join(', ')}, ` +
+              `so cutting it would have given you a rectangle of the painting. This is the ` +
+              `model and not the painting — naming something else will not change it.`
+          );
+        } else if (empty.length && drafts.length) {
           this.problem.set(
             `Nothing was cut for ${empty.join(', ')} — the mask came back empty. ` +
               `The other ${drafts.length === 1 ? 'layer' : 'layers'} are on the stage.`

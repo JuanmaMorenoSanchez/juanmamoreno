@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.104.2
+
+- **fix** — a mask that is just its own bounding box, filled, is refused rather
+  than cut. It was cutting a rectangle of the painting, which is the failure
+  that looks most like success: squares sliding over each other. The message
+  says it is the model and not the painting, because it is — asked for a mask, a
+  chat model spells one out as base64 and returns a PNG header it cannot fill.
+  Checked against Vertex on a real painting: the lite tier returned a 163-byte
+  PNG declaring 800×1080, and the flash tier a file whose header fails its own
+  CRC and whose image chunk claims more bytes than the file holds.
+
 ## 1.104.1
 
 - **fix** — cutting a painting into layers no longer blacks the stage out. A
