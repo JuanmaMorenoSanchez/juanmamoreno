@@ -200,13 +200,15 @@ describe('TopMenuComponent workshop menu', () => {
 
     // Named by its label rather than its text: the bar carries icons now.
     expect(trigger?.getAttribute('aria-label')).toBe('Admin');
+    // Activity first: whether the machine did its job is the thing worth
+    // knowing before choosing which task to open.
     expect(itemsOf(trigger)).toEqual([
+      'Activity',
       'Mint',
       'Reels waiting',
       'Certificates waiting',
       'Catalogue',
       'Atelier',
-      'Latest activity',
       'Sign out',
     ]);
   });
@@ -220,12 +222,12 @@ describe('TopMenuComponent workshop menu', () => {
       a.getAttribute('href')
     );
     expect(links).toEqual([
+      '/activity',
       '/mint',
       '/publish',
       '/pendingmint',
       '/catalogue',
       '/atelier',
-      '/activity',
     ]);
   });
 

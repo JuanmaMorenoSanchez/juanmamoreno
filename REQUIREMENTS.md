@@ -2520,13 +2520,34 @@ it exists for. And when the api does not answer, it says so in those words
 rather than showing nothing — on this page, "all quiet" and "could not ask" are
 opposite answers that look identical if the second is left blank.
 
+**A good night and a bad one do not look alike.** Each row carries a mark — a
+green check, or an error mark — and the mark carries a word beside its colour
+and its shape, because colour alone is not a state anybody can be sure of. A row
+with a failure can be opened; a row without one offers nothing to open, so there
+is no control that leads to an empty panel. The last fourteen runs read the same
+way: `ok`, or the failure and the same disclosure.
+
+**What opens is a kind and a time, never a message.** Nothing in either half of
+this project writes a log or a stack down, because an error message from Meta or
+Google is the request url and the url carries the access token. What is shown is
+what the backend stored — `instagram — AxiosError 429` — and there is no message
+anywhere to leak. The check returns by the latest run having nothing to report
+rather than by a record being deleted, so there is no cleanup that could be
+missed and no state to go stale.
+
+**It is first in the menu, and called Activity.**
+
 **The door opens onto it.** Signing in used to land on `/mint`, which is one
 task out of six; this is the one page whose answer he wants before choosing a
 task, and every task is a link away from it.
-*Proven by:* `activity.component.spec.ts` (8 tests, including "puts what is
+*Proven by:* `activity.component.spec.ts` (13 tests, including "puts what is
 wrong at the top, before anything else", "does not look calm when it could not
-ask" and "names a run that did not come back"); `door.component.spec.ts` "opens
-onto the latest activity"; and `verify-render.mjs`, which requires `/activity`
+ask", "names a run that did not come back", "marks a clean run with a tick and
+offers nothing to open", "marks a failed run, and opens only when asked",
+"goes back to a tick once a run comes back clean" and "offers the kinds of a
+failed run, and never a message"); `top-menu.component.spec.ts`, which has
+Activity first in the admin menu; `door.component.spec.ts` "opens onto the
+latest activity"; and `verify-render.mjs`, which requires `/activity`
 to stay out of the prerendered pages and out of the sitemap
 *Proven elsewhere by:* the backend's B67
 

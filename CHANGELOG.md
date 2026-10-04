@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.106.0
+
+- **feat** — every row on the activity page carries a mark: a green check when
+  the last run was clean, an error mark when it was not, each with a word beside
+  it rather than colour alone. A row with a failure opens to show what failed;
+  a row without one offers nothing to open.
+- **feat** — the last fourteen runs read the same way — `ok`, or the failure
+  with the same disclosure.
+- **feat** — what a failure shows is a kind and a time, `instagram — AxiosError
+  429`, and never a message. Nothing in either repository writes a log down,
+  because an error message from Meta or Google is the request url and the url
+  carries the token.
+- **chore** — the page is called **Activity** and sits first in the admin menu,
+  above Mint. The address is unchanged.
+
 ## 1.105.0
 
 - **chore** — the Threads mark is gone from the catalogue, with its icon and its

@@ -1,5 +1,5 @@
 <div class="container margin-top activity">
-  <h1 class="catalog-heading">Latest activity</h1>
+  <h1 class="catalog-heading">Activity</h1>
   <p class="activity-lead">
     Whether the machine did its job. Everything here is a date and a count — nothing on this page
     changes anything or spends anything.
@@ -45,6 +45,28 @@
       <ul class="activity-beats">
         @for (beat of beats(); track trackBeat($index, beat)) {
           <li class="activity-beat" [class.is-late]="beat.state !== 'quiet'">
+            <!--
+              The mark carries a word as well as a colour and a shape: read
+              aloud, or with the icon font missing, a green tick is nothing at
+              all.
+            -->
+            @if (failures(beat).length) {
+              <span class="activity-mark is-bad" title="failed">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span class="sr-only">failed</span>
+              </span>
+            } @else if (beat.state === 'quiet') {
+              <span class="activity-mark is-good" title="ok">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span class="sr-only">ok</span>
+              </span>
+            } @else {
+              <span class="activity-mark is-bad" title="late">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+                <span class="sr-only">late</span>
+              </span>
+            }
+
             <span class="activity-what">
               {{ beat.what }}
               @if (beat.count) {
@@ -54,8 +76,33 @@
             <span class="activity-when" [attr.title]="beat.at ? (beat.at | date: 'medium') : null">
               {{ ago(beat.at) }}
             </span>
+
+            <!-- Only where there is something to open. -->
+            @if (failures(beat).length) {
+              <button
+                type="button"
+                class="activity-open"
+                [attr.aria-expanded]="isOpen(beat.what)"
+                (click)="toggle(beat.what)"
+              >
+                {{ isOpen(beat.what) ? 'hide' : 'why' }}
+              </button>
+            }
             @if (beat.goTo) {
               <a class="activity-go" [routerLink]="beat.goTo">go →</a>
+            }
+
+            @if (isOpen(beat.what)) {
+              <ul class="activity-why">
+                @for (failure of failures(beat); track failure.name) {
+                  <li>
+                    <code>{{ describe(failure) }}</code>
+                    @if (failure.at) {
+                      <span class="activity-when">{{ failure.at | date: 'd MMM, HH:mm' }}</span>
+                    }
+                  </li>
+                }
+              </ul>
             }
           </li>
         }
@@ -87,12 +134,46 @@
         @for (run of runs(); track run.id) {
           <li class="activity-run" [class.is-late]="!cameBack(run) || run.failures">
             <span class="activity-run-when">{{ run.startedAt | date: 'd MMM, HH:mm' }}</span>
-            @if (!cameBack(run)) {
+
+            @if (isFine(run)) {
+              <span class="activity-mark is-good" title="ok">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span class="sr-only">ok</span>
+              </span>
+              <span class="activity-run-what">ok</span>
+            } @else if (!cameBack(run)) {
+              <span class="activity-mark is-bad" title="failed">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span class="sr-only">failed</span>
+              </span>
               <span class="activity-run-what">started and never came back</span>
-            } @else if (broke(run).length) {
-              <span class="activity-run-what">failed: {{ broke(run).join(', ') }}</span>
             } @else {
-              <span class="activity-run-what">all {{ run.jobs?.length ?? 0 }} jobs fine</span>
+              <span class="activity-mark is-bad" title="failed">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span class="sr-only">failed</span>
+              </span>
+              <span class="activity-run-what">failed: {{ broke(run).join(', ') }}</span>
+              <button
+                type="button"
+                class="activity-open"
+                [attr.aria-expanded]="isOpen(run.id)"
+                (click)="toggle(run.id)"
+              >
+                {{ isOpen(run.id) ? 'hide' : 'why' }}
+              </button>
+            }
+
+            @if (isOpen(run.id)) {
+              <ul class="activity-why">
+                @for (failure of failuresOf(run); track failure.name) {
+                  <li>
+                    <code>{{ describe(failure) }}</code>
+                    @if (failure.at) {
+                      <span class="activity-when">{{ failure.at | date: 'd MMM, HH:mm' }}</span>
+                    }
+                  </li>
+                }
+              </ul>
             }
           </li>
         }

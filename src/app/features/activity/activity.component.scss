@@ -171,3 +171,85 @@
     transform: rotate(360deg);
   }
 }
+
+/**
+ * The marks, and the thing they open.
+ *
+ * A mark carries a word beside its colour and its shape: colour alone is not a
+ * state anybody can be sure of, and the word is what is read aloud.
+ */
+.activity-mark {
+  display: inline-flex;
+  align-items: center;
+
+  mat-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    font-size: 1.15rem;
+    line-height: 1.15rem;
+  }
+
+  &.is-good mat-icon {
+    color: #3d8b5f;
+  }
+
+  &.is-bad mat-icon {
+    color: #b4442f;
+  }
+}
+
+/** Read out, never drawn. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.activity-open {
+  padding: 0.1rem 0.45rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  opacity: 0.7;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+/**
+ * What a failure says: a kind and a time. There is no message to show — none is
+ * ever written down, because a message from Meta or Google is the request url
+ * and the url carries the token.
+ */
+.activity-why {
+  flex-basis: 100%;
+  margin: 0.4rem 0 0;
+  padding: 0.5rem 0.75rem;
+  list-style: none;
+  font-size: 0.85rem;
+  background: rgb(0 0 0 / 4%);
+  border-radius: 0.4rem;
+
+  li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  code {
+    font-size: 0.82rem;
+  }
+}

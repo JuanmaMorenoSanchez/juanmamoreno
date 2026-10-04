@@ -127,12 +127,12 @@
   would promise a Spanish page that is not there.
 -->
 <mat-menu #adminMenu="matMenu">
+  <a mat-menu-item routerLink="/activity">Activity</a>
   <a mat-menu-item routerLink="/mint">Mint</a>
   <a mat-menu-item routerLink="/publish">Reels waiting</a>
   <a mat-menu-item routerLink="/pendingmint">Certificates waiting</a>
   <a mat-menu-item routerLink="/catalogue">Catalogue</a>
   <a mat-menu-item routerLink="/atelier">Atelier</a>
-  <a mat-menu-item routerLink="/activity">Latest activity</a>
   <button mat-menu-item type="button" (click)="signOut()">Sign out</button>
 </mat-menu>
 

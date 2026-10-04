@@ -11,10 +11,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
-import { Activity, ActivityApiService, CronRun, Heartbeat } from './activity.service';
+import { Activity, ActivityApiService, CronRun, Heartbeat, JobFailure } from './activity.service';
 
 /**
- * Latest activity: whether the machine did its job.
+ * Activity: whether the machine did its job.
  *
  * Everything this site does on a cron it does by itself, and until now it had no
  * way of saying so. Four separate things have broken quietly here — a bucket
@@ -51,6 +51,22 @@ export class ActivityComponent {
 
   /** Anything not quiet, which is what the page is for. */
   readonly wrong = computed(() => this.beats().filter((beat) => beat.state !== 'quiet'));
+
+  /**
+   * Which rows are open. Only a row with something to show can be opened at
+   * all, so this never holds a row that would open onto nothing.
+   */
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
+
+  isOpen(key: string): boolean {
+    return this.opened().has(key);
+  }
+
+  toggle(key: string): void {
+    const next = new Set(this.opened());
+    if (!next.delete(key)) next.add(key);
+    this.opened.set(next);
+  }
 
   constructor() {
     this.load();
@@ -109,5 +125,28 @@ export class ActivityComponent {
 
   trackBeat(_index: number, beat: Heartbeat): string {
     return beat.what;
+  }
+
+  /** What a row opens to show, or nothing — which is why it cannot be opened. */
+  failures(beat: Heartbeat): JobFailure[] {
+    return beat.errors ?? [];
+  }
+
+  /** The same, for one run in the list. */
+  failuresOf(run: CronRun): JobFailure[] {
+    return (run.jobs ?? []).filter((job) => !job.ok);
+  }
+
+  /**
+   * Whether a run is simply fine. A run that never came back is not fine and
+   * has no failed job to show either, so it is neither of the two states.
+   */
+  isFine(run: CronRun): boolean {
+    return this.cameBack(run) && !this.failuresOf(run).length;
+  }
+
+  /** A kind of failure, as it is stored: never a message, so never a token. */
+  describe(failure: JobFailure): string {
+    return `${failure.name} — ${failure.code ?? 'failed'}`;
   }
 }

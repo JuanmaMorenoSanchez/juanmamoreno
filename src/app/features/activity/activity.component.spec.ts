@@ -121,6 +121,89 @@ describe('ActivityComponent', () => {
     expect(text()).toContain('instagram reel');
   });
 
+  /**
+   * A good night and a bad one must not look alike at a glance, and a row with
+   * nothing to say must not offer to say it.
+   */
+  it('marks a clean run with a tick and offers nothing to open', () => {
+    build(page());
+
+    expect(fixture.nativeElement.querySelector('.activity-mark.is-good')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.activity-open')).toBeNull();
+  });
+
+  it('marks a failed run, and opens only when asked', () => {
+    build(
+      page({
+        beats: [
+          {
+            what: 'Last cron',
+            at: hoursAgo(8),
+            state: 'quiet',
+            errors: [{ name: 'bluesky', ok: false, code: 'AxiosError 401', at: hoursAgo(8) }],
+          },
+        ],
+      })
+    );
+
+    expect(fixture.nativeElement.querySelector('.activity-mark.is-bad')).not.toBeNull();
+    expect(text()).not.toContain('AxiosError 401');
+
+    const open = fixture.nativeElement.querySelector('.activity-open') as HTMLButtonElement;
+    expect(open).not.toBeNull();
+    open.click();
+    fixture.detectChanges();
+
+    expect(text()).toContain('bluesky');
+    expect(text()).toContain('AxiosError 401');
+  });
+
+  /**
+   * The green check comes back by there being nothing to report, not by a
+   * record being deleted anywhere — so a clean run after a bad one shows a tick
+   * and offers nothing, with no cleanup step that could be missed.
+   */
+  it('goes back to a tick once a run comes back clean', () => {
+    build(page({ beats: [{ what: 'Last cron', at: hoursAgo(8), state: 'quiet' }] }));
+
+    expect(fixture.nativeElement.querySelector('.activity-mark.is-good')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.activity-open')).toBeNull();
+  });
+
+  it('says ok against a run that had nothing go wrong', () => {
+    build(page());
+
+    expect(text()).toContain('ok');
+  });
+
+  it('offers the kinds of a failed run, and never a message', () => {
+    build(
+      page({
+        runs: [
+          {
+            id: 'r1',
+            startedAt: hoursAgo(9),
+            finishedAt: hoursAgo(8),
+            failures: 1,
+            jobs: [
+              { name: 'instagram', ok: false, code: 'AxiosError 429', at: hoursAgo(8) },
+              { name: 'essays', ok: true },
+            ],
+          },
+        ],
+        beats: [{ what: 'Last cron', at: hoursAgo(8), state: 'quiet' }],
+      })
+    );
+
+    const open = fixture.nativeElement.querySelector('.activity-open') as HTMLButtonElement;
+    open.click();
+    fixture.detectChanges();
+
+    expect(text()).toContain('AxiosError 429');
+    // There is no message anywhere to leak, because none is ever stored.
+    expect(text()).not.toContain('access_token');
+  });
+
   it('counts in words, because a date needs counting and this does not', () => {
     build(page());
     const component = fixture.componentInstance;

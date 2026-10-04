@@ -4,6 +4,20 @@ import { environment } from '@environments/environment';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { catchError, map, Observable, of } from 'rxjs';
 
+/**
+ * What one job failed at: which, what kind, when.
+ *
+ * A kind and a time, never a message. A failed call to Meta or Google throws an
+ * error whose message is the request url, and the url carries the token — so
+ * nothing in this app writes a message down, and there is none to show.
+ */
+export interface JobFailure {
+  name: string;
+  ok: boolean;
+  code?: string;
+  at?: string;
+}
+
 /** Something the machine does, and when it last did it. */
 export interface Heartbeat {
   what: string;
@@ -11,6 +25,8 @@ export interface Heartbeat {
   count?: number;
   /** Where to go and look. */
   goTo?: string;
+  /** What the last run failed at; absent once a run comes back clean. */
+  errors?: JobFailure[];
   state: 'quiet' | 'late' | 'never';
 }
 
@@ -19,7 +35,7 @@ export interface CronRun {
   id: string;
   startedAt: string;
   finishedAt?: string;
-  jobs?: { name: string; ok: boolean }[];
+  jobs?: JobFailure[];
   failures?: number;
 }
 

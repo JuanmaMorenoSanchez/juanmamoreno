@@ -184,7 +184,7 @@ export const routes: Routes = [
     canActivate: [readerLanguage, adminOnly],
     loadComponent: () =>
       import('@features/activity/activity.component').then((m) => m.ActivityComponent),
-    data: { title: 'Latest activity', hideBreadcrumb: true, noindex: true },
+    data: { title: 'Activity', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/activity', redirectTo: '/activity' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },

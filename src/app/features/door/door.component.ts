@@ -17,7 +17,7 @@ const GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 /**
  * Where the door opens onto.
  *
- * Latest activity rather than any one task, because the first thing worth
+ * Activity rather than any one task, because the first thing worth
  * knowing on signing in is whether the machine has been doing its job — and
  * every task is one link from there.
  */
