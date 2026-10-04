@@ -1349,8 +1349,8 @@ no licence to keep track of. A reel is a frame with a play triangle rather than
 a faithful copy of a small corporate glyph, because what the row has to say is
 "this one is the video" and that reads at 16px where detail does not. A painting on the
 feed and a painting filmed as a reel are two different things to have done with
-it, and while both wore one mark the studio could not tell them apart. Threads,
-Bluesky and Facebook are marked beside them, in a fixed order so a row does not
+it, and while both wore one mark the studio could not tell them apart. Bluesky
+and Facebook are marked beside them, in a fixed order so a row does not
 reshuffle as answers arrive.
 
 **A post that no longer exists can be forgotten**, which puts the painting back

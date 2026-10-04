@@ -19,7 +19,6 @@ export interface Network {
 export const NETWORKS: readonly Network[] = [
   { id: 'instagram', label: 'Instagram' },
   { id: 'instagram reel video', label: 'an Instagram reel' },
-  { id: 'threads', label: 'Threads' },
   { id: 'bluesky', label: 'Bluesky' },
   { id: 'facebook', label: 'Facebook' },
 ];

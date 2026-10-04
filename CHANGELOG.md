@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.105.0
+
+- **chore** — the Threads mark is gone from the catalogue, with its icon and its
+  entry in the network list. The backend no longer posts there, so nothing would
+  ever have worn it. Removed with the backend's own Threads code in the same
+  breath; `git revert` brings both back together.
+
 ## 1.104.2
 
 - **fix** — a mask that is just its own bounding box, filled, is refused rather

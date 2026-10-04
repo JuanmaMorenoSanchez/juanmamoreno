@@ -308,7 +308,7 @@ describe('CatalogueAdminComponent', () => {
    * mark the studio could not tell them apart.
    */
   describe('where a painting has been', () => {
-    const on = { '42': ['instagram', 'instagram reel video', 'threads'], '7': ['bluesky'] };
+    const on = { '42': ['instagram', 'instagram reel video', 'facebook'], '7': ['bluesky'] };
 
     it('tells the feed and a reel apart', () => {
       const page = setup([], [], on);
@@ -322,7 +322,7 @@ describe('CatalogueAdminComponent', () => {
     it('marks the other networks too', () => {
       const page = setup([], [], on);
 
-      expect(page.networksOf(catalogue[2])).toContain('threads');
+      expect(page.networksOf(catalogue[2])).toContain('facebook');
       expect(page.networksOf(catalogue[0])).toEqual(['bluesky']);
     });
 
@@ -333,7 +333,7 @@ describe('CatalogueAdminComponent', () => {
       expect(page.networksOf(catalogue[2])).toEqual([
         'instagram',
         'instagram reel video',
-        'threads',
+        'facebook',
       ]);
     });
 
