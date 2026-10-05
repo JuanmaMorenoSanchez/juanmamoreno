@@ -40,12 +40,10 @@
 </ng-template>
 
 <div class="container margin-top project">
-  <h1 class="project-title">{{ 'project.title' | translate }}</h1>
-
   <!--
-    Who is writing, first. He put it at the top: a reader deciding whether to
-    read the rest wants to know whose account this is before they are told how
-    the thing is built.
+    Who is writing, before the title itself. A reader deciding whether to read
+    the rest wants to know whose account this is before they are told what it
+    is called or how the thing is built.
   -->
   <section class="project-section">
     <h2>{{ 'project.about.title' | translate }}</h2>
@@ -55,6 +53,13 @@
       }
     }
   </section>
+
+  <!--
+    The title comes after him, where he put it. The page is an account of a
+    product, and he wanted the reader to know whose account it is before
+    reading what it is called.
+  -->
+  <h1 class="project-title">{{ 'project.title' | translate }}</h1>
 
   <!--
     His own text throughout, and several of these blocks are more than one

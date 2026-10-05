@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.107.1
+
+- **chore** — the title of the product page comes after *Where I come from*,
+  not before it. He wanted a reader to know whose account this is before being
+  told what it is called.
+- **chore** — his opening paragraph rewritten in both languages: the art world,
+  web3 and cultural management, and the industries he has worked the technology
+  layer of — IoT, tolls, construction.
+
 ## 1.107.0
 
 - **feat** — the product page opens with who is writing. *Where I come from*
