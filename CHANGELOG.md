@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.107.0
+
+- **feat** — the product page opens with who is writing. *Where I come from*
+  moves above everything: a reader deciding whether to read the rest wants to
+  know whose account this is before being told how the thing is built.
+- **feat** — *Product description* now comes before *Keeping control*. What the
+  thing is, then how it is kept honest.
+- **chore** — *The half nobody sees* is gone from both languages. It said again
+  what the rest of the page already says.
+- **fix** — the type no longer changes in the middle of the page. The opening
+  paragraphs about the architecture were bare `<p>` outside any section, so they
+  missed the line height every other paragraph has.
+- **fix** — the text a shared link shows was years out of date and counted 147
+  requirements, a figure he had already taken off the page. Rewritten in both
+  languages, with no number in it to go stale.
+
 ## 1.106.0
 
 - **feat** — every row on the activity page carries a mark: a green check when

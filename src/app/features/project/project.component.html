@@ -43,6 +43,20 @@
   <h1 class="project-title">{{ 'project.title' | translate }}</h1>
 
   <!--
+    Who is writing, first. He put it at the top: a reader deciding whether to
+    read the rest wants to know whose account this is before they are told how
+    the thing is built.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.about.title' | translate }}</h2>
+    @for (key of ['a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.about.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
+  </section>
+
+  <!--
     His own text throughout, and several of these blocks are more than one
     paragraph. A translated string with blank lines in it renders as one run-on
     paragraph, so every body is split where he left the blank line.
@@ -61,13 +75,20 @@
     comes before the argument about it — and the drawing is the fastest way to
     say what four paragraphs would.
   -->
+  <!--
+    In a section like every other body on the page. These were bare paragraphs
+    outside one, so they missed the line height the rest have and the type
+    changed in the middle of the page for no reason a reader could see.
+  -->
+  <section class="project-section">
     @for (key of ['a', 'b', 'c']; track key) {
       @for (paragraph of paragraphs('project.architecture.' + key); track $index) {
         <p>{{ paragraph }}</p>
       }
     }
+  </section>
 
-    <!--
+  <!--
       The three zones he describes and nothing he does not: the site that is
       written to disk, the cloud that is a service and three things around it,
       and the two that sit outside both — the chain and the permanent storage.
@@ -78,189 +99,159 @@
       either ground, and every word in it is a translation key, so the picture
       is bilingual, searchable and readable aloud like the page around it.
     -->
-    <figure class="project-diagram">
-      <svg
-        viewBox="0 0 700 380"
-        role="img"
-        [attr.aria-label]="'project.diagram.caption' | translate"
-      >
-        <defs>
-          <marker
-            id="dg-arrow"
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" />
-          </marker>
-        </defs>
+  <figure class="project-diagram">
+    <svg viewBox="0 0 700 380" role="img" [attr.aria-label]="'project.diagram.caption' | translate">
+      <defs>
+        <marker
+          id="dg-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" />
+        </marker>
+      </defs>
 
-        <!-- Who the catalogue is for, and who runs it. -->
-        <rect class="dg-box" x="14" y="20" width="132" height="44" rx="4" />
-        <text class="dg-label" x="80" y="47">{{ 'project.diagram.reader' | translate }}</text>
+      <!-- Who the catalogue is for, and who runs it. -->
+      <rect class="dg-box" x="14" y="20" width="132" height="44" rx="4" />
+      <text class="dg-label" x="80" y="47">{{ 'project.diagram.reader' | translate }}</text>
 
-        <rect class="dg-box" x="14" y="92" width="132" height="44" rx="4" />
-        <text class="dg-label" x="80" y="119">{{ 'project.diagram.artist' | translate }}</text>
+      <rect class="dg-box" x="14" y="92" width="132" height="44" rx="4" />
+      <text class="dg-label" x="80" y="119">{{ 'project.diagram.artist' | translate }}</text>
 
-        <line class="dg-edge" x1="148" y1="42" x2="196" y2="42" marker-end="url(#dg-arrow)" />
-        <text class="dg-edge-label" x="172" y="35">{{ 'project.diagram.reads' | translate }}</text>
+      <line class="dg-edge" x1="148" y1="42" x2="196" y2="42" marker-end="url(#dg-arrow)" />
+      <text class="dg-edge-label" x="172" y="35">{{ 'project.diagram.reads' | translate }}</text>
 
-        <polyline
-          class="dg-edge"
-          points="148,114 172,114 172,56 196,56"
-          marker-end="url(#dg-arrow)"
-        />
-        <text class="dg-edge-label" x="182" y="108">
-          {{ 'project.diagram.manages' | translate }}
-        </text>
+      <polyline
+        class="dg-edge"
+        points="148,114 172,114 172,56 196,56"
+        marker-end="url(#dg-arrow)"
+      />
+      <text class="dg-edge-label" x="182" y="108">
+        {{ 'project.diagram.manages' | translate }}
+      </text>
 
-        <!-- Written to disk before it is published, in both languages. -->
-        <rect class="dg-box dg-hub" x="200" y="18" width="240" height="56" rx="4" />
-        <text class="dg-label" x="320" y="40">{{ 'project.diagram.site' | translate }}</text>
-        <text class="dg-sub" x="320" y="58">{{ 'project.diagram.siteSub' | translate }}</text>
+      <!-- Written to disk before it is published, in both languages. -->
+      <rect class="dg-box dg-hub" x="200" y="18" width="240" height="56" rx="4" />
+      <text class="dg-label" x="320" y="40">{{ 'project.diagram.site' | translate }}</text>
+      <text class="dg-sub" x="320" y="58">{{ 'project.diagram.siteSub' | translate }}</text>
 
-        <line class="dg-edge" x1="320" y1="76" x2="320" y2="112" marker-end="url(#dg-arrow)" />
-        <text class="dg-edge-label" x="330" y="98">{{ 'project.diagram.api' | translate }}</text>
+      <line class="dg-edge" x1="320" y1="76" x2="320" y2="112" marker-end="url(#dg-arrow)" />
+      <text class="dg-edge-label" x="330" y="98">{{ 'project.diagram.api' | translate }}</text>
 
-        <!-- The cloud: a service, and the three things around it. -->
-        <rect class="dg-group" x="186" y="118" width="268" height="212" rx="6" />
-        <text class="dg-group-label" x="196" y="136">{{ 'project.diagram.cloud' | translate }}</text>
+      <!-- The cloud: a service, and the three things around it. -->
+      <rect class="dg-group" x="186" y="118" width="268" height="212" rx="6" />
+      <text class="dg-group-label" x="196" y="136">{{ 'project.diagram.cloud' | translate }}</text>
 
-        <rect class="dg-box" x="200" y="146" width="240" height="44" rx="4" />
-        <text class="dg-label" x="320" y="173">{{ 'project.diagram.service' | translate }}</text>
+      <rect class="dg-box" x="200" y="146" width="240" height="44" rx="4" />
+      <text class="dg-label" x="320" y="173">{{ 'project.diagram.service' | translate }}</text>
 
-        <rect class="dg-box" x="200" y="204" width="114" height="56" rx="4" />
-        <text class="dg-label" x="257" y="226">{{ 'project.diagram.ai' | translate }}</text>
-        <text class="dg-sub" x="257" y="242">{{ 'project.diagram.aiSub' | translate }}</text>
+      <rect class="dg-box" x="200" y="204" width="114" height="56" rx="4" />
+      <text class="dg-label" x="257" y="226">{{ 'project.diagram.ai' | translate }}</text>
+      <text class="dg-sub" x="257" y="242">{{ 'project.diagram.aiSub' | translate }}</text>
 
-        <rect class="dg-box" x="326" y="204" width="114" height="56" rx="4" />
-        <text class="dg-label" x="383" y="226">{{ 'project.diagram.db' | translate }}</text>
-        <text class="dg-sub" x="383" y="242">{{ 'project.diagram.dbSub' | translate }}</text>
+      <rect class="dg-box" x="326" y="204" width="114" height="56" rx="4" />
+      <text class="dg-label" x="383" y="226">{{ 'project.diagram.db' | translate }}</text>
+      <text class="dg-sub" x="383" y="242">{{ 'project.diagram.dbSub' | translate }}</text>
 
-        <rect class="dg-box" x="200" y="272" width="240" height="46" rx="4" />
-        <text class="dg-label" x="320" y="292">{{ 'project.diagram.bucket' | translate }}</text>
-        <text class="dg-sub" x="320" y="308">{{ 'project.diagram.bucketSub' | translate }}</text>
+      <rect class="dg-box" x="200" y="272" width="240" height="46" rx="4" />
+      <text class="dg-label" x="320" y="292">{{ 'project.diagram.bucket' | translate }}</text>
+      <text class="dg-sub" x="320" y="308">{{ 'project.diagram.bucketSub' | translate }}</text>
 
-        <!--
+      <!--
           The two nobody can take away, and the reason this is worth drawing at
           all: they are outside both boxes above.
         -->
-        <rect class="dg-group dg-dashed" x="486" y="118" width="200" height="212" rx="6" />
-        <text class="dg-group-label" x="496" y="136">
-          {{ 'project.diagram.outside' | translate }}
-        </text>
+      <rect class="dg-group dg-dashed" x="486" y="118" width="200" height="212" rx="6" />
+      <text class="dg-group-label" x="496" y="136">
+        {{ 'project.diagram.outside' | translate }}
+      </text>
 
-        <rect class="dg-box dg-hub" x="500" y="152" width="172" height="58" rx="4" />
-        <text class="dg-label" x="586" y="176">{{ 'project.diagram.chain' | translate }}</text>
-        <text class="dg-sub" x="586" y="194">{{ 'project.diagram.chainSub' | translate }}</text>
+      <rect class="dg-box dg-hub" x="500" y="152" width="172" height="58" rx="4" />
+      <text class="dg-label" x="586" y="176">{{ 'project.diagram.chain' | translate }}</text>
+      <text class="dg-sub" x="586" y="194">{{ 'project.diagram.chainSub' | translate }}</text>
 
-        <rect class="dg-box" x="500" y="248" width="172" height="58" rx="4" />
-        <text class="dg-label" x="586" y="272">{{ 'project.diagram.permanent' | translate }}</text>
-        <text class="dg-sub" x="586" y="290">{{ 'project.diagram.permanentSub' | translate }}</text>
+      <rect class="dg-box" x="500" y="248" width="172" height="58" rx="4" />
+      <text class="dg-label" x="586" y="272">{{ 'project.diagram.permanent' | translate }}</text>
+      <text class="dg-sub" x="586" y="290">{{ 'project.diagram.permanentSub' | translate }}</text>
 
-        <line class="dg-edge" x1="442" y1="168" x2="494" y2="178" marker-end="url(#dg-arrow)" />
-        <text class="dg-edge-label" x="468" y="160">{{ 'project.diagram.mint' | translate }}</text>
+      <line class="dg-edge" x1="442" y1="168" x2="494" y2="178" marker-end="url(#dg-arrow)" />
+      <text class="dg-edge-label" x="468" y="160">{{ 'project.diagram.mint' | translate }}</text>
 
-        <!--
+      <!--
           From the cloud rather than from the bucket. He says the cloud keeps
           the high-resolution images and the video in a bucket, and that the
           web-resolution copies live on permanent distributed storage; he does
           not say the one feeds the other, and an arrow from that box would.
         -->
-        <line class="dg-edge" x1="458" y1="278" x2="494" y2="278" marker-end="url(#dg-arrow)" />
-        <text class="dg-edge-label" x="476" y="270">{{ 'project.diagram.images' | translate }}</text>
-      </svg>
-      <figcaption>{{ 'project.diagram.caption' | translate }}</figcaption>
-    </figure>
+      <line class="dg-edge" x1="458" y1="278" x2="494" y2="278" marker-end="url(#dg-arrow)" />
+      <text class="dg-edge-label" x="476" y="270">{{ 'project.diagram.images' | translate }}</text>
+    </svg>
+    <figcaption>{{ 'project.diagram.caption' | translate }}</figcaption>
+  </figure>
 
-    <!--
+  <!--
       The addresses, in two lists: the ones a reader can walk to, and the ones
       the service answers. Both are drawn from data rather than typed here, and
       both leave out everything behind the credential — which the map says out
       loud, because a gap nobody can see is not the same as a list that admits
       to being partial.
     -->
-    <figure class="project-diagram">
-      <svg
-        viewBox="0 0 700 340"
-        role="img"
-        [attr.aria-label]="'project.map.title' | translate"
-      >
-        <text class="dg-group-label" x="14" y="16">{{ 'project.map.title' | translate }}</text>
-        <text class="dg-note" x="14" y="34">
-          {{ 'project.map.bothLanguages' | translate }}
+  <figure class="project-diagram">
+    <svg viewBox="0 0 700 340" role="img" [attr.aria-label]="'project.map.title' | translate">
+      <text class="dg-group-label" x="14" y="16">{{ 'project.map.title' | translate }}</text>
+      <text class="dg-note" x="14" y="34">
+        {{ 'project.map.bothLanguages' | translate }}
+      </text>
+
+      <rect class="dg-group" x="8" y="46" width="684" height="236" rx="6" />
+      @for (route of routes; track route.at) {
+        <text class="dg-at" x="24" [attr.y]="72 + $index * 22">{{ route.at }}</text>
+        <text class="dg-row" x="280" [attr.y]="72 + $index * 22">
+          {{ route.label | translate }}
         </text>
+      }
 
-        <rect class="dg-group" x="8" y="46" width="684" height="236" rx="6" />
-        @for (route of routes; track route.at) {
-          <text class="dg-at" x="24" [attr.y]="72 + $index * 22">{{ route.at }}</text>
-          <text class="dg-row" x="280" [attr.y]="72 + $index * 22">{{ route.label | translate }}</text>
-        }
+      <rect class="dg-group dg-dashed" x="8" y="294" width="684" height="38" rx="6" />
+      <text class="dg-row" x="24" y="318">{{ 'project.map.guarded' | translate }}</text>
+    </svg>
+    <figcaption>{{ 'project.map.title' | translate }}</figcaption>
+  </figure>
 
-        <rect class="dg-group dg-dashed" x="8" y="294" width="684" height="38" rx="6" />
-        <text class="dg-row" x="24" y="318">{{ 'project.map.guarded' | translate }}</text>
-      </svg>
-      <figcaption>{{ 'project.map.title' | translate }}</figcaption>
-    </figure>
+  <figure class="project-diagram">
+    <svg
+      viewBox="0 0 700 440"
+      role="img"
+      [attr.aria-label]="'project.map.endpointsTitle' | translate"
+    >
+      <text class="dg-group-label" x="14" y="16">
+        {{ 'project.map.endpointsTitle' | translate }}
+      </text>
 
-    <figure class="project-diagram">
-      <svg
-        viewBox="0 0 700 440"
-        role="img"
-        [attr.aria-label]="'project.map.endpointsTitle' | translate"
-      >
-        <text class="dg-group-label" x="14" y="16">
-          {{ 'project.map.endpointsTitle' | translate }}
+      <rect class="dg-group" x="8" y="28" width="684" height="120" rx="6" />
+      <text class="dg-group-label" x="24" y="48">{{ 'project.map.filesTitle' | translate }}</text>
+      @for (file of files; track file.at) {
+        <text class="dg-at" x="24" [attr.y]="72 + $index * 20">{{ file.at }}</text>
+        <text class="dg-row" x="280" [attr.y]="72 + $index * 20">{{ file.label | translate }}</text>
+      }
+
+      <rect class="dg-group" x="8" y="160" width="684" height="228" rx="6" />
+      <text class="dg-group-label" x="24" y="180">{{ 'project.map.publicApi' | translate }}</text>
+      @for (endpoint of endpoints; track endpoint.at) {
+        <text class="dg-at" x="24" [attr.y]="204 + $index * 20">{{ endpoint.at }}</text>
+        <text class="dg-row" x="280" [attr.y]="204 + $index * 20">
+          {{ endpoint.label | translate }}
         </text>
-
-        <rect class="dg-group" x="8" y="28" width="684" height="120" rx="6" />
-        <text class="dg-group-label" x="24" y="48">{{ 'project.map.filesTitle' | translate }}</text>
-        @for (file of files; track file.at) {
-          <text class="dg-at" x="24" [attr.y]="72 + $index * 20">{{ file.at }}</text>
-          <text class="dg-row" x="280" [attr.y]="72 + $index * 20">{{ file.label | translate }}</text>
-        }
-
-        <rect class="dg-group" x="8" y="160" width="684" height="228" rx="6" />
-        <text class="dg-group-label" x="24" y="180">{{ 'project.map.publicApi' | translate }}</text>
-        @for (endpoint of endpoints; track endpoint.at) {
-          <text class="dg-at" x="24" [attr.y]="204 + $index * 20">{{ endpoint.at }}</text>
-          <text class="dg-row" x="280" [attr.y]="204 + $index * 20">
-            {{ endpoint.label | translate }}
-          </text>
-        }
-
-        <rect class="dg-group dg-dashed" x="8" y="398" width="684" height="34" rx="6" />
-        <text class="dg-row" x="24" y="420">{{ 'project.map.credentialed' | translate }}</text>
-      </svg>
-      <figcaption>{{ 'project.map.endpointsTitle' | translate }}</figcaption>
-    </figure>
-
-
-  <!--
-    Second, where he put it: what keeps the requirements honest comes before
-    where he is coming from and before what the product is. It is the part of
-    this that is about how the work is done rather than about what was made.
-  -->
-  <section class="project-section">
-    <h2>{{ 'project.rot.title' | translate }}</h2>
-    @for (key of ['intro', 'a', 'b', 'c']; track key) {
-      @for (paragraph of paragraphs('project.rot.' + key); track $index) {
-        <p>{{ paragraph }}</p>
       }
-    }
-  </section>
 
-  <section class="project-section">
-    <h2>{{ 'project.about.title' | translate }}</h2>
-    @for (key of ['a', 'b', 'c']; track key) {
-      @for (paragraph of paragraphs('project.about.' + key); track $index) {
-        <p>{{ paragraph }}</p>
-      }
-    }
-  </section>
+      <rect class="dg-group dg-dashed" x="8" y="398" width="684" height="34" rx="6" />
+      <text class="dg-row" x="24" y="420">{{ 'project.map.credentialed' | translate }}</text>
+    </svg>
+    <figcaption>{{ 'project.map.endpointsTitle' | translate }}</figcaption>
+  </figure>
 
   <section class="project-section">
     <h2>{{ 'project.product.title' | translate }}</h2>
@@ -275,14 +266,24 @@
             <p>{{ paragraph }}</p>
           }
           @if (shotOf(goal)) {
-            <ng-container
-              *ngTemplateOutlet="shot; context: { $implicit: shotOf(goal) }"
-            />
+            <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf(goal) }" />
           }
         </li>
       }
     </ol>
+  </section>
 
+  <!--
+    After the product rather than before it: what the thing is comes first, and
+    how it is kept honest second. The order is his.
+  -->
+  <section class="project-section">
+    <h2>{{ 'project.rot.title' | translate }}</h2>
+    @for (key of ['intro', 'a', 'b', 'c']; track key) {
+      @for (paragraph of paragraphs('project.rot.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
   </section>
 
   <section class="project-section">
@@ -295,18 +296,6 @@
 
     <!-- The page carrying the structured data this section is about. -->
     <ng-container *ngTemplateOutlet="shot; context: { $implicit: shotOf('artwork') }" />
-  </section>
-
-  <!--
-    Described, never addressed. The build refuses this page if it names an
-    address behind the guard, which is the rule that keeps a useful detail and
-    a dangerous one from looking alike here.
-  -->
-  <section class="project-section">
-    <h2>{{ 'project.admin.title' | translate }}</h2>
-    @for (paragraph of paragraphs('project.admin.body'); track $index) {
-      <p>{{ paragraph }}</p>
-    }
   </section>
 
   <section class="project-section">

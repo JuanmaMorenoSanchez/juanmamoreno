@@ -51,16 +51,14 @@ describe('ProjectComponent', () => {
     );
 
     expect(headings).toEqual([
-      'project.rot.title',
+      // Who is writing, first: a reader deciding whether to read the rest wants
+      // to know whose account this is before being told how the thing is built.
       'project.about.title',
+      // What it is, then how it is kept honest. How it is put together has no
+      // heading of its own: it is in the opening, before any of this.
       'project.product.title',
-      // How it is put together has no heading of its own any more: it is in
-      // the opening, before any of this. The one section here that is not his
-      // writing is the half of the application no reader sees, and it sits
-      // after the machine readers rather than between them and the
-      // architecture, which is an adjacency he is arguing.
+      'project.rot.title',
       'project.agents.title',
-      'project.admin.title',
       'project.links.title',
     ]);
   });
@@ -74,13 +72,31 @@ describe('ProjectComponent', () => {
    */
   it('shows how it is put together before it argues anything', () => {
     const diagram = fixture.nativeElement.querySelector('.project-diagram');
-    const firstHeading = fixture.nativeElement.querySelector('h2');
+    // Against the first section that argues something, not against the first
+    // heading on the page: who is writing now comes above everything, so the
+    // first heading is his own and the drawing belongs after it.
+    const product = [...fixture.nativeElement.querySelectorAll('h2')].find(
+      (node: Element) => node.textContent?.trim() === 'project.product.title'
+    ) as Element;
 
     expect(diagram).not.toBeNull();
-    // Earlier in the document than the first section heading.
     expect(
-      diagram.compareDocumentPosition(firstHeading) & Node.DOCUMENT_POSITION_FOLLOWING
+      diagram.compareDocumentPosition(product) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
+  });
+
+  /** Whose account this is, before anything about how it was built. */
+  it('opens with who is writing', () => {
+    const headings = [...fixture.nativeElement.querySelectorAll('h2')];
+
+    expect(headings[0]?.textContent?.trim()).toBe('project.about.title');
+  });
+
+  /** The half nobody sees was redundant with the rest and he took it out. */
+  it('no longer carries the section about the guarded half', () => {
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+    expect(text).not.toContain('project.admin');
   });
 
   /** The machine readers still come after the architecture that allows them. */
