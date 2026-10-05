@@ -266,7 +266,7 @@
     },
     "project": {
       "title": "Cómo dirijo este producto",
-      "description": "Cómo se especifica, se decide y se mantiene honesto un producto de dos repositorios: 147 requisitos, cada uno con su prueba, y una compilación que falla cuando una deja de ser cierta."
+      "description": "Certificados de autenticidad en Ethereum, el catálogo que los muestra y la caja de herramientas del artista. El product owner pone los requisitos, los implementan agentes de IA, y nada se despliega hasta que los tests y todo lo anterior siguen en pie."
     }
   },
   "privacy": {
@@ -442,10 +442,6 @@
       "certificate": "El certificado de autenticidad de esa obra",
       "opens": "abre la página",
       "admin": "La página desde la que se gestiona el catálogo, tras un inicio de sesión"
-    },
-    "admin": {
-      "title": "La mitad que nadie ve",
-      "body": "Detrás de un inicio de sesión hay una segunda mitad de la aplicación que ningún lector ve: ahí el artista prepara un certificado, corrige uno ya escrito, elige las obras con las que se arma un dossier y ve dónde se ha publicado cada pieza. Es el mismo catálogo, con lo que se puede hacer con cada obra encima. Esas direcciones no se nombran aquí a propósito, y el build rechaza esta página si aparecen."
     }
   }
 }

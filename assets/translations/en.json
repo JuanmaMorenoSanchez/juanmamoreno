@@ -266,7 +266,7 @@
     },
     "project": {
       "title": "Owning this product",
-      "description": "How a two-repository product is specified, decided and kept honest: 147 requirements, each with a proof, and a build that fails when one stops being true."
+      "description": "Certificates of authenticity on Ethereum, the catalogue that shows them, and the artist's toolbox. The product owner sets the requirements, AI agents implement them, and nothing ships until the tests and everything earlier still hold."
     }
   },
   "privacy": {
@@ -442,10 +442,6 @@
       "certificate": "That work’s certificate of authenticity",
       "opens": "opens the page",
       "admin": "The page the catalogue is managed from, behind a sign-in"
-    },
-    "admin": {
-      "title": "The half nobody sees",
-      "body": "Behind a sign-in there is a second half of the application that no reader sees: the artist prepares a certificate there, corrects one already written, chooses the paintings a dossier is built from, and sees where each painting has been published. It is the same catalogue, with what can be done to a painting attached to it. Those addresses are not named here on purpose, and the build refuses this page if they appear in it."
     }
   }
 }
