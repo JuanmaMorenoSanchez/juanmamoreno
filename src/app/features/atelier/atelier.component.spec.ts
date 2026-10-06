@@ -205,7 +205,18 @@ describe('AtelierComponent', () => {
     component['putOnBench'](new Image(), 'the painting');
     component.title.set('Believe');
     component['setLayers']([
-      { label: 'head', depth: 1, mask: stubCanvas(), cut: stubCanvas(), saved: false },
+      {
+        label: 'head',
+        depth: 1,
+        points: [
+          [0, 0],
+          [500, 0],
+          [500, 500],
+        ] as [number, number][],
+        mask: stubCanvas(),
+        cut: stubCanvas(),
+        saved: false,
+      },
     ]);
     component.bench.set([
       ...component.bench(),
@@ -471,15 +482,11 @@ describe('AtelierComponent, the stage', () => {
   /**
    * The black stage.
    *
-   * A mask that survives the threshold nowhere cuts a layer with nothing in it.
-   * Kept, it joined the stack and drew nothing — so the painting vanished, and
-   * the pointer moved layers nobody could see. The page read as broken rather
-   * than as a pass that had found nothing, and those want opposite responses
-   * from whoever is looking at it.
-   *
-   * Here the mask is unreadable, which is the same thing from this side: there
-   * is nothing to put on the stage either way. What must not happen is that it
-   * goes on the stage regardless.
+   * An outline so small it is a speck cuts a layer with nothing in it. Kept, it
+   * joined the stack and drew nothing — so the painting vanished, and the
+   * pointer moved layers nobody could see. The page read as broken rather than
+   * as a pass that had found nothing, and those want opposite responses from
+   * whoever is looking at it.
    */
   it('does not stack a layer that cut nothing, and says which', async () => {
     const component = fixture.componentInstance;
@@ -490,7 +497,12 @@ describe('AtelierComponent, the stage', () => {
         {
           label: 'the sky',
           box: [250, 250, 750, 750] as [number, number, number, number],
-          mask: 'data:image/png;base64,iVBORw0KGgo=',
+          // Three points in a line: well-formed, and no shape at all.
+          points: [
+            [250, 250],
+            [500, 250],
+            [750, 250],
+          ] as [number, number][],
         },
       ]);
 

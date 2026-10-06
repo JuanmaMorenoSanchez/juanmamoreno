@@ -24,15 +24,16 @@ export interface Prices {
 
 export interface Cut {
   label: string;
-  /** The mask for the inside of `box`, as a data url. */
-  mask: string;
   /**
-   * `[y0, x0, y1, x1]`, each 0–1000 of the picture's size.
+   * The outline, as `[x, y]` points each 0–1000 of the picture's size.
    *
-   * The mask is only true inside this rectangle. Used without it, a mask of a
-   * head would be stretched across the whole painting — a wrong cut that looks
-   * like a right one.
+   * Numbers rather than an image, because a model asked for a mask spells a png
+   * out as text and gets the bytes wrong. Normalised over the whole picture, so
+   * a shape found on a small copy cuts the full-size original with nothing
+   * scaled and nothing blurred.
    */
+  points: [number, number][];
+  /** `[y0, x0, y1, x1]`, each 0–1000: where the model says the thing is. */
   box: [number, number, number, number];
 }
 
@@ -41,6 +42,15 @@ export interface Layer {
   label: string;
   depth: number;
   order: number;
+  /**
+   * The outline it was cut from, `[x, y]` each 0–1000 of the painting.
+   *
+   * The png is the layer at one resolution; this is its shape at any of them,
+   * so a layer can be cut again from a better photograph without asking the
+   * model a second time. Absent on a layer painted in behind another, which was
+   * never cut from an outline.
+   */
+  points?: [number, number][];
 }
 
 export interface Piece {

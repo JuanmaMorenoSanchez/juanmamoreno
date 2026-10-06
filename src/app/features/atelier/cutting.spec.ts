@@ -1,13 +1,13 @@
 import {
   boxToPixels,
   coverage,
+  outlineArea,
+  stencilFromPoints,
   fillsItsBox,
   depthFor,
   layerFile,
-  MASK_THRESHOLD,
   scriptedPointer,
   slug,
-  stencil,
   WORKING_MAX_SIDE,
   workingSize,
 } from './cutting';
@@ -184,73 +184,6 @@ describe('boxToPixels', () => {
   });
 });
 
-describe('stencil', () => {
-  /** Four pixels: black, dark grey, light grey, white. */
-  function pixels(): Uint8ClampedArray {
-    return new Uint8ClampedArray([
-      0, 0, 0, 255, 60, 60, 60, 255, 200, 200, 200, 255, 255, 255, 255, 255,
-    ]);
-  }
-
-  function alphas(data: Uint8ClampedArray): number[] {
-    return [data[3], data[7], data[11], data[15]];
-  }
-
-  /**
-   * The whole reason this function exists. `cutLayer` keeps the painting where
-   * the mask is *opaque*, and the model's mask is opaque everywhere — black
-   * included. Used as it arrives it would keep the entire box, which looks like
-   * a layer and is the whole rectangle.
-   */
-  it('turns brightness into transparency', () => {
-    const data = pixels();
-
-    stencil(data);
-
-    expect(alphas(data)).toEqual([0, 0, 255, 255]);
-  });
-
-  it('keeps the threshold where the model is more sure than not', () => {
-    const data = pixels();
-
-    stencil(data, MASK_THRESHOLD);
-
-    // 60 is below halfway and 200 above, so the dark grey goes and the light
-    // grey stays — hair and shadowed edges fall on this line.
-    expect(alphas(data)).toEqual([0, 0, 255, 255]);
-  });
-
-  it('takes a stricter threshold when asked', () => {
-    const data = pixels();
-
-    stencil(data, 220);
-
-    expect(alphas(data)).toEqual([0, 0, 0, 255]);
-  });
-
-  /** What survives is white, so the stencil is a stencil and not a grey wash. */
-  it('leaves what survives fully opaque white', () => {
-    const data = pixels();
-
-    stencil(data);
-
-    expect([data[12], data[13], data[14], data[15]]).toEqual([255, 255, 255, 255]);
-  });
-
-  /**
-   * A mask that arrives already transparent in places is respected: a pixel
-   * nothing was drawn into is not part of the layer, however bright the colour
-   * left in its channels.
-   */
-  it('does not resurrect a pixel that was never drawn', () => {
-    const untouched = new Uint8ClampedArray([255, 255, 255, 0]);
-
-    stencil(untouched);
-
-    expect(untouched[3]).toBe(0);
-  });
-});
-
 /**
  * What a stencil keeps, which is what decides whether a layer goes on the
  * stage at all.
@@ -304,5 +237,82 @@ describe('fillsItsBox', () => {
 
   it('claims nothing for a box with no area at all', () => {
     expect(fillsItsBox(1, [500, 500, 500, 500], 1000, 1000)).toBe(false);
+  });
+});
+
+/**
+ * The outline as the model gives it: `[x, y]` points over the whole picture.
+ * Its area is the one question worth asking before anything is drawn — a shape
+ * that encloses nothing cuts a layer that joins the stack and draws nothing.
+ */
+describe('outlineArea', () => {
+  it('measures a shape as a fraction of the whole picture', () => {
+    const quarter = outlineArea([
+      [0, 0],
+      [500, 0],
+      [500, 500],
+      [0, 500],
+    ]);
+
+    expect(quarter).toBeCloseTo(0.25, 5);
+  });
+
+  /** Order round the edge is the model's business, not ours. */
+  it('does not care which way round the points run', () => {
+    const points: [number, number][] = [
+      [0, 0],
+      [500, 0],
+      [500, 500],
+      [0, 500],
+    ];
+
+    expect(outlineArea([...points].reverse())).toBeCloseTo(outlineArea(points), 5);
+  });
+
+  it('is nothing for points in a line, which enclose nothing', () => {
+    expect(
+      outlineArea([
+        [0, 0],
+        [500, 0],
+        [1000, 0],
+      ])
+    ).toBe(0);
+  });
+
+  it('is nothing for too few points to be a shape', () => {
+    expect(outlineArea([])).toBe(0);
+    expect(outlineArea([[0, 0]])).toBe(0);
+    expect(
+      outlineArea([
+        [0, 0],
+        [500, 500],
+      ])
+    ).toBe(0);
+  });
+});
+
+/**
+ * Only the fail-safe is provable here: jsdom has no canvas, so the filling
+ * itself cannot run. A function that answered with a drawn shape when it could
+ * not draw would put an invisible layer on the stage.
+ */
+describe('stencilFromPoints', () => {
+  it('answers a canvas of the size asked for', () => {
+    const canvas = stencilFromPoints(
+      [
+        [0, 0],
+        [500, 0],
+        [500, 500],
+      ],
+      800,
+      600
+    );
+
+    expect(canvas.width).toBe(800);
+    expect(canvas.height).toBe(600);
+  });
+
+  it('draws nothing at all from too few points to be a shape', () => {
+    expect(() => stencilFromPoints([[0, 0]], 100, 100)).not.toThrow();
   });
 });

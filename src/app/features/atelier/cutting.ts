@@ -21,16 +21,6 @@ export const WORKING_MAX_SIDE = 1024;
 /** Softness of a layer's edge, in pixels of the finished cut. */
 export const FEATHER_PX = 1.5;
 
-/**
- * Where the edge of a layer is, on a mask that is a probability map.
- *
- * The model answers in greys: 255 is certainly the figure, 0 is certainly not,
- * and the middle is where it is unsure — usually hair, an edge in shadow, or a
- * brushstroke that goes both ways. Halfway is the honest reading, and the
- * feather above softens whatever this leaves hard.
- */
-export const MASK_THRESHOLD = 128;
-
 /** Lower-case, dashed, and nothing that could climb out of a folder. */
 export function slug(text: string, fallback = 'piece'): string {
   const made = text
@@ -203,47 +193,64 @@ export function scriptedPointer(seconds: number): { x: number; y: number } {
 }
 
 /**
- * Turns one of the model's masks into a full-frame stencil.
+ * The model's outline, drawn as a full-size stencil.
  *
- * Two things have to happen here, and getting either wrong produces a layer
- * that looks deliberate and is wrong — which is worse than an obvious failure.
+ * The points are `[x, y]`, each 0–1000 of the whole picture, so the shape found
+ * on a small copy is filled straight onto the full-size painting: nothing is
+ * scaled up, and nothing blurs from scaling. That is the whole reason for
+ * asking in numbers rather than for an image.
  *
- * **It covers a box, not the picture.** The mask is only true inside `box`,
- * given as `[y0, x0, y1, x1]` in thousandths of the picture's size. Drawn over
- * the whole frame it would stretch a head across a wall.
- *
- * **It is grey, not a stencil.** `cutLayer` keeps the painting where the mask
- * is *opaque*, and a probability map is fully opaque everywhere — black included
- * — so used directly it would keep the whole box. The brightness has to become
- * the transparency.
+ * Drawn with a path rather than pixel by pixel, so the browser's own
+ * antialiasing gives the edge — which is what the feather used to be for.
  */
-export function placeMask(
-  mask: CanvasImageSource,
-  box: readonly [number, number, number, number],
+export function stencilFromPoints(
+  points: readonly (readonly [number, number])[],
   width: number,
-  height: number,
-  threshold = MASK_THRESHOLD
+  height: number
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
 
   const context = canvas.getContext('2d');
-  if (!context) return canvas;
+  if (!context || points.length < 3) return canvas;
 
-  const at = boxToPixels(box, width, height);
-  context.drawImage(mask, at.x, at.y, at.width, at.height);
+  context.beginPath();
+  points.forEach(([x, y], at) => {
+    const across = (x / 1000) * width;
+    const down = (y / 1000) * height;
+    if (at === 0) context.moveTo(across, down);
+    else context.lineTo(across, down);
+  });
+  context.closePath();
 
-  // Brightness becomes transparency, over the box alone: reading the whole
-  // frame would cost four bytes a pixel of a forty-megapixel painting to learn
-  // what we already know, which is that outside the box there is nothing.
-  if (at.width < 1 || at.height < 1) return canvas;
-
-  const region = context.getImageData(at.x, at.y, at.width, at.height);
-  stencil(region.data, threshold);
-  context.putImageData(region, at.x, at.y);
+  context.fillStyle = '#ffffff';
+  context.fill();
 
   return canvas;
+}
+
+/**
+ * Whether an outline is worth cutting with.
+ *
+ * A polygon can arrive technically well-formed and still be no shape at all —
+ * the cheap model answers with thirty points that cross over one another and
+ * follow nothing. What cannot be allowed is a shape so small it is a speck, so
+ * this asks only the question `coverage` asks of a stencil, before anything is
+ * drawn.
+ */
+export function outlineArea(points: readonly (readonly [number, number])[]): number {
+  if (points.length < 3) return 0;
+
+  let twice = 0;
+  for (let at = 0; at < points.length; at++) {
+    const [x1, y1] = points[at];
+    const [x2, y2] = points[(at + 1) % points.length];
+    twice += x1 * y2 - x2 * y1;
+  }
+
+  // Of the whole picture, which is 1000 by 1000 in these coordinates.
+  return Math.abs(twice / 2) / 1_000_000;
 }
 
 /**
@@ -264,26 +271,6 @@ export function boxToPixels(
   const bottom = clamp(Math.round((y1 / 1000) * height), top, height);
 
   return { x: left, y: top, width: right - left, height: bottom - top };
-}
-
-/**
- * Makes a probability map into a stencil, in place.
- *
- * White becomes opaque white, anything below the threshold becomes nothing at
- * all. Separate from the canvas work so the rule can be tested without one.
- */
-export function stencil(data: Uint8ClampedArray, threshold = MASK_THRESHOLD): void {
-  for (let at = 0; at < data.length; at += 4) {
-    // Plain mean rather than a luminance weighting: these are greys, where the
-    // three channels agree, and a weighting would only matter if they did not.
-    const grey = (data[at] + data[at + 1] + data[at + 2]) / 3;
-    const keep = grey >= threshold && data[at + 3] > 0;
-
-    data[at] = 255;
-    data[at + 1] = 255;
-    data[at + 2] = 255;
-    data[at + 3] = keep ? 255 : 0;
-  }
 }
 
 function clamp(value: number, low: number, high: number): number {

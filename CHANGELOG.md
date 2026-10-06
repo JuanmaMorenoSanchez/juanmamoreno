@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.110.0
+
+- **feat** — cutting a painting into layers works. The shape now arrives from
+  the model as a polygon of `[x, y]` points rather than as a png it cannot
+  spell, and is filled straight onto the full-resolution painting: nothing is
+  scaled up, nothing blurs, and the edge is the browser's own antialiasing.
+- **feat** — the outline is saved with each layer. The png is the layer at one
+  resolution; the outline is its shape at any of them.
+- **chore** — the mask-image path is gone, and with it the local region-grow
+  experiment. Neither is reachable now that the shape arrives as numbers.
+
 ## 1.109.0
 
 - **fix** — the ordering by average watch time is gone, and the one by

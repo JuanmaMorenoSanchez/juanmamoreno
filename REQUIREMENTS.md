@@ -2222,20 +2222,23 @@ read through `ARTWORK_PORT` like everywhere else, so the atelier knows the name
 of no bucket. The file picker stays for the studio photographs that were never
 in the catalogue.
 
-**A box is not a shape, and neither is presented as one.** Asked for a mask, a
-chat model spells it out as base64 and returns a PNG header it cannot fill: the
-bytes are either undecodable or one flat colour. Checked against Vertex on a
-real painting, `gemini-3.1-flash-lite` returned a 163-byte PNG declaring
-800×1080 — a 52-byte image payload for 3.4 MB of pixels — and `gemini-3.8-flash`
-a 3144-byte file whose header fails its own CRC and whose image chunk claims
-more bytes than the file holds. A flat mask keeps its whole box, which cuts a
-rectangle of the painting: squares sliding over each other, which reads as a cut
-that went wrong rather than as a model that returned no shape. So a stencil that
-keeps its whole box is refused and named, and the message says it is the model
-and not the painting, because naming something else will not change it. Vertex's
-dedicated segmentation model, which returns a mask from an encoder rather than
-from a language model, answers 404 in this project.
+**The shape arrives as numbers, and is drawn at full size.** The model is asked
+for a polygon rather than a mask image: `[x, y]` points, each 0–1000 of the whole
+painting. Asked for an image it spells a png out as text and gets the bytes
+wrong — the backend's B65 has the measurements. Being normalised, the outline
+found on a small copy is filled straight onto the full-resolution painting with
+a path, so nothing is scaled up, nothing blurs, and the browser's own
+antialiasing gives the edge.
 
+The outline is kept with the layer when a piece is saved. The png is the layer at
+one resolution; the outline is its shape at any of them, so a layer can be cut
+again from a better photograph without asking the model a second time, and it
+costs a couple of hundred numbers beside a file of a megabyte.
+
+An outline that encloses nothing is refused before anything is drawn, and one
+that fills its own bounding box is refused after — the first would put an empty
+layer on the stage, the second would cut a rectangle of the painting, which is
+the failure that looks most like success.
 **A layer that cut nothing never reaches the stage.** A mask that survives the
 threshold nowhere cuts a fully transparent layer; kept, it joined the stack and
 drew nothing, so the painting disappeared and the pointer moved layers nobody
@@ -2255,15 +2258,15 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (30 tests, including `fillsItsBox` "knows a
-filled box from a shape inside one" and "reads the count against the box rather
-than the frame") for the names the bucket will take,
-the working size a model is billed for, the depth spread, and the two things
-that have to be undone about one of the model's masks — `boxToPixels` "reads a
+*Proven by:* `cutting.spec.ts` (31 tests, including `outlineArea` "measures a
+shape as a fraction of the whole picture", "does not care which way round the
+points run" and "is nothing for points in a line, which enclose nothing";
+`stencilFromPoints` "answers a canvas of the size asked for"; and `fillsItsBox`
+"knows a filled box from a shape inside one") for the names the bucket will take,
+the working size a model is billed for, the depth spread, and what has to be
+read correctly about the box the outline comes with — `boxToPixels` "reads a
 box in thousandths onto a picture of any size", "keeps y before x, as the model
-gives them" and "clamps a box that runs off the picture"; `stencil` "turns
-brightness into transparency", without which the whole bounding box is kept,
-because a probability map is opaque even where it is black; and
+gives them" and "clamps a box that runs off the picture"; and
 `atelier.component.spec.ts` "does not stack a layer that cut nothing, and says
 which" and "stops correcting a layer that no longer exists", which are the two
 ways the stage went black; "asks for a painting before it offers to do

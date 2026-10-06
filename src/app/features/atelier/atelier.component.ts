@@ -26,8 +26,9 @@ import {
   cutLayer,
   depthFor,
   fillsItsBox,
+  outlineArea,
+  stencilFromPoints,
   layerFile,
-  placeMask,
   scriptedPointer,
   slug,
   workingSize,
@@ -37,6 +38,18 @@ import {
 interface Draft {
   label: string;
   depth: number;
+  /**
+   * The outline the model gave, kept as it arrived.
+   *
+   * Numbers over the whole picture, so it survives a reload, a resize and a
+   * different copy of the painting — and so a layer can be cut again later
+   * without asking the model anything a second time. It is a couple of hundred
+   * numbers; the mask it draws is a megabyte.
+   *
+   * Absent on a layer that was never cut from one — what was painted in behind
+   * another layer is a whole picture, and has no outline to keep.
+   */
+  points?: [number, number][];
   /** The mask at full size, which the brush paints into. */
   mask: HTMLCanvasElement;
   /** The painting cut by that mask: what gets saved and drawn. */
@@ -353,24 +366,26 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         const empty: string[] = [];
         const squares: string[] = [];
         for (const [index, cut] of cuts.entries()) {
-          const mask = await loadImage(cut.mask);
-          if (!mask) continue;
+          // An outline so small it is a speck cuts a layer with nothing in it,
+          // which joins the stack and draws nothing: the stage goes black and
+          // the pointer moves layers nobody can see, so the page reads as
+          // broken rather than as a pass that found nothing.
+          if (outlineArea(cut.points) <= 0) {
+            empty.push(cut.label);
+            continue;
+          }
 
-          const draft = this.draftFrom(cut.label, mask, cut.box, index, cuts.length);
+          const draft = this.draftFrom(cut.label, cut.points, index, cuts.length);
           const kept = coverage(draft.mask);
 
-          // A mask that survives the threshold nowhere cuts a layer with
-          // nothing in it. Kept, it joins the stack and draws nothing: the
-          // stage goes black and the pointer moves layers nobody can see, so
-          // the page reads as broken rather than as a pass that found nothing.
           if (kept <= 0) {
             empty.push(cut.label);
             continue;
           }
 
-          // A mask that keeps its whole box cuts a rectangle of the painting,
-          // which is the failure that looks most like success — squares of
-          // picture sliding over each other.
+          // An outline that fills its own box is the box, which cuts a
+          // rectangle of the painting — the failure that looks most like
+          // success, squares of picture sliding over each other.
           if (fillsItsBox(kept, cut.box, painting.naturalWidth, painting.naturalHeight)) {
             squares.push(cut.label);
             continue;
@@ -653,6 +668,10 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
             label: draft.label,
             depth: draft.depth,
             order: index,
+            // Kept with the piece: the png is the layer at one resolution, the
+            // outline is its shape at any of them. A layer painted in behind
+            // another was never cut from one and has none to keep.
+            ...(draft.points ? { points: draft.points } : {}),
           })),
           frames: this.keptFrames(),
         },
@@ -894,19 +913,21 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private draftFrom(
     label: string,
-    mask: HTMLImageElement,
-    box: [number, number, number, number],
+    points: [number, number][],
     index: number,
     total: number
   ): Draft {
     const painting = this.painting()!;
     const width = painting.naturalWidth;
     const height = painting.naturalHeight;
-    const placed = placeMask(mask, box, width, height);
+    // Filled straight onto the full-size painting: the outline is normalised,
+    // so there is no mask to scale up and nothing blurs from scaling one.
+    const placed = stencilFromPoints(points, width, height);
 
     return {
       label,
       depth: depthFor(index, total),
+      points,
       mask: placed,
       cut: cutLayer(painting, placed, width, height),
       saved: false,
