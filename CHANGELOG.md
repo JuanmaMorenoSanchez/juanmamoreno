@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.110.1
+
+- **feat** — the atelier turns a mark on the button that is waiting. Every press
+  there is a call to a model and several take most of a minute; disabled buttons
+  said that something was happening and not which. Fill behind is keyed by its
+  layer, so only the one pressed turns.
+
 ## 1.110.0
 
 - **feat** — cutting a painting into layers works. The shape now arrives from

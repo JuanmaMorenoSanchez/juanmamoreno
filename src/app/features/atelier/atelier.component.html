@@ -177,6 +177,9 @@
           [disabled]="busy() || !affordable()"
           (click)="makeVariant()"
         >
+          @if (waiting('variant')) {
+            <span class="atelier-spin" aria-hidden="true"></span>
+          }
           Make one <app-cost operation="edit" />
         </button>
       </div>
@@ -232,6 +235,9 @@
           [disabled]="busy() || !affordable()"
           (click)="findLayers()"
         >
+          @if (waiting('layers')) {
+            <span class="atelier-spin" aria-hidden="true"></span>
+          }
           Find layers <app-cost operation="segment" />
         </button>
       </div>
@@ -277,6 +283,9 @@
                 (click)="fillBehind($index)"
                 title="Paint in what is behind this layer, so moving it reveals paint rather than a hole"
               >
+                @if (waiting('behind:' + $index)) {
+                  <span class="atelier-spin" aria-hidden="true"></span>
+                }
                 Fill behind <app-cost operation="inpaint" />
               </button>
               <button type="button" class="atelier-link" (click)="remove($index)" title="Remove">
@@ -307,6 +316,9 @@
             }
           </span>
           <button type="button" class="atelier-do" [disabled]="!canSave()" (click)="savePiece()">
+            @if (waiting('save')) {
+              <span class="atelier-spin" aria-hidden="true"></span>
+            }
             Save the piece
           </button>
         </div>
@@ -324,6 +336,9 @@
         </p>
 
         <button type="button" class="atelier-do" [disabled]="busy()" (click)="record()">
+          @if (waiting('record')) {
+            <span class="atelier-spin" aria-hidden="true"></span>
+          }
           Record {{ reelSeconds }} seconds
         </button>
 

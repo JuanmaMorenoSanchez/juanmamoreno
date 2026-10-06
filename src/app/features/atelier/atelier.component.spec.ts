@@ -480,6 +480,43 @@ describe('AtelierComponent, the stage', () => {
   });
 
   /**
+   * A press here is a call to a model and several take most of a minute.
+   * Disabled buttons say that something is happening and not which.
+   */
+  it('turns a mark on the button that is waiting, and on no other', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.atelier-spin')).toBeNull();
+
+    component.busy.set(true);
+    component.workingOn.set('layers');
+    fixture.detectChanges();
+
+    const turning = [...fixture.nativeElement.querySelectorAll('button')].filter((button: Element) =>
+      button.querySelector('.atelier-spin')
+    );
+    expect(turning).toHaveLength(1);
+    expect(turning[0].textContent).toContain('Find layers');
+  });
+
+  /** Nothing turns once the work is done, whatever was pressed. */
+  it('stops turning when the work finishes', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    component.busy.set(true);
+    component.workingOn.set('layers');
+    fixture.detectChanges();
+
+    component.busy.set(false);
+    component.workingOn.set('');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.atelier-spin')).toBeNull();
+  });
+
+  /**
    * The black stage.
    *
    * An outline so small it is a speck cuts a layer with nothing in it. Kept, it

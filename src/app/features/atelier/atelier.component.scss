@@ -340,3 +340,35 @@
     background: rgb(0 0 0 / 9%);
   }
 }
+
+/**
+ * The turning mark on the button that is waiting.
+ *
+ * Every press here is a call to a model and several take most of a minute.
+ * Disabled buttons say that something is happening and not which; this says
+ * which, on the one that was pressed.
+ */
+.atelier-spin {
+  display: inline-block;
+  width: 0.75em;
+  height: 0.75em;
+  margin-right: 0.45em;
+  vertical-align: -0.05em;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: atelier-turn 0.8s linear infinite;
+}
+
+@keyframes atelier-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* A mark that spins for a minute is a distraction to anyone who asked for less. */
+@media (prefers-reduced-motion: reduce) {
+  .atelier-spin {
+    animation-duration: 3s;
+  }
+}

@@ -167,6 +167,22 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly busy = signal(false);
   readonly stage = signal('');
+
+  /**
+   * Which button is waiting, so the spinner appears on the one that was
+   * pressed.
+   *
+   * Every press here is a call to a model and several of them take most of a
+   * minute. Disabling the buttons says something is happening and not which, so
+   * the one that was pressed carries the turning mark and the rest only go
+   * quiet. `fillBehind` is keyed by its layer, because there is one of those
+   * buttons per layer and only one of them is working.
+   */
+  readonly workingOn = signal('');
+
+  protected waiting(what: string): boolean {
+    return this.busy() && this.workingOn() === what;
+  }
   readonly problem = signal('');
   readonly saved = signal('');
   readonly recorded = signal<string | undefined>(undefined);
@@ -315,6 +331,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stage.set(`Fetching ${nft.name ?? id}…`);
     const image = await loadImage(url, true);
     this.busy.set(false);
+    this.workingOn.set('');
     this.stage.set('');
 
     if (!image) {
@@ -345,6 +362,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.busy.set(true);
+    this.workingOn.set('layers');
     this.problem.set('');
     this.stage.set('Looking at the painting…');
 
@@ -354,6 +372,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(async (cuts) => {
         this.busy.set(false);
+        this.workingOn.set('');
         this.stage.set('');
 
         if (!cuts) {
@@ -439,6 +458,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!painting || !layer || !token) return;
 
     this.busy.set(true);
+    this.workingOn.set(`behind:${index}`);
     this.problem.set('');
     this.stage.set('Painting in what was behind it…');
 
@@ -455,6 +475,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(async (made) => {
         this.busy.set(false);
+        this.workingOn.set('');
         this.stage.set('');
 
         if (!made) {
@@ -488,6 +509,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!painting || !token || !this.instruction().trim()) return;
 
     this.busy.set(true);
+    this.workingOn.set('variant');
     this.problem.set('');
     this.stage.set('Asking for a variant…');
 
@@ -497,6 +519,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(async (made) => {
         this.busy.set(false);
+        this.workingOn.set('');
         this.stage.set('');
 
         if (!made) {
@@ -614,6 +637,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!token || !painting || !this.canSave()) return;
 
     this.busy.set(true);
+    this.workingOn.set('save');
     this.problem.set('');
     this.saved.set('');
 
@@ -629,6 +653,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       const written = await firstValueFrom(this.atelier.saveFile(id, file, blob, token));
       if (!written) {
         this.busy.set(false);
+        this.workingOn.set('');
         this.stage.set('');
         this.problem.set(`${draft.label} would not save. Nothing else was written.`);
         return;
@@ -650,6 +675,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       if (!written) {
         this.busy.set(false);
+        this.workingOn.set('');
         this.stage.set('');
         this.problem.set(`${variantFile(index)} would not save. The piece was not written.`);
         return;
@@ -680,6 +706,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.busy.set(false);
+    this.workingOn.set('');
     this.stage.set('');
 
     if (!piece) {
@@ -709,6 +736,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.layers().length || this.busy()) return;
 
     this.busy.set(true);
+    this.workingOn.set('record');
     this.problem.set('');
     this.recorded.set(undefined);
     this.stage.set(`Recording ${REEL_SECONDS} seconds…`);
@@ -720,6 +748,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     if (!type) {
       this.busy.set(false);
+      this.workingOn.set('');
       this.stage.set('');
       this.problem.set('This browser will not record a canvas.');
       return;
@@ -742,6 +771,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
     this.scripted = false;
 
     this.busy.set(false);
+    this.workingOn.set('');
     this.stage.set('');
     this.recorded.set(URL.createObjectURL(new Blob(parts, { type })));
   }
