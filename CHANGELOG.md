@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.111.0
+
+- **feat** — a cut layer's edge is a curve rather than twenty straight runs. A
+  cardinal spline bends the runs between the model's points without moving any
+  of them, so nothing is invented about where the edge is — only about how it
+  travels. Run tighter than the usual Catmull-Rom, which at a right angle swings
+  an eighth of the run wide and takes paint that was never inside the outline.
+- **feat** — the edge is softened in proportion to the painting rather than by a
+  flat pixel and a half, which on a photograph three thousand across was no
+  softness at all. A layer now reads as paint rather than as paper stuck on.
+
 ## 1.110.1
 
 - **feat** — the atelier turns a mark on the button that is waiting. Every press

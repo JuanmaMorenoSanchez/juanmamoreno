@@ -494,8 +494,8 @@ describe('AtelierComponent, the stage', () => {
     component.workingOn.set('layers');
     fixture.detectChanges();
 
-    const turning = [...fixture.nativeElement.querySelectorAll('button')].filter((button: Element) =>
-      button.querySelector('.atelier-spin')
+    const turning = [...fixture.nativeElement.querySelectorAll('button')].filter(
+      (button: Element) => button.querySelector('.atelier-spin')
     );
     expect(turning).toHaveLength(1);
     expect(turning[0].textContent).toContain('Find layers');

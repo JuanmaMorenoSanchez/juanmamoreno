@@ -2235,6 +2235,18 @@ one resolution; the outline is its shape at any of them, so a layer can be cut
 again from a better photograph without asking the model a second time, and it
 costs a couple of hundred numbers beside a file of a megabyte.
 
+**The outline is drawn as a curve, and the edge is softened in proportion.**
+Twenty points round an animal is a good outline and a visibly faceted one, so a
+cardinal spline bends the runs between them without moving any point the model
+gave — nothing is invented about where the edge is, only about how it travels
+between the places the model was sure of. It is run tighter than the usual
+Catmull-Rom because at a right angle that swings an eighth of the run wide,
+which on a cut layer is a bulge of painting that was never inside the outline.
+
+The softness of the edge is a fraction of the painting's longest side rather
+than a flat pixel and a half, which on a photograph three thousand across was no
+softness at all: the layer read as cut out with scissors and stuck on.
+
 An outline that encloses nothing is refused before anything is drawn, and one
 that fills its own bounding box is refused after — the first would put an empty
 layer on the stage, the second would cut a rectangle of the painting, which is
@@ -2258,7 +2270,10 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (31 tests, including `outlineArea` "measures a
+*Proven by:* `cutting.spec.ts` (38 tests, including `smoothOutline` "passes
+through every point the model gave" and "stays close to the shape, even at a
+right angle"; `featherFor` "softens a big painting more than a small one";
+`outlineArea` "measures a
 shape as a fraction of the whole picture", "does not care which way round the
 points run" and "is nothing for points in a line, which enclose nothing";
 `stencilFromPoints` "answers a canvas of the size asked for"; and `fillsItsBox`

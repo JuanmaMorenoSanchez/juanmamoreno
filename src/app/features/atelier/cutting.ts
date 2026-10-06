@@ -18,8 +18,25 @@
  */
 export const WORKING_MAX_SIDE = 1024;
 
-/** Softness of a layer's edge, in pixels of the finished cut. */
-export const FEATHER_PX = 1.5;
+/**
+ * Softness of a layer's edge, as a fraction of the painting's longest side.
+ *
+ * It was a flat 1.5 pixels, which is a hard edge on a photograph three thousand
+ * pixels across — the layer read as cut out with scissors and stuck on. A
+ * fraction holds the same softness whatever the painting's size, which is what
+ * makes a cut look like paint rather than like paper.
+ */
+export const FEATHER_FRACTION = 0.0022;
+
+/** Narrow enough to stay an edge, wide enough to be one. */
+export const FEATHER_MIN = 1.5;
+export const FEATHER_MAX = 14;
+
+/** The softness for one painting, in pixels of it. */
+export function featherFor(width: number, height: number): number {
+  const longest = Math.max(width, height);
+  return Math.min(FEATHER_MAX, Math.max(FEATHER_MIN, longest * FEATHER_FRACTION));
+}
 
 /** Lower-case, dashed, and nothing that could climb out of a folder. */
 export function slug(text: string, fallback = 'piece'): string {
@@ -84,7 +101,7 @@ export function cutLayer(
   mask: CanvasImageSource,
   width: number,
   height: number,
-  feather = FEATHER_PX
+  feather = featherFor(width, height)
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -192,6 +209,69 @@ export function scriptedPointer(seconds: number): { x: number; y: number } {
   };
 }
 
+/** How many points are drawn along each run between two of the model's. */
+export const SMOOTH_STEPS = 8;
+
+/**
+ * How far the curve leans into a corner.
+ *
+ * A half is the usual Catmull-Rom, and on a right angle it swings about an
+ * eighth of the run past the point it is turning around — which on a cut layer
+ * is a bulge of painting that was never inside the outline. Run tighter, so a
+ * sharp corner stays near the point the model actually gave while a gentle one,
+ * which is most of a painted edge, still travels as a curve.
+ */
+export const SMOOTH_TENSION = 0.32;
+
+/**
+ * The model's points, as a curve that passes through all of them.
+ *
+ * Twenty points round a cat is a good outline and a visibly faceted one: the
+ * straight runs between them read as a polygon, which is exactly what a hand
+ * does not cut. A cardinal spline bends those runs without moving any of the
+ * points the model gave, so nothing is invented about where the edge is — only
+ * about how it travels between the places the model was sure of.
+ */
+export function smoothOutline(
+  points: readonly (readonly [number, number])[],
+  steps = SMOOTH_STEPS,
+  tension = SMOOTH_TENSION
+): [number, number][] {
+  if (points.length < 3 || steps < 2) return points.map(([x, y]) => [x, y]);
+
+  const at = (index: number): readonly [number, number] =>
+    points[((index % points.length) + points.length) % points.length];
+
+  const curve: [number, number][] = [];
+  for (let index = 0; index < points.length; index++) {
+    const p0 = at(index - 1);
+    const p1 = at(index);
+    const p2 = at(index + 1);
+    const p3 = at(index + 2);
+
+    for (let step = 0; step < steps; step++) {
+      const t = step / steps;
+      const t2 = t * t;
+      const t3 = t2 * t;
+
+      // A cardinal spline through p1 and p2, leaning on its neighbours for the
+      // direction it arrives and leaves in. Written on the hermite basis, which
+      // is where the tension has somewhere to go.
+      const h1 = 2 * t3 - 3 * t2 + 1;
+      const h2 = -2 * t3 + 3 * t2;
+      const h3 = t3 - 2 * t2 + t;
+      const h4 = t3 - t2;
+
+      curve.push([
+        h1 * p1[0] + h2 * p2[0] + h3 * tension * (p2[0] - p0[0]) + h4 * tension * (p3[0] - p1[0]),
+        h1 * p1[1] + h2 * p2[1] + h3 * tension * (p2[1] - p0[1]) + h4 * tension * (p3[1] - p1[1]),
+      ]);
+    }
+  }
+
+  return curve;
+}
+
 /**
  * The model's outline, drawn as a full-size stencil.
  *
@@ -216,7 +296,7 @@ export function stencilFromPoints(
   if (!context || points.length < 3) return canvas;
 
   context.beginPath();
-  points.forEach(([x, y], at) => {
+  smoothOutline(points).forEach(([x, y], at) => {
     const across = (x / 1000) * width;
     const down = (y / 1000) * height;
     if (at === 0) context.moveTo(across, down);

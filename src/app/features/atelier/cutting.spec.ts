@@ -1,7 +1,11 @@
 import {
   boxToPixels,
   coverage,
+  featherFor,
+  FEATHER_MAX,
+  FEATHER_MIN,
   outlineArea,
+  smoothOutline,
   stencilFromPoints,
   fillsItsBox,
   depthFor,
@@ -314,5 +318,76 @@ describe('stencilFromPoints', () => {
 
   it('draws nothing at all from too few points to be a shape', () => {
     expect(() => stencilFromPoints([[0, 0]], 100, 100)).not.toThrow();
+  });
+});
+
+/**
+ * Twenty points round a cat is a good outline and a visibly faceted one. The
+ * curve bends the runs between them without moving any of the points the model
+ * gave: nothing is invented about where the edge is, only about how it travels.
+ */
+describe('smoothOutline', () => {
+  const square: [number, number][] = [
+    [0, 0],
+    [500, 0],
+    [500, 500],
+    [0, 500],
+  ];
+
+  it('passes through every point the model gave', () => {
+    const curve = smoothOutline(square, 8);
+
+    for (const point of square) {
+      expect(
+        curve.some(([x, y]) => Math.abs(x - point[0]) < 0.001 && Math.abs(y - point[1]) < 0.001)
+      ).toBe(true);
+    }
+  });
+
+  it('draws the run between them rather than a straight line', () => {
+    expect(smoothOutline(square, 8)).toHaveLength(square.length * 8);
+  });
+
+  /**
+   * It rounds the corners; it does not swing wide of them. A right angle is the
+   * worst case a painted edge ever presents, and what the curve does there is a
+   * bulge of painting that was never inside the outline.
+   */
+  it('stays close to the shape, even at a right angle', () => {
+    const curve = smoothOutline(square, 8);
+    const xs = curve.map(([x]) => x);
+    const ys = curve.map(([, y]) => y);
+    // A tenth, and measured at a twelfth. Tightening it further would flatten
+    // the gentle curves that are the whole point, to hug a corner no painted
+    // edge has.
+    const overshoot = 500 * 0.1;
+
+    expect(Math.min(...xs)).toBeGreaterThan(-overshoot);
+    expect(Math.max(...xs)).toBeLessThan(500 + overshoot);
+    expect(Math.min(...ys)).toBeGreaterThan(-overshoot);
+    expect(Math.max(...ys)).toBeLessThan(500 + overshoot);
+  });
+
+  it('leaves alone what is too small to curve', () => {
+    expect(smoothOutline([[0, 0]], 8)).toEqual([[0, 0]]);
+    expect(smoothOutline(square, 1)).toEqual(square);
+  });
+});
+
+/**
+ * A flat pixel and a half is a hard edge on a photograph three thousand across:
+ * the layer reads as cut out with scissors and stuck on.
+ */
+describe('featherFor', () => {
+  it('softens a big painting more than a small one', () => {
+    expect(featherFor(3000, 2000)).toBeGreaterThan(featherFor(800, 600));
+  });
+
+  it('stays an edge rather than becoming a haze', () => {
+    expect(featherFor(40_000, 40_000)).toBe(FEATHER_MAX);
+  });
+
+  it('is still an edge on a small picture', () => {
+    expect(featherFor(100, 80)).toBe(FEATHER_MIN);
   });
 });
