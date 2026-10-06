@@ -2561,8 +2561,16 @@ asks Instagram nothing. Watch time is the one that answers what the others
 cannot: whether a reel is being left early, which separates a bad opening from a
 bad length.
 
+**Only orderings Instagram can answer.** What goes out nightly is a carousel of
+photographs, and a photograph has no watch time: asked for the reel metrics,
+Instagram refuses and answers with the basic set. So the ordering by average
+watch time read a number stored on none of the fifty posts, and the one by
+`total_interactions` read another — both did nothing at all. Watch time is gone,
+and interactions is the sum of the four Instagram does send: likes, comments,
+shares and saves, which is that quantity by its own definition.
+
 **One button per ordering, and pressing it again turns it round.** Year,
-when it last went out, watch time, reach and interactions: each says which way
+when it last went out, reach and interactions: each says which way
 it is pointing — *Reached most* becomes *Reached least* — so the row can be read
 without pressing anything. Two buttons for the two ends of one ordering said the
 same thing twice.
@@ -2576,11 +2584,12 @@ measured sorts to the end rather than ranking last. Those
 are two different facts, and ranking an unmeasured painting below a measured one
 with no reach at all would be inventing the one from the absence of the other.
 *Proven by:* `catalogue-admin.component.spec.ts` "arranging by what Instagram
-said" (14 tests, including "arranges by year, and turns round when pressed
-again", "says which way it is pointing", "keeps the never-posted at the end when
-the order is turned round" and "keeps the never-posted at the end either way
-round for every metric", "puts the furthest reached first", "puts the longest
-watched first", "sends the unmeasured to the end rather than ranking them last",
+said" (15 tests, including "arranges by year, and turns round when pressed
+again", "says which way it is pointing", "adds up what a post provoked, from the
+metrics Instagram actually sends", "keeps the never-posted at the end when the
+order is turned round" and "keeps the never-posted at the end either way round
+for every metric", "puts the furthest reached first",
+"sends the unmeasured to the end rather than ranking them last",
 "offers no metric ordering while there are no metrics" and "tells a listing that
 failed from a catalogue with no numbers")
 *Proven elsewhere by:* the backend's B68

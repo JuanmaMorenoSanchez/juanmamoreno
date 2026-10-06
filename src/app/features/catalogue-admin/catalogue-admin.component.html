@@ -57,16 +57,6 @@
         <button
           type="button"
           class="cat-order"
-          [class.is-on]="order() === 'watched'"
-          [attr.aria-pressed]="order() === 'watched'"
-          (click)="arrange('watched')"
-          title="Average watch time — whether a reel is being left early"
-        >
-          {{ label('watched') }}
-        </button>
-        <button
-          type="button"
-          class="cat-order"
           [class.is-on]="order() === 'reach'"
           [attr.aria-pressed]="order() === 'reach'"
           (click)="arrange('reach')"
@@ -204,15 +194,12 @@
           Nothing at all is the ordinary answer — most paintings have been
           posted once and reels are newer than most of the catalogue.
         -->
-        @if (metric(nft, 'reach') !== undefined || watchSeconds(nft) !== undefined) {
+        @if (metric(nft, 'reach') !== undefined || interactions(nft) !== undefined) {
           <span class="cat-metrics">
-            @if (watchSeconds(nft); as watched) {
-              <span title="Average watch time">▶ {{ watched }}s</span>
-            }
             @if (metric(nft, 'reach'); as reach) {
               <span title="Reach">{{ reach }} reached</span>
             }
-            @if (metric(nft, 'total_interactions'); as acted) {
+            @if (interactions(nft); as acted) {
               <span title="Likes, comments, shares and saves">{{ acted }} interactions</span>
             }
           </span>

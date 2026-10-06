@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.109.0
+
+- **fix** — the ordering by average watch time is gone, and the one by
+  interactions now reads numbers that exist. Both were sorting on metrics
+  Instagram had never sent: what goes out nightly is a carousel of photographs,
+  which has no watch time, so the reel metrics are refused and the basic set
+  comes back instead. Checked against the stored insights — `reach`, `likes`,
+  `comments` and `saved` on all fifty, `ig_reels_avg_watch_time` and
+  `total_interactions` on none.
+- **feat** — *Most interactions* adds up likes, comments, shares and saves,
+  which is that quantity by its own definition, and the row shows the same
+  figure. The watch-time reading beside each painting is gone with the ordering.
+
 ## 1.108.0
 
 - **feat** — *Oldest first* in the catalogue, beside the other orderings.

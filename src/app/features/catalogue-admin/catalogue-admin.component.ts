@@ -25,13 +25,14 @@ import { NETWORKS } from './networks';
 /**
  * How the list is arranged.
  *
- * The three that end in a metric are what Instagram said: the reels were being
- * tuned on taste, with the numbers that settle it sitting in an app nobody
- * opened. `watched` is the one that answers the question the others cannot —
- * whether a reel is being left early, which is the difference between a bad
- * opening and a bad length.
+ * The two that end in a metric are what Instagram said, and they are the two it
+ * actually answers with. There was a third, by average watch time, which never
+ * worked and could not have: what goes out nightly is a carousel of
+ * photographs, and a photograph has no watch time. Instagram refuses the reel
+ * metrics for it and answers with the basic set, so the ordering had no number
+ * to read on any of the fifty posts it was offered.
  */
-type Order = 'year' | 'posted' | 'reach' | 'watched' | 'liked';
+type Order = 'year' | 'posted' | 'reach' | 'liked';
 
 /**
  * What each ordering reads, as a number where **bigger means more** — the
@@ -42,7 +43,6 @@ type Order = 'year' | 'posted' | 'reach' | 'watched' | 'liked';
 const ORDER_LABELS: Record<Order, { more: string; less: string }> = {
   year: { more: 'Newest first', less: 'Oldest first' },
   posted: { more: 'Recently posted', less: 'Posted longest ago' },
-  watched: { more: 'Watched longest', less: 'Watched shortest' },
   reach: { more: 'Reached most', less: 'Reached least' },
   liked: { more: 'Most interactions', less: 'Least interactions' },
 };
@@ -50,8 +50,6 @@ const ORDER_LABELS: Record<Order, { more: string; less: string }> = {
 /** Which stored metric each ordering reads. Instagram's own names. */
 const METRIC_OF: Partial<Record<Order, string>> = {
   reach: 'reach',
-  watched: 'ig_reels_avg_watch_time',
-  liked: 'total_interactions',
 };
 
 /**
@@ -231,10 +229,23 @@ export class CatalogueAdminComponent {
     return this.metrics().get(nft.tokenId)?.[name];
   }
 
-  /** Watch time arrives in milliseconds and means nothing at that precision. */
-  protected watchSeconds(nft: Nft): string | undefined {
-    const ms = this.metric(nft, 'ig_reels_avg_watch_time');
-    return ms === undefined ? undefined : (ms / 1000).toFixed(1);
+  /**
+   * What a painting's post provoked, added up.
+   *
+   * `total_interactions` is a reel metric and Instagram never returns it for a
+   * carousel of photographs — it was stored on none of the fifty posts, so the
+   * ordering that read it did nothing. These four are what it does return, and
+   * their sum is the same quantity by its own definition.
+   */
+  protected interactions(nft: Nft): number | undefined {
+    const metrics = this.metrics().get(nft.tokenId);
+    if (!metrics) return undefined;
+
+    const parts = ['likes', 'comments', 'shares', 'saved']
+      .map((name) => metrics[name])
+      .filter((value): value is number => typeof value === 'number');
+
+    return parts.length ? parts.reduce((all, one) => all + one, 0) : undefined;
   }
 
   protected readonly rows = computed<Nft[]>(() => {
@@ -271,6 +282,8 @@ export class CatalogueAdminComponent {
       const at = this.postedIndex().get(nft.tokenId)?.at;
       return at === undefined ? undefined : -at;
     }
+
+    if (order === 'liked') return this.interactions(nft);
 
     const metric = METRIC_OF[order];
     return metric ? this.metrics().get(nft.tokenId)?.[metric] : undefined;

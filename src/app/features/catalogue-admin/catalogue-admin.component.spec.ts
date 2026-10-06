@@ -493,14 +493,21 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
     expect(label('reach')).toBe('Reached most');
   });
 
-  it('puts the longest watched first', () => {
+  /**
+   * `total_interactions` is a reel metric. What goes out nightly is a carousel
+   * of photographs, Instagram refuses the reel metrics for one and answers with
+   * the basic set — so the ordering read a number that was stored on none of
+   * the fifty posts. These four are what it does send, and their sum is the
+   * same quantity by its own definition.
+   */
+  it('adds up what a post provoked, from the metrics Instagram actually sends', () => {
     build([
-      insight('1', { ig_reels_avg_watch_time: 1000 }),
-      insight('3', { ig_reels_avg_watch_time: 9000 }),
-      insight('2', { ig_reels_avg_watch_time: 5000 }),
+      insight('1', { likes: 1, comments: 1, saved: 1 }),
+      insight('3', { likes: 20, comments: 5, shares: 2, saved: 3 }),
+      insight('2', { likes: 10, comments: 1, saved: 0 }),
     ]);
 
-    arrange('watched');
+    arrange('liked');
 
     expect(order()).toEqual(['3', '2', '1']);
   });
@@ -549,12 +556,9 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
   });
 
   it('keeps the never-posted at the end either way round for every metric', () => {
-    build([
-      insight('2', { ig_reels_avg_watch_time: 9000, total_interactions: 40 }),
-      insight('3', { ig_reels_avg_watch_time: 1000, total_interactions: 5 }),
-    ]);
+    build([insight('2', { reach: 90, likes: 40 }), insight('3', { reach: 10, likes: 5 })]);
 
-    for (const how of ['watched', 'liked']) {
+    for (const how of ['reach', 'liked']) {
       arrange(how);
       expect(order()[2]).toBe('1');
       arrange(how);
@@ -569,7 +573,7 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
     const buttons = [...fixture.nativeElement.querySelectorAll('button')].map((b: HTMLElement) =>
       b.textContent?.trim()
     );
-    expect(buttons).not.toContain('Watched longest');
+    expect(buttons).not.toContain('Reached most');
   });
 
   it('offers them once there is something to sort by', () => {
@@ -578,7 +582,7 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
     const buttons = [...fixture.nativeElement.querySelectorAll('button')].map((b: HTMLElement) =>
       b.textContent?.trim()
     );
-    expect(buttons).toContain('Watched longest');
+    expect(buttons).toContain('Reached most');
   });
 
   /**
@@ -596,11 +600,19 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
     expect(component.noNumbers()).toBe(true);
   });
 
-  it('shows the watch time on the row, in seconds rather than milliseconds', () => {
-    build([insight('1', { ig_reels_avg_watch_time: 4200, reach: 300 })]);
+  it('shows on the row what the post reached and provoked', () => {
+    build([insight('1', { reach: 300, likes: 20, comments: 3, saved: 1 })]);
 
     const shown = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(shown).toContain('4.2s');
     expect(shown).toContain('300 reached');
+    expect(shown).toContain('24 interactions');
+  });
+
+  /** Nothing of its own to say is not a nought: the row simply stays quiet. */
+  it('says nothing about a painting Instagram has no numbers for', () => {
+    build([insight('2', { reach: 300 })]);
+
+    const rows = [...fixture.nativeElement.querySelectorAll('.cat-metrics')];
+    expect(rows.length).toBe(1);
   });
 });
