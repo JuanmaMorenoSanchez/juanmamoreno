@@ -5,6 +5,25 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.108.0
+
+- **feat** — *Oldest first* in the catalogue, beside the other orderings.
+  *Newest* already arranged by year, so what was missing was the direction
+  rather than the ordering: the early work, which is otherwise the half you
+  scroll to reach. A painting with no year goes to the end rather than to the
+  front as year nought.
+
+## 1.108.0
+
+- **feat** — every ordering in the catalogue turns round when its button is
+  pressed again, and says which way it is pointing: *Reached most* becomes
+  *Reached least*, *Newest first* becomes *Oldest first*. One button per
+  ordering now, rather than two for the two ends of one.
+- **feat** — what has no answer stays at the end whichever way round. "Least
+  reached" is a statement about paintings that were posted; one that was never
+  posted is not the least reached of them, so turning the order round never
+  brings it to the front.
+
 ## 1.107.1
 
 - **chore** — the title of the product page comes after *Where I come from*,

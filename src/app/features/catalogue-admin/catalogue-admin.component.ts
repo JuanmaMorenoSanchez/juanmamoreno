@@ -31,7 +31,21 @@ import { NETWORKS } from './networks';
  * whether a reel is being left early, which is the difference between a bad
  * opening and a bad length.
  */
-type Order = 'newest' | 'posted' | 'reach' | 'watched' | 'liked';
+type Order = 'year' | 'posted' | 'reach' | 'watched' | 'liked';
+
+/**
+ * What each ordering reads, as a number where **bigger means more** — the
+ * newest year, the most recent post, the largest metric. That one convention is
+ * what lets a single comparator serve every button and lets "descending" mean
+ * the same thing on all of them.
+ */
+const ORDER_LABELS: Record<Order, { more: string; less: string }> = {
+  year: { more: 'Newest first', less: 'Oldest first' },
+  posted: { more: 'Recently posted', less: 'Posted longest ago' },
+  watched: { more: 'Watched longest', less: 'Watched shortest' },
+  reach: { more: 'Reached most', less: 'Reached least' },
+  liked: { more: 'Most interactions', less: 'Least interactions' },
+};
 
 /** Which stored metric each ordering reads. Instagram's own names. */
 const METRIC_OF: Partial<Record<Order, string>> = {
@@ -161,7 +175,14 @@ export class CatalogueAdminComponent {
   }
 
   protected readonly term = signal('');
-  protected readonly order = signal<Order>('newest');
+  protected readonly order = signal<Order>('year');
+
+  /**
+   * Which way the chosen ordering points. Pressing the button that is already
+   * on turns it round rather than doing nothing, which is the only press that
+   * had no answer before.
+   */
+  protected readonly descending = signal(true);
 
   /** Where each painting sits in what has been posted, and where it can be seen. */
   private readonly postedIndex = computed(() => {
@@ -218,7 +239,6 @@ export class CatalogueAdminComponent {
 
   protected readonly rows = computed<Nft[]>(() => {
     const term = this.term().trim().toLowerCase();
-    const posted = this.postedIndex();
 
     const found = this.all().filter(
       (nft) =>
@@ -228,40 +248,61 @@ export class CatalogueAdminComponent {
         this.trait(nft, VALIDTRAITS.YEAR).includes(term)
     );
 
-    if (this.order() === 'posted') {
-      // What has been on Instagram, in the order it went out, and everything
-      // else after it. Never dropped from the list: a painting that has not
-      // been posted is the interesting one when deciding what to post next.
-      return [...found].sort((a, b) => {
-        const left = posted.get(a.tokenId)?.at ?? Number.MAX_SAFE_INTEGER;
-        const right = posted.get(b.tokenId)?.at ?? Number.MAX_SAFE_INTEGER;
-        return left - right || Number(b.tokenId) - Number(a.tokenId);
-      });
-    }
-
-    // By what Instagram said, biggest first. A painting with no number is not a
-    // painting with a nought: it goes to the end rather than to the bottom of
-    // the ranking, because never posted and posted-and-ignored are different
-    // things and only one of them is a verdict.
-    const metric = METRIC_OF[this.order()];
-    if (metric) {
-      const known = this.metrics();
-      return [...found].sort((a, b) => {
-        const left = known.get(a.tokenId)?.[metric];
-        const right = known.get(b.tokenId)?.[metric];
-        if (left === undefined && right === undefined) return Number(b.tokenId) - Number(a.tokenId);
-        if (left === undefined) return 1;
-        if (right === undefined) return -1;
-        return right - left;
-      });
-    }
-
-    return [...found].sort(
-      (a, b) =>
-        Number(this.trait(b, VALIDTRAITS.YEAR)) - Number(this.trait(a, VALIDTRAITS.YEAR)) ||
-        Number(b.tokenId) - Number(a.tokenId)
-    );
+    return this.inOrder(found, this.order(), this.descending());
   });
+
+  /**
+   * One painting's standing under one ordering, as a number where bigger means
+   * more, or nothing at all when there is no answer.
+   *
+   * Nothing is not nought. A painting that was never posted has no reach, and a
+   * painting posted and ignored has a reach of nought; ranking them together
+   * would turn an absence into a verdict.
+   */
+  private standing(nft: Nft, order: Order): number | undefined {
+    if (order === 'year') {
+      const year = Number(this.trait(nft, VALIDTRAITS.YEAR));
+      return Number.isFinite(year) ? year : undefined;
+    }
+
+    if (order === 'posted') {
+      // The list arrives newest first, so a low index is a recent post: negated
+      // so that bigger means more recent, like every other ordering here.
+      const at = this.postedIndex().get(nft.tokenId)?.at;
+      return at === undefined ? undefined : -at;
+    }
+
+    const metric = METRIC_OF[order];
+    return metric ? this.metrics().get(nft.tokenId)?.[metric] : undefined;
+  }
+
+  /**
+   * The rows arranged, whichever way round, with what has no answer at the end.
+   *
+   * The end, in both directions. Turning the order round must not bring the
+   * never-posted to the front: "least reached" is a statement about paintings
+   * that were posted, and a painting that was never posted is not the least
+   * reached of them — it is not in the running at all.
+   */
+  private inOrder(rows: Nft[], order: Order, descending: boolean): Nft[] {
+    return [...rows].sort((a, b) => {
+      const left = this.standing(a, order);
+      const right = this.standing(b, order);
+
+      if (left === undefined && right === undefined) return Number(b.tokenId) - Number(a.tokenId);
+      if (left === undefined) return 1;
+      if (right === undefined) return -1;
+
+      const between = descending ? right - left : left - right;
+      return between || Number(b.tokenId) - Number(a.tokenId);
+    });
+  }
+
+  /** What a button says: where it points now, or where it would point. */
+  protected label(order: Order): string {
+    const descending = this.order() === order ? this.descending() : true;
+    return descending ? ORDER_LABELS[order].more : ORDER_LABELS[order].less;
+  }
 
   /** Whether anything at all has numbers, so the controls can say why not. */
   protected readonly noNumbers = computed(() => this.metrics().size === 0);
@@ -306,7 +347,14 @@ export class CatalogueAdminComponent {
   }
 
   protected arrange(order: Order): void {
+    if (this.order() === order) {
+      this.descending.update((was) => !was);
+      return;
+    }
+    // A new ordering starts at its "most" end, which is what the button says
+    // before it is pressed.
     this.order.set(order);
+    this.descending.set(true);
   }
 
   protected toggleOpen(nft: Nft): void {

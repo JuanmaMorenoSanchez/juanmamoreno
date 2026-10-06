@@ -22,15 +22,21 @@
       />
     </label>
 
+    <!--
+      One button per ordering, and pressing the one that is already on turns it
+      round. Two buttons for the two ends of the same ordering was a row of
+      controls that said the same thing twice.
+    -->
     <span class="cat-orders" role="group" aria-label="Order">
       <button
         type="button"
         class="cat-order"
-        [class.is-on]="order() === 'newest'"
-        [attr.aria-pressed]="order() === 'newest'"
-        (click)="arrange('newest')"
+        [class.is-on]="order() === 'year'"
+        [attr.aria-pressed]="order() === 'year'"
+        (click)="arrange('year')"
+        title="By year — press again to turn it round"
       >
-        Newest
+        {{ label('year') }}
       </button>
       <button
         type="button"
@@ -38,8 +44,9 @@
         [class.is-on]="order() === 'posted'"
         [attr.aria-pressed]="order() === 'posted'"
         (click)="arrange('posted')"
+        title="When it last went out — press again to turn it round"
       >
-        Recently posted
+        {{ label('posted') }}
       </button>
       <!--
         What Instagram said, which is the point of having asked. Shown only once
@@ -55,7 +62,7 @@
           (click)="arrange('watched')"
           title="Average watch time — whether a reel is being left early"
         >
-          Watched longest
+          {{ label('watched') }}
         </button>
         <button
           type="button"
@@ -63,8 +70,9 @@
           [class.is-on]="order() === 'reach'"
           [attr.aria-pressed]="order() === 'reach'"
           (click)="arrange('reach')"
+          title="How far it reached — press again to turn it round"
         >
-          Reached most
+          {{ label('reach') }}
         </button>
         <button
           type="button"
@@ -72,8 +80,9 @@
           [class.is-on]="order() === 'liked'"
           [attr.aria-pressed]="order() === 'liked'"
           (click)="arrange('liked')"
+          title="Likes, comments, shares and saves — press again to turn it round"
         >
-          Most interactions
+          {{ label('liked') }}
         </button>
       }
     </span>

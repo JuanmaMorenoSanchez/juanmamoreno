@@ -438,6 +438,61 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
   const arrange = (how: string) =>
     (fixture.componentInstance as unknown as { arrange: (o: string) => void }).arrange(how);
 
+  const label = (how: string) =>
+    (fixture.componentInstance as unknown as { label: (o: string) => string }).label(how);
+
+  /**
+   * One button per ordering, and pressing it again turns it round. Two buttons
+   * for the two ends of one ordering said the same thing twice.
+   */
+  it('arranges by year, and turns round when pressed again', () => {
+    build([]);
+
+    // Year is where the page opens, newest first, so the first press is already
+    // the second state of that button.
+    expect(order()).toEqual(['3', '2', '1']);
+
+    arrange('year');
+    expect(order()).toEqual(['1', '2', '3']);
+
+    arrange('year');
+    expect(order()).toEqual(['3', '2', '1']);
+  });
+
+  /** A different ordering starts where its own button says it will. */
+  it('starts a new ordering at the end its label promises', () => {
+    build([insight('1', { reach: 10 }), insight('2', { reach: 90 }), insight('3', { reach: 50 })]);
+
+    arrange('year');
+    arrange('year'); // now pointing the other way
+    arrange('reach');
+
+    expect(order()).toEqual(['2', '3', '1']);
+    expect(label('reach')).toBe('Reached most');
+  });
+
+  /** The button says where the list points, so it can be read without pressing. */
+  it('says which way it is pointing', () => {
+    build([]);
+
+    expect(label('year')).toBe('Newest first');
+    arrange('year');
+    expect(label('year')).toBe('Oldest first');
+    arrange('year');
+    expect(label('year')).toBe('Newest first');
+  });
+
+  /** An ordering that is not on says where it would go, not where it last was. */
+  it('shows an ordering that is off at its own starting end', () => {
+    build([insight('1', { reach: 10 })]);
+
+    arrange('reach');
+    arrange('reach'); // reach now points the other way
+    arrange('year');
+
+    expect(label('reach')).toBe('Reached most');
+  });
+
   it('puts the longest watched first', () => {
     build([
       insight('1', { ig_reels_avg_watch_time: 1000 }),
@@ -474,6 +529,37 @@ describe('CatalogueAdminComponent — arranging by what Instagram said', () => {
 
     expect(order()[0]).toBe('2');
     expect(order().slice(1).sort()).toEqual(['1', '3']);
+  });
+
+  /**
+   * The point of the whole arrangement. "Least reached" is a statement about
+   * paintings that were posted; one that was never posted is not the least
+   * reached of them, it is not in the running — so turning the order round must
+   * not bring it to the front.
+   */
+  it('keeps the never-posted at the end when the order is turned round', () => {
+    build([insight('2', { reach: 90 }), insight('3', { reach: 10 })]);
+
+    arrange('reach');
+    expect(order()).toEqual(['2', '3', '1']);
+
+    arrange('reach');
+    expect(order()).toEqual(['3', '2', '1']);
+    expect(order()[2]).toBe('1');
+  });
+
+  it('keeps the never-posted at the end either way round for every metric', () => {
+    build([
+      insight('2', { ig_reels_avg_watch_time: 9000, total_interactions: 40 }),
+      insight('3', { ig_reels_avg_watch_time: 1000, total_interactions: 5 }),
+    ]);
+
+    for (const how of ['watched', 'liked']) {
+      arrange(how);
+      expect(order()[2]).toBe('1');
+      arrange(how);
+      expect(order()[2]).toBe('1');
+    }
   });
 
   /** A control that silently does nothing is worse than one that is not there. */
