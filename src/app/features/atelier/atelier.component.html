@@ -33,8 +33,9 @@
   <section class="atelier-step">
     <h2>The painting</h2>
     <p class="atelier-hint">
-      It stays in this browser. What goes out to a model is a copy at 1024px, and the mask that
-      comes back is scaled up over the original — so the layer that is saved is full size.
+      It stays in this browser. What goes out to a model is a small copy, and what comes back is an
+      outline in numbers rather than a picture — so the cut is made here, on the full-size painting,
+      and nothing is scaled up.
     </p>
 
     <div class="atelier-row">
@@ -110,8 +111,9 @@
       </h2>
       <p class="atelier-hint">
         @if (refining() !== undefined) {
-          Paint to add to this layer, hold the erase toggle to take away. The model gets you most of
-          the way in two seconds; this is the thirty that make the edge stop looking cut out.
+          Paint to add to this layer, hold the erase toggle to take away. On a painting the model
+          can read, this is the thirty seconds that stop the edge looking cut out; on one it cannot,
+          it is the whole cut.
         } @else {
           Move the pointer over it. Nearer layers move more — which is the only thing here no model
           can work out from a painting, so it is the one you set by hand.
@@ -239,6 +241,20 @@
             <span class="atelier-spin" aria-hidden="true"></span>
           }
           Find layers <app-cost operation="segment" />
+        </button>
+        <!--
+          The way through when the model cannot read the painting. It traced a
+          sleeping cat and could not find a girl among two inverted figures, so
+          the stack can start with nothing in it and the brush does the rest.
+        -->
+        <button
+          type="button"
+          class="atelier-link"
+          [disabled]="busy()"
+          (click)="drawLayer()"
+          title="Start an empty layer and cut it with the brush — no model, no cost"
+        >
+          Or cut one by hand
         </button>
       </div>
     </section>

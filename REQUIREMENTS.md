@@ -2247,6 +2247,20 @@ The softness of the edge is a fraction of the painting's longest side rather
 than a flat pixel and a half, which on a photograph three thousand across was no
 softness at all: the layer read as cut out with scissors and stuck on.
 
+**A layer can be cut by hand, with no model involved.** The model traced a
+sleeping cat on a plain ground and could not read a canvas of two inverted
+figures with limbs crossing it: asked for the girl it outlined the arm, asked
+for the field it outlined the girl, and one answer in six was usable. Neither
+the prompt, nor the size sent, nor temperature moved it — at temperature 0 it
+was wrong in the same way every time, which is worse, because a retry at least
+rolls again.
+
+So the stack can start with nothing in it. An empty stencil at the painting's
+size goes straight to the brush — the same brush that corrects what the model
+finds, so from there on there is no difference between a layer it cut and a
+layer he did. Such a layer keeps no outline, there being none to keep, which is
+also what tells the two apart in a manifest afterwards.
+
 **An outline of hundreds of points is refused, and that is not a cosmetic
 judgement.** Measured over two paintings, this model answers in twenty to forty
 points when it has found the thing — twenty round a cat, twenty-two round a
@@ -2282,7 +2296,10 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (42 tests, including `looksTraced` "keeps an
+*Proven by:* `atelier.component.spec.ts` "starts an empty layer and hands it to
+the brush", "names a hand-cut layer when nothing was typed" and "keeps no
+outline for a layer nobody traced"; `cutting.spec.ts` (42 tests, including
+`looksTraced` "keeps an
 outline the model was sure of" and "refuses the hundreds of points it answers
 with when it has not found it", with the real counts from both paintings;
 `smoothOutline` "passes

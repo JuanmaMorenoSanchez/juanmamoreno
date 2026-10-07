@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.113.0
+
+- **feat** — a layer can be cut by hand. *Or cut one by hand* starts an empty
+  stencil and hands it straight to the brush, so a painting the model cannot
+  read no longer blocks the atelier. It costs nothing and asks nothing.
+- **fix** — the page no longer claims the mask comes back as a picture and is
+  scaled up over the original. It has been an outline in numbers since the
+  polygon change, and the cut is made here at full size.
+
 ## 1.112.0
 
 - **feat** — an outline of hundreds of points is refused rather than cut, and

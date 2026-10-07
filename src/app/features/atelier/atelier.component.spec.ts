@@ -517,6 +517,50 @@ describe('AtelierComponent, the stage', () => {
   });
 
   /**
+   * The way through when the model cannot read the painting. It traced a
+   * sleeping cat and could not find a girl among two inverted figures — asked
+   * for the girl it offered the arm, asked for the field it offered the girl.
+   */
+  it('starts an empty layer and hands it to the brush', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    component.labels.set('the girl');
+
+    component.drawLayer();
+
+    expect(component.layers()).toHaveLength(1);
+    expect(component.layers()[0].label).toBe('the girl');
+    // Straight into the brush, which is the only way to put anything in it.
+    expect(component.refining()).toBe(0);
+  });
+
+  /** A layer with no name is still a layer; it is the stack that needs one. */
+  it('names a hand-cut layer when nothing was typed', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+    component.labels.set('');
+
+    component.drawLayer();
+    component.drawLayer();
+
+    expect(component.layers().map((layer) => layer.label)).toEqual(['layer 1', 'layer 2']);
+  });
+
+  /**
+   * No model was asked, so there is no outline to keep. The manifest holds one
+   * only for layers cut from one, which is what tells the two apart later.
+   */
+  it('keeps no outline for a layer nobody traced', () => {
+    const component = fixture.componentInstance;
+    component['putOnBench'](picture(), 'the painting');
+
+    component.drawLayer();
+
+    expect(component.layers()[0].points).toBeUndefined();
+    expect(component.layers()[0].depth).toBe(1);
+  });
+
+  /**
    * The black stage.
    *
    * An outline so small it is a speck cuts a layer with nothing in it. Kept, it

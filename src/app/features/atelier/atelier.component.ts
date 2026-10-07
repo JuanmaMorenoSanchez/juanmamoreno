@@ -467,6 +467,50 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  /**
+   * A layer cut by hand, for a painting no model can read.
+   *
+   * The model traced a sleeping cat on a plain ground and could not find a girl
+   * in a canvas of two inverted figures with limbs crossing the frame — on that
+   * painting it offered the arm when asked for the girl, and the girl when asked
+   * for the field. No prompt, size or temperature moved it.
+   *
+   * So the stack can start with nothing in it. This makes an empty stencil at
+   * the painting's size and hands it straight to the brush, which is the same
+   * brush that corrects what the model finds: from here on there is no
+   * difference between a layer it cut and a layer he did.
+   */
+  drawLayer(): void {
+    const painting = this.painting();
+    if (!painting) return;
+
+    const blank = document.createElement('canvas');
+    blank.width = painting.naturalWidth;
+    blank.height = painting.naturalHeight;
+
+    const drafts = [...this.layers()];
+    const named = this.labels()
+      .split(',')
+      .map((label) => label.trim())
+      .filter(Boolean);
+
+    drafts.push({
+      label: named[0] ?? `layer ${drafts.length + 1}`,
+      // Nearest, because a layer somebody cuts by hand is usually the thing
+      // they want to move. It is a slider away from anything else.
+      depth: 1,
+      mask: blank,
+      cut: cutLayer(painting, blank, painting.naturalWidth, painting.naturalHeight),
+      saved: false,
+    });
+
+    this.problem.set('');
+    this.setLayers(drafts);
+    // `setLayers` stops the brush, having just replaced the stack it was working
+    // on. This layer exists to be brushed, so it is started again here.
+    this.refining.set(drafts.length - 1);
+  }
+
   /** What was behind one layer, so moving it does not reveal a hole. */
   async fillBehind(index: number): Promise<void> {
     const painting = this.painting();
