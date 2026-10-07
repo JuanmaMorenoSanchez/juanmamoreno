@@ -311,6 +311,38 @@ export function stencilFromPoints(
 }
 
 /**
+ * How many points an outline may have and still be one.
+ *
+ * Measured, not reasoned. Asked about two paintings, this model answers in
+ * twenty to forty points when it has found the thing — twenty round a cat,
+ * twenty-two round a girl, thirty-nine round a field — and fills the budget
+ * with hundreds when it has not: a hundred and six, a hundred and sixty-seven,
+ * two hundred and twenty-nine, three hundred and forty-eight, every one of them
+ * a ramble that doubles back through itself and follows nothing.
+ *
+ * More points is the symptom, never the cure. Asking for sixty produced
+ * twenty-two on the thing it knew and two hundred and twenty-nine on the thing
+ * it did not.
+ *
+ * A test for crossing was tried first and rejected: an outline that passes
+ * behind an arm genuinely touches itself, so it threw away a good cut of the
+ * field. This is a cruder rule that is right about every answer either model
+ * has given so far.
+ */
+export const OUTLINE_MAX_POINTS = 60;
+
+/**
+ * Whether this is an outline somebody could have traced.
+ *
+ * Only two ways to fail: enclosing nothing, and rambling. Both produce a layer
+ * that looks deliberate and is wrong, which is worse than a label that reports
+ * finding nothing.
+ */
+export function looksTraced(points: readonly (readonly [number, number])[]): boolean {
+  return points.length >= 3 && points.length <= OUTLINE_MAX_POINTS && outlineArea(points) > 0;
+}
+
+/**
  * Whether an outline is worth cutting with.
  *
  * A polygon can arrive technically well-formed and still be no shape at all —

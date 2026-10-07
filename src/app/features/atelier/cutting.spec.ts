@@ -3,6 +3,8 @@ import {
   coverage,
   featherFor,
   FEATHER_MAX,
+  looksTraced,
+  OUTLINE_MAX_POINTS,
   FEATHER_MIN,
   outlineArea,
   smoothOutline,
@@ -389,5 +391,49 @@ describe('featherFor', () => {
 
   it('is still an edge on a small picture', () => {
     expect(featherFor(100, 80)).toBe(FEATHER_MIN);
+  });
+});
+
+/**
+ * The numbers here are the real ones, from two paintings and this model: the
+ * outlines that followed the thing came back at 20, 22 and 39 points, and the
+ * ones that followed nothing at 106, 167, 229 and 348.
+ */
+describe('looksTraced', () => {
+  const round = (count: number): [number, number][] =>
+    Array.from({ length: count }, (_, at) => {
+      const angle = (at / count) * Math.PI * 2;
+      return [500 + 300 * Math.cos(angle), 500 + 300 * Math.sin(angle)] as [number, number];
+    });
+
+  it('keeps an outline the model was sure of', () => {
+    expect(looksTraced(round(20))).toBe(true);
+    expect(looksTraced(round(22))).toBe(true);
+    expect(looksTraced(round(39))).toBe(true);
+  });
+
+  /** More points is the symptom of a ramble, never the cure for a coarse edge. */
+  it('refuses the hundreds of points it answers with when it has not found it', () => {
+    expect(looksTraced(round(106))).toBe(false);
+    expect(looksTraced(round(167))).toBe(false);
+    expect(looksTraced(round(229))).toBe(false);
+    expect(looksTraced(round(348))).toBe(false);
+  });
+
+  it('refuses what encloses nothing, however few points it has', () => {
+    expect(
+      looksTraced([
+        [0, 0],
+        [500, 0],
+        [1000, 0],
+      ])
+    ).toBe(false);
+    expect(looksTraced([])).toBe(false);
+  });
+
+  it('draws the line where it was measured', () => {
+    expect(OUTLINE_MAX_POINTS).toBe(60);
+    expect(looksTraced(round(OUTLINE_MAX_POINTS))).toBe(true);
+    expect(looksTraced(round(OUTLINE_MAX_POINTS + 1))).toBe(false);
   });
 });

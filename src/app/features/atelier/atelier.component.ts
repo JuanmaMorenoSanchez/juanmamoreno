@@ -26,6 +26,7 @@ import {
   cutLayer,
   depthFor,
   fillsItsBox,
+  looksTraced,
   outlineArea,
   stencilFromPoints,
   layerFile,
@@ -384,6 +385,7 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
         const drafts: Draft[] = [];
         const empty: string[] = [];
         const squares: string[] = [];
+        const rambled: string[] = [];
         for (const [index, cut] of cuts.entries()) {
           // An outline so small it is a speck cuts a layer with nothing in it,
           // which joins the stack and draws nothing: the stage goes black and
@@ -391,6 +393,14 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           // broken rather than as a pass that found nothing.
           if (outlineArea(cut.points) <= 0) {
             empty.push(cut.label);
+            continue;
+          }
+
+          // Hundreds of points is the model rambling rather than tracing — it
+          // answers in twenty or forty when it has found the thing. Drawn, it
+          // is a shape that follows nothing and looks deliberate.
+          if (!looksTraced(cut.points)) {
+            rambled.push(cut.label);
             continue;
           }
 
@@ -431,9 +441,16 @@ export class AtelierComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
 
-        // A box is not a shape, and saying so is the whole point: this is the
-        // model and never the painting, so naming other things will not help.
-        if (squares.length) {
+        // Which is worth saying apart from the rest: naming the thing
+        // differently is the one thing that does help here.
+        if (rambled.length) {
+          this.problem.set(
+            `The outline for ${rambled.join(', ')} wandered rather than traced — ` +
+              `the model answers in twenty or forty points when it has found the thing, and ` +
+              `in hundreds when it has not. Try naming it more plainly, or something ` +
+              `larger and more separate in the painting.`
+          );
+        } else if (squares.length) {
           this.problem.set(
             `The model returned a box rather than a shape for ${squares.join(', ')}, ` +
               `so cutting it would have given you a rectangle of the painting. This is the ` +

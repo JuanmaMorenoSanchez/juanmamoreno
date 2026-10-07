@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 1.112.0
+
+- **feat** — an outline of hundreds of points is refused rather than cut, and
+  the page says which label rambled. Measured over two paintings, the model
+  answers in twenty to forty points when it has found the thing and in hundreds
+  when it has not — 106, 167, 229, 348, every one a shape that follows nothing.
+  More points is the symptom, never the cure.
+- **chore** — a self-crossing test was tried first and rejected: an outline that
+  passes behind an arm genuinely touches itself, and it threw away a good cut of
+  a field.
+
 ## 1.111.0
 
 - **feat** — a cut layer's edge is a curve rather than twenty straight runs. A

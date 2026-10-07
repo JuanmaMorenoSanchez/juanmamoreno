@@ -2247,6 +2247,18 @@ The softness of the edge is a fraction of the painting's longest side rather
 than a flat pixel and a half, which on a photograph three thousand across was no
 softness at all: the layer read as cut out with scissors and stuck on.
 
+**An outline of hundreds of points is refused, and that is not a cosmetic
+judgement.** Measured over two paintings, this model answers in twenty to forty
+points when it has found the thing — twenty round a cat, twenty-two round a
+girl, thirty-nine round a field — and fills its budget with hundreds when it has
+not: 106, 167, 229 and 348, every one of them a shape that doubles back through
+itself and follows nothing. More points is the symptom, never the cure; asking
+for sixty produced twenty-two on the thing it knew and two hundred and
+twenty-nine on the thing it did not. A test for self-crossing was tried first
+and rejected, because an outline passing behind an arm genuinely touches itself
+and the test threw away a good cut of the field. The page says which label
+rambled, because naming that thing differently is what helps.
+
 An outline that encloses nothing is refused before anything is drawn, and one
 that fills its own bounding box is refused after — the first would put an empty
 layer on the stage, the second would cut a rectangle of the painting, which is
@@ -2270,7 +2282,10 @@ trained on photographs and predict stylised work as flat planes, so a painting
 is exactly the case they get wrong. Segmentation survives stylisation, and the
 one judgement no model can make — which layer is in front — is a drag of the
 hand.
-*Proven by:* `cutting.spec.ts` (38 tests, including `smoothOutline` "passes
+*Proven by:* `cutting.spec.ts` (42 tests, including `looksTraced` "keeps an
+outline the model was sure of" and "refuses the hundreds of points it answers
+with when it has not found it", with the real counts from both paintings;
+`smoothOutline` "passes
 through every point the model gave" and "stays close to the shape, even at a
 right angle"; `featherFor` "softens a big painting more than a small one";
 `outlineArea` "measures a
