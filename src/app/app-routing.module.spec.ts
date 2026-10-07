@@ -61,7 +61,6 @@ describe('the route table', () => {
       ['es/publish', '/publish'],
       ['es/pendingmint', '/pendingmint'],
       ['es/catalogue', '/catalogue'],
-      ['es/atelier', '/atelier'],
     ]) {
       expect(at(spanish)?.redirectTo).toBe(english);
     }
@@ -76,7 +75,7 @@ describe('the route table', () => {
     const parent = routes.findIndex((route) => route.path === 'es');
 
     expect(parent).toBeGreaterThan(-1);
-    for (const spanish of ['es/mint', 'es/studio', 'es/door', 'es/atelier']) {
+    for (const spanish of ['es/mint', 'es/studio', 'es/door']) {
       expect(routes.findIndex((route) => route.path === spanish)).toBeLessThan(parent);
     }
   });

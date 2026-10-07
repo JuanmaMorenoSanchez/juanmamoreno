@@ -42,7 +42,6 @@ export interface CronRun {
 export interface Activity {
   runs: CronRun[];
   beats: Heartbeat[];
-  spend: { spent: number; ceiling: number; left: number };
 }
 
 /** What one painting has done on Instagram. */

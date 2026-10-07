@@ -208,7 +208,6 @@ describe('TopMenuComponent workshop menu', () => {
       'Reels waiting',
       'Certificates waiting',
       'Catalogue',
-      'Atelier',
       'Sign out',
     ]);
   });
@@ -227,7 +226,6 @@ describe('TopMenuComponent workshop menu', () => {
       '/publish',
       '/pendingmint',
       '/catalogue',
-      '/atelier',
     ]);
   });
 

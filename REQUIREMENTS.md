@@ -572,18 +572,13 @@ prompt.
 *Proven by:* `admin-auth.service.spec.ts` "remembers the session"
 
 ### R18 — The page a certificate is prepared on is not public · met
-`/mint`, `/door`, `/publish`, `/pendingmint`, `/catalogue` and `/atelier` are
+`/mint`, `/door`, `/publish`, `/pendingmint`, `/catalogue` and `/activity` are
 never prerendered, are excluded from the sitemap, are disallowed in robots.txt
 and carry `noindex`. Every one of them, not the three that existed when this
-was written: the last three arrived later and were missing from robots.txt
-until 1.95.0, which is the same way the build's own list of guarded addresses
-had failed — quietly, by not growing. `/studio`, which is
-what `/mint` was called before the atelier arrived and which still redirects to
-it, is disallowed too — it is still a way in.
-
-The page was renamed because `/studio` and `/atelier` read as the same room, and
-they are not: one turns a photograph into a certificate, the other cuts a
-painting into layers.
+was written: the later ones were missing from robots.txt until 1.95.0, which is
+the same way the build's own list of guarded addresses had failed — quietly, by
+not growing. `/studio`, which is what `/mint` was called before and which still
+redirects to it, is disallowed too — it is still a way in.
 *Proven by:* `app.routes.server.ts`, `robots.txt`, `verify-render` (none of them
 appears among the built pages)
 
@@ -2204,168 +2199,16 @@ list", "shows the year the painting was made, not the current one" and "shows
 the measurements it was written with"), which render the form rather than ask
 the class — the only place this fault was visible
 
-### R123 — A painting can be cut into layers that move apart · met
-The atelier takes one picture — a catalogue number, or a file from the laptop —
-and puts it on a bench. The painting and every variant made from it sit there
-together, one of them chosen, and the two things that can be done — ask for a
-variant in words, or cut into layers — both act on whichever is chosen, in
-either order and neither required. So a variant can be cut up, and a variant of
-a variant asked for. A variant can be downloaded
-where it is made without being kept in the piece — the two are different
-intentions, and one worth using elsewhere is not always one worth saving here. Cutting asks a model for a
-mask per thing named and cuts the full-size original with each; depth and
-stacking order are set by hand. A piece is layers, or kept variants, or both.
-
-A number is enough because the catalogue is already in the session and already
-holds where each painting's picture is and which copy is the best one; it is
-read through `ARTWORK_PORT` like everywhere else, so the atelier knows the name
-of no bucket. The file picker stays for the studio photographs that were never
-in the catalogue.
-
-**The shape arrives as numbers, and is drawn at full size.** The model is asked
-for a polygon rather than a mask image: `[x, y]` points, each 0–1000 of the whole
-painting. Asked for an image it spells a png out as text and gets the bytes
-wrong — the backend's B65 has the measurements. Being normalised, the outline
-found on a small copy is filled straight onto the full-resolution painting with
-a path, so nothing is scaled up, nothing blurs, and the browser's own
-antialiasing gives the edge.
-
-The outline is kept with the layer when a piece is saved. The png is the layer at
-one resolution; the outline is its shape at any of them, so a layer can be cut
-again from a better photograph without asking the model a second time, and it
-costs a couple of hundred numbers beside a file of a megabyte.
-
-**The outline is drawn as a curve, and the edge is softened in proportion.**
-Twenty points round an animal is a good outline and a visibly faceted one, so a
-cardinal spline bends the runs between them without moving any point the model
-gave — nothing is invented about where the edge is, only about how it travels
-between the places the model was sure of. It is run tighter than the usual
-Catmull-Rom because at a right angle that swings an eighth of the run wide,
-which on a cut layer is a bulge of painting that was never inside the outline.
-
-The softness of the edge is a fraction of the painting's longest side rather
-than a flat pixel and a half, which on a photograph three thousand across was no
-softness at all: the layer read as cut out with scissors and stuck on.
-
-**A layer can be cut by hand, with no model involved.** The model traced a
-sleeping cat on a plain ground and could not read a canvas of two inverted
-figures with limbs crossing it: asked for the girl it outlined the arm, asked
-for the field it outlined the girl, and one answer in six was usable. Neither
-the prompt, nor the size sent, nor temperature moved it — at temperature 0 it
-was wrong in the same way every time, which is worse, because a retry at least
-rolls again.
-
-So the stack can start with nothing in it. An empty stencil at the painting's
-size goes straight to the brush — the same brush that corrects what the model
-finds, so from there on there is no difference between a layer it cut and a
-layer he did. Such a layer keeps no outline, there being none to keep, which is
-also what tells the two apart in a manifest afterwards.
-
-**An outline of hundreds of points is refused, and that is not a cosmetic
-judgement.** Measured over two paintings, this model answers in twenty to forty
-points when it has found the thing — twenty round a cat, twenty-two round a
-girl, thirty-nine round a field — and fills its budget with hundreds when it has
-not: 106, 167, 229 and 348, every one of them a shape that doubles back through
-itself and follows nothing. More points is the symptom, never the cure; asking
-for sixty produced twenty-two on the thing it knew and two hundred and
-twenty-nine on the thing it did not. A test for self-crossing was tried first
-and rejected, because an outline passing behind an arm genuinely touches itself
-and the test threw away a good cut of the field. The page says which label
-rambled, because naming that thing differently is what helps.
-
-An outline that encloses nothing is refused before anything is drawn, and one
-that fills its own bounding box is refused after — the first would put an empty
-layer on the stage, the second would cut a rectangle of the painting, which is
-the failure that looks most like success.
-**A layer that cut nothing never reaches the stage.** A mask that survives the
-threshold nowhere cuts a fully transparent layer; kept, it joined the stack and
-drew nothing, so the painting disappeared and the pointer moved layers nobody
-could see. The page read as broken rather than as a pass that found nothing, and
-those two want opposite responses from whoever is looking. Each stencil is now
-measured before it is stacked, on a small copy — measuring a layer of a
-forty-megapixel painting is 160 MB of pixel data to answer a yes-or-no question
-— and on the stencil rather than the cut, because the cut holds a painting that
-came from the bucket cross-origin and reading pixels back out of a canvas it has
-touched throws instead of answering. What cut nothing is named in the message;
-what cut something is stacked. Replacing the stack also stops the brush, which
-would otherwise still point at a layer of the stack before it and draw neither
-the correction nor the preview.
-
-Depth estimation is not used and should not be: monocular depth models are
-trained on photographs and predict stylised work as flat planes, so a painting
-is exactly the case they get wrong. Segmentation survives stylisation, and the
-one judgement no model can make — which layer is in front — is a drag of the
-hand.
-*Proven by:* `atelier.component.spec.ts` "starts an empty layer and hands it to
-the brush", "names a hand-cut layer when nothing was typed" and "keeps no
-outline for a layer nobody traced"; `cutting.spec.ts` (42 tests, including
-`looksTraced` "keeps an
-outline the model was sure of" and "refuses the hundreds of points it answers
-with when it has not found it", with the real counts from both paintings;
-`smoothOutline` "passes
-through every point the model gave" and "stays close to the shape, even at a
-right angle"; `featherFor` "softens a big painting more than a small one";
-`outlineArea` "measures a
-shape as a fraction of the whole picture", "does not care which way round the
-points run" and "is nothing for points in a line, which enclose nothing";
-`stencilFromPoints` "answers a canvas of the size asked for"; and `fillsItsBox`
-"knows a filled box from a shape inside one") for the names the bucket will take,
-the working size a model is billed for, the depth spread, and what has to be
-read correctly about the box the outline comes with — `boxToPixels` "reads a
-box in thousandths onto a picture of any size", "keeps y before x, as the model
-gives them" and "clamps a box that runs off the picture"; and
-`atelier.component.spec.ts` "does not stack a layer that cut nothing, and says
-which" and "stops correcting a layer that no longer exists", which are the two
-ways the stage went black; "asks for a painting before it offers to do
-anything to one", "offers to keep a piece of variants with no layers at all",
-"offers every variant for download, kept or not", "names a downloaded variant
-after the painting and the instruction", "uploads every file the manifest goes
-on to name", and the
-six about naming a painting by its number — "finds the painting without being
-told where it lives", "says so plainly when there is no such painting",
-"tells a catalogue that has not arrived from a number that is wrong", and
-"offers the way round when the picture will not load", which
-is written down because it did not: the kept variants were listed as frames and
-never written, so a piece looked saved while a sketch reading it got filenames
-that were not in the bucket
-
-### R124 — Nothing in the atelier spends money without saying so first · met
-Every button that calls a model carries the price of one press, read from the
-api rather than written into the template. The day's running total is at the
-top of the page, a press the day cannot pay for is refused before it is made,
-and the ceiling is enforced on the server where it cannot be got round.
-
-**This is written down because the lesson was expensive once.** `/vision/search`
-re-ran a reverse image search on read, and a single build made 186 billed calls
-to it. What was missing was not care — it was something in front of the
-spending that answers no on its own.
-*Proven by:* `cost.component.spec.ts` "writes the price beside the button",
-"says nothing at all until it knows the price" and "marks a price the day can
-no longer cover"; `atelier.component.spec.ts` "shows what today has cost so
-far", "will not let a press be made that the day cannot pay for" and "offers no
-way to run the whole catalogue through it". The ceiling itself is enforced in
-the backend and proved there, by `spend-ledger.service.spec.ts` and the
-backend's `atelier.service.spec.ts` under B64 — this page refuses a press
-early so that one does not have to be made to find out, which is the part
-proved here.
-
-### R125 — A saved piece is not a page until somebody says so · met
-`/generative/<id>` draws a sketch that is in the registry and nothing else. A
-piece cut in the atelier is drawn there once a line is added for it, using
-`pieceSketch('<piece id>')` — one line and an import.
+### R125 — An id is not a page until somebody registers it · met
+`/generative/<id>` draws a sketch that is in the registry and nothing else.
+Every sketch is written by hand and added by hand, which is one line.
 
 **It used to resolve for any id at all.** The viewer fell back to building a
-piece sketch for whatever it was given, so saving a piece published a page at a
-public address that nobody had decided to publish — the saving and the
-publishing were the same act, and only one of them was intended.
-
-The machinery is unchanged and still proved: a registered piece fetches its
-manifest, orders its layers and parallaxes them. What changed is that existing
-is no longer enough.
-*Proven by:* `registry.spec.ts` "does not answer for a piece nobody registered",
-which names the piece that is in the bucket today, "holds the sketches that are
-written by hand" and "lists exactly what it holds, for the menu"; and
-`piece.sketch.spec.ts`, which still proves the drawing
+sketch for whatever it was handed, so a page existed at a public address that
+nobody had decided to publish.
+*Proven by:* `registry.spec.ts` "does not answer for an id nobody registered",
+"holds the sketches that are written by hand" and "lists exactly what it holds,
+for the menu"
 
 ### R126 — A painting comes into focus, and does not wash out · met
 Wherever a painting is shown while a better file is still arriving — the hero on
@@ -2433,71 +2276,6 @@ when the sharp file arrives", "still takes the shape from the sharp file when
 the preview could not be read", "takes the shape from the sharp file when the
 frame is the canvas, not the photograph" — which uses 195's own numbers — and
 "leaves the frame alone when the sharp file only rounds differently"
-
-### R128 — The stage shows the painting, whatever has been done to it · met
-Choosing a picture shows it. A pass that finds nothing says so and leaves the
-painting on screen.
-
-**It drew the layers and nothing else.** With none — which is every moment
-between choosing a painting and cutting it — the stage cleared to a dark
-rectangle, so the first thing anybody did produced the first thing that looked
-broken. A pass that found no masks left it dark too, and said nothing, so a
-press that cost money was indistinguishable from a button that did nothing.
-*Proven by:* `atelier.component.spec.ts` "shows the painting as soon as one is
-chosen", which asserts what the stage asks of a context rather than looking at
-pixels, and "says so when a pass finds nothing"
-
-### R129 — What a painting has produced is visible beside it · met
-A painting's row in the catalogue lists every piece made from it: a thumbnail of
-each layer and frame, each one a download named as it is stored, and a control
-that throws the whole piece away after asking.
-
-The listing is fetched once and shared by every row — there are a couple of
-hundred rows and tens of pieces, so a request per row opened would be a request
-to list the same bucket again. A painting with nothing made from it and a
-listing that never arrived are told apart, because they look identical on a row
-with nothing on it and only one of them is fine.
-
-The confirmation is not a formality: these files are the only copy, since the
-cutting that made them was by hand.
-*Proven by:* `derived-assets.component.spec.ts` (8 tests: "shows only what came
-from this painting", "says nothing yet rather than drawing an empty frame",
-"tells a listing that failed from a painting with nothing made from it", "offers
-every file for download, named as it is stored", "asks before throwing a piece
-away, and does nothing when refused", "takes the piece off the list once it is
-gone", "keeps the piece and says so when it would not go" and "asks for the
-listing once however many rows are built")
-
-### R130 — Every operation acts on the picture that is chosen · met
-The painting and every variant made from it sit on one bench, one of them
-chosen. Segmenting, filling in behind a layer and asking for another variant all
-act on the chosen one.
-
-**There was no such thing before.** The page had `painting` and a side-list of
-variants that nothing else could see, so every operation acted on the original
-whether that was what you meant or not — and a variant could not be cut up at
-all. There is no "the painting" now; there is what is on the bench.
-
-A stack is parked on the picture it was cut from rather than held once for the
-page, so clicking between pictures cannot destroy layers that were paid for. A
-variant records which picture it was made from, which is what makes a chain of
-them readable afterwards. Discarding one takes everything made from it along,
-because a variant of a discarded variant has nothing left to be a variant of,
-and the selection falls back to the painting — read before the bench changes,
-since asked afterwards it names whatever has slid into that position.
-
-The strip says how many pixels across each picture is. A variant comes back
-about a thousand where the painting is several thousand, so layers cut from one
-carry less paint: cut the painting for the best layers, cut a variant when what
-it changed is the point. Saying it on the strip puts the trade where the choice
-is made.
-*Proven by:* `atelier.component.spec.ts` "the bench" (8 tests: "cuts whichever
-picture is chosen, not always the painting", "keeps each stack with the picture
-it was cut from", "records which picture a variant was made from", "takes
-anything made from a discarded variant with it", "falls back to the painting
-when the chosen picture is discarded", "clears the bench when a different
-painting arrives", "says how big each picture on the bench is" and "says which
-picture the layers were cut from")
 
 ### R131 — The frame reserves a space without painting one · met
 The box that holds an artwork's footprint declares no background outside

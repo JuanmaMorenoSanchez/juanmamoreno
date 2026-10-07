@@ -19,7 +19,6 @@ describe('ActivityComponent', () => {
       { what: 'Last posted to a network', at: hoursAgo(20), goTo: '/catalogue', state: 'quiet' },
       { what: 'A reel waiting to be looked at', at: null, goTo: '/publish', state: 'quiet' },
     ],
-    spend: { spent: 0.12, ceiling: 5, left: 4.88 },
     ...over,
   });
 
@@ -90,7 +89,6 @@ describe('ActivityComponent', () => {
     );
     expect(links).toContain('/catalogue');
     expect(links).toContain('/publish');
-    expect(links).toContain('/atelier');
   });
 
   /** A run that started and never came back is the thing nothing else sees. */
@@ -214,10 +212,4 @@ describe('ActivityComponent', () => {
     expect(component.ago(hoursAgo(72))).toBe('3 days ago');
   });
 
-  it('shows what the day has cost, since it is the only thing that spends', () => {
-    build(page());
-
-    expect(text()).toContain('$0.12');
-    expect(text()).toContain('$5.00');
-  });
 });

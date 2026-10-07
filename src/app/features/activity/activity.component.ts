@@ -47,7 +47,6 @@ export class ActivityComponent {
 
   readonly beats = computed(() => this.activity()?.beats ?? []);
   readonly runs = computed(() => this.activity()?.runs ?? []);
-  readonly spend = computed(() => this.activity()?.spend);
 
   /** Anything not quiet, which is what the page is for. */
   readonly wrong = computed(() => this.beats().filter((beat) => beat.state !== 'quiet'));

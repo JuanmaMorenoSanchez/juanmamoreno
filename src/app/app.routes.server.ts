@@ -37,8 +37,6 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'es/publish', renderMode: RenderMode.Client },
   { path: 'es/pendingmint', renderMode: RenderMode.Client },
   { path: 'es/catalogue', renderMode: RenderMode.Client },
-  { path: 'atelier', renderMode: RenderMode.Client },
-  { path: 'es/atelier', renderMode: RenderMode.Client },
   { path: 'activity', renderMode: RenderMode.Client },
   { path: 'es/activity', renderMode: RenderMode.Client },
   // `/mint` was `/studio`, and the old address still redirects. A redirect has

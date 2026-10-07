@@ -3,10 +3,10 @@ import { SKETCHES, SKETCH_LIST } from './registry';
 /**
  * Which ids are pages, and which are not.
  *
- * A piece saved in the atelier used to resolve at `/generative/<its id>` by
- * existing — the viewer fell back to building one for any unknown id — so every
- * save published a page nobody had decided to publish. Registering a piece is
- * deliberate now, and this is the line that says so.
+ * An unknown id used to resolve by existing — the viewer fell back to building
+ * a sketch for whatever it was handed — so a page could appear that nobody had
+ * decided to publish. An id that is not registered is not a page, and this is
+ * the line that says so.
  */
 describe('the sketch registry', () => {
   it('holds the sketches that are written by hand', () => {
@@ -19,7 +19,7 @@ describe('the sketch registry', () => {
    * resolving without somebody having added it on purpose, the fallback is
    * back.
    */
-  it('does not answer for a piece nobody registered', () => {
+  it('does not answer for an id nobody registered', () => {
     expect(SKETCHES['rockets-win-i']).toBeUndefined();
     expect(SKETCHES['any-saved-piece']).toBeUndefined();
   });

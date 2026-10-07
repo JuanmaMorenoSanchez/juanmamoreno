@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.0.0
+
+- **break** — the atelier is gone: the page, its route, the cost display, the
+  derived assets beside each painting in the catalogue, the piece sketch that
+  drew a saved piece, and the requirements that described all of it. It had
+  drifted out of focus, and what it was for — cutting a painting into layers a
+  model could not reliably find — it did not do well enough to keep.
+- **break** — the spending row on the activity page goes with it. The atelier
+  was the only thing that spent through the ledger, so the row would have read
+  "$0.00 of $5.00" for ever.
+- **chore** — `/generative/<id>` is unchanged: every sketch is written and
+  registered by hand, as it already was. No piece was registered, so no page is
+  lost.
+
 ## 1.113.0
 
 - **feat** — a layer can be cut by hand. *Or cut one by hand* starts an empty

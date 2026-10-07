@@ -169,14 +169,6 @@ export const routes: Routes = [
   // The workshop where a painting is cut into parallax layers. His, like the
   // studio and the reels, and with one reason the others have not got: every
   // button on it spends money, so it is never reachable without the guard.
-  {
-    path: 'atelier',
-    canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/atelier/atelier.component').then((m) => m.AtelierComponent),
-    data: { title: 'Atelier', hideBreadcrumb: true, noindex: true },
-  },
-  { path: 'es/atelier', redirectTo: '/atelier' },
   // Whether the machine did its job. Everything else here is a place to do
   // something; this is the one that says whether the doing happened.
   {

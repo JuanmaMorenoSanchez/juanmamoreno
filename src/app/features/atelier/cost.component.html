@@ -1,9 +1,0 @@
-@if (price(); as price) {
-  <span
-    class="cost"
-    [class.cost-over]="beyondCeiling()"
-    [attr.title]="price.what + (beyondCeiling() ? ' — more than today has left' : '')"
-  >
-    {{ label() }}
-  </span>
-}

@@ -109,17 +109,6 @@
       </ul>
     </section>
 
-    <!-- The money, which is the only thing here that can run away. -->
-    @if (spend(); as spend) {
-      <section class="activity-step">
-        <h2>Spending today</h2>
-        <p class="activity-spend" [class.is-late]="!spend.left">
-          <strong>${{ spend.spent.toFixed(2) }}</strong> of ${{ spend.ceiling.toFixed(2) }}
-          <a class="activity-go" routerLink="/atelier">atelier →</a>
-        </p>
-      </section>
-    }
-
     <!--
       The cron runs themselves. A line with no end is a run that started and did not
       come back, which is the thing nothing else here can see: on 2 September the

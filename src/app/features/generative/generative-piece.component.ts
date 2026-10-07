@@ -111,10 +111,9 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.sketch?.dispose?.();
     this.sketch = null;
 
-    // Registered, or nothing. A piece saved in the atelier used to resolve here
-    // by existing, which made every save a public page nobody had decided to
-    // publish. Registering one is deliberate, and it is one line — see the note
-    // in `registry.ts`.
+    // Registered, or nothing. An unknown id used to resolve here by existing,
+    // which made a public page out of anything anybody asked for. Registering a
+    // sketch is deliberate — see the note in `registry.ts`.
     const entry = id ? SKETCHES[id] : undefined;
     if (!entry) {
       this.notFound.set(true);

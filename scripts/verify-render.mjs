@@ -203,7 +203,6 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
       // of secrets fails: quietly, by not growing.
       '/catalogue',
       '/publish',
-      '/atelier',
       '/activity',
       // Named now that the page describes the architecture. Which cloud it runs
       // on, which database, which indexer and which model are nobody's business
