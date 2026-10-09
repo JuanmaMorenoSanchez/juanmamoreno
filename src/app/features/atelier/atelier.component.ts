@@ -53,12 +53,42 @@ export class AtelierComponent {
   protected readonly failure = signal<string | null>(null);
   protected readonly result = signal<GraphRun | null>(null);
 
+  /**
+   * Boxes with a required port and nothing joined to it.
+   *
+   * Checked here rather than left to the engine. It does refuse, accurately —
+   * "'isolate-wvpp5' (Isolate) has nothing joined to: image" — but that
+   * arrives after a round trip and reads like the model failed to find
+   * something, when in fact a wire is missing. Isolate wants the painting as
+   * well as the box, and joining only the box is the easy mistake.
+   */
+  protected readonly unjoined = computed(() => {
+    const kinds = new Map(this.catalogue().map((type) => [type.key, type]));
+    const wires = this.edges();
+    const wanted: string[] = [];
+
+    for (const node of this.nodes()) {
+      const type = kinds.get(node.type);
+      if (!type) continue;
+      const missing = type.inputs
+        .filter(
+          (port) =>
+            !port.optional &&
+            !wires.some((edge) => edge.to[0] === node.id && edge.to[1] === port.name)
+        )
+        .map((port) => port.name);
+      if (missing.length) wanted.push(`${type.label} needs ${missing.join(' and ')}`);
+    }
+    return wanted;
+  });
+
   protected readonly ready = computed(
     () =>
       !this.busy() &&
       !this.engine.unreachable() &&
       this.painting() !== null &&
-      this.nodes().length > 0
+      this.nodes().length > 0 &&
+      this.unjoined().length === 0
   );
 
   constructor() {

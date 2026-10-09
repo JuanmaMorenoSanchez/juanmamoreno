@@ -2522,6 +2522,19 @@ left unjoined; pressing it pins the panel open, because a long explanation
 cannot be read while holding a pointer still. The text is written in the engine
 beside the node, so the two cannot drift apart.
 
+**A box short of a wire is shown before the graph is run, not after.** The
+engine does refuse, and accurately — *"'isolate-wvpp5' (Isolate) has nothing
+joined to: image"* — but that arrives after a round trip and reads like the
+model failed to find something, when in fact a connection is missing. Isolate
+wants the painting *and* the box, and joining only the box is the easy mistake,
+because one output feeding two boxes is not an obvious shape.
+
+So a required port with nothing joined to it is **outlined in red** on the
+canvas, Run is disabled, and a line above says which box needs what. An
+optional port left empty is not complained about, since a mask on **Edit** is
+meant to be optional and warning about it would teach the warning to be
+ignored.
+
 **A painting can be chosen by typing its token id**, as well as by finding the
 file. He knows his own paintings by number, and the file for one is several
 clicks away in a folder he did not open.
@@ -2558,7 +2571,10 @@ that is what is missing, rather than failing silently.
 minutes; throwing one away because a switch was brushed is worse than making
 someone wait, so `/stop` answers 409 and the page repeats the reason.
 
-*Proven by:* `catalogue-painting.service.spec.ts` (9 tests, including "takes
+*Proven by:* `atelier.component.spec.ts` "says which box is short of a wire,
+before anything is sent", "will not run while a required port is empty",
+"stops complaining once every required port is joined" and "ignores an optional
+port that is left alone"; `catalogue-painting.service.spec.ts` (9 tests, including "takes
 the original, not the copy a tile would use", "steps down to a worse copy when
 the best one is refused", "names what it tried when every copy is refused" and
 "takes the title from where the rest of the site takes it"),

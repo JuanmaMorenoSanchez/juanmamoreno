@@ -192,6 +192,14 @@
     (changed)="redraw($event)"
   />
 
+  @if (unjoined().length) {
+    <p class="atelier-wanting" data-testid="unjoined">
+      Not ready to run:
+      {{ unjoined().join('; ') }}. A port outlined in red has nothing joined to it — the painting
+      usually feeds more than one box.
+    </p>
+  }
+
   <p class="atelier-hint">
     Drag from a port on the right of a box to one on the left of another. Ports only join when they
     carry the same kind of thing. A dashed port can be left alone — joining a mask to

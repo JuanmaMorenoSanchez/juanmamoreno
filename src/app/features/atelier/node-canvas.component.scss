@@ -268,3 +268,16 @@
   cursor: pointer;
   opacity: 0.7;
 }
+
+/* A required port with nothing joined to it. Left looking like any other empty
+   port, this is the mistake that produces "has nothing joined to: image" —
+   which reads like the model failed rather than like a missing wire. */
+.port-wanting {
+  stroke: #b3261e;
+  stroke-dasharray: none;
+}
+
+.port-name-wanting {
+  fill: #b3261e;
+  opacity: 1;
+}

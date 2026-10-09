@@ -4,6 +4,31 @@ import { AtelierComponent } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
 
+const ISOLATE: NodeTypeDef = {
+  key: 'isolate',
+  label: 'Isolate',
+  category: 'cut',
+  summary: 'a box in, the exact shape out',
+  help: 'Turns a rough box into the exact shape of what is inside it.',
+  inputs: [
+    { name: 'image', kind: 'image', optional: false },
+    { name: 'box', kind: 'box', optional: false },
+  ],
+  outputs: [{ name: 'mask', kind: 'mask', optional: false }],
+  params: [],
+};
+
+const SOURCE: NodeTypeDef = {
+  key: 'painting',
+  label: 'Painting',
+  category: 'in',
+  summary: 'where everything starts',
+  help: 'The picture chosen above the canvas.',
+  inputs: [],
+  outputs: [{ name: 'image', kind: 'image', optional: false }],
+  params: [],
+};
+
 const A_NODE: NodeTypeDef = {
   key: 'find',
   label: 'Find',
@@ -330,6 +355,81 @@ describe('AtelierComponent', () => {
     fixture.detectChanges();
 
     expect(at(host, 'failure')?.textContent).toContain('handler installed');
+  });
+
+  it('says which box is short of a wire, before anything is sent', async () => {
+    // The engine refuses accurately — "(Isolate) has nothing joined to: image"
+    // — but that arrives after a round trip and reads like the model failed to
+    // find something, when a wire is missing. Isolate wants the painting as
+    // well as the box.
+    const { fixture, host } = build({ catalogue: [ISOLATE] });
+    await new Promise((settle) => setTimeout(settle, 0));
+    guts(fixture).redraw({
+      nodes: [{ id: 'iso', type: 'isolate', x: 0, y: 0, params: {} }],
+      edges: [],
+    });
+    fixture.detectChanges();
+
+    expect(at(host, 'unjoined')?.textContent).toContain('Isolate needs image and box');
+  });
+
+  it('will not run while a required port is empty', async () => {
+    const { fixture, host } = build({ catalogue: [ISOLATE] });
+    await new Promise((settle) => setTimeout(settle, 0));
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({
+      nodes: [{ id: 'iso', type: 'isolate', x: 0, y: 0, params: {} }],
+      edges: [],
+    });
+    fixture.detectChanges();
+
+    expect((at(host, 'run') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('stops complaining once every required port is joined', async () => {
+    // The painting feeds Find and Isolate both, which is the shape that was
+    // missed: one output can and must go to more than one box.
+    const { fixture, host } = build({ catalogue: [SOURCE, A_NODE, ISOLATE] });
+    await new Promise((settle) => setTimeout(settle, 0));
+    guts(fixture).redraw({
+      nodes: [
+        { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+        { id: 'f', type: 'find', x: 0, y: 0, params: {} },
+        { id: 'iso', type: 'isolate', x: 0, y: 0, params: {} },
+      ],
+      edges: [
+        { from: ['src', 'image'], to: ['f', 'image'] },
+        { from: ['src', 'image'], to: ['iso', 'image'] },
+        { from: ['f', 'box'], to: ['iso', 'box'] },
+      ],
+    });
+    fixture.detectChanges();
+
+    expect(at(host, 'unjoined')).toBeNull();
+  });
+
+  it('ignores an optional port that is left alone', async () => {
+    // A mask on Edit may be left empty on purpose; complaining about it would
+    // train him to ignore the warning.
+    const optional: NodeTypeDef = {
+      ...ISOLATE,
+      key: 'edit',
+      label: 'Edit',
+      inputs: [
+        { name: 'image', kind: 'image', optional: false },
+        { name: 'mask', kind: 'mask', optional: true },
+      ],
+    };
+    const { fixture, host } = build({ catalogue: [optional] });
+    await new Promise((settle) => setTimeout(settle, 0));
+    guts(fixture).redraw({
+      nodes: [{ id: 'e', type: 'edit', x: 0, y: 0, params: {} }],
+      edges: [{ from: ['e', 'mask'], to: ['e', 'image'] }],
+    });
+    fixture.detectChanges();
+
+    expect(at(host, 'unjoined')).toBeNull();
   });
 
   it('brings a graph back after a reload, because drawing one is work', () => {

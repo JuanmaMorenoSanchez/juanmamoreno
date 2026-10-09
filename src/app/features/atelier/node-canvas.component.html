@@ -91,6 +91,7 @@
                 class="port port-in"
                 [class.port-optional]="port.optional"
                 [class.port-joined]="joined(node, port.name)"
+                [class.port-wanting]="wanting(node, port)"
                 [attr.cx]="node.x"
                 [attr.cy]="inY(node, i)"
                 r="5"
@@ -100,7 +101,12 @@
                   {{ port.name }} ({{ port.kind }}{{ port.optional ? ', optional' : '' }})
                 </title>
               </circle>
-              <text class="port-name" [attr.x]="node.x + 12" [attr.y]="inY(node, i) + 4">
+              <text
+                class="port-name"
+                [class.port-name-wanting]="wanting(node, port)"
+                [attr.x]="node.x + 12"
+                [attr.y]="inY(node, i) + 4"
+              >
                 {{ port.name }}
               </text>
             }

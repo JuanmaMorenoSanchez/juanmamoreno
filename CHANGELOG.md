@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.6.1
+
+- **fix** — a box short of a wire says so before the graph is run. The engine's
+  refusal was accurate but arrived after a round trip and read like the model
+  had failed to find something, when a connection was missing: Isolate wants
+  the painting as well as the box. Required ports with nothing joined are now
+  outlined in red, Run is disabled, and a line names which box needs what.
+
 ## 2.6.0
 
 - **feat** — a painting can be chosen in the atelier by typing its token id, not

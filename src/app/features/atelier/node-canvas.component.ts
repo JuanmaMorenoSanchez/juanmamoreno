@@ -311,4 +311,16 @@ export class NodeCanvasComponent {
   protected joined(node: GraphNode, port: string): boolean {
     return this.edges().some((e) => e.to[0] === node.id && e.to[1] === port);
   }
+
+  /**
+   * A port that must be joined and is not.
+   *
+   * Drawn as a warning rather than left to look like any other empty port.
+   * Isolate takes a box *and* the painting, and joining only the box is the
+   * easy mistake — the engine then refuses with "has nothing joined to: image",
+   * which is accurate and reads like the model failed to find anything.
+   */
+  protected wanting(node: GraphNode, port: { name: string; optional: boolean }): boolean {
+    return !port.optional && !this.joined(node, port.name);
+  }
 }
