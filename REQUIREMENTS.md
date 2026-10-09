@@ -1612,18 +1612,21 @@ receives what it expects rather than something it has to correct.
 
 ### R83 — A certificate is never written while gas is expensive · met
 The price of gas is read every fifteen seconds and shown beside the button that
-would spend it. Above 0.7 gwei the button says **Too expensive!** and refuses,
-and so does the night's work, which checks again before each certificate rather
-than once at the start — gas rose ninefold in the middle of the original
-migration, which is exactly the case a single check at the start cannot catch.
+would spend it. Above the ceiling — 0.06 gwei, lowered from 0.7 on the artist's
+word — the button says **Too expensive!** and refuses, and so does the night's
+work, which checks again before each certificate rather than once at the start —
+gas rose ninefold in the middle of the original migration, which is exactly the
+case a single check at the start cannot catch.
 
 The button also refuses before the first price has arrived: not knowing the
 price is not the same as the price being low.
-*Proven by:* `mint-gate.component.spec.ts` (9 tests, including "says so plainly
+*Proven by:* `mint-gate.component.spec.ts` (13 tests, including "says so plainly
 and refuses when gas is dear", "refuses at anything above the limit, not merely
 far above it", "allows exactly the limit" and "refuses before the first price has
-arrived"). The night's work enforces the same number in the backend, as B34
-there.
+arrived"), and `gas-price.service.spec.ts` ("allows exactly the ceiling",
+"refuses a hair above it"). The night's work enforces its own number in the
+backend, as B34 there — moving the ceiling here does not move that one. The
+ceiling can be moved by hand: R135.
 
 ### R84 — A certificate can wait for a cheap morning · met
 Preparing and writing are separate. **Save for later** stores the prepared
@@ -2421,3 +2424,30 @@ for every metric", "puts the furthest reached first",
 "offers no metric ordering while there are no metrics" and "tells a listing that
 failed from a catalogue with no numbers")
 *Proven elsewhere by:* the backend's B68
+
+### R135 — The gas ceiling says what it is, and can be moved · met
+**Too expensive!** without the figure it is being judged against is a refusal
+with no argument: the price is on screen, the number it failed is not, and the
+only way to mint anyway was to edit `GasPriceService.LIMIT` and deploy.
+
+So the ceiling is shown beside the price, in the input that changes it — seeing
+it and moving it are one gesture. It starts at 0.06 gwei, and a reload comes
+back to that, which is the right default to return to.
+
+**Nonsense is ignored rather than refused.** An emptied input reads as `NaN`,
+against which no price ever compares true, so every certificate would be refused
+with nothing on screen to say why; a long enough run of digits reads as
+`Infinity`, which would let anything through. Both leave the ceiling where it
+was. Zero is kept, because it is a way of saying stop.
+
+The gate is one component used in three places — the studio, the pending list
+and the certificate panel — so the ceiling shown is the ceiling in force
+everywhere. **It does not reach the backend**: the night's work enforces its own
+number, as B34 there.
+*Proven by:* `gas-price.service.spec.ts` (10 tests, including "judges the price
+against the ceiling in force, not the one it started at", "takes zero, which is a
+way of saying stop", "ignores an emptied input instead of taking NaN as the
+ceiling", "ignores a negative ceiling" and "ignores an infinite one") and
+`mint-gate.component.spec.ts` ("shows the ceiling the price is judged against",
+"hands a typed ceiling to the service", "hands on an emptied input as NaN rather
+than as zero" and "lets a dear price through once the ceiling is above it")

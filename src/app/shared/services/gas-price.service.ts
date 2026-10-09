@@ -27,6 +27,10 @@ export class GasPriceService {
    * Lowered from 0.7 on the artist's word. At 0.7 a certificate cost about
    * thirty cents; at this, around ten. Nothing here is urgent enough to pay the
    * difference — a painting finished today is no less finished next week.
+   *
+   * This is where the ceiling starts. It can be moved from beside the button,
+   * because the day will come when one certificate is worth more than the ten
+   * cents it saves, and the alternative is editing this line and deploying.
    */
   static readonly LIMIT = 0.06;
 
@@ -35,6 +39,7 @@ export class GasPriceService {
 
   private readonly gwei = signal<number | null>(null);
   private readonly failing = signal(false);
+  private readonly ceiling = signal<number>(GasPriceService.LIMIT);
   private timer: ReturnType<typeof setInterval> | null = null;
   private watchers = 0;
 
@@ -42,6 +47,8 @@ export class GasPriceService {
   readonly price = this.gwei.asReadonly();
   /** True when the last read did not come back, so the price shown is stale. */
   readonly unreachable = this.failing.asReadonly();
+  /** The ceiling in force, in gwei. Starts at {@link LIMIT}. */
+  readonly limit = this.ceiling.asReadonly();
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.stop());
@@ -69,7 +76,23 @@ export class GasPriceService {
   /** Whether a certificate is worth minting at the price last heard. */
   affordable(): boolean {
     const price = this.gwei();
-    return price !== null && price <= GasPriceService.LIMIT;
+    return price !== null && price <= this.ceiling();
+  }
+
+  /**
+   * Moves the ceiling, for the day one certificate is worth more than the ten
+   * cents waiting saves.
+   *
+   * Nonsense is ignored rather than refused. An emptied number input reads as
+   * `NaN`, and the ceiling that was there standing is better than a ceiling of
+   * `NaN`, against which nothing compares true and so nothing is ever
+   * affordable. Zero is allowed: it is a way of saying stop.
+   *
+   * It lasts as long as the page does. A reload is a way back to 0.06, which is
+   * the right default to come back to.
+   */
+  setLimit(gwei: number): void {
+    if (Number.isFinite(gwei) && gwei >= 0) this.ceiling.set(gwei);
   }
 
   private stop(): void {

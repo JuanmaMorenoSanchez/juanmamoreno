@@ -28,3 +28,23 @@
   font-style: normal;
   opacity: 0.7;
 }
+
+/* The ceiling the price is judged against, shown and editable in one. */
+.gate-limit {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.gate-limit input {
+  width: 5rem;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+}

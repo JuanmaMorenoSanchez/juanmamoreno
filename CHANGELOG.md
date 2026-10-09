@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.1.0
+
+- **feat** — the gas ceiling says what it is, and can be moved. "Too expensive!"
+  showed the price but not the number it had failed, and the only way to mint
+  anyway was to edit the constant and deploy. The ceiling is now printed beside
+  the price in the input that changes it, in all three places the gate appears.
+  An emptied or absurd entry leaves it where it was rather than refusing
+  everything or allowing everything; a reload returns to 0.06 gwei. The
+  backend's own ceiling is untouched.
+
 ## 2.0.0
 
 - **break** — the atelier is gone: the page, its route, the cost display, the

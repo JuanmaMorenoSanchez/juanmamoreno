@@ -46,6 +46,19 @@ import { GasPriceService } from '@shared/services/gas-price.service';
       } @else {
         <span class="gate-price">reading the gas price…</span>
       }
+
+      <label class="gate-limit">
+        limit
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          [value]="gas.limit()"
+          (input)="retune($event)"
+          aria-label="The most to pay for a unit of gas, in gwei"
+        />
+        gwei
+      </label>
     </div>
   `,
   styleUrl: './mint-gate.component.scss',
@@ -74,5 +87,17 @@ export class MintGateComponent {
   constructor() {
     const stop = this.gas.watch();
     inject(DestroyRef).onDestroy(stop);
+  }
+
+  /**
+   * The ceiling moved by hand, from the input beside the price.
+   *
+   * `valueAsNumber` rather than parsing the string ourselves: whatever the
+   * browser will not read as a number arrives as `NaN`, which the service
+   * ignores, so a half-typed or malformed entry leaves the ceiling where it was
+   * rather than dropping it to zero and stopping everything.
+   */
+  protected retune(event: Event): void {
+    this.gas.setLimit((event.target as HTMLInputElement).valueAsNumber);
   }
 }
