@@ -184,3 +184,73 @@
     margin: 0;
   }
 }
+
+/* The switch that starts and stops the engine. */
+.engine-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.engine-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  font: inherit;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    border-color: currentColor;
+  }
+
+  /* Mid-flight. Not greyed into illegibility: the word beside it is the thing
+     being read, and it says what is happening. */
+  &[disabled] {
+    cursor: progress;
+    opacity: 0.8;
+  }
+}
+
+.engine-track {
+  position: relative;
+  width: 2.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+
+.engine-knob {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: currentColor;
+  transition: left 140ms ease;
+}
+
+.engine-on {
+  opacity: 1;
+  border-color: #1a7f4b;
+
+  .engine-knob {
+    left: 1.1rem;
+    background: #1a7f4b;
+  }
+}
+
+.engine-word {
+  font-variant-numeric: tabular-nums;
+}

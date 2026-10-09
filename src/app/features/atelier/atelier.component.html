@@ -32,14 +32,47 @@
           at the left of the address bar.
         </li>
       </ul>
-      <button
-        type="button"
-        class="atelier-go"
-        (click)="engine.check()"
-        [disabled]="engine.checking()"
-      >
-        {{ engine.checking() ? 'Asking…' : 'Ask again' }}
-      </button>
+      <div class="engine-row">
+        <button
+          type="button"
+          class="engine-switch"
+          role="switch"
+          [attr.aria-checked]="!engine.unreachable()"
+          [disabled]="engine.switching() !== 'idle'"
+          (click)="toggleEngine()"
+          data-testid="engine-switch"
+        >
+          <span class="engine-track" [class.engine-on]="!engine.unreachable()">
+            <span class="engine-knob"></span>
+          </span>
+          <span class="engine-word">
+            @switch (engine.switching()) {
+              @case ('starting') {
+                Switching on…
+              }
+              @case ('stopping') {
+                Switching off…
+              }
+              @default {
+                Engine off
+              }
+            }
+          </span>
+        </button>
+        <button
+          type="button"
+          class="atelier-minor"
+          (click)="engine.check()"
+          [disabled]="engine.checking() || engine.switching() !== 'idle'"
+        >
+          {{ engine.checking() ? 'Asking…' : 'Ask again' }}
+        </button>
+      </div>
+      <p class="atelier-caveat">
+        Switching it on asks Windows to run it, through a handler registered once from
+        <code>atelier-engine/tools/atelier-protocol.reg</code>. Without that the switch has nothing
+        to ask, and the engine has to be started from a terminal.
+      </p>
     </section>
   } @else if (engine.health(); as health) {
     <section class="atelier-up" data-testid="engine-up">
@@ -55,7 +88,38 @@
       @if (health.resident) {
         <span class="atelier-vram">holding {{ health.resident }}</span>
       }
-      <button type="button" class="atelier-minor" (click)="engine.evict()">
+      <button
+        type="button"
+        class="engine-switch"
+        role="switch"
+        [attr.aria-checked]="!engine.unreachable()"
+        [disabled]="engine.switching() !== 'idle'"
+        (click)="toggleEngine()"
+        data-testid="engine-switch"
+      >
+        <span class="engine-track" [class.engine-on]="!engine.unreachable()">
+          <span class="engine-knob"></span>
+        </span>
+        <span class="engine-word">
+          @switch (engine.switching()) {
+            @case ('starting') {
+              Switching on…
+            }
+            @case ('stopping') {
+              Switching off…
+            }
+            @default {
+              {{ engine.unreachable() ? 'Engine off' : 'Engine on' }}
+            }
+          }
+        </span>
+      </button>
+      <button
+        type="button"
+        class="atelier-minor"
+        (click)="engine.evict()"
+        [disabled]="engine.switching() !== 'idle'"
+      >
         Hand the card back
       </button>
     </section>

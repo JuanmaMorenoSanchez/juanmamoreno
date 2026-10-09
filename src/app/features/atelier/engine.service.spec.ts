@@ -50,6 +50,7 @@ describe('AtelierEngineService', () => {
       resident: null,
       vramFreeMib: 7096,
       vramTotalMib: 8187,
+      working: false,
     });
   });
 

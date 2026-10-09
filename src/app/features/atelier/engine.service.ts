@@ -27,7 +27,12 @@ export interface EngineHealth {
   resident: string | null;
   vramFreeMib: number | null;
   vramTotalMib: number | null;
+  /** True while a run is in progress. Stopping is refused then. */
+  working: boolean;
 }
+
+/** What the switch is doing. */
+export type Switching = 'idle' | 'starting' | 'stopping';
 
 export interface PortDef {
   name: string;
@@ -91,12 +96,15 @@ export class AtelierEngineService {
   private readonly state = signal<EngineHealth | null>(null);
   private readonly down = signal(false);
   private readonly asking = signal(false);
+  private readonly doing = signal<Switching>('idle');
 
   /** What the engine last said about itself, or null before it has said anything. */
   readonly health = this.state.asReadonly();
   /** True once an attempt to reach it has failed. */
   readonly unreachable = this.down.asReadonly();
   readonly checking = this.asking.asReadonly();
+  /** 'starting' or 'stopping' while the switch is mid-flight. */
+  readonly switching = this.doing.asReadonly();
 
   /**
    * Asks whether it is up, and how much of the card is free.
@@ -115,12 +123,14 @@ export class AtelierEngineService {
         resident: string | null;
         vram_free_mib: number | null;
         vram_total_mib: number | null;
+        working?: boolean;
       };
       this.state.set({
         device: body.device,
         resident: body.resident,
         vramFreeMib: body.vram_free_mib,
         vramTotalMib: body.vram_total_mib,
+        working: body.working ?? false,
       });
       this.down.set(false);
     } catch {
@@ -150,6 +160,76 @@ export class AtelierEngineService {
       not_found: string[];
     };
     return { ...body, notFound: body.not_found };
+  }
+
+  /**
+   * Asks the engine to stop, then waits until it really has.
+   *
+   * It refuses while a run is going: an edit takes eighteen minutes and
+   * throwing one away because a switch was brushed is worse than waiting.
+   */
+  async stop(): Promise<void> {
+    this.doing.set('stopping');
+    try {
+      const response = await fetch(`${ENGINE}/stop`, toLocal({ method: 'POST' }));
+      if (response.status === 409) {
+        const said = ((await response.json()) as { detail?: string }).detail;
+        throw new Error(said ?? 'something is still running');
+      }
+      if (!response.ok) throw new Error(`the engine answered ${response.status}`);
+      await this.until(false);
+    } finally {
+      this.doing.set('idle');
+      await this.check();
+    }
+  }
+
+  /**
+   * Asks Windows to start the engine, then waits until it answers.
+   *
+   * A page cannot launch a program — if one could, every website could. So it
+   * opens a protocol Windows has been told about once, and Windows runs the
+   * launcher. Nothing comes back from that: whether it worked is learned by
+   * asking the engine until it replies.
+   */
+  async start(): Promise<void> {
+    this.doing.set('starting');
+    try {
+      // An iframe rather than changing location: a protocol the browser does
+      // not know would otherwise navigate the page away from the atelier.
+      const hidden = document.createElement('iframe');
+      hidden.style.display = 'none';
+      hidden.src = 'atelier://start';
+      document.body.appendChild(hidden);
+      setTimeout(() => hidden.remove(), 2000);
+
+      const up = await this.until(true, 40_000);
+      if (!up) {
+        throw new Error(
+          'Windows was asked to start it, but it never answered. Is the atelier:// handler installed?'
+        );
+      }
+    } finally {
+      this.doing.set('idle');
+      await this.check();
+    }
+  }
+
+  /** Polls until the engine is there, or is not, or we give up. */
+  private async until(wanted: boolean, limitMs = 15_000): Promise<boolean> {
+    const deadline = Date.now() + limitMs;
+    while (Date.now() < deadline) {
+      let answered = false;
+      try {
+        const response = await fetch(`${ENGINE}/health`, toLocal({ cache: 'no-store' }));
+        answered = response.ok;
+      } catch {
+        answered = false;
+      }
+      if (answered === wanted) return true;
+      await new Promise((again) => setTimeout(again, 600));
+    }
+    return false;
   }
 
   /** Hands the card back without stopping the engine. */

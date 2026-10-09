@@ -38,6 +38,9 @@ describe('AtelierComponent', () => {
   const build = (
     options: {
       unreachable?: boolean;
+      switching?: 'idle' | 'starting' | 'stopping';
+      onStart?: () => Promise<void>;
+      onStop?: () => Promise<void>;
       catalogue?: NodeTypeDef[];
       run?: () => Promise<GraphRun>;
       stored?: string;
@@ -50,6 +53,8 @@ describe('AtelierComponent', () => {
         : { device: 'cuda', resident: null, vramFreeMib: 7096, vramTotalMib: 8187 }
     );
     const sent: unknown[] = [];
+    const switching = signal(options.switching ?? 'idle');
+    const did: string[] = [];
 
     try {
       if (options.stored) localStorage.setItem('juanmamoreno.atelier.graph', options.stored);
@@ -69,7 +74,16 @@ describe('AtelierComponent', () => {
             health,
             unreachable,
             checking: signal(false),
+            switching,
             check: () => Promise.resolve(),
+            start: () => {
+              did.push('start');
+              return options.onStart?.() ?? Promise.resolve();
+            },
+            stop: () => {
+              did.push('stop');
+              return options.onStop?.() ?? Promise.resolve();
+            },
             evict: () => Promise.resolve(),
             layerUrl: (file: string) => `http://127.0.0.1:7860/layer/${file}`,
             catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
@@ -92,7 +106,7 @@ describe('AtelierComponent', () => {
 
     const fixture = TestBed.createComponent(AtelierComponent);
     fixture.detectChanges();
-    return { fixture, host: fixture.nativeElement as HTMLElement, sent };
+    return { fixture, host: fixture.nativeElement as HTMLElement, sent, did, unreachable };
   };
 
   const at = (host: HTMLElement, id: string) =>
@@ -236,6 +250,63 @@ describe('AtelierComponent', () => {
     fixture.detectChanges();
 
     expect(at(host, 'result')?.textContent).toContain('Keep');
+  });
+
+  it('offers a switch whether the engine is up or down', () => {
+    // It is the one control that has to be reachable in both states: when the
+    // engine is down, everything else on the page is unusable.
+    expect(at(build({ unreachable: true }).host, 'engine-switch')).not.toBeNull();
+    expect(at(build().host, 'engine-switch')).not.toBeNull();
+  });
+
+  it('says which way it is going while it goes', async () => {
+    const starting = build({ unreachable: true, switching: 'starting' });
+    expect(at(starting.host, 'engine-switch')?.textContent).toContain('Switching on');
+
+    const stopping = build({ switching: 'stopping' });
+    expect(at(stopping.host, 'engine-switch')?.textContent).toContain('Switching off');
+  });
+
+  it('cannot be pressed again while it is switching', () => {
+    const { host } = build({ switching: 'starting', unreachable: true });
+
+    expect((at(host, 'engine-switch') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('starts when it is off and stops when it is on', async () => {
+    const off = build({ unreachable: true });
+    (at(off.host, 'engine-switch') as HTMLButtonElement).click();
+    await new Promise((settle) => setTimeout(settle, 0));
+    expect(off.did).toEqual(['start']);
+
+    const on = build();
+    (at(on.host, 'engine-switch') as HTMLButtonElement).click();
+    await new Promise((settle) => setTimeout(settle, 0));
+    expect(on.did).toEqual(['stop']);
+  });
+
+  it('repeats the reason when stopping is refused mid-run', async () => {
+    // An edit takes eighteen minutes. Refusing is right; saying nothing is not.
+    const { fixture, host } = build({
+      onStop: () => Promise.reject(new Error('something is still running')),
+    });
+    (at(host, 'engine-switch') as HTMLButtonElement).click();
+    await new Promise((settle) => setTimeout(settle, 0));
+    fixture.detectChanges();
+
+    expect(at(host, 'failure')?.textContent).toContain('still running');
+  });
+
+  it('says so when Windows was asked and nothing answered', async () => {
+    const { fixture, host } = build({
+      unreachable: true,
+      onStart: () => Promise.reject(new Error('Is the atelier:// handler installed?')),
+    });
+    (at(host, 'engine-switch') as HTMLButtonElement).click();
+    await new Promise((settle) => setTimeout(settle, 0));
+    fixture.detectChanges();
+
+    expect(at(host, 'failure')?.textContent).toContain('handler installed');
   });
 
   it('brings a graph back after a reload, because drawing one is work', () => {

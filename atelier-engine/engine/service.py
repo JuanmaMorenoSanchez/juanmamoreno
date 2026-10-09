@@ -19,6 +19,8 @@ Run:  .venv\\Scripts\\python -m uvicorn engine.service:app --host 127.0.0.1 --po
 from __future__ import annotations
 
 import io
+import os
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -75,6 +77,31 @@ async def allow_local_network(request, call_next):
 
 registry = ModelRegistry(cache_dir=MODELS, device="cpu")
 
+_working = threading.Semaphore(1)
+"""Held while a run is in progress.
+
+Only so that stopping can refuse. A run can be eighteen minutes long, and
+killing the process from a switch on a page because the pointer was in the
+wrong place would be a genuinely expensive mistake.
+"""
+
+
+class Busy:
+    """Marks the engine as working for as long as the block runs."""
+
+    def __enter__(self) -> None:
+        _working.acquire()
+
+    def __exit__(self, *_: object) -> None:
+        _working.release()
+
+
+def _idle() -> bool:
+    if _working.acquire(blocking=False):
+        _working.release()
+        return True
+    return False
+
 
 @app.on_event("startup")
 def choose_device() -> None:
@@ -103,6 +130,7 @@ def health() -> JSONResponse:
             "ok": True,
             "device": registry.device,
             "resident": registry.resident,
+            "working": not _idle(),
             "vram_free_mib": vram[0] if vram else None,
             "vram_total_mib": vram[1] if vram else None,
         }
@@ -163,6 +191,11 @@ def cut(
     to be judged by eye. That is why the response carries the score, the iou and
     the coverage rather than a verdict: the page shows the cut, and he decides.
     """
+    with Busy():
+        return _cut(image, labels, fill_behind)
+
+
+def _cut(image: UploadFile, labels: str, fill_behind: bool) -> JSONResponse:
     wanted = [line.strip() for line in labels.splitlines() if line.strip()]
     if not wanted:
         raise HTTPException(status_code=400, detail="name at least one thing to cut")
@@ -275,6 +308,11 @@ def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
     with a sentence naming the node, because the person reading it is looking
     at a picture of boxes and needs to know which box to move.
     """
+    with Busy():
+        return _graph(image, graph)
+
+
+def _graph(image: UploadFile, graph: str) -> JSONResponse:
     import json
 
     try:
@@ -323,3 +361,32 @@ def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
             "saved": context["saved"],
         }
     )
+
+
+@app.post("/stop")
+def stop() -> JSONResponse:
+    """Shut the engine down, so the page can switch it off.
+
+    Switching it back on is not something a page can do — a browser cannot
+    start a program, and once this process is gone there is nothing left
+    listening to be asked. That is what the `atelier://` handler is for: the
+    page asks Windows, and Windows starts it.
+
+    **Refused while a run is in progress.** An edit takes eighteen minutes, and
+    throwing that away because a switch was pressed by accident is worse than
+    making someone wait.
+    """
+    if not _idle():
+        raise HTTPException(
+            status_code=409,
+            detail="something is still running. Let it finish, or close the window it is in.",
+        )
+
+    def goodbye() -> None:
+        # After the response has gone out, or the page is told nothing and sees
+        # only a dropped connection, which looks the same as a crash.
+        time.sleep(0.4)
+        os._exit(0)
+
+    threading.Thread(target=goodbye, daemon=True).start()
+    return JSONResponse({"stopping": True})

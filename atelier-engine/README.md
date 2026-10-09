@@ -52,6 +52,27 @@ curl -L -o models/lama/lama_fp32.onnx   https://huggingface.co/Carve/LaMa-ONNX/r
 .venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860
 ```
 
+Or let the page do it. **Import `tools/atelier-protocol.reg` once** (double-click,
+accept the warning, restart the browser) and the switch on `/atelier` can start
+and stop the engine.
+
+That registration is the whole trick, and it is worth knowing why it is needed:
+**a browser cannot launch a program.** If one could, every website could. So the
+page opens `atelier://start`, Windows hands that to `tools/atelier.cmd`, and the
+page then polls `/health` until something answers — which is where _Switching
+on…_ comes from. Stopping needs no handler, because the engine is there to be
+asked.
+
+If you move or clone the project, run `python tools/write_protocol.py` to write
+the `.reg` with the new path, and import it again.
+
+Two things the launcher takes care of:
+
+- **It refuses to start a second engine.** Without that check a second press
+  leaves a window open complaining that the port is taken.
+- **It must have CRLF line endings.** With Unix endings `cmd.exe` mis-parses
+  every line — `REM` becomes an unknown command called `M`.
+
 127.0.0.1 only. `GET /health` says whether there is room to run anything,
 `POST /cut` takes an uploaded painting and one phrase per line, and `POST /evict`
 hands the card back without stopping the service — this is also the machine he

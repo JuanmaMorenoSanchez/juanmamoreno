@@ -2522,12 +2522,34 @@ left unjoined; pressing it pins the panel open, because a long explanation
 cannot be read while holding a pointer still. The text is written in the engine
 beside the node, so the two cannot drift apart.
 
+**The engine can be switched on and off from the page**, and says which way it
+is going while it goes: *Switching on…*, *Switching off…*, then **Engine on** or
+**Engine off**. The switch is present in both states, because when the engine is
+down everything else on the page is unusable and the switch is the only control
+worth reaching.
+
+The two halves are not symmetrical, and the page says so. **Stopping** is a
+request to the engine, which is there to receive it. **Starting is not something
+a page can do** — a browser cannot launch a program, or every website could — so
+the page opens `atelier://start`, Windows hands that to a launcher registered
+once from `atelier-engine/tools/atelier-protocol.reg`, and the page polls
+`/health` until something answers. Nothing comes back from opening a protocol,
+so the waiting *is* the feedback. Without the handler installed the switch says
+that is what is missing, rather than failing silently.
+
+**Stopping is refused while a run is in progress.** An edit takes eighteen
+minutes; throwing one away because a switch was brushed is worse than making
+someone wait, so `/stop` answers 409 and the page repeats the reason.
+
 *Proven by:* `node-canvas.component.spec.ts` (9 tests, including "draws a
 palette from whatever the engine sent, including a node it has never heard of",
 "opens the explanation when the question mark is hovered", "says what each
 control does, not only that it exists" and "survives an engine older than
 itself, which sends no explanation at all"),
-`atelier.component.spec.ts` (13 tests, including "says the engine is
+`atelier.component.spec.ts` (19 tests, including "offers a switch whether the
+engine is up or down", "says which way it is going while it goes", "repeats the
+reason when stopping is refused mid-run", "says so when Windows was asked and
+nothing answered", "says the engine is
 not answering, and that the site is not at fault", "names all three reasons it
 could be unreachable, including the one Chrome causes", "builds its palette from
 what the engine says it can do" and "will not run while the engine is

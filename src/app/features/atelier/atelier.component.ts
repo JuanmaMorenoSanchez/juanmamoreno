@@ -118,6 +118,29 @@ export class AtelierComponent {
     this.failure.set(null);
   }
 
+  /**
+   * The switch beside the status.
+   *
+   * Stopping is a request to the engine. Starting is not — a page cannot
+   * launch a program, so it asks Windows through the `atelier://` handler and
+   * then waits to see whether anything answers.
+   */
+  protected async toggleEngine(): Promise<void> {
+    this.failure.set(null);
+    try {
+      if (this.engine.unreachable()) {
+        await this.engine.start();
+        // The palette comes from the engine, so it arrives with the engine.
+        this.catalogue.set(await this.engine.catalogue());
+      } else {
+        await this.engine.stop();
+        this.catalogue.set([]);
+      }
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'the switch did not work');
+    }
+  }
+
   protected async run(): Promise<void> {
     const painting = this.painting();
     if (!painting) return;

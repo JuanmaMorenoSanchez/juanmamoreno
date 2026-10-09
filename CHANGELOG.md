@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.5.0
+
+- **feat** — the engine can be switched on and off from `/atelier`, and says
+  *Switching on…* or *Switching off…* while it does. Stopping is a request to
+  the engine; starting cannot be, because a browser cannot launch a program —
+  so the page asks Windows through an `atelier://` handler registered once, and
+  waits for the engine to answer. Stopping is refused while a run is going, an
+  edit being eighteen minutes long.
+
 ## 2.4.0
 
 - **feat** — `/atelier` is a node editor. Drag boxes onto a canvas, join a port
