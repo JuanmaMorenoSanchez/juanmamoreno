@@ -1,0 +1,11 @@
+# These three must keep Windows line endings, whatever git would prefer.
+#
+# `cmd.exe` mis-parses a batch file with Unix endings — every line is read
+# wrong, and `REM` arrives as an unknown command called `M`. That bug was found
+# and fixed by hand, and then git announced it would put it straight back on
+# the next checkout: "CRLF will be replaced by LF the next time Git touches it".
+#
+# `.reg` is the same story: the registry importer wants CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.reg text eol=crlf
