@@ -370,6 +370,13 @@
       "b": "The whole catalogue is published as a single json file as well: title, year, medium, measurements…, the text in both languages, the image, both addresses of the page and the certificate token. The build writes it from the pages themselves, so it cannot contradict them, and the build refuses to publish if the file stops matching what was built.",
       "c": "The service speaks the MCP protocol at backend.juanmamoreno.com/mcp, for anyone who wants to widen their agent’s context with the catalogue’s information. Realistically, the only use of the MCP so far is widening the context of my own agents, so that the processes I automate day to day can work with a wider context and spend fewer tokens."
     },
+    "atelier": {
+      "title": "Running the AI myself",
+      "a": "The newest part of the product is a studio that runs AI models on my own machine rather than calling a service. It cuts a painting into layers by naming what to cut — \"the girl\", \"the blue shirt\" — fills in what was behind them, measures depth so a flat canvas can be given movement, and writes the code for the generative pieces. None of it leaves the computer.",
+      "b": "That choice is about control rather than cost alone. An external provider can change its price, its terms or its content rules, and a tool built on one inherits all three. Running the weights myself means what I generate stays private, nothing can start charging, and the thing keeps working whatever a vendor decides next. The constraint is a laptop graphics card with eight gigabytes, which rules out most of what gets written about and rewards choosing carefully.",
+      "c": "Open weights is not the same as open source, and that difference decided most of the stack. A model can be free to download and still forbid commercial use, restrict what you may do with its output, or exclude whole territories. Since paintings are sold from this site, anything a model produces appears beside something that is for sale. So every model here is Apache 2.0 or MIT — the one that segments, the one that fills in, the one that measures depth and the one that writes code — and several better-known ones were rejected on their licence rather than their quality.",
+      "d": "It is measured rather than assumed. Cutting a painting peaks at about a quarter of the available graphics memory and takes under a second per element; one model is held in memory at a time and evicted before the next, which is what makes eight gigabytes enough. It finds figures and objects well and diffuse things like a field badly — so the background is never asked for, it is whatever the figures did not take."
+    },
     "links": {
       "title": "LINKS",
       "repo": "The code, public",
