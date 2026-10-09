@@ -2522,6 +2522,23 @@ left unjoined; pressing it pins the panel open, because a long explanation
 cannot be read while holding a pointer still. The text is written in the engine
 beside the node, so the two cannot drift apart.
 
+**A painting can be chosen by typing its token id**, as well as by finding the
+file. He knows his own paintings by number, and the file for one is several
+clicks away in a folder he did not open.
+
+**It takes the original, not the copy a tile would use.** `getAvailableOptimalUrl`
+prefers a thumbnail and deliberately keeps the multi-MB original out of the
+race, which is right for drawing a catalogue and wrong here: cutting a layer
+from a 95 KB copy gives a 95 KB layer. So it walks down the stored copies —
+original, cached, thumbnail — and takes the first that can be read. Measured on
+token 195: 3652×4533, the original.
+
+**It says which painting and which copy it got**, by name and in pixels, with a
+note when it had to settle for less than the original. A host refusing a
+cross-origin read is stepped past rather than thrown, because a smaller
+painting beats an error — and when every copy is refused it names what it
+tried.
+
 **The engine can be switched on and off from the page**, and says which way it
 is going while it goes: *Switching on…*, *Switching off…*, then **Engine on** or
 **Engine off**. The switch is present in both states, because when the engine is
@@ -2541,7 +2558,11 @@ that is what is missing, rather than failing silently.
 minutes; throwing one away because a switch was brushed is worse than making
 someone wait, so `/stop` answers 409 and the page repeats the reason.
 
-*Proven by:* `node-canvas.component.spec.ts` (9 tests, including "draws a
+*Proven by:* `catalogue-painting.service.spec.ts` (9 tests, including "takes
+the original, not the copy a tile would use", "steps down to a worse copy when
+the best one is refused", "names what it tried when every copy is refused" and
+"takes the title from where the rest of the site takes it"),
+`node-canvas.component.spec.ts` (9 tests, including "draws a
 palette from whatever the engine sent, including a node it has never heard of",
 "opens the explanation when the question mark is hovered", "says what each
 control does, not only that it exists" and "survives an engine older than

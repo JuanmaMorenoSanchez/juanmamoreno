@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { CataloguePaintingService } from './catalogue-painting.service';
 import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
 import {
   NodeCanvasComponent,
@@ -35,9 +36,14 @@ const SAVED = 'juanmamoreno.atelier.graph';
 })
 export class AtelierComponent {
   protected readonly engine = inject(AtelierEngineService);
+  private readonly catalogueImages = inject(CataloguePaintingService);
 
-  protected readonly painting = signal<File | null>(null);
+  protected readonly painting = signal<Blob | null>(null);
   protected readonly preview = signal<string | null>(null);
+  /** What the chosen painting is, for the line under the preview. */
+  protected readonly chosen = signal<string | null>(null);
+  protected readonly tokenId = signal('');
+  protected readonly fetching = signal(false);
 
   protected readonly catalogue = signal<NodeTypeDef[]>([]);
   protected readonly nodes = signal<GraphNode[]>([]);
@@ -109,11 +115,40 @@ export class AtelierComponent {
 
   protected chose(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.take(file, file ? file.name : null);
+  }
+
+  /**
+   * The same painting, by its token id instead of by finding the file.
+   *
+   * Takes the best copy the catalogue has rather than the one a tile would
+   * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
+   */
+  protected async byId(): Promise<void> {
+    const token = this.tokenId().trim();
+    if (!token || this.fetching()) return;
+
+    this.fetching.set(true);
+    this.failure.set(null);
+    try {
+      const got = await this.catalogueImages.byId(token);
+      const size = got.width ? ` · ${got.width}×${got.height}` : '';
+      const note = got.quality === 'original' ? '' : ` · ${got.quality} copy, not the original`;
+      this.take(got.blob, `${got.name}${size}${note}`);
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'that id could not be read');
+    } finally {
+      this.fetching.set(false);
+    }
+  }
+
+  private take(painting: Blob | null, called: string | null): void {
     const old = this.preview();
     if (old) URL.revokeObjectURL(old);
 
-    this.painting.set(file);
-    this.preview.set(file ? URL.createObjectURL(file) : null);
+    this.painting.set(painting);
+    this.chosen.set(called);
+    this.preview.set(painting ? URL.createObjectURL(painting) : null);
     this.result.set(null);
     this.failure.set(null);
   }

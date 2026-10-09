@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { AtelierComponent } from './atelier.component';
+import { CataloguePaintingService } from './catalogue-painting.service';
 import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
 
 const A_NODE: NodeTypeDef = {
@@ -39,6 +40,13 @@ describe('AtelierComponent', () => {
     options: {
       unreachable?: boolean;
       switching?: 'idle' | 'starting' | 'stopping';
+      byId?: () => Promise<{
+        blob: Blob;
+        name: string;
+        quality: 'original' | 'cached' | 'thumbnail';
+        width: number;
+        height: number;
+      }>;
       onStart?: () => Promise<void>;
       onStop?: () => Promise<void>;
       catalogue?: NodeTypeDef[];
@@ -68,6 +76,21 @@ describe('AtelierComponent', () => {
       imports: [AtelierComponent],
       providers: [
         provideZonelessChangeDetection(),
+        {
+          // Reaching the real one would reach ARTWORK_PORT and the network.
+          provide: CataloguePaintingService,
+          useValue: {
+            byId: () =>
+              options.byId?.() ??
+              Promise.resolve({
+                blob: new Blob([new Uint8Array([1])]),
+                name: 'Rockets win I',
+                quality: 'original' as const,
+                width: 3000,
+                height: 3180,
+              }),
+          },
+        },
         {
           provide: AtelierEngineService,
           useValue: {

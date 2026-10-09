@@ -254,3 +254,36 @@
 .engine-word {
   font-variant-numeric: tabular-nums;
 }
+
+/* Choosing a painting by its number rather than by finding the file. */
+.atelier-byid {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  input {
+    width: 6rem;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.atelier-chosen {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Which painting, and which copy of it — a thumbnail cuts a thumbnail. */
+.atelier-chosen-name {
+  max-width: 18rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  line-height: 1.3;
+}

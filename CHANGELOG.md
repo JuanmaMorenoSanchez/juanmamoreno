@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.6.0
+
+- **feat** — a painting can be chosen in the atelier by typing its token id, not
+  only by finding the file. It fetches the full-resolution original rather than
+  the thumbnail a tile would use, since cutting a layer from a 95 KB copy gives
+  a 95 KB layer, and says which painting and which copy it got. A host that
+  refuses a cross-origin read is stepped past rather than thrown.
+
 ## 2.5.0
 
 - **feat** — the engine can be switched on and off from `/atelier`, and says

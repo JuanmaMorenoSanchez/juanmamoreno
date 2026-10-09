@@ -135,8 +135,38 @@
       <input type="file" accept="image/*" (change)="chose($event)" data-testid="painting" />
     </label>
 
+    <!-- Or by number, which is how he knows his own paintings. -->
+    <label class="atelier-field">
+      <span>…or a token id</span>
+      <span class="atelier-byid">
+        <input
+          type="text"
+          inputmode="numeric"
+          placeholder="195"
+          [value]="tokenId()"
+          (input)="tokenId.set($any($event.target).value)"
+          (keydown.enter)="byId()"
+          data-testid="token-id"
+        />
+        <button
+          type="button"
+          class="atelier-minor"
+          [disabled]="!tokenId().trim() || fetching()"
+          (click)="byId()"
+          data-testid="fetch-id"
+        >
+          {{ fetching() ? 'Fetching…' : 'Fetch' }}
+        </button>
+      </span>
+    </label>
+
     @if (preview(); as url) {
-      <img class="atelier-preview" [src]="url" alt="The painting about to be worked on" />
+      <span class="atelier-chosen">
+        <img class="atelier-preview" [src]="url" alt="The painting about to be worked on" />
+        @if (chosen(); as called) {
+          <span class="atelier-chosen-name" data-testid="chosen">{{ called }}</span>
+        }
+      </span>
     }
 
     <span class="atelier-spacer"></span>
