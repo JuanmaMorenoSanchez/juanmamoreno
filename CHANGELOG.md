@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.2.0
+
+- **feat** — the product page says whose machine the AI runs on: a section on the
+  studio that runs the models locally, why the weights are run here rather than
+  called from a service, and why open weights is not open source. The models
+  themselves, their licences and what they measured are written up in
+  `docs/atelier-models.md` and drawn in `docs/atelier-schema.svg`.
+
 ## 2.1.0
 
 - **feat** — the gas ceiling says what it is, and can be moved. "Too expensive!"

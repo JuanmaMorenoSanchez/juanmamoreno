@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 650" width="980" height="650"
+     font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+     role="img" aria-label="How the atelier is put together: a painting and a hand-drawn hint go to Grounding DINO and SAM 2.1 to become masks, then cut layers, a LaMa fill, and a depth map that drives the existing Parallax motion logic. A separate strand generates sketch code with Qwen and runs it in a sandboxed iframe. Everything runs locally.">
+  <style>
+    :root { color-scheme: light dark; }
+    svg {
+      --surface: #ffffff;
+      --ink: #15181c;
+      --muted: #5c646e;
+      --line: #aab2bd;
+      --model: #1b5e9c;
+      --model-fill: #eaf2fa;
+      --owned: #146b52;
+      --owned-fill: #e7f4ef;
+      --data: #7a6410;
+      --data-fill: #fbf4df;
+      --rule: #d8dde4;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --surface: #15181c;
+        --ink: #eef1f5;
+        --muted: #9aa3ae;
+        --line: #4a525c;
+        --model: #7db6e8;
+        --model-fill: #16293b;
+        --owned: #6fd0ac;
+        --owned-fill: #112b23;
+        --data: #e0c569;
+        --data-fill: #2e2712;
+        --rule: #2b3139;
+      }
+    }
+    .bg { fill: var(--surface); }
+    .title { fill: var(--ink); font-size: 19px; font-weight: 700; }
+    .sub { fill: var(--muted); font-size: 12.5px; }
+    .lane { fill: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: .09em; }
+    .name { font-size: 13.5px; font-weight: 700; }
+    .role { fill: var(--muted); font-size: 11px; }
+    .meta { fill: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+    .edge-label { fill: var(--muted); font-size: 10.5px; font-style: italic; }
+    .box { stroke-width: 1.6; rx: 7; }
+    .swatch { stroke-width: 1.5; rx: 2.5; }
+    .m-box { fill: var(--model-fill); stroke: var(--model); }
+    .m-name { fill: var(--model); }
+    .o-box { fill: var(--owned-fill); stroke: var(--owned); }
+    .o-name { fill: var(--owned); }
+    .d-box { fill: var(--data-fill); stroke: var(--data); }
+    .d-name { fill: var(--data); }
+    .rule { stroke: var(--rule); stroke-width: 1; }
+    .foot { fill: var(--muted); font-size: 11px; }
+    .foot-strong { fill: var(--ink); font-size: 11px; font-weight: 700; }
+  </style>
+
+  <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--line)"/>
+  </marker>
+
+  <rect class="bg" x="0" y="0" width="980" height="650"/>
+
+  <text class="title" x="34" y="38">The atelier</text>
+  <text class="sub" x="34" y="58">Every model below runs on this machine. Nothing leaves it, and nothing here can reach a paid API.</text>
+
+  <!-- legend -->
+  <g transform="translate(624,28)">
+    <rect class="swatch d-box" x="0" y="0" width="13" height="13"/>
+    <text class="meta" x="19" y="11">yours</text>
+    <rect class="swatch m-box" x="78" y="0" width="13" height="13"/>
+    <text class="meta" x="97" y="11">downloaded model</text>
+    <rect class="swatch o-box" x="227" y="0" width="13" height="13"/>
+    <text class="meta" x="246" y="11">already in the repo</text>
+  </g>
+
+  <line class="rule" x1="34" y1="74" x2="946" y2="74"/>
+
+  <!-- ============ lane 1: cutting a painting into layers ============ -->
+  <text class="lane" x="34" y="100">CUTTING A PAINTING INTO LAYERS</text>
+
+  <!-- painting -->
+  <g transform="translate(34,116)">
+    <rect class="box d-box" width="170" height="64"/>
+    <text class="name d-name" x="14" y="26">A painting</text>
+    <text class="role" x="14" y="44">from the catalogue,</text>
+    <text class="role" x="14" y="56">full resolution</text>
+  </g>
+
+  <!-- brush -->
+  <g transform="translate(34,212)">
+    <rect class="box o-box" width="170" height="64"/>
+    <text class="name o-name" x="14" y="26">A brush stroke</text>
+    <text class="role" x="14" y="44">drawn by hand when</text>
+    <text class="role" x="14" y="56">a word is ambiguous</text>
+  </g>
+
+  <!-- grounding dino -->
+  <g transform="translate(268,116)">
+    <rect class="box m-box" width="196" height="64"/>
+    <text class="name m-name" x="14" y="24">Grounding DINO</text>
+    <text class="role" x="14" y="42">a phrase in, boxes out</text>
+    <text class="meta" x="14" y="56">700 MB · Apache 2.0 · 0.3–0.8 s</text>
+  </g>
+
+  <!-- sam -->
+  <g transform="translate(528,164)">
+    <rect class="box m-box" width="196" height="64"/>
+    <text class="name m-name" x="14" y="24">SAM 2.1 Small</text>
+    <text class="role" x="14" y="42">a box or a point in, a mask out</text>
+    <text class="meta" x="14" y="56">184 MB · Apache 2.0 · 0.1–0.4 s</text>
+  </g>
+
+  <!-- outputs -->
+  <g transform="translate(788,100)">
+    <rect class="box d-box" width="158" height="56"/>
+    <text class="name d-name" x="14" y="24">Cut layers</text>
+    <text class="role" x="14" y="42">transparent pngs</text>
+  </g>
+
+  <g transform="translate(788,192)">
+    <rect class="box m-box" width="158" height="64"/>
+    <text class="name m-name" x="14" y="24">LaMa</text>
+    <text class="role" x="14" y="42">fills in behind them</text>
+    <text class="meta" x="14" y="56">200 MB · Apache 2.0</text>
+  </g>
+
+  <!-- lane 1 edges -->
+  <path class="edge" marker-end="url(#tip)" d="M 204 148 H 268"/>
+  <path class="edge" marker-end="url(#tip)" d="M 464 148 H 496 Q 512 148 512 164 V 190 H 528"/>
+  <text class="edge-label" x="470" y="142">boxes</text>
+  <path class="edge" marker-end="url(#tip)" d="M 204 244 H 496 Q 512 244 512 228 V 206 H 528"/>
+  <text class="edge-label" x="330" y="238">points</text>
+  <path class="edge" marker-end="url(#tip)" d="M 724 190 H 756 Q 772 190 772 170 V 128 H 788"/>
+  <text class="edge-label" x="730" y="162">masks</text>
+  <path class="edge" marker-end="url(#tip)" d="M 724 202 H 756 Q 772 202 772 212 V 224 H 788"/>
+
+  <line class="rule" x1="34" y1="296" x2="946" y2="296"/>
+
+  <!-- ============ lane 2: motion ============ -->
+  <text class="lane" x="34" y="322">MOTION, WITHOUT A VIDEO MODEL</text>
+
+  <g transform="translate(34,338)">
+    <rect class="box d-box" width="170" height="56"/>
+    <text class="name d-name" x="14" y="24">The same painting</text>
+    <text class="role" x="14" y="42">flat, as it was painted</text>
+  </g>
+
+  <g transform="translate(268,338)">
+    <rect class="box m-box" width="196" height="64"/>
+    <text class="name m-name" x="14" y="24">Depth Anything V2 Small</text>
+    <text class="role" x="14" y="42">how far away each pixel is</text>
+    <text class="meta" x="14" y="56">100 MB · Apache 2.0</text>
+  </g>
+
+  <g transform="translate(528,338)">
+    <rect class="box o-box" width="196" height="64"/>
+    <text class="name o-name" x="14" y="24">Parallax</text>
+    <text class="role" x="14" y="42">depth → shift, already written</text>
+    <text class="meta" x="14" y="56">@domain/generative</text>
+  </g>
+
+  <g transform="translate(788,346)">
+    <rect class="box d-box" width="158" height="56"/>
+    <text class="name d-name" x="14" y="24">Motion</text>
+    <text class="role" x="14" y="42">only pixels you painted</text>
+  </g>
+
+  <path class="edge" marker-end="url(#tip)" d="M 204 366 H 268"/>
+  <path class="edge" marker-end="url(#tip)" d="M 464 370 H 528"/>
+  <text class="edge-label" x="470" y="364">depth map</text>
+  <path class="edge" marker-end="url(#tip)" d="M 724 370 H 788"/>
+
+  <line class="rule" x1="34" y1="444" x2="946" y2="444"/>
+
+  <!-- ============ lane 3: sketches ============ -->
+  <text class="lane" x="34" y="470">SKETCHES WRITTEN FROM A PROMPT</text>
+
+  <g transform="translate(34,486)">
+    <rect class="box d-box" width="170" height="56"/>
+    <text class="name d-name" x="14" y="24">A prompt</text>
+    <text class="role" x="14" y="42">what the piece should do</text>
+  </g>
+
+  <g transform="translate(268,486)">
+    <rect class="box m-box" width="196" height="64"/>
+    <text class="name m-name" x="14" y="24">Qwen2.5-Coder 7B</text>
+    <text class="role" x="14" y="42">writes a Sketch, Canvas 2D</text>
+    <text class="meta" x="14" y="56">4.7 GB · Apache 2.0 · Q4_K_M</text>
+  </g>
+
+  <g transform="translate(528,486)">
+    <rect class="box o-box" width="196" height="64"/>
+    <text class="name o-name" x="14" y="24">The Sketch contract</text>
+    <text class="role" x="14" y="42">setup · draw · five methods</text>
+    <text class="meta" x="14" y="56">@features/generative</text>
+  </g>
+
+  <g transform="translate(788,486)">
+    <rect class="box d-box" width="158" height="64"/>
+    <text class="name d-name" x="14" y="24">Sandboxed frame</text>
+    <text class="role" x="14" y="42">opaque origin,</text>
+    <text class="role" x="14" y="56">no network at all</text>
+  </g>
+
+  <path class="edge" marker-end="url(#tip)" d="M 204 514 H 268"/>
+  <path class="edge" marker-end="url(#tip)" d="M 464 518 H 528"/>
+  <path class="edge" marker-end="url(#tip)" d="M 724 518 H 788"/>
+
+  <line class="rule" x1="34" y1="578" x2="946" y2="578"/>
+
+  <!-- footer -->
+  <text class="foot-strong" x="34" y="602">Measured on an 8 GB laptop RTX 4060:</text>
+  <text class="foot" x="248" y="602">cutting a painting peaked at 1,808 MiB — a quarter of the budget.</text>
+  <text class="foot" x="34" y="622">One model is resident at a time, loaded when needed and evicted before the next, which is what makes 8 GB enough.</text>
+  <text class="foot" x="34" y="640">Every licence is Apache 2.0 or MIT, so there is nothing to re-read before selling a painting the output appears beside.</text>
+</svg>

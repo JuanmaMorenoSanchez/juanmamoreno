@@ -2451,3 +2451,25 @@ ceiling", "ignores a negative ceiling" and "ignores an infinite one") and
 `mint-gate.component.spec.ts` ("shows the ceiling the price is judged against",
 "hands a typed ceiling to the service", "hands on an emptied input as NaN rather
 than as zero" and "lets a dear price through once the ceiling is above it")
+
+### R136 — The product page says whose machine the AI runs on · met
+The page that explains how this is built now covers the part that runs AI models
+locally: what the studio does, why the weights are run here rather than called
+from a service, and the licence distinction that decided which models are in it.
+
+**It sits after the section about the agents**, because it is the same argument
+carried one step further — first who writes the code, then whose machine the AI
+runs on — and before the links, which close the page.
+
+**It names no address behind the guard.** The studio is admin-only and the
+repository is public, so the section describes what the tool does without giving
+the route to it, like everything else on this page.
+
+**Open weights is not open source, and the section says so**, because that
+distinction is the reason several better-known models were rejected: a model can
+be free to download and still forbid the commercial use that selling a painting
+beside its output amounts to.
+*Proven by:* `project.component.spec.ts` "reads in the order he put the sections
+in", which pins every heading and its place. The models themselves, their
+licences and the measurements quoted are written up in `docs/atelier-models.md`
+and drawn in `docs/atelier-schema.svg`.

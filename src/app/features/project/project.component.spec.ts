@@ -59,6 +59,10 @@ describe('ProjectComponent', () => {
       'project.product.title',
       'project.rot.title',
       'project.agents.title',
+      // Running the models himself comes after the agents that write the code,
+      // because it is the same argument carried one step further: first who
+      // writes the thing, then whose machine the AI runs on.
+      'project.atelier.title',
       'project.links.title',
     ]);
   });

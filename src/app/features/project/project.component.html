@@ -304,6 +304,15 @@
   </section>
 
   <section class="project-section">
+    <h2>{{ 'project.atelier.title' | translate }}</h2>
+    @for (key of ['a', 'b', 'c', 'd']; track key) {
+      @for (paragraph of paragraphs('project.atelier.' + key); track $index) {
+        <p>{{ paragraph }}</p>
+      }
+    }
+  </section>
+
+  <section class="project-section">
     <h2>{{ 'project.links.title' | translate }}</h2>
     <ul class="project-links">
       <li>
