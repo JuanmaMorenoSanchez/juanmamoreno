@@ -314,9 +314,17 @@ you painted.
 That is ~25 MB of model and seconds of compute, against ~5 GB and tens of
 minutes. For a painting on a web page I think it is also the better result.
 
-**Then Wan 2.2 TI2V-5B FP8** for real generative motion: Apache 2.0, ~6 GB at
-480p, and described in current write-ups as running on exactly a laptop-class
-RTX 4060. Two honest warnings:
+**Wan 2.2 is on hold** — decided 2026-10-09. Depth parallax is the motion the
+atelier offers, and the effort that would have gone into a video model goes into
+generating sketches from prompts instead (workflow C). This is the right order:
+parallax motion and generated sketches both compose with what already exists,
+and a 5B video model is the one thing in this plan that does not comfortably fit
+the card.
+
+Kept here because it is the obvious next thing when motion needs to do more than
+move flat layers: Wan 2.2 TI2V-5B FP8, Apache 2.0, ~6 GB at 480p, described in
+current write-ups as running on a laptop-class RTX 4060. Its two problems, for
+whenever it comes off hold:
 
 1. **Image-to-video models drift** — fed a painting they resolve its ambiguities
    into photographic plausibility, the opposite of what you want.
@@ -325,7 +333,7 @@ RTX 4060. Two honest warnings:
    3-second loop that begins and ends as the painting beats a longer clip that
    wanders.
 
-Expect 10–40 minutes per clip. Fine, by your own account.
+Expect 10–40 minutes per clip.
 
 ### C — generative interactive artworks
 
@@ -365,29 +373,133 @@ hand-written line, which is the gate you deliberately kept.
 
 ---
 
-## 7. Order of work
+## 7. Teaching it your paintings
+
+Every model here learned from photographs. Your canvases are not photographs,
+and that gap is the main risk in this plan. Fine-tuning on your own work is the
+answer to it, and the licences allow it outright — Apache 2.0 grants the right to
+prepare derivative works, with no field-of-use clause and no acceptable-use
+policy to honour.
+
+### Yes, it can be turned on and off
+
+That is exactly what a **LoRA** is: not a changed model but a separate small file
+of weight deltas, loaded on top of the base model at a strength you choose. 0.0
+is off, 1.0 is full, and the values between are real — so "my style" is a dial
+rather than a switch, and you can ask for a quarter of it.
+
+Not everything is LoRA-shaped. A fine-tuned LaMa is a second checkpoint rather
+than an overlay, so there it is on or off by which file loads — but each is only
+about 200 MB, so keeping both costs nothing.
+
+### The dataset you already have
+
+The build renders pages for about 150 distinct paintings plus second views, and
+the high-resolution originals are in the bucket. For everything below that is
+enough; people train style LoRAs on twenty images.
+
+### Three candidates, best first
+
+**1. LaMa, self-supervised — no labelling at all.** "Fill behind" is the weakest
+part of this plan: a generic inpainter will not invent _your_ brushwork. LaMa
+fine-tunes by masking random regions of your own paintings and learning to put
+them back, so the annotation is nothing — the paintings are the labels. 150
+canvases at full resolution is thousands of crops, the model is 51M parameters,
+and training it on 8 GB is untroubled. **Cheapest to do, and it attacks the thing
+most likely to disappoint.**
+
+**2. The segmenter, if Phase 2 says it needs it.** If Grounding DINO cannot
+ground "the girl" in a painted canvas, fine-tuning it — or SAM 2.1's mask decoder
+— on your paintings is the fix. It needs masks, which is the catch-22: masks are
+what the thing produces. But you wanted to cut by hand anyway, and **a hand-drawn
+mask is a training label**. Thirty or forty is enough to adapt a 46M-parameter
+decoder. The brush stops being a workaround and becomes the annotation tool.
+
+**3. A style LoRA — but there is nothing to attach it to yet.** This is the
+well-trodden path, and 150 images is generous. The snag: this stack has no
+text-to-image model in it. It segments, fills, measures and animates. A style
+LoRA would be for a workflow not yet asked for.
+
+### What the hardware allows
+
+Training needs optimiser state and activations on top of the weights — three to
+four times inference. So: LaMa (51M) and the SAM decoder (46M) are comfortable;
+Grounding DINO (~170M) is fine; a full fine-tune of anything larger is out of the
+question on this card. Wan 2.2 would have been the hard case, and it is on hold.
+
+Training locally also means the originals never leave the machine, which is the
+privacy property you asked for — and it reads from the bucket and never writes
+back, so nothing can downgrade an original.
+
+### The discipline
+
+**Do not fine-tune anything until Phase 2 has measured what the base models
+actually do.** Twice this project has built on an assumption that a model could
+do something it could not — Gemini's masks, then MiniMax's weights — and both
+times the cost was weeks. Fine-tuning is the right answer to a _measured_ gap. If
+Grounding DINO grounds "the girl" out of the box, a fine-tune is effort spent on
+a problem you do not have.
+
+Training adds `peft` and `datasets` beyond the inference list, so it is a
+separate dependency ask when the time comes.
+
+## 8. Order of work
 
 **Phase 1 (this document).** Audit, feasibility, architecture. Done.
 
-**Phase 2 — the spike. ~1 day, no Angular.** A Python script, not a service.
-Download Grounding DINO + SAM 2.1 Small, run them on **painting 6** — the one
-where "the girl" returned an error and "the woman in the bottom" returned
-something random. Measure real VRAM with the desktop closed, and real seconds.
-**Verify: a usable mask of the girl, judged by eye.** If this fails, nothing
-after it is worth building, and we will have spent a day instead of a fortnight.
+**Phase 2 — the spike. Done, 2026-10-09, and it passed.**
+`atelier-engine/spike/isolate.py`, run on **painting 6** — the canvas where
+"the girl" returned an error from Vertex and "the woman in the bottom" returned
+something random. **7 of 7 labels produced a cut.** The mask of the girl follows
+her hair, her shoulder and her face and takes nothing else; the face, asked for
+separately, is cut to its own contour and excludes the hair.
+
+Measured, not estimated:
+
+|                 |                                                           |
+| --------------- | --------------------------------------------------------- |
+| Peak VRAM       | **1,808 MiB** — of 7,096 free, so a quarter of the budget |
+| Grounding DINO  | 0.3–0.8s per label                                        |
+| SAM 2.1         | 0.1–0.4s per mask                                         |
+| Weights on disk | 1.1 GB for both                                           |
+
+**What it does well and what it does not** — the finding that shapes the
+editor:
+
+- **A tight, well-grounded box gives an excellent mask.** "a girl" (dino 0.41,
+  SAM iou 0.98) and "a face" (0.56 / 0.96) are clean enough to cut and use.
+- **A loose box on a coherent object gives the object, not the named part.**
+  "a blue shirt" returned the whole inverted figure — shirt, hands and head —
+  because SAM segments _what the box frames_, not the adjective. Usable as a
+  layer; not literal.
+- **A diffuse region fails.** "a green field" (iou 0.56) came back as confetti
+  scattered over the foliage: SAM looks for an object and there is none. **So do
+  not ask for the background — derive it.** The background layer is whatever the
+  figures did not take, which is how layered parallax wants it anyway.
+
+Mask precision follows box precision, which is the argument for the brush: a
+point or a box drawn by hand is the same kind of input, and the better one when
+a word is ambiguous.
 
 **Phase 3 — the service.** FastAPI on `127.0.0.1:7860`: the model registry with
 eviction, the graph executor with caching, and Workflow B's operations.
 **Verify: a pytest run that cuts a layer from a real painting end to end.**
 
 **Phase 4 — `/atelier`.** The page, the pipeline editor, the LNA permission flow,
-the "service is not running" state, Save to the bucket on an explicit press.
-**Verify: a parallax sketch running on layers this tool cut.**
+Save to the bucket on an explicit press, and **the unreachable state**: when the
+local service does not answer — because it is not started, or because you are on
+a different machine — the page says exactly that and why, rather than failing
+silently or looking broken. The `REQUIREMENTS.md` entry saying the page is
+useless without the local service is written in this phase, because
+`verify-requirements.mjs` refuses a proof naming a file that does not exist yet.
+**Verify: a parallax sketch running on layers this tool cut, and the page read
+with the service stopped.**
 
-**Phase 5 — motion.** Depth parallax first, then Wan 2.2. **Verify: a 3-second
-loop of one painting that still reads as that painting.**
+**Phase 5 — motion, without a video model.** Depth map → layer offsets → frames,
+through the `Parallax` logic already in `@domain/generative`. **Verify: a painting
+that moves and still reads as that painting.**
 
-**Phase 6 — code generation.** Qwen2.5-Coder and the sandbox. **Verify: a
+**Phase 6 — sketches from prompts.** Qwen2.5-Coder and the sandbox. **Verify: a
 generated sketch that satisfies `Sketch`, runs in the iframe, and provably
 cannot reach the network.**
 
@@ -396,65 +508,66 @@ Each phase bumps `package.json` and adds its `REQUIREMENTS.md` entries and
 
 ---
 
-## 8. What I am least sure about
+## 9. What I am least sure about
 
-- **Whether these models ground labels in a painting.** They are trained on
-  photographs; paintings are out of distribution, and this is the exact rock
-  Vertex broke on. Grounding DINO may be as vague as Gemini was. The difference
-  is that box and point prompts give a path that does not depend on language
-  understanding at all — so Workflow B has a floor even if text prompting
-  disappoints. Phase 2 answers this in a day.
-- **Inpainting quality** on painted texture. I expect hand-finishing.
-- **VRAM figures for models not yet downloaded** are from published reports, not
-  measurements on this card. Phase 2 replaces them with real numbers.
-- **Where the service lives.** A sibling folder in this repo, or its own repo? It
-  is Python in a TypeScript project either way. I lean to `atelier-engine/` here,
-  so one clone gets you everything, but it is your call.
-- **Whether `/atelier` should prerender at all.** It will, harmlessly, like the
-  other five admin routes — but it is worth a line in `REQUIREMENTS.md` saying
-  the page is useless without the local service, so nobody later "fixes" it.
+- ~~**Whether these models ground labels in a painting.**~~ **Answered by the
+  Phase 2 spike: they do, for figures and objects.** See §8. What they do not do
+  is diffuse regions, and the background is now derived rather than asked for.
+- **Inpainting quality** on painted texture. Still untested, still the part I
+  expect to need hand-finishing — and now the obvious candidate for the
+  self-supervised fine-tune in §7.
+- **Whether a box is precise enough for the layers you actually want.** The
+  spike cut whole figures well. Whether "her sleeve" or "the shadow under the
+  arm" can be had without the brush is unmeasured.
+- **VRAM for the models still to come.** Measured for segmentation (1.8 GB
+  peak); the inpainting and code models are still published figures.
+- **Whether a hand-drawn mask is good enough to fine-tune on.** It is the
+  fallback if text prompting disappoints, and it has never been tested here.
 
 ---
 
-## 9. Decisions I need from you
+## 10. What was decided
 
-### Dependencies — the real ask
+Settled 2026-10-09.
 
-Your rule is to ask before adding any, so here is the whole list.
+| Question                        | Decision                                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Run the Phase 2 spike?          | **Yes.**                                                                                         |
+| Where does the engine live?     | **`atelier-engine/` in this repo**, beside the site.                                             |
+| The 40 GB MiniMax stack?        | **Not used by this project at all** — it stays for ComfyUI, separately.                          |
+| Motion                          | **Depth parallax now; Wan 2.2 on hold**, so the effort goes to sketches from prompts instead.    |
+| Can "my style" be switched off? | **Yes** — a LoRA is a separate file loaded at a strength, so it is a dial, not a switch. See §7. |
+| The page with no local service  | **Says so, explicitly**, naming that the service is unreachable. Built and required in Phase 4.  |
 
-**npm, in the site: none.** Nothing new.
+### Dependencies
 
-**Python, for the new engine** — this is a real dependency surface and I would
-rather you see it in one piece than a package at a time:
+**npm, in the site: none.** Nothing new, now or planned.
 
-| Package                   | Why                                                | Note             |
-| ------------------------- | -------------------------------------------------- | ---------------- |
-| `torch` (cu12x)           | everything                                         | ~2.5 GB download |
-| `transformers`            | Grounding DINO, Depth Anything                     |                  |
-| `diffusers`               | Wan 2.2, any diffusion                             | Phase 5          |
-| `accelerate`              | **the CPU-offload machinery that makes 8 GB work** |                  |
-| `safetensors`             | weight loading                                     |                  |
-| `fastapi` + `uvicorn`     | the HTTP service                                   |                  |
-| `pillow`, `numpy`         | image handling                                     |                  |
-| `sam2` (facebookresearch) | SAM 2.1                                            | Apache 2.0       |
-| `llama-cpp-python`        | Qwen2.5-Coder                                      | Phase 6 only     |
+**Python** — and the thirty-day rule now covers pip as well as pnpm, on the
+artist's word. pip has no `minimumReleaseAge` setting, so every pin was checked
+against PyPI by hand and carries its publication date in `requirements.txt`.
 
-All Apache 2.0, BSD or MIT; all first-party to their models. They run on your
-machine only, in their own virtualenv, isolated from the site's pnpm tree.
+Installed for Phase 2, all verified at least thirty days old on 2026-10-09:
 
-**For Phase 2 specifically: `torch`, `transformers`, `sam2`, `pillow`, `numpy`.**
-That is the minimum to answer the only question that matters.
+| Package        | Version      | Published  | Age      |
+| -------------- | ------------ | ---------- | -------- |
+| `torch`        | 2.14.0+cu130 | 2026-09-02 | 36 days  |
+| `transformers` | 5.16.1       | 2026-08-26 | 43 days  |
+| `pillow`       | 12.3.0       | 2026-07-01 | 99 days  |
+| `numpy`        | 2.4.6        | 2026-05-18 | 143 days |
 
-### The four questions
+Four packages, not five: **`sam2` is not needed.** `facebook/sam2.1-hiera-small`
+is published as a `transformers` model, so the library already in the tree loads
+it — one supply chain instead of two, and no install from a git URL, which would
+have skipped the age check entirely.
 
-1. **Shall I run the Phase 2 spike?** Grounding DINO + SAM 2.1 on painting 6. One
-   day, no money, no site changes, ~1 GB of weights. It tells us whether any of
-   this works before we build a service around it.
-2. **`atelier-engine/` in this repo, or its own?** My lean: this repo.
-3. **MiniMax H3 — set aside?** Keep the 40 GB on disk, don't use it.
-4. **Depth parallax before Wan 2.2 for motion?** ~25 MB and seconds, versus ~5 GB
-   and half an hour — and more faithful to the painting. My lean: yes, and treat
-   the video model as the second option rather than the first.
+numpy is held at 2.4.x deliberately: 2.5 requires Python 3.12 and this machine
+has 3.11. Nothing here needs 2.5.
+
+Still to ask for, when their phase arrives: `fastapi` + `uvicorn` (Phase 3),
+`accelerate` (when a model needs offloading), `llama-cpp-python` (Phase 6), and
+`peft` + `datasets` (only if fine-tuning, §7). `diffusers` is no longer on the
+list, because it was there for Wan 2.2.
 
 ---
 

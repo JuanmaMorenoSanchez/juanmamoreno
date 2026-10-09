@@ -1,0 +1,32 @@
+# The atelier engine's dependencies.
+#
+# Every pin is a version that had been on the index for at least thirty days
+# when it was chosen, which is the same rule pnpm enforces on the site
+# (`minimumReleaseAge: 43200`). pip has no equivalent setting, so the check is
+# done by hand and the result written here: the date beside each pin is when
+# that version was published, and all of them were checked on 2026-10-09.
+#
+# Keep this list short. A model that `transformers` can load does not also need
+# its own package — that is one supply chain instead of two, which is why there
+# is no `sam2` here even though SAM 2.1 is used.
+
+# cu130 because the card is an Ada 4060 and the installed driver (592.82)
+# already runs CUDA 13 — the plain PyPI wheel for Windows is CPU-only, which
+# would silently work and take a thousand times as long.
+--extra-index-url https://download.pytorch.org/whl/cu130
+
+torch==2.14.0+cu130      # published 2026-09-02
+
+# Not a choice: `transformers` loads SAM 2.1 through Sam2ImageProcessor, which
+# imports torchvision and fails without it. Same publisher as torch and
+# published the same day, which is the pair that is meant to go together — 0.29.1
+# exists but was eight days old, so it is held back.
+torchvision==0.29.0+cu130  # published 2026-09-02
+
+transformers==5.16.1     # published 2026-08-26
+pillow==12.3.0           # published 2026-07-01
+
+# Held at 2.4.x deliberately: numpy 2.5 requires Python 3.12, and 3.11 is what
+# is installed on this machine. Nothing here needs 2.5, so the engine stays on
+# 3.11 rather than the whole toolchain moving for one pin.
+numpy==2.4.6             # published 2026-05-18

@@ -1,0 +1,8 @@
+# The virtualenv, the weights and anything generated. None of it belongs in git:
+# the weights are gigabytes and come from their publishers, and the outputs are
+# the artist's to keep or throw away.
+.venv/
+models/
+out/
+__pycache__/
+*.pyc
