@@ -29,8 +29,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
 
+from .catalogue import CATALOGUE
 from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
+from .nodes import GraphError, run_graph
 from .operations import DINO, SAM, find, isolate
 from .registry import ModelRegistry
 
@@ -251,3 +253,73 @@ def evict() -> JSONResponse:
     registry.evict()
     vram = registry.vram()
     return JSONResponse({"resident": None, "vram_free_mib": vram[0] if vram else None})
+
+
+@app.get("/nodes")
+def nodes() -> JSONResponse:
+    """Everything this engine can do, for the editor to draw a palette from.
+
+    The page knows none of these names. Adding a node to `catalogue.py` puts it
+    in the palette without the site being touched or released, which is the
+    whole reason the list lives here rather than in a template.
+    """
+    return JSONResponse({"nodes": [node.published() for node in CATALOGUE.values()]})
+
+
+@app.post("/graph")
+def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
+    """Run a drawn graph over an uploaded painting.
+
+    The graph is json: `nodes` as {id: {type, params}} and `edges` as
+    [[from, port, to, port], ...]. Anything wrong with it comes back as a 400
+    with a sentence naming the node, because the person reading it is looking
+    at a picture of boxes and needs to know which box to move.
+    """
+    import json
+
+    try:
+        drawn = json.loads(graph)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail="that is not a graph") from exc
+
+    painting = _read(image)
+    batch = uuid.uuid4().hex[:8]
+    context: dict[str, object] = {
+        "painting": painting,
+        "registry": registry,
+        "batch": batch,
+        "saved": [],
+    }
+
+    started = time.perf_counter()
+    try:
+        produced = run_graph(
+            CATALOGUE,
+            drawn.get("nodes") or {},
+            [tuple(edge) for edge in (drawn.get("edges") or [])],
+            context,
+        )
+    except GraphError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except ValueError as exc:
+        # A node that ran and could not do its job — "nothing came back for
+        # a unicorn" — which is a different thing from a graph that is wrong.
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    # Images do not go in the response; their names do, and /layer serves them.
+    plain: dict[str, dict[str, object]] = {}
+    for node_id, outputs in produced.items():
+        plain[node_id] = {
+            name: value
+            for name, value in outputs.items()
+            if isinstance(value, (str, int, float, list, bool))
+        }
+
+    return JSONResponse(
+        {
+            "batch": batch,
+            "seconds": round(time.perf_counter() - started, 2),
+            "produced": plain,
+            "saved": context["saved"],
+        }
+    )

@@ -30,3 +30,8 @@ typer==0.27.2  # 2026-08-28  41 days
 
 # Came in with onnxruntime, resolved to a build three weeks old.
 protobuf==7.36.1  # 2026-08-31  38 days
+
+# Came in with diffusers.
+charset-normalizer==3.5.1  # 2026-08-15  54 days
+urllib3==2.7.0  # 2026-05-07  154 days
+zipp==4.1.0  # 2026-05-18  143 days

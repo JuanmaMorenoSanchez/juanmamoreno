@@ -1,9 +1,9 @@
 <article class="atelier">
   <h1>Atelier</h1>
   <p class="atelier-lead">
-    Name the things in a painting and they are cut out, each to its own layer, with the background
-    they were lifted off. Everything runs on this machine. Nothing is saved anywhere until you say
-    so.
+    Draw what should happen to a painting, then run it. The boxes come from the engine, so whatever
+    it has learned to do is in the list. Every model runs on this machine, and nothing is saved
+    anywhere until you say so.
   </p>
 
   <!-- First, whether there is anything to talk to. Everything below depends on it. -->
@@ -65,109 +65,75 @@
     </section>
   }
 
-  <section class="atelier-form">
+  <section class="atelier-bar">
     <label class="atelier-field">
       <span>The painting</span>
       <input type="file" accept="image/*" (change)="chose($event)" data-testid="painting" />
     </label>
 
     @if (preview(); as url) {
-      <img class="atelier-preview" [src]="url" alt="The painting about to be cut" />
+      <img class="atelier-preview" [src]="url" alt="The painting about to be worked on" />
     }
 
-    <label class="atelier-field">
-      <span>What to cut, one per line</span>
-      <textarea
-        rows="4"
-        [value]="labels()"
-        (input)="labels.set($any($event.target).value)"
-        data-testid="labels"
-      ></textarea>
-    </label>
+    <span class="atelier-spacer"></span>
 
-    <label class="atelier-check">
-      <input
-        type="checkbox"
-        [checked]="fillBehind()"
-        (change)="fillBehind.set($any($event.target).checked)"
-      />
-      <span>Paint over the holes afterwards, for a background that can be moved behind them</span>
-    </label>
-
+    <button type="button" class="atelier-minor" (click)="clear()" data-testid="clear">
+      Clear the canvas
+    </button>
     <button
       type="button"
       class="atelier-go"
       [disabled]="!ready()"
-      (click)="cut()"
-      data-testid="cut"
+      (click)="run()"
+      data-testid="run"
     >
-      {{ busy() ? 'Cutting…' : 'Cut' }}
+      {{ busy() ? 'Running…' : 'Run' }}
     </button>
   </section>
+
+  <app-node-canvas
+    [catalogue]="catalogue()"
+    [nodes]="nodes()"
+    [edges]="edges()"
+    (changed)="redraw($event)"
+  />
+
+  <p class="atelier-hint">
+    Drag from a port on the right of a box to one on the left of another. Ports only join when they
+    carry the same kind of thing. A dashed port can be left alone — joining a mask to
+    <strong>Edit</strong> changes only that part of the painting; leaving it empty repaints the
+    whole canvas and the brushwork drifts.
+  </p>
 
   @if (failure(); as why) {
     <p class="atelier-failure" data-testid="failure">{{ why }}</p>
   }
 
-  @if (result(); as cut) {
+  @if (result(); as run) {
     <section class="atelier-result" data-testid="result">
-      <h2>{{ cut.layers.length }} layer(s), in {{ cut.seconds }}s</h2>
+      <h2>Ran in {{ run.seconds }}s</h2>
 
-      <!-- Said once, plainly, because the numbers below invite the opposite reading. -->
+      <!-- Said once, plainly, because the numbers invite the opposite reading. -->
       <p class="atelier-caveat">
-        A layer coming back is not evidence the thing is in the painting. Asked for a unicorn on a
+        A result coming back is not evidence the thing was in the painting. Asked for a unicorn on a
         canvas with none, the model returns whatever is most creature-shaped and scores it about the
         same. Judge these by eye.
       </p>
 
-      @if (cut.notFound.length) {
-        <p class="atelier-missed">
-          It would not even guess at: <strong>{{ cut.notFound.join(', ') }}</strong>
-        </p>
-      }
-
-      <ul class="atelier-layers">
-        @for (layer of cut.layers; track layer.file) {
-          <li>
-            <img [src]="layerUrl(layer.file)" [alt]="layer.label" loading="lazy" />
-            <h3>{{ layer.label }}</h3>
-            <dl>
-              <dt>found</dt>
-              <dd>{{ layer.score.toFixed(3) }}</dd>
-              <dt>edge</dt>
-              <dd>{{ layer.iou.toFixed(3) }}</dd>
-              <dt>covers</dt>
-              <dd>{{ percent(layer.coverage) }}</dd>
-            </dl>
-          </li>
-        }
-
-        @if (cut.background; as back) {
-          <li>
-            <img [src]="layerUrl(back.file)" alt="What the layers were lifted off" loading="lazy" />
-            <h3>Behind them</h3>
-            <dl>
-              <dt>covers</dt>
-              <dd>{{ percent(back.coverage) }}</dd>
-            </dl>
-          </li>
-
-          @if (back.filled) {
+      @if (run.saved.length) {
+        <ul class="atelier-layers">
+          @for (file of run.saved; track file) {
             <li>
-              <img
-                [src]="layerUrl(back.filled)"
-                alt="The background with the holes painted over"
-                loading="lazy"
-              />
-              <h3>Behind them, filled</h3>
-              <dl>
-                <dt>covers</dt>
-                <dd>all of it</dd>
-              </dl>
+              <img [src]="layerUrl(file)" [alt]="file" loading="lazy" />
+              <h3>{{ file }}</h3>
             </li>
           }
-        }
-      </ul>
+        </ul>
+      } @else {
+        <p class="atelier-caveat">
+          Nothing was kept. Join a <strong>Keep</strong> node to whatever you want written out.
+        </p>
+      }
     </section>
   }
 </article>

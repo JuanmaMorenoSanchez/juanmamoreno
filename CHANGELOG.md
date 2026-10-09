@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.4.0
+
+- **feat** — `/atelier` is a node editor. Drag boxes onto a canvas, join a port
+  to a port, press Run. Nine kinds of box so far, including **Edit**, which
+  changes part of a painting by asking in words. The page knows the name of
+  none of them: the palette, the ports, the controls and the explanation behind
+  each **?** all come from the engine, so a capability added there appears here
+  without the site being touched. Every box has a ? beside its name that says
+  what it is for, what it is bad at, and what each control does.
+
 ## 2.3.0
 
 - **feat** — `/atelier` is back, and this time the models run on his own

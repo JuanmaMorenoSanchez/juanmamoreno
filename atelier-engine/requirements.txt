@@ -59,3 +59,16 @@ pydantic==2.13.5         # published 2026-08-28
 #
 # 1.31.0 was published today and 1.30 within the month, so both are held back.
 onnxruntime==1.29.0      # published 2026-08-17
+
+# ---- image + text -> image ----
+#
+# Qwen-Image-Edit, chosen over FLUX.1 schnell because it follows an instruction
+# ("make the shirt red") rather than merely restyling. It is 20B and the honest
+# cost is quality: on an 8 GB card only the smallest quantisations fit, and the
+# text encoder and VAE have to live in system RAM.
+#
+# `gguf` is what lets diffusers read a quantised checkpoint; `accelerate` is the
+# CPU-offload machinery that makes a model larger than the card run at all.
+diffusers==0.40.0        # published 2026-08-20
+gguf==0.19.0             # published 2026-05-06
+accelerate==1.14.0       # published 2026-06-11

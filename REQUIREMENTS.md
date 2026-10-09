@@ -2509,11 +2509,29 @@ saves what it makes fills a bucket with rejects.
 **It is client-rendered, like every other guarded page**, so the build never
 writes it out and there is no prerendered copy of a page that cannot work
 without a local process.
-*Proven by:* `atelier.component.spec.ts` (10 tests, including "says the engine is
+**The editor knows the name of no node.** The palette, every box, its ports,
+its controls and the explanation behind its **?** all come from `GET /nodes`.
+A capability added to the engine's `catalogue.py` appears in the editor without
+this repository changing or the site being released — which is the whole reason
+the list lives there. The page also survives an engine older than itself: a
+field it expects and does not get is an empty panel, not a crash.
+
+**Every box carries a ?** beside its name. Hovering opens an explanation of what
+the box is for, what it is bad at, what each control does and which ports may be
+left unjoined; pressing it pins the panel open, because a long explanation
+cannot be read while holding a pointer still. The text is written in the engine
+beside the node, so the two cannot drift apart.
+
+*Proven by:* `node-canvas.component.spec.ts` (9 tests, including "draws a
+palette from whatever the engine sent, including a node it has never heard of",
+"opens the explanation when the question mark is hovered", "says what each
+control does, not only that it exists" and "survives an engine older than
+itself, which sends no explanation at all"),
+`atelier.component.spec.ts` (13 tests, including "says the engine is
 not answering, and that the site is not at fault", "names all three reasons it
-could be unreachable, including the one Chrome causes", "will not cut while the
-engine is unreachable" and "warns that a layer is not evidence the thing is
-there") and `engine.service.spec.ts` (8 tests, including "declares the loopback
+could be unreachable, including the one Chrome causes", "builds its palette from
+what the engine says it can do" and "will not run while the engine is
+unreachable") and `engine.service.spec.ts` (8 tests, including "declares the loopback
 address space, which is not the same as local" and "treats not being able to
 reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
 `atelier-engine/tests/`, which are not run by `npm test`.

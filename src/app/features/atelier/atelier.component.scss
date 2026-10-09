@@ -67,20 +67,31 @@
   opacity: 0.75;
 }
 
-.atelier-form {
+/* One row above the canvas: what to work on, and what to do with it. */
+.atelier-bar {
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   gap: 1rem;
-  align-items: flex-start;
-  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.atelier-spacer {
+  flex: 1 1 auto;
+}
+
+.atelier-hint {
+  max-width: 48rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 
 .atelier-field {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  width: 100%;
-  max-width: 34rem;
+  flex: 0 1 auto;
 
   span {
     font-size: 0.85rem;
@@ -108,8 +119,8 @@
 }
 
 .atelier-preview {
-  max-width: 18rem;
-  max-height: 14rem;
+  max-width: 5rem;
+  max-height: 4rem;
   object-fit: contain;
   border: 1px solid currentColor;
   border-radius: 3px;

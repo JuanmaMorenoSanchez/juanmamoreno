@@ -29,6 +29,41 @@ export interface EngineHealth {
   vramTotalMib: number | null;
 }
 
+export interface PortDef {
+  name: string;
+  kind: string;
+  optional: boolean;
+}
+
+export interface ParamDef {
+  name: string;
+  kind: 'text' | 'number' | 'toggle';
+  default: string | number | boolean;
+  label: string;
+  minimum: number | null;
+  maximum: number | null;
+  step: number | null;
+  help: string;
+}
+
+export interface NodeTypeDef {
+  key: string;
+  label: string;
+  category: string;
+  summary: string;
+  help: string;
+  inputs: PortDef[];
+  outputs: PortDef[];
+  params: ParamDef[];
+}
+
+export interface GraphRun {
+  batch: string;
+  seconds: number;
+  produced: Record<string, Record<string, unknown>>;
+  saved: string[];
+}
+
 export interface CutLayer {
   label: string;
   file: string;
@@ -121,6 +156,37 @@ export class AtelierEngineService {
   async evict(): Promise<void> {
     await fetch(`${ENGINE}/evict`, toLocal({ method: 'POST' })).catch(() => undefined);
     await this.check();
+  }
+
+  /**
+   * What this engine can do.
+   *
+   * The palette is built from the answer rather than from a list in the page,
+   * so a node added to the engine appears here without the site being touched.
+   */
+  async catalogue(): Promise<NodeTypeDef[]> {
+    const response = await fetch(`${ENGINE}/nodes`, toLocal({ cache: 'no-store' }));
+    if (!response.ok) throw new Error(`the engine answered ${response.status}`);
+    return ((await response.json()) as { nodes: NodeTypeDef[] }).nodes;
+  }
+
+  /** Run a drawn graph. Throws with the engine's own words, which name a node. */
+  async runGraph(painting: Blob, graph: unknown): Promise<GraphRun> {
+    const form = new FormData();
+    form.append('image', painting, 'painting');
+    form.append('graph', JSON.stringify(graph));
+
+    const response = await fetch(`${ENGINE}/graph`, toLocal({ method: 'POST', body: form }));
+    if (!response.ok) {
+      let said = '';
+      try {
+        said = ((await response.json()) as { detail?: string }).detail ?? '';
+      } catch {
+        said = '';
+      }
+      throw new Error(said || `the engine answered ${response.status}`);
+    }
+    return (await response.json()) as GraphRun;
   }
 
   /** Where a cut layer can be seen. */

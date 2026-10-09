@@ -1,0 +1,270 @@
+.canvas-frame {
+  display: flex;
+  gap: 0;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 32rem;
+}
+
+.palette {
+  flex: 0 0 9.5rem;
+  border-right: 1px solid currentColor;
+  padding: 0.5rem;
+  overflow-y: auto;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+}
+
+.palette-node {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.palette-kind {
+  font-size: 0.62rem;
+  opacity: 0.55;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.palette-empty {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.canvas {
+  flex: 1;
+  /* A grid, so dragging a node has something to move against. */
+  background-image: radial-gradient(currentColor 0.5px, transparent 0.5px);
+  background-size: 18px 18px;
+  background-color: transparent;
+  cursor: grab;
+  touch-action: none;
+  /* Dragging a node otherwise sweeps a text selection across every label it
+     passes, which looks like a fault and leaves the canvas full of blue. */
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.node-body {
+  fill: var(--surface, #fff);
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.97;
+}
+
+.node-header {
+  fill: currentColor;
+  opacity: 0.1;
+  cursor: move;
+}
+
+.node-name {
+  font-size: 12px;
+  font-weight: 700;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+.node-close {
+  font-size: 15px;
+  fill: currentColor;
+  opacity: 0.55;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.port {
+  fill: var(--surface, #fff);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  cursor: crosshair;
+}
+
+/* An optional port is drawn hollow and dashed: it can be left alone. */
+.port-optional {
+  stroke-dasharray: 2 2;
+}
+
+.port-joined {
+  fill: currentColor;
+}
+
+.port-name {
+  font-size: 10px;
+  fill: currentColor;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.port-name-out {
+  text-anchor: end;
+}
+
+.wire {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  opacity: 0.55;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+    stroke-width: 2.6;
+  }
+}
+
+.wire-pulling {
+  stroke-dasharray: 5 4;
+  pointer-events: none;
+}
+
+.param {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 10px;
+
+  span {
+    flex: 0 0 auto;
+    max-width: 48%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+
+  input[type='text'],
+  input[type='number'] {
+    flex: 1 1 auto;
+    min-width: 0;
+    font: inherit;
+    font-size: 10px;
+    padding: 1px 3px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+  }
+}
+
+/* The ? beside each title, and what it opens. */
+.help-dot {
+  fill: currentColor;
+  opacity: 0.12;
+  cursor: help;
+
+  &:hover {
+    opacity: 0.25;
+  }
+}
+
+.help-mark {
+  font-size: 11px;
+  font-weight: 700;
+  fill: currentColor;
+  opacity: 0.75;
+  text-anchor: middle;
+  cursor: help;
+  pointer-events: none;
+}
+
+/* The panel must not be clipped by the node beneath it, and must not swallow
+   pointer events meant for the canvas behind it. */
+.help-layer {
+  overflow: visible;
+  pointer-events: none;
+}
+
+.help-panel {
+  pointer-events: auto;
+  /* Shorter than the foreignObject that holds it, or the box clips the panel
+     before the panel ever decides to scroll, and a long explanation is cut off
+     mid-sentence with no way to reach the rest. */
+  max-height: 400px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 18%);
+  font-size: 11px;
+  line-height: 1.45;
+
+  h4 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0 0 0.4rem;
+    font-size: 12px;
+  }
+
+  h5 {
+    margin: 0.7rem 0 0.25rem;
+    font-size: 10px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0 0 0.45rem;
+    opacity: 0.85;
+  }
+}
+
+.help-param strong {
+  opacity: 1;
+}
+
+.help-ports {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.help-close {
+  font: inherit;
+  font-size: 10px;
+  padding: 0 0.3rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+}
