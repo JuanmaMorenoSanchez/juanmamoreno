@@ -51,6 +51,23 @@ def to_layer(
     return layer
 
 
+def grow(mask: np.ndarray, pixels: int) -> np.ndarray:
+    """The mask, widened by that many pixels in every direction.
+
+    Needed before filling in behind something. A mask traces the edge of the
+    figure, so the ring of pixels just outside it is still half figure — the
+    colour the brush left on the way past. Asked to invent inside that ring, the
+    inpainter uses it as context and reproduces a faint outline of the thing
+    that was removed, which is the one shape that must not survive.
+    """
+    if pixels <= 0:
+        return np.asarray(mask, dtype=bool)
+    # MaxFilter is a dilation, and the kernel has to be odd.
+    size = pixels * 2 + 1
+    widened = to_alpha(np.asarray(mask, dtype=bool)).filter(ImageFilter.MaxFilter(min(size, 99)))
+    return np.asarray(widened, dtype=np.uint8) > 127
+
+
 def bounds(mask: np.ndarray) -> tuple[int, int, int, int] | None:
     """The box the mask actually occupies, or None if it is empty.
 

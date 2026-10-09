@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.2.2
+
+- **chore** — the atelier engine gets its HTTP service, on 127.0.0.1 only, and
+  LaMa filling in behind a cut. Also `constraints.txt` and `tools/check_ages.py`:
+  pinning what the engine imports left eleven transitive packages newer than the
+  thirty-day rule, including one published that morning. No site behaviour
+  changes.
+
 ## 2.2.1
 
 - **chore** — the atelier engine gets its core: a model registry that keeps one

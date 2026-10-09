@@ -32,16 +32,70 @@ Python 3.11. From this folder:
 
 ```
 py -3.11 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m pip install -r requirements.txt -c constraints.txt
 ```
+
+**Both files, always.** `requirements.txt` pins what the engine imports;
+`constraints.txt` pins what those drag in. Installing without the second gets
+you a tree with packages published yesterday — see below.
+
+LaMa is the one model not fetched automatically, because it is not a
+`transformers` model:
+
+```
+curl -L -o models/lama/lama_fp32.onnx   https://huggingface.co/Carve/LaMa-ONNX/resolve/main/lama_fp32.onnx
+```
+
+## Running it
+
+```
+.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860
+```
+
+127.0.0.1 only. `GET /health` says whether there is room to run anything,
+`POST /cut` takes an uploaded painting and one phrase per line, and `POST /evict`
+hands the card back without stopping the service — this is also the machine he
+works on.
+
+## Tests
+
+```
+.venv\Scripts\python -m unittest discover -s tests -t .
+```
+
+Stdlib `unittest`, no test framework added. They run without a GPU or any
+weights: the models are replaced with functions returning a fixed box and a
+fixed rectangle, so what is tested is the policy and the service rather than
+PyTorch.
+
+`spike/isolate.py` and `spike/cut.py` are the manual checks that it really runs,
+against a real painting.
 
 The CUDA build of torch comes from the PyTorch index, not PyPI — the plain PyPI
 wheel for Windows is CPU-only and would work silently and far too slowly.
 
-**Dependencies follow the site's rule: nothing newer than thirty days.** pip has
-no setting for this, so every pin in `requirements.txt` was checked against PyPI
-by hand and carries the date it was published. Keep the list short, and prefer a
-model `transformers` can already load over a model's own package.
+## The thirty-day rule, and why there are two files
+
+The site's pnpm refuses any version less than thirty days old
+(`minimumReleaseAge: 43200`) **across the whole tree**. pip has no equivalent at
+all, and pinning only what you import constrains none of what it drags in.
+
+This is not theoretical. Asking for `fastapi` alone resolved `pydantic` and
+`pydantic-core` published **the previous day**, and `starlette` at fifteen days;
+`transformers` brought in a `tokenizers` published the same morning;
+`onnxruntime` brought a `protobuf` three weeks old. Eleven packages in total,
+none of them named anywhere.
+
+So `constraints.txt` holds the rest of the tree back by hand, and:
+
+```
+.venv\Scripts\python tools\check_ages.py
+```
+
+looks up every installed package on PyPI and exits 1 if any is too young. Run it
+after touching either file. Keep the list short, and prefer a model
+`transformers` can already load over a model's own package — that is one supply
+chain instead of two.
 
 ## Models
 
@@ -53,6 +107,11 @@ selling a painting the output appears beside.
 | ------------------- | ----------------------------------- | ---------- |
 | Text → boxes        | `IDEA-Research/grounding-dino-base` | Apache 2.0 |
 | Boxes/points → mask | `facebook/sam2.1-hiera-small`       | Apache 2.0 |
+| Fill behind         | `Carve/LaMa-ONNX` (`lama_fp32`)     | Apache 2.0 |
+
+LaMa is ONNX rather than TorchScript on purpose: an ONNX graph is data and
+cannot run code when it is loaded. It also runs on the CPU, so filling in
+competes for none of the 8 GB the segmenter needs.
 
 ## The hardware this is written for
 

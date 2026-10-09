@@ -70,9 +70,20 @@ def find(
     """Where in the painting the phrase might be, best first.
 
     One phrase per call. Grounding DINO will take several at once, but a score
-    per label is what the page needs in order to say which word it understood
-    and which it guessed at — and the previous attempt at this failed largely
-    because several things asked for together came back tangled.
+    per label is what the page needs in order to rank them — and the previous
+    attempt at this failed largely because several things asked for together
+    came back tangled.
+
+    **The score is not a presence test.** It ranks candidates inside one
+    painting; it does not answer whether the thing is there. Asked for "a
+    unicorn" on a canvas with no unicorn, this returns the arms and the inverted
+    head at 0.395 — against 0.418 for "a girl", which is really there. Two
+    hundredths apart, so no threshold separates them, and raising it only loses
+    real labels first.
+
+    An empty list therefore means the model would not even guess, which is rare.
+    Anything else has to be judged by eye, which is why every caller shows the
+    cut rather than reporting that something was found.
     """
     import torch
 

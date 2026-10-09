@@ -481,17 +481,32 @@ Mask precision follows box precision, which is the argument for the brush: a
 point or a box drawn by hand is the same kind of input, and the better one when
 a word is ambiguous.
 
-**Phase 3 — the engine. Under way.** Done: the model registry that holds one
-model at a time and evicts before loading the next, the find and isolate
-operations, and layers written as transparent pngs with a softened edge. Proved
-end to end on painting 6 at its full 3000x3180 — two layers and a background in
-21.6 s, and the card back to 6,908 MiB free with nothing resident. Tests are
-stdlib `unittest`, so no test framework was added.
+**Phase 3 — the engine. Done, 2026-10-09.** The model registry that holds one
+model at a time and evicts before loading the next; find, isolate and fill; layers
+written as transparent pngs with a softened edge; and an HTTP service on
+`127.0.0.1:7860` that takes an uploaded painting and one phrase per line. Thirty
+tests, stdlib `unittest`, no test framework added — they run with no GPU and no
+weights.
 
-Still to do in this phase: LaMa filling in behind a cut, and the HTTP layer
-(`fastapi` + `uvicorn`, pinned and waiting to be asked for).
-**Verify: `python -m unittest discover -s tests -t .`, and `spike/cut.py` on a
-real painting.**
+Measured through HTTP on painting 6: **21.2 s** for two layers, a background and
+an inpainted back plate, and the card back to 6,908 MiB free afterwards.
+
+Two findings that changed the design:
+
+- **A score is not a presence test.** Asked for "a unicorn" on a canvas with
+  none, Grounding DINO returned the arms and the inverted head at **0.395** —
+  against **0.418** for "a girl", who is there. Two hundredths apart, so no
+  threshold separates them. The service therefore never reports that something
+  was _found_: it returns the cut, the score and the coverage, and the page
+  shows it for judging by eye.
+- **The thirty-day rule needs a second file.** Pinning what the engine imports
+  constrained none of what those packages dragged in: eleven arrived newer than
+  the rule allows, including a `tokenizers` published that morning and a
+  `pydantic` published the day before. `constraints.txt` holds the rest of the
+  tree, and `tools/check_ages.py` fails if anything slips.
+
+**Verify: `python -m unittest discover -s tests -t .` and
+`python tools/check_ages.py`.**
 
 **Phase 4 — `/atelier`.** The page, the pipeline editor, the LNA permission flow,
 Save to the bucket on an explicit press, and **the unreachable state**: when the

@@ -1,0 +1,32 @@
+# The packages nothing here imports, held back because pip had resolved them
+# to versions published in the last thirty days.
+#
+# pnpm applies `minimumReleaseAge` to the whole dependency tree. pip applies
+# nothing to anything, and pinning only what you import constrains none of
+# what it drags in. Asking for fastapi resolved pydantic and pydantic-core
+# published the previous day; transformers brought in a tokenizers published
+# the same morning. Ten packages were too new on 2026-10-09 and are listed
+# here; the rest of the tree already resolved to something old enough.
+#
+# Only the offenders are listed on purpose. A blanket pin on every package
+# fights the ones that pin their own companion exactly — pydantic wants one
+# precise pydantic-core, sympy one precise mpmath — and the resolver gives up.
+#
+# Install with both files:
+#     pip install -r requirements.txt -c constraints.txt
+#
+# Re-check with: python tools/check_ages.py
+
+filelock==3.32.6  # 2026-09-08  30 days
+fsspec==2026.7.0  # 2026-07-28  72 days
+hf-xet==1.6.0  # 2026-08-03  66 days
+huggingface-hub==1.30.0  # 2026-09-03  35 days
+idna==3.19  # 2026-08-18  51 days
+MarkupSafe==3.0.3  # 2025-09-27  376 days
+regex==2026.9.3  # 2026-09-01  37 days
+tokenizers==0.23.2  # 2026-09-03  35 days
+tqdm==4.70.0  # 2026-07-27  73 days
+typer==0.27.2  # 2026-08-28  41 days
+
+# Came in with onnxruntime, resolved to a build three weeks old.
+protobuf==7.36.1  # 2026-08-31  38 days

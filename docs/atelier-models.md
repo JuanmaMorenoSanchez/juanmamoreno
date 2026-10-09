@@ -58,8 +58,22 @@ there is no reason to take the smaller one.
 seven labels out of seven returning a box. Scores ranged from 0.31 ("an arm",
 which is three arms) to 0.74 ("a blue shirt").
 
-**What it does badly.** Diffuse things. "A green field" scored 0.41 but returned
-a box covering nearly the whole canvas, because a field has no boundary to find.
+**What it does badly — two things, and the second is the one to remember.**
+
+_Diffuse things._ "A green field" scored 0.41 but returned a box covering nearly
+the whole canvas, because a field has no boundary to find.
+
+_Absence._ **The score is not a presence test.** Asked for "a unicorn" on a
+canvas containing none, it returned the arms and the inverted head — the most
+creature-shaped thing available — and scored it **0.395**, against **0.418** for
+"a girl", who is really there. Two hundredths apart. No threshold separates
+those, and raising one loses real labels before it loses invented ones.
+
+So the engine never reports that something was _found_. It returns the cut, the
+score and the coverage, and the page shows the result for judging by eye. This
+is the same lesson as the first attempt, in a new place: these models answer
+confidently about things that are not there, and the only reliable check is
+looking.
 
 ---
 
@@ -116,7 +130,24 @@ mask random regions of the paintings, train it to put them back. No annotation
 at all, 51M parameters, comfortable to train on 8 GB. Cheapest fine-tune
 available, aimed at the part most likely to disappoint.
 
-**Not yet measured.**
+**Measured** on painting 6, 2026-10-09: **10–12 s on the CPU**, holding no VRAM
+at all. Taken as `Carve/LaMa-ONNX` (`lama_fp32`, 208 MB) rather than TorchScript
+— an ONNX graph is data and cannot run code when it is loaded, while the
+well-known `big-lama.pt` files are individuals' GitHub releases.
+
+**Two things it needed to be usable.** The graph takes its image in 0–1 and
+returns 0–255, which is not symmetrical and not documented; read as 0–1 the
+output clips to white, which is what the first run produced. And the mask has to
+be **grown about 1% before filling** — a mask traces the figure's edge, so the
+ring just outside it still carries the colour the brush left going past, and the
+inpainter reads that as context and paints a faint outline of the thing being
+removed.
+
+**Honest about the result.** It continues the shirt and the field across a hole
+and leaves no seam, but it does not paint: large holes come back as a plausible
+soft mass rather than brushwork. For a parallax back plate — glimpsed at the
+edges as a layer shifts — that is enough. To stand on its own it is not, which
+is what the self-supervised fine-tune in the plan is for.
 
 ---
 

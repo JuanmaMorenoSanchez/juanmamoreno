@@ -30,3 +30,32 @@ pillow==12.3.0           # published 2026-07-01
 # is installed on this machine. Nothing here needs 2.5, so the engine stays on
 # 3.11 rather than the whole toolchain moving for one pin.
 numpy==2.4.6             # published 2026-05-18
+
+# ---- the service ----
+fastapi==0.141.1         # published 2026-07-29
+uvicorn==0.52.4          # published 2026-08-19
+python-multipart==0.0.32 # published 2026-06-04
+
+# Pinned although nothing here imports them. Pinning only what you import
+# constrains none of what it drags in: asking for fastapi alone resolved
+# pydantic and pydantic-core published *the previous day*, and starlette at
+# fifteen days. pnpm applies `minimumReleaseAge` to the whole tree; pip applies
+# nothing to anything, so the tree is held here by hand.
+#
+# Both are the newest that are old enough and still satisfy fastapi 0.141.1,
+# which wants starlette>=0.46.0 and pydantic>=2.9.0. pydantic-core is left to
+# pydantic, which pins it exactly and to a build of the same age.
+starlette==1.6.0         # published 2026-08-08
+pydantic==2.13.5         # published 2026-08-28
+
+# ---- filling in behind a cut ----
+#
+# LaMa, as ONNX rather than as a TorchScript file or the original checkpoint.
+# Three reasons, in order: an ONNX graph is data and cannot execute code on
+# load, where TorchScript and pickle can, and the well-known big-lama.pt files
+# are individuals' GitHub releases; the original checkpoint needs the whole lama
+# codebase to read it; and this runs on the CPU, so filling in competes for none
+# of the 8 GB the segmenter needs.
+#
+# 1.31.0 was published today and 1.30 within the month, so both are held back.
+onnxruntime==1.29.0      # published 2026-08-17

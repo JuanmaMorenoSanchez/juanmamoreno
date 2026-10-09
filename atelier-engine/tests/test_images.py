@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 from PIL import Image
 
-from engine.images import bounds, coverage, remainder, to_layer
+from engine.images import bounds, coverage, grow, remainder, to_layer
 
 
 def painting(size=(40, 30), colour=(200, 60, 40)) -> Image.Image:
@@ -79,6 +79,34 @@ class ReadingAMaskTest(unittest.TestCase):
         mask[:5, :] = True
 
         self.assertAlmostEqual(coverage(mask), 0.5)
+
+
+class GrowTest(unittest.TestCase):
+    """Widening a mask before filling in behind it.
+
+    The ring of pixels just outside a figure still carries the colour the brush
+    left going past. Left in, the inpainter reads it as context and paints a
+    faint outline of the thing being removed — which is the one shape that must
+    not survive.
+    """
+
+    def test_growing_by_nothing_changes_nothing(self) -> None:
+        mask = square(size=(20, 20), box=(8, 8, 12, 12))
+
+        self.assertTrue((grow(mask, 0) == mask).all())
+
+    def test_growing_widens_in_every_direction(self) -> None:
+        mask = square(size=(20, 20), box=(8, 8, 12, 12))
+        wider = grow(mask, 2)
+
+        self.assertEqual(bounds(mask), (8, 8, 12, 12))
+        self.assertEqual(bounds(wider), (6, 6, 14, 14))
+
+    def test_what_was_inside_stays_inside(self) -> None:
+        mask = square(size=(20, 20), box=(8, 8, 12, 12))
+        wider = grow(mask, 2)
+
+        self.assertTrue(wider[mask].all())
 
 
 class RemainderTest(unittest.TestCase):
