@@ -49,10 +49,10 @@ Weights are downloaded on first use into `models/`, which is not in git. Every
 model here is **Apache 2.0 or MIT**, so there is no licence to re-read before
 selling a painting the output appears beside.
 
-| Job | Model | Licence |
-| --- | --- | --- |
-| Text → boxes | `IDEA-Research/grounding-dino-base` | Apache 2.0 |
-| Boxes/points → mask | `facebook/sam2.1-hiera-small` | Apache 2.0 |
+| Job                 | Model                               | Licence    |
+| ------------------- | ----------------------------------- | ---------- |
+| Text → boxes        | `IDEA-Research/grounding-dino-base` | Apache 2.0 |
+| Boxes/points → mask | `facebook/sam2.1-hiera-small`       | Apache 2.0 |
 
 ## The hardware this is written for
 

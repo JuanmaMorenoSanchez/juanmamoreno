@@ -481,9 +481,17 @@ Mask precision follows box precision, which is the argument for the brush: a
 point or a box drawn by hand is the same kind of input, and the better one when
 a word is ambiguous.
 
-**Phase 3 — the service.** FastAPI on `127.0.0.1:7860`: the model registry with
-eviction, the graph executor with caching, and Workflow B's operations.
-**Verify: a pytest run that cuts a layer from a real painting end to end.**
+**Phase 3 — the engine. Under way.** Done: the model registry that holds one
+model at a time and evicts before loading the next, the find and isolate
+operations, and layers written as transparent pngs with a softened edge. Proved
+end to end on painting 6 at its full 3000x3180 — two layers and a background in
+21.6 s, and the card back to 6,908 MiB free with nothing resident. Tests are
+stdlib `unittest`, so no test framework was added.
+
+Still to do in this phase: LaMa filling in behind a cut, and the HTTP layer
+(`fastapi` + `uvicorn`, pinned and waiting to be asked for).
+**Verify: `python -m unittest discover -s tests -t .`, and `spike/cut.py` on a
+real painting.**
 
 **Phase 4 — `/atelier`.** The page, the pipeline editor, the LNA permission flow,
 Save to the bucket on an explicit press, and **the unreachable state**: when the

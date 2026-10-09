@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.2.1
+
+- **chore** — the atelier engine gets its core: a model registry that keeps one
+  model in VRAM at a time and evicts before loading the next, the find and
+  isolate operations, and layers written as transparent pngs with a softened
+  edge. The background is the remainder of the figures rather than a thing asked
+  for. No site behaviour changes — nothing is wired to a page yet.
+
 ## 2.2.0
 
 - **feat** — the product page says whose machine the AI runs on: a section on the
