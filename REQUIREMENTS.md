@@ -2522,6 +2522,24 @@ left unjoined; pressing it pins the panel open, because a long explanation
 cannot be read while holding a pointer still. The text is written in the engine
 beside the node, so the two cannot drift apart.
 
+**A thing can be pointed at instead of named.** Naming works when the thing has
+a name the model knows and fails on everything else — a particular fold, one of
+two similar figures. On painting 6 "the yellow jumper" found a strip behind her
+shoulder, and the edit went there. A mark has no such problem, because it
+points.
+
+**Brush** is a node like any other: press *Draw*, click what to keep,
+shift-click what to leave out, and join its `points` to **Isolate**. Isolate now
+takes a box, or marks, or both — both being best, since the box says roughly
+where and the marks settle what is in and what is out.
+
+**Marks are recorded in the painting's own pixels, not the screen's**, so they
+stay put when the window is resized and still mean the same thing when the graph
+is run against the full-resolution original rather than the preview. They are
+stored on the node as json, so a graph remains one object that survives a
+reload. A click before the painting has reported its size is ignored rather than
+recorded against a guess.
+
 **A box short of a wire is shown before the graph is run, not after.** The
 engine does refuse, and accurately — *"'isolate-wvpp5' (Isolate) has nothing
 joined to: image"* — but that arrives after a round trip and reads like the
@@ -2571,7 +2589,11 @@ that is what is missing, rather than failing silently.
 minutes; throwing one away because a switch was brushed is worse than making
 someone wait, so `/stop` answers 409 and the page repeats the reason.
 
-*Proven by:* `atelier.component.spec.ts` "says which box is short of a wire,
+*Proven by:* `brush-overlay.component.spec.ts` (10 tests, including "records a
+mark in the pixels of the painting, not of the screen", "places marks by percentage,
+so resizing the window does not move them", "ignores a click before the painting
+has said how big it is" and "survives a node written by an older version, or by
+nothing at all"); `atelier.component.spec.ts` "says which box is short of a wire,
 before anything is sent", "will not run while a required port is empty",
 "stops complaining once every required port is joined" and "ignores an optional
 port that is left alone"; `catalogue-painting.service.spec.ts` (9 tests, including "takes

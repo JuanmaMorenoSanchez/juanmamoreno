@@ -190,7 +190,19 @@
     [nodes]="nodes()"
     [edges]="edges()"
     (changed)="redraw($event)"
+    (drawing)="draw($event)"
   />
+
+  @if (marking(); as node) {
+    @if (preview(); as url) {
+      <app-brush-overlay
+        [source]="url"
+        [marks]="marksOf(node)"
+        (saved)="marked($event)"
+        (dismissed)="marking.set(null)"
+      />
+    }
+  }
 
   @if (unjoined().length) {
     <p class="atelier-wanting" data-testid="unjoined">

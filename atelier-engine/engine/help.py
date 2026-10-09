@@ -22,6 +22,21 @@ HELP: dict[str, str] = {
         "output can feed several boxes at once.\n\n"
         "Nothing to adjust."
     ),
+    "brush": (
+        "Marks drawn on the painting by hand: a dot for this, a dot for not "
+        "that.\n\n"
+        "Use it when a word will not do. Naming works when the thing has a name "
+        "the model knows — a girl, a shirt — and fails on everything else: a "
+        "particular fold, the shadow under an arm, one of two similar figures. "
+        "A mark has no such problem, because it points.\n\n"
+        "It is not a lesser input than Find. SAM takes points as a first-class "
+        "prompt, and a single well-placed dot usually beats a box around "
+        "roughly the right area. Two or three negative marks just outside the "
+        "thing are what stop it swallowing the background.\n\n"
+        "Join it to Isolate. A box and marks together is better than either: "
+        "the box says roughly where, the marks say definitely this and "
+        "definitely not that."
+    ),
     "find": (
         "Asks where something is, by name, and returns a box around its best guess.\n\n"
         "Open-vocabulary, so it is not limited to a list it was taught and odd phrases "
@@ -39,7 +54,11 @@ HELP: dict[str, str] = {
         "second look.\n\n"
         "It segments whatever the box frames, not the word you typed: a loose box "
         "around a shirt returns the whole figure, shirt and hands and head, because "
-        "that is the object in the frame. Tighter box, tighter shape."
+        "that is the object in the frame. Tighter box, tighter shape.\n\n"
+        "Needs a box from Find or marks from a Brush — either, or both. Both is "
+        "usually best: the box says roughly where and the marks settle what is "
+        "in and what is out. When a name keeps finding the wrong thing, the "
+        "Brush is the answer, not a better adjective."
     ),
     "grow": (
         "Makes a shape bigger in every direction.\n\n"
@@ -95,6 +114,11 @@ HELP: dict[str, str] = {
 
 
 PARAM_HELP: dict[tuple[str, str], str] = {
+    ("brush", "points"): (
+        "The marks themselves. Press Draw to put them on the painting: a click "
+        "keeps, a shift-click excludes. They are stored on the node, so they "
+        "survive a reload along with the rest of the graph."
+    ),
     ("find", "phrase"): (
         "What to look for, in plain words. Short and concrete beats elaborate. A word "
         "it does not understand gives a confident box around the wrong thing, so judge "

@@ -151,7 +151,18 @@
                   <!-- A caption, not a <label>: it sits beside the control rather
                        than wrapping it, and the control is named by aria-label. -->
                   <span [title]="param.label || param.name">{{ param.label || param.name }}</span>
-                  @if (param.kind === 'number') {
+                  @if (param.kind === 'points') {
+                    <!-- Edited on the painting, not in a box this size. -->
+                    <button
+                      type="button"
+                      class="param-draw"
+                      (click)="drawing.emit(node)"
+                      (pointerdown)="$event.stopPropagation()"
+                      [attr.data-testid]="'draw-' + node.id"
+                    >
+                      {{ markCount(node) ? markCount(node) + ' marks — edit' : 'Draw…' }}
+                    </button>
+                  } @else if (param.kind === 'number') {
                     <input
                       type="number"
                       [attr.aria-label]="param.label || param.name"

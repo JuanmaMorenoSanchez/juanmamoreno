@@ -51,8 +51,40 @@ def _find(inputs, params, context) -> dict[str, Any]:
     return {"box": list(best.box), "score": round(best.score, 4)}
 
 
+def _marks(inputs, params, context) -> dict[str, Any]:
+    """Points drawn by hand, as they come off the overlay.
+
+    Stored on the node as json rather than carried in some side channel, so a
+    graph is still one object that can be saved, reloaded and reasoned about.
+    """
+    import json
+
+    raw = params["points"]
+    try:
+        drawn = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except json.JSONDecodeError as exc:
+        raise ValueError("the marks on that brush are not readable") from exc
+
+    keep = [(int(p["x"]), int(p["y"])) for p in drawn.get("keep", [])]
+    drop = [(int(p["x"]), int(p["y"])) for p in drawn.get("drop", [])]
+    if not keep and not drop:
+        raise ValueError("nothing has been drawn on the brush yet")
+    return {"points": {"keep": keep, "drop": drop}}
+
+
 def _isolate(inputs, params, context) -> dict[str, Any]:
-    mask, iou = isolate_thing(context["registry"], inputs["image"], box=tuple(inputs["box"]))
+    box = inputs.get("box")
+    marks = inputs.get("points") or {}
+    if box is None and not marks.get("keep") and not marks.get("drop"):
+        raise ValueError("Isolate needs a box from Find, or marks from a Brush")
+
+    mask, iou = isolate_thing(
+        context["registry"],
+        inputs["image"],
+        box=tuple(box) if box is not None else None,
+        points=marks.get("keep") or None,
+        negative=marks.get("drop") or None,
+    )
     return {"mask": mask, "confidence": round(iou, 4)}
 
 
@@ -122,6 +154,23 @@ CATALOGUE: dict[str, NodeType] = {
             run=_painting,
         ),
         NodeType(
+            key="brush",
+            label="Brush",
+            category="in",
+            summary="Marks drawn on the painting by hand: this, and not that.",
+            inputs=[],
+            outputs=[Port("points", "points")],
+            params=[
+                Param(
+                    "points",
+                    "points",
+                    '{"keep":[],"drop":[]}',
+                    label="Marks",
+                )
+            ],
+            run=_marks,
+        ),
+        NodeType(
             key="find",
             label="Find",
             category="cut",
@@ -139,7 +188,14 @@ CATALOGUE: dict[str, NodeType] = {
             label="Isolate",
             category="cut",
             summary="A box in, the exact shape out.",
-            inputs=[Port("image", "image"), Port("box", "box")],
+            inputs=[
+                Port("image", "image"),
+                # Either will do, and both together is better than either: a
+                # box says roughly where, a mark says definitely this and
+                # definitely not that.
+                Port("box", "box", optional=True),
+                Port("points", "points", optional=True),
+            ],
             outputs=[Port("mask", "mask"), Port("confidence", "number")],
             run=_isolate,
         ),

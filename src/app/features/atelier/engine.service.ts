@@ -42,7 +42,11 @@ export interface PortDef {
 
 export interface ParamDef {
   name: string;
-  kind: 'text' | 'number' | 'toggle';
+  /**
+   * `points` is not a field: it is edited by marking the painting itself, and
+   * the canvas draws a button for it rather than an input.
+   */
+  kind: 'text' | 'number' | 'toggle' | 'points';
   default: string | number | boolean;
   label: string;
   minimum: number | null;

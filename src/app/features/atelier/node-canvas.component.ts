@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { readMarks } from './brush-overlay.component';
 import type { NodeTypeDef, ParamDef } from './engine.service';
 
 /** A node as it sits on the canvas. */
@@ -48,6 +49,8 @@ export class NodeCanvasComponent {
   readonly nodes = input.required<GraphNode[]>();
   readonly edges = input.required<GraphEdge[]>();
   readonly changed = output<Drawn>();
+  /** A Brush node wanting its marks drawn. The page owns the painting. */
+  readonly drawing = output<GraphNode>();
 
   /** Where the canvas is looking. */
   protected readonly panX = signal(0);
@@ -169,6 +172,12 @@ export class NodeCanvasComponent {
       nodes: this.nodes(),
       edges: this.edges().filter((e) => e !== edge),
     });
+  }
+
+  /** How many marks a Brush is carrying, for the label on its button. */
+  protected markCount(node: GraphNode): number {
+    const marks = readMarks(node.params['points']);
+    return marks.keep.length + marks.drop.length;
   }
 
   protected setParam(node: GraphNode, param: ParamDef, raw: string | boolean): void {

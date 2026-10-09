@@ -281,3 +281,21 @@
   fill: #b3261e;
   opacity: 1;
 }
+
+/* A points parameter is not a field — it is edited on the painting. */
+.param-draw {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}

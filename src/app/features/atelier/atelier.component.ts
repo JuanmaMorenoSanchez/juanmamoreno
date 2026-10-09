@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
 import {
@@ -30,7 +31,7 @@ const SAVED = 'juanmamoreno.atelier.graph';
 @Component({
   selector: 'app-atelier',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NodeCanvasComponent],
+  imports: [BrushOverlayComponent, NodeCanvasComponent],
   templateUrl: './atelier.component.html',
   styleUrl: './atelier.component.scss',
 })
@@ -44,6 +45,8 @@ export class AtelierComponent {
   protected readonly chosen = signal<string | null>(null);
   protected readonly tokenId = signal('');
   protected readonly fetching = signal(false);
+  /** The Brush node whose marks are being drawn, if any. */
+  protected readonly marking = signal<GraphNode | null>(null);
 
   protected readonly catalogue = signal<NodeTypeDef[]>([]);
   protected readonly nodes = signal<GraphNode[]>([]);
@@ -204,6 +207,34 @@ export class AtelierComponent {
     } catch (error) {
       this.failure.set(error instanceof Error ? error.message : 'the switch did not work');
     }
+  }
+
+  /** Opens the painting for marking. Needs a painting, which is the catch. */
+  protected draw(node: GraphNode): void {
+    if (!this.preview()) {
+      this.failure.set('Choose a painting first — there is nothing to mark.');
+      return;
+    }
+    this.failure.set(null);
+    this.marking.set(node);
+  }
+
+  protected marksOf(node: GraphNode): Marks {
+    return readMarks(node.params['points']);
+  }
+
+  /** Marks come back as json on the node, so a graph stays one saveable thing. */
+  protected marked(marks: Marks): void {
+    const node = this.marking();
+    this.marking.set(null);
+    if (!node) return;
+
+    this.redraw({
+      nodes: this.nodes().map((n) =>
+        n.id === node.id ? { ...n, params: { ...n.params, points: JSON.stringify(marks) } } : n
+      ),
+      edges: this.edges(),
+    });
   }
 
   protected async run(): Promise<void> {

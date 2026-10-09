@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.7.0
+
+- **feat** — a thing can be pointed at instead of named. The new **Brush** node
+  opens the painting, takes clicks for what to keep and shift-clicks for what to
+  leave out, and feeds those marks to **Isolate** — which now accepts a box, or
+  marks, or both. Marks are held in the painting's own pixels, so they survive a
+  resize and still mean the same thing against the full-resolution original.
+  This is the answer to a name that keeps finding the wrong thing.
+
 ## 2.6.1
 
 - **fix** — a box short of a wire says so before the graph is run. The engine's

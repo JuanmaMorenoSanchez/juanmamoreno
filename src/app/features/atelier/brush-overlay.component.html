@@ -1,0 +1,63 @@
+<!-- Dismissed with Escape or Cancel rather than by clicking the backdrop: a
+     backdrop that closes on click is a div pretending to be a button, and the
+     one thing worse than losing the marks is losing them by brushing past. -->
+<div class="brush-scrim">
+  <div class="brush-panel">
+    <header class="brush-head">
+      <h2>Mark the painting</h2>
+      <p>
+        Click what you want kept. <strong>Shift-click</strong> what you do not — two or three of
+        those just outside the thing are usually what stops it swallowing the background.
+      </p>
+    </header>
+
+    <!-- eslint-disable @angular-eslint/template/click-events-have-key-events,
+         @angular-eslint/template/interactive-supports-focus --
+         A freehand marking surface has no honest keyboard equivalent: the whole
+         input is "this pixel, not that one". Giving it a tabindex and an Enter
+         handler that marks the centre would satisfy the rule and help nobody.
+         This page is behind the admin guard and has one user, with a mouse. -->
+    <div
+      class="brush-stage"
+      (click)="mark($event)"
+      (contextmenu)="mark($event)"
+      data-testid="brush-stage"
+    >
+      <img [src]="source()" (load)="measured($event)" alt="The painting, to mark up" />
+
+      @for (m of working().keep; track $index) {
+        <span class="brush-mark brush-keep" [style.left]="at(m).left" [style.top]="at(m).top">
+        </span>
+      }
+      @for (m of working().drop; track $index) {
+        <span class="brush-mark brush-drop" [style.left]="at(m).left" [style.top]="at(m).top">
+        </span>
+      }
+    </div>
+
+    <footer class="brush-foot">
+      <span class="brush-count" data-testid="brush-count">
+        {{ count().keep }} kept · {{ count().drop }} left out
+      </span>
+      <span class="brush-spacer"></span>
+      <button
+        type="button"
+        class="brush-minor"
+        (click)="undo()"
+        [disabled]="!count().keep && !count().drop"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        class="brush-minor"
+        (click)="clear()"
+        [disabled]="!count().keep && !count().drop"
+      >
+        Clear
+      </button>
+      <button type="button" class="brush-minor" (click)="dismissed.emit()">Cancel</button>
+      <button type="button" class="brush-go" (click)="keep()" data-testid="brush-save">Done</button>
+    </footer>
+  </div>
+</div>
