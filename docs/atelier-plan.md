@@ -86,11 +86,19 @@ you have 672 GB. §5 names a video model that genuinely fits.
 This is what you asked for, and it works. Two things make it work, and one
 needs designing around.
 
-**The prerender is not a problem.** There are already five prerendered
-admin-guarded routes — `/door`, `/mint`, `/pendingmint`, `/activity` and one
-more — all passing `verify-render.mjs`. `/atelier` follows exactly the same
-pattern: `canActivate: [readerLanguage, adminOnly]`, a key in both translation
-files, an entry in the route table under both language parents. 388 pages becomes 390. No new category of problem.
+**The prerender is not a problem** — and for a better reason than I first wrote
+here. I had this wrong: the admin pages are not prerendered at all. `/door`,
+`/mint`, `/pendingmint`, `/activity`, `/publish` and `/catalogue` are every one
+of them `RenderMode.Client` in `app.routes.server.ts`, so the build never writes
+them out and `verify-render.mjs` never sees them.
+
+`/atelier` follows exactly that: guarded with `[readerLanguage, adminOnly]`,
+client-rendered, and the Spanish address a redirect to the English one, which is
+what every admin page does rather than being translated. The page count does not
+move. A redirect does have to be listed as client-rendered too — left to the
+prerenderer it is written out as a file with no canonical, no hreflang and no
+text, which is the fault that caught `/studio` once already, and which
+`app-routing.module.spec.ts` now catches a step earlier.
 
 **The browser-to-localhost call needs a permission, once.** The page is served
 from `https://juanmamoreno.com`; the inference service listens on
@@ -104,7 +112,9 @@ our favour:
   time here)
 - after the grant, **Chrome relaxes mixed-content restrictions for local
   targets**, so plain HTTP to `127.0.0.1` is allowed
-- each `fetch` is annotated `targetAddressSpace: 'local'`
+- each `fetch` is annotated **`targetAddressSpace: 'loopback'`** — not
+  `'local'`, which is a LAN address; Chrome refuses a loopback request that
+  declares the wrong one rather than treating it as near enough
 - **the grant sticks per origin** — you approve once for `juanmamoreno.com`
 
 One concrete design consequence: **WebSocket has been in LNA's scope since
@@ -167,7 +177,7 @@ cheap — seconds, not minutes.
 Angular /atelier            ──HTTPS──>  GitHub Pages (static, prerendered)
  (juanmamoreno.com)
       │
-      ├──fetch, targetAddressSpace:'local'──>  our service  ──>  GPU
+      ├─fetch, targetAddressSpace:'loopback'─>  our service  ──>  GPU
       │                                        127.0.0.1:7860
       │                                        (this project, Python)
       │

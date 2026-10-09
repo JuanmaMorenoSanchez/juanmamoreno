@@ -179,6 +179,20 @@ export const routes: Routes = [
     data: { title: 'Activity', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/activity', redirectTo: '/activity' },
+  // Cutting a painting into layers, with the models running on this machine.
+  // Guarded like the rest, and useless without the local engine — which is the
+  // point rather than a flaw: it is a front end for a program on his computer,
+  // and from anywhere else it says so and stops. Written out at build time like
+  // every other page, because leaving one route out of the prerender is a
+  // special case nothing else here has.
+  {
+    path: 'atelier',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/atelier/atelier.component').then((m) => m.AtelierComponent),
+    data: { title: 'Atelier', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/atelier', redirectTo: '/atelier' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

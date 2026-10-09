@@ -39,6 +39,12 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'es/catalogue', renderMode: RenderMode.Client },
   { path: 'activity', renderMode: RenderMode.Client },
   { path: 'es/activity', renderMode: RenderMode.Client },
+  // The atelier needs a browser and a program running on this machine; there is
+  // nothing about it that can be written out at build time. The Spanish address
+  // is a redirect, and a redirect prerenders as a file with no canonical, no
+  // hreflang and no text — which is the fault these two lines exist to avoid.
+  { path: 'atelier', renderMode: RenderMode.Client },
+  { path: 'es/atelier', renderMode: RenderMode.Client },
   // `/mint` was `/studio`, and the old address still redirects. A redirect has
   // nothing to render, so left to the prerenderer it is written out as a file
   // with no canonical, no hreflang and no text — which is what the build's own

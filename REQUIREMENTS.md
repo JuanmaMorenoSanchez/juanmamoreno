@@ -2473,3 +2473,47 @@ beside its output amounts to.
 in", which pins every heading and its place. The models themselves, their
 licences and the measurements quoted are written up in `docs/atelier-models.md`
 and drawn in `docs/atelier-schema.svg`.
+
+### R137 — The atelier is useless without the local engine, and says so · met
+`/atelier` cuts a painting into layers by naming the things in it. The models
+run on the artist's own machine, in `atelier-engine/`, and **the page is a front
+end for that program rather than a feature of the website**.
+
+**So when the engine does not answer, the page says that, and says the site is
+not at fault.** It names all three causes, because from the browser they are
+indistinguishable — a refused connection and a refused permission arrive as the
+same error:
+
+- the engine is not running, and the command to start it is given;
+- the page is open on a different machine from the card and the models;
+- Chrome refused the local connection, which it has gated since Chromium 142 and
+  which from Chrome 156 cannot be turned off.
+
+Every request to the engine is annotated **`targetAddressSpace: 'loopback'`**,
+without which the browser refuses it before sending. Not `'local'`: Chrome
+counts three address spaces and 127.0.0.1 is the narrowest, so declaring the
+LAN one for a loopback address is refused outright rather than treated as near
+enough. This is also why the engine is reached with `fetch` and not
+`HttpClient`, which has no way to set it.
+
+**It never reports that something was found.** Grounding DINO returned "a
+unicorn" at 0.395 on a canvas containing none, against 0.418 for a girl who was
+there — so no threshold separates a real label from an invented one. Every layer
+carries its score, its edge confidence and its coverage, and the page says in
+words that a layer is not evidence the thing is in the painting.
+
+**Nothing is saved.** The layers stay in the engine's own folder and are shown
+from there. Neither Firestore nor the bucket is touched: a generative tool that
+saves what it makes fills a bucket with rejects.
+
+**It is client-rendered, like every other guarded page**, so the build never
+writes it out and there is no prerendered copy of a page that cannot work
+without a local process.
+*Proven by:* `atelier.component.spec.ts` (10 tests, including "says the engine is
+not answering, and that the site is not at fault", "names all three reasons it
+could be unreachable, including the one Chrome causes", "will not cut while the
+engine is unreachable" and "warns that a layer is not evidence the thing is
+there") and `engine.service.spec.ts` (8 tests, including "declares the loopback
+address space, which is not the same as local" and "treats not being able to
+reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
+`atelier-engine/tests/`, which are not run by `npm test`.

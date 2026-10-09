@@ -1,0 +1,173 @@
+<article class="atelier">
+  <h1>Atelier</h1>
+  <p class="atelier-lead">
+    Name the things in a painting and they are cut out, each to its own layer, with the background
+    they were lifted off. Everything runs on this machine. Nothing is saved anywhere until you say
+    so.
+  </p>
+
+  <!-- First, whether there is anything to talk to. Everything below depends on it. -->
+  @if (engine.unreachable()) {
+    <section class="atelier-down" data-testid="engine-down">
+      <h2>The engine is not answering</h2>
+      <p>
+        This page is a front end for a program running on this computer, and that program is not
+        reachable at <code>127.0.0.1:7860</code>. There is nothing wrong with the site.
+      </p>
+      <p>Three things do this, and from here they look the same:</p>
+      <ul>
+        <li>
+          <strong>It is not running.</strong> Start it from <code>atelier-engine/</code>:
+          <code class="atelier-command"
+            >.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860</code
+          >
+        </li>
+        <li>
+          <strong>You are on a different machine.</strong> The models and the card are on the one
+          the engine runs on. This page cannot reach across to them, and is not meant to.
+        </li>
+        <li>
+          <strong>Chrome refused the local connection.</strong> A page served from the internet
+          needs permission to reach an address on your own machine. Look for the prompt, or the icon
+          at the left of the address bar.
+        </li>
+      </ul>
+      <button
+        type="button"
+        class="atelier-go"
+        (click)="engine.check()"
+        [disabled]="engine.checking()"
+      >
+        {{ engine.checking() ? 'Asking…' : 'Ask again' }}
+      </button>
+    </section>
+  } @else if (engine.health(); as health) {
+    <section class="atelier-up" data-testid="engine-up">
+      <span class="atelier-dot" aria-hidden="true"></span>
+      <span>
+        Running on <strong>{{ health.device }}</strong>
+      </span>
+      @if (health.vramFreeMib !== null) {
+        <span class="atelier-vram">
+          {{ health.vramFreeMib }} MiB free of {{ health.vramTotalMib }}
+        </span>
+      }
+      @if (health.resident) {
+        <span class="atelier-vram">holding {{ health.resident }}</span>
+      }
+      <button type="button" class="atelier-minor" (click)="engine.evict()">
+        Hand the card back
+      </button>
+    </section>
+  } @else {
+    <section class="atelier-up" data-testid="engine-asking">
+      <span>Asking the engine…</span>
+    </section>
+  }
+
+  <section class="atelier-form">
+    <label class="atelier-field">
+      <span>The painting</span>
+      <input type="file" accept="image/*" (change)="chose($event)" data-testid="painting" />
+    </label>
+
+    @if (preview(); as url) {
+      <img class="atelier-preview" [src]="url" alt="The painting about to be cut" />
+    }
+
+    <label class="atelier-field">
+      <span>What to cut, one per line</span>
+      <textarea
+        rows="4"
+        [value]="labels()"
+        (input)="labels.set($any($event.target).value)"
+        data-testid="labels"
+      ></textarea>
+    </label>
+
+    <label class="atelier-check">
+      <input
+        type="checkbox"
+        [checked]="fillBehind()"
+        (change)="fillBehind.set($any($event.target).checked)"
+      />
+      <span>Paint over the holes afterwards, for a background that can be moved behind them</span>
+    </label>
+
+    <button
+      type="button"
+      class="atelier-go"
+      [disabled]="!ready()"
+      (click)="cut()"
+      data-testid="cut"
+    >
+      {{ busy() ? 'Cutting…' : 'Cut' }}
+    </button>
+  </section>
+
+  @if (failure(); as why) {
+    <p class="atelier-failure" data-testid="failure">{{ why }}</p>
+  }
+
+  @if (result(); as cut) {
+    <section class="atelier-result" data-testid="result">
+      <h2>{{ cut.layers.length }} layer(s), in {{ cut.seconds }}s</h2>
+
+      <!-- Said once, plainly, because the numbers below invite the opposite reading. -->
+      <p class="atelier-caveat">
+        A layer coming back is not evidence the thing is in the painting. Asked for a unicorn on a
+        canvas with none, the model returns whatever is most creature-shaped and scores it about the
+        same. Judge these by eye.
+      </p>
+
+      @if (cut.notFound.length) {
+        <p class="atelier-missed">
+          It would not even guess at: <strong>{{ cut.notFound.join(', ') }}</strong>
+        </p>
+      }
+
+      <ul class="atelier-layers">
+        @for (layer of cut.layers; track layer.file) {
+          <li>
+            <img [src]="layerUrl(layer.file)" [alt]="layer.label" loading="lazy" />
+            <h3>{{ layer.label }}</h3>
+            <dl>
+              <dt>found</dt>
+              <dd>{{ layer.score.toFixed(3) }}</dd>
+              <dt>edge</dt>
+              <dd>{{ layer.iou.toFixed(3) }}</dd>
+              <dt>covers</dt>
+              <dd>{{ percent(layer.coverage) }}</dd>
+            </dl>
+          </li>
+        }
+
+        @if (cut.background; as back) {
+          <li>
+            <img [src]="layerUrl(back.file)" alt="What the layers were lifted off" loading="lazy" />
+            <h3>Behind them</h3>
+            <dl>
+              <dt>covers</dt>
+              <dd>{{ percent(back.coverage) }}</dd>
+            </dl>
+          </li>
+
+          @if (back.filled) {
+            <li>
+              <img
+                [src]="layerUrl(back.filled)"
+                alt="The background with the holes painted over"
+                loading="lazy"
+              />
+              <h3>Behind them, filled</h3>
+              <dl>
+                <dt>covers</dt>
+                <dd>all of it</dd>
+              </dl>
+            </li>
+          }
+        }
+      </ul>
+    </section>
+  }
+</article>

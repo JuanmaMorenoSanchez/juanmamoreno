@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.3.0
+
+- **feat** — `/atelier` is back, and this time the models run on his own
+  machine. Name the things in a painting and each is cut to its own layer, with
+  the background they were lifted off and, if asked, that background with the
+  holes painted over. Guarded and client-rendered like every other admin page.
+  When the local engine is not answering the page says so, says the site is not
+  at fault, and names all three causes — including Chrome refusing the local
+  connection, which is indistinguishable from the engine being stopped. Nothing
+  is saved anywhere until he says so.
+
 ## 2.2.2
 
 - **chore** — the atelier engine gets its HTTP service, on 127.0.0.1 only, and
