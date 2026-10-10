@@ -272,6 +272,12 @@ export class NodeCanvasComponent {
     this.zoom.set(Math.round(next * 100) / 100);
   }
 
+  /** The box whose explanation is open, if any. */
+  protected readonly helpingNode = computed(() => {
+    const id = this.helping();
+    return id ? (this.nodes().find((n) => n.id === id) ?? null) : null;
+  });
+
   protected showHelp(id: string): void {
     if (!this.pinned()) this.helping.set(id);
   }

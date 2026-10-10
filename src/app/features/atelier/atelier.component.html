@@ -119,6 +119,7 @@
         class="atelier-minor"
         (click)="engine.evict()"
         [disabled]="engine.switching() !== 'idle'"
+        title="Drops whatever model is loaded, giving the graphics card back to everything else on this machine. The engine keeps running and the weights stay on disk — the next run simply loads them again, which costs seconds for the segmenter and minutes for Edit. It does not stop a run."
       >
         Hand the card back
       </button>

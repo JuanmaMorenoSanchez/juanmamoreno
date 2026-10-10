@@ -193,57 +193,63 @@
                 </div>
               </foreignObject>
             }
-
-            @if (helping() === node.id) {
-              <foreignObject
-                [attr.x]="helpAt(node).x"
-                [attr.y]="helpAt(node).y"
-                width="310"
-                height="430"
-                class="help-layer"
-              >
-                <div class="help-panel">
-                  <h4>
-                    {{ type.label }}
-                    @if (pinned() === node.id) {
-                      <button type="button" class="help-close" (click)="pinHelp($event, node.id)">
-                        close
-                      </button>
-                    }
-                  </h4>
-                  @for (para of helpParagraphs(type); track $index) {
-                    <p>{{ para }}</p>
-                  }
-
-                  @if (!helpParagraphs(type).length) {
-                    <p>This engine did not send an explanation for this box.</p>
-                  }
-
-                  @if (type.params.length) {
-                    <h5>What you can adjust</h5>
-                    @for (param of type.params; track param.name) {
-                      <p class="help-param">
-                        <strong>{{ param.label || param.name }}.</strong>
-                        {{ param.help || 'No note for this one yet.' }}
-                      </p>
-                    }
-                  }
-
-                  @if (type.inputs.length || type.outputs.length) {
-                    <h5>What it joins to</h5>
-                    <p class="help-ports">
-                      @if (type.inputs.length) {
-                        <span> in: {{ inputNames(type) }} </span>
-                      }
-                      @if (type.outputs.length) {
-                        <span> out: {{ outputNames(type) }} </span>
-                      }
-                    </p>
-                  }
-                </div>
-              </foreignObject>
-            }
           </g>
+        }
+      }
+
+      <!-- Drawn after every box, and nothing is drawn after it.
+           SVG has no z-index: what comes last is on top. Inside the
+           loop this sat under any node that happened to be drawn
+           later, which is most of them. -->
+      @if (helpingNode(); as node) {
+        @if (typeOf(node); as type) {
+          <foreignObject
+            [attr.x]="helpAt(node).x"
+            [attr.y]="helpAt(node).y"
+            width="310"
+            height="430"
+            class="help-layer"
+          >
+            <div class="help-panel">
+              <h4>
+                {{ type.label }}
+                @if (pinned() === node.id) {
+                  <button type="button" class="help-close" (click)="pinHelp($event, node.id)">
+                    close
+                  </button>
+                }
+              </h4>
+              @for (para of helpParagraphs(type); track $index) {
+                <p>{{ para }}</p>
+              }
+
+              @if (!helpParagraphs(type).length) {
+                <p>This engine did not send an explanation for this box.</p>
+              }
+
+              @if (type.params.length) {
+                <h5>What you can adjust</h5>
+                @for (param of type.params; track param.name) {
+                  <p class="help-param">
+                    <strong>{{ param.label || param.name }}.</strong>
+                    {{ param.help || 'No note for this one yet.' }}
+                  </p>
+                }
+              }
+
+              @if (type.inputs.length || type.outputs.length) {
+                <h5>What it joins to</h5>
+                <p class="help-ports">
+                  @if (type.inputs.length) {
+                    <span> in: {{ inputNames(type) }} </span>
+                  }
+                  @if (type.outputs.length) {
+                    <span> out: {{ outputNames(type) }} </span>
+                  }
+                </p>
+              }
+            </div>
+          </foreignObject>
         }
       }
     </g>
