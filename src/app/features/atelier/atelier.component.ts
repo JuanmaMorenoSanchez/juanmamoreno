@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
+import { FlowRowComponent } from './flow-row.component';
 import { KeptService } from './kept.service';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
 import { SketchPreviewComponent } from './sketch-preview.component';
@@ -51,6 +52,7 @@ const NODE_WIDTH = 210;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BrushOverlayComponent,
+    FlowRowComponent,
     NodeCanvasComponent,
     ParallaxPreviewComponent,
     SketchPreviewComponent,
@@ -77,8 +79,6 @@ export class AtelierComponent {
   protected readonly catalogue = signal<NodeTypeDef[]>([]);
   /** The ready-made graphs the engine offers. */
   protected readonly flows = signal<FlowDef[]>([]);
-  /** Which flow's long explanation is open, if any. */
-  protected readonly explaining = signal<FlowDef | null>(null);
   protected readonly nodes = signal<GraphNode[]>([]);
   protected readonly edges = signal<GraphEdge[]>([]);
 
@@ -254,7 +254,6 @@ export class AtelierComponent {
 
     this.result.set(null);
     this.failure.set(null);
-    this.explaining.set(null);
   }
 
   /**
@@ -505,17 +504,6 @@ export class AtelierComponent {
 
   /** Whether the written piece is on screen, running. */
   protected readonly playing = signal(false);
-
-  /**
-   * A flow's explanation, split into paragraphs.
-   *
-   * Guarded, like the node help beside it: this page can be newer than the
-   * engine on the machine it is talking to, and it crashed once against an
-   * engine that predated a field it read.
-   */
-  protected aboutParagraphs(flow: FlowDef): string[] {
-    return (flow.about ?? '').split('\n\n').filter((paragraph) => paragraph.trim().length > 0);
-  }
 
   protected layerUrl(file: string): string {
     return this.engine.layerUrl(file);

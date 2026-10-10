@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.11.1
+
+- **fix** — the deploy failed on the build: the flow row's styles pushed
+  `atelier.component.scss` 255 bytes past the 6 kB a component stylesheet is
+  allowed. The row is its own component now, like every other piece of that
+  page, which is where those rules belonged anyway.
+
 ## 2.11.0
 
 - **feat** — the atelier writes a generative piece from a sentence, and runs it

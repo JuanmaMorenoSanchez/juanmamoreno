@@ -187,53 +187,7 @@
   </section>
 
   @if (flows().length) {
-    <!-- The engine's own list. This page knows none of these by name, which is
-         why a flow added to flows.py appears here with nothing released. -->
-    <section class="atelier-flows" data-testid="flows">
-      <h2>Start from something</h2>
-      <ul>
-        @for (flow of flows(); track flow.key) {
-          <li>
-            <button
-              type="button"
-              class="atelier-flow"
-              (click)="start(flow)"
-              [attr.data-testid]="'flow-' + flow.key"
-            >
-              <strong>{{ flow.label }}</strong>
-              <span>{{ flow.blurb }}</span>
-            </button>
-            <button
-              type="button"
-              class="atelier-why"
-              [attr.aria-label]="'What ' + flow.label + ' does'"
-              (click)="explaining.set(explaining()?.key === flow.key ? null : flow)"
-              [attr.data-testid]="'why-' + flow.key"
-            >
-              ?
-            </button>
-          </li>
-        }
-      </ul>
-      <p class="atelier-caveat">Replaces what is on the canvas.</p>
-
-      @if (explaining(); as flow) {
-        <article class="atelier-about" data-testid="flow-about">
-          <h3>{{ flow.label }}</h3>
-          @for (paragraph of aboutParagraphs(flow); track $index) {
-            <p>{{ paragraph }}</p>
-          }
-          <button
-            type="button"
-            class="atelier-minor"
-            (click)="explaining.set(null)"
-            data-testid="close-about"
-          >
-            Close
-          </button>
-        </article>
-      }
-    </section>
+    <app-flow-row [flows]="flows()" (chosen)="start($event)" />
   }
 
   <app-node-canvas

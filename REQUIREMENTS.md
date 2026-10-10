@@ -2837,6 +2837,11 @@ allowed to know one. A flow added to `flows.py` is a button on the deployed site
 with nothing rebuilt and nothing released. An engine too old to have flows shows
 no buttons rather than an error.
 
+**The row is its own component**, like every other distinct piece of that page.
+Written inline first, its rules pushed `atelier.component.scss` 255 bytes past
+the 6 kB a component stylesheet is allowed and failed the deploy — which is
+what the budget is for, and where those rules belonged anyway.
+
 **Position is a column and a row, not pixels.** Where a box sits depends on how
 wide this page draws one, which is the page's business; the engine says only
 what follows what.
