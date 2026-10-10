@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
+import { ParallaxPreviewComponent } from './parallax-preview.component';
 import {
   AtelierEngineService,
   type GraphRun,
@@ -36,7 +37,7 @@ const SAVED = 'juanmamoreno.atelier.graph';
 @Component({
   selector: 'app-atelier',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrushOverlayComponent, NodeCanvasComponent],
+  imports: [BrushOverlayComponent, NodeCanvasComponent, ParallaxPreviewComponent],
   templateUrl: './atelier.component.html',
   styleUrl: './atelier.component.scss',
 })
@@ -52,6 +53,8 @@ export class AtelierComponent {
   protected readonly fetching = signal(false);
   /** The Brush node whose marks are being drawn, if any. */
   protected readonly marking = signal<GraphNode | null>(null);
+  /** The depth map being looked at, as a url, while the painting moves. */
+  protected readonly moving = signal<string | null>(null);
 
   protected readonly catalogue = signal<NodeTypeDef[]>([]);
   protected readonly nodes = signal<GraphNode[]>([]);
@@ -333,6 +336,28 @@ export class AtelierComponent {
     const steps = now.steps ? ` · step ${now.step} of ${now.steps}` : '';
     return { where, steps, note: now.note, seconds: Math.round(now.seconds) };
   });
+
+  /**
+   * The depth map this run produced, if it made one.
+   *
+   * Found through the graph rather than by guessing at filenames: the page
+   * knows which boxes are Depth boxes, and the run says what each box
+   * produced.
+   */
+  protected readonly depthMap = computed(() => {
+    const run = this.result();
+    if (!run) return null;
+    for (const node of this.nodes()) {
+      if (node.type !== 'depth') continue;
+      const made = run.produced?.[node.id]?.['file'];
+      if (typeof made === 'string') return made;
+    }
+    return null;
+  });
+
+  protected see(file: string): void {
+    this.moving.set(this.engine.layerUrl(file));
+  }
 
   protected layerUrl(file: string): string {
     return this.engine.layerUrl(file);

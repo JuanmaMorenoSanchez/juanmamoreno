@@ -1,0 +1,36 @@
+<div class="moving-scrim">
+  <div class="moving-panel">
+    <header class="moving-head">
+      <h2>The painting, moving</h2>
+      <p>
+        Move the pointer over it. Every pixel here is one you painted, shifted by how near the depth
+        map says it is — there is nothing invented, which is why it still reads as your brushwork.
+      </p>
+    </header>
+
+    <div
+      class="moving-stage"
+      (pointermove)="move($event)"
+      (pointerleave)="leave()"
+      data-testid="moving-stage"
+    >
+      <canvas #stage></canvas>
+      @if (!ready() && !trouble()) {
+        <p class="moving-wait">Slicing it by depth…</p>
+      }
+      @if (trouble(); as why) {
+        <p class="moving-trouble" data-testid="moving-trouble">{{ why }}</p>
+      }
+    </div>
+
+    <footer class="moving-foot">
+      <span class="moving-note">
+        No video model. A hundred megabytes and four seconds, against twelve gigabytes and eighteen
+        minutes.
+      </span>
+      <button type="button" class="moving-go" (click)="dismissed.emit()" data-testid="moving-close">
+        Done
+      </button>
+    </footer>
+  </div>
+</div>

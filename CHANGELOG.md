@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.9.0
+
+- **feat** — a painting moves, without a video model. The new **Depth** node
+  reads how far away each part of a canvas is, and the page slices the painting
+  by depth and shifts each slice through the parallax logic already written for
+  the generative pieces. Every pixel on screen is one he painted, moved — there
+  is nothing invented, which is why it still reads as his brushwork. Four and a
+  half seconds and 284 MiB, against eighteen minutes and twelve gigabytes for
+  an edit.
+
 ## 2.8.0
 
 - **feat** — a run says what it is doing and can be stopped. The engine answers

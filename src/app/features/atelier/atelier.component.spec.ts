@@ -579,6 +579,48 @@ describe('AtelierComponent', () => {
     expect(at(host, 'progress')).toBeNull();
   });
 
+  it('offers to show the painting moving only once a Depth box has made a map', async () => {
+    const withoutDepth = build({
+      states: [done({ batch: 'a', seconds: 1, produced: {}, saved: [] })],
+    });
+    const first = await start(withoutDepth.fixture);
+    await first.running;
+    withoutDepth.fixture.detectChanges();
+    expect(at(withoutDepth.host, 'see-it-move')).toBeNull();
+  });
+
+  it('finds the depth map through the graph, not by guessing at a filename', async () => {
+    // The page knows which boxes are Depth boxes and the run says what each
+    // box produced. Matching on a name would break the moment two runs are
+    // kept, or a file is called something else.
+    const { fixture, host } = build({
+      states: [
+        going(),
+        done({
+          batch: 'a',
+          seconds: 4,
+          produced: { d: { file: 'a-depth.png' } },
+          saved: ['a-depth.png'],
+        }),
+      ],
+    });
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({
+      nodes: [
+        { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+        { id: 'd', type: 'depth', x: 0, y: 0, params: {} },
+      ],
+      edges: [{ from: ['src', 'image'], to: ['d', 'image'] }],
+    });
+    const running = parts.run();
+    await new Promise((settle) => setTimeout(settle, 1100));
+    await running;
+    fixture.detectChanges();
+
+    expect(at(host, 'see-it-move')).not.toBeNull();
+  });
+
   it('brings a graph back after a reload, because drawing one is work', () => {
     const { fixture } = build({
       stored: JSON.stringify({

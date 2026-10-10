@@ -23,6 +23,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
+from .depth import as_image as depth_image, measure as measure_depth
 from .edit import available as edit_available, edit as edit_painting
 from .help import HELP, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
@@ -141,6 +142,25 @@ def _edit(inputs, params, context) -> dict[str, Any]:
     }
 
 
+def _depth(inputs, params, context) -> dict[str, Any]:
+    """How far away each part of the painting is.
+
+    Writes the map out without being asked, unlike every other node. It is a
+    hundred kilobytes, and the page needs it by name to show the painting
+    moving — making that conditional on remembering to join a Keep would hide
+    the one thing this node is for.
+    """
+    depth = measure_depth(context["registry"], inputs["image"])
+    picture = depth_image(depth)
+
+    OUT.mkdir(exist_ok=True)
+    name = f"{context.get('batch', uuid.uuid4().hex[:8])}-depth.png"
+    picture.save(OUT / name)
+    context.setdefault("saved", []).append(name)
+
+    return {"image": picture, "depth": depth, "file": name}
+
+
 def _save(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     stem = (params["name"] or "layer").strip().replace(" ", "-") or "layer"
@@ -247,6 +267,15 @@ CATALOGUE: dict[str, NodeType] = {
             inputs=[Port("image", "image"), Port("mask", "mask")],
             outputs=[Port("image", "image")],
             run=_fill,
+        ),
+        NodeType(
+            key="depth",
+            label="Depth",
+            category="mask",
+            summary="How far away each part of the painting is. White is near, black is far.",
+            inputs=[Port("image", "image")],
+            outputs=[Port("image", "image"), Port("depth", "depth"), Port("file", "text")],
+            run=_depth,
         ),
         NodeType(
             key="edit",

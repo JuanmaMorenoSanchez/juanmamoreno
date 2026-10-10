@@ -74,6 +74,21 @@ HELP: dict[str, str] = {
         "scattered over the foliage. Cut the figures, invert what you took, and what "
         "is left is a better background than it would have drawn, for nothing."
     ),
+    "depth": (
+        "How far away each part of the painting is, as a grey picture: white "
+        "near, black far.\n\n"
+        "This is what moves a painting without a video model. The depth map "
+        "drives the parallax already written for the generative pieces, which "
+        "gives motion that is faithful by construction — it can only move "
+        "pixels you painted, so it cannot resolve a brushstroke into a "
+        "photograph the way an image-to-video model does.\n\n"
+        "A hundred megabytes and about a second, against twelve gigabytes and "
+        "eighteen minutes.\n\n"
+        "It reads depth from what a painting suggests rather than from any "
+        "measurement, so expect it to be confident and sometimes wrong — "
+        "a flat area of strong colour can read as near. Keep the map and look "
+        "at it; it is a picture like any other."
+    ),
     "cut": (
         "The picture showing through a shape, as a transparent layer the size of the "
         "whole canvas.\n\n"

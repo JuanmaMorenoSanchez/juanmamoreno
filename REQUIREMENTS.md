@@ -2600,6 +2600,36 @@ address space, which is not the same as local" and "treats not being able to
 reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
 `atelier-engine/tests/`, which are not run by `npm test`.
 
+### R140 — A painting moves without a video model · met
+**Depth** reads how far away each part of a painting is and writes the map out
+— white near, black far. The page then cuts the painting into six slices by
+depth and shifts each by how near it is, through the `Parallax` logic already
+written for the generative pieces.
+
+**The motion is faithful by construction.** Every pixel on screen is a pixel he
+painted, moved. An image-to-video model resolves ambiguity into photographic
+plausibility, which is the opposite of what a painting wants; this cannot,
+because it has nothing to invent with.
+
+**Depth-Anything-V2-Small, and only Small.** Base, Large and Giant are
+CC BY-NC 4.0 and cannot be used beside paintings that are for sale; the
+smallest is the only Apache 2.0 one of the four. Measured on painting 6:
+**4.5 seconds and 284 MiB**, against eighteen minutes and twelve gigabytes for
+an edit.
+
+**The slices are cumulative, not exclusive** — each contains everything that
+near or nearer, so a slice sliding away uncovers more painting rather than a
+hole. Exclusive bands were tried and tore white seams through the canvas
+wherever two parted, which no amount of overlap fixes: those pixels exist in
+one slice and it has moved.
+
+**The page finds the map through the graph**, not by matching a filename: it
+knows which boxes are Depth boxes and the run says what each produced.
+*Proven by:* `atelier.component.spec.ts` "finds the depth map through the
+graph, not by guessing at a filename" and "offers to show the painting moving
+only once a Depth box has made a map"; `parallax-preview.component.spec.ts`
+"says so rather than showing an empty frame when the map cannot be read".
+
 ### R138 — A thing can be pointed at instead of named · met
 **A thing can be pointed at instead of named.** Naming works when the thing has
 a name the model knows and fails on everything else — a particular fold, one of

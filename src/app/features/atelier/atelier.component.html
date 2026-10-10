@@ -194,6 +194,12 @@
     (drawing)="draw($event)"
   />
 
+  @if (moving(); as map) {
+    @if (preview(); as url) {
+      <app-parallax-preview [painting]="url" [depth]="map" (dismissed)="moving.set(null)" />
+    }
+  }
+
   @if (marking(); as node) {
     @if (preview(); as url) {
       <app-brush-overlay
@@ -252,6 +258,14 @@
         canvas with none, the model returns whatever is most creature-shaped and scores it about the
         same. Judge these by eye.
       </p>
+
+      @if (depthMap(); as map) {
+        <p class="atelier-caveat">
+          <button type="button" class="atelier-go" (click)="see(map)" data-testid="see-it-move">
+            See it move
+          </button>
+        </p>
+      }
 
       @if (run.saved.length) {
         <ul class="atelier-layers">
