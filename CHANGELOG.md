@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.10.0
+
+- **feat** — what the atelier makes can be kept. Every layer a run produced has
+  a Save beside it, and nothing leaves this machine until one is pressed; what
+  is kept goes to the bucket through the backend and appears on a shelf at the
+  foot of the page, so it can be found again when the engine is not running.
+  Needs backend 2.1.0.
+
 ## 2.9.0
 
 - **feat** — a painting moves, without a video model. The new **Depth** node

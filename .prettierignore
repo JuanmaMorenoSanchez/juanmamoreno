@@ -6,3 +6,9 @@ out-tsc
 src/assets/translations
 package-lock.json
 yarn.lock
+
+# Prettier rewrites this file wholesale and, worse, turns every `*Proven by:*`
+# into `_Proven by:_`. The verifier that gates the deploy looks for the
+# asterisks, so formatting this document silently breaks the build — seventy-five
+# lines rewritten and every requirement suddenly unproven.
+REQUIREMENTS.md

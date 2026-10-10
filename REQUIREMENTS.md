@@ -2600,6 +2600,28 @@ address space, which is not the same as local" and "treats not being able to
 reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
 `atelier-engine/tests/`, which are not run by `npm test`.
 
+### R141 — Nothing the atelier makes is kept until he presses save · met
+Everything the atelier makes lives in the engine's own folder on his machine
+and goes when the engine does. Most of it is a try, and a tool that kept all of
+it would fill a bucket with rejects.
+
+**Each layer a run produced has a Save beside it, and nothing happens until it
+is pressed.** What is saved goes to the bucket and Firestore through the
+backend's admin-guarded routes, tagged with the painting's token id when the
+painting came from the catalogue.
+
+**What has been kept is shown on the page**, under everything else, so it can
+be found again when the engine is not running — which is the point of keeping
+it somewhere other than this machine. Each can be forgotten from there, bytes
+and record together.
+
+**The bytes come back through the backend, not from a url.** Nothing stores one:
+a signed url is a credential with an expiry and an object url outlives any
+decision to stop sharing it.
+*Proven by:* `atelier.component.spec.ts` "offers to keep each layer, and keeps
+nothing without being asked" and "shows what has already been kept, which
+outlives the engine". The backend half is B69 there.
+
 ### R140 — A painting moves without a video model · met
 **Depth** reads how far away each part of a painting is and writes the map out
 — white near, black far. The page then cuts the painting into six slices by

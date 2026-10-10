@@ -273,6 +273,20 @@
             <li>
               <img [src]="layerUrl(file)" [alt]="file" loading="lazy" />
               <h3>{{ file }}</h3>
+              <!-- The only route by which anything here leaves this machine. -->
+              @if (alreadyKept().has(file)) {
+                <span class="atelier-kept">Kept</span>
+              } @else {
+                <button
+                  type="button"
+                  class="atelier-minor"
+                  [disabled]="keeping() !== null"
+                  (click)="save(file)"
+                  [attr.data-testid]="'save-' + file"
+                >
+                  {{ keeping() === file ? 'Saving…' : 'Save' }}
+                </button>
+              }
             </li>
           }
         </ul>
@@ -281,6 +295,44 @@
           Nothing was kept. Join a <strong>Keep</strong> node to whatever you want written out.
         </p>
       }
+    </section>
+  }
+
+  <!-- What has been kept, which is the only thing here that outlives the run. -->
+  @if (kept.pieces().length) {
+    <section class="atelier-shelf" data-testid="shelf">
+      <h2>Kept</h2>
+      <p class="atelier-caveat">
+        These are in the bucket, not on this machine, so they are still here when the engine is not.
+      </p>
+      <ul class="atelier-layers">
+        @for (piece of kept.pieces(); track piece.id) {
+          <li>
+            <img [src]="kept.imageUrl(piece.id)" [alt]="piece.name" loading="lazy" />
+            <h3>{{ piece.name }}</h3>
+            <dl>
+              <dt>kind</dt>
+              <dd>{{ piece.kind }}</dd>
+              @if (piece.tokenId) {
+                <dt>painting</dt>
+                <dd>{{ piece.tokenId }}</dd>
+              }
+              @if (piece.width) {
+                <dt>size</dt>
+                <dd>{{ piece.width }}×{{ piece.height }}</dd>
+              }
+            </dl>
+            <button
+              type="button"
+              class="atelier-minor"
+              (click)="kept.forget(piece.id)"
+              [attr.data-testid]="'forget-' + piece.id"
+            >
+              Forget
+            </button>
+          </li>
+        }
+      </ul>
     </section>
   }
 </article>

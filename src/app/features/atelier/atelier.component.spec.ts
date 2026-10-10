@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { AtelierComponent } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
+import { KeptService } from './kept.service';
 import {
   AtelierEngineService,
   type GraphRun,
@@ -97,6 +98,8 @@ describe('AtelierComponent', () => {
       catalogue?: NodeTypeDef[];
       run?: () => Promise<GraphRun>;
       states?: JobState[];
+      kept?: unknown[];
+      onKeep?: () => Promise<unknown>;
       stored?: string;
     } = {}
   ) => {
@@ -109,6 +112,7 @@ describe('AtelierComponent', () => {
     const sent: unknown[] = [];
     const switching = signal(options.switching ?? 'idle');
     const did: string[] = [];
+    const keptCalls: Record<string, unknown>[] = [];
     let asked = -1;
     const queued: JobState[] = options.states ?? [
       {
@@ -138,6 +142,20 @@ describe('AtelierComponent', () => {
       imports: [AtelierComponent],
       providers: [
         provideZonelessChangeDetection(),
+        {
+          provide: KeptService,
+          useValue: {
+            pieces: signal(options.kept ?? []),
+            saving: signal(false),
+            refresh: () => Promise.resolve(),
+            keep: (picture: Blob, about: Record<string, unknown>) => {
+              keptCalls.push(about);
+              return options.onKeep?.() ?? Promise.resolve({ id: 'k1', ...about });
+            },
+            forget: () => Promise.resolve(),
+            imageUrl: (id: string) => `/api/atelier-pieces/${id}/image`,
+          },
+        },
         {
           // Reaching the real one would reach ARTWORK_PORT and the network.
           provide: CataloguePaintingService,
@@ -190,7 +208,14 @@ describe('AtelierComponent', () => {
 
     const fixture = TestBed.createComponent(AtelierComponent);
     fixture.detectChanges();
-    return { fixture, host: fixture.nativeElement as HTMLElement, sent, did, unreachable };
+    return {
+      fixture,
+      host: fixture.nativeElement as HTMLElement,
+      sent,
+      did,
+      unreachable,
+      keptCalls,
+    };
   };
 
   const at = (host: HTMLElement, id: string) =>
@@ -619,6 +644,39 @@ describe('AtelierComponent', () => {
     fixture.detectChanges();
 
     expect(at(host, 'see-it-move')).not.toBeNull();
+  });
+
+  it('offers to keep each layer, and keeps nothing without being asked', async () => {
+    // The engine's folder is scratch on one machine. This is the only route by
+    // which anything the atelier makes leaves it, and it is never taken alone.
+    const { fixture, host, keptCalls } = build({
+      states: [done({ batch: 'a', seconds: 2, produced: {}, saved: ['a-girl.png'] })],
+    });
+    const { running } = await start(fixture);
+    await running;
+    fixture.detectChanges();
+
+    expect(keptCalls).toHaveLength(0);
+    expect(at(host, 'save-a-girl.png')).not.toBeNull();
+  });
+
+  it('shows what has already been kept, which outlives the engine', () => {
+    const { host } = build({
+      kept: [
+        {
+          id: 'k1',
+          name: 'Rockets win I',
+          tokenId: '195',
+          kind: 'layer',
+          width: 10,
+          height: 10,
+          bytes: 1,
+          created: '',
+        },
+      ],
+    });
+
+    expect(at(host, 'shelf')?.textContent).toContain('Rockets win I');
   });
 
   it('brings a graph back after a reload, because drawing one is work', () => {

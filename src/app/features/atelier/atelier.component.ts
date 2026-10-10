@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
+import { KeptService } from './kept.service';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
 import {
   AtelierEngineService,
@@ -44,6 +45,7 @@ const SAVED = 'juanmamoreno.atelier.graph';
 export class AtelierComponent {
   protected readonly engine = inject(AtelierEngineService);
   private readonly catalogueImages = inject(CataloguePaintingService);
+  protected readonly kept = inject(KeptService);
 
   protected readonly painting = signal<Blob | null>(null);
   protected readonly preview = signal<string | null>(null);
@@ -104,9 +106,71 @@ export class AtelierComponent {
       this.unjoined().length === 0
   );
 
+  /** Which layer is on its way to the bucket, by filename. */
+  protected readonly keeping = signal<string | null>(null);
+  /** What has been kept out of this run, so the button can say so. */
+  protected readonly alreadyKept = signal<Set<string>>(new Set());
+
   constructor() {
     void this.wake();
     this.recall();
+    void this.kept.refresh();
+  }
+
+  /**
+   * Sends one layer to the bucket. Only ever from a press.
+   *
+   * The engine's folder is scratch — it is cleared whenever he likes and lives
+   * on one machine. This is the only route by which anything the atelier makes
+   * leaves that machine, and it is never taken on its own.
+   */
+  protected async save(file: string): Promise<void> {
+    if (this.keeping()) return;
+    this.keeping.set(file);
+    this.failure.set(null);
+    try {
+      const picture = await fetch(this.engine.layerUrl(file)).then((r) => {
+        if (!r.ok) throw new Error('that layer is no longer on this machine');
+        return r.blob();
+      });
+      const size = await this.sizeOf(picture);
+      await this.kept.keep(picture, {
+        name: this.chosen() ?? file,
+        kind: kindOf(file),
+        tokenId: this.tokenId().trim() || undefined,
+        width: size.width,
+        height: size.height,
+      });
+      this.alreadyKept.update((all) => new Set(all).add(file));
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'it could not be kept');
+    } finally {
+      this.keeping.set(null);
+    }
+  }
+
+  /** The size of a picture, so the shelf can say how big each one is. */
+  private sizeOf(picture: Blob): Promise<{ width: number; height: number }> {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(picture);
+      const image = new Image();
+      const done = (size: { width: number; height: number }) => {
+        URL.revokeObjectURL(url);
+        resolve(size);
+      };
+      // Bounded, like everywhere else here: an image that neither loads nor
+      // fails would otherwise hold the save open for ever.
+      const timer = setTimeout(() => done({ width: 0, height: 0 }), 5000);
+      image.onload = () => {
+        clearTimeout(timer);
+        done({ width: image.naturalWidth, height: image.naturalHeight });
+      };
+      image.onerror = () => {
+        clearTimeout(timer);
+        done({ width: 0, height: 0 });
+      };
+      image.src = url;
+    });
   }
 
   private async wake(): Promise<void> {
@@ -362,4 +426,13 @@ export class AtelierComponent {
   protected layerUrl(file: string): string {
     return this.engine.layerUrl(file);
   }
+}
+
+/** What a layer is, read from the name the engine gave it. */
+function kindOf(file: string): string {
+  if (file.includes('background-filled')) return 'background';
+  if (file.includes('background')) return 'background';
+  if (file.includes('depth')) return 'depth';
+  if (file.includes('edit')) return 'edit';
+  return 'layer';
 }
