@@ -1,0 +1,162 @@
+.piece-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgb(0 0 0 / 62%);
+}
+
+.piece-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(56rem, 100%);
+  max-height: 100%;
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: 5px;
+  background: var(--surface, #fff);
+  color: inherit;
+}
+
+.piece-head {
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 42rem;
+    font-size: 0.78rem;
+    opacity: 0.7;
+  }
+}
+
+.piece-stage {
+  position: relative;
+  min-height: 0;
+
+  iframe {
+    display: block;
+    width: 100%;
+    /* Tall enough that a piece has somewhere to happen, short enough that the
+       code and the buttons stay on screen beside it. */
+    height: min(52vh, 30rem);
+    border: 0;
+    border-radius: 4px;
+    background: #0b0b0c;
+  }
+}
+
+.piece-wait {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: #f4f4f5;
+  font-size: 0.85rem;
+}
+
+.piece-trouble {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-radius: 4px;
+  background: rgb(11 11 12 / 92%);
+  color: #f4f4f5;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.45;
+
+  code {
+    max-width: 100%;
+    padding: 0.3rem 0.5rem;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 10%);
+    color: #ffb4ab;
+    font-size: 0.78rem;
+    /* A thrown message can be one long line; it wraps rather than scrolls. */
+    overflow-wrap: anywhere;
+  }
+
+  span {
+    max-width: 32rem;
+    opacity: 0.75;
+  }
+}
+
+.piece-notes {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.piece-code {
+  min-height: 0;
+
+  summary {
+    font-size: 0.78rem;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  pre {
+    max-height: 18rem;
+    margin: 0.5rem 0 0;
+    padding: 0.6rem 0.7rem;
+    overflow: auto;
+    border-radius: 4px;
+    background: rgb(0 0 0 / 5%);
+    font-size: 0.72rem;
+    line-height: 1.45;
+  }
+}
+
+.piece-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.piece-note {
+  flex: 1 1 auto;
+  font-size: 0.75rem;
+  opacity: 0.65;
+
+  code {
+    font-size: 0.72rem;
+  }
+}
+
+.piece-go,
+.piece-minor {
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.piece-go {
+  font-weight: 600;
+}
+
+.piece-minor {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}

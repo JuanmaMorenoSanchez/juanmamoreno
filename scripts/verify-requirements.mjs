@@ -33,8 +33,17 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..');
 const DOC = resolve(process.argv[2] ?? join(REPO, 'REQUIREMENTS.md'));
 
-/** Files that can stand as proof. Anything else in backticks is prose. */
-const PROOF_FILE = /`([\w./-]+\.(?:ts|mjs|cjs|js|html|scss|json))`/g;
+/**
+ * Files that can stand as proof. Anything else in backticks is prose.
+ *
+ * `.py` is here for the same reason it is in the glob below: the atelier
+ * engine lives in this repository and its tests are real proof. It was missing
+ * here while the glob already had it, which made the glob dead — a requirement
+ * citing a Python test was not citing a file at all, so the quotes in its proof
+ * were checked against whatever other file it happened to name, and the
+ * Python test could be renamed or deleted in silence.
+ */
+const PROOF_FILE = /`([\w./-]+\.(?:ts|mjs|cjs|js|html|scss|json|py))`/g;
 
 /**
  * A proof may point at the other half of the site — the backend is its own

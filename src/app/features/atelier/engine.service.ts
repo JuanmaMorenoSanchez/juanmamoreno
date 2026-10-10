@@ -68,6 +68,30 @@ export interface NodeTypeDef {
   params: ParamDef[];
 }
 
+/**
+ * A graph that arrives already wired up.
+ *
+ * `column` and `row` rather than pixels: where a box sits depends on how wide
+ * this page draws one, which is not the engine's business.
+ */
+export interface FlowDef {
+  key: string;
+  label: string;
+  /** One line, on the button. */
+  blurb: string;
+  /** The longer explanation, behind the ?. */
+  about: string;
+  nodes: {
+    at: string;
+    type: string;
+    params: Record<string, string | number | boolean>;
+    column: number;
+    row: number;
+  }[];
+  /** `[from id, from port, to id, to port]`, as the graph endpoint takes them. */
+  edges: [string, string, string, string][];
+}
+
 /** How a run is getting on. */
 export interface JobState {
   job: string;
@@ -272,6 +296,24 @@ export class AtelierEngineService {
     const response = await fetch(`${ENGINE}/nodes`, toLocal({ cache: 'no-store' }));
     if (!response.ok) throw new Error(`the engine answered ${response.status}`);
     return ((await response.json()) as { nodes: NodeTypeDef[] }).nodes;
+  }
+
+  /**
+   * The graphs that arrive already wired up.
+   *
+   * From the engine for the same reason the catalogue is: a flow is made of
+   * node names, and this page is not allowed to know one. Quiet on failure —
+   * an engine too old to have flows is an engine with no buttons, not a
+   * broken page.
+   */
+  async flows(): Promise<FlowDef[]> {
+    try {
+      const response = await fetch(`${ENGINE}/flows`, toLocal({ cache: 'no-store' }));
+      if (!response.ok) return [];
+      return ((await response.json()) as { flows: FlowDef[] }).flows ?? [];
+    } catch {
+      return [];
+    }
   }
 
   /**

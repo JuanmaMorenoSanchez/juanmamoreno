@@ -3,8 +3,10 @@ import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.co
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { KeptService } from './kept.service';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
+import { SketchPreviewComponent } from './sketch-preview.component';
 import {
   AtelierEngineService,
+  type FlowDef,
   type GraphRun,
   type JobState,
   type NodeTypeDef,
@@ -18,6 +20,15 @@ import {
 
 /** Where a graph is kept between visits. The browser's, not the engine's. */
 const SAVED = 'juanmamoreno.atelier.graph';
+
+/**
+ * How far apart a flow's boxes are placed, in the canvas's own pixels.
+ *
+ * The same spacing the palette uses when a box is added by hand: wider than a
+ * box, because the first attempt stepped them 60px apart and each one buried
+ * the last.
+ */
+const NODE_WIDTH = 210;
 
 /**
  * Cutting and changing a painting, with the models running on this machine.
@@ -38,7 +49,12 @@ const SAVED = 'juanmamoreno.atelier.graph';
 @Component({
   selector: 'app-atelier',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BrushOverlayComponent, NodeCanvasComponent, ParallaxPreviewComponent],
+  imports: [
+    BrushOverlayComponent,
+    NodeCanvasComponent,
+    ParallaxPreviewComponent,
+    SketchPreviewComponent,
+  ],
   templateUrl: './atelier.component.html',
   styleUrl: './atelier.component.scss',
 })
@@ -59,6 +75,10 @@ export class AtelierComponent {
   protected readonly moving = signal<string | null>(null);
 
   protected readonly catalogue = signal<NodeTypeDef[]>([]);
+  /** The ready-made graphs the engine offers. */
+  protected readonly flows = signal<FlowDef[]>([]);
+  /** Which flow's long explanation is open, if any. */
+  protected readonly explaining = signal<FlowDef | null>(null);
   protected readonly nodes = signal<GraphNode[]>([]);
   protected readonly edges = signal<GraphEdge[]>([]);
 
@@ -196,6 +216,45 @@ export class AtelierComponent {
       // empty palette says the same thing in the place you would look for it.
       this.catalogue.set([]);
     }
+
+    // Already quiet on failure, because an engine too old to have flows is an
+    // engine with no buttons rather than a broken page.
+    this.flows.set(await this.engine.flows());
+  }
+
+  /**
+   * Drops a ready-made graph on the canvas, in place of whatever was there.
+   *
+   * **It replaces rather than adds.** Merging two graphs leaves boxes on top
+   * of each other and wires going nowhere, and the one thing a flow is for is
+   * arriving correct.
+   */
+  protected start(flow: FlowDef): void {
+    // The ids in a flow are readable — `painting`, `grow`, `keep` — and are
+    // made unique here, because two flows in a row would otherwise collide
+    // with each other in localStorage.
+    const run = Math.random().toString(36).slice(2, 7);
+    const named = (at: string) => `${at}-${run}`;
+
+    this.redraw({
+      nodes: flow.nodes.map((node) => ({
+        id: named(node.at),
+        type: node.type,
+        // The engine says what follows what; this page decides how wide a box
+        // is, so it is this page that turns a column into a position.
+        x: 30 + node.column * (NODE_WIDTH + 70),
+        y: 30 + node.row * 190,
+        params: { ...node.params },
+      })),
+      edges: flow.edges.map(([source, from, target, to]) => ({
+        from: [named(source), from] as [string, string],
+        to: [named(target), to] as [string, string],
+      })),
+    });
+
+    this.result.set(null);
+    this.failure.set(null);
+    this.explaining.set(null);
   }
 
   /**
@@ -419,8 +478,43 @@ export class AtelierComponent {
     return null;
   });
 
+  /**
+   * The piece this run wrote, if it wrote one.
+   *
+   * The code itself, not a url. It never goes to a server — it came off this
+   * machine's own engine and is handed straight to a frame with no network.
+   */
+  protected readonly written = computed(() => {
+    const run = this.result();
+    if (!run) return null;
+    for (const node of this.nodes()) {
+      if (node.type !== 'sketch') continue;
+      const made = run.produced?.[node.id];
+      const code = made?.['code'];
+      if (typeof code === 'string' && code.length) {
+        const file = made?.['file'];
+        return { code, file: typeof file === 'string' ? file : null };
+      }
+    }
+    return null;
+  });
+
   protected see(file: string): void {
     this.moving.set(this.engine.layerUrl(file));
+  }
+
+  /** Whether the written piece is on screen, running. */
+  protected readonly playing = signal(false);
+
+  /**
+   * A flow's explanation, split into paragraphs.
+   *
+   * Guarded, like the node help beside it: this page can be newer than the
+   * engine on the machine it is talking to, and it crashed once against an
+   * engine that predated a field it read.
+   */
+  protected aboutParagraphs(flow: FlowDef): string[] {
+    return (flow.about ?? '').split('\n\n').filter((paragraph) => paragraph.trim().length > 0);
   }
 
   protected layerUrl(file: string): string {

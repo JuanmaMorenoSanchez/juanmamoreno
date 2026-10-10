@@ -26,10 +26,11 @@ nothing to re-read before selling a painting.
 | ------------------- | ---------------------------------------- | --------------- | ---------- | ------------ |
 | Text → boxes        | `IDEA-Research/grounding-dino-base`      | ~700 MB         | Apache 2.0 | **measured** |
 | Box or point → mask | `facebook/sam2.1-hiera-small`            | 184 MB · 46M    | Apache 2.0 | **measured** |
-| Fill behind         | LaMa (`big-lama`)                        | ~200 MB · 51M   | Apache 2.0 | planned      |
-| Depth               | `depth-anything/Depth-Anything-V2-Small` | ~100 MB · 24.8M | Apache 2.0 | planned      |
+| Fill behind         | LaMa (`big-lama`)                        | ~200 MB · 51M   | Apache 2.0 | **measured** |
+| Depth               | `depth-anything/Depth-Anything-V2-Small` | ~100 MB · 24.8M | Apache 2.0 | **measured** |
 | Background removal  | BiRefNet                                 | ~900 MB         | MIT        | optional     |
-| Sketch code         | `Qwen/Qwen2.5-Coder-7B-Instruct` Q4_K_M  | ~4.7 GB         | Apache 2.0 | planned      |
+| Sketch code         | `Qwen/Qwen2.5-Coder-7B-Instruct`         | 15 GB bf16      | Apache 2.0 | **measured** |
+| Sketch code, fast   | `Qwen/Qwen2.5-Coder-1.5B-Instruct`       | 3 GB bf16       | Apache 2.0 | **measured** |
 
 Everything needed to cut a painting into layers is **under 2 GB of weights** and
 peaked at **1,808 MiB of VRAM** — a quarter of the budget.
@@ -177,34 +178,66 @@ small — but it is recorded rather than ignored.
 
 ---
 
-## Qwen2.5-Coder 7B — writing the sketches
+## Qwen2.5-Coder — writing the sketches
 
-**What it does.** Generates code. Run locally through `llama.cpp` at Q4_K_M
-quantisation, ~4.7 GB.
+**What it does.** Writes a generative artwork as a `Piece` class from a
+sentence. Two sizes are offered, **7B and 1.5B**, both bfloat16 through
+`transformers`.
 
 **Why it is here, and why 7B is enough.** The target is unusually small: one
 interface, `Sketch`, with `setup`, `draw` and three optional methods, Canvas 2D
 only, no framework, with the motion logic in `@domain/generative` as building
-blocks. A 7B model can hit a target this narrow given two or three existing
-sketches as examples. Qwen3-Coder 30B would be better and needs 19 GB, so it is
-not a candidate.
+blocks. A model this size would not write an application; it can write one
+`draw` method. Qwen3-Coder 30B would be better and needs 19 GB, so it is not a
+candidate.
 
-**Not yet measured.**
+**Never the 3B.** The sizes are 0.5B, 1.5B and 7B under Apache 2.0 — and 3B
+under Qwen's research licence, which forbids commercial use. The convenient
+middle size is the one that cannot be used beside paintings that are for sale,
+exactly as with Depth Anything, where only Small was usable.
+
+**No `llama.cpp`, and no GGUF.** That was the plan, and `llama-cpp-python`
+publishes **no Windows wheel at all** — every recent release would compile from
+source against MSVC and CMake, which is a C++ toolchain added to the tree for
+one model. `transformers` was already here and does the job.
+
+**Measured.** The 7B is 15 GB in bfloat16 against 8 on the card, so it is split
+across the card, system memory and disk, with the card capped at 5 GiB:
+**477 seconds** for a piece. The 1.5B fits the card and took **18–25 seconds**
+across several runs. The difference is visible in the output, not just the
+clock — asked for drifting dust motes that gather towards the pointer, the 7B
+wrote a hundred motes easing towards it and the 1.5B wrote a single falling dot.
+
+**It is shown a worked answer rather than told a rule.** Asked in words for
+"plain JavaScript, not TypeScript" the 1.5B returned `class Piece implements
+Sketch` with `private width: number` and `resize?(ctx, ...)` — three parse
+errors in one answer. The cause was the prompt: the interface it was handed was
+itself a TypeScript `interface`, so it was shown TypeScript and asked for
+JavaScript in the same breath. With the contract rewritten as comments and one
+worked example added, both sizes answer in plain JavaScript. TypeScript coming
+back anyway is detected exactly and asked for once more.
+
+**What comes back is never trusted.** It runs in an iframe at an opaque origin
+under `default-src 'none'`, which is the subject of its own section in
+`REQUIREMENTS.md` (R143) and tested by trying to escape it.
 
 ---
 
 ## What was rejected, and why
 
-| Model                                      | Reason                                                                                                                                                                        |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **RMBG-2.0**                               | CC BY-NC 4.0 — no commercial use                                                                                                                                              |
-| **Depth-Anything-V2 Base / Large / Giant** | CC BY-NC 4.0 — only Small is Apache 2.0                                                                                                                                       |
-| **FLUX.1 Fill [dev]**                      | Non-commercial, and ~12 GB                                                                                                                                                    |
-| **SDXL Inpainting 0.1**                    | OpenRAIL++ use restrictions travel downstream; ~6 GB                                                                                                                          |
-| **Hunyuan Video**                          | Tencent Community Licence appears to exclude the EU                                                                                                                           |
-| **SAM 3**                                  | Custom Meta licence, not Apache; unnecessary once SAM 2.1 proved out                                                                                                          |
-| **Wan 2.2 TI2V-5B**                        | Apache 2.0 and it fits — but **on hold**, in favour of depth parallax                                                                                                         |
-| **MiniMax H3**                             | 19.5 GB diffusion model and a 14.6 GB text encoder against ~7 GB of VRAM — 2.6× over. Its text encoder is NVFP4, a Blackwell format this Ada card has no hardware support for |
+| Model                                           | Reason                                                                                                                                                                              |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **RMBG-2.0**                                    | CC BY-NC 4.0 — no commercial use                                                                                                                                                    |
+| **Depth-Anything-V2 Base / Large / Giant**      | CC BY-NC 4.0 — only Small is Apache 2.0                                                                                                                                             |
+| **FLUX.1 Fill [dev]**                           | Non-commercial, and ~12 GB                                                                                                                                                          |
+| **SDXL Inpainting 0.1**                         | OpenRAIL++ use restrictions travel downstream; ~6 GB                                                                                                                                |
+| **Hunyuan Video**                               | Tencent Community Licence appears to exclude the EU                                                                                                                                 |
+| **SAM 3**                                       | Custom Meta licence, not Apache; unnecessary once SAM 2.1 proved out                                                                                                                |
+| **Wan 2.2 TI2V-5B**                             | Apache 2.0 and it fits — but **on hold**, in favour of depth parallax                                                                                                               |
+| **MiniMax H3**                                  | 19.5 GB diffusion model and a 14.6 GB text encoder against ~7 GB of VRAM — 2.6× over. Its text encoder is NVFP4, a Blackwell format this Ada card has no hardware support for       |
+| **Qwen2.5-Coder-3B-Instruct**                   | Licence "other" — Qwen Research, no commercial use. The convenient middle size, and the only one of the four that cannot be used                                                    |
+| **Qwen3-Coder 30B**                             | Better at this, and 19 GB                                                                                                                                                           |
+| **`llama-cpp-python` (a runtime, not a model)** | No Windows wheel on PyPI at all — every recent release would compile from source against MSVC and CMake, a C++ toolchain in the tree for one model. `transformers` was already here |
 
 ---
 

@@ -89,6 +89,25 @@ HELP: dict[str, str] = {
         "a flat area of strong colour can read as near. Keep the map and look "
         "at it; it is a picture like any other."
     ),
+    "sketch": (
+        "Writes a small moving piece from a sentence, as code, which then runs "
+        "beside the box.\n\n"
+        "The target is unusually small, and that is the only reason a model "
+        "this size can hit it: one interface, a canvas, no framework and no "
+        "library, with the motion helpers already written for the other pieces "
+        "to draw on. It would not write an application. It can write one draw "
+        "method.\n\n"
+        "Two models, both Apache 2.0. The big one is seven billion parameters "
+        "and split across the card, the memory and the disk, so it takes "
+        "minutes; the small one fits the card and answers in seconds, and "
+        "writes worse code. There is a middle size which is not offered, "
+        "because its licence forbids commercial use and paintings are sold "
+        "from this site.\n\n"
+        "What comes back runs in a frame of its own with no network and no "
+        "reach into this page, so a piece that misbehaves can only misbehave "
+        "at itself. Expect to run it more than once: a sentence is a loose "
+        "brief and the model is small."
+    ),
     "cut": (
         "The picture showing through a shape, as a transparent layer the size of the "
         "whole canvas.\n\n"
@@ -133,6 +152,19 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "The marks themselves. Press Draw to put them on the painting: a click "
         "keeps, a shift-click excludes. They are stored on the node, so they "
         "survive a reload along with the rest of the graph."
+    ),
+    ("sketch", "asking"): (
+        "What the piece should do, in a sentence. Concrete and visual works best — "
+        "what moves, what colour, how fast. A brief it cannot picture comes back as "
+        "something generic."
+    ),
+    ("sketch", "small"): (
+        "Use the 1.5B model instead of the 7B. Seconds rather than minutes, and "
+        "noticeably worse code. Worth it while trying wordings out."
+    ),
+    ("sketch", "most_tokens"): (
+        "How long the answer may be. A sketch is rarely more than six hundred tokens; "
+        "raising this mostly buys comments."
     ),
     ("find", "phrase"): (
         "What to look for, in plain words. Short and concrete beats elaborate. A word "

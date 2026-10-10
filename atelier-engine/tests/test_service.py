@@ -154,6 +154,17 @@ class ServiceTest(unittest.TestCase):
 
         self.assertEqual(response.headers.get("access-control-allow-private-network"), "true")
 
+    def test_it_publishes_its_ready_made_flows(self) -> None:
+        # Served rather than written into the page, so a flow added here is a
+        # button on the deployed site without the site being released.
+        served = self.client.get("/flows").json()["flows"]
+
+        self.assertTrue(served)
+        self.assertIn("change-a-part", {flow["key"] for flow in served})
+        for flow in served:
+            self.assertTrue(flow["label"])
+            self.assertTrue(flow["nodes"])
+
 
 if __name__ == "__main__":
     unittest.main()

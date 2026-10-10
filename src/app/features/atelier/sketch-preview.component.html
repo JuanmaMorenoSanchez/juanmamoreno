@@ -1,0 +1,74 @@
+<div class="piece-scrim">
+  <div class="piece-panel">
+    <header class="piece-head">
+      <h2>The piece, running</h2>
+      <p>
+        Written by the model and running in a frame of its own: no network, and no way to reach this
+        page. Move the pointer over it — most pieces answer to it.
+      </p>
+    </header>
+
+    <div class="piece-stage">
+      <!-- `allow-scripts` and deliberately not `allow-same-origin`. The pair is
+           the boundary: scripts run, at an origin that is nobody's.
+
+           Written out here rather than bound, because Angular refuses to bind
+           `sandbox` at all (NG0910) — a sandbox that could be computed could
+           be computed wrongly, so it has to be a literal. Good. -->
+      <iframe
+        #frame
+        title="the written piece, running"
+        sandbox="allow-scripts"
+        referrerpolicy="no-referrer"
+        (load)="arrived()"
+        data-testid="piece-frame"
+      ></iframe>
+
+      @if (state() === 'starting') {
+        <p class="piece-wait">Starting it…</p>
+      }
+
+      @if (trouble(); as why) {
+        <div class="piece-trouble" data-testid="piece-trouble">
+          <strong>It threw.</strong>
+          <code>{{ why.message }}{{ why.where ? ' · ' + why.where : '' }}</code>
+          <span
+            >Nothing is broken but the piece. Change the sentence and run the box again — a model
+            this size is expected to need two or three tries.</span
+          >
+        </div>
+      }
+    </div>
+
+    @if (notes().length) {
+      <ul class="piece-notes" data-testid="piece-notes">
+        @for (note of notes(); track note) {
+          <li>{{ note }}</li>
+        }
+      </ul>
+    }
+
+    <details class="piece-code">
+      <summary>The code, {{ lines() }} lines</summary>
+      <pre data-testid="piece-code">{{ code() }}</pre>
+    </details>
+
+    <footer class="piece-foot">
+      <span class="piece-note">
+        @if (file(); as name) {
+          Written to <code>atelier-engine/out/{{ name }}</code
+          >. To make it a page of its own, add a line to <code>sketches/registry.ts</code> —
+          deliberately by hand.
+        } @else {
+          Nowhere but this browser until you do something with it.
+        }
+      </span>
+      <button type="button" class="piece-minor" (click)="copy()" data-testid="piece-copy">
+        {{ copied() ? 'Copied' : 'Copy the code' }}
+      </button>
+      <button type="button" class="piece-go" (click)="dismissed.emit()" data-testid="piece-close">
+        Done
+      </button>
+    </footer>
+  </div>
+</div>

@@ -35,6 +35,7 @@ from .catalogue import CATALOGUE
 from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
 from .jobs import Job, Runner, stopping
+from .flows import as_json as as_flows
 from .nodes import GraphError, run_graph
 from .operations import DINO, SAM, find, isolate
 from .registry import ModelRegistry
@@ -300,6 +301,17 @@ def nodes() -> JSONResponse:
     whole reason the list lives here rather than in a template.
     """
     return JSONResponse({"nodes": [node.published() for node in CATALOGUE.values()]})
+
+
+@app.get("/flows")
+def flows() -> JSONResponse:
+    """Graphs already wired up, for the things he does over and over.
+
+    Here for the same reason the catalogue is: a flow is made of node names,
+    and the page is not allowed to know one. A flow added to `flows.py`
+    becomes a button on the deployed site with nothing released.
+    """
+    return JSONResponse({"flows": as_flows()})
 
 
 @app.post("/graph")

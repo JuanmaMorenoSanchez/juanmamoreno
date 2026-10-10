@@ -23,6 +23,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
+from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from .edit import available as edit_available, edit as edit_painting
 from .help import HELP, PARAM_HELP
@@ -161,6 +162,34 @@ def _depth(inputs, params, context) -> dict[str, Any]:
     return {"image": picture, "depth": depth, "file": name}
 
 
+def _sketch(inputs, params, context) -> dict[str, Any]:
+    """A generative piece, written from a sentence.
+
+    The segmenter is dropped first: even the small coder wants three gigabytes,
+    and the big one is split across the card, memory and disk.
+    """
+    registry = context.get("registry")
+    if registry is not None:
+        registry.evict()
+
+    saying = context.get("saying")
+    if saying is not None:
+        saying("writing the piece — the big model is split across disk and takes minutes")
+
+    code = write_sketch(
+        registry,
+        params["asking"],
+        small=bool(params["small"]),
+        most_tokens=int(params["most_tokens"]),
+    )
+
+    OUT.mkdir(exist_ok=True)
+    batch = context.get("batch") or uuid.uuid4().hex[:8]
+    name = f"{batch}-{uuid.uuid4().hex[:4]}-piece.js"
+    (OUT / name).write_text(code, encoding="utf-8")
+    return {"code": code, "file": name}
+
+
 def _save(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     stem = (params["name"] or "layer").strip().replace(" ", "-") or "layer"
@@ -296,6 +325,20 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
             ],
             run=_edit,
+        ),
+        NodeType(
+            key="sketch",
+            label="Sketch",
+            category="paint",
+            summary="Writes a small generative piece from a sentence, in Canvas 2D.",
+            inputs=[],
+            outputs=[Port("code", "text"), Port("file", "text")],
+            params=[
+                Param("asking", "text", "dust drifting across a dark field", label="What it should do"),
+                Param("small", "toggle", False, label="Use the small model"),
+                Param("most_tokens", "number", 900, label="At most", minimum=200, maximum=2000, step=50),
+            ],
+            run=_sketch,
         ),
         NodeType(
             key="save",

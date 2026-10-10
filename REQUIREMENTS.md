@@ -2708,3 +2708,162 @@ apart from broken" and "shows how long the run took, which only the run knows";
 and `engine.service.spec.ts` "reports a run already in progress, so a reloaded
 page can pick it up".
 *Also proven by:* the engine's own `test_jobs.py`, which `npm test` does not run.
+
+### R142 — The atelier writes a generative piece from a sentence · met
+**Sketch** takes a sentence and writes a small Canvas 2D artwork as code, which
+the page then runs. It is the third thing the atelier was asked for, beside
+cutting a painting up and changing part of it, and the only one that needs no
+painting at all.
+
+**Qwen2.5-Coder, at 7B and 1.5B, and never 3B.** The sizes are 0.5B, 1.5B and
+7B under Apache 2.0, and 3B under a research licence that forbids commercial
+use — the convenient middle size is the one that cannot be used beside
+paintings that are for sale, exactly as with Depth Anything, where only Small
+was usable. The 7B is split across the card, system memory and disk: measured
+at **477 seconds** for a piece on painting-sized hardware, against about
+**20 seconds** for the 1.5B, which writes code that runs rather than code that
+works.
+
+**No new dependency.** The obvious route is `llama-cpp-python` with a GGUF, and
+it publishes no Windows wheel at all — it would compile from source against
+MSVC and CMake, a C++ toolchain added to the tree for one model. `transformers`
+was already here.
+
+**The target is small on purpose**, which is the only reason a model this size
+can hit it: one interface, a canvas, no framework and no library, with the
+motion helpers in `@domain/generative` to draw on. A model this size would not
+write an application; it can write one `draw` method.
+
+**It is shown a worked answer rather than told a rule.** Asked in words for
+"plain JavaScript, not TypeScript" it returned `class Piece implements Sketch`
+with `private width: number` and `resize?(ctx, ...)` — three parse errors in one
+answer — because the interface it was handed was itself a TypeScript
+`interface`. With the contract rewritten as comments and one worked example in
+the prompt, both models answer in plain JavaScript. TypeScript coming back
+anyway is detected exactly and asked for again once, and that is the only
+failure retried automatically: an ugly piece is a matter of taste and his to
+judge.
+
+**The class is renamed rather than refused.** Shown a class called `Piece` the
+model writes good JavaScript and calls it `DustMote`, after the subject. The
+name is the one part of this that is an interface detail, so it is corrected —
+but only when there is exactly one class, because with helpers around there is
+no telling which is the piece.
+*Proven by:* the engine's `test_coder.py` "test_renames_the_one_class_it_wrote",
+"test_refuses_to_guess_between_several_classes",
+"test_asks_again_when_it_answers_in_typescript",
+"test_gives_up_after_the_second_try_rather_than_looping" and
+"test_spots_the_answer_it_really_gave", which `npm test` does not run.
+*Also proven by:* `atelier.component.spec.ts` via R143's preview, which is the
+only route by which a written piece reaches a screen.
+
+### R143 — Code the model wrote runs where it can do no harm · met
+A piece arrives as code nobody has read, so it is never run by this
+application. **It runs in an iframe with `sandbox="allow-scripts"` and
+deliberately not `allow-same-origin`** — an opaque origin, which is nobody's, so
+the code cannot reach this page, its storage, its cookies or the admin token in
+them.
+
+**The frame has no network.** Its own policy is `default-src 'none'` with **no
+`connect-src` and no `img-src`**, so `fetch`, `XMLHttpRequest`, `WebSocket`,
+`EventSource`, `sendBeacon` and a tracking pixel all inherit the `none`. A piece
+cannot phone anywhere, including home.
+
+**`'unsafe-inline'` and not `'unsafe-eval'`**, which are different permissions
+and only the first is given. That is why the code is injected as a `<script>`
+element and never passed to `eval` or `new Function`.
+
+**The code arrives by `postMessage`, never written into the frame's markup.**
+A piece containing the characters that close a script tag would otherwise end
+the harness early and leave the rest of itself as markup, and a model writing
+about scripts is not far-fetched.
+
+**A throw is reported once, with what and where**, and the loop stops — a throw
+in `draw` would otherwise repeat sixty times a second. It says the page is fine
+and what to do next, because a stack trace with no instruction reads like the
+tool broke, and at this model size being wrong is expected.
+
+**A refused request is reported rather than left silent.** It is the one failure
+here that looks like nothing happening: `fetch` rejects a promise nobody
+awaited and an image simply never loads, so the piece runs on drawing nothing
+with no error to report. Measured in Chrome, an image beacon in `draw` made
+**74 attempts in half a second, every one refused, and said not a word**. The
+frame now names what the policy stopped — `connect-src` for a fetch, `img-src`
+for a beacon — once, because at sixty frames a second the alternative is a
+thousand messages a minute.
+
+**The static scan is not the boundary and does not gate anything.** Notes about
+`fetch`, `eval`, storage and timers are shown for fast feedback; `self['fe'+'tch']`
+defeats the scan in nine characters. What stops the code is the origin and the
+policy, and the refusal above is what reports the cases the scan misses.
+
+**The boundary is tested by trying to get out of it, in a real browser.** Every
+claim above is about behaviour no unit test can reach — jsdom executes nothing
+inside an iframe — so pieces that misbehave in each of the five ways that
+matter are run in the installed Chrome, with the harness lifted out of the
+component rather than copied, because a copy would keep passing after the real
+one changed.
+
+**A sandbox cannot be computed.** Angular refuses to bind `sandbox` at all
+(NG0910), so it is a literal in the template. The same mistake has been made
+once in this feature already — a test asserted `targetAddressSpace: 'local'`
+happily when Chrome wanted `'loopback'` — so each of the three values is pinned
+by name.
+*Proven by:* `sketch-sandbox.test.mjs` "refuses a piece that asks the network
+for something", "refuses a piece that smuggles its request out as an image",
+"refuses a piece that builds code at runtime", "refuses a piece that reaches
+into the page that hosts it", "runs a piece the model really wrote" and
+"reports a throw in draw once, rather than sixty times a second" — which is the
+only proof here about behaviour rather than about strings, and which gates the
+deploy.
+*Also proven by:* `sketch-preview.component.spec.ts` "allows scripts and nothing
+else", "never grants same-origin, forms, popups or top navigation", "gives the
+frame no way to reach the network", "allows inline script but not eval", "never
+writes the code into the frame markup", "ignores a message from anything but its
+own frame", "says when the policy actually refused something" and "shows the
+piece anyway, because the note is not the boundary".
+
+### R144 — The common graphs arrive already wired up · met
+A node graph is honest about what it is doing and tedious to build. Three boxes
+are wired most times the page is opened before anything interesting starts, and
+one wrong join produces `'isolate-x' (Isolate) has nothing joined to: image` —
+which reads like a model failing to find something and sent him looking at the
+wrong thing once. So the common ones arrive ready: **Make it move**, **Change
+one part**, **Take a figure out** and **Write a piece**.
+
+**They are published by the engine, not written into the page**, for the same
+reason the catalogue is: a flow is made of node names and this page is not
+allowed to know one. A flow added to `flows.py` is a button on the deployed site
+with nothing rebuilt and nothing released. An engine too old to have flows shows
+no buttons rather than an error.
+
+**Position is a column and a row, not pixels.** Where a box sits depends on how
+wide this page draws one, which is the page's business; the engine says only
+what follows what.
+
+**A flow replaces the canvas rather than adding to it.** Merging two graphs
+leaves boxes on top of each other and wires going nowhere, and arriving correct
+is the only thing a flow is for. Its readable ids — `painting`, `grow`, `keep` —
+are made unique on the way in, so two flows in a row cannot collide.
+
+**Each flow is checked against the catalogue it is made of**, by the same
+ordering and joining rules the Run button reaches: every node exists, every
+setting is one that node takes and of the right type, every wire joins ports
+that exist, every required input is joined, no two boxes land on the same square
+and no wire runs leftwards. Every mistake available when wiring by hand is
+available when writing a flow down.
+
+**Each says what it is for**, including the thing it is easy to get wrong — that
+the background in *Take a figure out* is derived rather than asked for, and that
+when a phrase keeps finding the wrong thing the answer is a Brush and not a
+better adjective.
+*Proven by:* `atelier.component.spec.ts` "offers the flows the engine
+published, not a list of its own", "joins the wires to the boxes it actually
+drew", "gives two flows in a row ids that cannot collide", "replaces the canvas
+rather than piling a second graph onto it" and "survives an engine too old to
+send an explanation".
+*Also proven by:* the engine's `test_flows.py`
+"test_every_required_input_is_joined",
+"test_every_setting_is_one_that_node_takes",
+"test_every_flow_runs_from_end_to_end" and
+"test_a_wire_always_goes_rightwards", which `npm test` does not run.

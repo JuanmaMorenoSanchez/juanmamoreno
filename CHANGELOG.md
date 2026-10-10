@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.11.0
+
+- **feat** — the atelier writes a generative piece from a sentence, and runs it
+  where it can do no harm. **Sketch** hands a sentence to Qwen2.5-Coder and gets
+  back a Canvas 2D class; the page runs it in an iframe at an opaque origin with
+  no network at all, so code nobody has read costs nothing to try. 7B and 1.5B,
+  both Apache 2.0 — the 3B in between forbids commercial use.
+- **feat** — the common graphs arrive already wired up. **Make it move**,
+  **Change one part**, **Take a figure out** and **Write a piece**, published by
+  the engine rather than written into the page, so a flow added to `flows.py` is
+  a button on the deployed site with nothing released.
+- **fix** — `verify-requirements` could not see a Python test it was told to
+  read. The glob had `.py` and the pattern that recognises a cited file did not,
+  so a requirement proved by an engine test was not citing a file at all, and
+  that test could be renamed or deleted in silence.
+
 ## 2.10.0
 
 - **feat** — what the atelier makes can be kept. Every layer a run produced has
@@ -61,7 +77,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 2.5.0
 
 - **feat** — the engine can be switched on and off from `/atelier`, and says
-  *Switching on…* or *Switching off…* while it does. Stopping is a request to
+  _Switching on…_ or _Switching off…_ while it does. Stopping is a request to
   the engine; starting cannot be, because a browser cannot launch a program —
   so the page asks Windows through an `atelier://` handler registered once, and
   waits for the engine to answer. Stopping is refused while a run is going, an
@@ -138,7 +154,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.113.0
 
-- **feat** — a layer can be cut by hand. *Or cut one by hand* starts an empty
+- **feat** — a layer can be cut by hand. _Or cut one by hand_ starts an empty
   stencil and hands it straight to the brush, so a painting the model cannot
   read no longer blocks the atelier. It costs nothing and asks nothing.
 - **fix** — the page no longer claims the mask comes back as a picture and is
@@ -194,14 +210,14 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   comes back instead. Checked against the stored insights — `reach`, `likes`,
   `comments` and `saved` on all fifty, `ig_reels_avg_watch_time` and
   `total_interactions` on none.
-- **feat** — *Most interactions* adds up likes, comments, shares and saves,
+- **feat** — _Most interactions_ adds up likes, comments, shares and saves,
   which is that quantity by its own definition, and the row shows the same
   figure. The watch-time reading beside each painting is gone with the ordering.
 
 ## 1.108.0
 
-- **feat** — *Oldest first* in the catalogue, beside the other orderings.
-  *Newest* already arranged by year, so what was missing was the direction
+- **feat** — _Oldest first_ in the catalogue, beside the other orderings.
+  _Newest_ already arranged by year, so what was missing was the direction
   rather than the ordering: the early work, which is otherwise the half you
   scroll to reach. A painting with no year goes to the end rather than to the
   front as year nought.
@@ -209,8 +225,8 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 1.108.0
 
 - **feat** — every ordering in the catalogue turns round when its button is
-  pressed again, and says which way it is pointing: *Reached most* becomes
-  *Reached least*, *Newest first* becomes *Oldest first*. One button per
+  pressed again, and says which way it is pointing: _Reached most_ becomes
+  _Reached least_, _Newest first_ becomes _Oldest first_. One button per
   ordering now, rather than two for the two ends of one.
 - **feat** — what has no answer stays at the end whichever way round. "Least
   reached" is a statement about paintings that were posted; one that was never
@@ -219,7 +235,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.107.1
 
-- **chore** — the title of the product page comes after *Where I come from*,
+- **chore** — the title of the product page comes after _Where I come from_,
   not before it. He wanted a reader to know whose account this is before being
   told what it is called.
 - **chore** — his opening paragraph rewritten in both languages: the art world,
@@ -228,12 +244,12 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.107.0
 
-- **feat** — the product page opens with who is writing. *Where I come from*
+- **feat** — the product page opens with who is writing. _Where I come from_
   moves above everything: a reader deciding whether to read the rest wants to
   know whose account this is before being told how the thing is built.
-- **feat** — *Product description* now comes before *Keeping control*. What the
+- **feat** — _Product description_ now comes before _Keeping control_. What the
   thing is, then how it is kept honest.
-- **chore** — *The half nobody sees* is gone from both languages. It said again
+- **chore** — _The half nobody sees_ is gone from both languages. It said again
   what the rest of the page already says.
 - **fix** — the type no longer changes in the middle of the page. The opening
   paragraphs about the architecture were bare `<p>` outside any section, so they
@@ -251,7 +267,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 - **feat** — the last fourteen runs read the same way — `ok`, or the failure
   with the same disclosure.
 - **feat** — what a failure shows is a kind and a time, `instagram — AxiosError
-  429`, and never a message. Nothing in either repository writes a log down,
+429`, and never a message. Nothing in either repository writes a log down,
   because an error message from Meta or Google is the request url and the url
   carries the token.
 - **chore** — the page is called **Activity** and sits first in the admin menu,
@@ -318,7 +334,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.102.0
 
-- **chore** — *Rockets win* is gone, and so is everything that existed for it:
+- **chore** — _Rockets win_ is gone, and so is everything that existed for it:
   the sketch, the ember simulation, and the method the timeline grew to tell a
   cross-fade how far into a frame it was. Nothing else used any of it. The three
   paintings it drew are untouched — they are assets of the piece `rockets-win-i`
@@ -331,7 +347,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.101.2
 
-- **fix** — *Rockets win* cuts back to the start instead of fading. The loop
+- **fix** — _Rockets win_ cuts back to the start instead of fading. The loop
   faded the loaded launcher in over four tenths of an eighteen-hundred
   millisecond step, so the rocket went on climbing underneath it for another
   seven hundred — which does not read as a fade, it reads as the last frame
@@ -339,7 +355,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.101.1
 
-- **fix** — *Rockets win* plays its paintings in the right order: the painting
+- **fix** — _Rockets win_ plays its paintings in the right order: the painting
   itself is the **second** state, not the last. Its rocket is barely clear of
   the tube and the bloom around it is still soft, where the variant that
   followed it has the same moment a breath later with the bloom dense and white.
@@ -351,7 +367,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.101.0
 
-- **feat** — a new generative piece, *Rockets win*, at `/generative/rockets-win`.
+- **feat** — a new generative piece, _Rockets win_, at `/generative/rockets-win`.
   Four paintings of one canvas held for lengths that make a launch rather than a
   slideshow, with sparks and smoke over them. (Removed again in 1.102.0.)
 
@@ -407,7 +423,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 - **fix** — the blurred preview is fitted to the same box as the painting, not
   filled to the frame. Filled, it covered the whole frame — so at any moment
-  the frame is still the shape the painting was *measured* as rather than the
+  the frame is still the shape the painting was _measured_ as rather than the
   shape the photograph is, the sharp image letterboxed inside it and the bars
   either side filled with stretched blurred paint: a second, wider, wrong copy
   beside the real one. It was only ever hidden in fullscreen for this reason,
@@ -547,7 +563,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 - **fix** — a certificate form showed the first option of every dropdown instead
   of what the certificate says: a 2010 watercolour opened reading "Oil on
   canvas, 2026". `[value]` on a `<select>` is applied before `@for` has rendered
-  its options. Pressing *Correct on chain* would have written those onto a
+  its options. Pressing _Correct on chain_ would have written those onto a
   permanent record. Fixed on both forms, and pinned by tests that render the
   form rather than ask the class — the only place the fault was visible.
 - **fix** — the network icons read at one weight. The one that is a link was
@@ -666,7 +682,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 1.84.0
 
 - **feat** — the landing page shows the painting `homeTokenId` names, and is set
-  to 202, *Electricidad estática II*. The setting was in both environment files
+  to 202, _Electricidad estática II_. The setting was in both environment files
   already and nothing read it; the page took the newest frontal view by year,
   which cannot reach a particular painting when six of them share a year and
   nothing breaks the tie. Empty still falls back to the newest, and a name the
@@ -1061,7 +1077,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 1.58.0
 
 - **fix** — a side's handles can no longer stretch the painting along that side.
-  They were free to move in two dimensions, and the movement *along* the side
+  They were free to move in two dimensions, and the movement _along_ the side
   bent nothing: it changed how fast the side was travelled, so one stretch of
   the painting came out bigger than it is and its neighbour smaller, with the
   outline still running neatly through the corners and still looking like the
@@ -1076,7 +1092,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 - **fix** — the requirements check passes again, and with it the deploy. R98's
   proof quoted "back to as shot" as though it were the name of a test; the
-  check reads a quoted phrase in a *Proven by* line as a claim that those exact
+  check reads a quoted phrase in a _Proven by_ line as a claim that those exact
   words are in the file named, and they were not. 1.56.0 and 1.57.0 both failed
   on it and neither reached the site.
 
@@ -1471,7 +1487,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.35.0
 
-- **feat** — a *Regenerate* button on each waiting reel makes the video again
+- **feat** — a _Regenerate_ button on each waiting reel makes the video again
   with whatever the render does now; it takes minutes, so the page watches for
   the new one rather than waiting on the request.
 
@@ -1488,7 +1504,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 1.34.0
 
 - **feat** — `/publish` edits the technical sheet and the critic in separate
-  boxes, and a new *Update critic* button saves the essay everywhere it is read
+  boxes, and a new _Update critic_ button saves the essay everywhere it is read
   rather than only on the video being published.
 
 ## 1.33.0
@@ -1766,7 +1782,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 1.12.0
 
-- feat: an artwork page now says that it carries writing *about* that painting,
+- feat: an artwork page now says that it carries writing _about_ that painting,
   as an Article joined to the artwork by `about`. The catalogue entry said what
   the painting is; nothing said several hundred words had been written on it,
   which is the only thing here that exists nowhere else. No author is claimed,

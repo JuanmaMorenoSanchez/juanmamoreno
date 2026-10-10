@@ -5,6 +5,7 @@ import { CataloguePaintingService } from './catalogue-painting.service';
 import { KeptService } from './kept.service';
 import {
   AtelierEngineService,
+  type FlowDef,
   type GraphRun,
   type JobState,
   type NodeTypeDef,
@@ -96,6 +97,7 @@ describe('AtelierComponent', () => {
       onStart?: () => Promise<void>;
       onStop?: () => Promise<void>;
       catalogue?: NodeTypeDef[];
+      flows?: FlowDef[];
       run?: () => Promise<GraphRun>;
       states?: JobState[];
       kept?: unknown[];
@@ -190,6 +192,7 @@ describe('AtelierComponent', () => {
             evict: () => Promise.resolve(),
             layerUrl: (file: string) => `http://127.0.0.1:7860/layer/${file}`,
             catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
+            flows: () => Promise.resolve(options.flows ?? []),
             startGraph: (_p: Blob, graph: unknown) => {
               sent.push(graph);
               // A rejecting `run` now stands for the engine refusing the graph.
@@ -226,11 +229,20 @@ describe('AtelierComponent', () => {
     fixture.componentInstance as unknown as {
       painting: { set(f: File | null): void };
       nodes: { set(v: unknown[]): void; (): unknown[] };
-      edges: { set(v: unknown[]): void };
+      edges: { set(v: unknown[]): void; (): unknown[] };
       catalogue: { (): NodeTypeDef[] };
       redraw(drawn: unknown): void;
       run(): Promise<void>;
     };
+
+  /**
+   * Let the constructor's fetches land.
+   *
+   * `whenStable` is no use: the catalogue and the flows are fetched from the
+   * constructor and not awaited there, so Angular has no idea either is
+   * outstanding. A turn of the task queue is what settles them.
+   */
+  const drained = () => new Promise((settle) => setTimeout(settle, 0));
 
   const aPainting = () => new File([new Uint8Array([1])], 'p.png', { type: 'image/png' });
 
@@ -695,5 +707,147 @@ describe('AtelierComponent', () => {
     const { fixture } = build({ stored: 'not json at all' });
 
     expect(guts(fixture).nodes()).toEqual([]);
+  });
+
+  describe('the ready-made flows', () => {
+    const A_FLOW: FlowDef = {
+      key: 'change-a-part',
+      label: 'Change one part',
+      blurb: 'Finds a thing by name, then changes only that.',
+      about: 'The whole reason to bother with a mask.\n\nTwo things to set.',
+      nodes: [
+        { at: 'painting', type: 'painting', params: {}, column: 0, row: 0 },
+        { at: 'find', type: 'find', params: { phrase: 'a girl' }, column: 1, row: 0 },
+      ],
+      edges: [['painting', 'image', 'find', 'image']],
+    };
+
+    it('offers the flows the engine published, not a list of its own', async () => {
+      // The same promise the palette makes: a flow added to the engine is a
+      // button here, with the site untouched.
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      expect(at(host, 'flow-change-a-part')?.textContent).toContain('Change one part');
+    });
+
+    it('shows no flows at all against an engine that has none', async () => {
+      // An older engine on the machine he happens to be at. Not an error.
+      const { fixture, host } = build({ flows: [] });
+      await drained();
+      fixture.detectChanges();
+
+      expect(at(host, 'flows')).toBeNull();
+    });
+
+    it('draws the whole graph, wired, when one is pressed', async () => {
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const drawn = guts(fixture);
+      expect(drawn.nodes()).toHaveLength(2);
+      expect(drawn.edges()).toHaveLength(1);
+    });
+
+    it('joins the wires to the boxes it actually drew', async () => {
+      // The ids in a flow are readable and made unique on the way in, so a
+      // wire naming the id from the flow would join nothing — which is the
+      // exact error a flow exists to prevent.
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const drawn = guts(fixture);
+      const ids = new Set(drawn.nodes().map((node) => (node as { id: string }).id));
+      for (const edge of drawn.edges() as { from: [string, string]; to: [string, string] }[]) {
+        expect(ids.has(edge.from[0])).toBe(true);
+        expect(ids.has(edge.to[0])).toBe(true);
+      }
+    });
+
+    it('gives two flows in a row ids that cannot collide', async () => {
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+      const first = (guts(fixture).nodes()[0] as { id: string }).id;
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+      const second = (guts(fixture).nodes()[0] as { id: string }).id;
+
+      expect(second).not.toBe(first);
+    });
+
+    it('carries the settings the flow chose', async () => {
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const find = guts(fixture).nodes()[1] as { params: Record<string, unknown> };
+      expect(find.params['phrase']).toBe('a girl');
+    });
+
+    it('replaces the canvas rather than piling a second graph onto it', async () => {
+      // Merging leaves boxes on top of each other and wires going nowhere.
+      const { fixture, host } = build({
+        flows: [A_FLOW],
+        stored: JSON.stringify({
+          nodes: [{ id: 'old', type: 'find', x: 10, y: 20, params: {} }],
+          edges: [],
+        }),
+      });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const ids = guts(fixture)
+        .nodes()
+        .map((node) => (node as { id: string }).id);
+      expect(ids).not.toContain('old');
+    });
+
+    it('explains a flow on asking, in paragraphs', async () => {
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'why-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const said = at(host, 'flow-about');
+      expect(said?.querySelectorAll('p')).toHaveLength(2);
+      expect(said?.textContent).toContain('bother with a mask');
+    });
+
+    it('survives an engine too old to send an explanation', async () => {
+      // This page can be newer than the engine on the machine it is talking
+      // to, and it crashed once against an engine that predated a field.
+      const { fixture, host } = build({
+        flows: [{ ...A_FLOW, about: undefined as unknown as string }],
+      });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'why-change-a-part')?.click();
+      fixture.detectChanges();
+
+      expect(at(host, 'flow-about')).not.toBeNull();
+    });
   });
 });
