@@ -93,6 +93,12 @@ class NodeType:
 class GraphError(ValueError):
     """A graph that cannot be run, with a reason meant for a person."""
 
+    http_status = 400
+
+
+class StoppedEarly(Exception):
+    """The run was asked to stop, and did, between nodes."""
+
 
 def order(nodes: dict[str, str], edges: list[tuple[str, str, str, str]]) -> list[str]:
     """The order to run them in, or a complaint.
@@ -137,12 +143,19 @@ def run_graph(
     nodes: dict[str, dict[str, Any]],
     edges: list[tuple[str, str, str, str]],
     context: dict[str, Any] | None = None,
+    watching: Callable[[str, int, int], None] | None = None,
+    stopped: Callable[[], bool] | None = None,
 ) -> dict[str, dict[str, Value]]:
     """Run every node once, in order, and keep what each produced.
 
     `nodes` is {id: {"type": key, "params": {...}}}. `context` is handed to any
     node that asks for it — the model registry and the uploaded painting live
     there, because a node should not be reaching for either on its own.
+
+    `watching` is told which box is starting and how far through we are, so the
+    page can say something better than "working". `stopped` is checked before
+    each one: a run is abandoned between nodes rather than part way through,
+    which is the only point at which stopping leaves nothing half-written.
     """
     kinds = {}
     for node_id, node in nodes.items():
@@ -152,9 +165,15 @@ def run_graph(
         kinds[node_id] = key
 
     produced: dict[str, dict[str, Value]] = {}
+    running = order(kinds, edges)
 
-    for node_id in order(kinds, edges):
+    for at, node_id in enumerate(running):
+        if stopped is not None and stopped():
+            raise StoppedEarly(f"stopped after {at} of {len(running)}")
+
         kind = catalogue[kinds[node_id]]
+        if watching is not None:
+            watching(kind.label, at, len(running))
         if kind.run is None:
             raise GraphError(f"{kind.key!r} has no way to run")
 

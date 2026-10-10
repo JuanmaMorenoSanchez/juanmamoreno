@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.8.0
+
+- **feat** — a run says what it is doing and can be stopped. The engine answers
+  at once with the run's name and the page follows it: which box, how far
+  through, how long so far, and — when there is nothing countable — what is
+  happening, because the first edit of a session spends four minutes loading
+  before step one. Stopping takes effect between steps, and stopped is told
+  apart from broken. A run now survives a reload: `/health` names it and the
+  page picks it up again.
+
 ## 2.7.0
 
 - **feat** — a thing can be pointed at instead of named. The new **Brush** node

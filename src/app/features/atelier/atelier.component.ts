@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
-import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
+import {
+  AtelierEngineService,
+  type GraphRun,
+  type JobState,
+  type NodeTypeDef,
+} from './engine.service';
 import {
   NodeCanvasComponent,
   type Drawn,
@@ -53,6 +58,8 @@ export class AtelierComponent {
   protected readonly edges = signal<GraphEdge[]>([]);
 
   protected readonly busy = signal(false);
+  /** The run in flight, as the engine last described it. */
+  protected readonly job = signal<JobState | null>(null);
   protected readonly failure = signal<string | null>(null);
   protected readonly result = signal<GraphRun | null>(null);
 
@@ -102,6 +109,19 @@ export class AtelierComponent {
   private async wake(): Promise<void> {
     await this.engine.check();
     if (this.engine.unreachable()) return;
+
+    // A run started before this page was loaded — or before it was reloaded —
+    // is still going on this machine, and the engine knows its name. Picking
+    // it up again beats showing an idle page beside a card that is busy.
+    const already = this.engine.health()?.job;
+    if (already) {
+      this.busy.set(true);
+      void this.watch(already).finally(() => {
+        this.busy.set(false);
+        void this.engine.check();
+      });
+    }
+
     try {
       this.catalogue.set(await this.engine.catalogue());
     } catch {
@@ -244,13 +264,16 @@ export class AtelierComponent {
     this.busy.set(true);
     this.failure.set(null);
     this.result.set(null);
+    this.job.set(null);
     try {
       // The engine wants nodes keyed by id and edges as flat quadruples.
       const nodes: Record<string, { type: string; params: Record<string, unknown> }> = {};
       for (const node of this.nodes()) nodes[node.id] = { type: node.type, params: node.params };
       const edges = this.edges().map((e) => [e.from[0], e.from[1], e.to[0], e.to[1]]);
 
-      this.result.set(await this.engine.runGraph(painting, { nodes, edges }));
+      const started = await this.engine.startGraph(painting, { nodes, edges });
+      this.job.set(started);
+      await this.watch(started.job);
     } catch (error) {
       // The engine's own words, which name the node at fault — the person
       // reading this is looking at a picture of boxes and needs to know which.
@@ -260,6 +283,56 @@ export class AtelierComponent {
       void this.engine.check();
     }
   }
+
+  /**
+   * Follows a run to its end, once a second.
+   *
+   * Nothing here times out. An edit is eighteen minutes and the first one of a
+   * session spends four of those building its pipeline before the first step,
+   * so any deadline worth having would be longer than anyone would wait for.
+   * The run ends when the engine says it has.
+   */
+  private async watch(id: string): Promise<void> {
+    for (;;) {
+      await new Promise((again) => setTimeout(again, 1000));
+      const state = await this.engine.job(id);
+      this.job.set(state);
+
+      if (state.state === 'done') {
+        // How long it took is the run's to know, not the graph's: the engine
+        // answers the moment it starts and the clock belongs to the job.
+        this.result.set(state.result ? { ...state.result, seconds: state.seconds } : null);
+        return;
+      }
+      if (state.state === 'failed') {
+        this.failure.set(state.detail ?? 'the run failed');
+        return;
+      }
+      if (state.state === 'cancelled') {
+        this.failure.set('Stopped. Nothing was kept from this run.');
+        return;
+      }
+    }
+  }
+
+  protected async stopRun(): Promise<void> {
+    const running = this.job();
+    if (!running) return;
+    try {
+      await this.engine.cancelJob(running.job);
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'it would not stop');
+    }
+  }
+
+  /** What to show while it works: a count if there is one, else what it is doing. */
+  protected readonly progress = computed(() => {
+    const now = this.job();
+    if (!now || now.state !== 'running') return null;
+    const where = now.node ? `${now.node} · ${now.doneNodes + 1} of ${now.totalNodes}` : 'starting';
+    const steps = now.steps ? ` · step ${now.step} of ${now.steps}` : '';
+    return { where, steps, note: now.note, seconds: Math.round(now.seconds) };
+  });
 
   protected layerUrl(file: string): string {
     return this.engine.layerUrl(file);

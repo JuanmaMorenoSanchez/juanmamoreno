@@ -34,6 +34,23 @@ describe('AtelierEngineService', () => {
     return fetched;
   };
 
+  it('reports a run already in progress, so a reloaded page can pick it up', async () => {
+    // Without this, a refresh loses sight of an eighteen-minute edit and the
+    // only way to get the card back is to kill the engine.
+    answering({
+      device: 'cuda',
+      resident: null,
+      vram_free_mib: 100,
+      vram_total_mib: 8187,
+      working: true,
+      job: 'abc123',
+    });
+
+    await service.check();
+
+    expect(service.health()?.job).toBe('abc123');
+  });
+
   it('knows nothing before it has asked', () => {
     expect(service.health()).toBeNull();
     expect(service.unreachable()).toBe(false);
@@ -51,6 +68,7 @@ describe('AtelierEngineService', () => {
       vramFreeMib: 7096,
       vramTotalMib: 8187,
       working: false,
+      job: null,
     });
   });
 

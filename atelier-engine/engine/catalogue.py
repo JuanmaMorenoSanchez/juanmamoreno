@@ -117,6 +117,12 @@ def _edit(inputs, params, context) -> dict[str, Any]:
     if registry is not None:
         registry.evict()
 
+    saying = context.get("saying")
+    if saying is not None:
+        # Measured at about four minutes the first time in a process: the
+        # spill is cleared and twelve gigabytes written back out.
+        saying("preparing the model — the first edit of a session takes a few minutes before it starts")
+
     mask = inputs.get("mask")
     return {
         "image": edit_painting(
@@ -126,6 +132,11 @@ def _edit(inputs, params, context) -> dict[str, Any]:
             steps=int(params["steps"]),
             guidance=float(params["guidance"]),
             seed=int(params["seed"]),
+            saying=saying,
+            # Passed down rather than reported by the node, because the node
+            # finishes once and the steps are what take the eighteen minutes.
+            watching=context.get("watching_steps"),
+            stopped=context.get("stopped"),
         )
     }
 

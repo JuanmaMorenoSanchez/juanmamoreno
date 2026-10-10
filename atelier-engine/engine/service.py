@@ -34,6 +34,7 @@ from PIL import Image
 from .catalogue import CATALOGUE
 from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
+from .jobs import Job, Runner, stopping
 from .nodes import GraphError, run_graph
 from .operations import DINO, SAM, find, isolate
 from .registry import ModelRegistry
@@ -76,6 +77,7 @@ async def allow_local_network(request, call_next):
 
 
 registry = ModelRegistry(cache_dir=MODELS, device="cpu")
+runs = Runner()
 
 _working = threading.Semaphore(1)
 """Held while a run is in progress.
@@ -130,7 +132,8 @@ def health() -> JSONResponse:
             "ok": True,
             "device": registry.device,
             "resident": registry.resident,
-            "working": not _idle(),
+            "working": runs.working or not _idle(),
+            "job": runs.current,
             "vram_free_mib": vram[0] if vram else None,
             "vram_total_mib": vram[1] if vram else None,
         }
@@ -301,18 +304,13 @@ def nodes() -> JSONResponse:
 
 @app.post("/graph")
 def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
-    """Run a drawn graph over an uploaded painting.
+    """Start a drawn graph running, and answer at once with its name.
 
-    The graph is json: `nodes` as {id: {type, params}} and `edges` as
-    [[from, port, to, port], ...]. Anything wrong with it comes back as a 400
-    with a sentence naming the node, because the person reading it is looking
-    at a picture of boxes and needs to know which box to move.
+    It used to run inside the request, which was right while a graph took
+    twenty seconds and stopped being right when **Edit** arrived at eighteen
+    minutes: nothing to watch, no way out, and the work carrying on unseen if
+    the browser gave up waiting. Ask `/jobs/{id}` how it is getting on.
     """
-    with Busy():
-        return _graph(image, graph)
-
-
-def _graph(image: UploadFile, graph: str) -> JSONResponse:
     import json
 
     try:
@@ -322,45 +320,83 @@ def _graph(image: UploadFile, graph: str) -> JSONResponse:
 
     painting = _read(image)
     batch = uuid.uuid4().hex[:8]
-    context: dict[str, object] = {
-        "painting": painting,
-        "registry": registry,
-        "batch": batch,
-        "saved": [],
-    }
 
-    started = time.perf_counter()
-    try:
+    def work(job: Job) -> dict[str, object]:
+        context: dict[str, object] = {
+            "painting": painting,
+            "registry": registry,
+            "batch": batch,
+            "saved": [],
+            "stopped": lambda: stopping(job),
+        }
+
+        def watching_steps(step: int, steps: int) -> None:
+            job.step, job.steps = step, steps
+
+        def watching_nodes(label: str, at: int, total: int) -> None:
+            job.node, job.done_nodes, job.total_nodes = label, at, total
+            # A new box has no steps and nothing to say until it says it.
+            job.step, job.steps, job.note = 0, 0, None
+
+        def saying(note: str | None) -> None:
+            job.note = note
+
+        context["watching_steps"] = watching_steps
+        context["saying"] = saying
+
         produced = run_graph(
             CATALOGUE,
             drawn.get("nodes") or {},
             [tuple(edge) for edge in (drawn.get("edges") or [])],
             context,
+            watching=watching_nodes,
+            stopped=lambda: stopping(job),
         )
-    except GraphError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except ValueError as exc:
-        # A node that ran and could not do its job — "nothing came back for
-        # a unicorn" — which is a different thing from a graph that is wrong.
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    # Images do not go in the response; their names do, and /layer serves them.
-    plain: dict[str, dict[str, object]] = {}
-    for node_id, outputs in produced.items():
-        plain[node_id] = {
-            name: value
-            for name, value in outputs.items()
-            if isinstance(value, (str, int, float, list, bool))
-        }
+        plain: dict[str, dict[str, object]] = {}
+        for node_id, outputs in produced.items():
+            plain[node_id] = {
+                name: value
+                for name, value in outputs.items()
+                if isinstance(value, (str, int, float, list, bool))
+            }
+        return {"batch": batch, "produced": plain, "saved": context["saved"]}
 
-    return JSONResponse(
-        {
-            "batch": batch,
-            "seconds": round(time.perf_counter() - started, 2),
-            "produced": plain,
-            "saved": context["saved"],
-        }
-    )
+    try:
+        job = runs.start(work)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return JSONResponse(job.published(), status_code=202)
+
+
+@app.get("/jobs/{job_id}")
+def job(job_id: str) -> JSONResponse:
+    """How a run is getting on, asked once a second by the page.
+
+    Asked rather than pushed. `EventSource` cannot carry `targetAddressSpace`,
+    the annotation Chrome needs before a page may reach this machine — the same
+    reason a WebSocket was ruled out. At about a hundred seconds a step there is
+    nothing a stream would show that a poll does not.
+    """
+    found = runs.find(job_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="no such run")
+    return JSONResponse(found.published())
+
+
+@app.post("/jobs/{job_id}/cancel")
+def cancel(job_id: str) -> JSONResponse:
+    """Ask a run to stop.
+
+    It stops between nodes, and between the denoising steps of an edit — within
+    about a step at worst, and at once for everything cheaper. A single forward
+    pass of a 20B model cannot be interrupted, and pretending otherwise would
+    mean killing the process and the model with it.
+    """
+    if not runs.cancel(job_id):
+        raise HTTPException(status_code=409, detail="that run is not going")
+    return JSONResponse({"cancelling": True})
+
 
 
 @app.post("/stop")
@@ -376,10 +412,10 @@ def stop() -> JSONResponse:
     throwing that away because a switch was pressed by accident is worse than
     making someone wait.
     """
-    if not _idle():
+    if runs.working or not _idle():
         raise HTTPException(
             status_code=409,
-            detail="something is still running. Let it finish, or close the window it is in.",
+            detail="something is still running. Stop it first, or let it finish.",
         )
 
     def goodbye() -> None:

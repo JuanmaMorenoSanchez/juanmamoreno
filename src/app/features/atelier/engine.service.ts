@@ -29,6 +29,8 @@ export interface EngineHealth {
   vramTotalMib: number | null;
   /** True while a run is in progress. Stopping is refused then. */
   working: boolean;
+  /** The run in progress, so a reloaded page can pick it up again. */
+  job: string | null;
 }
 
 /** What the switch is doing. */
@@ -64,6 +66,22 @@ export interface NodeTypeDef {
   inputs: PortDef[];
   outputs: PortDef[];
   params: ParamDef[];
+}
+
+/** How a run is getting on. */
+export interface JobState {
+  job: string;
+  state: 'running' | 'done' | 'failed' | 'cancelled';
+  node: string | null;
+  doneNodes: number;
+  totalNodes: number;
+  step: number;
+  steps: number;
+  seconds: number;
+  /** What is happening when there is nothing countable to report. */
+  note: string | null;
+  result: GraphRun | null;
+  detail: string | null;
 }
 
 export interface GraphRun {
@@ -128,6 +146,7 @@ export class AtelierEngineService {
         vram_free_mib: number | null;
         vram_total_mib: number | null;
         working?: boolean;
+        job?: string | null;
       };
       this.state.set({
         device: body.device,
@@ -135,6 +154,7 @@ export class AtelierEngineService {
         vramFreeMib: body.vram_free_mib,
         vramTotalMib: body.vram_total_mib,
         working: body.working ?? false,
+        job: body.job ?? null,
       });
       this.down.set(false);
     } catch {
@@ -254,27 +274,79 @@ export class AtelierEngineService {
     return ((await response.json()) as { nodes: NodeTypeDef[] }).nodes;
   }
 
-  /** Run a drawn graph. Throws with the engine's own words, which name a node. */
-  async runGraph(painting: Blob, graph: unknown): Promise<GraphRun> {
+  /**
+   * Start a graph running. Answers at once with the run's name.
+   *
+   * It used to wait for the whole thing, which was fine at twenty seconds and
+   * stopped being fine when an edit took eighteen minutes.
+   */
+  async startGraph(painting: Blob, graph: unknown): Promise<JobState> {
     const form = new FormData();
     form.append('image', painting, 'painting');
     form.append('graph', JSON.stringify(graph));
 
     const response = await fetch(`${ENGINE}/graph`, toLocal({ method: 'POST', body: form }));
-    if (!response.ok) {
-      let said = '';
-      try {
-        said = ((await response.json()) as { detail?: string }).detail ?? '';
-      } catch {
-        said = '';
-      }
-      throw new Error(said || `the engine answered ${response.status}`);
-    }
-    return (await response.json()) as GraphRun;
+    if (!response.ok) throw new Error(await complaint(response));
+    return asJob(await response.json());
+  }
+
+  /**
+   * How a run is getting on.
+   *
+   * Asked once a second rather than streamed: `EventSource` cannot carry
+   * `targetAddressSpace`, which Chrome wants before this page may reach this
+   * machine at all — the same reason a WebSocket was ruled out. At about a
+   * hundred seconds a step there is nothing a stream would show that this
+   * does not.
+   */
+  async job(id: string): Promise<JobState> {
+    const response = await fetch(
+      `${ENGINE}/jobs/${encodeURIComponent(id)}`,
+      toLocal({ cache: 'no-store' })
+    );
+    if (!response.ok) throw new Error(await complaint(response));
+    return asJob(await response.json());
+  }
+
+  /** Ask a run to stop. It does so between steps, not within one. */
+  async cancelJob(id: string): Promise<void> {
+    const response = await fetch(
+      `${ENGINE}/jobs/${encodeURIComponent(id)}/cancel`,
+      toLocal({ method: 'POST' })
+    );
+    if (!response.ok) throw new Error(await complaint(response));
   }
 
   /** Where a cut layer can be seen. */
   layerUrl(file: string): string {
     return `${ENGINE}/layer/${encodeURIComponent(file)}`;
   }
+}
+
+/** The engine's own words, which name the node at fault. */
+async function complaint(response: Response): Promise<string> {
+  try {
+    const said = ((await response.json()) as { detail?: string }).detail;
+    if (said) return said;
+  } catch {
+    // An empty or unreadable body; the status is all there is.
+  }
+  return `the engine answered ${response.status}`;
+}
+
+function asJob(raw: unknown): JobState {
+  const d = raw as Record<string, never>;
+  return {
+    job: d['job'],
+    state: d['state'],
+    node: d['node'] ?? null,
+    doneNodes: d['done_nodes'] ?? 0,
+    totalNodes: d['total_nodes'] ?? 0,
+    step: d['step'] ?? 0,
+    steps: d['steps'] ?? 0,
+    seconds: d['seconds'] ?? 0,
+    note: d['note'] ?? null,
+    result: d['result'] ?? null,
+    detail: d['detail'] ?? null,
+  };
 }

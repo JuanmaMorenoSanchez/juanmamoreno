@@ -295,3 +295,52 @@
   font-size: 0.85rem;
   color: #b3261e;
 }
+
+/* What a run is doing, while it does it. An edit is eighteen minutes and the
+   first of a session spends four of them loading before the first step. */
+.atelier-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.atelier-spin {
+  width: 0.7rem;
+  height: 0.7rem;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: atelier-turn 900ms linear infinite;
+}
+
+@keyframes atelier-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Honoured rather than ignored: a spinner is decoration, and the words beside
+   it carry everything it was saying. */
+@media (prefers-reduced-motion: reduce) {
+  .atelier-spin {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.5;
+  }
+}
+
+.atelier-note,
+.atelier-elapsed {
+  opacity: 0.7;
+}
+
+.atelier-elapsed {
+  font-variant-numeric: tabular-nums;
+}

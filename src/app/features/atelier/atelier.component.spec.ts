@@ -2,7 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { AtelierComponent } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
-import { AtelierEngineService, type GraphRun, type NodeTypeDef } from './engine.service';
+import {
+  AtelierEngineService,
+  type GraphRun,
+  type JobState,
+  type NodeTypeDef,
+} from './engine.service';
 
 const ISOLATE: NodeTypeDef = {
   key: 'isolate',
@@ -28,6 +33,21 @@ const SOURCE: NodeTypeDef = {
   outputs: [{ name: 'image', kind: 'image', optional: false }],
   params: [],
 };
+
+/** A run that is already over, which is what most of these tests need. */
+const done = (result: GraphRun): JobState => ({
+  job: 'j1',
+  state: 'done',
+  node: null,
+  doneNodes: 0,
+  totalNodes: 0,
+  step: 0,
+  steps: 0,
+  seconds: result.seconds,
+  note: null,
+  result,
+  detail: null,
+});
 
 const A_NODE: NodeTypeDef = {
   key: 'find',
@@ -76,6 +96,7 @@ describe('AtelierComponent', () => {
       onStop?: () => Promise<void>;
       catalogue?: NodeTypeDef[];
       run?: () => Promise<GraphRun>;
+      states?: JobState[];
       stored?: string;
     } = {}
   ) => {
@@ -88,6 +109,22 @@ describe('AtelierComponent', () => {
     const sent: unknown[] = [];
     const switching = signal(options.switching ?? 'idle');
     const did: string[] = [];
+    let asked = -1;
+    const queued: JobState[] = options.states ?? [
+      {
+        job: 'j1',
+        state: 'done',
+        node: null,
+        doneNodes: 0,
+        totalNodes: 0,
+        step: 0,
+        steps: 0,
+        seconds: 1,
+        note: null,
+        result: { batch: 'a', seconds: 1, produced: {}, saved: [] },
+        detail: null,
+      },
+    ];
 
     try {
       if (options.stored) localStorage.setItem('juanmamoreno.atelier.graph', options.stored);
@@ -135,17 +172,16 @@ describe('AtelierComponent', () => {
             evict: () => Promise.resolve(),
             layerUrl: (file: string) => `http://127.0.0.1:7860/layer/${file}`,
             catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
-            runGraph: (_p: Blob, graph: unknown) => {
+            startGraph: (_p: Blob, graph: unknown) => {
               sent.push(graph);
-              return (
-                options.run?.() ??
-                Promise.resolve({
-                  batch: 'a',
-                  seconds: 1,
-                  produced: {},
-                  saved: [],
-                } satisfies GraphRun)
-              );
+              // A rejecting `run` now stands for the engine refusing the graph.
+              return options.run ? options.run().then(() => queued[0]) : Promise.resolve(queued[0]);
+            },
+            // Each ask walks one along the states given, holding on the last.
+            job: () => Promise.resolve(queued[Math.min(++asked + 1, queued.length - 1)]),
+            cancelJob: () => {
+              did.push('cancel');
+              return Promise.resolve();
             },
           },
         },
@@ -278,7 +314,7 @@ describe('AtelierComponent', () => {
 
   it('warns that a result is not evidence the thing was there', async () => {
     const { fixture, host } = build({
-      run: () => Promise.resolve({ batch: 'a', seconds: 2, produced: {}, saved: ['a-girl.png'] }),
+      states: [done({ batch: 'a', seconds: 2, produced: {}, saved: ['a-girl.png'] })],
     });
     const parts = guts(fixture);
     parts.painting.set(aPainting());
@@ -290,7 +326,9 @@ describe('AtelierComponent', () => {
   });
 
   it('says so when a run kept nothing, rather than showing an empty box', async () => {
-    const { fixture, host } = build();
+    const { fixture, host } = build({
+      states: [done({ batch: 'a', seconds: 1, produced: {}, saved: [] })],
+    });
     const parts = guts(fixture);
     parts.painting.set(aPainting());
     parts.redraw({ nodes: [{ id: 'a', type: 'find', x: 0, y: 0, params: {} }], edges: [] });
@@ -430,6 +468,115 @@ describe('AtelierComponent', () => {
     fixture.detectChanges();
 
     expect(at(host, 'unjoined')).toBeNull();
+  });
+
+  /** A run still going, as the engine would describe it. */
+  const going = (over: Partial<JobState> = {}): JobState => ({
+    job: 'j1',
+    state: 'running',
+    node: 'Edit',
+    doneNodes: 1,
+    totalNodes: 3,
+    step: 4,
+    steps: 20,
+    seconds: 412,
+    note: null,
+    result: null,
+    detail: null,
+    ...over,
+  });
+
+  const start = async (fixture: ReturnType<typeof build>['fixture']) => {
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({ nodes: [{ id: 'a', type: 'find', x: 0, y: 0, params: {} }], edges: [] });
+    const running = parts.run();
+    // Let the first poll land; the page waits a second between asks.
+    await new Promise((settle) => setTimeout(settle, 1100));
+    return { parts, running };
+  };
+
+  it('says which box it is on and how far through, while it works', async () => {
+    // Eighteen minutes of a spinner is indistinguishable from a hang, which is
+    // the whole reason a run is now followed rather than awaited.
+    const { fixture, host } = build({ states: [going(), going()] });
+    await start(fixture);
+    fixture.detectChanges();
+
+    const said = at(host, 'progress')?.textContent ?? '';
+    expect(said).toContain('Edit');
+    expect(said).toContain('2 of 3');
+    expect(said).toContain('step 4 of 20');
+  });
+
+  it('says what it is doing when there is nothing to count', async () => {
+    // The first edit of a session spends about four minutes building its
+    // pipeline before step one, and "step 0 of 0" looks like nothing at all.
+    const { fixture, host } = build({
+      // Both: the first is what startGraph answered, the second what the
+      // first poll returns, and the note is meant to survive into polling.
+      states: [
+        going({ steps: 0, step: 0, note: 'preparing the model' }),
+        going({ steps: 0, step: 0, note: 'preparing the model' }),
+      ],
+    });
+    await start(fixture);
+    fixture.detectChanges();
+
+    expect(at(host, 'progress')?.textContent).toContain('preparing the model');
+  });
+
+  it('offers a way to stop, and asks the engine when pressed', async () => {
+    const { fixture, host, did } = build({ states: [going(), going()] });
+    await start(fixture);
+    fixture.detectChanges();
+
+    (at(host, 'stop') as HTMLButtonElement).click();
+    await new Promise((settle) => setTimeout(settle, 0));
+
+    expect(did).toContain('cancel');
+  });
+
+  it('tells stopped apart from broken', async () => {
+    // One is something he did and the other is something that went wrong, and
+    // a page that says "failed" for both teaches him to distrust it.
+    const { fixture, host } = build({
+      states: [going(), { ...going(), state: 'cancelled', detail: 'stopped' }],
+    });
+    const { running } = await start(fixture);
+    await running;
+    fixture.detectChanges();
+
+    const said = at(host, 'failure')?.textContent ?? '';
+    expect(said).toContain('Stopped');
+    expect(said).not.toContain('failed');
+  });
+
+  it('shows how long the run took, which only the run knows', async () => {
+    // The engine answers the moment a run starts, so the graph's own result
+    // carries no elapsed time — it reads "Ran in s" if taken from there.
+    const { fixture, host } = build({
+      states: [
+        going(),
+        { ...done({ batch: 'a', seconds: 0, produced: {}, saved: [] }), seconds: 47 },
+      ],
+    });
+    const { running } = await start(fixture);
+    await running;
+    fixture.detectChanges();
+
+    expect(at(host, 'result')?.textContent).toContain('47');
+  });
+
+  it('shows nothing of a run once it is over', async () => {
+    const { fixture, host } = build({
+      states: [going(), done({ batch: 'a', seconds: 2, produced: {}, saved: [] })],
+    });
+    const { running } = await start(fixture);
+    await running;
+    fixture.detectChanges();
+
+    expect(at(host, 'progress')).toBeNull();
   });
 
   it('brings a graph back after a reload, because drawing one is work', () => {

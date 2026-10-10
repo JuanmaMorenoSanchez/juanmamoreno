@@ -204,6 +204,24 @@
     }
   }
 
+  @if (progress(); as going) {
+    <section class="atelier-progress" data-testid="progress">
+      <span class="atelier-spin" aria-hidden="true"></span>
+      <span>
+        <strong>{{ going.where }}</strong
+        >{{ going.steps }}
+      </span>
+      @if (going.note) {
+        <span class="atelier-note">{{ going.note }}</span>
+      }
+      <span class="atelier-elapsed">{{ going.seconds }}s</span>
+      <span class="atelier-spacer"></span>
+      <button type="button" class="atelier-minor" (click)="stopRun()" data-testid="stop">
+        Stop
+      </button>
+    </section>
+  }
+
   @if (unjoined().length) {
     <p class="atelier-wanting" data-testid="unjoined">
       Not ready to run:

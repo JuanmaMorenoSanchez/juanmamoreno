@@ -2522,24 +2522,6 @@ left unjoined; pressing it pins the panel open, because a long explanation
 cannot be read while holding a pointer still. The text is written in the engine
 beside the node, so the two cannot drift apart.
 
-**A thing can be pointed at instead of named.** Naming works when the thing has
-a name the model knows and fails on everything else — a particular fold, one of
-two similar figures. On painting 6 "the yellow jumper" found a strip behind her
-shoulder, and the edit went there. A mark has no such problem, because it
-points.
-
-**Brush** is a node like any other: press *Draw*, click what to keep,
-shift-click what to leave out, and join its `points` to **Isolate**. Isolate now
-takes a box, or marks, or both — both being best, since the box says roughly
-where and the marks settle what is in and what is out.
-
-**Marks are recorded in the painting's own pixels, not the screen's**, so they
-stay put when the window is resized and still mean the same thing when the graph
-is run against the full-resolution original rather than the preview. They are
-stored on the node as json, so a graph remains one object that survives a
-reload. A click before the painting has reported its size is ignored rather than
-recorded against a guess.
-
 **A box short of a wire is shown before the graph is run, not after.** The
 engine does refuse, and accurately — *"'isolate-wvpp5' (Isolate) has nothing
 joined to: image"* — but that arrives after a round trip and reads like the
@@ -2589,6 +2571,7 @@ that is what is missing, rather than failing silently.
 minutes; throwing one away because a switch was brushed is worse than making
 someone wait, so `/stop` answers 409 and the page repeats the reason.
 
+
 *Proven by:* `brush-overlay.component.spec.ts` (10 tests, including "records a
 mark in the pixels of the painting, not of the screen", "places marks by percentage,
 so resizing the window does not move them", "ignores a click before the painting
@@ -2616,3 +2599,60 @@ unreachable") and `engine.service.spec.ts` (8 tests, including "declares the loo
 address space, which is not the same as local" and "treats not being able to
 reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
 `atelier-engine/tests/`, which are not run by `npm test`.
+
+### R138 — A thing can be pointed at instead of named · met
+**A thing can be pointed at instead of named.** Naming works when the thing has
+a name the model knows and fails on everything else — a particular fold, one of
+two similar figures. On painting 6 "the yellow jumper" found a strip behind her
+shoulder, and the edit went there. A mark has no such problem, because it
+points.
+
+**Brush** is a node like any other: press *Draw*, click what to keep,
+shift-click what to leave out, and join its `points` to **Isolate**. Isolate now
+takes a box, or marks, or both — both being best, since the box says roughly
+where and the marks settle what is in and what is out.
+
+**Marks are recorded in the painting's own pixels, not the screen's**, so they
+stay put when the window is resized and still mean the same thing when the graph
+is run against the full-resolution original rather than the preview. They are
+stored on the node as json, so a graph remains one object that survives a
+reload. A click before the painting has reported its size is ignored rather than
+recorded against a guess.
+*Proven by:* `brush-overlay.component.spec.ts` (10 tests, including "records a
+mark in the pixels of the painting, not of the screen", "places marks by
+percentage, so resizing the window does not move them", "ignores a click before
+the painting has said how big it is" and "survives a node written by an older
+version, or by nothing at all").
+
+### R139 — A run says what it is doing, and can be stopped · met
+**A run says what it is doing, and can be stopped.** It used to happen inside
+the request, which was right while a graph took twenty seconds and wrong the
+moment **Edit** arrived at eighteen minutes: a spinner, no way out, and the work
+carrying on unseen if the browser gave up waiting. Now the engine answers at
+once with the run's name and the page follows it.
+
+**It says which box, how far through, and how long so far** — and when there is
+nothing countable it says what is happening instead. The first edit of a session
+spends about four minutes building its pipeline before step one, and "step 0 of
+0" is indistinguishable from a hang.
+
+**Stopping is honest about its granularity.** A run is abandoned between nodes,
+and between the denoising steps of an edit — so within about a step at worst and
+at once for everything cheaper. A single forward pass of a 20B model cannot be
+interrupted. **Stopped is told apart from broken**: one is something he did.
+
+**A run survives the page.** `/health` names the run in progress, so a reload or
+a second tab picks it up rather than showing an idle page beside a busy card.
+A second run is refused rather than queued, there being one graphics card and a
+queue being only a list of things that cannot start.
+
+**Progress is asked for, not pushed.** `EventSource` cannot carry
+`targetAddressSpace` any more than a WebSocket can, and at about a hundred
+seconds a step there is nothing a stream would show that a poll does not.
+*Proven by:* `atelier.component.spec.ts` "says which box it is on and how far
+through, while it works", "says what it is doing when there is nothing to
+count", "offers a way to stop, and asks the engine when pressed", "tells stopped
+apart from broken" and "shows how long the run took, which only the run knows";
+and `engine.service.spec.ts` "reports a run already in progress, so a reloaded
+page can pick it up".
+*Also proven by:* the engine's own `test_jobs.py`, which `npm test` does not run.

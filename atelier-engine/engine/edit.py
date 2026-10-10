@@ -23,11 +23,14 @@ from __future__ import annotations
 
 import shutil
 from functools import lru_cache
+from typing import Callable
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from PIL import Image, ImageFilter
+
+from .nodes import StoppedEarly
 
 HERE = Path(__file__).resolve().parent.parent
 MODELS = HERE / "models"
@@ -133,16 +136,36 @@ def edit(
     steps: int = 20,
     guidance: float = 4.0,
     seed: int = 7,
+    watching: Callable[[int, int], None] | None = None,
+    stopped: Callable[[], bool] | None = None,
+    saying: Callable[[str | None], None] | None = None,
 ) -> Image.Image:
     """The painting with the instruction carried out.
 
     With a mask, only the masked region is taken from the model and everything
     outside it is the original at its original resolution — so the answer to
     "it repainted my whole canvas" is to say which part you meant.
+
+    `watching` is told each step as it finishes, which is the only honest
+    progress this has: eighteen minutes of silence is indistinguishable from a
+    hang. `stopped` is checked at the same moments, so a run can be abandoned
+    within about one step rather than not at all — a single forward pass of a
+    20B model is not interruptible.
     """
     import torch
 
     pipeline = _pipeline()
+
+    # Once the steps start there is something countable, so the note goes.
+    if saying is not None:
+        saying(None)
+
+    def each_step(pipe, index: int, timestep, kwargs):  # noqa: ANN001 - diffusers' shape
+        if watching is not None:
+            watching(index + 1, steps)
+        if stopped is not None and stopped():
+            raise StoppedEarly("stopped part way through an edit")
+        return kwargs
     produced = pipeline(
         image=painting,
         prompt=instruction,
@@ -153,6 +176,7 @@ def edit(
         num_inference_steps=steps,
         true_cfg_scale=guidance,
         generator=torch.Generator().manual_seed(seed),
+        callback_on_step_end=each_step,
     ).images[0]
 
     # It normalises to its own resolution, which is rarely the one it was given.

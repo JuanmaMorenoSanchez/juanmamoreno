@@ -79,9 +79,16 @@ const isAutomatic = (path) =>
 /** Every file in the repository, by name, so a citation need not give a path. */
 async function filesByName() {
   const found = new Map();
-  for await (const path of glob('**/*.{ts,mjs,cjs,js,html,scss,json}', {
+  // `.py` is here because the atelier engine lives in this repository now and
+  // its tests are real proof. Without it a requirement could cite a Python
+  // test by name and this would say the file does not exist — which is the
+  // one kind of lie this script exists to prevent.
+  for await (const path of glob('**/*.{ts,mjs,cjs,js,html,scss,json,py}', {
     cwd: REPO,
-    exclude: (name) => ['node_modules', 'dist', '.git', '.angular', 'coverage'].includes(name),
+    exclude: (name) =>
+      ['node_modules', 'dist', '.git', '.angular', 'coverage', '.venv', '__pycache__'].includes(
+        name
+      ),
   })) {
     const name = path.split(/[\\/]/).pop();
     if (!found.has(name)) found.set(name, []);
