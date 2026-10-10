@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.11.2
+
+- **chore** — removed _Wind direction_, which has not been a page for a while.
+  It was commented out of the registry and still in the repository, so its
+  layers — `head.png`, `head-angel.png` and three sizes of `head-girl` — kept
+  shipping in every build. Two sketches are published, _Believe_ and _Hide
+  until everybody is dead_, and the registry test now names exactly those
+  rather than merely checking they are among them.
+
 ## 2.11.1
 
 - **fix** — the deploy failed on the build: the flow row's styles pushed

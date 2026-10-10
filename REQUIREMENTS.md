@@ -2209,8 +2209,16 @@ Every sketch is written by hand and added by hand, which is one line.
 **It used to resolve for any id at all.** The viewer fell back to building a
 sketch for whatever it was handed, so a page existed at a public address that
 nobody had decided to publish.
+
+**Two sketches, and the list is exact.** *Believe*, from the layers of
+*Supersticiosos*, and *Hide until everybody is dead*. Asserting that the
+registry merely *contained* those two was too weak to notice the opposite
+mistake: *Wind direction* sat commented out of the list and still in the
+repository, with 220 KB of layers nobody could reach shipping in every build.
+A page nobody decided to publish and a page nobody remembers unpublishing are
+the same fault from either end, so the test names both and no more.
 *Proven by:* `registry.spec.ts` "does not answer for an id nobody registered",
-"holds the sketches that are written by hand" and "lists exactly what it holds,
+"holds exactly the two that are published" and "lists exactly what it holds,
 for the menu"
 
 ### R126 — A painting comes into focus, and does not wash out · met

@@ -9,9 +9,17 @@ import { SKETCHES, SKETCH_LIST } from './registry';
  * the line that says so.
  */
 describe('the sketch registry', () => {
-  it('holds the sketches that are written by hand', () => {
-    expect(Object.keys(SKETCHES)).toContain('believe');
-    expect(Object.keys(SKETCHES)).toContain('hide');
+  /**
+   * Two pages, and those two only.
+   *
+   * `toContain` was too weak: a third sketch could sit in here unnoticed, and
+   * one did — *Wind direction*, commented out of this list but still in the
+   * repository with 220 KB of its own layers shipping in every build. An exact
+   * list is what notices a page nobody decided to publish, and a page nobody
+   * remembers unpublishing.
+   */
+  it('holds exactly the two that are published', () => {
+    expect(Object.keys(SKETCHES)).toEqual(['believe', 'hide']);
   });
 
   /**
