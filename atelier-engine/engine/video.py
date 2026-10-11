@@ -348,6 +348,19 @@ def write_video(frames: list[np.ndarray], where: Path, fps: int = FPS) -> Path:
             "-s", f"{wide}x{high}",
             "-framerate", str(fps),
             "-i", "-",
+            # A silent track, at the sample rate and channel count Instagram
+            # asks for. The clip has no sound and never will — what this
+            # removes is a question nobody can answer without publishing:
+            # Meta's spec lists audio requirements and never says audio is
+            # optional, so a video-only file might be refused, and finding out
+            # costs a published post. Silence weighs a few kilobytes.
+            "-f", "lavfi",
+            "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
+            "-shortest",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            "-ar", "48000",
+            "-ac", "2",
             "-c:v", "libx264",
             # Every player and every phone, which a clip is no use without.
             "-pix_fmt", "yuv420p",

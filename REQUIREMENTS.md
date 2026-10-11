@@ -3028,3 +3028,53 @@ when the backend refuses, rather than claiming success" and "makes nothing
 without a press"; and `publish.component.spec.ts` "plays the clip it is asking
 about, from bytes it fetched itself" and "never points at a public url".
 *Also proven by:* B72 and B73 in the backend.
+
+### R148 — A clip is measured against Instagram's spec, not hoped at · met
+Whether a reel will be accepted cannot be found out by trying, because trying
+*is* publishing: it goes out under his name and there is no draft an API can
+write to. So a clip from the real encoder is measured against Meta's published
+specification for a REELS container, clause by clause, with `ffprobe` — the
+same tool a player uses to decide whether it can open a file.
+
+Measured rather than asserted from the command line: `-pix_fmt yuv420p` proves
+nothing if a later filter changes it back. Container, codec, chroma, scan,
+frame rate, duration at both ends, file size, aspect ratio, and the index at
+the front of the file — which is read out of the first four kilobytes rather
+than taken on the word of `+faststart`.
+
+**It is also why a clip now carries a silent audio track.** The spec lists
+audio requirements — AAC, 48 kHz, one or two channels — and never says audio
+is optional. A video-only file might be refused, and the only way to find out
+was to publish one. Silence costs a few kilobytes and ends the question.
+
+**Instagram is left to letterbox.** The permitted range is 0.01:1 to 10:1 and
+9:16 is only recommended, so a clip stays the painting's own shape rather than
+being padded — which would mean the engine composing for a frame the painting
+was not made for. That choice rests entirely on the range, so the range is
+what the test checks, including for the tallest canvas in the catalogue.
+*Proven by:* the engine's `test_clip_meets_instagram.py` (14 tests, including
+"test_there_is_an_audio_stream_at_all", "test_the_index_is_at_the_front_of_the_file"
+and "test_every_setting_the_node_offers_makes_a_publishable_clip"), which
+`npm test` does not run.
+*Also proven by:* B74 in the backend, for the journey the file makes.
+
+### R149 — The product page says what the studio actually does · met
+The page is the artist's own text and is written in his voice. Two claims on
+it had gone stale and were corrected rather than rewritten.
+
+**The studio films now**, and the paragraph listing what it does — cutting a
+painting into layers, filling in behind them, measuring depth, writing the
+code for the generative pieces — did not say so.
+
+**The video is no longer automated, and the page said it was.** "Publish the
+images and the video generated for it to social networks. All of it is
+automated" was true when a server rendered a reel from a photograph every
+other night. It is filmed by hand now and goes out only after he has watched
+it, which is a change in what the product *is* and not only in how it is
+built. The sentence now says so, and says the exception is deliberate.
+
+Both languages, because every key exists twice and a page half-corrected is
+worse than one not corrected at all.
+*Checked by:* nothing automatic — it is prose, and no test can tell whether a
+sentence is still true. It is listed here so the next change to what the
+studio does has somewhere to look.

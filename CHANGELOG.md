@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.15.0
+
+- **feat** — a clip carries a silent audio track. Meta's spec lists audio
+  requirements and never says audio is optional, so a video-only reel might be
+  refused — and the only way to find that out was to publish one. Silence
+  weighs a few kilobytes.
+- **chore** — a clip from the real encoder is now measured against every
+  clause of Meta's REELS specification with `ffprobe`, so the question "would
+  this publish?" is answered without publishing.
+- **fix** — the product page said the video was generated and published
+  automatically. It is filmed by hand in the atelier now and goes out only
+  after he has watched it, and the paragraph describing the studio did not
+  mention filming at all. Both languages.
+
 ## 2.14.0
 
 - **feat** — a kept clip can be made into a reel. **Make a reel** sits beside a
