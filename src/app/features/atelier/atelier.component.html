@@ -284,11 +284,23 @@
       @if (filmed(); as clip) {
         <figure class="atelier-clip" data-testid="clip">
           <!-- `controls` and nothing else: no autoplay, no loop. A clip takes
-               an hour to make and is looked at deliberately. -->
-          <video [src]="layerUrl(clip)" controls playsinline preload="metadata"></video>
+               the better part of an hour and is looked at deliberately. -->
+          <video [src]="layerUrl(clip.file)" controls playsinline preload="metadata"></video>
           <figcaption>
-            {{ clip }} — in the engine's folder on this machine, and nowhere else. Keep takes a
-            picture, not a film.
+            <span>{{ clip.file }} — on this machine until you keep it.</span>
+            @if (alreadyKept().has(clip.file)) {
+              <span class="atelier-kept">Kept</span>
+            } @else {
+              <button
+                type="button"
+                class="atelier-minor"
+                [disabled]="keeping() !== null"
+                (click)="save(clip.file)"
+                data-testid="save-clip"
+              >
+                {{ keeping() === clip.file ? 'Saving…' : 'Keep this clip' }}
+              </button>
+            }
           </figcaption>
         </figure>
       }

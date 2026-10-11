@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.13.0
+
+- **feat** — a clip can be kept, and what has been kept appears under its
+  painting on the catalogue page: a player for a clip, an `img` for a picture,
+  and forgetting asked about twice. Under the artwork rather than on a page of
+  its own, because that page already exists to stop lists of the same thing
+  multiplying. Nothing is listed publicly — the page, the routes and the bucket
+  are all closed. Needs backend 2.2.0.
+
 ## 2.12.0
 
 - **feat** — a painting and a sentence become a few seconds of video. **Video**

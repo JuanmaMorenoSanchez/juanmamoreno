@@ -2952,3 +2952,41 @@ browser says nothing about why.
 *Also proven by:* `atelier.component.spec.ts` "plays it, rather than trying to
 show it as a picture", "gives it controls and leaves it stopped" and "finds it
 through the graph rather than by guessing at a filename".
+
+### R146 — A clip can be kept, and kept assets live under their painting · met
+A clip is kept the same way a layer is: a press, and nothing without one. It
+goes to the bucket through the backend's guarded routes, tagged with the
+painting's token id when the painting came from the catalogue.
+
+**The size comes from the box that made it.** A video cannot be measured by
+loading it into an `Image`, and decoding one to ask would cost megabytes for
+two numbers — so the Video node reports what it produced and the page passes
+that on. The first attempt guessed from the node's longest-side setting and
+returned a square for a clip that is not one.
+
+**What has been kept appears under its painting on `/catalogue`**, beside the
+certificate panel, with a clip given a player and a picture an `img`. Under the
+artwork rather than on a page of its own: that page exists precisely because
+three lists turned out to be "the same list wearing different clothes", and
+`tokenId` already says which painting an asset belongs to. Anything kept from
+no painting in particular stays on the atelier's own shelf, which lists
+everything.
+
+**The list is fetched once per visit**, however many rows are opened — the
+atelier refreshes because it has just changed the list, while this page only
+reads it.
+
+**Forgetting is asked about twice**, because it cannot be undone and what it
+destroys took the better part of an hour of a graphics card.
+
+**None of it is public, and the bucket is what makes that true.** The route is
+admin-only and `noindex`, the backend routes are behind the guard, and the
+atelier bucket grants nothing to `allUsers` — it did, until this was checked.
+The public artwork page knows nothing about any of this and is not touched.
+*Proven by:* `assets-panel.component.spec.ts` "shows only what belongs to this
+painting", "gives a clip a player and a picture an img", "asks the list for
+itself, once", "asks twice before forgetting, because it cannot be undone" and
+"reaches an asset through the backend, never through a bucket url"; and
+`atelier.component.spec.ts` "offers to keep it, and keeps nothing without being
+asked" and "keeps the size the box reported, rather than guessing at it".
+*Also proven by:* B70 and B71 in the backend.

@@ -1,0 +1,83 @@
+.assets {
+  margin-top: 1rem;
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+}
+
+.assets-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.8rem;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    max-height: 14rem;
+    /* Contained, not filled: a layer is mostly transparent and a clip is the
+       painting's own shape, and cropping either to a tile hides the thing. */
+    object-fit: contain;
+    border-radius: 3px;
+    background: rgb(0 0 0 / 6%);
+  }
+}
+
+.assets-what {
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 0.78rem;
+  }
+
+  small {
+    font-size: 0.68rem;
+    opacity: 0.65;
+  }
+}
+
+.assets-forget {
+  align-self: flex-start;
+  font: inherit;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.assets-trouble {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #b3261e;
+}
+
+.assets-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}

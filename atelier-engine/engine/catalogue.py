@@ -228,9 +228,14 @@ def _video(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-clip.mp4"
     write_video(frames, OUT / name)
+    high, wide = frames[0].shape[:2]
     # Not added to `saved`: that list is pictures the page shows and offers to
     # keep, and an mp4 in it rendered as a broken image.
-    return {"file": name, "frames": len(frames)}
+    #
+    # The size is reported because nothing else can tell it cheaply: a video
+    # cannot be measured by loading it into an Image, and decoding one to ask
+    # would cost megabytes for two numbers.
+    return {"file": name, "frames": len(frames), "width": wide, "height": high}
 
 
 def _save(inputs, params, context) -> dict[str, Any]:
@@ -379,7 +384,12 @@ CATALOGUE: dict[str, NodeType] = {
                 "rather than moving what you painted."
             ),
             inputs=[Port("image", "image")],
-            outputs=[Port("file", "text"), Port("frames", "number")],
+            outputs=[
+                Port("file", "text"),
+                Port("frames", "number"),
+                Port("width", "number"),
+                Port("height", "number"),
+            ],
             params=[
                 Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
                 Param("seconds", "number", 2.0, label="How long", minimum=0.5, maximum=5.0, step=0.5),

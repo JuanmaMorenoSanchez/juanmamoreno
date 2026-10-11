@@ -149,14 +149,24 @@ export class AtelierComponent {
     this.keeping.set(file);
     this.failure.set(null);
     try {
-      const picture = await fetch(this.engine.layerUrl(file)).then((r) => {
-        if (!r.ok) throw new Error('that layer is no longer on this machine');
+      const got = await fetch(this.engine.layerUrl(file)).then((r) => {
+        if (!r.ok) throw new Error('that is no longer on this machine');
         return r.blob();
       });
-      const size = await this.sizeOf(picture);
-      await this.kept.keep(picture, {
+
+      // A clip cannot be measured with an `Image`, and asking costs a decode
+      // of the whole file. The engine named it, so the node that made it is
+      // what says how big it is.
+      const film = this.filmed();
+      const clip = film?.file === file || got.type === 'video/mp4';
+      const size = clip
+        ? { width: film?.width ?? 0, height: film?.height ?? 0 }
+        : await this.sizeOf(got);
+
+      await this.kept.keep(got, {
         name: this.chosen() ?? file,
-        kind: kindOf(file),
+        kind: clip ? 'clip' : kindOf(file),
+        media: clip ? 'video/mp4' : 'image/png',
         tokenId: this.tokenId().trim() || undefined,
         width: size.width,
         height: size.height,
@@ -511,8 +521,18 @@ export class AtelierComponent {
     if (!run) return null;
     for (const node of this.nodes()) {
       if (node.type !== 'video') continue;
-      const file = run.produced?.[node.id]?.['file'];
-      if (typeof file === 'string' && file.length) return file;
+      const made = run.produced?.[node.id];
+      const file = made?.['file'];
+      if (typeof file === 'string' && file.length) {
+        return {
+          file,
+          // Reported by the box that made it. A video cannot be measured by
+          // loading it into an `Image`, and decoding one to ask would cost
+          // megabytes for two numbers.
+          width: Number(made?.['width']) || 0,
+          height: Number(made?.['height']) || 0,
+        };
+      }
     }
     return null;
   });

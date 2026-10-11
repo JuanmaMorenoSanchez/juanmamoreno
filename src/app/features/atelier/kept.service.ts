@@ -10,6 +10,8 @@ export interface KeptPiece {
   name: string;
   tokenId: string | null;
   kind: string;
+  /** `image/png` or `video/mp4`. Absent on anything kept before clips. */
+  media?: string;
   width: number;
   height: number;
   bytes: number;
@@ -52,8 +54,24 @@ export class KeptService {
     return { headers: { Authorization: `Bearer ${this.admin.bearerToken() ?? ''}` } };
   }
 
+  /** In flight or done, so several panels asking do not become several fetches. */
+  private asked: Promise<void> | null = null;
+
+  /**
+   * Fetches the list once, however many times it is asked.
+   *
+   * The atelier refreshes on purpose, because it has just changed the list.
+   * The catalogue only wants to read it, and a panel opening per painting
+   * would otherwise be one request per row opened.
+   */
+  ensure(): Promise<void> {
+    this.asked ??= this.refresh();
+    return this.asked;
+  }
+
   /** Everything kept, newest first. Quiet on failure: an empty shelf is honest. */
   async refresh(): Promise<void> {
+    this.asked = Promise.resolve();
     try {
       this.held.set(
         await firstValueFrom(this.http.get<KeptPiece[]>(this.where, this.authorised()))
@@ -65,15 +83,29 @@ export class KeptService {
 
   /** Keeps one. Throws, so the page can say why rather than going quiet. */
   async keep(
-    picture: Blob,
-    about: { name: string; kind: string; tokenId?: string; width: number; height: number }
+    piece: Blob,
+    about: {
+      name: string;
+      kind: string;
+      tokenId?: string;
+      width: number;
+      height: number;
+      /** What it is. The backend checks this against its own allowlist. */
+      media?: string;
+    }
   ): Promise<KeptPiece> {
     this.busy.set(true);
     try {
+      // The blob's own type when it has one, which it does when it came from
+      // the engine over http. A clip sent as a png is written to the bucket as
+      // a png and never plays.
+      const media = about.media ?? (piece.type || 'image/png');
+
       const form = new FormData();
-      form.append('piece', picture, `${about.kind}.png`);
+      form.append('piece', piece, `${about.kind}.${media === 'video/mp4' ? 'mp4' : 'png'}`);
       form.append('name', about.name);
       form.append('kind', about.kind);
+      form.append('media', media);
       form.append('width', String(about.width));
       form.append('height', String(about.height));
       if (about.tokenId) form.append('tokenId', about.tokenId);
@@ -93,8 +125,19 @@ export class KeptService {
     this.held.update((all) => all.filter((piece) => piece.id !== id));
   }
 
-  /** Where to look at one. An address on the backend, not in a bucket. */
+  /**
+   * Where to look at one. An address on the backend, not in a bucket.
+   *
+   * Still `/image` for a clip as well as a picture: that is the route's name
+   * and what it serves is whatever the object says it is. The bucket is closed
+   * to everyone but the backend, so this is the only address an asset has.
+   */
   imageUrl(id: string): string {
     return `${this.where}/${id}/image`;
+  }
+
+  /** Whether this one needs a player rather than an `img`. */
+  isClip(piece: KeptPiece): boolean {
+    return piece.media === 'video/mp4';
   }
 }

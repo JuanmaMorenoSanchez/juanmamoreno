@@ -16,6 +16,7 @@ import { PostedArtworksService } from '@shared/services/posted-artworks.service'
 import { firstValueFrom } from 'rxjs';
 import { ActivityApiService } from '@features/activity/activity.service';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { AssetsPanelComponent } from './assets-panel.component';
 import { CertificatePanelComponent } from './certificate-panel.component';
 import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
@@ -74,6 +75,7 @@ const METRIC_OF: Partial<Record<Order, string>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PdfButtonComponent,
+    AssetsPanelComponent,
     CertificatePanelComponent,
     NetworkIconComponent,
   ],

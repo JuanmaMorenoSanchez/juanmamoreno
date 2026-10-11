@@ -663,6 +663,25 @@ describe('AtelierComponent', () => {
       states: [going(), done({ batch: 'a', seconds: 3600, produced, saved: [] })],
     });
 
+    /**
+     * The engine handing the bytes back.
+     *
+     * Saving fetches the file from the engine before it posts it, and jsdom
+     * can reach nothing. Stubbed here rather than skipped, because what is
+     * worth testing is what gets sent on: a clip must go as a clip.
+     */
+    const engineServes = (type = 'video/mp4') => {
+      const was = globalThis.fetch;
+      globalThis.fetch = (() =>
+        Promise.resolve({
+          ok: true,
+          blob: () => Promise.resolve(new Blob([new Uint8Array([1, 2, 3])], { type })),
+        })) as unknown as typeof fetch;
+      return () => {
+        globalThis.fetch = was;
+      };
+    };
+
     const ran = async (fixture: ReturnType<typeof build>['fixture']) => {
       const parts = guts(fixture);
       parts.painting.set(aPainting());
@@ -702,13 +721,45 @@ describe('AtelierComponent', () => {
       expect(player?.hasAttribute('loop')).toBe(false);
     });
 
-    it('says the clip stays on this machine and that Keep will not take it', async () => {
+    it('says the clip is only on this machine until it is kept', async () => {
       const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
       await ran(fixture);
 
-      const said = at(host, 'clip')?.textContent ?? '';
-      expect(said).toContain('nowhere else');
-      expect(said).toContain('not a film');
+      expect(at(host, 'clip')?.textContent).toContain('until you keep it');
+    });
+
+    it('offers to keep it, and keeps nothing without being asked', async () => {
+      const { fixture, host, keptCalls } = build(
+        filmed({ film: { file: 'a-clip.mp4', frames: 25, width: 768, height: 832 } })
+      );
+      await ran(fixture);
+      const stop = engineServes();
+
+      expect(keptCalls).toHaveLength(0);
+      at(host, 'save-clip')?.click();
+      await new Promise((settle) => setTimeout(settle, 0));
+
+      expect(keptCalls).toHaveLength(1);
+      expect(keptCalls[0]['kind']).toBe('clip');
+      expect(keptCalls[0]['media']).toBe('video/mp4');
+      stop();
+    });
+
+    it('keeps the size the box reported, rather than guessing at it', async () => {
+      // A video cannot be measured by loading it into an `Image`, and the
+      // first attempt here returned a square for a clip that is not one.
+      const { fixture, host, keptCalls } = build(
+        filmed({ film: { file: 'a-clip.mp4', frames: 25, width: 768, height: 832 } })
+      );
+      await ran(fixture);
+      const stop = engineServes();
+
+      at(host, 'save-clip')?.click();
+      await new Promise((settle) => setTimeout(settle, 0));
+
+      expect(keptCalls[0]['width']).toBe(768);
+      expect(keptCalls[0]['height']).toBe(832);
+      stop();
     });
 
     it('finds it through the graph rather than by guessing at a filename', async () => {

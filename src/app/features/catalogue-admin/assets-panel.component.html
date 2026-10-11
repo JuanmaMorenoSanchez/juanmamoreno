@@ -1,0 +1,55 @@
+@if (mine().length) {
+  <section class="assets" data-testid="assets">
+    <h4>Kept from the atelier</h4>
+
+    <ul class="assets-list">
+      @for (piece of mine(); track piece.id) {
+        <li>
+          @if (isClip(piece)) {
+            <video
+              [src]="url(piece)"
+              controls
+              playsinline
+              preload="metadata"
+              [attr.data-testid]="'asset-clip-' + piece.id"
+            ></video>
+          } @else {
+            <img [src]="url(piece)" [alt]="piece.name" loading="lazy" />
+          }
+
+          <span class="assets-what">
+            <strong>{{ piece.kind }}</strong>
+            <small
+              >{{ piece.width }}×{{ piece.height }} · {{ size(piece) }} · {{ when(piece) }}</small
+            >
+          </span>
+
+          <button
+            type="button"
+            class="assets-forget"
+            [disabled]="forgetting() === piece.id"
+            (click)="forget(piece)"
+            [attr.data-testid]="'forget-' + piece.id"
+          >
+            @if (forgetting() === piece.id) {
+              Forgetting…
+            } @else if (asking() === piece.id) {
+              Really forget it?
+            } @else {
+              Forget
+            }
+          </button>
+        </li>
+      }
+    </ul>
+
+    @if (trouble(); as why) {
+      <p class="assets-trouble" data-testid="assets-trouble">{{ why }}</p>
+    }
+
+    <p class="assets-note">
+      Kept on purpose, from this machine's atelier. Nobody but you can reach these — the page, the
+      routes and the bucket are all closed.
+    </p>
+  </section>
+}
