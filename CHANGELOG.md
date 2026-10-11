@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.16.1
+
+- **chore** — `.mcp.json`: working on this repository now reaches the site's
+  own MCP server, so the catalogue can be asked rather than guessed at. It
+  corrected a wrong year and a wrong size within a minute of being connected.
+
 ## 2.16.0
 
 - **feat** — `/pieces`: the generative pieces that have been kept, each

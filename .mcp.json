@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "juanmamoreno-catalogue": {
+      "type": "http",
+      "url": "https://backend.juanmamoreno.com/mcp"
+    }
+  }
+}
