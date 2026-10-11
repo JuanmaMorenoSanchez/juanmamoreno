@@ -281,6 +281,18 @@
         </p>
       }
 
+      @if (filmed(); as clip) {
+        <figure class="atelier-clip" data-testid="clip">
+          <!-- `controls` and nothing else: no autoplay, no loop. A clip takes
+               an hour to make and is looked at deliberately. -->
+          <video [src]="layerUrl(clip)" controls playsinline preload="metadata"></video>
+          <figcaption>
+            {{ clip }} — in the engine's folder on this machine, and nowhere else. Keep takes a
+            picture, not a film.
+          </figcaption>
+        </figure>
+      }
+
       @if (written()) {
         <p class="atelier-caveat">
           <button

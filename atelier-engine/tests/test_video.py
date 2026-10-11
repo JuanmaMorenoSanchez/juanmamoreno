@@ -1,0 +1,251 @@
+"""
+A painting and a sentence into a few seconds of video.
+
+The model itself is not exercised here — it is 5.4 GB of weights streamed off
+the disk and takes the better part of an hour. What is tested is everything
+around it that can be wrong silently: the frame arithmetic the scheduler
+refuses, the size a 3652-pixel painting has to become, the mp4 that comes out,
+and above all the prompt embedding, which is the one place in this engine that
+copies a library's internals instead of calling them.
+"""
+
+import subprocess
+import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import numpy as np
+from PIL import Image
+
+from engine import video
+
+
+class FramesForTest(unittest.TestCase):
+    """Wan's VAE compresses time four to one, so a count must be 4n+1."""
+
+    def test_every_answer_is_one_the_latent_can_divide(self) -> None:
+        for seconds in (0.5, 1, 1.5, 2, 2.5, 3, 4, 5):
+            with self.subTest(seconds=seconds):
+                self.assertEqual((video.frames_for(seconds) - 1) % 4, 0)
+
+    def test_lands_near_what_was_asked_for(self) -> None:
+        # Flooring turned every "2 seconds" into 1.88, which is a worse answer
+        # than 2.04 and harder to explain.
+        for seconds in (1, 2, 3, 5):
+            with self.subTest(seconds=seconds):
+                got = video.frames_for(seconds) / video.FPS
+                self.assertLess(abs(got - seconds), 1 / video.FPS * 2.5)
+
+    def test_never_asks_for_a_clip_too_short_to_denoise(self) -> None:
+        self.assertGreaterEqual(video.frames_for(0.01), 5)
+
+
+class FitTest(unittest.TestCase):
+    def test_brings_a_painting_down_to_something_the_card_can_hold(self) -> None:
+        # The real thing: painting 6 is 3652 x 4533.
+        wide, high = video.fit(Image.new("RGB", (3652, 4533)), longest=832)
+
+        self.assertEqual(max(wide, high), 832)
+
+    def test_every_side_is_a_multiple_of_sixteen(self) -> None:
+        # Not cosmetic: the patch embedding divides by it, and a size that
+        # does not is a shape error from somewhere deep inside the transformer.
+        for size in [(3652, 4533), (1000, 1000), (1920, 1080), (37, 913)]:
+            with self.subTest(size=size):
+                wide, high = video.fit(Image.new("RGB", size))
+                self.assertEqual((wide % 16, high % 16), (0, 0))
+
+    def test_keeps_the_shape_of_the_painting(self) -> None:
+        wide, high = video.fit(Image.new("RGB", (4000, 3000)), longest=832)
+
+        self.assertAlmostEqual(wide / high, 4000 / 3000, places=1)
+
+    def test_never_returns_nothing(self) -> None:
+        wide, high = video.fit(Image.new("RGB", (4000, 4)), longest=832)
+
+        self.assertGreaterEqual(min(wide, high), 16)
+
+
+class TidyTest(unittest.TestCase):
+    """What `ftfy` would have done, minus the part that needed it."""
+
+    def test_collapses_whitespace_the_way_the_library_does(self) -> None:
+        self.assertEqual(video.tidy("  the light   shifts\n\n dust drifts "), "the light shifts dust drifts")
+
+    def test_unescapes_twice(self) -> None:
+        # diffusers unescapes twice, because a prompt pasted out of a web page
+        # can carry double-encoded entities.
+        self.assertEqual(video.tidy("dust &amp;amp; light"), "dust & light")
+
+    def test_leaves_ordinary_prose_alone(self) -> None:
+        said = "the light shifts slowly across her face"
+
+        self.assertEqual(video.tidy(said), said)
+
+
+class FfmpegTest(unittest.TestCase):
+    def test_finds_it(self) -> None:
+        # Installed once with winget rather than vendored as a Python package,
+        # which is the whole reason this engine can write an mp4 at all.
+        self.assertTrue(Path(video.ffmpeg()).exists())
+
+    def test_writes_a_clip_that_a_player_will_open(self) -> None:
+        frames = []
+        for i in range(9):
+            frame = np.zeros((64, 96, 3), dtype=np.uint8)
+            frame[:, :, 0] = 20 * i
+            frame[20:40, i * 4 : i * 4 + 20] = 255
+            frames.append(frame)
+
+        with TemporaryDirectory() as folder:
+            where = video.write_video(frames, Path(folder) / "clip.mp4", fps=8)
+
+            self.assertTrue(where.exists())
+            self.assertGreater(where.stat().st_size, 0)
+
+            # Asked of ffprobe rather than assumed: a file with an mp4 name
+            # that no player will open is the failure worth catching.
+            # Its neighbour, not a string substitution: the installed path is
+            # ...\ffmpeg-9.0.2-full_build\bin\ffmpeg.exe, and replacing the
+            # name replaces the folder's too.
+            binary = Path(video.ffmpeg())
+            probe = subprocess.run(
+                [
+                    str(binary.with_name("ffprobe" + binary.suffix)),
+                    "-v", "error",
+                    "-select_streams", "v:0",
+                    "-show_entries", "stream=codec_name,width,height,nb_read_frames",
+                    "-count_frames",
+                    "-of", "csv=p=0",
+                    str(where),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(probe.returncode, 0, probe.stderr)
+            said = probe.stdout.strip().split(",")
+            self.assertEqual(said[0], "h264")
+            self.assertEqual((said[1], said[2]), ("96", "64"))
+            self.assertEqual(said[3], "9", "not every frame reached the file")
+
+    def test_refuses_an_empty_clip_rather_than_writing_one(self) -> None:
+        with TemporaryDirectory() as folder:
+            with self.assertRaises(ValueError):
+                video.write_video([], Path(folder) / "clip.mp4")
+
+
+class EmbedTest(unittest.TestCase):
+    """The one place here that copies a library instead of calling it.
+
+    `embed` exists so the engine needs no `ftfy`, which diffusers wants only to
+    repair mojibake in a prompt — and these prompts are typed into a form and
+    arrive as UTF-8. The risk of hand-rolling it is not a crash; it is masking
+    done slightly differently, which would degrade every clip and say nothing.
+
+    So it is compared against diffusers' own `_get_t5_prompt_embeds`, with the
+    cleaner it cannot run stubbed out. A release that changes the masking fails
+    here instead.
+    """
+
+    def setUp(self) -> None:
+        try:
+            import torch  # noqa: F401
+            from diffusers.pipelines.wan import pipeline_wan_i2v  # noqa: F401
+        except Exception as why:  # pragma: no cover - environment, not behaviour
+            self.skipTest(f"diffusers is not importable here: {why}")
+
+    def test_matches_what_the_pipeline_would_have_produced(self) -> None:
+        import torch
+        from diffusers.pipelines.wan import pipeline_wan_i2v
+
+        said = ["the light shifts slowly", "static, blurred detail, worst quality"]
+        length = 32
+        hidden = 8
+
+        class Tokeniser:
+            def __call__(self, prompts, **kw):
+                ids = torch.zeros((len(prompts), kw["max_length"]), dtype=torch.long)
+                mask = torch.zeros((len(prompts), kw["max_length"]), dtype=torch.long)
+                for row, text in enumerate(prompts):
+                    # A token per word, which is enough to give the two prompts
+                    # different real lengths — which is what masking is about.
+                    count = min(len(text.split()), kw["max_length"])
+                    ids[row, :count] = torch.arange(1, count + 1)
+                    mask[row, :count] = 1
+                return type("Batch", (), {"input_ids": ids, "attention_mask": mask})()
+
+        class Encoder:
+            dtype = torch.float32
+
+            def parameters(self):
+                # `embed` reads the device off the weights rather than off the
+                # pipeline, because in this engine the encoder is the one part
+                # that stays on the processor.
+                yield torch.zeros(1)
+
+            def __call__(self, ids, mask):
+                # Deterministic and position-dependent, so a wrong trim shows.
+                rows = ids.unsqueeze(-1).float() * torch.arange(1, hidden + 1).float()
+                return type("Out", (), {"last_hidden_state": rows + 0.5})()
+
+        class Pipe:
+            tokenizer = Tokeniser()
+            text_encoder = Encoder()
+            _execution_device = torch.device("cpu")
+
+            # The real method, bound to this stand-in.
+            _get_t5_prompt_embeds = pipeline_wan_i2v.WanImageToVideoPipeline._get_t5_prompt_embeds
+
+        pipe = Pipe()
+        mine = video.embed(pipe, said, length=length)
+
+        # The library's path, with only the ftfy-dependent cleaner replaced.
+        was = pipeline_wan_i2v.prompt_clean
+        pipeline_wan_i2v.prompt_clean = video.tidy
+        try:
+            theirs = pipe._get_t5_prompt_embeds(said, max_sequence_length=length)
+        finally:
+            pipeline_wan_i2v.prompt_clean = was
+
+        self.assertEqual(mine.shape, theirs.shape)
+        self.assertTrue(torch.equal(mine, theirs), "the embeddings differ from diffusers' own")
+
+    def test_pads_every_prompt_to_the_same_length(self) -> None:
+        import torch
+
+        class Tokeniser:
+            def __call__(self, prompts, **kw):
+                ids = torch.zeros((len(prompts), kw["max_length"]), dtype=torch.long)
+                mask = torch.zeros((len(prompts), kw["max_length"]), dtype=torch.long)
+                ids[0, :3] = torch.tensor([1, 2, 3])
+                mask[0, :3] = 1
+                ids[1, :7] = torch.arange(1, 8)
+                mask[1, :7] = 1
+                return type("Batch", (), {"input_ids": ids, "attention_mask": mask})()
+
+        class Encoder:
+            dtype = torch.float32
+
+            def parameters(self):
+                yield torch.zeros(1)
+
+            def __call__(self, ids, mask):
+                return type("Out", (), {"last_hidden_state": ids.unsqueeze(-1).float() + 1})()
+
+        class Pipe:
+            tokenizer = Tokeniser()
+            text_encoder = Encoder()
+            _execution_device = torch.device("cpu")
+
+        got = video.embed(Pipe(), ["three words here", "a prompt of rather more words"], length=16)
+
+        self.assertEqual(got.shape[:2], (2, 16))
+        # Everything past each prompt's own length is zero, not the encoder's
+        # opinion of the padding tokens.
+        self.assertTrue(torch.all(got[0, 3:] == 0))
+        self.assertTrue(torch.all(got[1, 7:] == 0))
+        self.assertFalse(torch.all(got[1, :7] == 0))
+
+
+if __name__ == "__main__":
+    unittest.main()

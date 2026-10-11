@@ -269,15 +269,26 @@ def _cut(image: UploadFile, labels: str, fill_behind: bool) -> JSONResponse:
     )
 
 
+#: What this will hand back, by extension. A short allowlist rather than
+#: `mimetypes`, which reads the Windows registry and will cheerfully report
+#: whatever is installed — this says exactly what the engine writes.
+SERVES = {".png": "image/png", ".mp4": "video/mp4", ".js": "text/javascript"}
+
+
 @app.get("/layer/{name}")
 def layer(name: str) -> FileResponse:
-    """One cut layer, by the name /cut gave it."""
+    """One thing a run produced, by the name the node gave it.
+
+    The type comes from the extension. It was hardcoded to `image/png`, which
+    was true until a node started writing mp4s: a clip served as a png is
+    downloaded and never played, and the browser says nothing about why.
+    """
     # Resolved and checked rather than joined: a name is not a path, and this
     # process can read the whole disk.
     path = (OUT / name).resolve()
     if path.parent != OUT.resolve() or not path.is_file():
         raise HTTPException(status_code=404, detail="no such layer")
-    return FileResponse(path, media_type="image/png")
+    return FileResponse(path, media_type=SERVES.get(path.suffix.lower(), "image/png"))
 
 
 @app.post("/evict")

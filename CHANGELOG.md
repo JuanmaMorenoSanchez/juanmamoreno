@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.12.0
+
+- **feat** — a painting and a sentence become a few seconds of video. **Video**
+  runs Wan 2.2 TI2V-5B on this machine and writes an mp4; **Film it** is the
+  flow for it. It does not replace the parallax and was never meant to — that
+  one can only move pixels he painted, which is why it stays faithful, and this
+  one invents every frame after the first. Apache 2.0 throughout, quantised to
+  5.4 GB, and no new Python dependency: ffmpeg is installed on the machine, and
+  the prompt embedding is done here rather than pulling in `ftfy` to repair
+  mojibake that typed text cannot have.
+- **fix** — the engine served every file as `image/png`, so a clip was
+  downloaded and never played, with nothing said about why.
+
 ## 2.11.2
 
 - **chore** — removed _Wind direction_, which has not been a page for a while.

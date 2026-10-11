@@ -154,6 +154,28 @@ class ServiceTest(unittest.TestCase):
 
         self.assertEqual(response.headers.get("access-control-allow-private-network"), "true")
 
+    def test_a_clip_is_served_as_a_video_and_not_as_a_picture(self) -> None:
+        # The type was hardcoded to image/png, which was true until a node
+        # started writing mp4s. A clip served as a picture is downloaded and
+        # never played, and the browser says nothing about why.
+        (self.out / "a-clip.mp4").write_bytes(b"not really an mp4, but named like one")
+        try:
+            answer = self.client.get("/layer/a-clip.mp4")
+
+            self.assertEqual(answer.status_code, 200)
+            self.assertEqual(answer.headers["content-type"], "video/mp4")
+        finally:
+            (self.out / "a-clip.mp4").unlink(missing_ok=True)
+
+    def test_a_picture_is_still_served_as_one(self) -> None:
+        (self.out / "a-layer.png").write_bytes(b"pretend png")
+        try:
+            self.assertEqual(
+                self.client.get("/layer/a-layer.png").headers["content-type"], "image/png"
+            )
+        finally:
+            (self.out / "a-layer.png").unlink(missing_ok=True)
+
     def test_it_publishes_its_ready_made_flows(self) -> None:
         # Served rather than written into the page, so a flow added here is a
         # button on the deployed site without the site being released.

@@ -2880,3 +2880,75 @@ send an explanation".
 "test_every_setting_is_one_that_node_takes",
 "test_every_flow_runs_from_end_to_end" and
 "test_a_wire_always_goes_rightwards", which `npm test` does not run.
+
+### R145 — A painting and a sentence become a few seconds of video · met
+**Video** takes the painting and a sentence and writes an mp4. It is the
+slowest thing the atelier does by a distance, and the only one that invents
+motion rather than moving what was painted.
+
+**It does not replace the parallax, and was never meant to.** R140 can only
+shift pixels he painted, which is exactly why it stays faithful and exactly why
+it can never do anything he did not paint; this invents every frame after the
+first and will resolve a brushstroke into something photographic if the
+sentence invites it. Both are offered, as *Make it move* and *Film it*, because
+they are different jobs.
+
+**Wan 2.2 TI2V-5B, Apache 2.0 throughout.** "5B" undersells the cost: the
+official repository is **34.2 GB**, because the transformer ships in fp32 at
+20 GB and Wan's umT5-XXL text encoder is another 11.4 — against 8 GB of card,
+the same shape as the MiniMax rejection. The way through is the one the image
+editor already took: a **Q8_0 GGUF transformer at 5.4 GB**, the highest
+fidelity quant published, because slow is preferred to soft.
+
+**Nothing is ever all resident**, which is the only reason any of it runs:
+
+- The **text encoder stays on the processor** and never touches the card.
+  Streamed onto it a block at a time it still ran out of memory inside umT5's
+  attention, building a 512-by-512 position-bias mask per head while 2.8 GB of
+  VAE was already pinned there. It runs once per clip, 11.4 GB fits in 31 GB of
+  system memory with room, and half a minute on the processor beats an
+  out-of-memory error every time.
+- The **transformer is streamed off the disk** a block at a time.
+- The **VAE stays on the card and decodes tiled**. Resident because a stack of
+  3D convolutions has no blocks for block-level offloading to find; tiled
+  because decoding every frame at once is what actually exhausts the card —
+  far more than any denoising step.
+
+**No new dependency, for either half.** `ffmpeg` is installed on the machine
+rather than vendored as a Python package, and the frames go to it over a pipe
+so a stopped run leaves no temporary files behind. And diffusers' Wan pipeline
+cannot encode a prompt without `ftfy`, which it wants only to repair mojibake —
+text decoded with the wrong codec somewhere upstream. These prompts are typed
+into a form and arrive as UTF-8, so the embedding is done here instead and
+passed in as `prompt_embeds`, which is a supported argument.
+
+**That hand-rolled embedding is the one place in this engine that copies a
+library's internals rather than calling them**, so it is pinned to them: the
+test stubs out only the cleaner that cannot run and asserts the embeddings
+match `_get_t5_prompt_embeds` tensor for tensor. The risk there was never a
+crash — it was masking done slightly differently, which would have degraded
+every clip and said nothing.
+
+**The frame count and the size are the model's, not the asker's.** Wan's VAE
+compresses time four to one, so a clip is 4n+1 frames at 24 a second and
+"2 seconds" becomes 49 frames rather than 48; every side is a multiple of
+sixteen, because the patch embedding divides by it and a size that does not is
+a shape error from deep inside the transformer. A painting is thousands of
+pixels across and is brought down to about 832 on its longest side.
+
+**The clip is found through the graph and played, not shown.** It is
+deliberately absent from the run's `saved` list — that list is pictures,
+rendered in an `img` and offered to the bucket, and an mp4 in it drew a broken
+image beside a Save that could not have worked. It plays with controls and does
+not autoplay: an hour of work is looked at deliberately. **The engine serves it
+as `video/mp4`**, which it could not do while the layer endpoint hardcoded
+`image/png` — a clip served as a picture is downloaded, never played, and the
+browser says nothing about why.
+*Proven by:* `test_video.py` "test_matches_what_the_pipeline_would_have_produced",
+"test_pads_every_prompt_to_the_same_length",
+"test_every_answer_is_one_the_latent_can_divide",
+"test_every_side_is_a_multiple_of_sixteen" and
+"test_writes_a_clip_that_a_player_will_open", which `npm test` does not run.
+*Also proven by:* `atelier.component.spec.ts` "plays it, rather than trying to
+show it as a picture", "gives it controls and leaves it stopped" and "finds it
+through the graph rather than by guessing at a filename".

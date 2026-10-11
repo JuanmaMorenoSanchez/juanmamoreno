@@ -658,6 +658,69 @@ describe('AtelierComponent', () => {
     expect(at(host, 'see-it-move')).not.toBeNull();
   });
 
+  describe('a clip', () => {
+    const filmed = (produced: Record<string, Record<string, unknown>>) => ({
+      states: [going(), done({ batch: 'a', seconds: 3600, produced, saved: [] })],
+    });
+
+    const ran = async (fixture: ReturnType<typeof build>['fixture']) => {
+      const parts = guts(fixture);
+      parts.painting.set(aPainting());
+      parts.redraw({
+        nodes: [
+          { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+          { id: 'film', type: 'video', x: 0, y: 0, params: {} },
+        ],
+        edges: [{ from: ['src', 'image'], to: ['film', 'image'] }],
+      });
+      const running = parts.run();
+      await new Promise((settle) => setTimeout(settle, 1100));
+      await running;
+      fixture.detectChanges();
+    };
+
+    it('plays it, rather than trying to show it as a picture', async () => {
+      // The clip is deliberately not in `run.saved`: that list is rendered in
+      // an img and offered to the bucket, and an mp4 in it drew a broken
+      // image beside a Save that could not have worked.
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      await ran(fixture);
+
+      const player = at(host, 'clip')?.querySelector('video');
+      expect(player).not.toBeNull();
+      expect(player?.getAttribute('src')).toContain('a-clip.mp4');
+    });
+
+    it('gives it controls and leaves it stopped', async () => {
+      // An hour of work is looked at deliberately. Nothing autoplays.
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      await ran(fixture);
+      const player = at(host, 'clip')?.querySelector('video');
+
+      expect(player?.hasAttribute('controls')).toBe(true);
+      expect(player?.hasAttribute('autoplay')).toBe(false);
+      expect(player?.hasAttribute('loop')).toBe(false);
+    });
+
+    it('says the clip stays on this machine and that Keep will not take it', async () => {
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      await ran(fixture);
+
+      const said = at(host, 'clip')?.textContent ?? '';
+      expect(said).toContain('nowhere else');
+      expect(said).toContain('not a film');
+    });
+
+    it('finds it through the graph rather than by guessing at a filename', async () => {
+      // Nothing produced by the Video box means nothing to play, even with
+      // other files about.
+      const { fixture, host } = build(filmed({ other: { file: 'a-depth.png' } }));
+      await ran(fixture);
+
+      expect(at(host, 'clip')).toBeNull();
+    });
+  });
+
   it('offers to keep each layer, and keeps nothing without being asked', async () => {
     // The engine's folder is scratch on one machine. This is the only route by
     // which anything the atelier makes leaves it, and it is never taken alone.

@@ -22,15 +22,16 @@ nothing to re-read before selling a painting.
 
 ## The stack
 
-| Job                 | Model                                    | Size            | Licence    | Status       |
-| ------------------- | ---------------------------------------- | --------------- | ---------- | ------------ |
-| Text → boxes        | `IDEA-Research/grounding-dino-base`      | ~700 MB         | Apache 2.0 | **measured** |
-| Box or point → mask | `facebook/sam2.1-hiera-small`            | 184 MB · 46M    | Apache 2.0 | **measured** |
-| Fill behind         | LaMa (`big-lama`)                        | ~200 MB · 51M   | Apache 2.0 | **measured** |
-| Depth               | `depth-anything/Depth-Anything-V2-Small` | ~100 MB · 24.8M | Apache 2.0 | **measured** |
-| Background removal  | BiRefNet                                 | ~900 MB         | MIT        | optional     |
-| Sketch code         | `Qwen/Qwen2.5-Coder-7B-Instruct`         | 15 GB bf16      | Apache 2.0 | **measured** |
-| Sketch code, fast   | `Qwen/Qwen2.5-Coder-1.5B-Instruct`       | 3 GB bf16       | Apache 2.0 | **measured** |
+| Job                  | Model                                    | Size            | Licence    | Status       |
+| -------------------- | ---------------------------------------- | --------------- | ---------- | ------------ |
+| Text → boxes         | `IDEA-Research/grounding-dino-base`      | ~700 MB         | Apache 2.0 | **measured** |
+| Box or point → mask  | `facebook/sam2.1-hiera-small`            | 184 MB · 46M    | Apache 2.0 | **measured** |
+| Fill behind          | LaMa (`big-lama`)                        | ~200 MB · 51M   | Apache 2.0 | **measured** |
+| Depth                | `depth-anything/Depth-Anything-V2-Small` | ~100 MB · 24.8M | Apache 2.0 | **measured** |
+| Background removal   | BiRefNet                                 | ~900 MB         | MIT        | optional     |
+| Sketch code          | `Qwen/Qwen2.5-Coder-7B-Instruct`         | 15 GB bf16      | Apache 2.0 | **measured** |
+| Sketch code, fast    | `Qwen/Qwen2.5-Coder-1.5B-Instruct`       | 3 GB bf16       | Apache 2.0 | **measured** |
+| Image + text → video | `Wan-AI/Wan2.2-TI2V-5B` Q8_0 GGUF        | 5.4 GB          | Apache 2.0 | **measured** |
 
 Everything needed to cut a painting into layers is **under 2 GB of weights** and
 peaked at **1,808 MiB of VRAM** — a quarter of the budget.
@@ -223,6 +224,46 @@ under `default-src 'none'`, which is the subject of its own section in
 
 ---
 
+## Wan 2.2 TI2V-5B — a painting and a sentence into video
+
+**What it does.** Takes the painting and a sentence and produces a few seconds
+of actual video. It does not replace the depth parallax and was never meant to:
+that one can only shift pixels he painted, which is why it stays faithful and
+why it can never do anything he did not paint. This invents every frame after
+the first.
+
+**Why it was on hold, and what changed.** Nothing about the model — it was
+deferred in favour of depth parallax, which is a hundred megabytes against this
+one's tens of gigabytes and answers in seconds rather than minutes. Both are
+wanted, for different jobs, so both are now here.
+
+**"5B" undersells it badly.** The official repository is **34.2 GB**: the
+transformer ships in fp32 at 20 GB and Wan's umT5-XXL text encoder is another
+11.4. Against 8 GB of card that is the same shape as the MiniMax rejection. The
+way through is the one the image editor took — a **Q8_0 GGUF transformer at
+5.4 GB**, the highest-fidelity quant published.
+
+**Nothing is ever all resident.** The text encoder stays on the processor and
+never touches the card; the transformer is streamed off the disk a block at a
+time; the VAE stays resident in float32 and decodes tiled. Streaming the text
+encoder onto the card _still_ ran out of memory, inside umT5's attention,
+building a 512-by-512 position-bias mask per head while 2.8 GB of VAE was
+already pinned there.
+
+**Measured** on painting 6, 768 x 832, 25 frames at 24 fps, 12 steps:
+**423 seconds to generate, 425 to the finished mp4** — about **17 seconds a
+step**, after roughly three and a half minutes of one-off setup. The file was
+0.75 MB. The motion is real and smooth rather than static or flickering: mean
+pixel difference from the first frame rises steadily from 2.2 to 12.2 of 255,
+while consecutive frames differ by only 2.5 on average.
+
+**It keeps the brushwork.** At these settings the output still reads as his
+canvas rather than as a render, helped by a negative prompt that includes
+"painting" and "artwork" — which pushes it away from imitating brushwork it
+cannot do and towards moving what it was given.
+
+---
+
 ## What was rejected, and why
 
 | Model                                           | Reason                                                                                                                                                                              |
@@ -233,7 +274,6 @@ under `default-src 'none'`, which is the subject of its own section in
 | **SDXL Inpainting 0.1**                         | OpenRAIL++ use restrictions travel downstream; ~6 GB                                                                                                                                |
 | **Hunyuan Video**                               | Tencent Community Licence appears to exclude the EU                                                                                                                                 |
 | **SAM 3**                                       | Custom Meta licence, not Apache; unnecessary once SAM 2.1 proved out                                                                                                                |
-| **Wan 2.2 TI2V-5B**                             | Apache 2.0 and it fits — but **on hold**, in favour of depth parallax                                                                                                               |
 | **MiniMax H3**                                  | 19.5 GB diffusion model and a 14.6 GB text encoder against ~7 GB of VRAM — 2.6× over. Its text encoder is NVFP4, a Blackwell format this Ada card has no hardware support for       |
 | **Qwen2.5-Coder-3B-Instruct**                   | Licence "other" — Qwen Research, no commercial use. The convenient middle size, and the only one of the four that cannot be used                                                    |
 | **Qwen3-Coder 30B**                             | Better at this, and 19 GB                                                                                                                                                           |

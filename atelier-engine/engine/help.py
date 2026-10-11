@@ -89,6 +89,26 @@ HELP: dict[str, str] = {
         "a flat area of strong colour can read as near. Keep the map and look "
         "at it; it is a picture like any other."
     ),
+    "video": (
+        "A painting and a sentence, into a few seconds of actual video.\n\n"
+        "This is the thing Depth deliberately will not do. Parallax can only "
+        "move pixels you painted, which is why it stays faithful; this invents "
+        "every frame after the first, and will resolve a brushstroke into "
+        "something photographic if you let it. Both are here because they are "
+        "different jobs — one shows your painting moving, the other makes a "
+        "film of it.\n\n"
+        "The slowest box by a distance. Wan 2.2 is five billion parameters "
+        "quantised to five and a half gigabytes, streamed through the card a "
+        "block at a time, and the text encoder alone is eleven gigabytes "
+        "before a single step runs. Expect the first clip of a session to "
+        "spend minutes doing nothing visible.\n\n"
+        "Keep it short and small. Seconds and the longest side are what cost "
+        "the time, and they multiply: four seconds at 1280 is not twice two "
+        "seconds at 832, it is many times it. Find the motion you want at two "
+        "seconds and 832, then raise it once.\n\n"
+        "It writes an mp4 into the engine's folder and nothing else. No Keep "
+        "is needed and none will help — Keep takes a picture, not a film."
+    ),
     "sketch": (
         "Writes a small moving piece from a sentence, as code, which then runs "
         "beside the box.\n\n"
@@ -152,6 +172,39 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "The marks themselves. Press Draw to put them on the painting: a click "
         "keeps, a shift-click excludes. They are stored on the node, so they "
         "survive a reload along with the rest of the graph."
+    ),
+    ("video", "prompt"): (
+        "What should happen, as motion rather than as description. The dust "
+        "drifts and the light shifts works; a dusty room is weaker, because "
+        "it says nothing about what moves. The painting already supplies what "
+        "the thing looks like — this supplies what it does."
+    ),
+    ("video", "seconds"): (
+        "How long the clip runs. The single most expensive setting here: the "
+        "model works on the whole clip at once, so five seconds is not twice "
+        "the wait of two and a half. Rounded to what the model will take, "
+        "which is a frame count of 4n+1 at 24 frames a second."
+    ),
+    ("video", "steps"): (
+        "How many passes over the whole clip. Fewer is faster and mushier, "
+        "and below about twenty the motion starts to judder rather than "
+        "flow. Thirty is a reasonable place to start."
+    ),
+    ("video", "guidance"): (
+        "How literally to take the sentence. Higher follows the words and can "
+        "force motion that was not in the painting; lower drifts and "
+        "sometimes barely moves at all."
+    ),
+    ("video", "seed"): (
+        "Which random start to use. The same seed, sentence and painting give "
+        "the same clip, so change it to roll again and keep it when something "
+        "nearly worked."
+    ),
+    ("video", "longest"): (
+        "How big to generate, on the long side. The painting is thousands of "
+        "pixels across and the model was trained near this size — asked for "
+        "the full thing it would run out of memory long before it finished. "
+        "Raise it only once the motion is right."
     ),
     ("sketch", "asking"): (
         "What the piece should do, in a sentence. Concrete and visual works best — "

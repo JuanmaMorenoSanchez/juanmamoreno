@@ -160,6 +160,39 @@ TAKE_A_FIGURE_OUT = Flow(
     ),
 )
 
+FILM_IT = Flow(
+    key="film-it",
+    label="Film it",
+    blurb="A painting and a sentence into a few seconds of actual video.",
+    about=(
+        "The other kind of motion, and the opposite trade to *Make it move*. "
+        "Parallax can only shift pixels you painted, which is why it stays "
+        "faithful and why it can never do anything you did not paint. This "
+        "invents every frame after the first.\n\n"
+        "That is the cost as well as the point. It will resolve a brushstroke "
+        "into something photographic if the sentence invites it, and a clip "
+        "that looks like a film of a painting is a different object from a "
+        "painting that moves. Use whichever one the piece wants.\n\n"
+        "Say what *happens*, not what it looks like — the painting already "
+        "supplies the look. Two seconds at 832 is the place to start; seconds "
+        "and size are what cost the time and they multiply, so find the "
+        "motion small and raise it once.\n\n"
+        "It writes an mp4 into the engine's folder. No Keep is needed, and "
+        "none would help: Keep takes a picture, not a film."
+    ),
+    nodes=(
+        Placed(at="painting", type="painting", column=0, row=0),
+        Placed(
+            at="film",
+            type="video",
+            params={"prompt": "the light shifts slowly across her face, dust drifting"},
+            column=1,
+            row=0,
+        ),
+    ),
+    edges=(("painting", "image", "film", "image"),),
+)
+
 WRITE_A_PIECE = Flow(
     key="write-a-piece",
     label="Write a piece",
@@ -188,7 +221,8 @@ WRITE_A_PIECE = Flow(
 )
 
 FLOWS: dict[str, Flow] = {
-    flow.key: flow for flow in (MOVE, CHANGE_A_PART, TAKE_A_FIGURE_OUT, WRITE_A_PIECE)
+    flow.key: flow
+    for flow in (MOVE, CHANGE_A_PART, TAKE_A_FIGURE_OUT, FILM_IT, WRITE_A_PIECE)
 }
 """Order matters: it is the order of the buttons, cheapest and shortest first."""
 

@@ -498,6 +498,25 @@ export class AtelierComponent {
     return null;
   });
 
+  /**
+   * The clip this run filmed, if it filmed one.
+   *
+   * Found through the graph like the depth map and the written piece, rather
+   * than by guessing at a filename. It is deliberately not in `run.saved`:
+   * that list is pictures, shown in an `img` and offered to the bucket, and an
+   * mp4 in it rendered as a broken image beside a Save that would not work.
+   */
+  protected readonly filmed = computed(() => {
+    const run = this.result();
+    if (!run) return null;
+    for (const node of this.nodes()) {
+      if (node.type !== 'video') continue;
+      const file = run.produced?.[node.id]?.['file'];
+      if (typeof file === 'string' && file.length) return file;
+    }
+    return null;
+  });
+
   protected see(file: string): void {
     this.moving.set(this.engine.layerUrl(file));
   }

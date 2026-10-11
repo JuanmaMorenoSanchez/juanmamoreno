@@ -29,6 +29,7 @@ from .edit import available as edit_available, edit as edit_painting
 from .help import HELP, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
+from .video import animate as animate_painting, write_video
 from .nodes import NodeType, Param, Port
 from .operations import find as find_things, isolate as isolate_thing
 
@@ -190,6 +191,48 @@ def _sketch(inputs, params, context) -> dict[str, Any]:
     return {"code": code, "file": name}
 
 
+def _video(inputs, params, context) -> dict[str, Any]:
+    """A painting and a sentence, into a few seconds of video.
+
+    The opposite trade to Depth. Parallax can only move pixels he painted,
+    which is why it stays faithful; this invents every frame after the first.
+    Both are wanted, for different jobs.
+
+    Everything else is dropped first: the transformer is streamed off the disk
+    a block at a time and the text encoder is eleven gigabytes on its own, so
+    anything else resident is memory this has to work around.
+    """
+    registry = context.get("registry")
+    if registry is not None:
+        registry.evict()
+
+    saying = context.get("saying")
+    if saying is not None:
+        saying("preparing the model — the first clip of a session spends minutes before a step runs")
+
+    frames = animate_painting(
+        inputs["image"],
+        params["prompt"],
+        seconds=float(params["seconds"]),
+        steps=int(params["steps"]),
+        guidance=float(params["guidance"]),
+        seed=int(params["seed"]),
+        longest=int(params["longest"]),
+        watching=context.get("watching_steps"),
+        stopped=context.get("stopped"),
+    )
+
+    if saying is not None:
+        saying("encoding the clip")
+
+    OUT.mkdir(exist_ok=True)
+    name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-clip.mp4"
+    write_video(frames, OUT / name)
+    # Not added to `saved`: that list is pictures the page shows and offers to
+    # keep, and an mp4 in it rendered as a broken image.
+    return {"file": name, "frames": len(frames)}
+
+
 def _save(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     stem = (params["name"] or "layer").strip().replace(" ", "-") or "layer"
@@ -325,6 +368,27 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
             ],
             run=_edit,
+        ),
+        NodeType(
+            key="video",
+            label="Video",
+            category="paint",
+            summary=(
+                "A painting and a sentence into a few seconds of video. The slowest "
+                "thing here by a distance, and the only one that invents motion "
+                "rather than moving what you painted."
+            ),
+            inputs=[Port("image", "image")],
+            outputs=[Port("file", "text"), Port("frames", "number")],
+            params=[
+                Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
+                Param("seconds", "number", 2.0, label="How long", minimum=0.5, maximum=5.0, step=0.5),
+                Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
+                Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
+                Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
+            ],
+            run=_video,
         ),
         NodeType(
             key="sketch",
