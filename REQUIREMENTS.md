@@ -3078,3 +3078,57 @@ worse than one not corrected at all.
 *Checked by:* nothing automatic — it is prose, and no test can tell whether a
 sentence is still true. It is listed here so the next change to what the
 studio does has somewhere to look.
+
+### R150 — A written piece can be looked at again, away from the machine · met
+`/pieces` lists the generative pieces that have been kept and runs one in the
+same sandboxed frame the atelier uses. Before it, a piece could only be seen
+inside the atelier, in the frame that ran it once, on the computer that wrote
+it — closing the tab lost it, which is no basis for deciding about anything.
+
+**Kept is not published, and the page refuses to blur the line.** It lists
+what is actually a page, read from `sketches/registry.ts` because the registry
+is what decides, and it lists what is merely kept. There is no button here
+that publishes: registering is a line added by hand, which is what replaced an
+earlier `/generative/<id>` that resolved any id by existing and so put pages
+on the public site nobody had chosen.
+
+**The two lists are not matched against each other**, because there is nothing
+to match on — a piece is published by copying its code into a `.sketch.ts`
+file and naming it, and no id survives that. The first version compared a
+prompt against a registry label, which would have silently reported every
+piece as unpublished for ever.
+
+**A piece is kept as `text/javascript`** through the same route a layer takes,
+and is never served as a script: the page fetches the text with the credential
+and hands it to the frame, which is the only thing that runs it.
+
+The page is admin-only and `noindex`, like the atelier it belongs to. It is
+also where a mint queue would hang if generative pieces are ever put on chain;
+nothing here does that yet.
+*Proven by:* `pieces.component.spec.ts` "publishes nothing, and offers no way
+to", "lists what is actually published, from the registry", "shows only
+pieces, not layers or clips" and "says there is nothing rather than showing an
+empty list"; and `atelier.component.spec.ts` for the Keep beside a written
+piece.
+*Also proven by:* B70 in the backend, for the type being keepable at all.
+
+### R151 — The project keeps a readable account of its own direction · met
+`DIRECTION.md` says where the project has gone and why, including what was
+built and then taken away. It exists because the other two documents cannot
+answer that question: the changelog is 203 entries and a direction is only
+visible across twenty of them, and the requirements describe the present and
+say nothing about how it was arrived at.
+
+**Append-only, like the changelog.** An entry records a decision when it was
+taken, and one later reversed is not a mistake to correct — it is the most
+useful thing in the file. One entry per change of direction, not per release;
+most releases need nothing.
+
+**Derived from the history rather than from recollection.** The first version
+was built by reading all 203 changelog entries and the commit log, which is
+why it can name versions: the five automatic photograph corrections removed in
+1.38.0, saving stopping publishing in 1.99.0, the atelier removed whole in
+2.0.0 and rebuilt locally after it.
+*Checked by:* nothing automatic, and deliberately so — a claim about direction
+is a judgement and no script can check one. What keeps it honest is that every
+assertion in it names a version that can be looked up.

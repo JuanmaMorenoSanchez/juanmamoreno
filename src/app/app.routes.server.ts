@@ -44,6 +44,8 @@ export const serverRoutes: ServerRoute[] = [
   // is a redirect, and a redirect prerenders as a file with no canonical, no
   // hreflang and no text — which is the fault these two lines exist to avoid.
   { path: 'atelier', renderMode: RenderMode.Client },
+  { path: 'pieces', renderMode: RenderMode.Client },
+  { path: 'es/pieces', renderMode: RenderMode.Client },
   { path: 'es/atelier', renderMode: RenderMode.Client },
   // `/mint` was `/studio`, and the old address still redirects. A redirect has
   // nothing to render, so left to the prerenderer it is written out as a file

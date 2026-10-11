@@ -554,6 +554,46 @@ export class AtelierComponent {
     this.moving.set(this.engine.layerUrl(file));
   }
 
+  /**
+   * Keeps a written piece, so it can be looked at away from this machine.
+   *
+   * The code, not a picture. It goes to the same place a layer does and is
+   * served back as text; nothing runs it but the sandboxed frame. A piece
+   * kept here is not published — that is still a line added to
+   * `sketches/registry.ts` by hand, deliberately.
+   */
+  protected async keepPiece(): Promise<void> {
+    const piece = this.written();
+    if (!piece || this.keeping()) return;
+
+    const name = piece.file ?? 'piece';
+    this.keeping.set(name);
+    this.failure.set(null);
+    try {
+      await this.kept.keep(new Blob([piece.code], { type: 'text/javascript' }), {
+        name: this.pieceName() || name,
+        kind: 'piece',
+        media: 'text/javascript',
+        tokenId: this.tokenId().trim() || undefined,
+        // A piece has no size: it is code, and the frame it runs in decides
+        // how big it is drawn.
+        width: 0,
+        height: 0,
+      });
+      this.alreadyKept.update((all) => new Set(all).add(name));
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'it could not be kept');
+    } finally {
+      this.keeping.set(null);
+    }
+  }
+
+  /** What the piece was asked for, which is the only name it has. */
+  private pieceName(): string {
+    const asking = this.nodes().find((node) => node.type === 'sketch')?.params?.['asking'];
+    return typeof asking === 'string' ? asking.slice(0, 80) : '';
+  }
+
   /** Whether the written piece is on screen, running. */
   protected readonly playing = signal(false);
 

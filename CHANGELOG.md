@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.16.0
+
+- **feat** — `/pieces`: the generative pieces that have been kept, each
+  runnable in the same sandboxed frame the atelier uses. A piece could only be
+  seen inside the atelier before, on the machine that wrote it. Keeping is
+  still not publishing, and the page says so and offers no way to.
+- **feat** — a written piece can be kept, as code, through the same route a
+  layer takes. Needs backend 3.1.0.
+- **chore** — `DIRECTION.md`: where the project has gone and why, including
+  what was built and then removed, derived from all 203 changelog entries.
+- **chore** — `hands01` to `hands04.png` deleted, 144 KB referenced by nothing
+  and shipping to every visitor.
+
 ## 2.15.0
 
 - **feat** — a clip carries a silent audio track. Meta's spec lists audio

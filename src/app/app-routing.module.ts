@@ -193,6 +193,18 @@ export const routes: Routes = [
     data: { title: 'Atelier', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/atelier', redirectTo: '/atelier' },
+  // Where a written piece can be looked at again, at an address, away from
+  // the machine that wrote it. Guarded and noindex like the rest of his
+  // pages: a piece kept here has not been published, and the whole point of
+  // the distinction is that it is not on the public site.
+  {
+    path: 'pieces',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/pieces/pieces.component').then((m) => m.PiecesComponent),
+    data: { title: 'Pieces', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/pieces', redirectTo: '/pieces' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

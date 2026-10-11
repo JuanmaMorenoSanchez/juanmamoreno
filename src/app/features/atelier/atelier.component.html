@@ -315,6 +315,21 @@
           >
             Run the piece
           </button>
+          @if (written(); as piece) {
+            @if (alreadyKept().has(piece.file ?? 'piece')) {
+              <span class="atelier-kept">Kept</span>
+            } @else {
+              <button
+                type="button"
+                class="atelier-minor"
+                [disabled]="keeping() !== null"
+                (click)="keepPiece()"
+                data-testid="keep-piece"
+              >
+                {{ keeping() ? 'Keeping…' : 'Keep the piece' }}
+              </button>
+            }
+          }
           It runs in a frame with no network and no reach into this page, so code you have not read
           costs nothing to try.
         </p>

@@ -1,0 +1,66 @@
+<section class="pieces">
+  <header>
+    <h1>Generative pieces</h1>
+    <p class="pieces-lead">
+      Written in the atelier and kept, so they can be looked at away from the machine that wrote
+      them. Keeping is not publishing: a piece becomes a page only when a line is added to
+      <code>sketches/registry.ts</code> by hand. Nothing on this page publishes anything.
+    </p>
+  </header>
+
+  <h2>Pages on the site</h2>
+  <ul class="pieces-published">
+    @for (piece of published; track piece.id) {
+      <li>
+        <a [href]="'/generative/' + piece.id" target="_blank" rel="noopener">{{ piece.label }}</a>
+        <code>/generative/{{ piece.id }}</code>
+      </li>
+    }
+  </ul>
+
+  <h2>Kept, not published</h2>
+  @if (!asked()) {
+    <p class="pieces-note">Looking…</p>
+  } @else if (!pieces().length) {
+    <p class="pieces-note" data-testid="none">
+      Nothing kept yet. Write one in the <a href="/atelier">atelier</a> and press
+      <strong>Keep the piece</strong>.
+    </p>
+  } @else {
+    <ul class="pieces-kept" data-testid="kept">
+      @for (piece of pieces(); track piece.id) {
+        <li>
+          <span class="pieces-what">
+            <strong>{{ piece.name }}</strong>
+            <small>{{ when(piece) }} · {{ piece.bytes }} bytes</small>
+          </span>
+          <button
+            type="button"
+            class="pieces-run"
+            [disabled]="fetching() !== null"
+            (click)="run(piece)"
+            [attr.data-testid]="'run-' + piece.id"
+          >
+            {{ fetching() === piece.id ? 'Reading…' : 'Run it' }}
+          </button>
+          <button
+            type="button"
+            class="pieces-forget"
+            (click)="forget(piece)"
+            [attr.data-testid]="'forget-' + piece.id"
+          >
+            Forget
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (trouble(); as why) {
+    <p class="pieces-trouble" data-testid="trouble">{{ why }}</p>
+  }
+</section>
+
+@if (running(); as piece) {
+  <app-sketch-preview [code]="piece.code" (dismissed)="running.set(null)" />
+}
