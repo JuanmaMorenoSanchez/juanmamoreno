@@ -183,7 +183,10 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "How long the clip runs. The single most expensive setting here: the "
         "model works on the whole clip at once, so five seconds is not twice "
         "the wait of two and a half. Rounded to what the model will take, "
-        "which is a frame count of 4n+1 at 24 frames a second."
+        "which is a frame count of 4n+1 at 24 frames a second.\n\n"
+        "Three seconds is the floor and cannot be lowered. Instagram refuses a "
+        "reel shorter than that, and it refuses it at the point of publishing "
+        "— after the twenty-odd minutes of making it."
     ),
     ("video", "steps"): (
         "How many passes over the whole clip. Fewer is faster and mushier, "

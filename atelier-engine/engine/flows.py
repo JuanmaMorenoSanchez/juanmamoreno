@@ -174,7 +174,7 @@ FILM_IT = Flow(
         "that looks like a film of a painting is a different object from a "
         "painting that moves. Use whichever one the piece wants.\n\n"
         "Say what *happens*, not what it looks like — the painting already "
-        "supplies the look. Two seconds at 832 is the place to start; seconds "
+        "supplies the look. Three seconds at 832 is the place to start; seconds "
         "and size are what cost the time and they multiply, so find the "
         "motion small and raise it once.\n\n"
         "It writes an mp4 into the engine's folder. No Keep is needed, and "

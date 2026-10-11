@@ -148,6 +148,14 @@ describe('AtelierComponent', () => {
           provide: KeptService,
           useValue: {
             pieces: signal(options.kept ?? []),
+            // Blob urls, because the route wants a credential an `img`
+            // cannot send and the tag fetches nothing itself.
+            urls: signal(
+              Object.fromEntries(
+                ((options.kept ?? []) as { id: string }[]).map((p) => [p.id, `blob:fake/${p.id}`])
+              )
+            ),
+            show: () => Promise.resolve(),
             saving: signal(false),
             refresh: () => Promise.resolve(),
             keep: (picture: Blob, about: Record<string, unknown>) => {

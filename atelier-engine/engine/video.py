@@ -71,6 +71,14 @@ WINGET_FFMPEG = (
 #: Frames per second the model was trained at. Not a preference.
 FPS = 24
 
+#: The shortest clip Instagram will take, and so the shortest this will make.
+#:
+#: Not a preference either. Meta's content-publishing spec puts a reel at three
+#: seconds minimum, and a clip below it is refused at the point of publishing —
+#: after twenty-odd minutes of generating it. Better to refuse it here, where
+#: the only cost is changing a number.
+LEAST_SECONDS = 3.0
+
 
 def available() -> bool:
     """Whether the weights are here. The node says so rather than failing late."""
@@ -228,11 +236,14 @@ def frames_for(seconds: float) -> int:
     Wan's VAE compresses time four to one, so the count has to be 4k+1 or the
     latent does not divide. Asking for 2 seconds and silently getting 49 frames
     instead of 48 is better than a shape error from inside the scheduler.
+
+    Never fewer than `LEAST_SECONDS` worth, whatever is asked for. A shorter
+    clip cannot be published, and finding that out costs a re-render.
     """
-    wanted = max(1, round(seconds * FPS))
+    wanted = round(max(seconds, LEAST_SECONDS) * FPS)
     # Nearest, not floor. Flooring turned every "2 seconds" into 1.88, which
     # is a worse answer than 2.04 and harder to explain.
-    return max(5, round((wanted - 1) / 4) * 4 + 1)
+    return round((wanted - 1) / 4) * 4 + 1
 
 
 def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
@@ -253,7 +264,7 @@ def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
 def animate(
     painting: Image.Image,
     prompt: str,
-    seconds: float = 2.0,
+    seconds: float = LEAST_SECONDS,
     steps: int = 30,
     guidance: float = 5.0,
     seed: int = 7,

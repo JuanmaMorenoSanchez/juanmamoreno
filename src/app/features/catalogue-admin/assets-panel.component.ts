@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { KeptService, type KeptPiece } from '@features/atelier/kept.service';
 
@@ -39,6 +47,12 @@ export class AssetsPanelComponent {
   constructor() {
     // Once per visit, however many rows are opened.
     void this.kept.ensure();
+
+    // The bytes cannot be fetched by the tag itself: the route wants an
+    // Authorization header and neither an img nor a video can send one.
+    effect(() => {
+      for (const piece of this.mine()) void this.kept.show(piece.id);
+    });
   }
 
   protected readonly mine = computed(() => {
@@ -50,8 +64,9 @@ export class AssetsPanelComponent {
     return this.kept.isClip(piece);
   }
 
+  /** Empty until the bytes have been fetched, which is one frame later. */
   protected url(piece: KeptPiece): string {
-    return this.kept.imageUrl(piece.id);
+    return this.kept.urls()[piece.id] ?? '';
   }
 
   /** Roughly, because the exact byte count of a clip tells nobody anything. */

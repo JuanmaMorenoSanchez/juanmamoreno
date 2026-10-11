@@ -392,7 +392,7 @@ CATALOGUE: dict[str, NodeType] = {
             ],
             params=[
                 Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
-                Param("seconds", "number", 2.0, label="How long", minimum=0.5, maximum=5.0, step=0.5),
+                Param("seconds", "number", 3.0, label="How long", minimum=3.0, maximum=5.0, step=0.5),
                 Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
                 Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),

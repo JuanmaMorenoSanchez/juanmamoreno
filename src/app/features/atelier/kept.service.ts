@@ -123,6 +123,51 @@ export class KeptService {
   async forget(id: string): Promise<void> {
     await firstValueFrom(this.http.delete(`${this.where}/${id}`, this.authorised()));
     this.held.update((all) => all.filter((piece) => piece.id !== id));
+    this.release(id);
+  }
+
+  /**
+   * Object urls for pieces already fetched, by id.
+   *
+   * Because `imageUrl` cannot be put in an `img` or a `video`. The route is
+   * behind the admin guard, the guard reads the `Authorization` header and
+   * nothing else, and neither tag can send one — so the src was answered 403
+   * and the shelf showed broken images from the day it was written. Nobody
+   * noticed because nothing had been kept yet.
+   *
+   * The bytes are fetched with the credential and handed to the tag as a blob
+   * instead. The alternative is a token in a url, which is a credential in
+   * something that gets logged and shared.
+   */
+  private readonly shown = signal<Record<string, string>>({});
+  readonly urls = this.shown.asReadonly();
+
+  /**
+   * Fetches one so it can be displayed. Safe to call again; it fetches once.
+   */
+  async show(id: string): Promise<void> {
+    if (this.shown()[id]) return;
+    try {
+      const bytes = await firstValueFrom(
+        this.http.get(this.imageUrl(id), { ...this.authorised(), responseType: 'blob' })
+      );
+      this.shown.update((all) => ({ ...all, [id]: URL.createObjectURL(bytes) }));
+    } catch {
+      // Left out of the map, so the template shows nothing rather than a
+      // broken tag. An asset that cannot be fetched is not worth a dialog.
+    }
+  }
+
+  /** Lets go of one object url. Called when a piece is forgotten. */
+  private release(id: string): void {
+    const url = this.shown()[id];
+    if (!url) return;
+    URL.revokeObjectURL(url);
+    this.shown.update((all) => {
+      const left = { ...all };
+      delete left[id];
+      return left;
+    });
   }
 
   /**

@@ -32,7 +32,19 @@ describe('AssetsPanelComponent', () => {
   const build = (kept: KeptPiece[], tokenId = '195') => {
     const held = signal(kept);
     const forgotten: string[] = [];
+    const asked: string[] = [];
     let ensured = 0;
+
+    // The bytes arrive as blob urls, because the route wants a credential an
+    // `img` cannot send. Resolved immediately here; in a browser it is a
+    // fetch.
+    // An id of "slow" stands for bytes that have not arrived yet, which is
+    // every piece for the first frame after the panel opens.
+    const shown = signal<Record<string, string>>(
+      Object.fromEntries(
+        kept.filter((p) => p.id !== 'slow').map((p) => [p.id, `blob:fake/${p.id}`])
+      )
+    );
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -43,6 +55,11 @@ describe('AssetsPanelComponent', () => {
           provide: KeptService,
           useValue: {
             pieces: held,
+            urls: shown,
+            show: (id: string) => {
+              asked.push(id);
+              return Promise.resolve();
+            },
             ensure: () => {
               ensured += 1;
               return Promise.resolve();
@@ -67,6 +84,7 @@ describe('AssetsPanelComponent', () => {
       fixture,
       host: fixture.nativeElement as HTMLElement,
       forgotten,
+      asked,
       ensured: () => ensured,
     };
   };
@@ -126,14 +144,28 @@ describe('AssetsPanelComponent', () => {
     expect(forgotten).toEqual(['k1']);
   });
 
-  it('reaches an asset through the backend, never through a bucket url', () => {
-    // The bucket is closed to everyone but the backend, so this is the only
-    // address an asset has — and no url is written down anywhere.
-    const { host } = build([piece()]);
-    const src = host.querySelector('img')?.getAttribute('src') ?? '';
+  it('fetches the bytes itself rather than letting the tag do it', () => {
+    // The route is behind the admin guard, the guard reads the Authorization
+    // header and nothing else, and an `img` cannot send one — so a src
+    // pointing straight at it was answered 403, and the shelf this was copied
+    // from showed broken images from the day it was written.
+    const { host, asked } = build([piece()]);
 
-    expect(src).toContain('/atelier-pieces/k1/image');
-    expect(src).not.toContain('storage.googleapis');
+    expect(asked).toContain('k1');
+    expect(host.querySelector('img')?.getAttribute('src')).toBe('blob:fake/k1');
+  });
+
+  it('never points at a bucket', () => {
+    // There is no public address for an asset, and no url is written down.
+    const { host } = build([piece()]);
+
+    expect(host.querySelector('img')?.getAttribute('src')).not.toContain('storage.googleapis');
+  });
+
+  it('says so rather than showing a broken tag while the bytes are coming', () => {
+    const { host } = build([piece({ id: 'slow' })]);
+
+    expect(host.textContent).toContain('Fetching…');
   });
 
   it('says plainly that none of this is public', () => {

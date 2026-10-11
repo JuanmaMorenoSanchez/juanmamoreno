@@ -2979,14 +2979,24 @@ reads it.
 **Forgetting is asked about twice**, because it cannot be undone and what it
 destroys took the better part of an hour of a graphics card.
 
+**The page fetches the bytes; the tag never does.** The route is behind the
+admin guard, the guard reads the `Authorization` header and nothing else, and
+neither an `img` nor a `video` can send one — so a `src` pointing straight at
+it is answered 403. The shelf on the atelier page did exactly that from the
+day it was written and showed broken images; nobody noticed, because nothing
+had been kept yet. The bytes are fetched with the credential and handed over
+as a blob instead. A token in the url was the other way, and that is a
+credential in the one place that gets logged and shared.
+
 **None of it is public, and the bucket is what makes that true.** The route is
 admin-only and `noindex`, the backend routes are behind the guard, and the
 atelier bucket grants nothing to `allUsers` — it did, until this was checked.
 The public artwork page knows nothing about any of this and is not touched.
 *Proven by:* `assets-panel.component.spec.ts` "shows only what belongs to this
 painting", "gives a clip a player and a picture an img", "asks the list for
-itself, once", "asks twice before forgetting, because it cannot be undone" and
-"reaches an asset through the backend, never through a bucket url"; and
-`atelier.component.spec.ts` "offers to keep it, and keeps nothing without being
-asked" and "keeps the size the box reported, rather than guessing at it".
+itself, once", "asks twice before forgetting, because it cannot be undone",
+"fetches the bytes itself rather than letting the tag do it" and "never points
+at a bucket"; and `atelier.component.spec.ts` "offers to keep it, and keeps
+nothing without being asked" and "keeps the size the box reported, rather than
+guessing at it".
 *Also proven by:* B70 and B71 in the backend.

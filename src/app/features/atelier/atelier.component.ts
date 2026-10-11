@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
@@ -135,6 +142,12 @@ export class AtelierComponent {
     void this.wake();
     this.recall();
     void this.kept.refresh();
+
+    // The shelf shows the bytes, and the route they come from wants a
+    // credential an `img` cannot send.
+    effect(() => {
+      for (const piece of this.kept.pieces()) void this.kept.show(piece.id);
+    });
   }
 
   /**

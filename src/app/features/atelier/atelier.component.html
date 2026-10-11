@@ -361,7 +361,9 @@
       <ul class="atelier-layers">
         @for (piece of kept.pieces(); track piece.id) {
           <li>
-            <img [src]="kept.imageUrl(piece.id)" [alt]="piece.name" loading="lazy" />
+            @if (kept.urls()[piece.id]; as bytes) {
+              <img [src]="bytes" [alt]="piece.name" loading="lazy" />
+            }
             <h3>{{ piece.name }}</h3>
             <dl>
               <dt>kind</dt>

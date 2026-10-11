@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.13.1
+
+- **fix** — a kept picture never displayed. The route that serves it is behind
+  the admin guard, the guard reads the `Authorization` header and nothing
+  else, and an `img` cannot send one — so the shelf had shown broken images
+  since 2.10.0 and nobody had noticed, because nothing had been kept yet. The
+  bytes are fetched with the credential and handed to the tag as a blob.
+
 ## 2.13.0
 
 - **feat** — a clip can be kept, and what has been kept appears under its

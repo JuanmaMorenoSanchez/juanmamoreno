@@ -30,14 +30,21 @@ class FramesForTest(unittest.TestCase):
 
     def test_lands_near_what_was_asked_for(self) -> None:
         # Flooring turned every "2 seconds" into 1.88, which is a worse answer
-        # than 2.04 and harder to explain.
-        for seconds in (1, 2, 3, 5):
+        # than 2.04 and harder to explain. Only above the floor, since below it
+        # the answer is deliberately not what was asked for.
+        for seconds in (3, 3.5, 4, 5):
             with self.subTest(seconds=seconds):
                 got = video.frames_for(seconds) / video.FPS
                 self.assertLess(abs(got - seconds), 1 / video.FPS * 2.5)
 
-    def test_never_asks_for_a_clip_too_short_to_denoise(self) -> None:
-        self.assertGreaterEqual(video.frames_for(0.01), 5)
+    def test_never_goes_below_the_three_seconds_instagram_wants(self) -> None:
+        # A hard floor in every case. A shorter clip is refused at the point of
+        # publishing, which is after twenty-odd minutes of making it.
+        for seconds in (0.01, 0.5, 1, 2, 2.9):
+            with self.subTest(seconds=seconds):
+                self.assertGreaterEqual(
+                    video.frames_for(seconds) / video.FPS, video.LEAST_SECONDS
+                )
 
 
 class FitTest(unittest.TestCase):

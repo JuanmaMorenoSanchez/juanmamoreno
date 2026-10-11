@@ -5,7 +5,9 @@
     <ul class="assets-list">
       @for (piece of mine(); track piece.id) {
         <li>
-          @if (isClip(piece)) {
+          @if (!url(piece)) {
+            <span class="assets-waiting">Fetching…</span>
+          } @else if (isClip(piece)) {
             <video
               [src]="url(piece)"
               controls
