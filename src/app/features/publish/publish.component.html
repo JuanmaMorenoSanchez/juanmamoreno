@@ -24,14 +24,18 @@
         Muted and not autoplaying: several of these on a page, all talking at
         once, on a page whose whole purpose is watching one at a time.
       -->
-      <video
-        class="publish-video"
-        [src]="reel.video"
-        controls
-        muted
-        playsinline
-        preload="metadata"
-      ></video>
+      @if (clips()[reel.video]; as bytes) {
+        <video
+          class="publish-video"
+          [src]="bytes"
+          controls
+          muted
+          playsinline
+          preload="metadata"
+        ></video>
+      } @else {
+        <p class="publish-fetching" data-testid="fetching">Fetching the clip…</p>
+      }
 
       <div class="publish-detail">
         <h2 class="publish-name">{{ reel.name }}</h2>
@@ -135,9 +139,16 @@
             The way to edit one. Instagram cannot be given a draft, so editing
             means downloading the file and posting it from the app by hand.
           -->
-          <a class="publish-download" [href]="reel.video" download target="_blank" rel="noopener">
-            Download
-          </a>
+          @if (clips()[reel.video]; as bytes) {
+            <a
+              class="publish-download"
+              [href]="bytes"
+              [attr.download]="reel.tokenId + '.mp4'"
+              rel="noopener"
+            >
+              Download
+            </a>
+          }
           <!--
             Minutes rather than seconds. The page does not wait on the request —
             it watches the list, and the reel arrives when its date moves.

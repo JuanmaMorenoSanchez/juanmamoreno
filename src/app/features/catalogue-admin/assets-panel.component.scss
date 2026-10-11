@@ -92,3 +92,21 @@
   font-size: 0.7rem;
   opacity: 0.6;
 }
+
+.assets-reel {
+  align-self: flex-start;
+  font: inherit;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.assets-done {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  opacity: 0.6;
+}

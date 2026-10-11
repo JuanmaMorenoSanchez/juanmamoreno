@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.14.0
+
+- **feat** — a kept clip can be made into a reel. **Make a reel** sits beside a
+  clip under its painting on the catalogue page; it writes a note that puts the
+  clip on `/publish` with the caption as it reads today, and publishes nothing.
+- **feat** — a waiting reel is private. `/publish` fetches the clip through the
+  guarded backend instead of playing it from a public url, which is where every
+  unapproved reel used to sit. Needs backend 3.0.0.
+
 ## 2.13.1
 
 - **fix** — a kept picture never displayed. The route that serves it is behind

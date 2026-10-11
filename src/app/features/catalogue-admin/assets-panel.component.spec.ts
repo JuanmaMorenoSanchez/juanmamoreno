@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { KeptService, type KeptPiece } from '@features/atelier/kept.service';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { PendingReelsService } from '@shared/services/pending-reels.service';
+import { of } from 'rxjs';
 import { AssetsPanelComponent } from './assets-panel.component';
 
 /**
@@ -29,10 +32,11 @@ describe('AssetsPanelComponent', () => {
     ...over,
   });
 
-  const build = (kept: KeptPiece[], tokenId = '195') => {
+  const build = (kept: KeptPiece[], tokenId = '195', reelWorks = true) => {
     const held = signal(kept);
     const forgotten: string[] = [];
     const asked: string[] = [];
+    const filmed: { tokenId: string; kept: string }[] = [];
     let ensured = 0;
 
     // The bytes arrive as blob urls, because the route wants a credential an
@@ -51,6 +55,16 @@ describe('AssetsPanelComponent', () => {
       imports: [AssetsPanelComponent],
       providers: [
         provideZonelessChangeDetection(),
+        {
+          provide: PendingReelsService,
+          useValue: {
+            fromClip: (tokenId: string, keptId: string) => {
+              filmed.push({ tokenId, kept: keptId });
+              return of(reelWorks);
+            },
+          },
+        },
+        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
         {
           provide: KeptService,
           useValue: {
@@ -85,6 +99,7 @@ describe('AssetsPanelComponent', () => {
       host: fixture.nativeElement as HTMLElement,
       forgotten,
       asked,
+      filmed,
       ensured: () => ensured,
     };
   };
@@ -172,5 +187,55 @@ describe('AssetsPanelComponent', () => {
     const { host } = build([piece()]);
 
     expect(host.textContent).toContain('closed');
+  });
+
+  describe('making a reel of a clip', () => {
+    const clip = () =>
+      piece({ id: 'c1', kind: 'clip', media: 'video/mp4', width: 768, height: 832 });
+
+    it('offers it for a clip and not for a picture', () => {
+      const { host } = build([piece(), clip()]);
+
+      expect(host.querySelector('[data-testid="reel-c1"]')).not.toBeNull();
+      expect(host.querySelector('[data-testid="reel-k1"]')).toBeNull();
+    });
+
+    it('sends the painting and the clip, and nothing else', async () => {
+      const { host, filmed, fixture } = build([clip()]);
+
+      (host.querySelector('[data-testid="reel-c1"]') as HTMLButtonElement).click();
+      await fixture.whenStable();
+
+      expect(filmed).toEqual([{ tokenId: '195', kept: 'c1' }]);
+    });
+
+    it('says where it went, rather than looking like nothing happened', async () => {
+      const { host, fixture } = build([clip()]);
+
+      (host.querySelector('[data-testid="reel-c1"]') as HTMLButtonElement).click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(host.textContent).toContain('/publish');
+    });
+
+    it('says so when the backend refuses, rather than claiming success', async () => {
+      // The usual refusal is a reel already waiting for that painting.
+      const { host, fixture } = build([clip()], '195', false);
+
+      (host.querySelector('[data-testid="reel-c1"]') as HTMLButtonElement).click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(host.querySelector('[data-testid="assets-trouble"]')?.textContent).toContain(
+        'already waiting'
+      );
+    });
+
+    it('makes nothing without a press', () => {
+      const { filmed } = build([clip()]);
+
+      expect(filmed).toEqual([]);
+    });
   });
 });

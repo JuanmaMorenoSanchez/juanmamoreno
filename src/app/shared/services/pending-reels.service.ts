@@ -132,7 +132,27 @@ export class PendingReelsService {
       );
   }
 
-  /** Throws one away, video and all, so a new one is made for that painting. */
+  /**
+   * Makes a reel out of a clip the atelier kept.
+   *
+   * What replaced the nightly render. The clip is not uploaded or moved: the
+   * backend already has it, and this only says which painting it is of. The
+   * clip stays private and becomes public at the moment of publishing.
+   */
+  fromClip(tokenId: string, kept: string, token: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<unknown>>(
+        `${environment.backendUrl}reels/from-clip`,
+        { tokenId, kept },
+        this.authorised(token)
+      )
+      .pipe(
+        map((response) => response?.success === true),
+        catchError(() => of(false))
+      );
+  }
+
+  /** Throws one away: the note and the public copy. The clip is kept. */
   discard(tokenId: string, token: string): Observable<boolean> {
     return this.http
       .delete<ApiResponse<unknown>>(`${environment.backendUrl}reels/${tokenId}`, {

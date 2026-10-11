@@ -26,6 +26,22 @@
             >
           </span>
 
+          @if (isClip(piece)) {
+            @if (becameReel().has(piece.id)) {
+              <span class="assets-done">Waiting at /publish</span>
+            } @else {
+              <button
+                type="button"
+                class="assets-reel"
+                [disabled]="filming() !== null"
+                (click)="makeReel(piece)"
+                [attr.data-testid]="'reel-' + piece.id"
+              >
+                {{ filming() === piece.id ? 'Making…' : 'Make a reel' }}
+              </button>
+            }
+          }
+
           <button
             type="button"
             class="assets-forget"

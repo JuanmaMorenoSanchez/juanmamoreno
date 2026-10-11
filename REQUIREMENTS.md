@@ -3000,3 +3000,31 @@ at a bucket"; and `atelier.component.spec.ts` "offers to keep it, and keeps
 nothing without being asked" and "keeps the size the box reported, rather than
 guessing at it".
 *Also proven by:* B70 and B71 in the backend.
+
+### R147 — A reel is made from a clip, and watched before it goes out · met
+A kept clip has **Make a reel** beside it, under its painting on
+`/catalogue`. It writes a note that puts the clip on `/publish` with the
+caption as it reads today. Nothing is published and nothing becomes public.
+
+**The backend renders no video any more.** It used to make a reel out of a
+still photograph — a plan of Ken Burns shots and ffmpeg, against the 2 GiB a
+Cloud Run instance has — every other night, from a queue. That is gone, with
+its cron job; a reel is a clip filmed in the atelier on a machine with a
+graphics card, and it exists because he decided to make one.
+
+**A waiting reel is private.** Its clip is in the closed atelier bucket and
+`/publish` fetches the bytes through the guarded backend, the same way the
+assets panel does, because a `video` tag cannot send the header the route
+wants. Every waiting reel used to sit at a public url, watchable by anyone
+with the link. A public copy is made at the moment of publishing, which is the
+only moment Instagram needs one.
+
+**One reel per painting may wait**, because the note is keyed by the painting
+and a second would replace the first silently. The refusal says so rather than
+appearing to work.
+*Proven by:* `assets-panel.component.spec.ts` "offers it for a clip and not
+for a picture", "sends the painting and the clip, and nothing else", "says so
+when the backend refuses, rather than claiming success" and "makes nothing
+without a press"; and `publish.component.spec.ts` "plays the clip it is asking
+about, from bytes it fetched itself" and "never points at a public url".
+*Also proven by:* B72 and B73 in the backend.

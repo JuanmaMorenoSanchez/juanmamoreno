@@ -1,6 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { KeptService } from '@features/atelier/kept.service';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { PendingReel, PendingReelsService } from '@shared/services/pending-reels.service';
 import { of } from 'rxjs';
@@ -17,7 +19,8 @@ const REEL: PendingReel = {
   tokenId: '10',
   tokenIds: ['10', '11'],
   name: 'Siesta',
-  video: 'https://storage.googleapis.com/bucket/reels/10.mp4',
+  // A kept clip's id, not a url: the bytes come through the guarded backend.
+  video: 'kept-abc123',
   caption: 'Siesta\nJuanma Moreno Sánchez, 2019\n\nThe blue arrives first.',
   sheet: 'Siesta\nJuanma Moreno Sánchez, 2019',
   essay: 'The **blue** arrives first.',
@@ -45,6 +48,16 @@ function setup(options: { waiting?: PendingReel[] | undefined; signedIn?: boolea
       provideHttpClient(),
       provideHttpClientTesting(),
       { provide: PendingReelsService, useValue: reels },
+      {
+        // A waiting reel's `video` is a kept clip's id, not a url. The bytes
+        // come through the guarded backend as a blob, because the route wants
+        // an Authorization header a `video` tag cannot send.
+        provide: KeptService,
+        useValue: {
+          urls: signal({ [REEL.video]: `blob:fake/${REEL.video}` }),
+          show: () => Promise.resolve(),
+        },
+      },
       { provide: AdminAuthService, useValue: auth },
     ],
   });
@@ -62,11 +75,21 @@ const find = (fixture: ComponentFixture<PublishComponent>, selector: string) =>
 describe('PublishComponent', () => {
   afterEach(() => TestBed.resetTestingModule());
 
-  it('plays the video it is asking about', () => {
+  it('plays the clip it is asking about, from bytes it fetched itself', () => {
     const { fixture } = setup();
 
-    expect(find(fixture, '.publish-video')?.getAttribute('src')).toBe(REEL.video);
+    expect(find(fixture, '.publish-video')?.getAttribute('src')).toBe(`blob:fake/${REEL.video}`);
     expect(text(fixture)).toContain('Siesta');
+  });
+
+  it('never points at a public url', () => {
+    // A reel he has not approved used to sit at one, where anybody with the
+    // link could watch it. The clip is in the closed bucket now and only
+    // becomes public at the moment he publishes.
+    const { fixture } = setup();
+    const src = find(fixture, '.publish-video')?.getAttribute('src') ?? '';
+
+    expect(src).not.toContain('storage.googleapis');
   });
 
   /**
@@ -423,7 +446,9 @@ describe('PublishComponent', () => {
   it('offers the file, since editing it can only happen in the app', () => {
     const { fixture } = setup();
 
-    expect(find(fixture, '.publish-download')?.getAttribute('href')).toBe(REEL.video);
+    expect(find(fixture, '.publish-download')?.getAttribute('href')).toBe(
+      `blob:fake/${REEL.video}`
+    );
   });
 
   it('asks for nothing when nobody is signed in', () => {

@@ -8,7 +8,10 @@ import {
   signal,
 } from '@angular/core';
 import { Nft } from '@domain/artwork/artwork.entity';
+import { firstValueFrom } from 'rxjs';
 import { KeptService, type KeptPiece } from '@features/atelier/kept.service';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { PendingReelsService } from '@shared/services/pending-reels.service';
 
 /**
  * What the atelier has kept of one painting.
@@ -37,6 +40,12 @@ export class AssetsPanelComponent {
   readonly painting = input.required<Nft>();
 
   private readonly kept = inject(KeptService);
+  private readonly reels = inject(PendingReelsService);
+  private readonly admin = inject(AdminAuthService);
+
+  /** Which clip is being made into a reel, and which already was. */
+  protected readonly filming = signal<string | null>(null);
+  protected readonly becameReel = signal<Set<string>>(new Set());
 
   /** Which one is being forgotten, so the press can say so and happen once. */
   protected readonly forgetting = signal<string | null>(null);
@@ -77,6 +86,30 @@ export class AssetsPanelComponent {
 
   protected when(piece: KeptPiece): string {
     return piece.created ? piece.created.slice(0, 10) : '';
+  }
+
+  /**
+   * Makes a reel of a clip, waiting to be reviewed.
+   *
+   * Only ever a clip, and only ever from a press. Nothing is published and
+   * nothing becomes public: it writes a note that puts the clip on the page
+   * he publishes from, with the caption as it reads today.
+   */
+  protected async makeReel(piece: KeptPiece): Promise<void> {
+    const token = this.admin.bearerToken();
+    if (this.filming() || !token) return;
+
+    this.filming.set(piece.id);
+    this.trouble.set(null);
+    try {
+      const made = await firstValueFrom(
+        this.reels.fromClip(this.painting().tokenId, piece.id, token)
+      );
+      if (made) this.becameReel.update((all) => new Set(all).add(piece.id));
+      else this.trouble.set('It could not be made into a reel. Is one already waiting?');
+    } finally {
+      this.filming.set(null);
+    }
   }
 
   /**

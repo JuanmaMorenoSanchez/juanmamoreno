@@ -1,7 +1,8 @@
 import { SlicePipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { KeptService } from '@features/atelier/kept.service';
 import { PendingReel, PendingReelsService } from '@shared/services/pending-reels.service';
 import { of, switchMap } from 'rxjs';
 
@@ -31,6 +32,18 @@ const REMAKE_POLL_MS = 15_000;
   styleUrl: './publish.component.scss',
 })
 export class PublishComponent {
+  /**
+   * The clips themselves, fetched with the credential.
+   *
+   * A waiting reel's `video` is the id of a clip kept in the atelier bucket,
+   * which is closed — it used to be a public url and is not one any more,
+   * because a reel he has not approved should not be readable by anybody who
+   * has the link. The route that serves it wants an `Authorization` header
+   * and a `video` tag cannot send one, so the bytes come through here.
+   */
+  private readonly kept = inject(KeptService);
+  protected readonly clips = this.kept.urls;
+
   private readonly auth = inject(AdminAuthService);
   private readonly reels = inject(PendingReelsService);
 
@@ -43,6 +56,14 @@ export class PublishComponent {
     ),
     { initialValue: undefined }
   );
+
+  constructor() {
+    // The bytes of each waiting clip, fetched with the credential a `video`
+    // tag cannot send. Safe to ask repeatedly; it fetches each one once.
+    effect(() => {
+      for (const reel of this.waiting()) void this.kept.show(reel.video);
+    });
+  }
 
   /** The reels waiting, or an empty list. */
   protected readonly waiting = computed<PendingReel[]>(() => {
