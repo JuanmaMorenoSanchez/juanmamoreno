@@ -13,11 +13,16 @@ which one was being used. So the backend assembles the brief, the page carries
 it here, and this runs a model over it. The only thing this file knows about
 art criticism is how to hold the text while the model reads it.
 
-**8B against 8 GB.** The weights are 16 GB in bfloat16, so the model is split
-between the card and system memory rather than spilled to disk: the image
-editor pays the disk price because it is 20B and has no choice, and this one
-does not have to. Thirty-one gigabytes of RAM is enough to hold what will not
-fit on the card.
+**8B against 8 GB, quantised to fit.** The weights are 16 GB in bfloat16 and
+the card holds 8, so the first version split the model between the card and
+system memory. That worked and took **thirty-six minutes** to write one
+essay, because every token drags half a model across the PCIe bus.
+
+In 4-bit it is about 5.5 GB and the whole thing sits on the card. `nf4` with
+a double quantisation and bfloat16 for the compute: the format the weights
+were trained to look like, rather than a flat round-off. What this buys is
+speed and nothing else — the model is the same size it was, makes the same
+mistakes, and quantisation does not make an 8B hold a longer brief.
 """
 
 from __future__ import annotations
@@ -33,10 +38,13 @@ from PIL import Image
 MODELS = Path(__file__).resolve().parent.parent / "models"
 WRITER = "Qwen/Qwen3-VL-8B-Instruct"
 
-#: How much of the card to leave the model. The rest of it goes to system
-#: memory, which is slower to reach and very much faster than a disk.
-ON_CARD = "6GiB"
-IN_MEMORY = "22GiB"
+#: Room to leave beyond the weights, for the image and the context.
+#:
+#: A quantised 8B is about 5.5 GB and the card holds 8. The brief runs to
+#: seven thousand tokens and the painting adds more, so the attention cache
+#: is not small; this leaves it the rest of the card rather than guessing a
+#: number that fits one prompt and not the next.
+ON_CARD = "7GiB"
 
 #: The longest an essay may run before it is cut off.
 #:
@@ -76,7 +84,11 @@ def available() -> bool:
 def _model():
     """Built once and kept. Setting it up costs a few minutes."""
     import torch
-    from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
+    from transformers import (
+        AutoProcessor,
+        BitsAndBytesConfig,
+        Qwen3VLForConditionalGeneration,
+    )
 
     if not available():
         raise FileNotFoundError(
@@ -89,7 +101,18 @@ def _model():
         cache_dir=MODELS,
         dtype=torch.bfloat16,
         device_map="auto",
-        max_memory={0: ON_CARD, "cpu": IN_MEMORY},
+        max_memory={0: ON_CARD},
+        quantization_config=BitsAndBytesConfig(
+            load_in_4bit=True,
+            # The weights are roughly normal around zero, and nf4 is the
+            # format shaped for that. int4 spends the same bits on values
+            # the weights almost never take.
+            bnb_4bit_quant_type="nf4",
+            # Quantises the quantisation constants too: a few hundred
+            # megabytes, which on an 8 GB card is the context window.
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        ),
     )
     model.eval()
     return processor, model

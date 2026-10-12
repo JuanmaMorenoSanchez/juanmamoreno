@@ -72,3 +72,20 @@ onnxruntime==1.29.0      # published 2026-08-17
 diffusers==0.40.0        # published 2026-08-20
 gguf==0.19.0             # published 2026-05-06
 accelerate==1.14.0       # published 2026-06-11
+
+# ---- writing: essays and the short descriptions ----
+#
+# Qwen3-VL-8B needs no package of its own — `transformers` already knows it —
+# but it is 16 GB in bfloat16 against an 8 GB card, and split between the card
+# and system memory it wrote one essay in thirty-six minutes. Every token
+# dragged half a model across the bus.
+#
+# `bitsandbytes` quantises it to 4-bit, about 5.5 GB, so the whole model sits
+# on the card: the same essay took four and a half minutes, eight times
+# faster. MIT, and a prebuilt Windows wheel, which matters because the obvious
+# alternative for a quantised model — llama-cpp-python — publishes none and
+# would compile from source against MSVC.
+#
+# It buys speed and nothing else. The model is the same size it was and makes
+# the same mistakes.
+bitsandbytes==0.50.2     # published 2026-08-27

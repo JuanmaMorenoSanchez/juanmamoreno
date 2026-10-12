@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.16.2
+
+- **chore** — the local writer is quantised to 4-bit, so the whole model sits
+  on the card instead of half of it streaming from system memory: the same
+  essay took four and a half minutes where it took thirty-six. One new
+  package, `bitsandbytes`, MIT and 46 days old with a prebuilt Windows wheel.
+  It buys speed and nothing else — the model makes exactly the same mistakes.
+
 ## 2.16.1
 
 - **chore** — `.mcp.json`: working on this repository now reaches the site's
