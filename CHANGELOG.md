@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.17.1
+
+- **fix** — the atelier and the pieces page are in the workshop menu. Both
+  were added behind the guard and never linked from anywhere, so they were
+  reachable only by typing the address. The menu is now checked against the
+  route table rather than against a list of its own, which is the only thing
+  that notices the next one.
+- **fix** — an engine answering without flows says so, with the command to
+  restart it, instead of hiding the row. Quiet about an old engine reads as a
+  feature that was never built.
+
 ## 2.17.0
 
 - **feat** — the engine writes the short descriptions. `POST /describe` on the

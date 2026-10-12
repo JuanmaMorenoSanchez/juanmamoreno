@@ -8,6 +8,8 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
 import { vi } from 'vitest';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { adminOnly } from '@shared/guards/admin.guard';
+import { routes } from '../../../app-routing.module';
 import { TopMenuComponent } from './top-menu.component';
 
 describe('TopMenuComponent language switcher', () => {
@@ -208,6 +210,8 @@ describe('TopMenuComponent workshop menu', () => {
       'Reels waiting',
       'Certificates waiting',
       'Catalogue',
+      'Atelier',
+      'Pieces',
       'Sign out',
     ]);
   });
@@ -226,7 +230,34 @@ describe('TopMenuComponent workshop menu', () => {
       '/publish',
       '/pendingmint',
       '/catalogue',
+      '/atelier',
+      '/pieces',
     ]);
+  });
+
+  /**
+   * The list above is a list, and a list only notices a page it already names.
+   *
+   * The atelier and the pieces page were added behind the guard and never
+   * added here, so they were reachable only by typing the address, and every
+   * test passed: the two that check this menu compared it against a list that
+   * was missing them too. This reads the route table instead, which is the
+   * only thing that knows what is behind the guard.
+   */
+  it('offers every page the guard protects, counted off the route table', async () => {
+    const guarded = routes
+      .filter((route) => (route.canActivate ?? []).includes(adminOnly))
+      .map((route) => `/${route.path}`);
+    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const trigger = sessionButton();
+    trigger?.click();
+
+    const offered = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((item) =>
+      item.getAttribute('href')
+    );
+
+    expect(guarded.length).toBeGreaterThan(0);
+    expect([...guarded].sort()).toEqual([...offered].sort());
   });
 
   it('signs out from inside it', async () => {

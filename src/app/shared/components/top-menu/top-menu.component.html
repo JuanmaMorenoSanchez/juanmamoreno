@@ -132,6 +132,14 @@
   <a mat-menu-item routerLink="/publish">Reels waiting</a>
   <a mat-menu-item routerLink="/pendingmint">Certificates waiting</a>
   <a mat-menu-item routerLink="/catalogue">Catalogue</a>
+  <!--
+    The atelier and what it keeps, which were reachable only by typing the
+    address. Both are guarded and noindex like everything else here, and this
+    menu is where a private page is found: a page nobody can navigate to is a
+    page that exists for whoever remembers it.
+  -->
+  <a mat-menu-item routerLink="/atelier">Atelier</a>
+  <a mat-menu-item routerLink="/pieces">Pieces</a>
   <button mat-menu-item type="button" (click)="signOut()">Sign out</button>
 </mat-menu>
 

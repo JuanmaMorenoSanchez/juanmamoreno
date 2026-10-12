@@ -1027,11 +1027,20 @@ Spanish page that is not there.
 
 None of it is a security boundary — the guard on each route decides what is
 drawn and the backend decides what happens. This decides only what is offered.
+
+**And the proof is now the route table, not a list.** "Every address behind the
+guard hangs off it" was false for two of them: the atelier and the pieces page
+were added behind the guard and never linked, so the only way to either was to
+type it. Both tests passed, because both compared the menu against a list that
+was missing them too. A list notices a page it already names and nothing else,
+so the check now reads the routes, filters the ones carrying `adminOnly`, and
+asserts the menu offers exactly those.
 *Proven by:* `top-menu.component.spec.ts` "shows a reader the door and none of
 what is behind it", "leaves the door once the session has lapsed", "gathers
 the private pages and the way out", "links each of them to its own address",
-"signs out from inside it"; `admin-auth.service.spec.ts` (the marker outliving
-a sign-out), and the browser probe across both states
+"offers every page the guard protects, counted off the route table", "signs out
+from inside it"; `admin-auth.service.spec.ts` (the marker outliving a
+sign-out), and the browser probe across both states
 
 ### R37 — The artist can see which essays he has been over · met
 The catalogue can be narrowed to the artworks whose essay has been corrected by
@@ -2842,8 +2851,14 @@ one part**, **Take a figure out** and **Write a piece**.
 **They are published by the engine, not written into the page**, for the same
 reason the catalogue is: a flow is made of node names and this page is not
 allowed to know one. A flow added to `flows.py` is a button on the deployed site
-with nothing rebuilt and nothing released. An engine too old to have flows shows
-no buttons rather than an error.
+with nothing rebuilt and nothing released.
+
+**An engine too old to have flows now says so**, with the command to restart it,
+where it used to show nothing at all. Showing no buttons was meant to keep the
+page quiet about an old engine; what it did was hide the feature. The engine on
+his machine had been running since before the flows were written, so the row
+never appeared, and the page he was looking at gave him no reason to think it
+should. A missing row is indistinguishable from a row that was never built.
 
 **The row is its own component**, like every other distinct piece of that page.
 Written inline first, its rules pushed `atelier.component.scss` 255 bytes past
@@ -2871,7 +2886,8 @@ the background in *Take a figure out* is derived rather than asked for, and that
 when a phrase keeps finding the wrong thing the answer is a Brush and not a
 better adjective.
 *Proven by:* `atelier.component.spec.ts` "offers the flows the engine
-published, not a list of its own", "joins the wires to the boxes it actually
+published, not a list of its own", "says why the row is missing, rather than
+leaving the page silent", "joins the wires to the boxes it actually
 drew", "gives two flows in a row ids that cannot collide", "replaces the canvas
 rather than piling a second graph onto it" and "survives an engine too old to
 send an explanation".

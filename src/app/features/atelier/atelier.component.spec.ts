@@ -863,6 +863,19 @@ describe('AtelierComponent', () => {
       expect(at(host, 'flows')).toBeNull();
     });
 
+    it('says why the row is missing, rather than leaving the page silent', async () => {
+      // The row was hidden for a week on the one machine that has an engine,
+      // because the process in memory predated the flows. Quiet about an old
+      // engine reads as a feature that does not exist.
+      const { fixture, host } = build({ flows: [] });
+      await drained();
+      fixture.detectChanges();
+
+      const said = at(host, 'no-flows');
+      expect(said?.textContent).toContain('it was started before they existed');
+      expect(said?.textContent).toContain('uvicorn engine.service:app');
+    });
+
     it('draws the whole graph, wired, when one is pressed', async () => {
       const { fixture, host } = build({ flows: [A_FLOW] });
       await drained();
