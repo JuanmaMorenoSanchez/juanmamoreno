@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.17.2
+
+- **feat** — a flow for the plainest edit there is: a painting, a sentence, a
+  new image, no mask. **Repaint the whole thing**, and it says in its own
+  description that the brushwork drifts and which flow to use instead when
+  only one part should change.
+- **fix** — the ready-made flows are the first thing on the atelier page,
+  above the painting and the Run button. Below them they read as something to
+  notice after wiring a graph by hand, which is the opposite of what they are
+  for.
+
 ## 2.17.1
 
 - **fix** — the atelier and the pieces page are in the workshop menu. Both

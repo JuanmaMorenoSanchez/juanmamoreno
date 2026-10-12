@@ -193,6 +193,42 @@ FILM_IT = Flow(
     edges=(("painting", "image", "film", "image"),),
 )
 
+REPAINT_IT = Flow(
+    key="repaint-it",
+    label="Repaint the whole thing",
+    blurb="A painting and a sentence into a new image.",
+    about=(
+        "The plainest thing the editor does, and the one that was missing from "
+        "this row: a painting in, a sentence, a new image out. No mask, no "
+        "finding anything by name.\n\n"
+        "No mask means the whole canvas is repainted, so expect the brushwork "
+        "to drift — the model repaints what it sees in its own hand, and a "
+        "passage you never asked it to touch comes back changed. When only one "
+        "part should move, *Change one part* holds the rest still and is the "
+        "better flow by a distance.\n\n"
+        "Say what should be different, not what the painting is. **How "
+        "literally** is the dial worth turning: low lets it wander, high holds "
+        "it to the sentence and to the canvas. It takes minutes rather than "
+        "seconds, because the model is larger than the card and is streamed "
+        "through it."
+    ),
+    nodes=(
+        Placed(at="painting", type="painting", column=0, row=0),
+        Placed(
+            at="edit",
+            type="edit",
+            params={"instruction": "the sky turns to late evening, the light goes orange"},
+            column=1,
+            row=0,
+        ),
+        Placed(at="keep", type="save", params={"name": "repainted"}, column=2, row=0),
+    ),
+    edges=(
+        ("painting", "image", "edit", "image"),
+        ("edit", "image", "keep", "image"),
+    ),
+)
+
 WRITE_A_PIECE = Flow(
     key="write-a-piece",
     label="Write a piece",
@@ -222,7 +258,7 @@ WRITE_A_PIECE = Flow(
 
 FLOWS: dict[str, Flow] = {
     flow.key: flow
-    for flow in (MOVE, CHANGE_A_PART, TAKE_A_FIGURE_OUT, FILM_IT, WRITE_A_PIECE)
+    for flow in (MOVE, CHANGE_A_PART, REPAINT_IT, TAKE_A_FIGURE_OUT, FILM_IT, WRITE_A_PIECE)
 }
 """Order matters: it is the order of the buttons, cheapest and shortest first."""
 

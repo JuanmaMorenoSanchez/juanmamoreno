@@ -130,6 +130,28 @@
     </section>
   }
 
+  @if (flows().length) {
+    <app-flow-row [flows]="flows()" (chosen)="start($event)" />
+  } @else if (!engine.unreachable()) {
+    <!--
+      An engine answering without flows is an older engine, and hiding the row
+      was meant to keep the page quiet about it. What it actually does is hide
+      the feature: the flows were invisible here for a week because the engine
+      in memory had been started before they were written. Saying so costs two
+      sentences and is the difference between a missing feature and a restart.
+    -->
+    <section class="atelier-down" data-testid="no-flows">
+      <h2>Start from something</h2>
+      <p>
+        The ready-made flows come from the engine, and this one does not serve them: it was started
+        before they existed. Restart it and they appear here, one button each.
+      </p>
+      <code class="atelier-command"
+        >.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860</code
+      >
+    </section>
+  }
+
   <section class="atelier-bar">
     <label class="atelier-field">
       <span>The painting</span>
@@ -185,28 +207,6 @@
       {{ busy() ? 'Running…' : 'Run' }}
     </button>
   </section>
-
-  @if (flows().length) {
-    <app-flow-row [flows]="flows()" (chosen)="start($event)" />
-  } @else if (!engine.unreachable()) {
-    <!--
-      An engine answering without flows is an older engine, and hiding the row
-      was meant to keep the page quiet about it. What it actually does is hide
-      the feature: the flows were invisible here for a week because the engine
-      in memory had been started before they were written. Saying so costs two
-      sentences and is the difference between a missing feature and a restart.
-    -->
-    <section class="atelier-down" data-testid="no-flows">
-      <h2>Start from something</h2>
-      <p>
-        The ready-made flows come from the engine, and this one does not serve them: it was started
-        before they existed. Restart it and they appear here, one button each.
-      </p>
-      <code class="atelier-command"
-        >.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860</code
-      >
-    </section>
-  }
 
   <app-node-canvas
     [catalogue]="catalogue()"

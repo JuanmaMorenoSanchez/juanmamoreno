@@ -2846,7 +2846,20 @@ are wired most times the page is opened before anything interesting starts, and
 one wrong join produces `'isolate-x' (Isolate) has nothing joined to: image` —
 which reads like a model failing to find something and sent him looking at the
 wrong thing once. So the common ones arrive ready: **Make it move**, **Change
-one part**, **Take a figure out** and **Write a piece**.
+one part**, **Repaint the whole thing**, **Take a figure out**, **Film it** and
+**Write a piece**.
+
+**The row is the first thing on the page**, above the painting and the Run
+button. It used to sit below them, which is the order the page was built in
+rather than the order it is used in: a ready-made graph is where you start, and
+underneath the controls it reads as something to notice after wiring one by
+hand.
+
+**Repaint the whole thing** was the plainest flow and the one missing: an image
+and a sentence, with no mask and nothing found by name. It says in its own
+description that the brushwork drifts and that *Change one part* is the better
+flow when only one thing should move, because an unmasked edit repaints every
+passage in the model's hand rather than his.
 
 **They are published by the engine, not written into the page**, for the same
 reason the catalogue is: a flow is made of node names and this page is not
