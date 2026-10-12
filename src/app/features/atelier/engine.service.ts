@@ -299,6 +299,30 @@ export class AtelierEngineService {
   }
 
   /**
+   * The short description of a painting, written on this machine.
+   *
+   * The `alt` attribute of the image, which is why it is short and visual:
+   * a screen reader says it to somebody who cannot see the canvas. The
+   * prompt is passed in rather than held here, because the backend owns both
+   * languages and a second copy of either would drift from it.
+   *
+   * Tens of seconds, not the minutes an essay takes — it is a hundred words
+   * and the model is quantised onto the card.
+   */
+  async describe(prompt: string, image: string): Promise<string> {
+    const response = await fetch(
+      `${ENGINE}/describe`,
+      toLocal({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, images: [image] }),
+      })
+    );
+    if (!response.ok) throw new Error(await complaint(response));
+    return ((await response.json()) as { text: string }).text;
+  }
+
+  /**
    * The graphs that arrive already wired up.
    *
    * From the engine for the same reason the catalogue is: a flow is made of

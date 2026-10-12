@@ -26,7 +26,7 @@ import uuid
 from pathlib import Path
 
 import numpy as np
-from fastapi import FastAPI, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
@@ -36,6 +36,7 @@ from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
 from .jobs import Job, Runner, stopping
 from .flows import as_json as as_flows
+from .writer import write as write_text
 from .nodes import GraphError, run_graph
 from .operations import DINO, SAM, find, isolate
 from .registry import ModelRegistry
@@ -289,6 +290,31 @@ def layer(name: str) -> FileResponse:
     if path.parent != OUT.resolve() or not path.is_file():
         raise HTTPException(status_code=404, detail="no such layer")
     return FileResponse(path, media_type=SERVES.get(path.suffix.lower(), "image/png"))
+
+
+@app.post("/describe")
+def describe(asked: dict = Body(...)) -> JSONResponse:
+    """The short description of a painting, written on this machine.
+
+    The `alt` attribute of the image: what a screen reader says to somebody
+    who cannot see the canvas. Short, visual, and in whichever language was
+    asked for — the prompt comes from the page rather than from here, because
+    the backend owns both languages and a second copy of either would drift.
+
+    Writing is the only job of this engine that the page waits on in a form,
+    so the model is quantised and this is tens of seconds rather than the
+    minutes an essay takes.
+    """
+    prompt = str(asked.get("prompt") or "").strip()
+    images = asked.get("images") or []
+    if not prompt:
+        raise HTTPException(status_code=400, detail="no prompt was sent")
+    if not images:
+        raise HTTPException(status_code=400, detail="a description needs the painting")
+
+    registry.evict()
+    text = write_text(prompt, images, most_tokens=int(asked.get("most_tokens") or 300))
+    return JSONResponse({"text": text})
 
 
 @app.post("/evict")

@@ -154,6 +154,30 @@ class ServiceTest(unittest.TestCase):
 
         self.assertEqual(response.headers.get("access-control-allow-private-network"), "true")
 
+    def test_describing_needs_a_prompt_and_a_painting(self) -> None:
+        # Both come from the page: the prompt because the backend owns the two
+        # languages and a copy here would drift from them, the painting
+        # because a description of nothing is not worth four seconds of a
+        # graphics card.
+        self.assertEqual(self.client.post("/describe", json={"images": ["x"]}).status_code, 400)
+        self.assertEqual(
+            self.client.post("/describe", json={"prompt": "describe it"}).status_code, 400
+        )
+
+    def test_describing_hands_back_what_the_model_wrote(self) -> None:
+        # The model is replaced here, as everywhere in this file: eight
+        # gigabytes of weights say nothing about whether the route works.
+        was = service.write_text
+        service.write_text = lambda prompt, images, most_tokens=300: f"about {len(images)} image(s)"
+        try:
+            answer = self.client.post(
+                "/describe", json={"prompt": "describe this piece", "images": ["x"]}
+            )
+            self.assertEqual(answer.status_code, 200)
+            self.assertEqual(answer.json()["text"], "about 1 image(s)")
+        finally:
+            service.write_text = was
+
     def test_a_clip_is_served_as_a_video_and_not_as_a_picture(self) -> None:
         # The type was hardcoded to image/png, which was true until a node
         # started writing mp4s. A clip served as a picture is downloaded and

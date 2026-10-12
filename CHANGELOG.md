@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.17.0
+
+- **feat** — the engine writes the short descriptions. `POST /describe` on the
+  local service takes the prompt and the painting and hands back the text; the
+  prompt comes from the backend rather than being copied into the engine,
+  because the backend owns both languages and a second copy would drift.
+  Needs backend 3.5.0 to store the result.
+
 ## 2.16.2
 
 - **chore** — the local writer is quantised to 4-bit, so the whole model sits
