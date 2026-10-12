@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.18.0
+
+- **feat** — the writer is Qwen3-VL-30B-A3B through llama.cpp, in place of the
+  8B through transformers. Thirty-one billion parameters with three active per
+  token: the card keeps attention and the shared expert, system memory keeps
+  the routed experts. On the same painting and the same brief: 752 words
+  against 1,279, two antitheses against eleven, fourteen em dashes against
+  forty-three, and ninety seconds against two hundred and seventy-three.
+- **feat** — a box called **My style** and a flow called **In my style**:
+  the editor shown two of his own paintings, oil or watercolour, so whatever
+  it repaints comes back in his hand. No training and nothing new downloaded.
+  The references come from his own catalogue by medium, through the MCP.
+- **feat** — a setting can be a list of values rather than a typed string.
+  The engine publishes what they are, so a third style is an option on the
+  deployed page with nothing released.
+
 ## 2.17.2
 
 - **feat** — a flow for the plainest edit there is: a painting, a sentence, a

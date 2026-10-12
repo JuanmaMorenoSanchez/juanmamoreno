@@ -65,6 +65,7 @@ const A_NODE: NodeTypeDef = {
       kind: 'text',
       default: 'a girl',
       label: 'What to look for',
+      choices: [],
       minimum: null,
       maximum: null,
       step: null,

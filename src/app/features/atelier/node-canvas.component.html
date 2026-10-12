@@ -173,6 +173,20 @@
                       (change)="setParam(node, param, $any($event.target).value)"
                       (pointerdown)="$event.stopPropagation()"
                     />
+                  } @else if (param.kind === 'choice') {
+                    <!-- The engine says what the values are, so a style added
+                         there is an option here with nothing released. -->
+                    <select
+                      [attr.aria-label]="param.label || param.name"
+                      (change)="setParam(node, param, $any($event.target).value)"
+                      (pointerdown)="$event.stopPropagation()"
+                    >
+                      @for (choice of param.choices; track choice) {
+                        <option [value]="choice" [selected]="node.params[param.name] === choice">
+                          {{ choice }}
+                        </option>
+                      }
+                    </select>
                   } @else if (param.kind === 'toggle') {
                     <input
                       type="checkbox"

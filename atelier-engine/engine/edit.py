@@ -133,6 +133,7 @@ def edit(
     painting: Image.Image,
     instruction: str,
     mask: np.ndarray | None = None,
+    references: list[Image.Image] | None = None,
     steps: int = 20,
     guidance: float = 4.0,
     seed: int = 7,
@@ -166,8 +167,12 @@ def edit(
         if stopped is not None and stopped():
             raise StoppedEarly("stopped part way through an edit")
         return kwargs
+    # 2509 takes a list, and what the extra images are for is said in the
+    # instruction rather than by position: shown two canvases and told to
+    # repaint, it works in their manner. The painting stays first, because
+    # every style instruction here calls it "the first image".
     produced = pipeline(
-        image=painting,
+        image=[painting, *references] if references else painting,
         prompt=instruction,
         # Without a negative prompt the pipeline quietly disables guidance and
         # follows the instruction more loosely, which is the opposite of why

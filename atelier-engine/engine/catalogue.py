@@ -26,11 +26,17 @@ from PIL import Image
 from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from .edit import available as edit_available, edit as edit_painting
+from .style import (
+    STYLES,
+    available as style_available,
+    instruction as style_instruction,
+    references as style_references,
+)
 from .help import HELP, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
 from .video import animate as animate_painting, write_video
-from .nodes import NodeType, Param, Port
+from .nodes import GraphError, NodeType, Param, Port
 from .operations import find as find_things, isolate as isolate_thing
 
 OUT = Path(__file__).resolve().parent.parent / "out"
@@ -138,6 +144,46 @@ def _edit(inputs, params, context) -> dict[str, Any]:
             saying=saying,
             # Passed down rather than reported by the node, because the node
             # finishes once and the steps are what take the eighteen minutes.
+            watching=context.get("watching_steps"),
+            stopped=context.get("stopped"),
+        )
+    }
+
+
+def _my_style(inputs, params, context) -> dict[str, Any]:
+    """The same editor, shown two of his own paintings.
+
+    One node rather than a setting on Edit, because the instruction is not his
+    to write: the sentence that makes a reference a manner instead of a subject
+    took several goes to get right and belongs in `style.py`. What he types
+    here is an extra change, and may be nothing at all.
+    """
+    which = str(params["style"])
+    if not style_available(which):
+        raise GraphError(
+            f"there are no {which} paintings to work from. "
+            "Run `python fetch_references.py` in atelier-engine."
+        )
+
+    registry = context.get("registry")
+    if registry is not None:
+        registry.evict()
+
+    saying = context.get("saying")
+    if saying is not None:
+        saying("preparing the model — the first edit of a session takes a few minutes before it starts")
+
+    mask = inputs.get("mask")
+    return {
+        "image": edit_painting(
+            inputs["image"],
+            style_instruction(which, str(params["asking"])),
+            mask=np.asarray(mask, dtype=bool) if mask is not None else None,
+            references=style_references(which, int(params["pick"])),
+            steps=int(params["steps"]),
+            guidance=float(params["guidance"]),
+            seed=int(params["seed"]),
+            saying=saying,
             watching=context.get("watching_steps"),
             stopped=context.get("stopped"),
         )
@@ -373,6 +419,54 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
             ],
             run=_edit,
+        ),
+        NodeType(
+            key="my-style",
+            label="My style",
+            category="paint",
+            summary=(
+                "Repaints the image in his own hand, by showing the model two "
+                "of his paintings. Oil or watercolour. As slow as Edit, and "
+                "the same model: the difference is what it is shown."
+            ),
+            inputs=[Port("image", "image"), Port("mask", "mask", optional=True)],
+            outputs=[Port("image", "image")],
+            params=[
+                Param(
+                    "style",
+                    "choice",
+                    "oil",
+                    label="Which hand",
+                    choices=tuple(STYLES),
+                ),
+                Param(
+                    "asking",
+                    "text",
+                    "",
+                    label="And also change",
+                ),
+                Param(
+                    "pick",
+                    "number",
+                    0,
+                    label="Which references",
+                    minimum=0,
+                    maximum=20,
+                    step=1,
+                ),
+                Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
+                Param(
+                    "guidance",
+                    "number",
+                    4.5,
+                    label="How literally",
+                    minimum=1,
+                    maximum=10,
+                    step=0.5,
+                ),
+                Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+            ],
+            run=_my_style,
         ),
         NodeType(
             key="video",

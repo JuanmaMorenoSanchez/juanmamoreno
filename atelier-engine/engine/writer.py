@@ -1,128 +1,190 @@
 """
 Writing, on this machine: the essays and the short descriptions.
 
-Qwen3-VL-8B-Instruct, Apache 2.0. **Vision-language, and it has to be** — the
-brief shows the model the painting, up to four images with the frontal view
-first, and the short description is written from the picture too. A text-only
-model cannot do either job.
+Qwen3-VL-30B-A3B-Instruct, Apache 2.0, through llama.cpp. **Vision-language,
+and it has to be** — the brief shows the model the painting, up to four images
+with the frontal view first, and the short description is written from the
+picture too. A text-only model cannot do either job.
 
-**This module owns no prompt.** The brief is 439 lines of TypeScript in the
-backend, with its own tests, and it has been corrected by hand many times; a
-second copy here would drift from it within a week and nobody would notice
-which one was being used. So the backend assembles the brief, the page carries
-it here, and this runs a model over it. The only thing this file knows about
-art criticism is how to hold the text while the model reads it.
+**This module owns no prompt.** The brief is four hundred lines of TypeScript
+in the backend, with its own tests, and it has been corrected by hand many
+times; a second copy here would drift from it within a week and nobody would
+notice which one was being used. So the backend assembles the brief, the page
+carries it here, and this runs a model over it. The only thing this file knows
+about art criticism is how to hold the text while the model reads it.
 
-**8B against 8 GB, quantised to fit.** The weights are 16 GB in bfloat16 and
-the card holds 8, so the first version split the model between the card and
-system memory. That worked and took **thirty-six minutes** to write one
-essay, because every token drags half a model across the PCIe bus.
+**Why the model got four times bigger and the card did not.** Qwen3-VL-8B is
+the best vision-language model of its size and it could not hold this brief: a
+draft came back at 1,279 words against a brief asking for as long as the
+painting is worth, with 43 em dashes against a rule that bans them outright,
+and an invented account of a method for a canvas that never saw one. Those are
+instruction-following failures, which is a size problem rather than a prompt
+problem — the brief had already been corrected four times.
 
-In 4-bit it is about 5.5 GB and the whole thing sits on the card. `nf4` with
-a double quantisation and bfloat16 for the compute: the format the weights
-were trained to look like, rather than a flat round-off. What this buys is
-speed and nothing else — the model is the same size it was, makes the same
-mistakes, and quantisation does not make an 8B hold a longer brief.
+30B-A3B is a mixture of experts: 31B parameters of which 3B are active for any
+one token. Attention and the shared expert sit on the card; `--n-cpu-moe`
+leaves the routed experts in system memory for the processor. So the weights
+are 18 GB and the card holds 8, and it still runs — faster than the 8B did
+through transformers, which was streaming half a model across the bus per
+token. The same trick in the same shape as the editor's block offload, one
+layer down.
+
+**A second process, deliberately.** llama.cpp is a server and this talks to it
+over the loopback. The alternative was a Python binding, which would put a
+CUDA build of llama.cpp inside this virtualenv and tie the engine's own
+startup to it. A child process can be started when the first essay is asked
+for, and it is: eighteen gigabytes are not mapped at import time.
 """
 
 from __future__ import annotations
 
+import atexit
 import base64
-import io
-from functools import lru_cache
+import json
+import os
+import subprocess
+import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Callable
 
-from PIL import Image
+HERE = Path(__file__).resolve().parent.parent
+MODELS = HERE / "models" / "llama"
+BINARIES = HERE / "llama"
 
-MODELS = Path(__file__).resolve().parent.parent / "models"
-WRITER = "Qwen/Qwen3-VL-8B-Instruct"
+SERVER = BINARIES / "llama-server.exe"
+WEIGHTS = MODELS / "Qwen3VL-30B-A3B-Instruct-Q4_K_M.gguf"
+MMPROJ = MODELS / "mmproj-Qwen3VL-30B-A3B-Instruct-F16.gguf"
 
-#: Room to leave beyond the weights, for the image and the context.
+#: Its own port, next to the engine's.
+PORT = int(os.environ.get("ATELIER_WRITER_PORT", "7861"))
+
+#: How many layers keep their routed experts in system memory.
 #:
-#: A quantised 8B is about 5.5 GB and the card holds 8. The brief runs to
-#: seven thousand tokens and the painting adds more, so the attention cache
-#: is not small; this leaves it the rest of the card rather than guessing a
-#: number that fits one prompt and not the next.
-ON_CARD = "7GiB"
+#: The whole of the trade. Lower puts more of the model on the card and runs
+#: faster until it does not fit at all; 40 of the 48 layers is what leaves
+#: room for the brief and a painting beside the weights that stay. An override
+#: is here because the right number depends on what else is on the card, and
+#: the editor leaves 1.4 GB of itself behind.
+ON_CPU = int(os.environ.get("ATELIER_WRITER_CPU_MOE", "40"))
+
+#: Room for the brief, the painting and the essay.
+#:
+#: The brief runs to about seven thousand tokens, a painting at 1024px adds
+#: something over a thousand, and the answer is the essay and the short
+#: version after it.
+CONTEXT = int(os.environ.get("ATELIER_WRITER_CONTEXT", "16384"))
 
 #: The longest an essay may run before it is cut off.
 #:
-#: The brief asks for about four hundred words, which is roughly six hundred
-#: tokens in Spanish; this is generous enough that the short version after it
-#: also fits, and tight enough that a model which has started repeating itself
-#: stops within a minute rather than filling the context.
-MOST_TOKENS = 1400
+#: The brief no longer gives a word count — the essay is as long as the
+#: painting is worth — so this is the only ceiling, and it is here to stop a
+#: model that has started repeating itself rather than to shape the prose.
+#: 1,600 tokens of essay plus the short version after it.
+MOST_TOKENS = 2200
+
+#: How long to wait for eighteen gigabytes to be mapped and the card filled.
+READY_WITHIN = float(os.environ.get("ATELIER_WRITER_WAIT", "420"))
+
+_server: subprocess.Popen | None = None
 
 
 def available() -> bool:
-    """Whether the weights are here, without loading a gigabyte to find out.
+    """The binary and both halves of the model, on disk.
 
-    The weights, not the config. `config.json` is a few kilobytes and arrives
-    first, so a check for it answers True about a download that has barely
-    started — which it did, and the failure would have surfaced minutes later
-    as a missing shard rather than as "not downloaded yet".
+    Both, because the vision encoder is a separate file in llama.cpp and a
+    model without it answers about an image it cannot see. The 8B before this
+    reported itself available on a 787 MB partial download, which surfaced
+    minutes later as a missing shard.
     """
-    shards = list(MODELS.glob("models--Qwen--Qwen3-VL-8B-Instruct/snapshots/*/*.safetensors"))
-    if not shards:
+    return SERVER.exists() and WEIGHTS.exists() and MMPROJ.exists()
+
+
+def _answering() -> bool:
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/health", timeout=2) as answer:
+            return answer.status == 200
+    except (urllib.error.URLError, OSError, TimeoutError):
         return False
-    # An index names every shard the model needs; without it, trust the bytes.
-    index = next(
-        MODELS.glob("models--Qwen--Qwen3-VL-8B-Instruct/snapshots/*/model.safetensors.index.json"),
-        None,
-    )
-    if index is None:
-        return True
-
-    import json
-
-    wanted = set(json.loads(index.read_text(encoding="utf-8"))["weight_map"].values())
-    return wanted <= {shard.name for shard in shards}
 
 
-@lru_cache(maxsize=1)
-def _model():
-    """Built once and kept. Setting it up costs a few minutes."""
-    import torch
-    from transformers import (
-        AutoProcessor,
-        BitsAndBytesConfig,
-        Qwen3VLForConditionalGeneration,
-    )
+def _start(watching: Callable[[str], None] | None = None) -> None:
+    """Start the server, or do nothing if one is already answering.
 
+    Already answering covers two cases: this process started it earlier, and
+    he started one by hand. Neither wants a second copy mapping eighteen
+    gigabytes against the first.
+    """
+    global _server
+
+    if _answering():
+        return
     if not available():
         raise FileNotFoundError(
-            f"{WRITER} is not downloaded. Run `python fetch_writer.py`."
+            f"{WEIGHTS.name} is not downloaded. Run `python fetch_llama.py` in atelier-engine."
         )
 
-    processor = AutoProcessor.from_pretrained(WRITER, cache_dir=MODELS)
-    model = Qwen3VLForConditionalGeneration.from_pretrained(
-        WRITER,
-        cache_dir=MODELS,
-        dtype=torch.bfloat16,
-        device_map="auto",
-        max_memory={0: ON_CARD},
-        quantization_config=BitsAndBytesConfig(
-            load_in_4bit=True,
-            # The weights are roughly normal around zero, and nf4 is the
-            # format shaped for that. int4 spends the same bits on values
-            # the weights almost never take.
-            bnb_4bit_quant_type="nf4",
-            # Quantises the quantisation constants too: a few hundred
-            # megabytes, which on an 8 GB card is the context window.
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        ),
+    if watching is not None:
+        watching("starting the writer — the first essay of a session waits for the model to load")
+
+    _server = subprocess.Popen(
+        [
+            str(SERVER),
+            "-m",
+            str(WEIGHTS),
+            "--mmproj",
+            str(MMPROJ),
+            # Every layer offered to the card; --n-cpu-moe then takes the
+            # routed experts back off it. The two together are what fits.
+            "-ngl",
+            "99",
+            "--n-cpu-moe",
+            str(ON_CPU),
+            "-c",
+            str(CONTEXT),
+            # The model's own chat template, which is what puts the image in
+            # the right place in the conversation.
+            "--jinja",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            str(PORT),
+        ],
+        cwd=str(HERE),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
-    model.eval()
-    return processor, model
+    atexit.register(stop)
+
+    began = time.time()
+    while time.time() - began < READY_WITHIN:
+        if _server.poll() is not None:
+            raise RuntimeError(
+                f"the writer stopped while loading (exit {_server.returncode}). "
+                "Run llama-server by hand to see why."
+            )
+        if _answering():
+            return
+        time.sleep(2.0)
+
+    stop()
+    raise TimeoutError(f"the writer did not answer within {READY_WITHIN:.0f}s")
 
 
-def _as_image(data: str) -> Image.Image:
-    """One image, from base64 with or without a data-url prefix."""
-    if "," in data[:64] and data.lstrip().startswith("data:"):
-        data = data.split(",", 1)[1]
-    return Image.open(io.BytesIO(base64.b64decode(data))).convert("RGB")
+def stop() -> None:
+    """Hand back the card and the system memory."""
+    global _server
+
+    if _server is None:
+        return
+    if _server.poll() is None:
+        _server.terminate()
+        try:
+            _server.wait(timeout=20)
+        except subprocess.TimeoutExpired:  # pragma: no cover - a wedged child
+            _server.kill()
+    _server = None
 
 
 def write(
@@ -138,46 +200,44 @@ def write(
     base64 JPEGs, the frontal view first, exactly as the backend already sends
     them to Gemini.
     """
-    import torch
+    _start(watching)
 
-    if watching is not None:
-        watching("loading the model — the first run of a session takes minutes")
-
-    processor, model = _model()
-    pictures = [_as_image(one) for one in (images or [])]
-
-    content: list[dict] = [{"type": "image", "image": picture} for picture in pictures]
+    content: list[dict] = []
+    for one in images or []:
+        # A data url either way: the server takes one, and the backend sends
+        # bare base64.
+        url = one if one.lstrip().startswith("data:") else f"data:image/jpeg;base64,{one}"
+        content.append({"type": "image_url", "image_url": {"url": url}})
     content.append({"type": "text", "text": prompt})
-
-    text = processor.apply_chat_template(
-        [{"role": "user", "content": content}],
-        tokenize=False,
-        add_generation_prompt=True,
-    )
-    inputs = processor(
-        text=[text],
-        images=pictures or None,
-        return_tensors="pt",
-    ).to(model.device)
 
     if watching is not None:
         watching("writing")
 
-    with torch.no_grad():
-        produced = model.generate(
-            **inputs,
-            max_new_tokens=most_tokens,
-            do_sample=True,
-            temperature=temperature,
-            top_p=0.95,
-            # Repetition is the failure mode of a small model asked for long
-            # prose, and it is better to loosen this than to cut the essay off.
-            repetition_penalty=1.05,
-        )
+    asking = json.dumps(
+        {
+            "messages": [{"role": "user", "content": content}],
+            "max_tokens": most_tokens,
+            "temperature": temperature,
+            "top_p": 0.95,
+            # Repetition is the failure of a model asked for long prose, and
+            # it is better to loosen this than to cut the essay off.
+            "repeat_penalty": 1.05,
+            "stream": False,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        f"http://127.0.0.1:{PORT}/v1/chat/completions",
+        data=asking,
+        headers={"Content-Type": "application/json"},
+    )
+    # No deadline. An essay takes minutes and a timeout here throws away work
+    # that is already paid for in card time.
+    with urllib.request.urlopen(request) as answer:
+        said = json.load(answer)
 
-    answer = processor.batch_decode(
-        produced[:, inputs.input_ids.shape[-1] :],
-        skip_special_tokens=True,
-        clean_up_tokenization_spaces=False,
-    )[0]
-    return answer.strip()
+    return said["choices"][0]["message"]["content"].strip()
+
+
+def _as_data_url(path: Path) -> str:
+    """A file as the server wants it. For trying this by hand."""
+    return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")

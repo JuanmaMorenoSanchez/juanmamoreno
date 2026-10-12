@@ -48,9 +48,11 @@ export interface ParamDef {
    * `points` is not a field: it is edited by marking the painting itself, and
    * the canvas draws a button for it rather than an input.
    */
-  kind: 'text' | 'number' | 'toggle' | 'points';
+  kind: 'text' | 'number' | 'toggle' | 'choice' | 'points';
   default: string | number | boolean;
   label: string;
+  /** Every value a `choice` may take, in the order to offer them. Empty otherwise. */
+  choices: string[];
   minimum: number | null;
   maximum: number | null;
   step: number | null;

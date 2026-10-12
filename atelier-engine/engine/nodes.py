@@ -44,13 +44,18 @@ class Port:
 class Param:
     name: str
     kind: str
-    """`text`, `number` or `toggle` — enough for everything here, and the editor
-    draws a control per kind."""
+    """`text`, `number`, `toggle` or `choice` — enough for everything here, and
+    the editor draws a control per kind."""
     default: Value
     label: str = ""
     minimum: float | None = None
     maximum: float | None = None
     step: float | None = None
+    choices: tuple[str, ...] = ()
+    """The whole of what a `choice` may be, in the order they are offered.
+
+    A free text field would take a typo and fail eighteen minutes later; two
+    styles spelled out are a list to pick from."""
     help: str = ""
     """What moving this actually does, and which way to move it.
 

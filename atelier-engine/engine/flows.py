@@ -229,6 +229,38 @@ REPAINT_IT = Flow(
     ),
 )
 
+IN_MY_STYLE = Flow(
+    key="in-my-style",
+    label="In my style",
+    blurb="Repaints the image in his own hand, oil or watercolour.",
+    about=(
+        "The editor, shown two of his own paintings beside the one being "
+        "changed. No training and nothing downloaded: Qwen-Image-Edit takes "
+        "three images, and an instruction that says the other two are the "
+        "manner rather than the subject is most of what makes this a restyle "
+        "and not a collage.\n\n"
+        "**Which hand** is oil or watercolour, and they are not "
+        "interchangeable: a watercolour reference thins an oil painting out. "
+        "**Which references** steps through the pairs of his paintings and "
+        "wraps — the cheapest thing to change when the hand comes out wrong, "
+        "and worth two or three goes before any number is touched.\n\n"
+        "Leave **and also change** empty for a straight restyle. Anything "
+        "typed there happens in the same pass.\n\n"
+        "A figure walking in from one of the references is the failure to "
+        "watch for. Raise **how literally** and it holds closer to the canvas "
+        "it was given. As slow as any edit: minutes, not seconds."
+    ),
+    nodes=(
+        Placed(at="painting", type="painting", column=0, row=0),
+        Placed(at="style", type="my-style", params={"style": "oil"}, column=1, row=0),
+        Placed(at="keep", type="save", params={"name": "in-my-style"}, column=2, row=0),
+    ),
+    edges=(
+        ("painting", "image", "style", "image"),
+        ("style", "image", "keep", "image"),
+    ),
+)
+
 WRITE_A_PIECE = Flow(
     key="write-a-piece",
     label="Write a piece",
@@ -258,7 +290,15 @@ WRITE_A_PIECE = Flow(
 
 FLOWS: dict[str, Flow] = {
     flow.key: flow
-    for flow in (MOVE, CHANGE_A_PART, REPAINT_IT, TAKE_A_FIGURE_OUT, FILM_IT, WRITE_A_PIECE)
+    for flow in (
+        MOVE,
+        CHANGE_A_PART,
+        REPAINT_IT,
+        IN_MY_STYLE,
+        TAKE_A_FIGURE_OUT,
+        FILM_IT,
+        WRITE_A_PIECE,
+    )
 }
 """Order matters: it is the order of the buttons, cheapest and shortest first."""
 

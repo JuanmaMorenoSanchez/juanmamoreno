@@ -3161,3 +3161,80 @@ why it can name versions: the five automatic photograph corrections removed in
 *Checked by:* nothing automatic, and deliberately so — a claim about direction
 is a judgement and no script can check one. What keeps it honest is that every
 assertion in it names a version that can be looked up.
+
+### R152 — The writer is a bigger model than the card holds · met
+Essays and descriptions are written on this machine by
+Qwen3-VL-30B-A3B-Instruct, Apache 2.0, through llama.cpp. Thirty-one billion
+parameters of which three are active per token: attention and the shared
+expert sit on the card and `--n-cpu-moe` leaves the routed experts in system
+memory for the processor.
+
+**It replaced an 8B that could not hold the brief.** Qwen3-VL-8B is the best
+vision-language model of its size and the drafts showed it: 1,279 words against
+a brief that asks for as long as the painting is worth, 43 em dashes against a
+rule banning them outright, 11 antitheses against a rule allowing one, and an
+invented account of a generative method for a figurative canvas. The brief had
+already been corrected four times, so the next correction was not going to be
+to the brief.
+
+**Measured on the same painting, the same brief, the same card.** 752 words
+against 1,279. Two antitheses against eleven. Fourteen em dashes against
+forty-three. No rhetorical question where the 8B opened on one. Ninety seconds
+against two hundred and seventy-three — four times the model and three times
+the speed, because the 8B was being streamed across the bus a layer at a time
+and this one is not.
+
+**What it still gets wrong is what it cannot check.** It opened on a
+description, used "we" eight times, and invented a Velázquez called *The
+Phantom Banquet* with a Prado url to match. Every one of those is countable
+or checkable, and the backend already counts and checks them for the Gemini
+path: `findViolations` with a rewrite behind it, and `pruneDeadLinks` against
+every link. The local path runs neither yet, which is the next piece of work
+and not a reason to keep the smaller model.
+
+**Pinned, and a month old.** llama.cpp publishes a dozen builds a day; this is
+b10933, built against CUDA 12.4 because the driver here reports 13.1 and a
+binary built against a newer toolkit than the driver will not load.
+*Proven by:* `engine/writer.py` holds the ports and the offload in one place
+with the reasoning beside them; the model and the binary are fetched by
+`fetch_llama.py`, and `available()` checks the binary and both halves of the
+model, the vision encoder included, because a model without it answers about a
+painting it cannot see.
+*Checked by:* writing one essay by hand and counting it, which is what every
+claim above is.
+
+### R153 — The atelier can repaint in his own hand · met
+A box called **My style** repaints whatever reaches it in his own manner, oil
+or watercolour, and a flow called **In my style** arrives wired. It is the same
+editor as **Edit** at the same price in minutes; what differs is what the model
+is shown.
+
+**No training and no second model.** Qwen-Image-Edit-2509 takes three images
+and works in the manner of the ones it is given, so the canvas goes in with two
+of his own paintings and an instruction that says the other two are the manner
+and not the subject. The alternative was a LoRA trained on his work, which
+wants 24 GB against the 8 on this card; Z-Image is 6B, Apache 2.0 and trains in
+8, and is the route if a reference turns out not to hold the hand tightly
+enough.
+
+**The references are his own catalogue, by medium.** `fetch_references.py`
+asks the site's own MCP server for oils and watercolours and downloads eight of
+each — there are 104 and 62 to draw on. Two go in per run, because three images
+is the ceiling and one of them is the painting. Which two changes the answer
+more than any setting, so `pick` steps through the pairs and wraps rather than
+hiding the choice, and the files are sorted so that the same pick is the same
+pair tomorrow.
+
+**A missing folder fails before the model loads**, not eighteen minutes later
+with the card already warm, and it says which script to run.
+
+**The styles are a list and not a text field.** A typed style name would take a
+typo and fail at the end of a run; `choice` is a new kind of parameter, and the
+engine publishes the values exactly as it publishes the nodes and the ports, so
+a third style is an option on the deployed page with nothing released.
+*Proven by:* `test_style.py` (16 tests: the instruction names the medium and
+forbids taking the subject across, the pair is stable and wraps, a style with
+too few paintings says which script to run, and the node fails before the model
+loads) and `node-canvas.component.spec.ts` "offers exactly what the engine
+listed, in that order", "shows the one the node is set to, not the first in the
+list"

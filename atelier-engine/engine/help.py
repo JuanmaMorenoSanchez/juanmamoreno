@@ -156,6 +156,24 @@ HELP: dict[str, str] = {
         "surface of the paint all come back subtly repainted and a little glossier. "
         "With a mask, everything outside it is your original, untouched."
     ),
+    "my-style": (
+        "Repaints the picture in his own hand, by showing the model two of his "
+        "paintings beside it.\n\n"
+        "No training and nothing new downloaded. Qwen-Image-Edit takes three images, "
+        "so the canvas goes in with two of his own and an instruction saying the "
+        "other two are the manner and not the subject. The same model as Edit, at "
+        "the same price in minutes: what differs is what it is shown.\n\n"
+        "Which two matters more than any setting here. Which references steps "
+        "through the pairs and wraps, so a style that comes out wrong is worth "
+        "another go with a different pair before it is worth a different number.\n\n"
+        "A figure walking in from one of the references is the failure to watch for. "
+        "The instruction tells it to take nothing but the handling, and it does not "
+        "always listen; raising How literally holds it closer to the canvas it was "
+        "given.\n\n"
+        "The references are his own paintings, by medium, downloaded from the "
+        "catalogue by fetch_references.py. Oil has a hundred and four to draw on and "
+        "watercolour sixty-two; eight of each are kept here."
+    ),
     "save": (
         "Writes the picture out so it can be seen, and nothing more.\n\n"
         "It lands in the engine's folder on this machine. It does not go to the "
@@ -258,6 +276,34 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "Which random start to use. The same seed and instruction give the same "
         "picture, so change it to roll again and keep it to reproduce something you "
         "liked."
+    ),
+    ("my-style", "style"): (
+        "Oil or watercolour. Each is a different set of his paintings, and the two "
+        "hands are not interchangeable: a watercolour reference will thin an oil "
+        "painting out."
+    ),
+    ("my-style", "asking"): (
+        "Left empty it only restyles. Anything typed here is carried out in the same "
+        "pass, on top of the repaint, so the sky goes to evening restyles and changes "
+        "the sky at once."
+    ),
+    ("my-style", "pick"): (
+        "Which pair of his paintings to show it. Zero is the first two, one the next "
+        "two, and it wraps round. The cheapest thing to change when the hand is "
+        "wrong."
+    ),
+    ("my-style", "steps"): (
+        "How many passes. More is slower and usually slightly better, and each one "
+        "costs about a hundred seconds here."
+    ),
+    ("my-style", "guidance"): (
+        "How literally to hold to the canvas it was given. Higher keeps your "
+        "composition and resists the references; lower lets them lead and is where a "
+        "figure from one of them starts to walk in."
+    ),
+    ("my-style", "seed"): (
+        "Which random start to use. The same seed, style and pair give the same "
+        "picture."
     ),
     ("save", "name"): (
         "What to call the file. A run can keep several things and they are told apart "

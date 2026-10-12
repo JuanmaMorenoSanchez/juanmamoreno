@@ -20,6 +20,7 @@ const EDIT: NodeTypeDef = {
       kind: 'text',
       default: 'make it red',
       label: 'What to change',
+      choices: [],
       minimum: null,
       maximum: null,
       step: null,
@@ -138,5 +139,69 @@ describe('NodeCanvasComponent', () => {
     const { host } = build([EDIT], aNode('vanished'));
 
     expect(host.querySelectorAll('.node')).toHaveLength(0);
+  });
+
+  /**
+   * A setting with a list of values, drawn as a list.
+   *
+   * The engine says what the values are, exactly as it says what the nodes
+   * and the ports are, so a third style added there is a third option here
+   * with nothing released. The alternative was a text field, which takes a
+   * typo and fails eighteen minutes later with the card already warm.
+   */
+  describe('a setting with a fixed set of values', () => {
+    const STYLED: NodeTypeDef = {
+      ...EDIT,
+      key: 'my-style',
+      label: 'My style',
+      params: [
+        {
+          name: 'style',
+          kind: 'choice',
+          default: 'oil',
+          label: 'Which hand',
+          choices: ['oil', 'watercolour'],
+          minimum: null,
+          maximum: null,
+          step: null,
+          help: 'Each is a different set of his paintings.',
+        },
+      ],
+    };
+
+    it('offers exactly what the engine listed, in that order', () => {
+      const { host } = build([STYLED], [{ id: 'n1', type: 'my-style', x: 0, y: 0, params: {} }]);
+      const options = [...host.querySelectorAll('option')].map((o) => o.textContent?.trim());
+
+      expect(host.querySelector('select')).not.toBeNull();
+      expect(options).toEqual(['oil', 'watercolour']);
+    });
+
+    it('shows the one the node is set to, not the first in the list', () => {
+      const { host } = build(
+        [STYLED],
+        [{ id: 'n1', type: 'my-style', x: 0, y: 0, params: { style: 'watercolour' } }]
+      );
+      const chosen = [...host.querySelectorAll('option')].find(
+        (o) => (o as HTMLOptionElement).selected
+      );
+
+      expect(chosen?.textContent?.trim()).toBe('watercolour');
+    });
+
+    it('reports the choice as a change to the graph', () => {
+      const { fixture, host } = build(
+        [STYLED],
+        [{ id: 'n1', type: 'my-style', x: 0, y: 0, params: { style: 'oil' } }]
+      );
+      let sent: unknown = null;
+      fixture.componentInstance.changed.subscribe((value: unknown) => (sent = value));
+
+      const select = host.querySelector('select') as HTMLSelectElement;
+      select.value = 'watercolour';
+      select.dispatchEvent(new Event('change'));
+
+      expect(sent).not.toBeNull();
+    });
   });
 });

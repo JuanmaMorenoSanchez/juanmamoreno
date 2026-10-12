@@ -6,3 +6,7 @@ models/
 out/
 __pycache__/
 *.pyc
+
+# The style references, downloaded from his own public catalogue.
+references/
+llama/
