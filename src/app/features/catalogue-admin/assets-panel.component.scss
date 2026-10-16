@@ -110,3 +110,25 @@
   font-size: 0.68rem;
   opacity: 0.6;
 }
+
+/* The copy it was made from, over the corner of the picture. Dim by default:
+   most runs are tries, and the one worth noticing is the big one. */
+.assets-quality {
+  align-self: flex-start;
+  margin-top: -1.6rem;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 2px;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+  opacity: 0.75;
+}
+
+.assets-quality-high {
+  background: rgb(0 0 0 / 80%);
+  opacity: 1;
+  font-weight: 600;
+}

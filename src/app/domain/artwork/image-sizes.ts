@@ -38,3 +38,19 @@ export function mediumImageSize({ width, height }: ImageSize): ImageSize & { res
 export function meetsMediumRequirements(bytes: number, size: ImageSize): boolean {
   return bytes <= MEDIUM_MAX_BYTES && Math.min(size.width, size.height) >= MEDIUM_MIN_SIDE;
 }
+
+/**
+ * Whether something made in the atelier came off the big copy or the small one.
+ *
+ * Read off the picture rather than recorded when it was kept, and deliberately:
+ * what a model gives back is the size of what it was given, so the pixels are
+ * the fact and a stored label would be a claim about an intention. The same
+ * 2500 px the medium download is defined by, so "high" here and "high" in the
+ * atelier mean the same thing.
+ *
+ * It matters at a glance because a run on the big copy is the one worth
+ * keeping, and the two look identical in a thumbnail.
+ */
+export function atelierQuality(size: ImageSize): 'web' | 'high' {
+  return Math.min(size.width, size.height) >= MEDIUM_MIN_SIDE ? 'high' : 'web';
+}

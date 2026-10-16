@@ -116,6 +116,7 @@ describe('AtelierComponent', () => {
     const switching = signal(options.switching ?? 'idle');
     const did: string[] = [];
     const keptCalls: Record<string, unknown>[] = [];
+    const wantedByCall: string[] = [];
     let asked = -1;
     const queued: JobState[] = options.states ?? [
       {
@@ -165,21 +166,32 @@ describe('AtelierComponent', () => {
             },
             forget: () => Promise.resolve(),
             imageUrl: (id: string) => `/api/atelier-pieces/${id}/image`,
+            // Read off the picture's own size, as the real one does.
+            qualityOf: (piece: { width: number; height: number }) =>
+              Math.min(piece.width, piece.height) >= 2500 ? 'high' : 'web',
           },
         },
         {
           // Reaching the real one would reach ARTWORK_PORT and the network.
           provide: CataloguePaintingService,
           useValue: {
-            byId: () =>
-              options.byId?.() ??
-              Promise.resolve({
-                blob: new Blob([new Uint8Array([1])]),
-                name: 'Rockets win I',
-                quality: 'original' as const,
-                width: 3000,
-                height: 3180,
-              }),
+            // Which quality each call asked for, since that is the whole of
+            // what the two Run buttons do.
+            asked: wantedByCall,
+            byId: (_id: string, wanted = 'web') => {
+              wantedByCall.push(wanted);
+              return (
+                options.byId?.() ??
+                Promise.resolve({
+                  blob: new Blob([new Uint8Array([1])]),
+                  name: 'Rockets win I',
+                  quality: wanted === 'high' ? ('original' as const) : ('cached' as const),
+                  width: wanted === 'high' ? 3000 : 1024,
+                  height: wanted === 'high' ? 3180 : 1086,
+                  reduced: wanted === 'high',
+                })
+              );
+            },
           },
         },
         {
@@ -227,6 +239,7 @@ describe('AtelierComponent', () => {
       did,
       unreachable,
       keptCalls,
+      wantedByCall,
     };
   };
 
@@ -241,7 +254,10 @@ describe('AtelierComponent', () => {
       edges: { set(v: unknown[]): void; (): unknown[] };
       catalogue: { (): NodeTypeDef[] };
       redraw(drawn: unknown): void;
-      run(): Promise<void>;
+      run(wanted?: 'web' | 'high'): Promise<void>;
+      tokenId: { set(v: string): void };
+      byId(wanted?: 'web' | 'high'): Promise<void>;
+      at: { (): 'web' | 'high' | null };
     };
 
   /**
@@ -814,6 +830,28 @@ describe('AtelierComponent', () => {
     expect(at(host, 'shelf')?.textContent).toContain('Rockets win I');
   });
 
+  it('says which copy of the painting each kept thing was made from', () => {
+    // Two runs of the same graph are indistinguishable in a thumbnail and
+    // only one of them is the size worth keeping.
+    const piece = {
+      id: 'k1',
+      name: 'Rockets win I',
+      tokenId: '195',
+      kind: 'layer',
+      bytes: 1,
+      created: '',
+    };
+    const { host } = build({
+      kept: [
+        { ...piece, width: 1024, height: 1086 },
+        { ...piece, id: 'k2', width: 3000, height: 3180 },
+      ],
+    });
+
+    expect(at(host, 'quality-k1')?.textContent?.trim()).toBe('web');
+    expect(at(host, 'quality-k2')?.textContent?.trim()).toBe('high');
+  });
+
   it('brings a graph back after a reload, because drawing one is work', () => {
     const { fixture } = build({
       stored: JSON.stringify({
@@ -984,6 +1022,84 @@ describe('AtelierComponent', () => {
       fixture.detectChanges();
 
       expect(at(host, 'flow-about')).not.toBeNull();
+    });
+  });
+
+  /**
+   * Which copy of the painting a run uses.
+   *
+   * A graph takes minutes, and what goes in decides what comes out at the same
+   * size: a first attempt is asking whether the instruction is right, which the
+   * small copy answers in a fraction of the time. So the fetch takes the web
+   * copy and Run asks before it spends the afternoon.
+   */
+  describe('choosing a quality', () => {
+    // Built from the same harness as the rest of the file.
+    const ready = async () => {
+      const made = build();
+      const { fixture } = made;
+      guts(fixture).tokenId.set('195');
+      await guts(fixture).byId();
+      guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      fixture.detectChanges();
+      return made;
+    };
+
+    it('fetches the web copy when a token id is typed', async () => {
+      const { wantedByCall } = await ready();
+
+      expect(wantedByCall).toEqual(['web']);
+    });
+
+    it('asks which copy instead of running, when the painting came from the catalogue', async () => {
+      const { fixture, host, did } = await ready();
+
+      at(host, 'run')?.click();
+      fixture.detectChanges();
+
+      expect(at(host, 'which-copy')).not.toBeNull();
+      expect(did).not.toContain('graph');
+    });
+
+    it('runs on what is loaded when the web copy is chosen', async () => {
+      const { fixture, wantedByCall } = await ready();
+
+      await guts(fixture).run('web');
+
+      // One fetch, the one that loaded the preview. Nothing downloaded again.
+      expect(wantedByCall).toEqual(['web']);
+    });
+
+    it('fetches the big copy first when the high quality is chosen', async () => {
+      const { fixture, wantedByCall } = await ready();
+
+      await guts(fixture).run('high');
+
+      expect(wantedByCall).toEqual(['web', 'high']);
+      expect(guts(fixture).at()).toBe('high');
+    });
+
+    it('does not fetch twice for a second high-quality run', async () => {
+      const { fixture, wantedByCall } = await ready();
+
+      await guts(fixture).run('high');
+      await guts(fixture).run('high');
+
+      expect(wantedByCall).toEqual(['web', 'high']);
+    });
+
+    it('runs straight away for a file he chose himself', async () => {
+      // There is no bigger copy of his own file to go and get, so asking would
+      // be offering something that cannot be done.
+      const { fixture, host } = build();
+      guts(fixture).painting.set(aPainting());
+      guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      fixture.detectChanges();
+
+      at(host, 'run')?.click();
+      fixture.detectChanges();
+
+      expect(at(host, 'which-copy')).toBeNull();
     });
   });
 });

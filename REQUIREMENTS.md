@@ -2556,18 +2556,19 @@ ignored.
 file. He knows his own paintings by number, and the file for one is several
 clicks away in a folder he did not open.
 
-**It takes the original, not the copy a tile would use.** `getAvailableOptimalUrl`
-prefers a thumbnail and deliberately keeps the multi-MB original out of the
-race, which is right for drawing a catalogue and wrong here: cutting a layer
-from a 95 KB copy gives a 95 KB layer. So it walks down the stored copies —
-original, cached, thumbnail — and takes the first that can be read. Measured on
-token 195: 3652×4533, the original.
+**It is asked which copy it should take**, rather than always taking the best
+one. `getAvailableOptimalUrl` prefers a thumbnail and deliberately keeps the
+multi-MB original out of the race, which is right for drawing a catalogue and
+is not what either answer here wants: it walks the stored copies — original,
+cached, thumbnail — and takes the first that can be read, with the original
+left out of the race entirely when the small copy was asked for. Which copy a
+run uses, and why the small one is the default, is R154.
 
 **It says which painting and which copy it got**, by name and in pixels, with a
-note when it had to settle for less than the original. A host refusing a
-cross-origin read is stepped past rather than thrown, because a smaller
-painting beats an error — and when every copy is refused it names what it
-tried.
+note when the original was reduced on the way in or when it had to settle for
+less. A host refusing a cross-origin read is stepped past rather than thrown,
+because a smaller painting beats an error — and when every copy is refused it
+names what it tried.
 
 **The engine can be switched on and off from the page**, and says which way it
 is going while it goes: *Switching on…*, *Switching off…*, then **Engine on** or
@@ -2596,8 +2597,8 @@ has said how big it is" and "survives a node written by an older version, or by
 nothing at all"); `atelier.component.spec.ts` "says which box is short of a wire,
 before anything is sent", "will not run while a required port is empty",
 "stops complaining once every required port is joined" and "ignores an optional
-port that is left alone"; `catalogue-painting.service.spec.ts` (9 tests, including "takes
-the original, not the copy a tile would use", "steps down to a worse copy when
+port that is left alone"; `catalogue-painting.service.spec.ts` (11 tests, including "takes
+the original when the big copy is asked for", "steps down to a worse copy when
 the best one is refused", "names what it tried when every copy is refused" and
 "takes the title from where the rest of the site takes it"),
 `node-canvas.component.spec.ts` (9 tests, including "draws a
@@ -3238,3 +3239,59 @@ too few paintings says which script to run, and the node fails before the model
 loads) and `node-canvas.component.spec.ts` "offers exactly what the engine
 listed, in that order", "shows the one the node is set to, not the first in the
 list"
+
+### R154 — A run is tried small and kept big · met
+Pressing Run on a painting fetched from the catalogue asks which copy to use
+before it spends the afternoon: **web quality**, the copy already loaded, or
+**high quality**, which downloads the original and reduces it to the medium
+download first — the same 2500 px and 5 MB a buyer gets.
+
+**Typing a token id now fetches the small copy**, where it used to take the
+original. A graph takes minutes and what goes in decides what comes out at the
+same size, so the small copy answers the only question a first attempt is
+asking — is this the right instruction — in a fraction of the time. The ladder
+is otherwise unchanged, and asked for the big copy it still steps down to a
+worse one rather than failing, because the best copy lives on a host that may
+refuse a cross-origin read.
+
+**The same seed at a different size is a different picture**, which the page
+says where it asks: the last run is a run, not a resize of an earlier one.
+
+**A file he chose himself runs without being asked.** There is no larger copy
+of it to fetch, and offering one would be offering something that cannot be
+done.
+
+**It never claims a reduction that did not happen.** A browser that cannot
+resize hands back the original untouched and the note beside the painting says
+so, because the note is printed on the page and a wrong statement about what
+is on the canvas is worse than none.
+
+**The reduction is the download button's, moved rather than copied.** Two
+callers now share `MediumImageService`: a buyer's download and an atelier run
+mean the same thing by "big enough", and a second implementation would drift.
+*Proven by:* `catalogue-painting.service.spec.ts` ("takes the original when the
+big copy is asked for", "does not even ask for the original by default", "says
+plainly when the browser could not reduce the original") and
+`atelier.component.spec.ts` "choosing a quality" (6 tests: the fetch takes the
+web copy, Run asks instead of running, the big copy is fetched once and only
+when chosen, and a file of his own runs straight away)
+
+### R155 — A kept picture says which copy it was made from · met
+Everything kept from the atelier carries a `web` or `high` badge on its
+thumbnail, in the atelier's own shelf and in the panel under each painting in
+the catalogue. Hovering gives the pixels and the weight.
+
+It exists because the two are indistinguishable in a thumbnail and only one of
+them is the size worth keeping: a run on the web copy and a run on the medium
+download are the same picture at two sizes, and the grid is where he decides
+what to do with them.
+
+**Read off the picture, not recorded when it was kept.** A model gives back the
+size it was given, so the pixels are the fact; a stored label would be a claim
+about an intention, and would be wrong for everything kept before the label
+existed. The threshold is the 2500 px the medium download is already defined
+by, so the word means one thing across the site.
+*Proven by:* `image-sizes.spec.ts` "atelierQuality" (3 tests, including that it
+judges by the shorter side), `assets-panel.component.spec.ts` "the size it was
+made at", and `atelier.component.spec.ts` "says which copy of the painting each
+kept thing was made from"

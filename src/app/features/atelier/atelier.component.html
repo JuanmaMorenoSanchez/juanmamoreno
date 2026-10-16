@@ -201,12 +201,52 @@
       type="button"
       class="atelier-go"
       [disabled]="!ready()"
-      (click)="run()"
+      (click)="asked()"
       data-testid="run"
     >
       {{ busy() ? 'Running…' : 'Run' }}
     </button>
   </section>
+
+  <!--
+    Which copy to run on, asked at the moment of running.
+
+    A graph takes minutes and the input decides the output, at the same size:
+    the small copy answers whether the instruction is right, and the big one is
+    for the run worth keeping. Only offered where the painting came from the
+    catalogue, because a file he chose himself has no larger copy to fetch.
+  -->
+  @if (choosing()) {
+    <section class="atelier-down" data-testid="which-copy">
+      <h2>Which copy?</h2>
+      <p>
+        The same graph on a bigger painting takes longer and gives a bigger picture. The small copy
+        is for finding out whether this is the right instruction; the big one is for the run you
+        mean to keep. The same seed at a different size is a different picture, so the last run is a
+        run and not a resize.
+      </p>
+      <button type="button" class="atelier-go" (click)="run('web')" data-testid="run-web">
+        Web quality
+        @if (at() === 'web') {
+          <span>· already loaded</span>
+        }
+      </button>
+      <button type="button" class="atelier-go" (click)="run('high')" data-testid="run-high">
+        High quality
+        @if (at() !== 'high') {
+          <span>· downloads up to 5 MB first</span>
+        }
+      </button>
+      <button
+        type="button"
+        class="atelier-minor"
+        (click)="choosing.set(false)"
+        data-testid="dont-run"
+      >
+        Not yet
+      </button>
+    </section>
+  }
 
   <app-node-canvas
     [catalogue]="catalogue()"
@@ -407,7 +447,14 @@
               }
               @if (piece.width) {
                 <dt>size</dt>
-                <dd>{{ piece.width }}×{{ piece.height }}</dd>
+                <dd>
+                  {{ piece.width }}×{{ piece.height }}
+                  <!-- Which copy of the painting it came off, which is the
+                       difference between a try and the one worth keeping. -->
+                  <strong [attr.data-testid]="'quality-' + piece.id">{{
+                    kept.qualityOf(piece)
+                  }}</strong>
+                </dd>
               }
             </dl>
             <button

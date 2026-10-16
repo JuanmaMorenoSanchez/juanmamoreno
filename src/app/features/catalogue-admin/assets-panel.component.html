@@ -19,6 +19,19 @@
             <img [src]="url(piece)" [alt]="piece.name" loading="lazy" />
           }
 
+          <!--
+            Which copy of the painting it was made from, on the picture itself.
+            Two runs of the same graph look identical in a thumbnail, and only
+            one of them is the size worth keeping.
+          -->
+          <span
+            class="assets-quality"
+            [class.assets-quality-high]="quality(piece) === 'high'"
+            [title]="piece.width + '×' + piece.height + ' · ' + size(piece)"
+            [attr.data-testid]="'quality-' + piece.id"
+            >{{ quality(piece) }}</span
+          >
+
           <span class="assets-what">
             <strong>{{ piece.kind }}</strong>
             <small

@@ -73,6 +73,11 @@ export class AssetsPanelComponent {
     return this.kept.isClip(piece);
   }
 
+  /** `web` or `high`, read off the picture's own size. */
+  protected quality(piece: KeptPiece): string {
+    return this.kept.qualityOf(piece);
+  }
+
   /** Empty until the bytes have been fetched, which is one frame later. */
   protected url(piece: KeptPiece): string {
     return this.kept.urls()[piece.id] ?? '';

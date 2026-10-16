@@ -5,6 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.19.0
+
+- **feat** — Run asks which copy of the painting to use: **web quality**, the
+  small one already loaded, or **high quality**, the original reduced to the
+  medium download first. Typing a token id now fetches the small copy rather
+  than the original, because a graph takes minutes and what goes in decides
+  what comes out at the same size — the small one answers whether the
+  instruction is right. A file chosen by hand runs without being asked: there
+  is no bigger copy of it to fetch.
+- **feat** — everything kept from the atelier carries a `web` or `high` badge
+  on its thumbnail, in the atelier's shelf and under each painting in the
+  catalogue. Read off its own pixels, against the same 2500 px the medium
+  download is defined by, because a stored label would be a claim about an
+  intention and would be wrong for everything kept before it existed.
+- **chore** — the medium-size reduction left the download button it was
+  written in. Two callers now share it: a buyer's download and an atelier run
+  mean the same thing by "big enough".
+
 ## 2.18.0
 
 - **feat** — the writer is Qwen3-VL-30B-A3B through llama.cpp, in place of the

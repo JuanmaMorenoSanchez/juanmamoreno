@@ -86,6 +86,7 @@ describe('AssetsPanelComponent', () => {
             },
             imageUrl: (id: string) => `/api/atelier-pieces/${id}/image`,
             isClip: (p: KeptPiece) => p.media === 'video/mp4',
+            qualityOf: (p: KeptPiece) => (Math.min(p.width, p.height) >= 2500 ? 'high' : 'web'),
           },
         },
       ],
@@ -236,6 +237,33 @@ describe('AssetsPanelComponent', () => {
       const { filmed } = build([clip()]);
 
       expect(filmed).toEqual([]);
+    });
+  });
+
+  /**
+   * Which copy of the painting a kept thing was made from, on the thumbnail.
+   *
+   * A run on the small copy and a run on the big one are the same picture at
+   * two sizes, and in a grid of thumbnails they are indistinguishable. One of
+   * them is the one worth keeping.
+   */
+  describe('the size it was made at', () => {
+    it('marks a big one high and a small one web', () => {
+      const { host } = build([
+        piece({ id: 'k1', width: 3652, height: 4533 }),
+        piece({ id: 'k2', width: 1024, height: 1086 }),
+      ]);
+
+      expect(host.querySelector('[data-testid="quality-k1"]')?.textContent?.trim()).toBe('high');
+      expect(host.querySelector('[data-testid="quality-k2"]')?.textContent?.trim()).toBe('web');
+    });
+
+    it('says the pixels and the weight on hover, where the badge has no room', () => {
+      const { host } = build([piece({ id: 'k1', width: 3652, height: 4533, bytes: 2_400_000 })]);
+
+      expect(host.querySelector('[data-testid="quality-k1"]')?.getAttribute('title')).toBe(
+        '3652×4533 · 2.4 MB'
+      );
     });
   });
 });

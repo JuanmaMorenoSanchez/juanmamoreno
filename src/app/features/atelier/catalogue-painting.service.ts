@@ -2,6 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import type { Nft } from '@domain/artwork/artwork.entity';
+import { MediumImageService } from '@shared/services/medium-image.service';
+
+/**
+ * How good a copy to work from.
+ *
+ * `web` is the small one the site draws with, a hundred kilobytes or so.
+ * `high` is the original reduced to the medium download — at least 2500 px on
+ * the shorter side and under 5 MB — which is what the site already offers a
+ * buyer and the largest thing worth putting through a model.
+ */
+export type Wanted = 'web' | 'high';
 
 /** A painting fetched by its token id, and which copy of it was obtained. */
 export interface FetchedPainting {
@@ -11,6 +22,8 @@ export interface FetchedPainting {
   quality: 'original' | 'cached' | 'thumbnail';
   width: number;
   height: number;
+  /** True when the original was reduced on the way in. */
+  reduced?: boolean;
 }
 
 /** How good each copy is, best first. */
@@ -25,9 +38,14 @@ const LADDER: Array<{ field: keyof Nft['image']; quality: FetchedPainting['quali
  *
  * **Deliberately not `getAvailableOptimalUrl`.** That one is for drawing a tile
  * and prefers a thumbnail, with the multi-MB original kept out of the race on
- * purpose. Here the opposite is wanted: cutting a layer from a 95 KB copy gives
- * a 95 KB layer, and the original is the only one worth the eighteen minutes an
- * edit costs.
+ * purpose. This is asked which it wants.
+ *
+ * **Two qualities, because a run is eighteen minutes.** What goes in decides
+ * what comes out, at the same size, so a graph tried at the small copy
+ * finishes in a fraction of the time and answers the only question being asked
+ * of a first attempt: is this the right instruction. The big copy is for the
+ * run he means to keep. The same seed at a different size is a different
+ * picture, so the final run is a run and not a resize.
  *
  * It walks down the ladder rather than insisting, because the best copy lives
  * on a host that may refuse a cross-origin read, and a lower-resolution
@@ -36,9 +54,10 @@ const LADDER: Array<{ field: keyof Nft['image']; quality: FetchedPainting['quali
 @Injectable({ providedIn: 'root' })
 export class CataloguePaintingService {
   private readonly artwork = inject(ARTWORK_PORT);
+  private readonly medium = inject(MediumImageService);
 
   /** The painting with that token id, as bytes. Throws with something readable. */
-  async byId(id: string): Promise<FetchedPainting> {
+  async byId(id: string, wanted: Wanted = 'web'): Promise<FetchedPainting> {
     const token = id.trim();
     if (!token) throw new Error('type a token id');
 
@@ -51,15 +70,40 @@ export class CataloguePaintingService {
     const name = nft.name || nft.raw?.metadata?.name || `Painting ${token}`;
     const refused: string[] = [];
 
-    for (const rung of LADDER) {
+    // Asked for the web copy, the original is not even attempted: it is tens
+    // of megabytes on a slow host, and the point of asking for the small one
+    // is not to wait for it.
+    const ladder =
+      wanted === 'high' ? LADDER : LADDER.filter((rung) => rung.quality !== 'original');
+
+    for (const rung of ladder) {
       const url = nft.image?.[rung.field];
       if (typeof url !== 'string' || !url) continue;
       try {
         const response = await fetch(url, { mode: 'cors', cache: 'no-store' });
         if (!response.ok) throw new Error(String(response.status));
-        const blob = await response.blob();
+        const fetched = await response.blob();
+
+        // The original goes through the same reduction a buyer's download
+        // does. Unreduced it is forty megabytes of canvas weave, which no
+        // model here reads and every one of them has to resize first.
+        //
+        // A browser that cannot do it hands back the original untouched, and
+        // says so rather than claiming a reduction that did not happen: the
+        // page prints this, and a wrong note about what is on the canvas is
+        // worse than no note.
+        let blob = fetched;
+        let reduced = false;
+        if (wanted === 'high' && rung.quality === 'original') {
+          const smaller = await this.medium.toMedium(fetched).catch(() => null);
+          if (smaller) {
+            blob = smaller;
+            reduced = true;
+          }
+        }
+
         const { width, height } = await measure(blob);
-        return { blob, name, quality: rung.quality, width, height };
+        return { blob, name, quality: rung.quality, width, height, reduced };
       } catch {
         // Almost always the host refusing a cross-origin read. Noted and
         // stepped past rather than thrown, so a worse copy can still be had.

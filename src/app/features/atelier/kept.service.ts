@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { atelierQuality } from '@domain/artwork/image-sizes';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 
@@ -184,5 +185,17 @@ export class KeptService {
   /** Whether this one needs a player rather than an `img`. */
   isClip(piece: KeptPiece): boolean {
     return piece.media === 'video/mp4';
+  }
+
+  /**
+   * Whether it was made from the big copy of the painting or the small one.
+   *
+   * Read off its own pixels. A model gives back the size it was given, so a
+   * run on the web copy is a web-sized picture and a run on the medium
+   * download is a big one — and in a thumbnail the two are indistinguishable,
+   * which is the whole reason to say.
+   */
+  qualityOf(piece: KeptPiece): 'web' | 'high' {
+    return atelierQuality(piece);
   }
 }

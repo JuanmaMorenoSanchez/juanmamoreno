@@ -1,6 +1,7 @@
 import {
   MEDIUM_MAX_BYTES,
   MEDIUM_MIN_SIDE,
+  atelierQuality,
   mediumImageSize,
   meetsMediumRequirements,
 } from './image-sizes';
@@ -87,5 +88,30 @@ describe('meetsMediumRequirements', () => {
     expect(MEDIUM_MAX_BYTES).toBe(5_000_000);
     expect(meetsMediumRequirements(5_000_000, big)).toBe(true);
     expect(meetsMediumRequirements(5_242_880, big)).toBe(false);
+  });
+});
+
+/**
+ * Which copy of a painting something made in the atelier came off.
+ *
+ * Read off its own pixels rather than recorded when it was kept: a model gives
+ * back the size it was given, so the picture is the evidence and a stored
+ * label would be a claim about an intention. The same 2500 px the medium
+ * download is defined by, so the word means one thing across the site.
+ */
+describe('atelierQuality', () => {
+  it('calls a run off the medium download high', () => {
+    expect(atelierQuality({ width: 3652, height: 4533 })).toBe('high');
+    expect(atelierQuality({ width: 2500, height: 2500 })).toBe('high');
+  });
+
+  it('calls a run off the web copy web', () => {
+    expect(atelierQuality({ width: 1024, height: 1086 })).toBe('web');
+    expect(atelierQuality({ width: 768, height: 832 })).toBe('web');
+  });
+
+  it('judges by the shorter side, as the medium download does', () => {
+    // A long thin canvas is not a big picture because one side is long.
+    expect(atelierQuality({ width: 6000, height: 2499 })).toBe('web');
   });
 });

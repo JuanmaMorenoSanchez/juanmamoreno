@@ -5,13 +5,17 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CataloguePaintingService } from './catalogue-painting.service';
 
 /**
- * Fetching a painting by its number.
+ * Fetching a painting by its number, at one of two qualities.
  *
- * Two things here are deliberate and worth pinning. It asks for the **original**
- * rather than the copy a tile would use — cutting a layer from a 95 KB
- * thumbnail gives a 95 KB layer. And it walks down to a worse copy rather than
- * failing, because the best one lives on a host that may refuse a cross-origin
- * read and a smaller painting beats an error.
+ * Three things here are deliberate and worth pinning. **The default is the web
+ * copy**, because a graph takes minutes and what goes in decides what comes
+ * out at the same size: a first attempt is asking whether the instruction is
+ * right, and the answer arrives in a fraction of the time. **High quality is
+ * the original reduced to the medium download**, the same 2500 px and 5 MB a
+ * buyer gets, because unreduced it is forty megabytes no model here reads. And
+ * it **walks down to a worse copy rather than failing**, because the best one
+ * lives on a host that may refuse a cross-origin read and a smaller painting
+ * beats an error.
  */
 describe('CataloguePaintingService', () => {
   const nft = (image: Record<string, string>) => ({
@@ -77,17 +81,43 @@ describe('CataloguePaintingService', () => {
     await expect(build('boom').byId('195')).rejects.toThrow('no painting 195');
   });
 
-  it('takes the original, not the copy a tile would use', async () => {
+  it('takes the original when the big copy is asked for', async () => {
     serving('https://host/original.jpg');
     const got = await build(
       nft({
         originalUrl: 'https://host/original.jpg',
         thumbnailUrl: 'https://host/thumb.jpg',
       })
-    ).byId('195');
+    ).byId('195', 'high');
 
     expect(got.quality).toBe('original');
     expect(got.name).toBe('Rockets win I');
+  });
+
+  it('does not even ask for the original by default', async () => {
+    // The point of the small copy is not waiting for the big one: it is tens
+    // of megabytes on a slow host, and a run on it takes as long again.
+    serving('https://host/original.jpg', 'https://host/cached.jpg');
+    const got = await build(
+      nft({
+        originalUrl: 'https://host/original.jpg',
+        cachedUrl: 'https://host/cached.jpg',
+      })
+    ).byId('195');
+
+    expect(got.quality).toBe('cached');
+    expect(fetch).not.toHaveBeenCalledWith('https://host/original.jpg', expect.anything());
+  });
+
+  it('says plainly when the browser could not reduce the original', async () => {
+    // jsdom cannot, and nor can a browser handed something that is not an
+    // image. The page prints this note, so claiming a reduction that did not
+    // happen would be a wrong statement about what is on the canvas.
+    serving('https://host/original.jpg');
+    const got = await build(nft({ originalUrl: 'https://host/original.jpg' })).byId('195', 'high');
+
+    expect(got.quality).toBe('original');
+    expect(got.reduced).toBe(false);
   });
 
   it('steps down to a worse copy when the best one is refused', async () => {
@@ -109,7 +139,8 @@ describe('CataloguePaintingService', () => {
     serving();
     await expect(
       build(nft({ originalUrl: 'https://host/a.jpg', thumbnailUrl: 'https://host/b.jpg' })).byId(
-        '195'
+        '195',
+        'high'
       )
     ).rejects.toThrow('original, thumbnail');
   });
@@ -123,14 +154,17 @@ describe('CataloguePaintingService', () => {
     // The raw metadata's name is not always filled in, and "Painting 195"
     // tells you nothing about whether you fetched the one you meant.
     serving('https://host/a.jpg');
-    const got = await build(nft({ originalUrl: 'https://host/a.jpg' })).byId('195');
+    const got = await build(nft({ originalUrl: 'https://host/a.jpg' })).byId('195', 'high');
 
     expect(got.name).toBe('Rockets win I');
   });
 
   it('trims what was typed, because an id is pasted as often as typed', async () => {
     serving('https://host/original.jpg');
-    const got = await build(nft({ originalUrl: 'https://host/original.jpg' })).byId('  195 ');
+    const got = await build(nft({ originalUrl: 'https://host/original.jpg' })).byId(
+      '  195 ',
+      'high'
+    );
 
     expect(got.quality).toBe('original');
   });

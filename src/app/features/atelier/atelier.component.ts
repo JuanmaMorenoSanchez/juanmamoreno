@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
-import { CataloguePaintingService } from './catalogue-painting.service';
+import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
 import { KeptService } from './kept.service';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
@@ -77,6 +77,20 @@ export class AtelierComponent {
   /** What the chosen painting is, for the line under the preview. */
   protected readonly chosen = signal<string | null>(null);
   protected readonly tokenId = signal('');
+
+  /**
+   * The token id the painting on the canvas came from, when it came from one.
+   *
+   * Null for a file he chose himself: there is no larger copy of that to go
+   * and get, and Run should not offer what it cannot do.
+   */
+  protected readonly fromCatalogue = signal<string | null>(null);
+
+  /** Which copy is loaded, so the page can say what a run would use. */
+  protected readonly at = signal<Wanted | null>(null);
+
+  /** Whether Run is asking which copy to use rather than running. */
+  protected readonly choosing = signal(false);
   protected readonly fetching = signal(false);
   /** The Brush node whose marks are being drawn, if any. */
   protected readonly marking = signal<GraphNode | null>(null);
@@ -317,6 +331,10 @@ export class AtelierComponent {
   protected chose(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.take(file, file ? file.name : null);
+    // His own file is whatever he gave it. There is no bigger copy of it to
+    // fetch, so Run does not offer one.
+    this.fromCatalogue.set(null);
+    this.at.set(null);
   }
 
   /**
@@ -325,17 +343,21 @@ export class AtelierComponent {
    * Takes the best copy the catalogue has rather than the one a tile would
    * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
    */
-  protected async byId(): Promise<void> {
+  protected async byId(wanted: Wanted = 'web'): Promise<void> {
     const token = this.tokenId().trim();
     if (!token || this.fetching()) return;
 
     this.fetching.set(true);
     this.failure.set(null);
     try {
-      const got = await this.catalogueImages.byId(token);
+      const got = await this.catalogueImages.byId(token, wanted);
       const size = got.width ? ` · ${got.width}×${got.height}` : '';
-      const note = got.quality === 'original' ? '' : ` · ${got.quality} copy, not the original`;
+      const note = got.reduced ? ' · reduced to the medium size' : '';
       this.take(got.blob, `${got.name}${size}${note}`);
+      // Remembered so the Run button can offer to go and get the big copy,
+      // and so that a file chosen by hand does not pretend it can.
+      this.fromCatalogue.set(token);
+      this.at.set(wanted);
     } catch (error) {
       this.failure.set(error instanceof Error ? error.message : 'that id could not be read');
     } finally {
@@ -405,7 +427,42 @@ export class AtelierComponent {
     });
   }
 
-  protected async run(): Promise<void> {
+  /**
+   * Run, or first ask which copy of the painting to run on.
+   *
+   * A graph takes minutes and what goes in decides what comes out, at the same
+   * size — so the small copy answers "is this the right instruction" in a
+   * fraction of the time, and the big one is for the run he means to keep.
+   * Asked rather than remembered, because the answer is different for the
+   * fourth attempt and the fifth.
+   *
+   * Only where there is a bigger copy to fetch. A file he chose himself runs
+   * as it is.
+   */
+  protected asked(): void {
+    if (this.fromCatalogue() && !this.busy()) {
+      this.choosing.set(true);
+      return;
+    }
+    void this.run();
+  }
+
+  /**
+   * Runs the graph, fetching the big copy first when that is what was chosen.
+   *
+   * The fetch is part of the run rather than something to do beforehand: it is
+   * five megabytes over a slow host, and nobody wants it until the moment they
+   * have decided to wait for the run itself.
+   */
+  protected async run(wanted?: Wanted): Promise<void> {
+    this.choosing.set(false);
+
+    const token = this.fromCatalogue();
+    if (wanted && token && wanted !== this.at()) {
+      await this.byId(wanted);
+      if (this.failure()) return;
+    }
+
     const painting = this.painting();
     if (!painting) return;
 
