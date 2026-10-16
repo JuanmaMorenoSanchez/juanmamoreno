@@ -1,0 +1,1 @@
+function n({width:e,height:t}){if(e<=0||t<=0)return{width:e,height:t,resized:!1};let M=Math.min(e,t);if(M<=2500)return{width:e,height:t,resized:!1};let r=2500/M;return{width:Math.ceil(e*r),height:Math.ceil(t*r),resized:!0}}function I(e){return Math.min(e.width,e.height)>=2500?`high`:`web`}export{n,I as t};
