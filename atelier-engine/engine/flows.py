@@ -62,16 +62,41 @@ MOVE = Flow(
         "choice — it is the only thing this can do, because it has nothing to "
         "invent with. An image-to-video model would resolve your brushwork into "
         "something photographic, and takes eighteen minutes to do it.\n\n"
-        "Nothing to adjust. Run it, then press See it move."
+        "**It also paints in behind the nearest thing**, the same way *Take a "
+        "figure out* does. When a near slice shifts it leaves a gap, and with "
+        "nothing behind it the gap is a smear of the edge it dragged along. "
+        "Filled, there is real paint back there for the slice to move across. "
+        "Name whatever is nearest in **what to look for** — it is the thing "
+        "that moves furthest and so the thing whose gap shows.\n\n"
+        "The fill is why this is no longer the fastest flow here: the depth "
+        "map is a hundred megabytes of model and a few seconds, and LaMa is "
+        "another pass. Still seconds rather than the minutes an edit costs.\n\n"
+        "Run it, then press See it move."
     ),
     nodes=(
         Placed(at="painting", type="painting", column=0, row=0),
         Placed(at="depth", type="depth", column=1, row=0),
         Placed(at="keep", type="save", params={"name": "depth"}, column=2, row=0),
+        Placed(at="find", type="find", params={"phrase": "a girl"}, column=1, row=1),
+        Placed(at="isolate", type="isolate", column=2, row=1),
+        # Grown before the fill, as in Take a figure out: the ring of pixels
+        # just outside a figure carries the colour the brush left going past,
+        # and the inpainter reads it as context and paints a faint outline of
+        # the very thing that was removed.
+        Placed(at="grow", type="grow", params={"pixels": 12}, column=3, row=1),
+        Placed(at="behind", type="fill", column=4, row=1),
+        Placed(at="background", type="save", params={"name": "background"}, column=5, row=1),
     ),
     edges=(
         ("painting", "image", "depth", "image"),
         ("depth", "image", "keep", "image"),
+        ("painting", "image", "find", "image"),
+        ("painting", "image", "isolate", "image"),
+        ("find", "box", "isolate", "box"),
+        ("isolate", "mask", "grow", "mask"),
+        ("painting", "image", "behind", "image"),
+        ("grow", "mask", "behind", "mask"),
+        ("behind", "image", "background", "image"),
     ),
 )
 
@@ -252,7 +277,13 @@ IN_MY_STYLE = Flow(
     ),
     nodes=(
         Placed(at="painting", type="painting", column=0, row=0),
-        Placed(at="style", type="my-style", params={"style": "oil"}, column=1, row=0),
+        Placed(
+            at="style",
+            type="edit",
+            params={"style": "oil", "instruction": ""},
+            column=1,
+            row=0,
+        ),
         Placed(at="keep", type="save", params={"name": "in-my-style"}, column=2, row=0),
     ),
     edges=(

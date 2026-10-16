@@ -109,7 +109,16 @@ HELP: dict[str, str] = {
         "seconds at 832, it is many times it. Find the motion you want at two "
         "seconds and 832, then raise it once.\n\n"
         "It writes an mp4 into the engine's folder and nothing else. No Keep "
-        "is needed and none will help — Keep takes a picture, not a film."
+        "is needed and none will help — Keep takes a picture, not a film.\n\n"
+        "The clip comes out the shape the painting is. The model needs both "
+        "sides to be multiples of sixteen, which a painting almost never is, "
+        "so it is generated at the model's size and written at the painting's. "
+        "Width out and Height out are for asking for something else; left at "
+        "zero they mean the painting.\n\n"
+        "The two dots on the right marked width and height are not settings. "
+        "They are what the clip came out at, for whatever comes after: the "
+        "shelf shows them beside a kept clip, and a video cannot be measured "
+        "by loading it into a picture."
     ),
     "sketch": (
         "Writes a small moving piece from a sentence, as code, which then runs "
@@ -156,25 +165,23 @@ HELP: dict[str, str] = {
         "Join a mask and only that part changes. Without one it regenerates the whole "
         "picture — the instruction is obeyed, but the field, the other figures and the "
         "surface of the paint all come back subtly repainted and a little glossier. "
-        "With a mask, everything outside it is your original, untouched."
-    ),
-    "my-style": (
-        "Repaints the picture in his own hand, by showing the model two of his "
-        "paintings beside it.\n\n"
-        "No training and nothing new downloaded. Qwen-Image-Edit takes three images, "
-        "so the canvas goes in with two of his own and an instruction saying the "
-        "other two are the manner and not the subject. The same model as Edit, at "
-        "the same price in minutes: what differs is what it is shown.\n\n"
-        "Which two matters more than any setting here. Which references steps "
-        "through the pairs and wraps, so a style that comes out wrong is worth "
-        "another go with a different pair before it is worth a different number.\n\n"
-        "A figure walking in from one of the references is the failure to watch for. "
-        "The instruction tells it to take nothing but the handling, and it does not "
-        "always listen; raising How literally holds it closer to the canvas it was "
-        "given.\n\n"
-        "The references are his own paintings, by medium, downloaded from the "
-        "catalogue by fetch_references.py. Oil has a hundred and four to draw on and "
-        "watercolour sixty-two; eight of each are kept here."
+        "With a mask, everything outside it is your original, untouched.\n\n"
+        "**In my style** decides whose hand it comes back in. Off, the model paints in "
+        "whatever manner it likes, which is often photographic. Set to oil or "
+        "watercolour, two of his own paintings go in beside the canvas and the "
+        "instruction says they are the manner and not the subject: no training, no "
+        "second model, the same minutes.\n\n"
+        "This was a second box called My style for a week, and it was this one with "
+        "two reference images and a sentence in front — same model, same mask, same "
+        "settings. Two boxes for one operation is a choice to be made before you know "
+        "which you want.\n\n"
+        "Which two references matters more than any number here. **Which references** "
+        "steps through the pairs and wraps, and is the first thing to change when the "
+        "hand comes out wrong. A figure walking in from one of them is the failure to "
+        "watch for: raise **how literally** and it holds closer to the canvas it was "
+        "given. The references are his own paintings, by medium, downloaded from the "
+        "catalogue by fetch_references.py — a hundred and four oils and sixty-two "
+        "watercolours, eight of each kept here."
     ),
     "save": (
         "Writes the picture out so it can be seen, and nothing more.\n\n"
@@ -229,6 +236,21 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "the full thing it would run out of memory long before it finished. "
         "Raise it only once the motion is right."
     ),
+    ("video", "width"): (
+        "The width to write the clip at. Zero means the painting's own, which "
+        "is what you want unless somewhere else has asked for a size: nothing "
+        "here changes the shape of a painting on its own.\n\n"
+        "Type one of width or height and the other follows from the painting, "
+        "so the shape is kept. Type both and both are obeyed, which is how to "
+        "ask for a shape of your own.\n\n"
+        "It does not change what the model generates, which has to be a "
+        "multiple of sixteen near 832. It changes the file."
+    ),
+    ("video", "height"): (
+        "The height to write the clip at. Zero means the painting's own.\n\n"
+        "Typed on its own, the width follows from the painting. 1920 with the "
+        "width left at zero is the usual way to ask for something tall."
+    ),
     ("sketch", "asking"): (
         "What the piece should do, in a sentence. Concrete and visual works best — "
         "what moves, what colour, how fast. A brief it cannot picture comes back as "
@@ -279,33 +301,15 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "picture, so change it to roll again and keep it to reproduce something you "
         "liked."
     ),
-    ("my-style", "style"): (
+    ("edit", "style"): (
         "Oil or watercolour. Each is a different set of his paintings, and the two "
         "hands are not interchangeable: a watercolour reference will thin an oil "
         "painting out."
     ),
-    ("my-style", "asking"): (
-        "Left empty it only restyles. Anything typed here is carried out in the same "
-        "pass, on top of the repaint, so the sky goes to evening restyles and changes "
-        "the sky at once."
-    ),
-    ("my-style", "pick"): (
+    ("edit", "pick"): (
         "Which pair of his paintings to show it. Zero is the first two, one the next "
         "two, and it wraps round. The cheapest thing to change when the hand is "
         "wrong."
-    ),
-    ("my-style", "steps"): (
-        "How many passes. More is slower and usually slightly better, and each one "
-        "costs about a hundred seconds here."
-    ),
-    ("my-style", "guidance"): (
-        "How literally to hold to the canvas it was given. Higher keeps your "
-        "composition and resists the references; lower lets them lead and is where a "
-        "figure from one of them starts to walk in."
-    ),
-    ("my-style", "seed"): (
-        "Which random start to use. The same seed, style and pair give the same "
-        "picture."
     ),
     ("save", "name"): (
         "What to call the file. A run can keep several things and they are told apart "
@@ -355,23 +359,7 @@ PARAM_ADVICE: dict[tuple[str, str], Advice] = {
         high="Over about seven it forces the words through: edges harden, "
         "colour goes flat, and the brushwork reads as plastic.",
     ),
-    ("my-style", "steps"): Advice(
-        below=12,
-        above=35,
-        low="Below about ten passes the references do not take: it comes back "
-        "neither his hand nor the original.",
-        high="Each pass costs about a hundred seconds here, so this is over an "
-        "hour for a difference that is hard to see.",
-    ),
-    ("my-style", "guidance"): Advice(
-        below=2.5,
-        above=7,
-        low="Under about 2.5 the references lead, and this is where a figure "
-        "from one of them walks into the canvas.",
-        high="Over about seven it holds so tightly to the original that the "
-        "hand does not come across at all.",
-    ),
-    ("my-style", "pick"): Advice(
+    ("edit", "pick"): Advice(
         above=3,
         high="There are eight references per style, two to a pair, so anything "
         "over three wraps round to a pair already offered.",

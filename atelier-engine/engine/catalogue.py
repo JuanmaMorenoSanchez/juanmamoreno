@@ -27,6 +27,7 @@ from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from .edit import available as edit_available, edit as edit_painting
 from .style import (
+    OFF as STYLE_OFF,
     STYLES,
     available as style_available,
     instruction as style_instruction,
@@ -35,7 +36,7 @@ from .style import (
 from .help import HELP, PARAM_ADVICE, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
-from .video import animate as animate_painting, write_video
+from .video import animate as animate_painting, shown as shown_size, write_video
 from .nodes import GraphError, NodeType, Param, Port
 from .operations import find as find_things, isolate as isolate_thing
 
@@ -115,13 +116,26 @@ def _fill(inputs, params, context) -> dict[str, Any]:
 
 
 def _edit(inputs, params, context) -> dict[str, Any]:
-    """Change part of a painting by asking for it.
+    """Change part of a painting by asking for it, in his hand or in anyone's.
+
+    **One box, with a switch.** My style was a second box for a week and it was
+    this one with two reference images and a sentence in front: same model,
+    same minutes, same mask, same settings. Two boxes for one operation is a
+    choice to make before knowing which you want, and the switch is the same
+    choice made at the moment it matters.
 
     The segmenter is dropped first. This model is streamed block by block
     through the card, and anything else resident is memory it has to work
     around — the registry holds one model at a time and this is the moment
     that rule earns itself.
     """
+    hand = str(params.get("style") or STYLE_OFF)
+    if hand != STYLE_OFF and not style_available(hand):
+        raise GraphError(
+            f"there are no {hand} paintings to work from. "
+            "Run `python fetch_references.py` in atelier-engine."
+        )
+
     registry = context.get("registry")
     if registry is not None:
         registry.evict()
@@ -136,54 +150,19 @@ def _edit(inputs, params, context) -> dict[str, Any]:
     return {
         "image": edit_painting(
             inputs["image"],
-            params["instruction"],
+            style_instruction(hand, str(params["instruction"])),
             mask=np.asarray(mask, dtype=bool) if mask is not None else None,
+            references=(
+                style_references(hand, int(params.get("pick") or 0))
+                if hand != STYLE_OFF
+                else None
+            ),
             steps=int(params["steps"]),
             guidance=float(params["guidance"]),
             seed=int(params["seed"]),
             saying=saying,
             # Passed down rather than reported by the node, because the node
             # finishes once and the steps are what take the eighteen minutes.
-            watching=context.get("watching_steps"),
-            stopped=context.get("stopped"),
-        )
-    }
-
-
-def _my_style(inputs, params, context) -> dict[str, Any]:
-    """The same editor, shown two of his own paintings.
-
-    One node rather than a setting on Edit, because the instruction is not his
-    to write: the sentence that makes a reference a manner instead of a subject
-    took several goes to get right and belongs in `style.py`. What he types
-    here is an extra change, and may be nothing at all.
-    """
-    which = str(params["style"])
-    if not style_available(which):
-        raise GraphError(
-            f"there are no {which} paintings to work from. "
-            "Run `python fetch_references.py` in atelier-engine."
-        )
-
-    registry = context.get("registry")
-    if registry is not None:
-        registry.evict()
-
-    saying = context.get("saying")
-    if saying is not None:
-        saying("preparing the model — the first edit of a session takes a few minutes before it starts")
-
-    mask = inputs.get("mask")
-    return {
-        "image": edit_painting(
-            inputs["image"],
-            style_instruction(which, str(params["asking"])),
-            mask=np.asarray(mask, dtype=bool) if mask is not None else None,
-            references=style_references(which, int(params["pick"])),
-            steps=int(params["steps"]),
-            guidance=float(params["guidance"]),
-            seed=int(params["seed"]),
-            saying=saying,
             watching=context.get("watching_steps"),
             stopped=context.get("stopped"),
         )
@@ -273,8 +252,18 @@ def _video(inputs, params, context) -> dict[str, Any]:
 
     OUT.mkdir(exist_ok=True)
     name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-clip.mp4"
-    write_video(frames, OUT / name)
-    high, wide = frames[0].shape[:2]
+
+    # The shape he painted, not the multiple of sixteen the model needed. The
+    # frames are generated at the model's size and written at the painting's,
+    # unless he has typed one of his own.
+    size = shown_size(
+        inputs["image"],
+        frames[0].shape[1::-1],
+        width=int(params["width"]),
+        height=int(params["height"]),
+    )
+    write_video(frames, OUT / name, size=size)
+    wide, high = size
     # Not added to `saved`: that list is pictures the page shows and offers to
     # keep, and an mp4 in it rendered as a broken image.
     #
@@ -405,68 +394,30 @@ CATALOGUE: dict[str, NodeType] = {
             label="Edit",
             category="paint",
             summary=(
-                "Change part of a painting by asking for it. Minutes, not seconds — "
-                "the model is larger than the card and is streamed through it. "
-                "Join a mask to change only that part; without one the whole canvas "
-                "is repainted and the brushwork drifts."
+                "Change part of a painting by asking for it, in any hand or in his. "
+                "Minutes, not seconds — the model is larger than the card and is "
+                "streamed through it. Join a mask to change only that part; without "
+                "one the whole canvas is repainted and the brushwork drifts."
             ),
             inputs=[Port("image", "image"), Port("mask", "mask", optional=True)],
             outputs=[Port("image", "image")],
             params=[
                 Param("instruction", "text", "make the jumper deep red", label="What to change"),
+                # The switch that used to be a second box. `none` leaves the
+                # model to its own hand, which is what an edit always did.
+                Param(
+                    "style",
+                    "choice",
+                    STYLE_OFF,
+                    label="In my style",
+                    choices=(STYLE_OFF, *STYLES),
+                ),
+                Param("pick", "number", 0, label="Which references", minimum=0, maximum=20, step=1),
                 Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
                 Param("guidance", "number", 4.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
             ],
             run=_edit,
-        ),
-        NodeType(
-            key="my-style",
-            label="My style",
-            category="paint",
-            summary=(
-                "Repaints the image in his own hand, by showing the model two "
-                "of his paintings. Oil or watercolour. As slow as Edit, and "
-                "the same model: the difference is what it is shown."
-            ),
-            inputs=[Port("image", "image"), Port("mask", "mask", optional=True)],
-            outputs=[Port("image", "image")],
-            params=[
-                Param(
-                    "style",
-                    "choice",
-                    "oil",
-                    label="Which hand",
-                    choices=tuple(STYLES),
-                ),
-                Param(
-                    "asking",
-                    "text",
-                    "",
-                    label="And also change",
-                ),
-                Param(
-                    "pick",
-                    "number",
-                    0,
-                    label="Which references",
-                    minimum=0,
-                    maximum=20,
-                    step=1,
-                ),
-                Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
-                Param(
-                    "guidance",
-                    "number",
-                    4.5,
-                    label="How literally",
-                    minimum=1,
-                    maximum=10,
-                    step=0.5,
-                ),
-                Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
-            ],
-            run=_my_style,
         ),
         NodeType(
             key="video",
@@ -491,6 +442,8 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
                 Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
+                Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
+                Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
             ],
             run=_video,
         ),

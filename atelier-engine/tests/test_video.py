@@ -67,6 +67,14 @@ class FitTest(unittest.TestCase):
 
         self.assertAlmostEqual(wide / high, 4000 / 3000, places=1)
 
+    def test_it_is_not_the_size_the_clip_comes_out_at(self) -> None:
+        # Both sides rounded to sixteens is a different rectangle from the one
+        # he painted. `shown` is where that is put right.
+        painting = Image.new("RGB", (3652, 4533))
+        wide, high = video.fit(painting, longest=832)
+
+        self.assertNotAlmostEqual(wide / high, 3652 / 4533, places=3)
+
     def test_never_returns_nothing(self) -> None:
         wide, high = video.fit(Image.new("RGB", (4000, 4)), longest=832)
 
@@ -256,3 +264,59 @@ class EmbedTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ShownTest(unittest.TestCase):
+    """The size a clip is written at, which is the painting's and not the model's.
+
+    Nothing in the atelier changes the shape of a painting unless he asks it
+    to. The model's size has to be a multiple of sixteen and a painting's
+    shape almost never is, so the two are separated: generated at the size the
+    model takes, written at the shape it was painted.
+    """
+
+    painting = Image.new("RGB", (3652, 4533))
+    generated = (672, 832)
+
+    def test_it_keeps_the_shape_of_the_painting(self) -> None:
+        wide, high = video.shown(self.painting, self.generated)
+
+        self.assertAlmostEqual(wide / high, 3652 / 4533, places=3)
+
+    def test_it_stays_near_the_size_that_was_generated(self) -> None:
+        # Neither upscaled to the painting's three and a half thousand pixels
+        # nor shrunk below what the model made.
+        wide, high = video.shown(self.painting, self.generated)
+
+        self.assertEqual(max(wide, high), max(self.generated))
+
+    def test_a_typed_width_brings_the_height_with_it(self) -> None:
+        wide, high = video.shown(self.painting, self.generated, width=1080)
+
+        self.assertEqual(wide, 1080)
+        self.assertAlmostEqual(wide / high, 3652 / 4533, places=2)
+
+    def test_a_typed_height_brings_the_width_with_it(self) -> None:
+        wide, high = video.shown(self.painting, self.generated, height=1920)
+
+        self.assertEqual(high, 1920)
+        self.assertAlmostEqual(wide / high, 3652 / 4533, places=2)
+
+    def test_both_typed_are_both_obeyed(self) -> None:
+        # Including a shape he never painted, because that is what typing both
+        # means.
+        self.assertEqual(video.shown(self.painting, self.generated, 1080, 1920), (1080, 1920))
+
+    def test_every_side_is_even_because_h264_requires_it(self) -> None:
+        for painting, want in [((999, 1777), None), ((1001, 1003), None), ((3652, 4533), None)]:
+            with self.subTest(painting=painting):
+                wide, high = video.shown(Image.new("RGB", painting), self.generated)
+                self.assertEqual((wide % 2, high % 2), (0, 0), want)
+
+    def test_an_odd_typed_size_is_brought_down_to_even(self) -> None:
+        self.assertEqual(video.shown(self.painting, self.generated, 1081, 1921), (1080, 1920))
+
+    def test_never_returns_nothing(self) -> None:
+        wide, high = video.shown(Image.new("RGB", (0, 0)), self.generated)
+
+        self.assertGreaterEqual(min(wide, high), 2)

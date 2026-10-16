@@ -48,6 +48,18 @@ const REACH = 26;
 export class ParallaxPreviewComponent {
   readonly painting = input.required<string>();
   readonly depth = input.required<string>();
+  /**
+   * The painting with the nearest thing taken out and the hole filled in,
+   * where the run made one.
+   *
+   * Drawn behind every slice and not moved. A near slice shifts and leaves a
+   * gap; with nothing behind it the gap is a smear of the edge it dragged
+   * along, which is the one thing about this that looked cheap. With it there
+   * is paint back there, inpainted from the canvas itself.
+   *
+   * Optional, because a graph without the fill still has to work.
+   */
+  readonly background = input<string | null>(null);
   readonly dismissed = output<void>();
 
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('stage');
@@ -57,6 +69,8 @@ export class ParallaxPreviewComponent {
 
   /** One slice per depth band, nearest last so it is drawn on top. */
   private slices: { layer: HTMLCanvasElement; parallax: Parallax }[] = [];
+  /** Drawn first and never moved, so a shifted slice reveals paint. */
+  private behind: HTMLImageElement | null = null;
   private pointerX = 0;
   private pointerY = 0;
   private frame = 0;
@@ -65,9 +79,10 @@ export class ParallaxPreviewComponent {
     effect(() => {
       const paintingUrl = this.painting();
       const depthUrl = this.depth();
+      const behindUrl = this.background();
       const stage = this.canvas()?.nativeElement;
       if (!stage) return;
-      void this.prepare(paintingUrl, depthUrl, stage);
+      void this.prepare(paintingUrl, depthUrl, stage, behindUrl);
     });
 
     inject(DestroyRef).onDestroy(() => cancelAnimationFrame(this.frame));
@@ -76,7 +91,8 @@ export class ParallaxPreviewComponent {
   private async prepare(
     paintingUrl: string,
     depthUrl: string,
-    stage: HTMLCanvasElement
+    stage: HTMLCanvasElement,
+    behindUrl: string | null = null
   ): Promise<void> {
     try {
       const [painting, depth] = await Promise.all([load(paintingUrl), load(depthUrl)]);
@@ -90,6 +106,10 @@ export class ParallaxPreviewComponent {
       stage.width = wide;
       stage.height = high;
 
+      // The filled background, if the run made one. Loaded after the two that
+      // matter and allowed to fail on its own: a graph without the fill still
+      // has to move, and so does one whose fill could not be fetched.
+      this.behind = behindUrl ? await load(behindUrl).catch(() => null) : null;
       this.slices = band(painting, depth, wide, high);
       this.ready.set(true);
       this.trouble.set(null);
@@ -120,6 +140,8 @@ export class ParallaxPreviewComponent {
 
     const tick = (): void => {
       ctx.clearRect(0, 0, stage.width, stage.height);
+      // Still, and underneath everything: it is what the gaps show.
+      if (this.behind) ctx.drawImage(this.behind, 0, 0, stage.width, stage.height);
       for (const slice of this.slices) {
         slice.parallax.update(this.pointerX, this.pointerY);
         ctx.drawImage(slice.layer, slice.parallax.x, slice.parallax.y);

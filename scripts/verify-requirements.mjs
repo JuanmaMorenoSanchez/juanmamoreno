@@ -83,7 +83,14 @@ const collapse = (text) => text.replace(/\s+/g, ' ').trim();
  */
 const isAutomatic = (path) =>
   // A hyphen as well as a dot: end-to-end specs are named app.e2e-spec.ts.
-  /[.-](spec|test)\.[a-z]+$/.test(path) || path.split(/[\\/]/)[0] === 'scripts';
+  /[.-](spec|test)\.[a-z]+$/.test(path) ||
+  // And Python puts the word at the front: the engine's tests are test_*.py.
+  // The glob was widened for `.py` when the engine moved into this
+  // repository, and this was not — so a requirement proved only by an engine
+  // test was listed as having no automated proof, which is the opposite of
+  // true and exactly the kind of quiet wrong answer this script is for.
+  /(^|[\\/])test_[\w-]+\.py$/.test(path) ||
+  path.split(/[\\/]/)[0] === 'scripts';
 
 /** Every file in the repository, by name, so a citation need not give a path. */
 async function filesByName() {

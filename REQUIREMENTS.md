@@ -3369,3 +3369,83 @@ named neither the stage nor the value.
 a list" — not held, and does not break the next save — across six shapes that
 are not lists) and `atelier.component.spec.ts` "offers to keep it, and keeps
 nothing without being asked"
+
+### R158 — A duration is said the way a person says it · met
+A run shows `47s`, `20m 47s`, `2h 04m`. Seconds were the only unit, which was
+fine while the atelier cut layers in four: an edit is a hundred seconds a pass
+and a clip is twenty minutes, so a run read `1247s` and the reader divided.
+Under an hour the seconds stay, because they are the difference between nearly
+done and another third to go; over an hour they go, because nobody waiting on
+a two-hour clip cares about the odd seven.
+*Proven by:* `elapsed.spec.ts` (6 tests, the boundaries at 59/60 and 3599/3600,
+and a number that is not one)
+
+### R159 — Nothing changes the shape of a painting unless he asks · met
+A clip comes out the shape the painting is. The model needs both sides to be
+multiples of sixteen, which a painting's shape almost never is — a 3652×4533
+canvas generates at 672×832, a different rectangle — so the frames are
+generated at the size the model takes and written at the shape they were
+painted, scaled once by ffmpeg on the way into the file.
+
+**Width out and Height out are for asking for something else.** Zero means the
+painting's own. One of the two typed, the other follows from the painting, so
+the shape is kept; both typed, both are obeyed, because that is what typing
+both means. Rounded down to even numbers, which `yuv420p` requires and will
+refuse without.
+
+**The two dots marked width and height are not settings**, which was the
+reasonable thing to assume about them. They are what the clip came out at, for
+whatever comes after: the shelf shows them beside a kept clip, and a video
+cannot be measured by loading it into a picture. The node's own help says so
+now.
+*Proven by:* `test_video.py` `ShownTest` (8 tests: the painting's shape kept to
+three places, near the generated size, one side typed bringing the other, both
+typed obeyed, every side even) and
+"test_it_is_not_the_size_the_clip_comes_out_at", which pins the difference the
+shape fix exists for
+
+### R160 — One box for an edit, with his hand as a switch · met
+**Edit** has a setting called *In my style*: off, oil, or watercolour. Off, the
+model paints in whatever manner it likes. Set to a medium, two of his own
+paintings go in beside the canvas and the instruction says they are the manner
+and not the subject.
+
+**My style was a second box for a week and it was this one with a switch.**
+Same model, same mask, same minutes, same settings; the difference was two
+reference images and a sentence in front. Two boxes for one operation is a
+choice to be made before you know which you want, and the switch is the same
+choice at the moment it matters. The flow called **In my style** stays: it
+drops an Edit with the switch already set.
+
+The references, the pairs and what to watch for are unchanged and documented
+on Edit now. A figure walking in from a reference is still the failure to
+watch for, and *how literally* is still what holds it off.
+*Proven by:* `test_style.py` (18 tests, including the switch offered as a list
+with `none` as its default, his instruction passed through untouched with the
+switch off, and a missing reference folder refused before the model loads —
+with the switch on, which is the only thing standing between that test and a
+twenty-billion-parameter load)
+
+### R161 — Make it move paints in behind the nearest thing · met
+The **Make it move** flow now cuts the nearest thing, grows the mask and fills
+behind it, and the parallax draws that filled painting underneath every slice
+and never moves it.
+
+A near slice shifts and leaves a gap. With nothing behind it the gap is a
+smear of the edge it dragged along, which was the one thing about the parallax
+that looked cheap. With the fill there is real paint back there, inpainted
+from the canvas itself.
+
+**The mask is grown before the fill**, as in *Take a figure out* and for the
+same reason: the ring of pixels just outside a figure carries the colour the
+brush left going past, and the inpainter reads it as context and paints a
+faint outline of the thing that was removed.
+
+**The background is optional everywhere.** A graph with no Fill still moves,
+and so does one whose fill could not be fetched — it is loaded after the two
+layers that matter and allowed to fail on its own.
+*Proven by:* `atelier.component.spec.ts` "finds the filled background the same
+way, for the parallax to show" and "has no background to show when the graph
+has no Fill in it"; `parallax-preview.component.spec.ts` "still works when
+there is no background at all"; `test_flows.py` (every flow checked end to end
+against the catalogue, which is what caught the wires on this one)

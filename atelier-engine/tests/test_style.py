@@ -120,28 +120,36 @@ class ReferenceTest(unittest.TestCase):
 
 
 class NodeTest(unittest.TestCase):
+    """The switch on Edit, which used to be a box of its own.
+
+    One operation with a switch rather than two boxes: the model, the mask,
+    the minutes and every setting were the same, and the difference was two
+    reference images and a sentence in front.
+    """
+
     def setUp(self) -> None:
-        self.node = CATALOGUE["my-style"]
+        self.node = CATALOGUE["edit"]
 
     def test_it_offers_the_styles_as_a_list_rather_than_a_text_field(self) -> None:
         # A typed style would be a typo discovered eighteen minutes later.
         which = next(p for p in self.node.params if p.name == "style")
 
         self.assertEqual(which.kind, "choice")
-        self.assertEqual(which.choices, ("oil", "watercolour"))
-        self.assertIn(which.default, which.choices)
+        self.assertEqual(which.choices, ("none", "oil", "watercolour"))
+        # Off by default: an edit is an edit until he says otherwise.
+        self.assertEqual(which.default, "none")
 
     def test_the_choices_reach_the_page(self) -> None:
         published = next(p for p in self.node.published()["params"] if p["name"] == "style")
 
-        self.assertEqual(published["choices"], ("oil", "watercolour"))
+        self.assertEqual(published["choices"], ("none", "oil", "watercolour"))
 
     def test_it_arrives_explained_like_every_other_box(self) -> None:
         # The explanations are written in `help.py` and fastened on after the
         # catalogue is built, replacing whatever the node was declared with.
         # Writing them inline instead is silent: the node is published with an
         # empty ? and nothing fails.
-        self.assertIn("showing the model two of his", self.node.help)
+        self.assertIn("two of his own paintings go in beside the canvas", self.node.help)
         for param in self.node.params:
             with self.subTest(param=param.name):
                 self.assertTrue(param.help, f"{param.name} has no note in PARAM_HELP")
@@ -154,6 +162,12 @@ class NodeTest(unittest.TestCase):
     def test_a_missing_reference_folder_fails_before_the_model_loads(self) -> None:
         # Twelve gigabytes and four minutes of spill happen after this check,
         # and a missing folder used to surface at the end of all of it.
+        #
+        # **With the switch on**, which matters here more than it reads: the
+        # guard is the only thing in this test standing between it and a real
+        # twenty-billion-parameter load. Run with the style off, it does not
+        # fire, the model is fetched for real, and the suite sits there for
+        # ten minutes — which is exactly what happened once.
         with TemporaryDirectory() as empty:
             was, style.REFERENCES = style.REFERENCES, Path(empty)
             style._found.cache_clear()
@@ -161,7 +175,10 @@ class NodeTest(unittest.TestCase):
                 with self.assertRaises(GraphError) as refused:
                     self.node.run(
                         inputs={"image": Image.new("RGB", (8, 8))},
-                        params={p.name: p.default for p in self.node.params},
+                        params={
+                            **{p.name: p.default for p in self.node.params},
+                            "style": "oil",
+                        },
                         context={},
                     )
             finally:
@@ -170,6 +187,13 @@ class NodeTest(unittest.TestCase):
 
         self.assertIn("fetch_references.py", str(refused.exception))
         self.assertIn("oil", str(refused.exception))
+
+    def test_with_the_switch_off_it_is_his_instruction_and_nothing_else(self) -> None:
+        # No references, no sentence in front: the box as it was before the
+        # style was folded into it.
+        self.assertEqual(style.instruction(style.OFF, "make the jumper deep red"),
+                         "make the jumper deep red")
+        self.assertEqual(style.instruction("", "  spaced  "), "spaced")
 
 
 if __name__ == "__main__":

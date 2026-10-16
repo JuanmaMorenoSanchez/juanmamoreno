@@ -258,7 +258,12 @@
 
   @if (moving(); as map) {
     @if (preview(); as url) {
-      <app-parallax-preview [painting]="url" [depth]="map" (dismissed)="moving.set(null)" />
+      <app-parallax-preview
+        [painting]="url"
+        [depth]="map"
+        [background]="behind()"
+        (dismissed)="moving.set(null)"
+      />
     }
   }
 
@@ -293,7 +298,7 @@
       @if (going.note) {
         <span class="atelier-note">{{ going.note }}</span>
       }
-      <span class="atelier-elapsed">{{ going.seconds }}s</span>
+      <span class="atelier-elapsed">{{ elapsed(going.seconds) }}</span>
       <span class="atelier-spacer"></span>
       <button type="button" class="atelier-minor" (click)="stopRun()" data-testid="stop">
         Stop
@@ -322,7 +327,7 @@
 
   @if (result(); as run) {
     <section class="atelier-result" data-testid="result">
-      <h2>Ran in {{ run.seconds }}s</h2>
+      <h2>Ran in {{ elapsed(run.seconds) }}</h2>
 
       <!-- Said once, plainly, because the numbers invite the opposite reading. -->
       <p class="atelier-caveat">

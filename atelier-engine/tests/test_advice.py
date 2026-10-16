@@ -78,8 +78,9 @@ class AdviceTest(unittest.TestCase):
     def test_the_two_slow_models_are_both_advised(self) -> None:
         # The ones worth a warning at all: an edit is a hundred seconds a pass
         # and a clip is twenty minutes, so a number set badly here costs the
-        # afternoon rather than a retry.
-        for key in ("edit", "my-style", "video"):
+        # afternoon rather than a retry. There were three until Edit absorbed
+        # My style, which was the same model with two reference images.
+        for key in ("edit", "video"):
             with self.subTest(node=key):
                 advice = {p.name for p in CATALOGUE[key].params if p.advice}
                 self.assertIn("steps", advice)

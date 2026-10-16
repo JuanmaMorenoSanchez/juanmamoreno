@@ -252,6 +252,12 @@ def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
     A painting is 3652 pixels across and the model was trained near 480p. Asked
     for the full size it would run the card out of memory long before it
     produced anything.
+
+    **This is not the size the clip comes out at.** Both sides are rounded to
+    sixteens, which moves the shape of the picture by up to one part in fifty —
+    a 3652×4533 painting generates at 672×832, which is a different rectangle
+    from the one he painted. `shown` is the size it is written at, and the
+    frames are scaled to it on the way into the file.
     """
     wide, high = painting.size
     scale = longest / max(wide, high)
@@ -259,6 +265,49 @@ def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
         max(16, int(round(wide * scale / 16)) * 16),
         max(16, int(round(high * scale / 16)) * 16),
     )
+
+
+def shown(
+    painting: Image.Image,
+    generated: tuple[int, int],
+    width: int = 0,
+    height: int = 0,
+) -> tuple[int, int]:
+    """The size to write the clip at: the painting's own shape, or his.
+
+    Nothing in the atelier changes the shape of a painting unless he asks it
+    to. The model's size has to be a multiple of sixteen and the painting's
+    shape almost never is, so the clip is generated at the size the model will
+    take and written at the shape it was painted at.
+
+    `width` and `height` are his, where he has typed them. One of the two is
+    enough: the other follows from the painting, which is the only answer that
+    does not invent a shape he did not ask for. Both given, both are obeyed —
+    including a shape of his own, because that is what typing both means.
+
+    Rounded to even numbers, which H.264 requires of a `yuv420p` file and will
+    refuse without.
+    """
+    wide, high = painting.size
+    if wide <= 0 or high <= 0:
+        return even(generated)
+
+    if width > 0 and height > 0:
+        return even((width, height))
+    if width > 0:
+        return even((width, round(width * high / wide)))
+    if height > 0:
+        return even((round(height * wide / high), height))
+
+    # Neither typed: the painting's shape, at about the size it was generated,
+    # so a clip is neither upscaled nor shrunk beyond what the model did.
+    scale = max(generated) / max(wide, high)
+    return even((round(wide * scale), round(high * scale)))
+
+
+def even(size: tuple[int, int]) -> tuple[int, int]:
+    """Both sides even, which `yuv420p` requires. Never below two."""
+    return (max(2, size[0] - size[0] % 2), max(2, size[1] - size[1] % 2))
 
 
 def animate(
@@ -326,18 +375,36 @@ def animate(
     return [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in result.frames[0]]
 
 
-def write_video(frames: list[np.ndarray], where: Path, fps: int = FPS) -> Path:
+def write_video(
+    frames: list[np.ndarray],
+    where: Path,
+    fps: int = FPS,
+    size: tuple[int, int] | None = None,
+) -> Path:
     """The frames as an mp4, through ffmpeg.
 
     Raw frames go in over a pipe rather than as a few dozen PNGs on disk: the
     temporary files were the only part of this that could be left behind when a
     run was stopped part way.
+
+    `size` is the shape to write at, which is the painting's and not the
+    model's. Scaled here rather than frame by frame in Python: ffmpeg is doing
+    a pass over every pixel anyway, and lanczos in C is faster than PIL over a
+    list of arrays.
     """
     if not frames:
         raise ValueError("there are no frames to write")
 
     high, wide = frames[0].shape[:2]
     where.parent.mkdir(parents=True, exist_ok=True)
+
+    # Only when it differs: a scale filter that changes nothing still re-reads
+    # every pixel.
+    scaling = (
+        ["-vf", f"scale={size[0]}:{size[1]}:flags=lanczos"]
+        if size and size != (wide, high)
+        else []
+    )
 
     ran = subprocess.run(
         [
@@ -368,6 +435,7 @@ def write_video(frames: list[np.ndarray], where: Path, fps: int = FPS) -> Path:
             "-preset", "slow",
             # Lets a browser start playing before the whole file has arrived.
             "-movflags", "+faststart",
+            *scaling,
             str(where),
         ],
         input=b"".join(frame.tobytes() for frame in frames),

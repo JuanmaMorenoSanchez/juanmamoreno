@@ -5,6 +5,28 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.21.0
+
+- **feat** — a duration is said the way a person says it: 47s, 20m 47s,
+  2h 04m. An edit is a hundred seconds a pass and a clip is twenty minutes, so
+  a run used to read 1247s and the reader divided.
+- **fix** — a clip comes out the shape the painting is. The model needs sides
+  that are multiples of sixteen, which a painting almost never is, so the
+  frames are generated at the model's size and written at the painting's.
+  Width out and Height out ask for something else: one typed and the other
+  follows from the painting, both typed and both are obeyed.
+- **feat** — **Edit** has the style switch, and **My style** is gone as a
+  separate box. It was this one with two reference images and a sentence in
+  front: same model, same mask, same minutes. The _In my style_ flow stays and
+  drops an Edit with the switch set.
+- **feat** — **Make it move** paints in behind the nearest thing and the
+  parallax draws it underneath every slice. A shifted slice used to leave a
+  smear of the edge it dragged along; now there is paint back there.
+- **chore** — the requirements check recognises `test_*.py` as proof. The glob
+  was widened for the engine's tests when it moved into this repository and
+  this was not, so a requirement proved only by an engine test was reported as
+  having none.
+
 ## 2.20.1
 
 - **fix** — keeping a layer answered "f is not iterable" after the bytes had

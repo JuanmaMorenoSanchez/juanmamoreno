@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
+import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
 import { KeptService } from './kept.service';
@@ -601,6 +602,25 @@ export class AtelierComponent {
   });
 
   /**
+   * The filled background this run made, if it made one.
+   *
+   * Found through the graph like the depth map: the page knows which boxes
+   * are Fill boxes and the run says what each box produced. It is what the
+   * parallax shows through the gap a shifted slice leaves, and a graph
+   * without a Fill simply has none.
+   */
+  protected readonly behind = computed(() => {
+    const run = this.result();
+    if (!run) return null;
+    for (const node of this.nodes()) {
+      if (node.type !== 'fill') continue;
+      const made = run.produced?.[node.id]?.['file'];
+      if (typeof made === 'string' && made.length) return this.engine.layerUrl(made);
+    }
+    return null;
+  });
+
+  /**
    * The piece this run wrote, if it wrote one.
    *
    * The code itself, not a url. It never goes to a server — it came off this
@@ -649,6 +669,9 @@ export class AtelierComponent {
     }
     return null;
   });
+
+  /** A duration as a person says it: 47s, 20m 47s, 2h 04m. */
+  protected readonly elapsed = elapsed;
 
   protected see(file: string): void {
     this.moving.set(this.engine.layerUrl(file));

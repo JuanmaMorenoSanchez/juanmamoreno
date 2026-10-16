@@ -269,6 +269,7 @@ describe('AtelierComponent', () => {
       catalogue: { (): NodeTypeDef[] };
       redraw(drawn: unknown): void;
       run(wanted?: 'web' | 'high'): Promise<void>;
+      behind: { (): string | null };
       tokenId: { set(v: string): void };
       byId(wanted?: 'web' | 'high'): Promise<void>;
       at: { (): 'web' | 'high' | null };
@@ -695,6 +696,57 @@ describe('AtelierComponent', () => {
     fixture.detectChanges();
 
     expect(at(host, 'see-it-move')).not.toBeNull();
+  });
+
+  it('finds the filled background the same way, for the parallax to show', async () => {
+    // What a shifted slice reveals. Found through the graph, like the depth
+    // map: a Fill box and what the run says it produced.
+    const { fixture } = build({
+      states: [
+        going(),
+        done({
+          batch: 'a',
+          seconds: 4,
+          produced: { d: { file: 'a-depth.png' }, f: { file: 'a-background.png' } },
+          saved: ['a-depth.png', 'a-background.png'],
+        }),
+      ],
+    });
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({
+      nodes: [
+        { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+        { id: 'd', type: 'depth', x: 0, y: 0, params: {} },
+        { id: 'f', type: 'fill', x: 0, y: 0, params: {} },
+      ],
+      edges: [{ from: ['src', 'image'], to: ['d', 'image'] }],
+    });
+    const running = parts.run();
+    await new Promise((settle) => setTimeout(settle, 1100));
+    await running;
+
+    expect(parts.behind()).toContain('a-background.png');
+  });
+
+  it('has no background to show when the graph has no Fill in it', async () => {
+    const { fixture } = build({
+      states: [
+        going(),
+        done({ batch: 'a', seconds: 4, produced: { d: { file: 'a-depth.png' } }, saved: [] }),
+      ],
+    });
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({
+      nodes: [{ id: 'd', type: 'depth', x: 0, y: 0, params: {} }],
+      edges: [],
+    });
+    const running = parts.run();
+    await new Promise((settle) => setTimeout(settle, 1100));
+    await running;
+
+    expect(parts.behind()).toBeNull();
   });
 
   describe('a clip', () => {

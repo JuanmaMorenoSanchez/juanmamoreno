@@ -100,18 +100,31 @@ def references(style: str, pick: int = 0) -> list[Image.Image]:
     return [Image.open(path).convert("RGB") for path in chosen]
 
 
+#: What `style` is set to when the hand is not his: an ordinary edit.
+OFF = "none"
+
+
 def instruction(style: str, asking: str = "") -> str:
     """The sentence the model is given: the style, then anything he added.
 
     His own instruction comes second and is marked as a change rather than as
     a description, because the first sentence already told the model to keep
     the subject and the two would otherwise contradict each other.
+
+    With the style off this is his instruction and nothing else, which is what
+    Edit has always been. The two were separate boxes for a week and one of
+    them was the other with a switch: the model, the minutes, the mask and
+    every setting were the same, and the difference was two reference images
+    and a sentence in front.
     """
+    asked = asking.strip()
+    if style in (OFF, "", None):
+        return asked
+
     if style not in STYLES:
         raise ValueError(f"no style called {style!r}; there is {', '.join(STYLES)}")
 
     said = STYLES[style]
-    asked = asking.strip()
     if asked:
         said = f"{said} While repainting it, also make this change: {asked}"
     return said
