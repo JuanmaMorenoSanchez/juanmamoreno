@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.22.0
+
+- **feat** — the essay for a painting is written on his own machine, from a
+  panel under it in the catalogue. The brief and the painting come from the
+  backend, the model on the card writes, the backend counts the countable
+  rules and fetches every link, the model fixes what was named and then
+  translates it, and both languages are stored as a draft. No paid call
+  anywhere, and nothing published: the public route still waits for him to
+  read it.
+
 ## 2.21.1
 
 - **fix** — a setting cannot be given a value that can only fail. A number

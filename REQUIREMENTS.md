@@ -3501,3 +3501,32 @@ to the PyTorch documentation, which says nothing about which setting to move.
 measured combination is allowed, the biggest size is refused even at three
 seconds, and that the check touches no model — which is why it can run without
 a card at all)
+
+### R164 — The essay for a painting is written on his own machine · met
+A panel under each painting in the catalogue writes its essay start to finish,
+with the model on his card and no paid call anywhere: the brief and the
+painting come from the backend, the model writes, the backend counts the
+countable rules and fetches every link, the model fixes what was named, the
+cleaner draft is kept, and the model translates it. Both languages are stored
+as a draft.
+
+**The browser is the only place both halves are reachable.** Cloud Run cannot
+see 127.0.0.1 and a program on his desk cannot read Firestore, so the page
+carries the text between them. That is also why this is a panel on the
+catalogue page rather than a cron job: nothing on a server can do it.
+
+**It stops at a draft.** The public route serves an essay only once he has
+read it, and arriving from a model on his own machine rather than one in a
+data centre changes nothing about that.
+
+**A rewrite that fixes nothing is discarded**, by the same rule the Gemini
+path uses — this model has handed back its own text unchanged — and whatever
+rules the draft still breaks are listed under the button rather than hidden,
+because they are worth knowing before reading it.
+
+**An unreachable engine offers no button**, with the atelier named as the place
+that explains how to start it.
+*Proven by:* `essay-panel.component.spec.ts` (9 tests: the whole loop in
+order, the English first and the Spanish second as raw text, the rewrite
+asked for and the better draft kept, nothing stored when the model fails, and
+no button at all without an engine)

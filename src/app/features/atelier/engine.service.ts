@@ -326,12 +326,26 @@ export class AtelierEngineService {
    * and the model is quantised onto the card.
    */
   async describe(prompt: string, image: string): Promise<string> {
+    return this.write(prompt, [image]);
+  }
+
+  /**
+   * Whatever the brief asked for, written on this machine.
+   *
+   * The same route the short descriptions use, with room for an essay: a
+   * description is a hundred words and an essay is seven hundred with a
+   * caption after it, and the model stops at the ceiling it is given.
+   *
+   * No deadline. An essay is a minute and a half on this card and a timeout
+   * here would throw away work already paid for in card time.
+   */
+  async write(prompt: string, images: string[], mostTokens = 2200): Promise<string> {
     const response = await fetch(
       `${ENGINE}/describe`,
       toLocal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, images: [image] }),
+        body: JSON.stringify({ prompt, images, most_tokens: mostTokens }),
       })
     );
     if (!response.ok) throw new Error(await complaint(response));

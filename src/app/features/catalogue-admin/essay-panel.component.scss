@@ -1,0 +1,54 @@
+.essay {
+  margin-top: 1rem;
+
+  h4 {
+    margin: 0 0 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+}
+
+.essay-write {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.essay-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+/* The rules a draft still breaks. Dim: it is a note, not a failure. */
+.essay-left {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.essay-trouble {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: #c62828;
+}
+
+@media (prefers-color-scheme: dark) {
+  .essay-trouble {
+    color: #ff8a80;
+  }
+}

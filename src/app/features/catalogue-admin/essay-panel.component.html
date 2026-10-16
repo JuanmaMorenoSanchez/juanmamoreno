@@ -1,0 +1,54 @@
+<section class="essay" data-testid="essay-panel">
+  <h4>Essay</h4>
+
+  <!--
+    Unreachable engine first, as everywhere else: from the browser a refused
+    connection and a refused permission are the same error, and the atelier
+    page is where that is explained at length.
+  -->
+  @if (engine.unreachable()) {
+    <p class="essay-note" data-testid="essay-no-engine">
+      The writer runs on this machine and is not answering. Start the engine from the
+      <a href="/atelier">atelier</a>, where it says how.
+    </p>
+  } @else {
+    <button
+      type="button"
+      class="essay-write"
+      [disabled]="stage() !== null"
+      (click)="write()"
+      data-testid="write-essay"
+    >
+      {{ stage() ? 'Writing…' : 'Write it here' }}
+    </button>
+
+    @if (stage(); as doing) {
+      <p class="essay-note" data-testid="essay-stage">{{ doing }}</p>
+    }
+
+    @if (done()) {
+      <p class="essay-note" data-testid="essay-done">
+        Written, in both languages, and kept as a draft. Nothing is public until you have been over
+        it: open the painting's page while signed in to read and correct it.
+      </p>
+    }
+
+    @if (remaining().length) {
+      <!--
+        Not a failure. The draft is stored either way, and these are the
+        countable rules it still breaks after a rewrite — which is worth
+        knowing before reading it, and is sometimes the model refusing to be
+        told.
+      -->
+      <ul class="essay-left" data-testid="essay-remaining">
+        @for (rule of remaining(); track rule) {
+          <li>{{ rule }}</li>
+        }
+      </ul>
+    }
+
+    @if (trouble(); as why) {
+      <p class="essay-trouble" data-testid="essay-trouble">{{ why }}</p>
+    }
+  }
+</section>
