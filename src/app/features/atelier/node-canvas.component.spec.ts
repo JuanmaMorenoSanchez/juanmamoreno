@@ -210,6 +210,46 @@ describe('NodeCanvasComponent', () => {
       expect(host.querySelector('[data-testid="caution-n1-steps"]')).toBeNull();
     });
 
+    /**
+     * A number field draws min and max and a browser enforces neither.
+     *
+     * Twelve went into a seconds field whose maximum is five and the card was
+     * asked for nineteen gigabytes; fifty went into a guidance field built
+     * for ten, and a diffusion model answers that with a black rectangle.
+     * Neither is a mistake a person should be able to make by typing.
+     */
+    describe('a number typed outside what the box takes', () => {
+      const sent = (value: string) => {
+        const { fixture, host } = build([withSteps([steps()])], node({ steps: 20 }));
+        type Change = { nodes: { params: Record<string, unknown> }[] };
+        const changes: Change[] = [];
+        fixture.componentInstance.changed.subscribe((change: unknown) =>
+          changes.push(change as Change)
+        );
+
+        const field = host.querySelector("input[type='number']") as HTMLInputElement;
+        field.value = value;
+        field.dispatchEvent(new Event('change'));
+        return changes.at(-1)?.nodes[0].params['steps'];
+      };
+
+      it('comes back to the highest the box takes', () => {
+        expect(sent('500')).toBe(50);
+      });
+
+      it('comes back up to the lowest', () => {
+        expect(sent('1')).toBe(4);
+      });
+
+      it('is left alone when it is already inside', () => {
+        expect(sent('30')).toBe(30);
+      });
+
+      it('falls back to the default rather than storing nonsense', () => {
+        expect(sent('')).toBe(20);
+      });
+    });
+
     it('makes the box taller when a warning is showing, so rows do not overlap', () => {
       // Every row was twenty pixels while every control was one line. A box
       // three lines tall and a line of red underneath are not.

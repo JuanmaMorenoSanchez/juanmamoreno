@@ -18,6 +18,7 @@ import numpy as np
 from PIL import Image
 
 from engine import video
+from engine.nodes import GraphError
 
 
 class FramesForTest(unittest.TestCase):
@@ -320,3 +321,52 @@ class ShownTest(unittest.TestCase):
         wide, high = video.shown(Image.new("RGB", (0, 0)), self.generated)
 
         self.assertGreaterEqual(min(wide, high), 2)
+
+
+class AffordTest(unittest.TestCase):
+    """What the card can hold, decided before the model is loaded.
+
+    Twelve seconds at 1200 asked for 2.53 GiB it did not have and the card's
+    own words were four lines of allocator arithmetic and a link to the
+    PyTorch docs. What is needed instead is which two numbers to lower.
+
+    The line comes from one measured point — three seconds at 832, which every
+    default here points at — and twice it, which is a judgement. `animate`
+    catches the card running out anyway, because a line drawn from one point
+    will be wrong somewhere.
+    """
+
+    painting = Image.new("RGB", (3652, 4533))
+
+    def allowed(self, seconds: float, longest: int) -> bool:
+        wide, high = video.fit(self.painting, longest)
+        try:
+            video.afford(video.frames_for(seconds), wide, high)
+            return True
+        except GraphError:
+            return False
+
+    def test_the_measured_combination_is_allowed(self) -> None:
+        self.assertTrue(self.allowed(3, 832))
+
+    def test_the_longest_clip_at_the_default_size_is_allowed(self) -> None:
+        self.assertTrue(self.allowed(5, 832))
+
+    def test_the_biggest_size_is_refused_even_at_three_seconds(self) -> None:
+        self.assertFalse(self.allowed(3, 1280))
+
+    def test_it_says_which_numbers_to_lower(self) -> None:
+        wide, high = video.fit(self.painting, 1280)
+        with self.assertRaises(GraphError) as refused:
+            video.afford(video.frames_for(5), wide, high)
+
+        said = str(refused.exception)
+        self.assertIn("frames", said)
+        self.assertIn("Three seconds at 832", said)
+        self.assertIn("Lower the seconds first", said)
+
+    def test_it_refuses_before_anything_is_loaded(self) -> None:
+        # The point of the check. `afford` touches no model and no card: it is
+        # arithmetic on three numbers, callable without a GPU, which is why
+        # this test can run at all.
+        video.afford(73, 672, 832)

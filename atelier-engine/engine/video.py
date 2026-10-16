@@ -34,6 +34,8 @@ from typing import Callable
 import numpy as np
 from PIL import Image
 
+from .nodes import GraphError
+
 MODELS = Path(__file__).resolve().parent.parent / "models"
 SPILL = MODELS / "offload"
 REPO = "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
@@ -310,6 +312,42 @@ def even(size: tuple[int, int]) -> tuple[int, int]:
     return (max(2, size[0] - size[0] % 2), max(2, size[1] - size[1] % 2))
 
 
+#: The largest clip measured to fit, as frames times pixels.
+#:
+#: Three seconds at 832 on a 3652×4533 painting: 73 frames at 672×832, which
+#: is 40.8 million pixels of latent and the combination every default here
+#: points at. It is one measured point and the only one — the model holds the
+#: whole clip at once, so memory grows with frames and area together.
+MEASURED = 73 * 672 * 832
+
+#: How far past it to allow.
+#:
+#: Twice, which is a judgement and not a measurement: the card has 8 GB, the
+#: model and its text encoder are most of that, and the headroom left is not
+#: enough to be generous with. Anything beyond this is refused before the
+#: model loads, and `animate` catches the card running out anyway — because a
+#: line drawn from one point is a line that will be wrong somewhere.
+AFFORDABLE = 2.0
+
+
+def afford(frames: int, width: int, height: int) -> None:
+    """Refuses a clip too big for the card, before anything is loaded.
+
+    Measured once at three seconds and 832. The pair of numbers in the message
+    is the whole point: an allocator's complaint about 2.53 GiB says nothing
+    about which setting to move.
+    """
+    asked = frames * width * height
+    if asked <= MEASURED * AFFORDABLE:
+        return
+
+    raise GraphError(
+        f"{frames} frames at {width}×{height} is {asked / MEASURED:.1f} times the biggest clip "
+        "this card has been measured to hold. Three seconds at 832 fits. Lower the seconds "
+        "first: the model works on the whole clip at once, so they cost more than the size does."
+    )
+
+
 def animate(
     painting: Image.Image,
     prompt: str,
@@ -324,9 +362,11 @@ def animate(
     """The painting, moving, as a list of RGB frames."""
     import torch
 
-    pipeline = _pipeline()
     width, height = fit(painting, longest)
     count = frames_for(seconds)
+    afford(count, width, height)
+
+    pipeline = _pipeline()
     start = painting.convert("RGB").resize((width, height), Image.Resampling.LANCZOS)
 
     def stepped(_pipe, step: int, _timestep, kwargs):
@@ -355,19 +395,32 @@ def animate(
         device="cuda", dtype=pipeline.transformer.dtype
     )
 
-    result = pipeline(
-        image=start,
-        prompt_embeds=said[:1],
-        negative_prompt_embeds=said[1:],
-        height=height,
-        width=width,
-        num_frames=count,
-        num_inference_steps=steps,
-        guidance_scale=guidance,
-        generator=torch.Generator(device="cuda").manual_seed(seed),
-        output_type="np",
-        callback_on_step_end=stepped,
-    )
+    try:
+        result = pipeline(
+            image=start,
+            prompt_embeds=said[:1],
+            negative_prompt_embeds=said[1:],
+            height=height,
+            width=width,
+            num_frames=count,
+            num_inference_steps=steps,
+            guidance_scale=guidance,
+            generator=torch.Generator(device="cuda").manual_seed(seed),
+            output_type="np",
+            callback_on_step_end=stepped,
+        )
+    except torch.cuda.OutOfMemoryError as ran_out:
+        # The card's own words are four lines of allocator arithmetic and a
+        # link to the PyTorch docs. What is actually needed is which two
+        # numbers to lower, so the budget above gets a second chance to be
+        # wrong in the right direction: it is drawn from one measured point,
+        # and this is what happens when the line is in the wrong place.
+        raise GraphError(
+            f"{seconds:g} seconds at {longest} did not fit in the card "
+            f"({count} frames at {width}×{height}). Three seconds at 832 does. "
+            "Lower the seconds first: the model works on the whole clip at once, "
+            "so they cost more than the size does."
+        ) from ran_out
 
     # (frames, h, w, 3) in 0..1 — written out as 8-bit here rather than left
     # for the caller to guess at, which is the asymmetry that cost a day in

@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.21.1
+
+- **fix** — a setting cannot be given a value that can only fail. A number
+  field draws min and max and a browser enforces neither, and the engine took
+  whatever arrived: twelve seconds reached a video node whose maximum is five
+  and asked the card for nineteen gigabytes, and a guidance of fifty reached
+  an editor built for ten and came back black. The engine now refuses, naming
+  the box, the setting and the range, before any box runs; the page brings a
+  typed number back into range as it is typed.
+- **fix** — a clip too big for the card is refused before the model loads,
+  measured against the largest combination known to fit, and a card that runs
+  out anyway says which number to lower instead of printing allocator
+  arithmetic.
+
 ## 2.21.0
 
 - **feat** — a duration is said the way a person says it: 47s, 20m 47s,

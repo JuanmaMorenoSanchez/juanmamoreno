@@ -3449,3 +3449,55 @@ way, for the parallax to show" and "has no background to show when the graph
 has no Fill in it"; `parallax-preview.component.spec.ts` "still works when
 there is no background at all"; `test_flows.py` (every flow checked end to end
 against the catalogue, which is what caught the wires on this one)
+
+### R162 — A setting cannot be given a value that can only fail · met
+Every setting is checked against what its box accepts, in the engine, before
+any box runs. A number outside its range, a number that is not a number, and a
+choice that is not one of the choices are each refused with a sentence naming
+the box, the setting and the range. The page brings a typed number back into
+range as it is typed, so the number he is looking at is the number that will
+be used.
+
+**Both halves were broken in the same way.** The page draws `min` and `max` on
+a number field and a browser enforces neither — typing a larger number is
+allowed — and the engine took whatever arrived, filling in defaults for what
+was missing and trusting the rest. So two runs failed that could not have
+worked: twelve seconds reached a video node whose maximum is five and asked
+the card for nineteen gigabytes, and a guidance of fifty reached an editor
+built for ten and came back a black rectangle, which is what a diffusion model
+does when its guidance pushes the latents past what the numbers hold.
+
+Neither is a mistake a person should be able to make by typing. The thing that
+knows the range is the thing that has to check it.
+
+**Refused rather than clamped, in the engine.** Quietly running five seconds
+when the field says twelve produces a clip that does not match the screen, and
+the next question is why the number moved. The page clamps instead, where the
+number moving is visible.
+
+**A setting the catalogue has never heard of is dropped, not refused**: a
+saved graph outlives the engine that drew it.
+*Proven by:* `test_settle.py` (12 tests, including the two numbers that caused
+the failures, a graph stopped before any box runs, and a whole number staying
+whole) and `node-canvas.component.spec.ts` "a number typed outside what the
+box takes" (4 tests)
+
+### R163 — A clip too big for the card is refused, not attempted · met
+A clip is measured against the card before the model is loaded: frames times
+area, against the largest combination measured to fit — three seconds at 832,
+which is 73 frames at 672×832 and the combination every default points at —
+and refused above twice that. Five seconds at 832 is allowed; three seconds at
+1280 is not.
+
+**And the card running out anyway is caught.** The line is drawn from one
+measured point, so it will be wrong somewhere; a `CUDA out of memory` is
+turned into the same sentence, naming the frames, the size, the combination
+that does fit, and which number to lower first — the seconds, because the
+model holds the whole clip at once and they cost more than the size does.
+
+What the card says on its own is four lines of allocator arithmetic and a link
+to the PyTorch documentation, which says nothing about which setting to move.
+*Proven by:* `test_video.py` `AffordTest` (5 tests, including that the
+measured combination is allowed, the biggest size is refused even at three
+seconds, and that the check touches no model — which is why it can run without
+a card at all)

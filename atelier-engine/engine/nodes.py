@@ -190,11 +190,16 @@ def run_graph(
     which is the only point at which stopping leaves nothing half-written.
     """
     kinds = {}
+    settled: dict[str, dict[str, Value]] = {}
     for node_id, node in nodes.items():
         key = node.get("type")
         if key not in catalogue:
             raise GraphError(f"{node_id!r} is a {key!r}, which this engine does not have")
         kinds[node_id] = key
+        # Every setting checked before anything runs, rather than as each box
+        # is reached: a graph with a number in it that cannot work should say
+        # so at once, not after the first box has spent four minutes.
+        settled[node_id] = settle(catalogue[key], node.get("params") or {})
 
     produced: dict[str, dict[str, Value]] = {}
     running = order(kinds, edges)
@@ -223,9 +228,84 @@ def run_graph(
         if missing:
             raise GraphError(f"{node_id!r} ({kind.label}) has nothing joined to: {', '.join(missing)}")
 
-        settings = {p.name: p.default for p in kind.params}
-        settings.update(nodes[node_id].get("params") or {})
-
-        produced[node_id] = kind.run(inputs=arriving, params=settings, context=context or {})
+        produced[node_id] = kind.run(
+            inputs=arriving, params=settled[node_id], context=context or {}
+        )
 
     return produced
+
+
+def settle(kind: NodeType, given: dict[str, Any]) -> dict[str, Value]:
+    """Every setting for one box, checked against what the box accepts.
+
+    **The engine used to take whatever arrived.** The page draws `min` and
+    `max` on a number field and a browser does not enforce either — typing a
+    larger number is allowed, and nothing between the keyboard and the model
+    disagreed. So twelve seconds went to a video node whose maximum is five,
+    and a `true_cfg_scale` of fifty went to an editor built for ten: the first
+    asked the card for nineteen gigabytes it does not have, and the second is
+    how a run comes back as a black rectangle, which is what a diffusion model
+    does when its guidance pushes the latents to infinity.
+
+    Neither failure is the person's mistake. A field that accepts a number it
+    cannot use is the mistake, and the fix is for the thing that knows the
+    range to be the thing that checks it.
+
+    **Refused rather than clamped.** Quietly running five seconds when the
+    field says twelve produces a clip that does not match what is on screen,
+    and the next question would be why the number moved. A sentence naming the
+    box, the setting and the range can be acted on.
+
+    A setting the catalogue has never heard of is dropped, not refused: a
+    saved graph outlives the engine that drew it, and an old spelling left in
+    a stored graph is not worth a dead end.
+    """
+    settings: dict[str, Value] = {p.name: p.default for p in kind.params}
+
+    for param in kind.params:
+        if param.name not in given:
+            continue
+        value = given[param.name]
+
+        if param.kind == "number":
+            try:
+                number = float(value)
+            except (TypeError, ValueError):
+                raise GraphError(
+                    f"{kind.label}: {param.label or param.name} needs a number, not {value!r}"
+                ) from None
+            if number != number or number in (float("inf"), float("-inf")):
+                raise GraphError(f"{kind.label}: {param.label or param.name} needs a real number")
+            if param.minimum is not None and number < param.minimum:
+                raise GraphError(
+                    f"{kind.label}: {param.label or param.name} is {_said(number)}, and the "
+                    f"lowest it can be is {_said(param.minimum)}"
+                )
+            if param.maximum is not None and number > param.maximum:
+                raise GraphError(
+                    f"{kind.label}: {param.label or param.name} is {_said(number)}, and the "
+                    f"highest it can be is {_said(param.maximum)}"
+                )
+            # Whole numbers stay whole: a step count of 20.0 reads as a bug.
+            settings[param.name] = (
+                int(number) if float(param.step or 0) == 1 or float(number).is_integer() else number
+            )
+        elif param.kind == "choice":
+            said = str(value)
+            if param.choices and said not in param.choices:
+                raise GraphError(
+                    f"{kind.label}: {param.label or param.name} is {said!r}, and it can only be "
+                    f"{', '.join(param.choices)}"
+                )
+            settings[param.name] = said
+        elif param.kind == "toggle":
+            settings[param.name] = bool(value)
+        else:
+            settings[param.name] = value
+
+    return settings
+
+
+def _said(number: float) -> str:
+    """A number as a person writes it: 20, not 20.0; 4.5 stays 4.5."""
+    return str(int(number)) if float(number).is_integer() else str(number)

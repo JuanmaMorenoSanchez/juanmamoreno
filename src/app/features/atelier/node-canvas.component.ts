@@ -232,14 +232,43 @@ export class NodeCanvasComponent {
     return '';
   }
 
+  /**
+   * Stores a setting, held to what the box will actually accept.
+   *
+   * A number field draws `min` and `max` and a browser enforces neither:
+   * typing a bigger number is allowed, and nothing between the keyboard and
+   * the model used to disagree. Twelve seconds reached a video node whose
+   * maximum is five and asked the card for nineteen gigabytes; a guidance of
+   * fifty reached an editor built for ten, which is how a run comes back as a
+   * black rectangle.
+   *
+   * Brought back into range here, where he can see the number move, and
+   * refused by the engine if it arrives out of range anyway — the page is not
+   * the only thing that can send a graph.
+   */
   protected setParam(node: GraphNode, param: ParamDef, raw: string | boolean): void {
-    const value = param.kind === 'number' ? Number(raw) : raw;
+    const value =
+      param.kind === 'number'
+        ? this.inRange(param, String(raw).trim() === '' ? Number.NaN : Number(raw))
+        : raw;
     this.changed.emit({
       nodes: this.nodes().map((n) =>
         n.id === node.id ? { ...n, params: { ...n.params, [param.name]: value } } : n
       ),
       edges: this.edges(),
     });
+  }
+
+  /** A number brought inside what the engine says the field accepts. */
+  private inRange(param: ParamDef, value: number): number {
+    // An emptied field is somebody retyping, not somebody asking for the
+    // lowest the box takes — `Number('')` is zero, which would be clamped to
+    // the minimum and leave him looking at a number he never typed.
+    if (!Number.isFinite(value)) return Number(param.default) || 0;
+
+    const low = param.minimum ?? Number.NEGATIVE_INFINITY;
+    const high = param.maximum ?? Number.POSITIVE_INFINITY;
+    return Math.min(high, Math.max(low, value));
   }
 
   // ---- pointer ----
