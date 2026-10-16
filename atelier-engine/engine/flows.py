@@ -292,6 +292,34 @@ IN_MY_STYLE = Flow(
     ),
 )
 
+FILM_SEVERAL_SCENES = Flow(
+    key="film-it-in-scenes",
+    label="Film it in scenes",
+    blurb="A sequence: each scene carries on from the last frame of the one before.",
+    about=(
+        "The way to a clip longer than five seconds. The model holds every "
+        "frame of a clip at once and this card has eight gigabytes, so a single "
+        "pass stops at five seconds — that is the card talking. Each scene here "
+        "is its own pass at the cost of one clip, and the frames are joined at "
+        "the end.\n\n"
+        "**One sentence per scene, one to a line.** They read as a sequence: "
+        "what happens first, then what happens next. Each starts from the last "
+        "frame of the one before, so write motion rather than appearance — the "
+        "frame it starts from already supplies what the thing looks like.\n\n"
+        "**The paint softens with every hop.** Scene one starts from your "
+        "painting; scene two from a frame the model drew of it; scene three "
+        "from a frame drawn of that. Six is the most it will chain and three is "
+        "usually where it stops looking like yours.\n\n"
+        "Minutes per scene. Two scenes at three seconds tells you whether the "
+        "sequence works, and costs a fraction of six."
+    ),
+    nodes=(
+        Placed(at="painting", type="painting", column=0, row=0),
+        Placed(at="film", type="scenes", column=1, row=0),
+    ),
+    edges=(("painting", "image", "film", "image"),),
+)
+
 WRITE_A_PIECE = Flow(
     key="write-a-piece",
     label="Write a piece",
@@ -328,6 +356,7 @@ FLOWS: dict[str, Flow] = {
         IN_MY_STYLE,
         TAKE_A_FIGURE_OUT,
         FILM_IT,
+        FILM_SEVERAL_SCENES,
         WRITE_A_PIECE,
     )
 }

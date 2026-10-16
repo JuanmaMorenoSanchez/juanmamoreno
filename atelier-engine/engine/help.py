@@ -120,6 +120,27 @@ HELP: dict[str, str] = {
         "shelf shows them beside a kept clip, and a video cannot be measured "
         "by loading it into a picture."
     ),
+    "scenes": (
+        "Several scenes in one clip, each carrying on from the last frame of the one "
+        "before. One sentence per scene, one to a line.\n\n"
+        "**Why this exists.** The model holds every frame of a clip in memory at once, "
+        "so twelve seconds is four times the memory of three and this card has none to "
+        "spare: a single clip stops at five seconds and that is the card talking, not a "
+        "preference. Each scene here is generated on its own, at the cost of one clip, "
+        "and the frames are joined at the end. The length is bounded by patience "
+        "instead.\n\n"
+        "**What it costs is faithfulness.** The first scene starts from your painting. "
+        "The second starts from a frame the model drew of your painting, and the third "
+        "from a frame drawn of that. The brushwork softens with every hop, and by the "
+        "fourth it is a copy of a copy. Six is the most it will chain, and three is "
+        "usually where it stops looking like yours.\n\n"
+        "**Write what happens, scene by scene**, and keep each line about motion: she "
+        "turns her head towards the window, then the light fails and the room goes "
+        "blue. A line describing what the thing looks like wastes a scene, because the "
+        "frame it starts from already supplies that.\n\n"
+        "Minutes per scene, the same as Video. Find the motion with two scenes at three "
+        "seconds before asking for six."
+    ),
     "sketch": (
         "Writes a small moving piece from a sentence, as code, which then runs "
         "beside the box.\n\n"
@@ -250,6 +271,36 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "The height to write the clip at. Zero means the painting's own.\n\n"
         "Typed on its own, the width follows from the painting. 1920 with the "
         "width left at zero is the usual way to ask for something tall."
+    ),
+    ("scenes", "asking"): (
+        "One scene per line. Each starts from the last frame of the one above it, so "
+        "they read as a sequence: what happens first, then what happens next."
+    ),
+    ("scenes", "seconds"): (
+        "How long each scene runs, not the whole clip. Six scenes at three seconds is "
+        "eighteen seconds of film and six times the wait of one."
+    ),
+    ("scenes", "steps"): (
+        "How many passes over each scene. Multiplied by the number of scenes, so this "
+        "is the setting that decides whether the run is twenty minutes or two hours."
+    ),
+    ("scenes", "guidance"): (
+        "How literally to take each sentence. The same dial as Video, applied to every "
+        "scene."
+    ),
+    ("scenes", "seed"): (
+        "The random start for the first scene; the others walk up from it. Changing a "
+        "later sentence does not reroll the scenes before it."
+    ),
+    ("scenes", "longest"): (
+        "How big to generate, on the long side. Costs what it costs in Video, once per "
+        "scene."
+    ),
+    ("scenes", "width"): (
+        "The width to write the joined clip at. Zero means the painting's own."
+    ),
+    ("scenes", "height"): (
+        "The height to write the joined clip at. Zero means the painting's own."
     ),
     ("sketch", "asking"): (
         "What the piece should do, in a sentence. Concrete and visual works best — "
@@ -386,6 +437,24 @@ PARAM_ADVICE: dict[tuple[str, str], Advice] = {
         above=960,
         high="The model was trained near 832, and the time and the memory both "
         "grow with the area. Raise this only once the motion is right.",
+    ),
+    ("scenes", "steps"): Advice(
+        below=20,
+        above=35,
+        low="Below about twenty the motion judders rather than flows, in every scene.",
+        high="Multiplied by the number of scenes: thirty-five across six scenes is "
+        "already an afternoon.",
+    ),
+    ("scenes", "guidance"): Advice(
+        below=3,
+        above=7,
+        low="Under about three it drifts, and a scene that barely moves is a scene "
+        "wasted.",
+        high="Over about seven it forces motion the frame never suggested.",
+    ),
+    ("scenes", "longest"): Advice(
+        above=960,
+        high="Once per scene, so this is where a run turns into hours.",
     ),
     ("sketch", "most_tokens"): Advice(
         below=400,

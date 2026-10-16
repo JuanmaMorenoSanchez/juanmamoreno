@@ -428,6 +428,85 @@ def animate(
     return [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in result.frames[0]]
 
 
+#: The most scenes one run will chain.
+#:
+#: Not a memory limit — each scene is generated on its own and costs what one
+#: clip costs. It is the drift: every hop starts from a frame the model drew
+#: rather than from the painting, so the paint it was imitating is a copy of a
+#: copy by the third or fourth, and the look stops being his.
+MOST_SCENES = 6
+
+
+def scenes(
+    painting: Image.Image,
+    asking: list[str],
+    seconds: float = LEAST_SECONDS,
+    steps: int = 30,
+    guidance: float = 5.0,
+    seed: int = 7,
+    longest: int = 832,
+    watching: Callable[[int, int], None] | None = None,
+    stopped: Callable[[], bool] | None = None,
+    saying: Callable[[str | None], None] | None = None,
+) -> list[np.ndarray]:
+    """One clip in several scenes, each carrying on from the last frame of the one before.
+
+    **Why this is not one longer clip.** The model holds every frame of a clip
+    in memory at once, so twelve seconds is four times the memory of three and
+    the card has none to spare. Each scene here is generated on its own, at the
+    cost of one clip, and the frames are joined at the end — so the length is
+    bounded by patience rather than by the card.
+
+    **What it costs instead is faithfulness.** Scene one starts from his
+    painting. Scene two starts from a frame the model drew of his painting, and
+    scene three from a frame drawn of that. The brushwork softens with each
+    hop, which is the trade and is why `MOST_SCENES` exists.
+
+    `asking` is one sentence per scene. The seed walks with the scenes, so a
+    rerun gives the same film and changing one sentence does not reroll the
+    others.
+    """
+    wanted = [said.strip() for said in asking if said.strip()]
+    if not wanted:
+        raise GraphError("there are no scenes here: write one sentence per scene, one to a line")
+    if len(wanted) > MOST_SCENES:
+        raise GraphError(
+            f"{len(wanted)} scenes is more than this will chain. Six is the most, and by the "
+            "fourth the paint is a copy of a copy. Keep the ones that matter and film the rest "
+            "as a second clip."
+        )
+
+    frames: list[np.ndarray] = []
+    start = painting
+    for at, said in enumerate(wanted):
+        if saying is not None:
+            saying(f"scene {at + 1} of {len(wanted)}: {said[:60]}")
+
+        made = animate(
+            start,
+            said,
+            seconds=seconds,
+            steps=steps,
+            guidance=guidance,
+            # Walked rather than shared: the same seed on every scene makes
+            # every scene the same motion.
+            seed=seed + at,
+            longest=longest,
+            watching=watching,
+            stopped=stopped,
+        )
+
+        # The first frame of a scene is the last frame of the one before it,
+        # which is where it was told to start. Kept once, or the film stutters
+        # on every join.
+        frames.extend(made if at == 0 else made[1:])
+        start = Image.fromarray(made[-1])
+
+    if saying is not None:
+        saying(None)
+    return frames
+
+
 def write_video(
     frames: list[np.ndarray],
     where: Path,

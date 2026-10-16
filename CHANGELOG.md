@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.23.0
+
+- **feat** — a clip can run longer than one pass, in scenes. **Scenes** takes
+  one sentence per scene, one to a line, and each starts from the last frame
+  of the one before, so six scenes at three seconds is eighteen seconds of
+  film on a card that cannot hold six seconds in a single pass. The paint
+  softens with every hop, which is why six is the most it will chain. The flow
+  **Film it in scenes** arrives wired.
+
 ## 2.22.0
 
 - **feat** — the essay for a painting is written on his own machine, from a

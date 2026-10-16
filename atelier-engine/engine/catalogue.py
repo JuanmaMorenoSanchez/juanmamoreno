@@ -36,7 +36,12 @@ from .style import (
 from .help import HELP, PARAM_ADVICE, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
-from .video import animate as animate_painting, shown as shown_size, write_video
+from .video import (
+    animate as animate_painting,
+    scenes as scene_by_scene,
+    shown as shown_size,
+    write_video,
+)
 from .nodes import GraphError, NodeType, Param, Port
 from .operations import find as find_things, isolate as isolate_thing
 
@@ -273,6 +278,59 @@ def _video(inputs, params, context) -> dict[str, Any]:
     return {"file": name, "frames": len(frames), "width": wide, "height": high}
 
 
+def _scenes(inputs, params, context) -> dict[str, Any]:
+    """One clip in several scenes, each carrying on from the last frame before.
+
+    The same model and the same cost per scene as Video; what it buys is
+    length the card could not hold in one pass, and what it costs is the paint
+    softening with every hop.
+    """
+    registry = context.get("registry")
+    if registry is not None:
+        registry.evict()
+
+    saying = context.get("saying")
+    if saying is not None:
+        saying("preparing the model — the first clip of a session spends minutes before a step runs")
+
+    frames = scene_by_scene(
+        inputs["image"],
+        str(params["asking"]).splitlines(),
+        seconds=float(params["seconds"]),
+        steps=int(params["steps"]),
+        guidance=float(params["guidance"]),
+        seed=int(params["seed"]),
+        longest=int(params["longest"]),
+        watching=context.get("watching_steps"),
+        stopped=context.get("stopped"),
+        saying=saying,
+    )
+
+    if saying is not None:
+        saying("encoding the clip")
+
+    OUT.mkdir(exist_ok=True)
+    name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-scenes.mp4"
+    size = shown_size(
+        inputs["image"],
+        frames[0].shape[1::-1],
+        width=int(params["width"]),
+        height=int(params["height"]),
+    )
+    write_video(frames, OUT / name, size=size)
+    wide, high = size
+    return {
+        "file": name,
+        "frames": len(frames),
+        "width": wide,
+        "height": high,
+        # The one number that is not obvious from the others: a scene is not a
+        # fixed length, because the frame count is rounded to what the latent
+        # divides by.
+        "scenes": len([said for said in str(params["asking"]).splitlines() if said.strip()]),
+    }
+
+
 def _save(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     stem = (params["name"] or "layer").strip().replace(" ", "-") or "layer"
@@ -446,6 +504,48 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
             ],
             run=_video,
+        ),
+        NodeType(
+            key="scenes",
+            label="Scenes",
+            category="paint",
+            summary=(
+                "Several scenes in one clip, each carrying on from the last frame of "
+                "the one before. One sentence per scene, one to a line. Longer than "
+                "the card can hold in a single pass, at the cost of the paint "
+                "softening with every scene."
+            ),
+            inputs=[Port("image", "image")],
+            outputs=[
+                Port("file", "text"),
+                Port("frames", "number"),
+                Port("width", "number"),
+                Port("height", "number"),
+                Port("scenes", "number"),
+            ],
+            params=[
+                Param(
+                    "asking",
+                    "text",
+                    # Two lines, because one would read as a single prompt and
+                    # the whole of this box is that each line is a scene.
+                    "\n".join(
+                        (
+                            "she turns her head towards the window",
+                            "the light fails and the room goes blue",
+                        )
+                    ),
+                    label="The scenes",
+                ),
+                Param("seconds", "number", 3.0, label="Each scene", minimum=3.0, maximum=5.0, step=0.5),
+                Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
+                Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
+                Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
+                Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
+                Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
+            ],
+            run=_scenes,
         ),
         NodeType(
             key="sketch",

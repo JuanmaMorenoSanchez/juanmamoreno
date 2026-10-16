@@ -3530,3 +3530,38 @@ that explains how to start it.
 order, the English first and the Spanish second as raw text, the rewrite
 asked for and the better draft kept, nothing stored when the model fails, and
 no button at all without an engine)
+
+### R165 — A clip can run longer than one pass, in scenes · met
+A box called **Scenes** and a flow called **Film it in scenes** take one
+sentence per scene, one to a line, and make a single clip of them: each scene
+starts from the last frame of the one before, and the frames are joined at the
+end.
+
+**It exists because a single pass stops at five seconds and that is the card
+talking.** The model holds every frame of a clip in memory at once, so twelve
+seconds is four times the memory of three and the card has none to spare. Each
+scene here is its own pass at the cost of one clip, so the length is bounded
+by patience rather than by memory — six scenes at three seconds is eighteen
+seconds of film.
+
+**What it costs is faithfulness, and the limit is drawn there.** The first
+scene starts from his painting, the second from a frame the model drew of it,
+the third from a frame drawn of that: the brushwork softens with every hop and
+by the fourth it is a copy of a copy. Six is the most it will chain, and the
+refusal says why rather than citing a number.
+
+**The join does not repeat a frame.** The first frame of a scene is the last
+frame of the one before, which is what it was told to start from; kept twice,
+the film stutters on every join.
+
+**The seed walks with the scenes** rather than being shared: one seed for all
+of them makes every scene the same motion, and walking means changing a later
+sentence does not reroll the ones before it.
+
+**It says which scene it is on**, because minutes per scene over six scenes is
+an afternoon, and a progress note that says nothing is indistinguishable from
+a hang.
+*Proven by:* `test_scenes.py` (10 tests: one pass per scene, the first from the
+painting and every other from the last frame before it, the join not repeating
+a frame, the seed walking, blank lines not counting as scenes, and both
+refusals landing before any run)
