@@ -32,7 +32,7 @@ from .style import (
     instruction as style_instruction,
     references as style_references,
 )
-from .help import HELP, PARAM_HELP
+from .help import HELP, PARAM_ADVICE, PARAM_HELP
 from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
 from .video import animate as animate_painting, write_video
@@ -529,7 +529,14 @@ CATALOGUE = {
     key: replace(
         node,
         help=HELP.get(key, ""),
-        params=[replace(p, help=PARAM_HELP.get((key, p.name), "")) for p in node.params],
+        params=[
+            replace(
+                p,
+                help=PARAM_HELP.get((key, p.name), ""),
+                advice=PARAM_ADVICE.get((key, p.name)),
+            )
+            for p in node.params
+        ],
     )
     for key, node in CATALOGUE.items()
 }

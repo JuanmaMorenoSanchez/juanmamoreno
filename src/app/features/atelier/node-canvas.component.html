@@ -135,17 +135,9 @@
             @for (param of type.params; track param.name; let p = $index) {
               <foreignObject
                 [attr.x]="node.x + 8"
-                [attr.y]="
-                  node.y +
-                  30 +
-                  (type.inputs.length > type.outputs.length
-                    ? type.inputs.length
-                    : type.outputs.length) *
-                    20 +
-                  p * 20
-                "
+                [attr.y]="rowTop(node, type, p)"
                 [attr.width]="width - 16"
-                height="20"
+                [attr.height]="rowHeight(node, param)"
               >
                 <div class="param">
                   <!-- A caption, not a <label>: it sits beside the control rather
@@ -196,15 +188,35 @@
                       (pointerdown)="$event.stopPropagation()"
                     />
                   } @else {
-                    <input
-                      type="text"
+                    <!--
+                      A box rather than a line. What goes in these is an
+                      instruction or a sentence about motion, and both run past
+                      the width of a node: typing one in a single line meant
+                      writing the end of it blind.
+                    -->
+                    <textarea
+                      rows="3"
                       [attr.aria-label]="param.label || param.name"
                       [value]="node.params[param.name]"
                       (change)="setParam(node, param, $any($event.target).value)"
                       (pointerdown)="$event.stopPropagation()"
-                    />
+                    ></textarea>
                   }
                 </div>
+
+                <!--
+                  What the engine says is unwise about the number, in its own
+                  words. Not a refusal: the value is accepted and run, because
+                  the limits it would break are the ones already on the field.
+                -->
+                @if (caution(node, param); as why) {
+                  <p
+                    class="param-caution"
+                    [attr.data-testid]="'caution-' + node.id + '-' + param.name"
+                  >
+                    {{ why }}
+                  </p>
+                }
               </foreignObject>
             }
           </g>

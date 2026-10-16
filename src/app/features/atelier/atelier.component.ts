@@ -254,6 +254,12 @@ export class AtelierComponent {
       this.catalogue.set([]);
     }
 
+    // The graph came back from storage before the catalogue did, so anything
+    // it was missing could not be filled in then. Now it can.
+    this.nodes.update((nodes) =>
+      nodes.map((node) => ({ ...node, params: this.filled(node.type, node.params) }))
+    );
+
     // Already quiet on failure, because an engine too old to have flows is an
     // engine with no buttons rather than a broken page.
     this.flows.set(await this.engine.flows());
@@ -281,7 +287,7 @@ export class AtelierComponent {
         // is, so it is this page that turns a column into a position.
         x: 30 + node.column * (NODE_WIDTH + 70),
         y: 30 + node.row * 190,
-        params: { ...node.params },
+        params: this.filled(node.type, node.params),
       })),
       edges: flow.edges.map(([source, from, target, to]) => ({
         from: [named(source), from] as [string, string],
@@ -291,6 +297,31 @@ export class AtelierComponent {
 
     this.result.set(null);
     this.failure.set(null);
+  }
+
+  /**
+   * Every setting a node takes, with what the engine says each one should be
+   * where the graph itself does not say.
+   *
+   * A flow sets the two or three settings it is about and leaves the rest, and
+   * a graph brought back from before a setting existed has never heard of it.
+   * Both ran correctly — the engine fills a missing setting with its default —
+   * and both drew an empty box on screen, so the number that was going to be
+   * used was the one thing not written anywhere he could see it.
+   *
+   * A node the catalogue has never heard of keeps exactly what it arrived
+   * with: a saved graph can outlive the engine that could run it, and
+   * inventing settings for it would be inventing them from nothing.
+   */
+  private filled(
+    type: string,
+    params: Record<string, unknown> = {}
+  ): Record<string, string | number | boolean> {
+    const known = this.catalogue().find((entry) => entry.key === type);
+    const filled: Record<string, string | number | boolean> = {};
+    for (const param of known?.params ?? []) filled[param.name] = param.default;
+
+    return { ...filled, ...(params as Record<string, string | number | boolean>) };
   }
 
   /**
@@ -304,7 +335,12 @@ export class AtelierComponent {
       const kept = localStorage.getItem(SAVED);
       if (!kept) return;
       const drawn = JSON.parse(kept) as Drawn;
-      this.nodes.set(drawn.nodes ?? []);
+      this.nodes.set(
+        (drawn.nodes ?? []).map((node) => ({
+          ...node,
+          params: this.filled(node.type, node.params),
+        }))
+      );
       this.edges.set(drawn.edges ?? []);
     } catch {
       // A private window, blocked storage, or something written by an older

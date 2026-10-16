@@ -71,6 +71,17 @@ const A_NODE: NodeTypeDef = {
       step: null,
       help: 'Short and concrete beats elaborate.',
     },
+    {
+      name: 'threshold',
+      kind: 'number',
+      default: 0.25,
+      label: 'How sure',
+      choices: [],
+      minimum: 0.05,
+      maximum: 0.9,
+      step: 0.05,
+      help: 'Lower finds more and is wrong more often.',
+    },
   ],
 };
 
@@ -926,6 +937,28 @@ describe('AtelierComponent', () => {
       const drawn = guts(fixture);
       expect(drawn.nodes()).toHaveLength(2);
       expect(drawn.edges()).toHaveLength(1);
+    });
+
+    it('fills in every setting the flow did not mention', async () => {
+      // A flow sets the two or three settings it is about. The rest ran
+      // correctly — the engine fills a missing one with its default — and drew
+      // an empty box, so the number about to be used was the one thing not
+      // written anywhere he could see it.
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      const found = guts(fixture)
+        .nodes()
+        .find((node) => (node as { type: string }).type === 'find') as {
+        params: Record<string, unknown>;
+      };
+      // "a girl" is the flow's own; the threshold is the catalogue's.
+      expect(found.params['phrase']).toBe('a girl');
+      expect(found.params['threshold']).toBe(0.25);
     });
 
     it('joins the wires to the boxes it actually drew', async () => {

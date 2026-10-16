@@ -134,6 +134,95 @@ describe('NodeCanvasComponent', () => {
     expect(host.querySelector('.help-panel')?.textContent).toContain('did not send an explanation');
   });
 
+  /**
+   * A sentence gets a box, and a number outside its sensible band gets a line
+   * of red under it.
+   *
+   * Both come from the engine: the kind of control, and the words saying what
+   * twelve steps does. This page knows neither, and an engine older than the
+   * advice says nothing rather than having this page guess for it.
+   */
+  describe('the controls a setting gets', () => {
+    const steps = (over: Partial<NodeTypeDef['params'][0]> = {}) => ({
+      name: 'steps',
+      kind: 'number' as const,
+      default: 20,
+      label: 'Steps',
+      choices: [],
+      minimum: 4,
+      maximum: 50,
+      step: 1,
+      help: 'How many passes.',
+      advice: {
+        below: 12,
+        above: 35,
+        low: 'Below about ten passes it tends to come apart.',
+        high: 'Each pass costs about a hundred seconds here.',
+      },
+      ...over,
+    });
+    const withSteps = (params: NodeTypeDef['params']): NodeTypeDef => ({ ...EDIT, params });
+    const node = (params: Record<string, unknown>) => [
+      { id: 'n1', type: 'edit', x: 0, y: 0, params },
+    ];
+
+    it('gives free text a box, because an instruction is a sentence', () => {
+      const { host } = build([EDIT], node({ instruction: 'make the jumper deep red' }));
+
+      const box = host.querySelector('textarea');
+      expect(box).not.toBeNull();
+      expect(box?.value).toBe('make the jumper deep red');
+      expect(host.querySelector("input[type='text']")).toBeNull();
+    });
+
+    it('says nothing while a number is inside its band', () => {
+      const { host } = build([withSteps([steps()])], node({ steps: 20 }));
+
+      expect(host.querySelector('[data-testid="caution-n1-steps"]')).toBeNull();
+    });
+
+    it('warns in the words the engine sent, when a number is too low', () => {
+      const { host } = build([withSteps([steps()])], node({ steps: 6 }));
+
+      expect(host.querySelector('[data-testid="caution-n1-steps"]')?.textContent).toContain(
+        'tends to come apart'
+      );
+    });
+
+    it('warns when a number is too high', () => {
+      const { host } = build([withSteps([steps()])], node({ steps: 48 }));
+
+      expect(host.querySelector('[data-testid="caution-n1-steps"]')?.textContent).toContain(
+        'hundred seconds'
+      );
+    });
+
+    it('is quiet on an engine that sends no advice at all', () => {
+      // Which is every engine older than the field.
+      const { host } = build([withSteps([steps({ advice: undefined })])], node({ steps: 50 }));
+
+      expect(host.querySelector('[data-testid="caution-n1-steps"]')).toBeNull();
+    });
+
+    it('never warns about a value it was not given', () => {
+      const { host } = build([withSteps([steps()])], node({}));
+
+      expect(host.querySelector('[data-testid="caution-n1-steps"]')).toBeNull();
+    });
+
+    it('makes the box taller when a warning is showing, so rows do not overlap', () => {
+      // Every row was twenty pixels while every control was one line. A box
+      // three lines tall and a line of red underneath are not.
+      const tight = build([withSteps([steps()])], node({ steps: 20 }));
+      const tall = build([withSteps([steps()])], node({ steps: 6 }));
+
+      const height = (host: HTMLElement) =>
+        Number(host.querySelector('.node rect')?.getAttribute('height') ?? 0);
+
+      expect(height(tall.host)).toBeGreaterThan(height(tight.host));
+    });
+  });
+
   it('draws nothing for a node of a kind the engine does not have', () => {
     // A saved graph can outlive the engine that could run it.
     const { host } = build([EDIT], aNode('vanished'));

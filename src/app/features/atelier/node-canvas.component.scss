@@ -165,7 +165,9 @@
   }
 
   input[type='text'],
-  input[type='number'] {
+  input[type='number'],
+  select,
+  textarea {
     flex: 1 1 auto;
     min-width: 0;
     font: inherit;
@@ -175,6 +177,34 @@
     border-radius: 2px;
     background: transparent;
     color: inherit;
+  }
+
+  /* An instruction is a sentence, not a word: it gets a box, and it may be
+     dragged taller when it is a long one. */
+  textarea {
+    resize: vertical;
+    line-height: 1.3;
+  }
+
+  /* Wrapping, because a box is two lines tall and the label beside it would
+     otherwise squeeze it to nothing. */
+  &:has(textarea) {
+    align-items: flex-start;
+  }
+}
+
+/* What the engine says is unwise about a number. Red, and not a refusal:
+   the value is accepted and run. */
+.param-caution {
+  margin: 0 0 0.25rem;
+  font-size: 9px;
+  line-height: 1.25;
+  color: #c62828;
+}
+
+@media (prefers-color-scheme: dark) {
+  .param-caution {
+    color: #ff8a80;
   }
 }
 

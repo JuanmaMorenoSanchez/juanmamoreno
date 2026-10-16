@@ -3295,3 +3295,46 @@ by, so the word means one thing across the site.
 judges by the shorter side), `assets-panel.component.spec.ts` "the size it was
 made at", and `atelier.component.spec.ts` "says which copy of the painting each
 kept thing was made from"
+
+### R156 — A setting arrives filled in, and says when it is unwise · met
+Every setting on every box carries the value the engine says it should have,
+and a number outside the band that is sensible for it gets a line of red
+underneath saying what leaving the band does.
+
+**Three things were wrong and all three were invisible.** A free-text setting
+was a single line, so an instruction — which is a sentence — was typed with its
+beginning scrolled out of sight. A box dropped by a flow carried only the two
+or three settings that flow was about, and the rest drew empty: they ran
+correctly, because the engine fills a missing setting with its default, so the
+number about to be used was the one thing not written anywhere he could see
+it. And nothing anywhere said that twelve steps comes back as mush while fifty
+costs an hour and looks like thirty-five.
+
+**The band is not the limit.** `minimum` and `maximum` are what a field will
+accept; the advice is what is worth setting, which is a different question and
+narrower. Nothing is refused: the warning is a sentence, not a validator, and
+the value is run as given.
+
+**Every number in the table was measured or read off a run that went wrong**,
+and the sentence beside it says which — a hundred seconds a pass on this card,
+motion that judders below twenty steps, a unicorn found at 0.395 on a canvas
+with none. The table lives beside the prose that explains each setting, in
+`help.py`, so a number and its reason cannot drift apart. Nothing is advised
+about a seed: every value is as good as another, and red beside one would be
+the page inventing a preference.
+
+**A row is as tall as what is in it.** Every row was twenty pixels while every
+control was one line; a box three lines deep and a line of red under it are
+not, and the rows below have to know where to start.
+
+**An engine older than the field says nothing**, as with the help text and the
+flows: the page knows that twelve steps is too few only because the engine
+told it.
+*Proven by:* `test_advice.py` (8 tests: every band inside what the node
+accepts, the right way round, the default inside its own band, every edge with
+a sentence attached, nothing on a seed, and both slow models covered);
+`node-canvas.component.spec.ts` "the controls a setting gets" (7 tests,
+including the box for free text, quiet inside the band, the engine's words
+outside it, quiet on an older engine, and the row growing so rows do not
+overlap); `atelier.component.spec.ts` "fills in every setting the flow did not
+mention"

@@ -41,6 +41,28 @@ class Port:
 
 
 @dataclass(frozen=True)
+class Advice:
+    """The band a number is sensible in, and what leaving it does.
+
+    Separate from `minimum` and `maximum`, which are what the node will accept
+    at all. These are what is *wise*, which is a different question and the one
+    somebody setting a number actually has: twelve steps runs and comes back
+    mush, fifty runs for an hour and looks like thirty-five.
+
+    Every number here was measured on this machine or read off a run that went
+    wrong, and the sentences say which. A band with no reason behind it would
+    be a guess printed in red, which is worse than nothing.
+    """
+
+    below: float | None = None
+    """Under this, `low` is shown."""
+    above: float | None = None
+    """Over this, `high` is shown."""
+    low: str = ""
+    high: str = ""
+
+
+@dataclass(frozen=True)
 class Param:
     name: str
     kind: str
@@ -56,6 +78,11 @@ class Param:
 
     A free text field would take a typo and fail eighteen minutes later; two
     styles spelled out are a list to pick from."""
+    advice: Advice | None = None
+    """What is wise, where that is narrower than what is allowed.
+
+    Fastened on from `help.py` beside the sentence explaining it, so a number
+    and the reason for it cannot drift apart."""
     help: str = ""
     """What moving this actually does, and which way to move it.
 

@@ -14,6 +14,8 @@ cheaper than meeting it.
 
 from __future__ import annotations
 
+from .nodes import Advice
+
 HELP: dict[str, str] = {
     "painting": (
         "Where everything starts: the picture chosen above the canvas.\n\n"
@@ -311,3 +313,106 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ),
 }
 """Keyed by node and parameter, because `steps` means different things elsewhere."""
+
+PARAM_ADVICE: dict[tuple[str, str], Advice] = {
+    ("find", "threshold"): Advice(
+        below=0.15,
+        above=0.5,
+        low="Under about 0.15 it offers a box for almost anything asked of it: "
+        "a unicorn came back at 0.395 from a canvas with none.",
+        high="Over about 0.5 it loses real things before it loses invented ones. "
+        "A phrase that keeps finding the wrong thing wants a Brush, not a "
+        "higher number.",
+    ),
+    ("grow", "pixels"): Advice(
+        below=2,
+        above=40,
+        low="Under two pixels is not a widening: the fill has nothing to work "
+        "with and the old edge shows through.",
+        high="Past about forty it eats into what is genuinely behind the thing, "
+        "and the fill invents a wall where an arm was. About one percent of "
+        "the canvas is usually right.",
+    ),
+    ("cut", "feather"): Advice(
+        above=4,
+        high="Past four pixels it stops looking like a join and starts looking "
+        "like a glow around the layer.",
+    ),
+    ("edit", "steps"): Advice(
+        below=12,
+        above=35,
+        low="Below about ten passes it tends to come apart: the change is there "
+        "and the paint around it is mush.",
+        high="Each pass costs about a hundred seconds here, so this is over an "
+        "hour, and past thirty-five the picture barely changes. Raise the "
+        "seed instead and run it again.",
+    ),
+    ("edit", "guidance"): Advice(
+        below=2.5,
+        above=7,
+        low="Under about 2.5 it wanders off the instruction and repaints "
+        "whatever it likes.",
+        high="Over about seven it forces the words through: edges harden, "
+        "colour goes flat, and the brushwork reads as plastic.",
+    ),
+    ("my-style", "steps"): Advice(
+        below=12,
+        above=35,
+        low="Below about ten passes the references do not take: it comes back "
+        "neither his hand nor the original.",
+        high="Each pass costs about a hundred seconds here, so this is over an "
+        "hour for a difference that is hard to see.",
+    ),
+    ("my-style", "guidance"): Advice(
+        below=2.5,
+        above=7,
+        low="Under about 2.5 the references lead, and this is where a figure "
+        "from one of them walks into the canvas.",
+        high="Over about seven it holds so tightly to the original that the "
+        "hand does not come across at all.",
+    ),
+    ("my-style", "pick"): Advice(
+        above=3,
+        high="There are eight references per style, two to a pair, so anything "
+        "over three wraps round to a pair already offered.",
+    ),
+    ("video", "seconds"): Advice(
+        above=4,
+        high="The model works on the whole clip at once, so five seconds is "
+        "well over twice the wait of three. Find the motion at three.",
+    ),
+    ("video", "steps"): Advice(
+        below=20,
+        above=40,
+        low="Below about twenty the motion judders rather than flows.",
+        high="Over about forty is minutes of extra waiting for motion that "
+        "looks the same.",
+    ),
+    ("video", "guidance"): Advice(
+        below=3,
+        above=7,
+        low="Under about three it drifts, and sometimes barely moves at all.",
+        high="Over about seven it forces motion the painting never suggested.",
+    ),
+    ("video", "longest"): Advice(
+        above=960,
+        high="The model was trained near 832, and the time and the memory both "
+        "grow with the area. Raise this only once the motion is right.",
+    ),
+    ("sketch", "most_tokens"): Advice(
+        below=400,
+        above=1400,
+        low="Under about four hundred tokens it is cut off mid-function and the "
+        "piece will not run.",
+        high="A sketch is rarely more than six hundred tokens. Past about "
+        "fourteen hundred this buys comments and a model talking to itself.",
+    ),
+}
+"""What is wise, where that is narrower than what the node will accept.
+
+Keyed like PARAM_HELP and deliberately beside it: a number in red on screen
+needs the sentence that justifies it within reading distance, or the next
+person to touch it cannot tell a measurement from a guess.
+
+Nothing here for a seed, a name or a style: every value is as good as another.
+"""

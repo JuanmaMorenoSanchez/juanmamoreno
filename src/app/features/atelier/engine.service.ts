@@ -53,6 +53,20 @@ export interface ParamDef {
   label: string;
   /** Every value a `choice` may take, in the order to offer them. Empty otherwise. */
   choices: string[];
+  /**
+   * What is wise, where that is narrower than what the node accepts.
+   *
+   * `minimum` and `maximum` are what it will take at all; this is the band it
+   * is worth being in, with the sentence saying what leaving it does. Absent
+   * on anything where every value is as good as another, like a seed, and on
+   * an engine older than the field.
+   */
+  advice?: {
+    below: number | null;
+    above: number | null;
+    low: string;
+    high: string;
+  } | null;
   minimum: number | null;
   maximum: number | null;
   step: number | null;

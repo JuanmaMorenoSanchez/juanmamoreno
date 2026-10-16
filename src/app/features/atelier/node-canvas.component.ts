@@ -25,6 +25,10 @@ export interface Drawn {
 const NODE_WIDTH = 210;
 const HEADER = 30;
 const ROW = 20;
+/** How many rows tall a free-text box is: an instruction is a sentence. */
+const TEXT_ROWS = 3;
+/** Room for the line of red under a number outside its sensible band. */
+const CAUTION = 26;
 
 /**
  * The canvas: boxes, ports, wires.
@@ -90,8 +94,32 @@ export class NodeCanvasComponent {
   protected height(node: GraphNode): number {
     const type = this.typeOf(node);
     if (!type) return HEADER + ROW;
-    const rows = Math.max(type.inputs.length, type.outputs.length) + type.params.length;
-    return HEADER + rows * ROW + 12;
+
+    const ports = Math.max(type.inputs.length, type.outputs.length);
+    const settings = type.params.reduce((all, param) => all + this.rowHeight(node, param), 0);
+    return HEADER + ports * ROW + settings + 12;
+  }
+
+  /**
+   * How tall one setting's row is.
+   *
+   * Every row was twenty pixels, which was true while every control was one
+   * line. An instruction is a sentence and gets a box, and a number outside
+   * its sensible band gets a line of red underneath it — so a row is as tall
+   * as what is in it, and the rows below have to know where to start.
+   */
+  protected rowHeight(node: GraphNode, param: ParamDef): number {
+    const box = param.kind === 'text' ? TEXT_ROWS * ROW : ROW;
+    return box + (this.caution(node, param) ? CAUTION : 0);
+  }
+
+  /** Where a setting's row begins, measured down from the node's own top. */
+  protected rowTop(node: GraphNode, type: NodeTypeDef, at: number): number {
+    const ports = Math.max(type.inputs.length, type.outputs.length);
+    const above = type.params
+      .slice(0, at)
+      .reduce((all, param) => all + this.rowHeight(node, param), 0);
+    return node.y + HEADER + ports * ROW + above;
   }
 
   protected inY(node: GraphNode, at: number): number {
@@ -178,6 +206,30 @@ export class NodeCanvasComponent {
   protected markCount(node: GraphNode): number {
     const marks = readMarks(node.params['points']);
     return marks.keep.length + marks.drop.length;
+  }
+
+  /**
+   * What is unwise about the number in a field, if anything.
+   *
+   * Only ever a sentence from the engine. Nothing here knows that twelve steps
+   * is too few — the engine does, beside the measurement it learned it from,
+   * and an engine older than the field says nothing at all rather than this
+   * page guessing on its behalf.
+   */
+  protected caution(node: GraphNode, param: ParamDef): string {
+    const advice = param.advice;
+    if (!advice || param.kind !== 'number') return '';
+
+    const value = Number(node.params[param.name]);
+    if (!Number.isFinite(value)) return '';
+
+    if (advice.below !== null && advice.below !== undefined && value < advice.below) {
+      return advice.low;
+    }
+    if (advice.above !== null && advice.above !== undefined && value > advice.above) {
+      return advice.high;
+    }
+    return '';
   }
 
   protected setParam(node: GraphNode, param: ParamDef, raw: string | boolean): void {

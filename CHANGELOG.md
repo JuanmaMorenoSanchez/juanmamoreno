@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.20.0
+
+- **feat** — a free-text setting is a box rather than a line. An instruction is
+  a sentence and was being typed with its beginning scrolled out of sight.
+- **feat** — a number outside the band that is sensible for it gets a line of
+  red underneath, in the engine's own words: twelve steps comes back as mush,
+  fifty costs an hour and looks like thirty-five. The band is not the limit and
+  nothing is refused. Every number in the table was measured or read off a run
+  that went wrong, and lives beside the prose that explains the setting.
+- **fix** — a box dropped by a flow arrives with every setting filled in. It
+  carried only the ones the flow was about; the rest ran on the engine's
+  defaults and drew empty, so the number about to be used was the one thing not
+  written where he could see it. The same for a graph restored from before a
+  setting existed.
+
 ## 2.19.0
 
 - **feat** — Run asks which copy of the painting to use: **web quality**, the
