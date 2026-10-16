@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.20.1
+
+- **fix** — keeping a layer answered "f is not iterable" after the bytes had
+  already reached the bucket. The shelf stored whatever the list route
+  answered, list or not, and the next save spread it; a non-list now leaves
+  the shelf empty and says what arrived in the console, and the spread is
+  guarded. `KeptService` had no test, alone among the services in that click.
+- **fix** — those bytes were fetched without `targetAddressSpace: 'loopback'`,
+  the one engine request in the page that was not annotated. Chrome refuses an
+  unannotated request from a public page to 127.0.0.1.
+
 ## 2.20.0
 
 - **feat** — a free-text setting is a box rather than a line. An instruction is

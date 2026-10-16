@@ -3338,3 +3338,34 @@ including the box for free text, quiet inside the band, the engine's words
 outside it, quiet on an older engine, and the row growing so rows do not
 overlap); `atelier.component.spec.ts` "fills in every setting the flow did not
 mention"
+
+### R157 — A save that reaches the bucket does not then fail on the shelf · met
+Keeping a layer answered **"f is not iterable"**, from a minified bundle,
+after the bytes had already been written to the bucket. Two faults, one in the
+click and one older.
+
+**The shelf stored whatever the list route answered**, list or not. An empty
+body, an error page that answered 200, a shape changed at the other end: each
+became the list itself, and the shelf then rendered nothing at all — silently,
+because `.length` on an object is undefined and the template hid itself. The
+next save spread that object, which is where the TypeError came from. The
+answer is now checked on the way in, a bad one leaves the shelf empty and
+prints what arrived in the console, and the spread is guarded too, because
+that is the line that threw.
+
+**`KeptService` had no test**, alone among the services in that click, and it
+was the one holding a network answer. It has one now.
+
+**The bytes were fetched without the loopback annotation.** Every request to
+the engine carries `targetAddressSpace: 'loopback'` except this one, which
+used a bare `fetch` on a url — enough for an `img`, which the browser
+annotates itself, and refused for a `fetch`. Chrome has gated a public page
+reaching 127.0.0.1 since 142 and cannot be made not to from 156.
+
+**And the real error goes to the console** as well as a sentence to the page. A
+minified message was the whole of what a failure here left behind, and it
+named neither the stage nor the value.
+*Proven by:* `kept.service.spec.ts` (9 tests, including "an answer that is not
+a list" — not held, and does not break the next save — across six shapes that
+are not lists) and `atelier.component.spec.ts` "offers to keep it, and keeps
+nothing without being asked"

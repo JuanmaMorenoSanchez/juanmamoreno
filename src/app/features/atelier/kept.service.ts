@@ -71,12 +71,34 @@ export class KeptService {
   }
 
   /** Everything kept, newest first. Quiet on failure: an empty shelf is honest. */
+  /**
+   * Fetches the list, and holds it only if it is one.
+   *
+   * **Anything but a list used to be stored as the list.** An empty body, an
+   * error page that answered 200, a shape changed at the other end: all of
+   * them became the shelf, which then rendered nothing — silently, because
+   * `.length` on an object is undefined and the template simply hid itself.
+   * The next save spread that object and threw `f is not iterable` from a
+   * minified bundle, with the bytes already in the bucket and nothing on
+   * screen to say the piece had been kept.
+   *
+   * So the answer is checked, and a bad one leaves the shelf empty and says
+   * what arrived in the console — an empty shelf is wrong in a way he can
+   * see, and the next person debugging it gets the shape rather than a
+   * TypeError three clicks later.
+   */
   async refresh(): Promise<void> {
     this.asked = Promise.resolve();
     try {
-      this.held.set(
-        await firstValueFrom(this.http.get<KeptPiece[]>(this.where, this.authorised()))
+      const answer = await firstValueFrom(
+        this.http.get<KeptPiece[]>(this.where, this.authorised())
       );
+      if (!Array.isArray(answer)) {
+        console.error('atelier-pieces answered something that is not a list:', answer);
+        this.held.set([]);
+        return;
+      }
+      this.held.set(answer);
     } catch {
       this.held.set([]);
     }
@@ -114,7 +136,10 @@ export class KeptService {
       const kept = await firstValueFrom(
         this.http.post<KeptPiece>(this.where, form, this.authorised())
       );
-      this.held.update((all) => [kept, ...all]);
+      // Guarded here as well as where the list is fetched, because this is
+      // the line that threw: a save that reached the bucket must not then
+      // fail on the shelf it is being added to.
+      this.held.update((all) => (Array.isArray(all) ? [kept, ...all] : [kept]));
       return kept;
     } finally {
       this.busy.set(false);

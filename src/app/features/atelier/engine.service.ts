@@ -403,6 +403,20 @@ export class AtelierEngineService {
   layerUrl(file: string): string {
     return `${ENGINE}/layer/${encodeURIComponent(file)}`;
   }
+
+  /**
+   * The bytes of a layer, for keeping it.
+   *
+   * Here rather than in the page because every request to the engine carries
+   * `targetAddressSpace: 'loopback'`, and the one in the page that fetched
+   * these bytes did not: a url is enough for an `img`, which the browser
+   * annotates for itself, and not enough for a `fetch`, which it refuses.
+   */
+  async layerBytes(file: string): Promise<Blob> {
+    const response = await fetch(this.layerUrl(file), toLocal({ cache: 'no-store' }));
+    if (!response.ok) throw new Error('that is no longer on this machine');
+    return response.blob();
+  }
 }
 
 /** The engine's own words, which name the node at fault. */

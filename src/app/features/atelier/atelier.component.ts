@@ -176,10 +176,12 @@ export class AtelierComponent {
     this.keeping.set(file);
     this.failure.set(null);
     try {
-      const got = await fetch(this.engine.layerUrl(file)).then((r) => {
-        if (!r.ok) throw new Error('that is no longer on this machine');
-        return r.blob();
-      });
+      // Through the engine service, which annotates every request to
+      // 127.0.0.1 with `targetAddressSpace: 'loopback'`. This was the one
+      // engine request in the page that did not: Chrome has gated a public
+      // page reaching loopback since 142, and from 156 the gate cannot be
+      // turned off, so an unannotated request is refused before it is sent.
+      const got = await this.engine.layerBytes(file);
 
       // A clip cannot be measured with an `Image`, and asking costs a decode
       // of the whole file. The engine named it, so the node that made it is
@@ -200,6 +202,11 @@ export class AtelierComponent {
       });
       this.alreadyKept.update((all) => new Set(all).add(file));
     } catch (error) {
+      // The real one to the console as well as a sentence on screen. A
+      // minified message — "f is not iterable" — is the whole of what a
+      // failure here used to leave behind, and it named neither the stage nor
+      // the value.
+      console.error('keeping a layer failed', error);
       this.failure.set(error instanceof Error ? error.message : 'it could not be kept');
     } finally {
       this.keeping.set(null);

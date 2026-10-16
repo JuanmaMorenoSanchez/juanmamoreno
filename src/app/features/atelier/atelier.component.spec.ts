@@ -223,6 +223,9 @@ describe('AtelierComponent', () => {
             },
             evict: () => Promise.resolve(),
             layerUrl: (file: string) => `http://127.0.0.1:7860/layer/${file}`,
+            // Through the service, which is what annotates a request to
+            // 127.0.0.1 as one the browser is allowed to make.
+            layerBytes: () => Promise.resolve(new Blob([new Uint8Array([1])])),
             catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
             flows: () => Promise.resolve(options.flows ?? []),
             startGraph: (_p: Blob, graph: unknown) => {
