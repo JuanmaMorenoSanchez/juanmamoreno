@@ -119,20 +119,39 @@ class StagedTest(unittest.TestCase):
         self.assertNotEqual(sky, (200, 30, 30))
         self.assertNotEqual(ground, (0, 0, 0))
 
-    def test_the_painting_stands_on_the_horizon(self) -> None:
-        # Centred, the model invented an easel where the canvas was and a
-        # landscape behind it, and the two did not agree: the easel floated.
-        # The ground has to be there before the easel is.
+    def test_the_painting_stands_well_below_the_horizon(self) -> None:
+        # Level with it, the model read the horizon as a far ridge and hung
+        # the canvas up at it, over a valley, with no easel at all. A painting
+        # on an easel is in front of the landscape, not in it.
         staged = video.staged(self.painting, (832, 480), room=45)
         red = [
             y
             for y in range(staged.height)
             if staged.getpixel((staged.width // 2, y)) == (200, 30, 30)
         ]
-        horizon = round(480 * 0.62)
 
         self.assertTrue(red)
-        self.assertLessEqual(abs(max(red) - horizon), 4)
+        self.assertGreater(max(red), round(480 * 0.42) + 20)
+
+    def test_an_easel_is_drawn_rather_than_left_to_be_invented(self) -> None:
+        """Four strokes of dark paint where the legs go.
+
+        Invented from nothing the model put the easel wherever it liked, which
+        was usually nowhere. Turning two lines into wood is a far smaller
+        thing to ask than inventing a piece of furniture and deciding where
+        the floor is.
+        """
+        plain = Image.new("RGB", (832, 480), (90, 90, 90))
+        staged = video.staged(self.painting, (832, 480), room=45)
+
+        # Below the canvas there is something darker than the ground it
+        # stands on, in two places either side of the middle.
+        low = round(480 * 0.86)
+        ground = staged.getpixel((40, low))
+        middle = [staged.getpixel((x, low)) for x in range(300, 540)]
+
+        self.assertTrue(any(sum(pixel) < sum(ground) - 40 for pixel in middle))
+        self.assertEqual(plain.size, staged.size)
 
     def test_an_absurd_share_is_brought_back_to_something_possible(self) -> None:
         for room in (0, -10, 500):

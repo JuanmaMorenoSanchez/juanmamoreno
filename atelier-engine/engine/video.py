@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Callable
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 from .nodes import GraphError
 
@@ -370,11 +370,14 @@ def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> 
     painting. There is nothing in it to peel, and the model has only to
     sharpen what is already the right shape.
 
-    **And the painting stands on the horizon.** The first version centred it,
-    which gave the model no ground plane — so it invented an easel where the
-    canvas was and a landscape behind, and the two did not agree: the easel
-    floated. Sitting the painting's foot on the horizon line puts the easel on
-    the ground, because the ground is there before the easel is.
+    **And the easel is drawn, not left to be invented.** Sitting the canvas on
+    the horizon was not enough: the model read that line as a far ridge, put
+    the painting up at it, and the canvas hung in the air over a valley with no
+    easel at all. So the frame now has three lines in it — a far horizon, the
+    ground the easel stands on, and the foot of the canvas between them — and
+    four strokes of dark paint where the legs go. The model turns those into
+    wood, which is a far smaller thing to ask than inventing a piece of
+    furniture and deciding where the floor is.
     """
     wide, high = size
     share = min(max(room, 5.0), 95.0) / 100
@@ -384,21 +387,48 @@ def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> 
         (max(1, round(wide * share)), max(1, round(high * share))), Image.Resampling.LANCZOS
     )
 
-    # Where the ground begins. A little below the middle, where a horizon sits
-    # in almost every photograph ever taken of a landscape.
-    horizon = round(high * 0.62)
+    # Three lines across the frame, which is what a landscape is made of: the
+    # far horizon, the ground the easel stands on, and the foot of the canvas
+    # between them. The painting sits well below the horizon, or it reads as
+    # hanging in the distance — which is what it did when the two were level.
+    horizon = round(high * 0.42)
+    standing = round(high * 0.92)
     sky, ground = _sky_and_ground(painting)
 
     frame = Image.new("RGB", size, sky)
-    below = Image.new("RGB", (wide, max(1, high - horizon)), ground)
-    frame.paste(below, (0, horizon))
-    # Softened, so it reads as distance rather than as two rectangles.
+    frame.paste(Image.new("RGB", (wide, max(1, high - horizon)), ground), (0, horizon))
     frame = frame.filter(ImageFilter.GaussianBlur(radius=max(2, high // 40)))
 
-    # The painting's foot on the horizon, which is what stops the easel
-    # floating: the ground is established before the easel is invented.
-    frame.paste(held, ((wide - held.width) // 2, max(0, horizon - held.height)))
-    return frame
+    left = (wide - held.width) // 2
+    # The legs want to be about as tall as the canvas, or they read as a
+    # stand rather than an easel, so the canvas sits at three fifths and the
+    # ground is at the bottom of the frame.
+    foot = min(standing - round(high * 0.3), max(held.height + 2, round(high * 0.62)))
+    frame.paste(held, (left, foot - held.height))
+
+    # A crude easel: two legs to the ground and a bar across them. Four strokes
+    # of dark paint, and the model turns them into wood. Invented from nothing
+    # it put the easel wherever it liked, which was usually nowhere — the
+    # canvas hung in the air over a valley.
+    drawn = ImageDraw.Draw(frame)
+    timber = tuple(max(0, value - 45) for value in ground)
+    thick = max(2, wide // 180)
+    spread = round(held.width * 0.38)
+    for away in (-1, 1):
+        drawn.line(
+            [
+                (left + held.width // 2 + away * (held.width // 3), foot - held.height // 6),
+                (left + held.width // 2 + away * spread, standing),
+            ],
+            fill=timber,
+            width=thick,
+        )
+    drawn.line(
+        [(left + held.width // 4, foot + thick), (left + held.width * 3 // 4, foot + thick)],
+        fill=timber,
+        width=thick,
+    )
+    return frame.filter(ImageFilter.GaussianBlur(radius=1))
 
 
 def _sky_and_ground(painting: Image.Image) -> tuple[tuple[int, int, int], tuple[int, int, int]]:

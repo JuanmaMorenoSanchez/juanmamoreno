@@ -3601,10 +3601,16 @@ light above a horizon, dark below it, in colours taken from the painting's own
 top and bottom. There is nothing in it to peel, and the model has only to
 sharpen what is already the right shape.
 
-**The painting stands on the horizon**, which is what stops the easel
-floating. Centred, the model invented an easel where the canvas was and a
-landscape behind it, and the two did not agree. The ground has to be there
-before the easel is.
+**And the easel is drawn, not left to be invented.** Three attempts, and the
+lesson from all of them is that scaffolding a model can *sharpen* beats
+scaffolding it has to *replace*. Centred on a blur, it invented an easel and a
+landscape that did not agree about the floor. Sat on the horizon line, it read
+that line as a far ridge, hung the canvas up at it over a valley, and drew no
+easel at all. So the frame now carries three lines — a far horizon at two
+fifths, the ground at the bottom, the foot of the canvas between them — and
+four strokes of dark paint where the legs go. Turning two lines into wood is a
+far smaller thing to ask than inventing a piece of furniture and deciding
+where the floor is.
 
 **The settling is generated and then dropped.** The first moments of a staged
 clip are the model resolving a frame that was assembled rather than
@@ -3620,11 +3626,11 @@ mountain on an easel in another mountain.
 **How much of the frame is his to set**, with the band stated: under about a
 quarter the painting is too small for the model to hold its detail, and past
 about sixty per cent there is no scene left to put it in.
-*Proven by:* `test_in_a_scene.py` (12 tests: the scene-shaped frame, the clip
+*Proven by:* `test_in_a_scene.py` (13 tests: the scene-shaped frame, the clip
 written at that shape, a typed size still winning, the painting keeping its
 own shape inside the frame, more room meaning more painting, the surround
-being two bands with the darker underneath, and the painting's foot landing on
-the horizon) and `test_settling.py` (4 tests, including that an unstaged clip
+being two bands with the darker underneath, the painting standing well below
+the horizon, and an easel drawn under it) and `test_settling.py` (4 tests, including that an unstaged clip
 is untouched and that trimming never goes under three seconds)
 
 ### R167 — A box is dragged to the width its labels need · met

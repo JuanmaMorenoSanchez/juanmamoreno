@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.25.1
+
+- **fix** — the easel is drawn into the staged frame instead of being left to
+  the model. Sitting the canvas on the horizon made it read as a far ridge:
+  the painting hung in the air over a valley with no easel at all. Now the
+  horizon is in the distance, the canvas is in front of it, and two strokes
+  of dark paint show where the legs go — which the model sharpens into wood.
+
 ## 2.25.0
 
 - **fix** — the staged frame is a place rather than a blurred copy of the
