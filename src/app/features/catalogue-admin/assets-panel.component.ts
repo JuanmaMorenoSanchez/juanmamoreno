@@ -64,6 +64,9 @@ export class AssetsPanelComponent {
     });
   }
 
+  /** Why the whole list is missing, which is not the same as having none. */
+  protected readonly listTrouble = this.kept.listTrouble;
+
   protected readonly mine = computed(() => {
     const id = this.painting().tokenId;
     return this.kept.pieces().filter((piece) => piece.tokenId === id);

@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.26.1
+
+- **fix** — the assets kept for a painting show on its row in the catalogue.
+  The list is fetched once per visit and a refusal was remembered as the
+  answer: asked before the sign-in had been restored it got a 403, and every
+  painting then said it had nothing kept for it. A failure is retried by the
+  next panel that opens, and the panel says why rather than looking empty.
+- **fix** — the catalogue search matches the start of a token id, not only
+  the whole of it. Typing the first digits of a painting found nothing while
+  three beginning with them were in the list.
+
 ## 2.26.0
 
 - **feat** — the shelf shows each kept piece as a picture, or a player for a

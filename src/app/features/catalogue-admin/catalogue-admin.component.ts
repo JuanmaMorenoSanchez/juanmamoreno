@@ -256,7 +256,10 @@ export class CatalogueAdminComponent {
     const found = this.all().filter(
       (nft) =>
         !term ||
-        String(nft.tokenId) === term ||
+        // Starts with, not equals: he knows his paintings by number and types
+        // the first digits of one. An exact match meant "19" found nothing
+        // while 193, 195 and 199 were all sitting there.
+        String(nft.tokenId).startsWith(term) ||
         (nft.name ?? '').toLowerCase().includes(term) ||
         this.trait(nft, VALIDTRAITS.YEAR).includes(term)
     );

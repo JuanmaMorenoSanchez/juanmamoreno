@@ -3697,6 +3697,14 @@ lapsed, it is no longer in the bucket, or the status the backend gave.
 that asks for every piece whenever the list changes, and a failure used to
 leave nothing recorded, so each redraw asked again.
 
+**And a refused list is not remembered as an empty one.** `ensure` keeps its
+promise so that ten panels opening are one request, and it kept a refusal
+just as happily: the catalogue asked once, before the sign-in had been
+restored, got a 403, and every painting on the page said it had no assets for
+the rest of the visit. A failure now clears the memo, so the next panel asks
+again, and the panel says why it has nothing rather than looking like a
+painting nothing was ever kept for.
+
 **A piece kept before a field existed still reads.** The name falls back to
 the kind and then to the id: an entry is never a blank card.
 
@@ -3705,5 +3713,16 @@ by hand gives a file with no name and the wrong extension. The button names
 it for the painting it came from and gives it the right one.
 *Proven by:* `kept.service.spec.ts` "fetching the bytes of a kept piece" (5
 tests: the three messages, asked once, and the trouble cleared when the bytes
-arrive) and `atelier.component.spec.ts` "offers to hand a kept piece over as
-a file"
+arrive) and "a list that could not be fetched" (3 tests: it says why, the next
+panel asks again, and a list that answered is not asked twice);
+`assets-panel.component.spec.ts` "when the list itself could not be read" (3
+tests); `atelier.component.spec.ts` "offers to hand a kept piece over as a
+file"
+
+### R170 — A painting is found by the first digits of its number · met
+The search on the catalogue page matches the start of a token id, as well as
+the title and the year. It matched the id exactly, so typing the first digits
+of a painting he was looking for — which is how he looks for one — found
+nothing while three paintings beginning with them sat in the list.
+*Proven by:* `catalogue-admin.component.spec.ts` "finds one by the first
+digits of its number"

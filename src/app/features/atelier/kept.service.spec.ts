@@ -131,6 +131,67 @@ describe('KeptService', () => {
     expect(kept.pieces()).toEqual([]);
   });
 
+  /**
+   * A refusal is not an answer, and must not be remembered as one.
+   *
+   * `ensure` keeps the promise so ten panels opening are one request, and it
+   * kept a refusal just as happily: the catalogue asked once, before the
+   * sign-in had been restored, got a 403, and every painting on the page said
+   * it had no assets for the rest of the visit.
+   */
+  describe('a list that could not be fetched', () => {
+    const refusing = (answers: unknown[]) => {
+      const asked: string[] = [];
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {
+            provide: HttpClient,
+            useValue: {
+              get: (url: string) => {
+                asked.push(url);
+                const answer = answers.shift();
+                return answer === null ? of([piece()]) : throwError(() => answer);
+              },
+            },
+          },
+          { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        ],
+      });
+      return { kept: TestBed.inject(KeptService), asked };
+    };
+
+    it('says why, rather than looking like an empty shelf', async () => {
+      const { kept } = refusing([{ status: 403 }]);
+
+      await kept.ensure();
+
+      expect(kept.pieces()).toEqual([]);
+      expect(kept.listTrouble()).toContain('sign in again');
+    });
+
+    it('is asked again by the next panel that opens', async () => {
+      const { kept, asked } = refusing([{ status: 403 }, null]);
+
+      await kept.ensure();
+      await kept.ensure();
+
+      expect(asked).toHaveLength(2);
+      expect(kept.pieces()).toHaveLength(1);
+      expect(kept.listTrouble()).toBeNull();
+    });
+
+    it('is not asked again once it has answered', async () => {
+      const { kept, asked } = refusing([null, null]);
+
+      await kept.ensure();
+      await kept.ensure();
+
+      expect(asked).toHaveLength(1);
+    });
+  });
+
   it('asks once however many panels ask it', async () => {
     const { kept, calls } = build({ get: [piece()] });
 

@@ -32,7 +32,12 @@ describe('AssetsPanelComponent', () => {
     ...over,
   });
 
-  const build = (kept: KeptPiece[], tokenId = '195', reelWorks = true) => {
+  const build = (
+    kept: KeptPiece[],
+    tokenId = '195',
+    reelWorks = true,
+    listTrouble: string | null = null
+  ) => {
     const held = signal(kept);
     const forgotten: string[] = [];
     const asked: string[] = [];
@@ -87,6 +92,7 @@ describe('AssetsPanelComponent', () => {
             imageUrl: (id: string) => `/api/atelier-pieces/${id}/image`,
             isClip: (p: KeptPiece) => p.media === 'video/mp4',
             qualityOf: (p: KeptPiece) => (Math.min(p.width, p.height) >= 2500 ? 'high' : 'web'),
+            listTrouble: signal<string | null>(listTrouble ?? null),
           },
         },
       ],
@@ -264,6 +270,36 @@ describe('AssetsPanelComponent', () => {
       expect(host.querySelector('[data-testid="quality-k1"]')?.getAttribute('title')).toBe(
         '3652×4533 · 2.4 MB'
       );
+    });
+  });
+  /**
+   * A painting with nothing kept for it, and a list that could not be read,
+   * looked exactly the same: a panel with no assets in it.
+   *
+   * The usual cause is the page asking before the sign-in has been restored,
+   * and the answer used to be remembered — so every painting on the page said
+   * it had nothing for the rest of the visit.
+   */
+  describe('when the list itself could not be read', () => {
+    it('says so, rather than looking like a painting with nothing kept', () => {
+      const { host } = build([], '195', true, 'the sign-in has lapsed; sign in again');
+
+      expect(host.querySelector('[data-testid="assets-no-list"]')?.textContent).toContain(
+        'sign in again'
+      );
+    });
+
+    it('says nothing when the painting simply has none', () => {
+      const { host } = build([]);
+
+      expect(host.querySelector('[data-testid="assets-no-list"]')).toBeNull();
+    });
+
+    it('says nothing when there are assets to show', () => {
+      const { host } = build([piece()], '195', true, 'something went wrong');
+
+      expect(host.querySelector('[data-testid="assets-no-list"]')).toBeNull();
+      expect(host.querySelector('[data-testid="assets"]')).not.toBeNull();
     });
   });
 });

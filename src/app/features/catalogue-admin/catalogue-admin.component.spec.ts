@@ -153,6 +153,16 @@ describe('CatalogueAdminComponent', () => {
     expect(page.rows().map((one) => one.tokenId)).toEqual(['7']);
   });
 
+  it('finds one by the first digits of its number', () => {
+    // He knows his paintings by number and types the first digits of one.
+    // An exact match meant "4" found nothing while 42 was sitting there.
+    const page = setup([]);
+
+    page.term.set('4');
+
+    expect(page.rows().map((one) => one.tokenId)).toEqual(['42']);
+  });
+
   /** What `/latest` used to be, as an order rather than a page of its own. */
   describe('what has lately gone to Instagram', () => {
     const posted = [

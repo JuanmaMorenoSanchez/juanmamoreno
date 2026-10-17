@@ -1,3 +1,13 @@
+<!--
+  A painting with nothing kept for it shows nothing at all, which is right.
+  A list that could not be fetched is a different thing and says so: it looked
+  the same, and the usual cause is the page asking before the sign-in has been
+  restored.
+-->
+@if (!mine().length && listTrouble(); as why) {
+  <p class="assets-waiting" data-testid="assets-no-list">Assets could not be read: {{ why }}</p>
+}
+
 @if (mine().length) {
   <section class="assets" data-testid="assets">
     <h4>Kept from the atelier</h4>

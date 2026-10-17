@@ -78,6 +78,18 @@ export class KeptService {
     return this.asked;
   }
 
+  /**
+   * Why the list could not be fetched, if it could not.
+   *
+   * Empty is a real answer — nothing has been kept for this painting — and a
+   * refusal is not, and the two looked identical: a panel with no assets in
+   * it. The usual cause is the page asking before the sign-in has been
+   * restored, which answers 403 and used to be remembered as "there is
+   * nothing".
+   */
+  private readonly listFailed = signal<string | null>(null);
+  readonly listTrouble = this.listFailed.asReadonly();
+
   /** Everything kept, newest first. Quiet on failure: an empty shelf is honest. */
   /**
    * Fetches the list, and holds it only if it is one.
@@ -104,11 +116,20 @@ export class KeptService {
       if (!Array.isArray(answer)) {
         console.error('atelier-pieces answered something that is not a list:', answer);
         this.held.set([]);
+        this.listFailed.set('the backend answered something that is not a list');
         return;
       }
       this.held.set(answer);
-    } catch {
+      this.listFailed.set(null);
+    } catch (error) {
+      // **Not remembered as an answer.** `ensure` keeps the promise so that
+      // ten panels opening are one request, and it kept a refusal just as
+      // happily: the catalogue asked once, before the sign-in had been
+      // restored, got a 403, and every painting on the page said it had no
+      // assets for the rest of the visit.
+      this.asked = null;
       this.held.set([]);
+      this.listFailed.set(said(error));
     }
   }
 
