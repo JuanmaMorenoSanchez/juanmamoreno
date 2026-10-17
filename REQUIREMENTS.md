@@ -2977,7 +2977,7 @@ browser says nothing about why.
 *Proven by:* `test_video.py` "test_matches_what_the_pipeline_would_have_produced",
 "test_pads_every_prompt_to_the_same_length",
 "test_every_answer_is_one_the_latent_can_divide",
-"test_every_side_is_a_multiple_of_sixteen" and
+"test_every_side_is_a_multiple_of_the_stride" and
 "test_writes_a_clip_that_a_player_will_open", which `npm test` does not run.
 *Also proven by:* `atelier.component.spec.ts` "plays it, rather than trying to
 show it as a picture", "gives it controls and leaves it stopped" and "finds it
