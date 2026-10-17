@@ -3616,8 +3616,18 @@ where the floor is.
 clip are the model resolving a frame that was assembled rather than
 photographed — the horizon sharpening, an easel appearing, the ground finding
 its texture — which is scaffolding coming down and not motion anybody asked
-for. Three quarters of a second is generated on top and handed back without,
-never trimming below the three seconds Instagram wants.
+for. A second and a quarter is generated on top and handed back without,
+never trimming below the three seconds Instagram wants. Three quarters was
+not enough: the last of the staged ground showed as a pale band across the
+bottom of the frame for the first third of a second.
+
+**What the canvas inside the clip is, and is not.** It is the model's
+repainting of the painting, not the painting: an image-to-video model redraws
+every pixel of every frame, so the canvas in the clip is as sharp as the
+number of pixels it was given and as faithful as the model is. The painting
+is placed at its own shape and the largest size the frame allows, and the
+frame is worth raising for this — at 832 across, a canvas at 45 per cent of a
+16:9 frame is about 260 pixels tall, which is not enough to read as paint.
 
 **Applied to the first scene only** when several are chained: after it the
 frame already holds the scene, and staging it again would put a picture of the

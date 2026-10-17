@@ -344,7 +344,13 @@ ROOM = 45.0
 #: under the canvas, the ground finds its texture. It is not motion anybody
 #: asked for, so it is generated and then dropped, and the clip he is given
 #: starts where the scene is already standing.
-SETTLES = 0.75
+#:
+#: A second and a quarter, read off the clips. Three quarters left the last of
+#: the staged ground showing as a pale band across the bottom of the frame for
+#: the first third of a second, which is the kind of thing that cannot be
+#: unseen once it has been. It costs that much more generation, which is the
+#: price of a clip that starts clean.
+SETTLES = 1.25
 
 
 def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> Image.Image:

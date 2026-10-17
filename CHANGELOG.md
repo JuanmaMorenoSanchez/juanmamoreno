@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.25.2
+
+- **fix** — a staged clip drops a second and a quarter of settling rather than
+  three quarters. The last of the staged ground was showing as a pale band
+  across the bottom of the frame for the first third of a second.
+
 ## 2.25.1
 
 - **fix** — the easel is drawn into the staged frame instead of being left to
