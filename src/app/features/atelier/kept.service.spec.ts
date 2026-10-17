@@ -155,6 +155,84 @@ describe('KeptService', () => {
     expect(kept.isClip(piece({ kind: 'clip', media: 'image/png' }))).toBe(false);
   });
 
+  /**
+   * The shelf showing what it has, and saying when it cannot.
+   *
+   * It used to swallow a failed fetch, so a shelf of pieces with no pictures
+   * and no labels looked exactly like a shelf of things that never saved. The
+   * usual cause is an hour-old sign-in, which is worth saying.
+   */
+  describe('fetching the bytes of a kept piece', () => {
+    const building = (answer: unknown) => {
+      const asked: string[] = [];
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {
+            provide: HttpClient,
+            useValue: {
+              get: (url: string) => {
+                asked.push(url);
+                // `null` is the one that works; anything else is what the
+                // backend answered with.
+                return answer === null ? of(new Blob(['bytes'])) : throwError(() => answer);
+              },
+            },
+          },
+          { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        ],
+      });
+      return { kept: TestBed.inject(KeptService), asked };
+    };
+
+    it('says the sign-in has lapsed, which is what a 403 means here', async () => {
+      const { kept } = building({ status: 403 });
+
+      await kept.show('k1');
+
+      expect(kept.trouble()['k1']).toContain('sign in again');
+    });
+
+    it('says when the piece is no longer in the bucket', async () => {
+      const { kept } = building({ status: 404 });
+
+      await kept.show('k1');
+
+      expect(kept.trouble()['k1']).toContain('no longer in the bucket');
+    });
+
+    it('gives the status for anything else, rather than nothing at all', async () => {
+      const { kept } = building({ status: 500 });
+
+      await kept.show('k1');
+
+      expect(kept.trouble()['k1']).toContain('500');
+    });
+
+    it('asks once however many times the shelf redraws', async () => {
+      const { kept, asked } = building(null);
+
+      await Promise.all([kept.show('k1'), kept.show('k1')]);
+      await kept.show('k1');
+
+      expect(asked).toHaveLength(1);
+      expect(kept.urls()['k1']).toBeDefined();
+    });
+
+    it('forgets the trouble once the bytes arrive', async () => {
+      const { kept } = building({ status: 403 });
+      await kept.show('k1');
+      expect(kept.trouble()['k1']).toBeDefined();
+
+      // A second sign-in, and the same piece asked for again.
+      const after = building(null);
+      await after.kept.show('k1');
+
+      expect(after.kept.trouble()['k1']).toBeUndefined();
+    });
+  });
+
   it('says which copy of the painting a piece was made from', () => {
     const { kept } = build();
 

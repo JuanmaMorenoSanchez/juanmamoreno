@@ -3680,3 +3680,30 @@ The explanation above them is a note at 0.82rem rather than prose at full
 size.
 *Proven by:* nothing automatic — it is a stylesheet, and what it is about is
 how it looks. Checked by eye on the page.
+
+### R169 — The shelf says what each kept piece is, and hands it over · met
+Everything kept from the atelier is shown on the shelf as a picture (or a
+player, for a clip), labelled, with a **Download** beside **Forget**.
+
+**A failed fetch is said out loud.** The bytes come through the guard with a
+credential, because the route is behind it and no `img` can send a header —
+and a fetch that failed was swallowed, so a shelf of pieces appeared with no
+pictures and no labels at all. That is indistinguishable from a shelf of
+things that never saved, and the usual cause is neither: it is an hour-old
+sign-in. The shelf now says which of the three it was — the sign-in has
+lapsed, it is no longer in the bucket, or the status the backend gave.
+
+**Asked once, however many times the shelf redraws.** The page has an effect
+that asks for every piece whenever the list changes, and a failure used to
+leave nothing recorded, so each redraw asked again.
+
+**A piece kept before a field existed still reads.** The name falls back to
+the kind and then to the id: an entry is never a blank card.
+
+**Download rather than right-click.** The picture is a blob url, so saving it
+by hand gives a file with no name and the wrong extension. The button names
+it for the painting it came from and gives it the right one.
+*Proven by:* `kept.service.spec.ts` "fetching the bytes of a kept piece" (5
+tests: the three messages, asked once, and the trouble cleared when the bytes
+arrive) and `atelier.component.spec.ts` "offers to hand a kept piece over as
+a file"

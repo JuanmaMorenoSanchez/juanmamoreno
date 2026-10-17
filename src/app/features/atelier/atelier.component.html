@@ -444,12 +444,25 @@
         @for (piece of kept.pieces(); track piece.id) {
           <li>
             @if (kept.urls()[piece.id]; as bytes) {
-              <img [src]="bytes" [alt]="piece.name" loading="lazy" />
+              @if (kept.isClip(piece)) {
+                <video [src]="bytes" controls playsinline preload="metadata"></video>
+              } @else {
+                <img [src]="bytes" [alt]="piece.name || piece.kind" loading="lazy" />
+              }
+            } @else if (kept.trouble()[piece.id]; as why) {
+              <!-- Said rather than left blank: an unlabelled box with no
+                   picture in it is indistinguishable from a piece that never
+                   saved, and the usual cause is an hour-old sign-in. -->
+              <p class="atelier-missed" [attr.data-testid]="'missed-' + piece.id">{{ why }}</p>
+            } @else {
+              <p class="atelier-missed">Fetching…</p>
             }
-            <h3>{{ piece.name }}</h3>
+            <!-- A piece kept before the name was stored has none, and an id is
+                 better than an empty line. -->
+            <h3>{{ piece.name || piece.kind || piece.id }}</h3>
             <dl>
               <dt>kind</dt>
-              <dd>{{ piece.kind }}</dd>
+              <dd>{{ piece.kind || '—' }}</dd>
               @if (piece.tokenId) {
                 <dt>painting</dt>
                 <dd>{{ piece.tokenId }}</dd>
@@ -466,14 +479,24 @@
                 </dd>
               }
             </dl>
-            <button
-              type="button"
-              class="atelier-minor"
-              (click)="kept.forget(piece.id)"
-              [attr.data-testid]="'forget-' + piece.id"
-            >
-              Forget
-            </button>
+            <span class="atelier-shelf-does">
+              <button
+                type="button"
+                class="atelier-minor"
+                (click)="kept.download(piece)"
+                [attr.data-testid]="'download-' + piece.id"
+              >
+                Download
+              </button>
+              <button
+                type="button"
+                class="atelier-cancel atelier-minor"
+                (click)="kept.forget(piece.id)"
+                [attr.data-testid]="'forget-' + piece.id"
+              >
+                Forget
+              </button>
+            </span>
           </li>
         }
       </ul>

@@ -128,6 +128,7 @@ describe('AtelierComponent', () => {
     const did: string[] = [];
     const keptCalls: Record<string, unknown>[] = [];
     const wantedByCall: string[] = [];
+    const downloaded: string[] = [];
     let asked = -1;
     const queued: JobState[] = options.states ?? [
       {
@@ -180,6 +181,12 @@ describe('AtelierComponent', () => {
             // Read off the picture's own size, as the real one does.
             qualityOf: (piece: { width: number; height: number }) =>
               Math.min(piece.width, piece.height) >= 2500 ? 'high' : 'web',
+            trouble: signal<Record<string, string>>({}),
+            isClip: (piece: { media?: string }) => piece.media === 'video/mp4',
+            download: (piece: { id: string }) => {
+              downloaded.push(piece.id);
+              return Promise.resolve();
+            },
           },
         },
         {
@@ -254,6 +261,7 @@ describe('AtelierComponent', () => {
       unreachable,
       keptCalls,
       wantedByCall,
+      downloaded,
     };
   };
 
@@ -894,6 +902,29 @@ describe('AtelierComponent', () => {
     });
 
     expect(at(host, 'shelf')?.textContent).toContain('Rockets win I');
+  });
+
+  it('offers to hand a kept piece over as a file', async () => {
+    // The route is behind the guard, so a right-click on the picture saves a
+    // blob url with no name and the wrong extension.
+    const { host, downloaded } = build({
+      kept: [
+        {
+          id: 'k1',
+          name: 'Rockets win I',
+          tokenId: '195',
+          kind: 'layer',
+          width: 1024,
+          height: 1086,
+          bytes: 1,
+          created: '',
+        },
+      ],
+    });
+
+    at(host, 'download-k1')?.click();
+
+    expect(downloaded).toEqual(['k1']);
   });
 
   it('says which copy of the painting each kept thing was made from', () => {

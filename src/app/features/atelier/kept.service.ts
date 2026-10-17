@@ -5,6 +5,14 @@ import { atelierQuality } from '@domain/artwork/image-sizes';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 
+/** The most useful sentence available about a failure. */
+const said = (error: unknown): string => {
+  const status = (error as { status?: number })?.status;
+  if (status === 401 || status === 403) return 'the sign-in has lapsed; sign in again';
+  if (status === 404) return 'it is no longer in the bucket';
+  return status ? `the backend answered ${status}` : 'it could not be fetched';
+};
+
 /** One thing he decided was worth keeping. */
 export interface KeptPiece {
   id: string;
@@ -172,16 +180,55 @@ export class KeptService {
    * Fetches one so it can be displayed. Safe to call again; it fetches once.
    */
   async show(id: string): Promise<void> {
-    if (this.shown()[id]) return;
+    if (this.shown()[id] || this.asking.has(id)) return;
+    this.asking.add(id);
     try {
       const bytes = await firstValueFrom(
         this.http.get(this.imageUrl(id), { ...this.authorised(), responseType: 'blob' })
       );
       this.shown.update((all) => ({ ...all, [id]: URL.createObjectURL(bytes) }));
-    } catch {
-      // Left out of the map, so the template shows nothing rather than a
-      // broken tag. An asset that cannot be fetched is not worth a dialog.
+      this.failed.update((all) => {
+        const left = { ...all };
+        delete left[id];
+        return left;
+      });
+    } catch (error) {
+      // Said out loud, where it used to be swallowed. A shelf of unlabelled
+      // boxes with no pictures in them is indistinguishable from a shelf of
+      // things that failed to save, and the usual cause is an hour-old
+      // sign-in rather than anything about the piece.
+      this.failed.update((all) => ({ ...all, [id]: said(error) }));
+    } finally {
+      this.asking.delete(id);
     }
+  }
+
+  /** Which pieces could not be fetched, and why. */
+  private readonly failed = signal<Record<string, string>>({});
+  readonly trouble = this.failed.asReadonly();
+
+  /** In flight, so a shelf redrawing does not ask for the same bytes twice. */
+  private readonly asking = new Set<string>();
+
+  /**
+   * Hands the file to the browser to save.
+   *
+   * The same bytes the thumbnail is made of, through the same credential: the
+   * route is behind the guard, so a right-click on the picture saves a blob
+   * url with no name and the wrong extension, and a plain link cannot send a
+   * header at all.
+   */
+  async download(piece: KeptPiece): Promise<void> {
+    await this.show(piece.id);
+    const url = this.shown()[piece.id];
+    if (!url) return;
+
+    const link = document.createElement('a');
+    link.href = url;
+    // Named for the painting it came from, not the id it is filed under.
+    const stem = `${piece.name || piece.kind || 'kept'}-${piece.kind}`.replace(/[^\w.-]+/g, '-');
+    link.download = `${stem}.${this.isClip(piece) ? 'mp4' : 'png'}`;
+    link.click();
   }
 
   /** Lets go of one object url. Called when a piece is forgotten. */

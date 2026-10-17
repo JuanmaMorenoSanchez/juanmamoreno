@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.26.0
+
+- **feat** — the shelf shows each kept piece as a picture, or a player for a
+  clip, with a Download beside Forget. A clip could not be seen at all before
+  and a picture that failed to fetch left a blank card.
+- **fix** — a failed fetch says which of the three things it was: the sign-in
+  has lapsed, the piece is no longer in the bucket, or the status the backend
+  gave. It used to be swallowed, so a shelf of pieces with no pictures and no
+  labels looked exactly like a shelf of things that never saved.
+
 ## 2.25.3
 
 - **fix** — the clip budget is a quarter over the measured point rather than
