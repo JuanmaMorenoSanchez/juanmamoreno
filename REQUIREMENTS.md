@@ -3565,3 +3565,38 @@ a hang.
 painting and every other from the last frame before it, the join not repeating
 a frame, the seed walking, blank lines not counting as scenes, and both
 refusals landing before any run)
+
+### R166 — The painting can be an object in a clip, not only the clip · met
+**Video** and **Scenes** carry a switch, *The painting in a scene*. Off, the
+painting is the whole frame and the sentence is what happens on the canvas.
+On, the painting is an object standing in a wider frame and the sentence is
+what is around it.
+
+**Why it was needed.** The model is image-to-video: the image it is given *is*
+the first frame. Asked for a 150 x 140 canvas on an easel in the middle of a
+mountain, with people arriving with torches, it returned the canvas filling
+the screen and the mountain inside it — which is the only reading available to
+it, because what it was handed was a frame entirely full of painting.
+
+**So the switch builds a first frame that says otherwise**: the painting at
+about forty-five per cent of the frame, its own shape kept, with space around
+it. The frame itself becomes sixteen by nine rather than the painting's shape,
+because a square canvas in a square frame leaves nowhere to put a mountain,
+and the clip is written at that shape unless he types a size.
+
+**The surround is scaffolding, not paint.** A flat field reads as a border and
+comes back as one, so it is a blurred, darkened enlargement of the painting:
+the right palette, no detail, and the model paints over it to the extent the
+sentence asks. Nothing of it reaches anything he keeps.
+
+**Applied to the first scene only** when several are chained: after it the
+frame already holds the scene, and staging it again would put a picture of the
+mountain on an easel in another mountain.
+
+**How much of the frame is his to set**, with the band stated: under about a
+quarter the painting is too small for the model to hold its detail, and past
+about sixty per cent there is no scene left to put it in.
+*Proven by:* `test_in_a_scene.py` (11 tests: the scene-shaped frame, the clip
+written at that shape, a typed size still winning, the painting keeping its
+own shape inside the frame, more room meaning more painting, and the surround
+not being a flat border)

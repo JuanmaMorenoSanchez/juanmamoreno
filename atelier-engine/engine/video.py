@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Callable
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageFilter
 
 from .nodes import GraphError
 
@@ -248,7 +248,7 @@ def frames_for(seconds: float) -> int:
     return round((wanted - 1) / 4) * 4 + 1
 
 
-def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
+def fit(painting: Image.Image, longest: int = 832, in_a_scene: bool = False) -> tuple[int, int]:
     """The size to generate at, as a multiple of 16 the pipeline can use.
 
     A painting is 3652 pixels across and the model was trained near 480p. Asked
@@ -261,7 +261,7 @@ def fit(painting: Image.Image, longest: int = 832) -> tuple[int, int]:
     from the one he painted. `shown` is the size it is written at, and the
     frames are scaled to it on the way into the file.
     """
-    wide, high = painting.size
+    wide, high = (SCENE_SHAPE if in_a_scene else painting.size)
     scale = longest / max(wide, high)
     return (
         max(16, int(round(wide * scale / 16)) * 16),
@@ -274,6 +274,7 @@ def shown(
     generated: tuple[int, int],
     width: int = 0,
     height: int = 0,
+    in_a_scene: bool = False,
 ) -> tuple[int, int]:
     """The size to write the clip at: the painting's own shape, or his.
 
@@ -291,8 +292,11 @@ def shown(
     refuse without.
     """
     wide, high = painting.size
-    if wide <= 0 or high <= 0:
-        return even(generated)
+    if wide <= 0 or high <= 0 or in_a_scene:
+        # In a scene the frame is the scene's shape, not the painting's: the
+        # painting is an object inside it and keeping its ratio would crop the
+        # mountain the sentence asked for.
+        return even((width, height)) if width > 0 and height > 0 else even(generated)
 
     if width > 0 and height > 0:
         return even((width, height))
@@ -310,6 +314,57 @@ def shown(
 def even(size: tuple[int, int]) -> tuple[int, int]:
     """Both sides even, which `yuv420p` requires. Never below two."""
     return (max(2, size[0] - size[0] % 2), max(2, size[1] - size[1] % 2))
+
+
+#: The shape of a frame the painting is only part of.
+#:
+#: Sixteen by nine, because a scene wants room beside the painting and the
+#: painting's own shape leaves none: a canvas is roughly square and a square
+#: frame filled by a square painting is the thing this switch exists to stop.
+#: Overridden by typing a width or a height, like everything else here.
+SCENE_SHAPE = (16, 9)
+
+#: How much of the frame the painting takes when it is part of a scene.
+ROOM = 45.0
+
+
+def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> Image.Image:
+    """The first frame with the painting standing in it, rather than being it.
+
+    **Why this is needed at all.** The model is image-to-video: the image it is
+    given *is* the first frame. Asked for a painting on an easel in a mountain,
+    with the painting as the whole frame, it can only read the sentence as
+    something happening to the picture — which is what it did, and the clip
+    came back with the canvas filling the screen while people with torches
+    arrived inside it.
+
+    So when the painting is meant to be an object in a scene, a frame is built
+    where it is an object: the painting at `room` per cent of the frame, its
+    own shape kept, with space around it for the model to put a mountain in.
+
+    **The surround is scaffolding.** A flat grey field reads as a border and
+    comes back as one, so it is a blurred, darkened enlargement of the painting
+    instead: the right palette, no detail, and the model paints over it to the
+    extent the sentence asks. It is not the painting and nothing of it survives
+    into what he keeps.
+    """
+    wide, high = size
+    backdrop = (
+        painting.convert("RGB")
+        .resize((max(1, wide // 8), max(1, high // 8)), Image.Resampling.LANCZOS)
+        .filter(ImageFilter.GaussianBlur(radius=3))
+        .resize((wide, high), Image.Resampling.LANCZOS)
+    )
+    backdrop = ImageEnhance.Brightness(backdrop).enhance(0.55)
+
+    share = min(max(room, 5.0), 95.0) / 100
+    held = painting.convert("RGB").copy()
+    held.thumbnail((max(1, round(wide * share)), max(1, round(high * share))), Image.Resampling.LANCZOS)
+
+    # Centred across, and a little low: an easel stands on the ground, and a
+    # painting sitting dead centre reads as a poster.
+    backdrop.paste(held, ((wide - held.width) // 2, round((high - held.height) * 0.58)))
+    return backdrop
 
 
 #: The largest clip measured to fit, as frames times pixels.
@@ -356,18 +411,29 @@ def animate(
     guidance: float = 5.0,
     seed: int = 7,
     longest: int = 832,
+    in_a_scene: bool = False,
+    room: float = ROOM,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
 ) -> list[np.ndarray]:
-    """The painting, moving, as a list of RGB frames."""
+    """The painting, moving, as a list of RGB frames.
+
+    `in_a_scene` decides what the painting is to the model: the whole frame,
+    with the sentence describing what happens on the canvas, or an object in a
+    wider frame, with the sentence describing what is around it.
+    """
     import torch
 
-    width, height = fit(painting, longest)
+    width, height = fit(painting, longest, in_a_scene)
     count = frames_for(seconds)
     afford(count, width, height)
 
     pipeline = _pipeline()
-    start = painting.convert("RGB").resize((width, height), Image.Resampling.LANCZOS)
+    start = (
+        staged(painting, (width, height), room)
+        if in_a_scene
+        else painting.convert("RGB").resize((width, height), Image.Resampling.LANCZOS)
+    )
 
     def stepped(_pipe, step: int, _timestep, kwargs):
         if watching is not None:
@@ -445,6 +511,8 @@ def scenes(
     guidance: float = 5.0,
     seed: int = 7,
     longest: int = 832,
+    in_a_scene: bool = False,
+    room: float = ROOM,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
     saying: Callable[[str | None], None] | None = None,
@@ -492,6 +560,11 @@ def scenes(
             # every scene the same motion.
             seed=seed + at,
             longest=longest,
+            # Only the first scene: after it the frame already holds the
+            # scene, and staging it again would put a picture of the mountain
+            # on an easel in another mountain.
+            in_a_scene=in_a_scene and at == 0,
+            room=room,
             watching=watching,
             stopped=stopped,
         )

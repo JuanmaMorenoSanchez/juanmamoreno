@@ -302,6 +302,32 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ("scenes", "height"): (
         "The height to write the joined clip at. Zero means the painting's own."
     ),
+    ("video", "in_a_scene"): (
+        "What the painting is to the model. Off, it is the whole frame and the sentence "
+        "is what happens on the canvas. On, it is an object standing in a wider frame "
+        "and the sentence is what is around it: on an easel in the mountains, with "
+        "people arriving.\n\n"
+        "Off is the right answer for motion in the picture, and was the only answer "
+        "until a painting asked to be on an easel in a mountain came back filling the "
+        "screen with the mountain inside it. The model is image-to-video: the image it "
+        "is given is the first frame, so a painting that fills the frame can only be "
+        "the scene."
+    ),
+    ("video", "room"): (
+        "How much of the frame the painting takes when it is standing in a scene. "
+        "Forty-five per cent leaves room for an easel and a horizon; past about sixty "
+        "there is no scene left to put it in, and under twenty-five the painting is too "
+        "small for the model to keep its detail."
+    ),
+    ("scenes", "in_a_scene"): (
+        "As on Video, and applied to the first scene only: after it the frame already "
+        "holds the scene, and staging it again would put a picture of the mountain on "
+        "an easel in another mountain."
+    ),
+    ("scenes", "room"): (
+        "How much of the first frame the painting takes. The scenes after it carry on "
+        "from what the first one made."
+    ),
     ("sketch", "asking"): (
         "What the piece should do, in a sentence. Concrete and visual works best — "
         "what moves, what colour, how fast. A brief it cannot picture comes back as "
@@ -455,6 +481,14 @@ PARAM_ADVICE: dict[tuple[str, str], Advice] = {
     ("scenes", "longest"): Advice(
         above=960,
         high="Once per scene, so this is where a run turns into hours.",
+    ),
+    ("video", "room"): Advice(
+        below=25,
+        above=60,
+        low="Under about twenty-five per cent the painting is too small for the model to "
+        "hold its detail, and it comes back as a smudge on an easel.",
+        high="Past about sixty per cent there is no scene left to put it in, which is "
+        "the thing this switch is for.",
     ),
     ("sketch", "most_tokens"): Advice(
         below=400,

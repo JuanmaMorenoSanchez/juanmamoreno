@@ -248,6 +248,8 @@ def _video(inputs, params, context) -> dict[str, Any]:
         guidance=float(params["guidance"]),
         seed=int(params["seed"]),
         longest=int(params["longest"]),
+        in_a_scene=bool(params["in_a_scene"]),
+        room=float(params["room"]),
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
     )
@@ -266,6 +268,7 @@ def _video(inputs, params, context) -> dict[str, Any]:
         frames[0].shape[1::-1],
         width=int(params["width"]),
         height=int(params["height"]),
+        in_a_scene=bool(params["in_a_scene"]),
     )
     write_video(frames, OUT / name, size=size)
     wide, high = size
@@ -301,6 +304,8 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
         guidance=float(params["guidance"]),
         seed=int(params["seed"]),
         longest=int(params["longest"]),
+        in_a_scene=bool(params["in_a_scene"]),
+        room=float(params["room"]),
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
         saying=saying,
@@ -316,6 +321,7 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
         frames[0].shape[1::-1],
         width=int(params["width"]),
         height=int(params["height"]),
+        in_a_scene=bool(params["in_a_scene"]),
     )
     write_video(frames, OUT / name, size=size)
     wide, high = size
@@ -499,6 +505,21 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
                 Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                Param(
+                    "in_a_scene",
+                    "toggle",
+                    False,
+                    label="The painting in a scene",
+                ),
+                Param(
+                    "room",
+                    "number",
+                    45,
+                    label="How much of the frame",
+                    minimum=15,
+                    maximum=80,
+                    step=5,
+                ),
                 Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
                 Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
                 Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
@@ -541,6 +562,21 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
                 Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                Param(
+                    "in_a_scene",
+                    "toggle",
+                    False,
+                    label="The painting in a scene",
+                ),
+                Param(
+                    "room",
+                    "number",
+                    45,
+                    label="How much of the frame",
+                    minimum=15,
+                    maximum=80,
+                    step=5,
+                ),
                 Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
                 Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
                 Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),

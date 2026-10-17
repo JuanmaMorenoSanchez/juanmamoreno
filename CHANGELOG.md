@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.24.0
+
+- **feat** — a switch on **Video** and **Scenes**: _The painting in a scene_.
+  Off, the painting is the whole frame and the sentence is what happens on the
+  canvas. On, the painting is an object standing in a wider sixteen-by-nine
+  frame and the sentence is what is around it — an easel, a mountain, people
+  arriving. The model is image-to-video, so a frame full of painting can only
+  be read as the scene; this builds a first frame that says otherwise.
+
 ## 2.23.0
 
 - **feat** — a clip can run longer than one pass, in scenes. **Scenes** takes
