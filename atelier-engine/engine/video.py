@@ -248,8 +248,18 @@ def frames_for(seconds: float) -> int:
     return round((wanted - 1) / 4) * 4 + 1
 
 
+#: What both sides of a generated frame have to be a multiple of.
+#:
+#: Thirty-two, not the sixteen the VAE's own compression suggests. The
+#: pipeline patchifies in pairs on top of that and quietly adjusts anything
+#: else: asked for 832x464 it said "Adjusting (464, 832) -> (448, 832)" and
+#: carried on, so every clip made before this was a slightly different shape
+#: from the one computed for it, and the note went by in a log nobody reads.
+STRIDE = 32
+
+
 def fit(painting: Image.Image, longest: int = 832, in_a_scene: bool = False) -> tuple[int, int]:
-    """The size to generate at, as a multiple of 16 the pipeline can use.
+    """The size to generate at, as a multiple of 32 the pipeline can use.
 
     A painting is 3652 pixels across and the model was trained near 480p. Asked
     for the full size it would run the card out of memory long before it
@@ -264,8 +274,8 @@ def fit(painting: Image.Image, longest: int = 832, in_a_scene: bool = False) -> 
     wide, high = (SCENE_SHAPE if in_a_scene else painting.size)
     scale = longest / max(wide, high)
     return (
-        max(16, int(round(wide * scale / 16)) * 16),
-        max(16, int(round(high * scale / 16)) * 16),
+        max(STRIDE, int(round(wide * scale / STRIDE)) * STRIDE),
+        max(STRIDE, int(round(high * scale / STRIDE)) * STRIDE),
     )
 
 

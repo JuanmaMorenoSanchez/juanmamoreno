@@ -13,6 +13,11 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   frame and the sentence is what is around it — an easel, a mountain, people
   arriving. The model is image-to-video, so a frame full of painting can only
   be read as the scene; this builds a first frame that says otherwise.
+- **fix** — a clip is generated at a multiple of 32, which is what the
+  pipeline actually requires. It was 16, and anything else was quietly
+  adjusted — "Adjusting (464, 832) -> (448, 832)" — so every clip came out a
+  slightly different shape from the one computed for it, and the note went by
+  in a log nobody reads.
 
 ## 2.23.0
 

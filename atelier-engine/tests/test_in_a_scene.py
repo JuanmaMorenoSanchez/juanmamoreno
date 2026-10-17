@@ -35,11 +35,14 @@ class ShapeTest(unittest.TestCase):
 
         self.assertAlmostEqual(wide / high, 16 / 9, places=1)
 
-    def test_both_sides_are_still_multiples_of_sixteen(self) -> None:
+    def test_both_sides_are_still_multiples_of_the_stride(self) -> None:
+        # Or the pipeline adjusts them itself and says so in a log nobody
+        # reads, which is how a clip ends up a different shape from the one
+        # computed for it.
         for in_a_scene in (False, True):
             with self.subTest(in_a_scene=in_a_scene):
                 wide, high = video.fit(self.painting, 832, in_a_scene)
-                self.assertEqual((wide % 16, high % 16), (0, 0))
+                self.assertEqual((wide % video.STRIDE, high % video.STRIDE), (0, 0))
 
     def test_the_clip_is_written_at_the_scene_shape_not_the_painting(self) -> None:
         generated = video.fit(self.painting, 832, in_a_scene=True)

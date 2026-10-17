@@ -3387,6 +3387,14 @@ canvas generates at 672×832, a different rectangle — so the frames are
 generated at the size the model takes and written at the shape they were
 painted, scaled once by ffmpeg on the way into the file.
 
+**The multiple is 32, not 16.** The VAE compresses by eight and the
+transformer patchifies in pairs on top of that, and the pipeline quietly
+adjusts anything else: asked for 832x464 it said "Adjusting (464, 832) ->
+(448, 832)" in a log and carried on, so a clip came out a different shape from
+the one computed for it. The frames are measured as they come back rather than
+as they were asked for, so the written file is right either way, but the size
+asked for is now one the model will take.
+
 **Width out and Height out are for asking for something else.** Zero means the
 painting's own. One of the two typed, the other follows from the painting, so
 the shape is kept; both typed, both are obeyed, because that is what typing

@@ -55,13 +55,15 @@ class FitTest(unittest.TestCase):
 
         self.assertEqual(max(wide, high), 832)
 
-    def test_every_side_is_a_multiple_of_sixteen(self) -> None:
-        # Not cosmetic: the patch embedding divides by it, and a size that
-        # does not is a shape error from somewhere deep inside the transformer.
+    def test_every_side_is_a_multiple_of_the_stride(self) -> None:
+        # Not cosmetic, and not sixteen: the VAE compresses by eight and the
+        # transformer patchifies in pairs on top of that, so anything else is
+        # quietly adjusted — "Adjusting (464, 832) -> (448, 832)" — and the
+        # clip comes out a different shape from the one computed for it.
         for size in [(3652, 4533), (1000, 1000), (1920, 1080), (37, 913)]:
             with self.subTest(size=size):
                 wide, high = video.fit(Image.new("RGB", size))
-                self.assertEqual((wide % 16, high % 16), (0, 0))
+                self.assertEqual((wide % video.STRIDE, high % video.STRIDE), (0, 0))
 
     def test_keeps_the_shape_of_the_painting(self) -> None:
         wide, high = video.fit(Image.new("RGB", (4000, 3000)), longest=832)
