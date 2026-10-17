@@ -349,10 +349,23 @@ class AffordTest(unittest.TestCase):
             return False
 
     def test_the_measured_combination_is_allowed(self) -> None:
+        # Sixteen minutes, several times over, with a scene in it every time.
         self.assertTrue(self.allowed(3, 832))
 
-    def test_the_longest_clip_at_the_default_size_is_allowed(self) -> None:
-        self.assertTrue(self.allowed(5, 832))
+    def test_five_seconds_at_the_default_size_is_no_longer_allowed(self) -> None:
+        """Because it was never measured, and what was measured beyond it died.
+
+        It used to be allowed, on a guess that twice the measured point would
+        fit. A clip at 1.8 times it took eight hours — twenty-two minutes of
+        diffusion and the rest a hundred frames of decode thrashing against a
+        card with nothing left — and came back with no scene in it at all.
+        Five seconds is 1.5 times, which is the same unmeasured country, and
+        the refusal says what is known rather than guessing twice.
+        """
+        self.assertFalse(self.allowed(5, 832))
+
+    def test_the_combination_that_took_eight_hours_is_refused(self) -> None:
+        self.assertFalse(self.allowed(3, 1152))
 
     def test_the_biggest_size_is_refused_even_at_three_seconds(self) -> None:
         self.assertFalse(self.allowed(3, 1280))

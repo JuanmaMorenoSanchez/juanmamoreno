@@ -467,12 +467,21 @@ MEASURED = 73 * 672 * 832
 
 #: How far past it to allow.
 #:
-#: Twice, which is a judgement and not a measurement: the card has 8 GB, the
-#: model and its text encoder are most of that, and the headroom left is not
-#: enough to be generous with. Anything beyond this is refused before the
-#: model loads, and `animate` catches the card running out anyway — because a
-#: line drawn from one point is a line that will be wrong somewhere.
-AFFORDABLE = 2.0
+#: It was twice, which was a judgement and not a measurement, and the
+#: measurement came in at a cost: 101 frames at 1152x640 is 1.82 times the
+#: measured point, and it took **eight hours** and produced a clip that never
+#: moved. Twenty-two minutes of that was the diffusion; the rest was the
+#: decode of a hundred frames thrashing against a card with nothing left, and
+#: what came out was the first frame held still for three seconds.
+#:
+#: Two things were learned and both are here. Memory: past about a quarter
+#: over the measured point the decode stops fitting and the time goes from
+#: minutes to hours. And size: the model is trained near 480p, so a frame far
+#: past that does not merely cost more, it stops forming a scene at all — no
+#: mountains, no easel, nothing but the staging it was handed.
+#:
+#: So: a quarter over, and the refusal names both reasons.
+AFFORDABLE = 1.25
 
 
 def afford(frames: int, width: int, height: int) -> None:
@@ -488,8 +497,11 @@ def afford(frames: int, width: int, height: int) -> None:
 
     raise GraphError(
         f"{frames} frames at {width}×{height} is {asked / MEASURED:.1f} times the biggest clip "
-        "this card has been measured to hold. Three seconds at 832 fits. Lower the seconds "
-        "first: the model works on the whole clip at once, so they cost more than the size does."
+        "this card has been measured to hold. Three seconds at 832 fits, and takes sixteen "
+        "minutes. Half as much again took eight hours and came back without a scene in it — "
+        "the decode stops fitting, and the model is trained near 480p and stops composing one "
+        "far past it. Lower the seconds first: the model works on the whole clip at once, so "
+        "they cost more than the size does."
     )
 
 

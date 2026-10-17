@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.25.3
+
+- **fix** — the clip budget is a quarter over the measured point rather than
+  twice it. The two was a guess; the measurement came in at eight hours. A
+  hundred and one frames at 1152×640 ran for twenty-two minutes of diffusion
+  and then seven and a half hours of decode, and came back as the staged
+  first frame held still — the model is trained near 480p and stops composing
+  a scene far past it. The refusal now names both reasons.
+
 ## 2.25.2
 
 - **fix** — a staged clip drops a second and a quarter of settling rather than
