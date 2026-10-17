@@ -225,26 +225,30 @@
         mean to keep. The same seed at a different size is a different picture, so the last run is a
         run and not a resize.
       </p>
-      <button type="button" class="atelier-go" (click)="run('web')" data-testid="run-web">
-        Web quality
-        @if (at() === 'web') {
-          <span>· already loaded</span>
-        }
-      </button>
-      <button type="button" class="atelier-go" (click)="run('high')" data-testid="run-high">
-        High quality
-        @if (at() !== 'high') {
-          <span>· downloads up to 5 MB first</span>
-        }
-      </button>
-      <button
-        type="button"
-        class="atelier-minor"
-        (click)="choosing.set(false)"
-        data-testid="dont-run"
-      >
-        Not yet
-      </button>
+      <!-- One row of equals: three presses of the same weight, and the one
+           that backs out wears the colour a cancel wears. -->
+      <div class="atelier-choice">
+        <button type="button" (click)="run('web')" data-testid="run-web">
+          Web quality
+          @if (at() === 'web') {
+            <span>· already loaded</span>
+          }
+        </button>
+        <button type="button" (click)="run('high')" data-testid="run-high">
+          High quality
+          @if (at() !== 'high') {
+            <span>· downloads up to 5 MB first</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="atelier-cancel"
+          (click)="choosing.set(false)"
+          data-testid="dont-run"
+        >
+          Not yet
+        </button>
+      </div>
     </section>
   }
 

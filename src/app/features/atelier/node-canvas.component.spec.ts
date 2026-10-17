@@ -263,6 +263,75 @@ describe('NodeCanvasComponent', () => {
     });
   });
 
+  /**
+   * A box dragged wider, because the longest labels differ by a factor of
+   * three and a cut-off label is a setting nobody can be sure of.
+   *
+   * Width only: a box is as tall as what is in it — ports, settings, a text
+   * box, a line of red under an unwise number — and a height held by hand
+   * would fight the content every time a warning appeared.
+   */
+  describe('taking hold of a corner', () => {
+    const wide = (host: HTMLElement) =>
+      Number(host.querySelector('.node-body')?.getAttribute('width') ?? 0);
+
+    const drag = (fixture: ReturnType<typeof build>['fixture'], host: HTMLElement, by: number) => {
+      type Change = { nodes: { width?: number }[] };
+      const changes: Change[] = [];
+      fixture.componentInstance.changed.subscribe((change: unknown) =>
+        changes.push(change as Change)
+      );
+      const corner = host.querySelector('.node-stretch') as SVGElement;
+      corner.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, bubbles: true }));
+      host
+        .querySelector('svg')
+        ?.dispatchEvent(new PointerEvent('pointermove', { clientX: 100 + by, bubbles: true }));
+      return changes.at(-1)?.nodes[0].width;
+    };
+
+    it('starts at the width every box has', () => {
+      const { host } = build([EDIT], aNode());
+
+      expect(wide(host)).toBe(260);
+    });
+
+    it('reports the new width as a change to the graph', () => {
+      const { fixture, host } = build([EDIT], aNode());
+
+      expect(drag(fixture, host, 80)).toBe(340);
+    });
+
+    it('can be dragged narrower as well as wider', () => {
+      const { fixture, host } = build([EDIT], aNode());
+
+      expect(drag(fixture, host, -40)).toBe(220);
+    });
+
+    it('will not be dragged to nothing, or past the canvas', () => {
+      const { fixture, host } = build([EDIT], aNode());
+      expect(drag(fixture, host, -900)).toBe(180);
+
+      const other = build([EDIT], aNode());
+      expect(drag(other.fixture, other.host, 900)).toBe(560);
+    });
+
+    it('draws a box at whatever width it was given', () => {
+      const { host } = build(
+        [EDIT],
+        [{ id: 'n1', type: 'edit', x: 0, y: 0, width: 420, params: {} }]
+      );
+
+      expect(wide(host)).toBe(420);
+    });
+
+    it('keeps the width a graph was saved without', () => {
+      // Every graph saved before boxes could be resized.
+      const { host } = build([EDIT], aNode());
+
+      expect(wide(host)).toBe(260);
+    });
+  });
+
   it('draws nothing for a node of a kind the engine does not have', () => {
     // A saved graph can outlive the engine that could run it.
     const { host } = build([EDIT], aNode('vanished'));

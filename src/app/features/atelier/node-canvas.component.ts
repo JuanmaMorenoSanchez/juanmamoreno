@@ -8,6 +8,14 @@ export interface GraphNode {
   type: string;
   x: number;
   y: number;
+  /**
+   * How wide this one has been dragged, where it has been.
+   *
+   * Absent on every box until somebody takes hold of its corner, and absent
+   * in every graph saved before this existed — so the default is the answer
+   * rather than a migration.
+   */
+  width?: number;
   params: Record<string, string | number | boolean>;
 }
 
@@ -22,11 +30,18 @@ export interface Drawn {
   edges: GraphEdge[];
 }
 
-const NODE_WIDTH = 210;
+// Wide enough for the longest label a box carries. At 210 "How much of the
+// frame" and "Which references" were cut off mid-word, and a label that
+// cannot be read is a setting nobody can be sure of.
+const NODE_WIDTH = 260;
+/** How far a box may be dragged either way, so none is dragged to nothing. */
+const LEAST_WIDE = 180;
+const MOST_WIDE = 560;
 const HEADER = 30;
 const ROW = 20;
-/** How many rows tall a free-text box is: an instruction is a sentence. */
-const TEXT_ROWS = 3;
+/** How many rows tall a free-text box is: an instruction is a sentence, and
+ *  the ones that work are two or three of them. */
+const TEXT_ROWS = 5;
 /** Room for the line of red under a number outside its sensible band. */
 const CAUTION = 26;
 
@@ -130,7 +145,13 @@ export class NodeCanvasComponent {
     return node.y + HEADER + at * ROW + ROW / 2;
   }
 
+  /** The default, for a box nobody has resized. */
   protected readonly width = NODE_WIDTH;
+
+  /** How wide one box is: what it was dragged to, or the default. */
+  protected wide(node: GraphNode): number {
+    return Math.min(MOST_WIDE, Math.max(LEAST_WIDE, node.width ?? NODE_WIDTH));
+  }
 
   /** A port's position, for drawing a wire to or from it. */
   private portAt(id: string, port: string, side: 'in' | 'out'): { x: number; y: number } | null {
@@ -141,7 +162,7 @@ export class NodeCanvasComponent {
     const at = list.findIndex((p) => p.name === port);
     if (at < 0) return null;
     return {
-      x: side === 'in' ? node.x : node.x + NODE_WIDTH,
+      x: side === 'in' ? node.x : node.x + this.wide(node),
       y: node.y + HEADER + at * ROW + ROW / 2,
     };
   }
@@ -271,6 +292,42 @@ export class NodeCanvasComponent {
     return Math.min(high, Math.max(low, value));
   }
 
+  /**
+   * Dragging a box wider or narrower, by its bottom corner.
+   *
+   * Width only. A box is as tall as what is in it — ports, settings, a text
+   * box, a line of red under a number that is unwise — and a height dragged
+   * by hand would be a number fighting the content every time a warning
+   * appeared. What a box runs out of is width: a label cut off mid-word is
+   * a setting nobody can be sure of, and the longest of them differ by a
+   * factor of three.
+   */
+  protected stretch(event: PointerEvent, node: GraphNode): void {
+    event.stopPropagation();
+    (event.currentTarget as Element).setPointerCapture?.(event.pointerId);
+    this.stretching.set({ id: node.id, from: event.clientX, was: this.wide(node) });
+  }
+
+  protected readonly stretching = signal<{ id: string; from: number; was: number } | null>(null);
+
+  private resize(event: PointerEvent): boolean {
+    const held = this.stretching();
+    if (!held) return false;
+
+    // Divided by the zoom, or a box dragged while zoomed out runs away from
+    // the pointer.
+    const by = (event.clientX - held.from) / this.zoom();
+    this.changed.emit({
+      nodes: this.nodes().map((n) =>
+        n.id === held.id
+          ? { ...n, width: Math.min(MOST_WIDE, Math.max(LEAST_WIDE, Math.round(held.was + by))) }
+          : n
+      ),
+      edges: this.edges(),
+    });
+    return true;
+  }
+
   // ---- pointer ----
 
   private where(event: PointerEvent): { x: number; y: number } {
@@ -301,6 +358,10 @@ export class NodeCanvasComponent {
   }
 
   protected move(event: PointerEvent): void {
+    // Before the drag, because a corner held is a corner held: the pointer is
+    // over the box it is making wider.
+    if (this.resize(event)) return;
+
     if (this.dragging) {
       const at = this.where(event);
       const { id, dx, dy } = this.dragging;
@@ -325,6 +386,7 @@ export class NodeCanvasComponent {
   protected release(): void {
     this.dragging = null;
     this.panning = null;
+    this.stretching.set(null);
     // A wire let go over nothing is not a wire. Dropping it here rather than
     // leaving it attached to the pointer is what makes that feel deliberate.
     this.pulling.set(null);
@@ -348,6 +410,11 @@ export class NodeCanvasComponent {
   }
 
   protected wheel(event: WheelEvent): void {
+    // Over an open explanation, the wheel belongs to the explanation. It is a
+    // panel of prose taller than the space it has, and zooming the canvas
+    // under it was the one thing a reader scrolling it could not want.
+    if ((event.target as Element | null)?.closest?.('.help-panel')) return;
+
     event.preventDefault();
     const next = Math.min(2, Math.max(0.35, this.zoom() * (event.deltaY < 0 ? 1.1 : 0.9)));
     this.zoom.set(Math.round(next * 100) / 100);
@@ -376,7 +443,7 @@ export class NodeCanvasComponent {
 
   /** Where the explanation hangs: beside the box, or left of it near the edge. */
   protected helpAt(node: GraphNode): { x: number; y: number } {
-    return { x: node.x + NODE_WIDTH + 14, y: node.y };
+    return { x: node.x + this.wide(node) + 14, y: node.y };
   }
 
   /**

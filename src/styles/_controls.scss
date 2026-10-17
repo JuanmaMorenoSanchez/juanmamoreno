@@ -24,3 +24,26 @@
     cursor: not-allowed;
   }
 }
+
+/// The same button, in the colour a cancel wears.
+///
+/// Backing out of something is not the same press as doing it, and across the
+/// web it is not drawn the same. Amber rather than red: red is for destroying
+/// something, and this only declines to start.
+@mixin warning-button($padding: 0.6rem 1.4rem, $size: inherit) {
+  @include plain-button($padding, $size);
+
+  border-color: #b26a00;
+  color: #8a5200;
+
+  &:hover:not([disabled]) {
+    background: rgb(178 106 0 / 10%);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .warning-button-dark {
+    border-color: #ffb74d;
+    color: #ffb74d;
+  }
+}

@@ -28,6 +28,12 @@
     font-size: 1.1rem;
   }
 
+  p {
+    max-width: 44rem;
+    font-size: 0.82rem;
+    opacity: 0.8;
+  }
+
   ul {
     padding-left: 1.1rem;
   }
@@ -136,6 +142,30 @@
 
 .atelier-minor {
   @include controls.plain-button(0.25rem 0.6rem, 0.78rem);
+}
+
+/* A row of choices: same size, same baseline, whatever each one does. The
+   third was drawn at the minor size and sat lower than the other two. */
+.atelier-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: stretch;
+
+  button {
+    @include controls.plain-button;
+  }
+}
+
+.atelier-cancel {
+  @include controls.warning-button;
+}
+
+@media (prefers-color-scheme: dark) {
+  .atelier-cancel {
+    border-color: #ffb74d;
+    color: #ffb74d;
+  }
 }
 
 .atelier-failure {

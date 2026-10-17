@@ -3592,10 +3592,26 @@ it. The frame itself becomes sixteen by nine rather than the painting's shape,
 because a square canvas in a square frame leaves nowhere to put a mountain,
 and the clip is written at that shape unless he types a size.
 
-**The surround is scaffolding, not paint.** A flat field reads as a border and
-comes back as one, so it is a blurred, darkened enlargement of the painting:
-the right palette, no detail, and the model paints over it to the extent the
-sentence asks. Nothing of it reaches anything he keeps.
+**The surround is a place, not a picture.** The first version put a blurred,
+darkened copy of the painting behind it, and the model did what a diffusion
+model does with an image it is given: it kept it and transformed it. The blur
+hung in front of the mountain for most of a second and then slid away like a
+blanket being pulled off. So the surround is now the simplest possible scene —
+light above a horizon, dark below it, in colours taken from the painting's own
+top and bottom. There is nothing in it to peel, and the model has only to
+sharpen what is already the right shape.
+
+**The painting stands on the horizon**, which is what stops the easel
+floating. Centred, the model invented an easel where the canvas was and a
+landscape behind it, and the two did not agree. The ground has to be there
+before the easel is.
+
+**The settling is generated and then dropped.** The first moments of a staged
+clip are the model resolving a frame that was assembled rather than
+photographed — the horizon sharpening, an easel appearing, the ground finding
+its texture — which is scaffolding coming down and not motion anybody asked
+for. Three quarters of a second is generated on top and handed back without,
+never trimming below the three seconds Instagram wants.
 
 **Applied to the first scene only** when several are chained: after it the
 frame already holds the scene, and staging it again would put a picture of the
@@ -3604,7 +3620,47 @@ mountain on an easel in another mountain.
 **How much of the frame is his to set**, with the band stated: under about a
 quarter the painting is too small for the model to hold its detail, and past
 about sixty per cent there is no scene left to put it in.
-*Proven by:* `test_in_a_scene.py` (11 tests: the scene-shaped frame, the clip
+*Proven by:* `test_in_a_scene.py` (12 tests: the scene-shaped frame, the clip
 written at that shape, a typed size still winning, the painting keeping its
-own shape inside the frame, more room meaning more painting, and the surround
-not being a flat border)
+own shape inside the frame, more room meaning more painting, the surround
+being two bands with the darker underneath, and the painting's foot landing on
+the horizon) and `test_settling.py` (4 tests, including that an unstaged clip
+is untouched and that trimming never goes under three seconds)
+
+### R167 — A box is dragged to the width its labels need · met
+Every box on the atelier canvas can be taken by its bottom corner and dragged
+wider or narrower, between 180 and 560 pixels, and the width is kept with the
+graph.
+
+The default went from 210 to 260 because the longest labels — *How much of the
+frame*, *Which references* — were cut off mid-word, and a label that cannot be
+read is a setting nobody can be sure of. The rest is his: the boxes differ by
+a factor of three in how much they carry.
+
+**Width only.** A box is as tall as what is in it — ports, settings, a text
+box, a line of red under a number that is unwise — and a height held by hand
+would fight the content every time a warning appeared.
+
+**A graph saved before this has no width in it**, and gets the default, which
+is why the field is optional rather than migrated.
+
+**And the wheel belongs to whatever is under it.** Over an open explanation it
+scrolls the explanation; the canvas only zooms when the pointer is on the
+canvas. A panel of prose taller than its space, zooming the page underneath,
+was the one thing a reader scrolling it could not want.
+*Proven by:* `node-canvas.component.spec.ts` "taking hold of a corner" (6
+tests: the default width, dragging either way, the two limits, a width given
+in the graph, and a graph saved without one)
+
+### R168 — A cancel is not drawn like the thing it cancels · met
+The three presses in the *Which copy?* panel are one row of equals — same
+size, same baseline — and the one that backs out is amber rather than the
+same outline as the two that start work. Amber and not red: red is for
+destroying something, and this only declines to start.
+
+The third was drawn at the minor size and sat lower than the other two, which
+is the kind of thing that reads as a mistake before it reads as a hierarchy.
+The explanation above them is a note at 0.82rem rather than prose at full
+size.
+*Proven by:* nothing automatic — it is a stylesheet, and what it is about is
+how it looks. Checked by eye on the page.

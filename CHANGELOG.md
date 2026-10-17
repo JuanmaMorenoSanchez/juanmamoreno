@@ -5,6 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.25.0
+
+- **fix** — the staged frame is a place rather than a blurred copy of the
+  painting, so nothing peels off it like a blanket in the first second, and
+  the painting stands on the horizon so the easel the model invents has ground
+  under it. The three quarters of a second the staging takes to resolve is
+  generated and then dropped.
+- **feat** — a box on the atelier canvas can be dragged wider or narrower by
+  its bottom corner, and the width is kept with the graph. The default went
+  from 210 to 260: the longest labels were cut off mid-word.
+- **fix** — the wheel scrolls an open explanation instead of zooming the
+  canvas underneath it.
+- **feat** — a free-text setting fills the width of its box, with no caption
+  taking a third of it, and is five rows tall rather than three.
+- **fix** — the three presses in _Which copy?_ are one row of equals, and the
+  one that backs out is amber. The help above them is a note rather than
+  prose at full size.
+
 ## 2.24.0
 
 - **feat** — a switch on **Video** and **Scenes**: _The painting in a scene_.

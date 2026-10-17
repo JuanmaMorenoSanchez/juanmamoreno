@@ -100,17 +100,39 @@ class StagedTest(unittest.TestCase):
 
         self.assertAlmostEqual(held_wide / held_high, 400 / 832, places=1)
 
-    def test_the_surround_is_not_a_flat_border(self) -> None:
-        # A flat field reads as a border and comes back as one. The backdrop is
-        # a blurred, darkened enlargement of the painting instead, so it
-        # carries the palette and no detail.
-        staged = video.staged(self.painting, (832, 464))
-        corner = staged.getpixel((2, 2))
+    def test_the_surround_is_a_place_rather_than_a_picture(self) -> None:
+        """Light above a horizon, dark below it, and nothing to peel.
 
-        self.assertNotEqual(corner, (0, 0, 0))
-        self.assertNotEqual(corner, (200, 30, 30))
-        # Darker than the painting, which is what keeps the eye on the canvas.
-        self.assertLess(sum(corner), sum((200, 30, 30)))
+        The first version put a blurred copy of the painting behind it, and
+        the model did what a diffusion model does with an image it is given:
+        it kept it and transformed it. The blur hung in front of the mountain
+        for most of a second and then slid away like a blanket.
+        """
+        staged = video.staged(self.painting, (832, 480))
+        sky = staged.getpixel((20, 20))
+        ground = staged.getpixel((20, 460))
+
+        # Two bands, and the one underneath is the darker: that is the whole
+        # of what makes it read as a place rather than as a wall.
+        self.assertLess(sum(ground), sum(sky))
+        # Neither is the painting, and neither is black.
+        self.assertNotEqual(sky, (200, 30, 30))
+        self.assertNotEqual(ground, (0, 0, 0))
+
+    def test_the_painting_stands_on_the_horizon(self) -> None:
+        # Centred, the model invented an easel where the canvas was and a
+        # landscape behind it, and the two did not agree: the easel floated.
+        # The ground has to be there before the easel is.
+        staged = video.staged(self.painting, (832, 480), room=45)
+        red = [
+            y
+            for y in range(staged.height)
+            if staged.getpixel((staged.width // 2, y)) == (200, 30, 30)
+        ]
+        horizon = round(480 * 0.62)
+
+        self.assertTrue(red)
+        self.assertLessEqual(abs(max(red) - horizon), 4)
 
     def test_an_absurd_share_is_brought_back_to_something_possible(self) -> None:
         for room in (0, -10, 500):

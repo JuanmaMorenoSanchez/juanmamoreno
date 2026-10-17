@@ -39,7 +39,7 @@
               class="node-body"
               [attr.x]="node.x"
               [attr.y]="node.y"
-              [attr.width]="width"
+              [attr.width]="wide(node)"
               [attr.height]="height(node)"
               rx="6"
             />
@@ -47,10 +47,21 @@
               class="node-header"
               [attr.x]="node.x"
               [attr.y]="node.y"
-              [attr.width]="width"
+              [attr.width]="wide(node)"
               height="30"
               rx="6"
               (pointerdown)="grab($event, node)"
+            />
+            <!-- The corner to drag. Width only: a box is as tall as what is
+                 in it, and a height held by hand would fight the content. -->
+            <rect
+              class="node-stretch"
+              [attr.x]="node.x + wide(node) - 14"
+              [attr.y]="node.y + height(node) - 14"
+              width="14"
+              height="14"
+              (pointerdown)="stretch($event, node)"
+              [attr.data-testid]="'stretch-' + node.id"
             />
             <text class="node-name" [attr.x]="node.x + 10" [attr.y]="node.y + 20">
               {{ type.label }}
@@ -136,13 +147,21 @@
               <foreignObject
                 [attr.x]="node.x + 8"
                 [attr.y]="rowTop(node, type, p)"
-                [attr.width]="width - 16"
+                [attr.width]="wide(node) - 16"
                 [attr.height]="rowHeight(node, param)"
               >
-                <div class="param">
-                  <!-- A caption, not a <label>: it sits beside the control rather
-                       than wrapping it, and the control is named by aria-label. -->
-                  <span [title]="param.label || param.name">{{ param.label || param.name }}</span>
+                <div class="param" [class.param-wide]="param.kind === 'text'">
+                  <!--
+                    A caption, not a <label>: it sits beside the control rather
+                    than wrapping it, and the control is named by aria-label.
+
+                    None at all for a sentence. A text box is the full width of
+                    the node and the caption would take a third of it to say
+                    what the placeholder and the ? already say.
+                  -->
+                  @if (param.kind !== 'text') {
+                    <span [title]="param.label || param.name">{{ param.label || param.name }}</span>
+                  }
                   @if (param.kind === 'points') {
                     <!-- Edited on the painting, not in a box this size. -->
                     <button
@@ -195,8 +214,9 @@
                       writing the end of it blind.
                     -->
                     <textarea
-                      rows="3"
+                      rows="5"
                       [attr.aria-label]="param.label || param.name"
+                      [attr.placeholder]="param.label || param.name"
                       [value]="node.params[param.name]"
                       (change)="setParam(node, param, $any($event.target).value)"
                       (pointerdown)="$event.stopPropagation()"

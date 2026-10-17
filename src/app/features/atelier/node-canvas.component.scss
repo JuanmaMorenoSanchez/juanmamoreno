@@ -186,10 +186,10 @@
     line-height: 1.3;
   }
 
-  /* Wrapping, because a box is two lines tall and the label beside it would
-     otherwise squeeze it to nothing. */
-  &:has(textarea) {
-    align-items: flex-start;
+  /* A sentence gets the whole width: no caption beside it, and the box
+     stretched across what the caption used to take. */
+  &.param-wide {
+    align-items: stretch;
   }
 }
 
@@ -327,5 +327,17 @@
 
   &:hover {
     opacity: 0.75;
+  }
+}
+
+/* The corner that makes a box wider. Barely drawn until the pointer is near
+   it: it is on every box and none of them are about it. */
+.node-stretch {
+  fill: currentColor;
+  opacity: 0.12;
+  cursor: ew-resize;
+
+  &:hover {
+    opacity: 0.4;
   }
 }

@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Callable
 
 import numpy as np
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageFilter
 
 from .nodes import GraphError
 
@@ -337,6 +337,15 @@ SCENE_SHAPE = (16, 9)
 #: How much of the frame the painting takes when it is part of a scene.
 ROOM = 45.0
 
+#: How long the model takes to turn the staging into a place, in seconds.
+#:
+#: The first moments of a staged clip are the model resolving a frame that was
+#: assembled rather than photographed: the horizon sharpens, an easel appears
+#: under the canvas, the ground finds its texture. It is not motion anybody
+#: asked for, so it is generated and then dropped, and the clip he is given
+#: starts where the scene is already standing.
+SETTLES = 0.75
+
 
 def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> Image.Image:
     """The first frame with the painting standing in it, rather than being it.
@@ -348,33 +357,68 @@ def staged(painting: Image.Image, size: tuple[int, int], room: float = ROOM) -> 
     came back with the canvas filling the screen while people with torches
     arrived inside it.
 
-    So when the painting is meant to be an object in a scene, a frame is built
-    where it is an object: the painting at `room` per cent of the frame, its
-    own shape kept, with space around it for the model to put a mountain in.
+    **The surround is a place, not a blur.** The first version put a blurred,
+    darkened copy of the painting behind it, and the model did what a
+    diffusion model does with an image it has been given: it kept it and
+    transformed it. The blur hung in front of the mountain for most of a
+    second and then slid away like a blanket being pulled off, because that is
+    what "turn this into that" looks like when the thing it starts from is a
+    picture of something else.
 
-    **The surround is scaffolding.** A flat grey field reads as a border and
-    comes back as one, so it is a blurred, darkened enlargement of the painting
-    instead: the right palette, no detail, and the model paints over it to the
-    extent the sentence asks. It is not the painting and nothing of it survives
-    into what he keeps.
+    So the surround is built as the simplest possible scene instead: light
+    above, dark below, a horizon between them, in colours taken from the
+    painting. There is nothing in it to peel, and the model has only to
+    sharpen what is already the right shape.
+
+    **And the painting stands on the horizon.** The first version centred it,
+    which gave the model no ground plane — so it invented an easel where the
+    canvas was and a landscape behind, and the two did not agree: the easel
+    floated. Sitting the painting's foot on the horizon line puts the easel on
+    the ground, because the ground is there before the easel is.
     """
     wide, high = size
-    backdrop = (
-        painting.convert("RGB")
-        .resize((max(1, wide // 8), max(1, high // 8)), Image.Resampling.LANCZOS)
-        .filter(ImageFilter.GaussianBlur(radius=3))
-        .resize((wide, high), Image.Resampling.LANCZOS)
-    )
-    backdrop = ImageEnhance.Brightness(backdrop).enhance(0.55)
-
     share = min(max(room, 5.0), 95.0) / 100
-    held = painting.convert("RGB").copy()
-    held.thumbnail((max(1, round(wide * share)), max(1, round(high * share))), Image.Resampling.LANCZOS)
 
-    # Centred across, and a little low: an easel stands on the ground, and a
-    # painting sitting dead centre reads as a poster.
-    backdrop.paste(held, ((wide - held.width) // 2, round((high - held.height) * 0.58)))
-    return backdrop
+    held = painting.convert("RGB").copy()
+    held.thumbnail(
+        (max(1, round(wide * share)), max(1, round(high * share))), Image.Resampling.LANCZOS
+    )
+
+    # Where the ground begins. A little below the middle, where a horizon sits
+    # in almost every photograph ever taken of a landscape.
+    horizon = round(high * 0.62)
+    sky, ground = _sky_and_ground(painting)
+
+    frame = Image.new("RGB", size, sky)
+    below = Image.new("RGB", (wide, max(1, high - horizon)), ground)
+    frame.paste(below, (0, horizon))
+    # Softened, so it reads as distance rather than as two rectangles.
+    frame = frame.filter(ImageFilter.GaussianBlur(radius=max(2, high // 40)))
+
+    # The painting's foot on the horizon, which is what stops the easel
+    # floating: the ground is established before the easel is invented.
+    frame.paste(held, ((wide - held.width) // 2, max(0, horizon - held.height)))
+    return frame
+
+
+def _sky_and_ground(painting: Image.Image) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
+    """Two colours from the painting: one for above the horizon, one for below.
+
+    Taken from its own top and bottom, so the staging carries the palette he
+    painted with rather than a grey nobody chose. Dulled, because this is a
+    place for the model to put a mountain and not a thing to look at.
+    """
+    small = painting.convert("RGB").resize((8, 8), Image.Resampling.LANCZOS)
+    rows = list(small.getdata())
+
+    def average(band: list[tuple[int, int, int]], towards: int) -> tuple[int, int, int]:
+        count = max(1, len(band))
+        mixed = [sum(pixel[at] for pixel in band) // count for at in range(3)]
+        # Half way towards light or dark: a flat field of the painting's own
+        # colour reads as a wall, and this reads as air or as earth.
+        return tuple(round(value * 0.55 + towards * 0.45) for value in mixed)
+
+    return average(rows[:24], 235), average(rows[40:], 40)
 
 
 #: The largest clip measured to fit, as frames times pixels.
@@ -435,7 +479,8 @@ def animate(
     import torch
 
     width, height = fit(painting, longest, in_a_scene)
-    count = frames_for(seconds)
+    # Generated with the settling time on top, and handed back without it.
+    count = frames_for(seconds + SETTLES if in_a_scene else seconds)
     afford(count, width, height)
 
     pipeline = _pipeline()
@@ -501,7 +546,14 @@ def animate(
     # (frames, h, w, 3) in 0..1 — written out as 8-bit here rather than left
     # for the caller to guess at, which is the asymmetry that cost a day in
     # the inpainter.
-    return [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in result.frames[0]]
+    frames = [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in result.frames[0]]
+
+    # The settling frames go. What they hold is the staged frame becoming a
+    # place, which is scaffolding coming down and not a thing to watch.
+    if in_a_scene:
+        settling = min(round(SETTLES * FPS), max(0, len(frames) - frames_for(0)))
+        frames = frames[settling:]
+    return frames
 
 
 #: The most scenes one run will chain.
