@@ -17,7 +17,10 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   girl's cut — going dark and lighting up again as a screen does, at
   intervals never twice the same, taking a red, a blue or a yellow cast laid
   on so that it changes the colour of her face without changing its
-  brightness. **Not deployed** — running locally while he looks at it.
+  brightness; shafts of it thrown up into the snow, the flakes that fall
+  through it lighting up, the depth of field opening and closing behind her,
+  and the screen caught in the eyes of both birds. **Not deployed** — running
+  locally while he looks at it.
 - **fix** — the atelier's shelf is empty on the catalogue page. Every route on
   the backend answers `{ success, message, data }` and the shelf read the body
   as the list, so it held the envelope: nothing rendered, and a save spread it

@@ -1,4 +1,5 @@
 import { IdleDrift } from '@domain/generative/idle-drift';
+import { FocusPull } from '@domain/generative/focus-pull';
 import { clamp } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
 import { Cast, ScreenGlow } from '@domain/generative/screen-glow';
@@ -108,6 +109,55 @@ const SCREEN_GREY = { red: 0xdb, green: 0xdb, blue: 0xdb };
  */
 const NEAR = 170;
 
+/** Where the tablet itself is, as a share of the frame. */
+const TABLET = { x: 0.526, y: 0.95 };
+
+/**
+ * The shafts the tablet throws up into the snow, as lobes of a fan.
+ *
+ * An angle in radians measured from the tablet, with `-PI/2` straight up, how
+ * wide the lobe is, and how strong. Uneven on purpose: evenly spaced rays of
+ * equal width are a sunburst clip-art, and what makes this read as light
+ * through falling snow is that some of it is blocked and some is not.
+ */
+const LOBES = [
+  { turn: -2.62, width: 0.15, strength: 0.9 },
+  { turn: -2.15, width: 0.08, strength: 0.6 },
+  { turn: -1.75, width: 0.18, strength: 1 },
+  { turn: -1.3, width: 0.09, strength: 0.7 },
+  { turn: -0.9, width: 0.17, strength: 0.9 },
+  { turn: -0.48, width: 0.08, strength: 0.5 },
+] as const;
+
+/** How strong the shafts are against the light that makes them. */
+const SHAFTS = 0.38;
+
+/** How wide the fan is drawn, against the frame. */
+const FAN = 1.9;
+
+/**
+ * The eyes that catch the screen, and which cut each sits on.
+ *
+ * Found in the paint rather than guessed: the goose beside her is inside the
+ * girl's cut and moves with her, and the bird behind it belongs to no figure
+ * and so moves with the ground. A highlight on the wrong one of those would
+ * swim across the eye it is supposed to be in.
+ */
+const EYES = [
+  { x: 0.677, y: 0.891, size: 0.0042, rides: 'girl' },
+  { x: 0.893, y: 0.843, size: 0.0062, rides: 'ground' },
+] as const;
+
+/**
+ * How far out of focus a layer goes, and how far in depth that takes.
+ *
+ * The blur is made once at load at half the size, because a soft thing does
+ * not need the resolution, and faded in over the sharp copy rather than
+ * computed per frame: `filter` on a canvas this size, four times a frame, is
+ * not something a laptop should be asked to do sixty times a second.
+ */
+const SOFTENS = 5;
+
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
  *
@@ -145,9 +195,18 @@ export class IpadLightSketch implements Sketch {
   /** The landscape, whole: his paint runs on under where the figures were. */
   private ground?: HTMLImageElement;
   private groundParallax?: Parallax;
+  /** Every layer again, soft, for the focus to fade towards. */
+  private blurredGround?: HTMLCanvasElement;
+  /** The shafts, as one shape, built once and turned a little each frame. */
+  private fanned?: HTMLCanvasElement;
 
   /** One canvas per cut, and the parallax that moves it. */
-  private layers: { sprite: HTMLCanvasElement; parallax: Parallax }[] = [];
+  private layers: {
+    sprite: HTMLCanvasElement;
+    soft: HTMLCanvasElement;
+    parallax: Parallax;
+    depth: number;
+  }[] = [];
   /** The screen's light and its absence, each alone on transparency. */
   private lit?: HTMLCanvasElement;
   private unlit?: HTMLCanvasElement;
@@ -160,6 +219,7 @@ export class IpadLightSketch implements Sketch {
   private readonly glow = new ScreenGlow();
   private readonly drift = new IdleDrift();
   private readonly gaze = new SteadyGaze();
+  private readonly focus = new FocusPull();
 
   /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
@@ -179,10 +239,17 @@ export class IpadLightSketch implements Sketch {
     this.ground = images['ground'];
     this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
-    this.layers = CUTS.map((each) => ({
-      sprite: cut(images['painting'], images[each.name]),
-      parallax: new Parallax(each.depth, SHIFT, EASE),
-    }));
+    this.layers = CUTS.map((each) => {
+      const sprite = cut(images['painting'], images[each.name]);
+      return {
+        sprite,
+        soft: softened(sprite),
+        parallax: new Parallax(each.depth, SHIFT, EASE),
+        depth: each.depth,
+      };
+    });
+    this.blurredGround = softened(images['ground']);
+    this.fanned = fan(1200);
 
     const screen = screenLit(images['painting']);
     this.lit = screen?.lit;
@@ -222,6 +289,8 @@ export class IpadLightSketch implements Sketch {
     ctx.fillRect(0, 0, this.width, this.height);
 
     const scale = Math.max(width, height) / 1000;
+    // The focus stays on her; what travels is how much is in focus with her.
+    const spread = this.focus.at(frame.t);
 
     // The landscape first, whole and at its own depth. What a figure in
     // front of it uncovers is paint rather than a hole or a shadow: his own
@@ -229,27 +298,63 @@ export class IpadLightSketch implements Sketch {
     // out, so the sky goes on being this painting's sky.
     if (this.ground && this.groundParallax) {
       this.groundParallax.update(looking.x, looking.y);
-      ctx.drawImage(
+      this.lay(
+        ctx,
         this.ground,
+        this.blurredGround,
+        GROUND,
+        spread,
         x + this.groundParallax.x * scale,
-        y + this.groundParallax.y * scale,
-        width,
-        height
+        y + this.groundParallax.y * scale
       );
     }
     for (const layer of this.layers) {
       layer.parallax.update(looking.x, looking.y);
-      ctx.drawImage(
+      this.lay(
+        ctx,
         layer.sprite,
+        layer.soft,
+        layer.depth,
+        spread,
         x + layer.parallax.x * scale,
-        y + layer.parallax.y * scale,
-        width,
-        height
+        y + layer.parallax.y * scale
       );
     }
 
     this.drawScreen(ctx, frame.t, scale);
-    this.drawSnow(ctx, frame.dt);
+    this.drawSnow(ctx, frame.dt, frame.t);
+  }
+
+  /**
+   * One layer, as sharp or as soft as the focus leaves it.
+   *
+   * The focus is on her, always — `depth` of 1 is her cut and it is never
+   * softened — and everything behind her goes soft in proportion to how far
+   * behind her it is and how shallow the field is this second.
+   *
+   * The soft copy is faded in over the sharp one rather than a blur being
+   * computed: a tenth of the way out of focus is a tenth of the soft copy,
+   * which is not what a lens does but is what the eye reads, and it costs one
+   * more draw instead of a filter pass per layer per frame.
+   */
+  private lay(
+    ctx: CanvasRenderingContext2D,
+    sharp: CanvasImageSource,
+    soft: CanvasImageSource | undefined,
+    depth: number,
+    spread: number,
+    x: number,
+    y: number
+  ): void {
+    const { width, height } = this.frame;
+    ctx.drawImage(sharp, x, y, width, height);
+
+    const away = Math.min(1, (1 - depth) / spread);
+    if (!soft || away < 0.02) return;
+    ctx.save();
+    ctx.globalAlpha = away;
+    ctx.drawImage(soft, x, y, width, height);
+    ctx.restore();
   }
 
   /**
@@ -293,12 +398,33 @@ export class IpadLightSketch implements Sketch {
 
     const bright = clamp((level - middle) / span, 0, 1) * MOST_LIGHT;
     if (bright <= 0) return;
+    const how = this.glow.colouring(t) * bright * SO_MUCH;
+    const tint = this.glow.tint(t);
 
-    // First the light, in its own cold white. Screened, not added: added
-    // light has nothing above 255 to work with, so the brightest paint
+    // The shafts first, so the light in the air is behind the light on her.
+    // Tinted towards the cast rather than cast with the blend the paint gets:
+    // this is light in the air, so it is added, and added light cannot make
+    // anything darker than it found it.
+    const air = this.painted(
+      (onto) => this.drawFan(onto, x, y, t),
+      rgb(mix(SCREEN_LIGHT, tint, Math.min(0.3, how)))
+    );
+    if (air) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.globalAlpha = bright * SHAFTS;
+      ctx.drawImage(air, 0, 0);
+      ctx.restore();
+    }
+
+    // Then the light itself, in its own cold white. Screened, not added:
+    // added light has nothing above 255 to work with, so the brightest paint
     // flattens into a white patch; screened, it approaches white without
     // arriving and the cheek keeps its shape.
-    const white = this.colour(SCREEN_LIGHT, x, y);
+    const white = this.painted(
+      (onto) => onto.drawImage(this.lit as CanvasImageSource, x, y, width, height),
+      rgb(SCREEN_LIGHT)
+    );
     if (white) {
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
@@ -314,8 +440,13 @@ export class IpadLightSketch implements Sketch {
     // or the second is lost in the first. `color` takes the hue and the
     // saturation from the cast and leaves the brightness exactly as the paint
     // had it, so a cast can never be a dimming.
-    const how = this.glow.colouring(t) * bright * SO_MUCH;
-    const cast = how > 0.01 ? this.colour(this.glow.tint(t), x, y) : undefined;
+    const cast =
+      how > 0.01
+        ? this.painted(
+            (onto) => onto.drawImage(this.lit as CanvasImageSource, x, y, width, height),
+            rgb(tint)
+          )
+        : undefined;
     if (cast) {
       ctx.save();
       ctx.globalCompositeOperation = 'color';
@@ -323,46 +454,158 @@ export class IpadLightSketch implements Sketch {
       ctx.drawImage(cast, 0, 0);
       ctx.restore();
     }
+
+    this.drawEyes(ctx, scale, bright, tint, how);
   }
 
   /**
-   * The light's shape, given the colour it is this second.
+   * The shafts, into whatever is being coloured.
    *
-   * On a scratch the size of the window rather than by keeping a copy of the
-   * mask per colour: the colour moves every couple of seconds and eases while
-   * it moves, so there is no fixed set of them to keep. `source-in` throws
-   * away what the mask was painted in and keeps only its shape.
+   * One shape, built at load and turned a little: the fan drifts a few
+   * degrees over a minute, which is enough that it is never the same picture
+   * twice and not enough to look like something swinging.
    */
-  private colour(tint: Cast, x: number, y: number): HTMLCanvasElement | undefined {
+  private drawFan(onto: CanvasRenderingContext2D, x: number, y: number, t: number): void {
+    if (!this.fanned) return;
+    const { width, height } = this.frame;
+    const wide = width * FAN;
+
+    onto.save();
+    onto.translate(x + width * TABLET.x, y + height * TABLET.y);
+    onto.rotate(Math.sin(t * 0.047) * 0.12 + Math.sin(t * 0.0131 + 2) * 0.05);
+    onto.drawImage(this.fanned, -wide / 2, -wide, wide, wide);
+    onto.restore();
+  }
+
+  /**
+   * The screen, in the eyes that are facing it.
+   *
+   * Two of them, and each has to ride on the cut its eye is painted on or the
+   * highlight swims about inside the eye as the scene moves. It is the
+   * smallest thing on the page and the one that makes the light read as a
+   * thing in the room rather than a wash over it.
+   */
+  private drawEyes(
+    ctx: CanvasRenderingContext2D,
+    scale: number,
+    bright: number,
+    tint: Cast,
+    how: number
+  ): void {
+    const { width, height } = this.frame;
+    const girl = this.layers[this.layers.length - 1]?.parallax;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (const eye of EYES) {
+      const parallax = eye.rides === 'girl' ? girl : this.groundParallax;
+      const at = {
+        x: this.frame.x + (parallax?.x ?? 0) * scale + width * eye.x,
+        y: this.frame.y + (parallax?.y ?? 0) * scale + height * eye.y,
+      };
+      const size = width * eye.size;
+
+      // A hard little centre in a soft halo, which is what a specular
+      // highlight is: the halo is the eye's own wetness around it.
+      const lit = mix(SCREEN_LIGHT, tint, Math.min(0.6, how * 1.6));
+      const pool = ctx.createRadialGradient(at.x, at.y, 0, at.x, at.y, size * 3.4);
+      pool.addColorStop(0, `rgb(${rounded(lit)} / ${bright})`);
+      pool.addColorStop(0.3, `rgb(${rounded(lit)} / ${bright * 0.35})`);
+      pool.addColorStop(1, `rgb(${rounded(lit)} / 0)`);
+      ctx.fillStyle = pool;
+      ctx.beginPath();
+      ctx.arc(at.x, at.y, size * 3.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = bright;
+      ctx.fillStyle = `rgb(${rounded(lit)})`;
+      ctx.beginPath();
+      ctx.arc(at.x - size * 0.2, at.y - size * 0.2, size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Whatever is drawn into the scratch, in one colour.
+   *
+   * On a scratch the size of the window rather than by keeping a copy per
+   * colour: the colour moves every couple of seconds and eases while it
+   * moves, so there is no fixed set of them to keep. `source-in` throws away
+   * what was drawn and keeps only its shape.
+   */
+  private painted(
+    draw: (onto: CanvasRenderingContext2D) => void,
+    colour: string
+  ): HTMLCanvasElement | undefined {
     if (!this.lit || !this.tinted) return undefined;
     const onto = this.tinted.getContext('2d');
     if (!onto) return undefined;
 
     onto.clearRect(0, 0, this.width, this.height);
-    onto.drawImage(this.lit, x, y, this.frame.width, this.frame.height);
+    onto.globalCompositeOperation = 'source-over';
+    draw(onto);
     onto.globalCompositeOperation = 'source-in';
-    onto.fillStyle = `rgb(${Math.round(tint.red)} ${Math.round(tint.green)} ${Math.round(tint.blue)})`;
+    onto.fillStyle = colour;
     onto.fillRect(0, 0, this.width, this.height);
     onto.globalCompositeOperation = 'source-over';
     return this.tinted;
   }
 
-  private drawSnow(ctx: CanvasRenderingContext2D, dt: number): void {
+  /**
+   * The snow, and what the screen does to the flakes it reaches.
+   *
+   * A flake near the tablet is lit from below like everything else near it:
+   * brighter, the colour of whatever is on the screen, and with a halo,
+   * because a lit speck against a dark painting has one. Everything further
+   * off falls as it did. It is the cheapest thing here — the snow already
+   * exists and this is a term in its alpha — and it is what ties the weather
+   * to the light instead of leaving them two effects on one page.
+   */
+  private drawSnow(ctx: CanvasRenderingContext2D, dt: number, t: number): void {
     this.snow.update(dt);
     const scale = Math.max(this.width, this.height) / 1000;
 
+    const level = this.glow.at(t);
+    const bright = clamp((level - 0.78) / 0.37, 0, 1) * MOST_LIGHT;
+    const tint = this.glow.tint(t);
+    const how = this.glow.colouring(t);
+    const lit = rounded(mix(SCREEN_LIGHT, tint, Math.min(0.45, how)));
+
+    // Where the tablet is on the canvas, so a flake can be asked how near it
+    // is to the light rather than how near it is to her.
+    const girl = this.layers[this.layers.length - 1]?.parallax;
+    const lamp = {
+      x: this.frame.x + (girl?.x ?? 0) * scale + this.frame.width * TABLET.x,
+      y: this.frame.y + (girl?.y ?? 0) * scale + this.frame.height * TABLET.y,
+    };
+    const reach = this.frame.width * 0.34;
+
     ctx.save();
-    ctx.fillStyle = '#e8eef6';
     for (const flake of this.snow.specks) {
-      ctx.globalAlpha = flake.alpha;
+      const at = {
+        x: this.snow.across(flake) * this.width,
+        y: flake.y * this.height,
+      };
+      const size = flake.size * scale;
+      const caught = clamp(1 - Math.hypot(at.x - lamp.x, at.y - lamp.y) / reach, 0, 1) * bright;
+
+      if (caught > 0.04) {
+        // The halo first, which is the flake seen through the air it is in.
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = caught * 0.3;
+        ctx.fillStyle = `rgb(${lit})`;
+        ctx.beginPath();
+        ctx.arc(at.x, at.y, size * 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = Math.min(1, flake.alpha + caught * 0.5);
+      ctx.fillStyle = caught > 0.04 ? `rgb(${lit})` : '#e8eef6';
       ctx.beginPath();
-      ctx.arc(
-        this.snow.across(flake) * this.width,
-        flake.y * this.height,
-        flake.size * scale,
-        0,
-        Math.PI * 2
-      );
+      ctx.arc(at.x, at.y, size * (1 + caught * 0.5), 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -508,4 +751,96 @@ function paint(
   ctx.fillStyle = colour;
   ctx.fillRect(0, 0, wide, high);
   return canvas;
+}
+
+/**
+ * A soft copy of a layer, made once.
+ *
+ * At half the size, because a blurred thing does not need the resolution and
+ * four full-size copies is forty megabytes to hold something nobody can see
+ * the detail of. Scaling it back up on the way out softens it a little
+ * further, which is free and in the right direction.
+ */
+function softened(sharp: CanvasImageSource): HTMLCanvasElement {
+  const wide = Math.round(Number((sharp as { width?: number }).width ?? 0) / 2) || 512;
+  const high = Math.round(Number((sharp as { height?: number }).height ?? 0) / 2) || 512;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = wide;
+  canvas.height = high;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  ctx.filter = `blur(${SOFTENS}px)`;
+  ctx.drawImage(sharp, 0, 0, wide, high);
+  ctx.filter = 'none';
+  return canvas;
+}
+
+/**
+ * The shafts, as one shape with the tablet at the bottom of it.
+ *
+ * Built once, per pixel, and then only ever turned and faded: a fan computed
+ * every frame is a megapixel of trigonometry sixty times a second for
+ * something that barely changes. The lobes are a hand-written table rather
+ * than an even sweep, because light through falling snow is interrupted and
+ * an even sweep is a sunburst.
+ */
+function fan(size: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  const shape = new ImageData(size, size);
+  const from = { x: size / 2, y: size };
+
+  for (let down = 0; down < size; down++) {
+    for (let across = 0; across < size; across++) {
+      const toX = across - from.x;
+      const toY = down - from.y;
+      const turn = Math.atan2(toY, toX);
+
+      let beam = 0;
+      for (const lobe of LOBES) {
+        beam += lobe.strength * Math.exp(-(((turn - lobe.turn) / lobe.width) ** 2));
+      }
+
+      // Only upwards, and thinning out with distance.
+      const up = Math.min(1, Math.max(0, -toY / (size * 0.12))) ** 0.5;
+      const away = Math.hypot(toX, toY) / (size * 0.58);
+      // The floor is what makes them shafts: without it the lobes blend into
+      // one another near the source and the whole thing is a glow.
+      const lit = Math.max(0, Math.min(1, beam) - 0.2) * 1.25 * up * Math.exp(-away * 1.1);
+
+      const at = (down * size + across) * 4;
+      shape.data[at] = 255;
+      shape.data[at + 1] = 255;
+      shape.data[at + 2] = 255;
+      shape.data[at + 3] = Math.round(255 * Math.min(1, lit));
+    }
+  }
+
+  ctx.putImageData(shape, 0, 0);
+  return canvas;
+}
+
+/** `how` of the way from one colour to another. */
+function mix(from: Cast, to: Cast, how: number): Cast {
+  return {
+    red: from.red + (to.red - from.red) * how,
+    green: from.green + (to.green - from.green) * how,
+    blue: from.blue + (to.blue - from.blue) * how,
+  };
+}
+
+/** The three bytes, rounded, for a css colour. */
+function rounded(colour: Cast): string {
+  return `${Math.round(colour.red)} ${Math.round(colour.green)} ${Math.round(colour.blue)}`;
+}
+
+/** A css colour from one. */
+function rgb(colour: Cast): string {
+  return `rgb(${rounded(colour)})`;
 }

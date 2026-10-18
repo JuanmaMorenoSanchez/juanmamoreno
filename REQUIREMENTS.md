@@ -3872,6 +3872,44 @@ face, her coat, the hand and the goose at four different distances, and Chrome
 measured her face travelling 43 px across a pointer sweep while the light
 travelled 20: the light sliding off her face.
 
+**Four more things happen in the light**, chosen off still samples
+composited from his own layers rather than described.
+
+**The tablet throws shafts.** A fan of soft rays rising out of the screen
+into the falling snow, strongest when the screen is, turning a few degrees
+over a minute. The lobes are a hand-written table of six, unevenly spaced and
+unevenly wide, with a floor subtracted so the gaps between them stay open:
+evenly spaced rays of equal width are a sunburst, and what makes this read as
+light through snowy air is that some of it is blocked. Built once at load as
+one shape and thereafter only turned and faded — a fan computed per frame is
+a megapixel of trigonometry sixty times a second for something that barely
+changes.
+
+**The snow in the light picks it up.** A flake near the tablet is brighter,
+the colour of whatever is on the screen, and carries a halo; everything
+further off falls as it did. It is the cheapest thing on the page — the snow
+already existed and this is a term in its alpha — and it is what stops the
+weather and the light being two effects that happen to share a page.
+
+**The field opens and closes, and the focus never leaves her.** It was a
+focus pull at first, off her and out to the landscape and back, and it put
+the subject of the painting out of focus for seven seconds at a time: his
+paint, softened, which is the one thing he has said is never acceptable. What
+travels is the depth of field instead. Her cut is never softened; everything
+behind her goes soft in proportion to how far behind her it is and how
+shallow the field is that second, resting shallow for eleven seconds, opening
+over three and a half, resting open for six. Each layer's soft copy is made
+once at load at half size and faded in over the sharp one, because a blur
+filter on four full-size layers every frame is not something to ask of a
+laptop.
+
+**And the screen is in two eyes.** A hard little centre in a soft halo, on
+the goose beside her and on the bird behind it, brightening and taking the
+cast with the rest of the light. Each had to be given the cut its eye is
+painted on — the goose is inside the girl's cut and moves with her, the bird
+belongs to no figure and moves with the ground — or the highlight swims about
+inside the eye as the scene moves.
+
 **And it snows**, which is the one thing not in the painting: a hundred and
 eighty flakes rather than ninety, half again as big and twice as solid,
 because at the first setting it was weather you had to be told about.
@@ -3897,4 +3935,5 @@ including "cannot be thrown by a pointer crossing the window"),
 "wanders rather than going round the same circle"), and `registry.spec.ts` "holds exactly the three that
 are published"
 *Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 —
-no console errors, and the scene measurably answers the pointer in both.
+no console errors, the scene measurably answers the pointer in both, and the
+draw loop holds 120 frames a second with all four of the new effects running.
