@@ -85,8 +85,8 @@ export class Snowfall {
     return {
       x: rand(-0.05, 1.05),
       y: -0.02,
-      size: 0.6 + near * 2.2,
-      alpha: 0.18 + near * 0.4,
+      size: 1.1 + near * 3.3,
+      alpha: 0.34 + near * 0.56,
       fall: 0.014 + near * 0.05,
       sway: rand(0.004, 0.02),
       phase: randInt(0, 600) / 100,

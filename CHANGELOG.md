@@ -11,8 +11,9 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   atelier kept of _Reflejo de luz de iPad_: the painting cut into six depth
   bands over an unmoved copy of itself, drifting by itself and answering the
   pointer, snow falling through it, and the paint the tablet lights — keyed on
-  #DBDBDB — going dark and blowing out again as a screen does. **Not
-  deployed** — running locally while he looks at it.
+  #DBDBDB, and carried at the depth of the face it lands on — going dark and
+  blowing out again as a screen does. **Not deployed** — running locally while
+  he looks at it.
 
 ## 2.26.1
 

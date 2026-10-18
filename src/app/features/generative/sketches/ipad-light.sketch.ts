@@ -30,7 +30,7 @@ const SHIFT = 16;
 const GROWS = 1.05;
 
 /** Where the screen is in the painting, as a share of the frame. */
-const SCREEN = { x: 0.52, y: 0.88, radius: 0.46 };
+const SCREEN = { x: 0.52, y: 0.88, radius: 0.52 };
 
 /**
  * The colour of the paint the screen lights: #DBDBDB, his pick.
@@ -45,13 +45,28 @@ const SCREEN_GREY = { red: 0xdb, green: 0xdb, blue: 0xdb };
  * How far from that grey a pixel may be and still count, in RGB distance.
  *
  * Measured rather than guessed: at 110 it catches only the two brightest
- * planes of the face, at 145 it takes the whole of what the tablet lights and
- * stops short of the blue shirt behind her.
+ * planes of the face, at 145 the whole of the face and the collar, and at 170
+ * her shoulder, the lit side of the coat, the near hand and the goose's head
+ * as well — everything in front of her, and still nothing of the blue shirt
+ * behind.
  */
-const NEAR = 145;
+const NEAR = 170;
 
 /** The colour added back when the screen brightens: a cold white. */
 const SCREEN_LIGHT = '#cfe4ff';
+
+/**
+ * How much of the light a pixel has to take to count towards its depth.
+ *
+ * The mask reaches her face, her coat, the near hand and the goose, and those
+ * are not all the same distance away, so an average over the whole of it rides
+ * at a depth nothing is actually at: measured in Chrome, her face travelled 43
+ * pixels and the light following that average travelled 20, which is the light
+ * sliding off her face as the pointer crosses. Taken over the part of the mask
+ * the light actually lands on, the depth is her face's, and the two travel
+ * together.
+ */
+const STRONGEST = 0.6;
 
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
@@ -90,8 +105,16 @@ export class IpadLightSketch implements Sketch {
   /** The screen's light and its absence, each alone on transparency. */
   private lit?: HTMLCanvasElement;
   private unlit?: HTMLCanvasElement;
+  /**
+   * And the parallax that carries them, at the depth of the paint they fall
+   * on. Without it the light stays put while her face slides out from under
+   * it, which reads as a stain on the glass rather than as her being lit.
+   */
+  private glowParallax?: Parallax;
 
-  private readonly snow = new Snowfall();
+  // Twice the default snow, bigger and more solid: at a hundred small faint
+  // flakes it was weather you had to be told about.
+  private readonly snow = new Snowfall(180, 28);
   private readonly glow = new ScreenGlow();
   private readonly drift = new IdleDrift();
 
@@ -109,9 +132,10 @@ export class IpadLightSketch implements Sketch {
     this.painting = images['painting'];
 
     this.bands = band(images['painting'], images['depth']);
-    const screen = screenLit(images['painting']);
+    const screen = screenLit(images['painting'], images['depth']);
     this.lit = screen?.lit;
     this.unlit = screen?.unlit;
+    if (screen) this.glowParallax = new Parallax(screen.depthOf, SHIFT, 0.045);
     this.snow.seed();
     this.measure();
   }
@@ -142,8 +166,15 @@ export class IpadLightSketch implements Sketch {
     ctx.fillRect(0, 0, this.width, this.height);
 
     // The painting itself first, whole and unmoved, so a band sliding off
-    // reveals paint rather than a hole.
+    // reveals paint rather than a hole — and dimmed into the black, because
+    // the bands between them cover every pixel of it and the only place it
+    // ever shows is the sliver a shifted band uncovers. At full strength that
+    // sliver is the same contour drawn twice, a hairline tracing her shoulder;
+    // dimmed, it is the shadow a near thing casts on what is behind it.
+    ctx.save();
+    ctx.globalAlpha = 0.45;
     ctx.drawImage(this.painting, x, y, width, height);
+    ctx.restore();
 
     const scale = Math.max(width, height) / 1000;
     for (const slice of this.bands) {
@@ -157,7 +188,7 @@ export class IpadLightSketch implements Sketch {
       );
     }
 
-    this.drawScreen(ctx, frame.t);
+    this.drawScreen(ctx, frame.t, looking, scale);
     this.drawSnow(ctx, frame.dt);
   }
 
@@ -169,10 +200,21 @@ export class IpadLightSketch implements Sketch {
    * swing is a face going dark and then lighting up again, which is what a
    * screen does to a face. Dimming is drawn over, brightening is drawn
    * additively, and between them the cheek travels most of its range.
+   *
+   * Both move with the paint, at the depth of the paint they were found on.
    */
-  private drawScreen(ctx: CanvasRenderingContext2D, t: number): void {
-    const { x, y, width, height } = this.frame;
+  private drawScreen(
+    ctx: CanvasRenderingContext2D,
+    t: number,
+    looking: { x: number; y: number },
+    scale: number
+  ): void {
+    const { width, height } = this.frame;
     const level = this.glow.at(t);
+
+    this.glowParallax?.update(looking.x, looking.y);
+    const x = this.frame.x + (this.glowParallax?.x ?? 0) * scale;
+    const y = this.frame.y + (this.glowParallax?.y ?? 0) * scale;
 
     // Where the two cross, and how far each side reaches. The glow runs 0.45
     // to 1.15, and the span is the longer half of that, so brightening is at
@@ -183,7 +225,7 @@ export class IpadLightSketch implements Sketch {
     const span = 0.37;
 
     if (this.unlit) {
-      const dim = clamp((middle - level) / span, 0, 1) * 0.6;
+      const dim = clamp((middle - level) / span, 0, 1) * 0.82;
       if (dim > 0) {
         ctx.save();
         ctx.globalAlpha = dim;
@@ -321,10 +363,15 @@ function band(
  * both of those are soft, so the mask has no edge to see. `lit` is that shape
  * in cold white, to be added; `unlit` is the same shape in near-black, to be
  * laid over. Done once at load, and the results are images like any other.
+ *
+ * `depthOf` comes back with them: the average depth of the paint the mask
+ * fell on, weighted by how much of each pixel it took. It is what lets the
+ * light travel with the face rather than sit still while the face moves.
  */
 function screenLit(
-  painting: HTMLImageElement
-): { lit: HTMLCanvasElement; unlit: HTMLCanvasElement } | undefined {
+  painting: HTMLImageElement,
+  depth: HTMLImageElement
+): { lit: HTMLCanvasElement; unlit: HTMLCanvasElement; depthOf: number } | undefined {
   const wide = painting.naturalWidth;
   const high = painting.naturalHeight;
 
@@ -336,6 +383,13 @@ function screenLit(
 
   reading.drawImage(painting, 0, 0);
   const { data } = reading.getImageData(0, 0, wide, high);
+
+  reading.clearRect(0, 0, wide, high);
+  reading.drawImage(depth, 0, 0, wide, high);
+  const near = reading.getImageData(0, 0, wide, high);
+
+  let deep = 0;
+  let weight = 0;
 
   const shape = new Uint8ClampedArray(wide * high * 4);
   for (let at = 0; at < data.length; at += 4) {
@@ -354,12 +408,20 @@ function screenLit(
     const blue = data[at + 2] - SCREEN_GREY.blue;
     const like = 1 - Math.min(1, Math.sqrt(red * red + green * green + blue * blue) / NEAR);
 
-    shape[at + 3] = Math.round(255 * like * reach);
+    const how = like * reach;
+    shape[at + 3] = Math.round(255 * how);
+    if (how > STRONGEST) {
+      deep += near.data[at] / 255;
+      weight += 1;
+    }
   }
 
   return {
     lit: paint(shape, wide, high, SCREEN_LIGHT),
     unlit: paint(shape, wide, high, '#05060a'),
+    // If nothing matched there is nothing to move, and the nearest band is
+    // as good a guess as any.
+    depthOf: weight > 0 ? deep / weight : 1,
   };
 }
 

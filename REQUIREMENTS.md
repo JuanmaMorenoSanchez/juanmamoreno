@@ -3759,10 +3759,31 @@ drift in between. **Both ways, because one way was not visible.** Added light
 alone is a faint bloom on paint that is already pale; taken away first, the
 same swing is a face going dark and lighting up again, which is what a screen
 does to a face. The tolerance is measured rather than guessed: at 110 the key
-catches only the two brightest planes of the face, at 145 it takes the whole
-of what the tablet lights and stops short of the blue shirt behind her.
+catches only the two brightest planes of the face, at 145 the face and the
+collar, and at 170 her shoulder, the lit side of the coat, the near hand and
+the goose's head as well — and still nothing of the blue shirt behind her.
 
-And it snows, which is the one thing not in the painting.
+**And the light travels with the face.** It is drawn at its own parallax, at
+the depth of the paint it lands on, or it sits still while she slides out from
+under it and reads as a stain on the glass. That depth is taken over the part
+of the mask the light actually lands on rather than over all of it: the mask
+reaches her face, her coat, the hand and the goose, which are not the same
+distance away, and the average of all of them is a depth nothing is at. With
+the average, Chrome measured her face travelling 43 px across a pointer sweep
+and the light 20. Taken over the strongest of the mask, the light rides at
+0.979 against her band's 1.0, and the two offsets measured in the running page
+are 28.6 and 29.2 — together, to two per cent.
+
+**And it snows**, which is the one thing not in the painting: a hundred and
+eighty flakes rather than ninety, half again as big and twice as solid,
+because at the first setting it was weather you had to be told about.
+
+**What is behind the bands is dimmed into the black.** The bands between them
+cover every pixel of the painting, so the only place the copy behind them ever
+shows is the sliver a shifted band uncovers. At full strength that sliver is
+the same contour drawn twice — a hairline tracing her shoulder, which is what
+using the original as the backdrop costs. At 45% it is the shadow a near thing
+casts on what is behind it.
 
 **The shape of the canvas is the canvas's.** A window of another shape loses
 some of the painting rather than stretching it, and what it loses is the top:
