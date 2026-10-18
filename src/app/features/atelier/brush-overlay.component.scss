@@ -14,7 +14,10 @@
   flex-direction: column;
   gap: 0.75rem;
   max-width: min(60rem, 100%);
-  max-height: 100%;
+  /* No scrollbar on it: the picture gives way instead, which is what a
+     preview is for. */
+  height: 100%;
+  overflow: hidden;
   padding: 1rem 1.25rem 1.25rem;
   border-radius: 5px;
   background: var(--surface, #fff);
@@ -22,6 +25,8 @@
 }
 
 .brush-head {
+  flex: 0 0 auto;
+
   h2 {
     margin: 0 0 0.25rem;
     font-size: 1.05rem;
@@ -35,32 +40,53 @@
   }
 }
 
-/* The painting, and the marks on top of it. Marks are positioned by
-   percentage so they stay where they were put when the window changes size. */
+/* The stage is whatever room the panel has left; the picture is the box the
+   painting actually occupies inside it, and the marks sit on that. Fitting
+   rather than a fixed height, because a fixed one plus a header and a footer
+   is taller than the window on a laptop and the whole panel then scrolls. */
 .brush-stage {
-  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
   min-height: 0;
+}
+
+.brush-picture {
+  position: relative;
+  min-width: 0;
   line-height: 0;
   cursor: crosshair;
   /* Dragging across the picture otherwise selects it. */
   user-select: none;
 
   img {
+    display: block;
     max-width: 100%;
-    max-height: 62vh;
+    max-height: 100%;
     object-fit: contain;
   }
 }
 
 .brush-mark {
   position: absolute;
-  width: 13px;
-  height: 13px;
-  margin: -7px 0 0 -7px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
   border-radius: 50%;
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 55%);
   pointer-events: none;
+  /* Said as well as coloured: which marks keep and which leave out is the
+     whole of the input, and a green dot and a red dot beside each other on a
+     painting of this one's colours is not a distinction anybody should have
+     to make. */
+  color: #fff;
+  font:
+    600 13px/1 system-ui,
+    sans-serif;
 }
 
 .brush-keep {
@@ -72,6 +98,7 @@
 }
 
 .brush-foot {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;

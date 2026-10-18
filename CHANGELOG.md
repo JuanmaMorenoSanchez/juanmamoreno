@@ -25,6 +25,12 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   all the time for now, at his asking, with the settled timings written
   beside the trial ones. **Not deployed** — running locally while he looks
   at it.
+- **fix** — marking a painting by hand selected the wrong part of it. Clicks
+  were measured against the panel rather than the picture, so on a portrait
+  painting every mark was recorded at a fraction of a painting it had not been
+  put on — and the dots still landed under the cursor, so nothing looked
+  wrong. The picture is its own box now, the panel no longer scrolls, and the
+  marks say `+` and `−` as well as being green and red.
 - **fix** — the atelier's shelf is empty on the catalogue page. Every route on
   the backend answers `{ success, message, data }` and the shelf read the body
   as the list, so it held the envelope: nothing rendered, and a save spread it

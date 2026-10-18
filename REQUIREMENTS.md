@@ -2591,7 +2591,21 @@ minutes; throwing one away because a switch was brushed is worse than making
 someone wait, so `/stop` answers 409 and the page repeats the reason.
 
 
-*Proven by:* `brush-overlay.component.spec.ts` (10 tests, including "records a
+**A mark is measured against the painting, not the panel.** It was measured
+against the stage, which is as wide as the panel: a portrait painting sat in
+the left of it and every mark was recorded at a fraction of a painting it had
+not been put on. Nothing looked wrong — the same error placed the dots back
+under the cursor — and the cut came out of somewhere else, which reads as
+nothing having been selected at all. The picture is its own box now and the
+clicks are read from that. **And the panel does not scroll**: the picture is
+given whatever room is left after the heading and the buttons rather than a
+fixed share of the window, so it shrinks to fit instead of pushing a scrollbar
+down the side of a modal. The marks say `+` and `−` as well as being green and
+red, because a green dot and a red dot on a painting of these colours is not a
+distinction to ask anyone to make.
+
+*Proven by:* `brush-overlay.component.spec.ts` (11 tests, including "measures
+clicks against the painting, not the panel it sits in", "records a
 mark in the pixels of the painting, not of the screen", "places marks by percentage,
 so resizing the window does not move them", "ignores a click before the painting
 has said how big it is" and "survives a node written by an older version, or by
@@ -2689,7 +2703,7 @@ is run against the full-resolution original rather than the preview. They are
 stored on the node as json, so a graph remains one object that survives a
 reload. A click before the painting has reported its size is ignored rather than
 recorded against a guess.
-*Proven by:* `brush-overlay.component.spec.ts` (10 tests, including "records a
+*Proven by:* `brush-overlay.component.spec.ts` (11 tests, including "records a
 mark in the pixels of the painting, not of the screen", "places marks by
 percentage, so resizing the window does not move them", "ignores a click before
 the painting has said how big it is" and "survives a node written by an older

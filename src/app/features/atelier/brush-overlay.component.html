@@ -17,22 +17,32 @@
          input is "this pixel, not that one". Giving it a tabindex and an Enter
          handler that marks the centre would satisfy the rule and help nobody.
          This page is behind the admin guard and has one user, with a mouse. -->
-    <div
-      class="brush-stage"
-      (click)="mark($event)"
-      (contextmenu)="mark($event)"
-      data-testid="brush-stage"
-    >
-      <img [src]="source()" (load)="measured($event)" alt="The painting, to mark up" />
+    <!-- The picture is its own box inside the stage, and it is the box the
+         clicks are measured against. It used to be the stage, which is as
+         wide as the panel: a portrait painting sat in the left of it and
+         every mark was recorded at a fraction of the painting it was not
+         put on. The dots looked right — the same error placed them back
+         under the cursor — and the cut came out of somewhere else. -->
+    <div class="brush-stage">
+      <div
+        class="brush-picture"
+        (click)="mark($event)"
+        (contextmenu)="mark($event)"
+        data-testid="brush-stage"
+      >
+        <img [src]="source()" (load)="measured($event)" alt="The painting, to mark up" />
 
-      @for (m of working().keep; track $index) {
-        <span class="brush-mark brush-keep" [style.left]="at(m).left" [style.top]="at(m).top">
-        </span>
-      }
-      @for (m of working().drop; track $index) {
-        <span class="brush-mark brush-drop" [style.left]="at(m).left" [style.top]="at(m).top">
-        </span>
-      }
+        @for (m of working().keep; track $index) {
+          <span class="brush-mark brush-keep" [style.left]="at(m).left" [style.top]="at(m).top">
+            +
+          </span>
+        }
+        @for (m of working().drop; track $index) {
+          <span class="brush-mark brush-drop" [style.left]="at(m).left" [style.top]="at(m).top">
+            −
+          </span>
+        }
+      </div>
     </div>
 
     <footer class="brush-foot">

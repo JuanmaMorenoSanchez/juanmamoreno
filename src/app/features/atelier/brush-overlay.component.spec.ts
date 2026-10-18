@@ -67,6 +67,22 @@ describe('BrushOverlayComponent', () => {
     expect(original.keep).toHaveLength(1);
   });
 
+  it('measures clicks against the painting, not the panel it sits in', () => {
+    const { host } = build();
+    const target = host.querySelector('[data-testid="brush-stage"]') as HTMLElement;
+
+    // The element the clicks are read from holds the painting and the marks
+    // and nothing else, so its rectangle is the painting's rectangle. It used
+    // to be the stage, which is as wide as the panel: a portrait painting sat
+    // in the left of it and every mark was recorded at a fraction of a
+    // painting it had not been put on. The dots still landed under the cursor,
+    // because the same error placed them back, and the cut came out of
+    // somewhere else entirely.
+    expect(target.classList).toContain('brush-picture');
+    expect(target.querySelector('img')).not.toBeNull();
+    expect(target.parentElement?.classList).toContain('brush-stage');
+  });
+
   it('records a mark in the pixels of the painting, not of the screen', async () => {
     const { fixture } = build();
     await new Promise((settle) => setTimeout(settle, 0));
