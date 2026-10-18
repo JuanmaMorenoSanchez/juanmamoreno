@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.28.0
+
+- **feat** — every picture and clip the atelier makes is told not to be
+  cartoonish, an illustration or a comic, and is told whose hand to lean
+  towards. The negative is in the repository because it is a fact about the
+  models; the painters are not, because they are his — they live in a file
+  the engine keeps and git ignores, editable from the page, and a clone that
+  has never been told behaves exactly as before.
+- **feat** — a kept piece can be worked from, which makes it the painting the
+  page works on, and seen full size.
+
+---
+
 ## 2.27.0
 
 - **feat** — _Ipad light_, a third generative page, built from what the

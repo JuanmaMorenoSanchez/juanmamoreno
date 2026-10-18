@@ -10,7 +10,7 @@ import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.co
 import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
-import { KeptService } from './kept.service';
+import { KeptService, type KeptPiece } from './kept.service';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
 import { SketchPreviewComponent } from './sketch-preview.component';
 import {
@@ -153,8 +153,22 @@ export class AtelierComponent {
   /** What has been kept out of this run, so the button can say so. */
   protected readonly alreadyKept = signal<Set<string>>(new Set());
 
+  /**
+   * The painters the work leans towards, as the engine has them.
+   *
+   * Read from the engine rather than held here, and written back when it is
+   * changed, because the names are his and this repository does not have
+   * them: they live in a file the engine keeps and git ignores. An engine
+   * that has never been told answers with nothing and the field is empty,
+   * which is what a fresh clone does.
+   */
+  protected readonly hand = signal('');
+  protected readonly handSaving = signal(false);
+  protected readonly handSaved = signal(false);
+
   constructor() {
     void this.wake();
+    void this.engine.hand().then((said) => this.hand.set(said));
     this.recall();
     void this.kept.refresh();
 
@@ -163,6 +177,26 @@ export class AtelierComponent {
     effect(() => {
       for (const piece of this.kept.pieces()) void this.kept.show(piece.id);
     });
+  }
+
+  protected handTyped(event: Event): void {
+    this.hand.set((event.target as HTMLInputElement).value);
+    this.handSaved.set(false);
+  }
+
+  /** Writes them back to the engine. Empty puts the prompts back as they were. */
+  protected async saveHand(): Promise<void> {
+    if (this.handSaving()) return;
+    this.handSaving.set(true);
+    this.failure.set(null);
+    try {
+      this.hand.set(await this.engine.setHand(this.hand()));
+      this.handSaved.set(true);
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'that could not be written');
+    } finally {
+      this.handSaving.set(false);
+    }
   }
 
   /**
@@ -407,6 +441,42 @@ export class AtelierComponent {
     } finally {
       this.fetching.set(false);
     }
+  }
+
+  /**
+   * Makes a kept piece the painting everything else works from.
+   *
+   * The bytes are already here, as the object url the thumbnail is drawn
+   * from, so this costs nothing but reading them back. What it does cost is
+   * the catalogue link: a piece off the shelf has no token, so Run must stop
+   * offering to go and fetch a bigger copy of a painting this no longer is.
+   */
+  protected async workFrom(piece: KeptPiece): Promise<void> {
+    const url = this.kept.urls()[piece.id];
+    if (!url) return;
+    try {
+      const bytes = await fetch(url).then((answer) => answer.blob());
+      this.take(bytes, piece.name || piece.kind || piece.id);
+      this.fromCatalogue.set(null);
+    } catch {
+      this.failure.set('that piece could not be read back');
+    }
+  }
+
+  /**
+   * The piece, as big as the screen will make it.
+   *
+   * The browser's own fullscreen rather than an overlay of our own: it is one
+   * call, Escape leaves it, and a clip keeps its controls. Found in the
+   * document by the handle on its wrapper, because the button is below the
+   * details and a template reference inside a branch does not reach out of
+   * it.
+   */
+  protected fullSize(piece: KeptPiece): void {
+    const media = document.querySelector<HTMLElement>(
+      `[data-media="${piece.id}"] img, [data-media="${piece.id}"] video`
+    );
+    void media?.requestFullscreen?.().catch(() => undefined);
   }
 
   private take(painting: Blob | null, called: string | null): void {

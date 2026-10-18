@@ -110,6 +110,7 @@ describe('AtelierComponent', () => {
       onStop?: () => Promise<void>;
       catalogue?: NodeTypeDef[];
       flows?: FlowDef[];
+      hand?: string;
       run?: () => Promise<GraphRun>;
       states?: JobState[];
       kept?: unknown[];
@@ -235,6 +236,10 @@ describe('AtelierComponent', () => {
             layerBytes: () => Promise.resolve(new Blob([new Uint8Array([1])])),
             catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
             flows: () => Promise.resolve(options.flows ?? []),
+            // The painters, which this repository does not have: the engine
+            // keeps them in a file git ignores, so the stub has none either.
+            hand: () => Promise.resolve(options.hand ?? ''),
+            setHand: (saying: string) => Promise.resolve(saying.trim()),
             startGraph: (_p: Blob, graph: unknown) => {
               sent.push(graph);
               // A rejecting `run` now stands for the engine refusing the graph.
@@ -925,6 +930,67 @@ describe('AtelierComponent', () => {
     at(host, 'download-k1')?.click();
 
     expect(downloaded).toEqual(['k1']);
+  });
+
+  it('works from a kept piece, and forgets the catalogue it did not come from', async () => {
+    // What the atelier makes is usually the input to the next thing it makes.
+    // The bytes are already here as the thumbnail's own url, so this costs
+    // nothing but reading them back — and the token has to go, or Run would
+    // offer to fetch a bigger copy of a painting this no longer is.
+    const { fixture, host } = build({
+      kept: [
+        {
+          id: 'k1',
+          name: 'Rockets win I',
+          tokenId: '195',
+          kind: 'layer',
+          width: 1024,
+          height: 1086,
+          bytes: 1,
+          created: '',
+        },
+      ],
+    });
+    guts(fixture).tokenId.set('195');
+    const bytes = new Blob(['a picture'], { type: 'image/png' });
+    // A plain stand-in rather than a real Response: jsdom's cannot be built
+    // from a Blob, and the only thing read off it here is `blob()`.
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      blob: () => Promise.resolve(bytes),
+    } as unknown as Response);
+
+    at(host, 'work-from-k1')?.click();
+    await new Promise((settle) => setTimeout(settle, 0));
+    fixture.detectChanges();
+
+    expect(at(host, 'chosen')?.textContent).toContain('Rockets win I');
+    vi.restoreAllMocks();
+  });
+
+  it('shows a kept piece at the size of the screen', () => {
+    // The browser's own fullscreen: one call, Escape leaves it, and a clip
+    // keeps its controls. A thumbnail is not enough to judge a render by.
+    const { host } = build({
+      kept: [
+        {
+          id: 'k1',
+          name: 'Rockets win I',
+          tokenId: '195',
+          kind: 'layer',
+          width: 1024,
+          height: 1086,
+          bytes: 1,
+          created: '',
+        },
+      ],
+    });
+    const media = host.querySelector('[data-media="k1"] img') as HTMLElement;
+    const asked = vi.fn().mockResolvedValue(undefined);
+    media.requestFullscreen = asked;
+
+    at(host, 'full-size-k1')?.click();
+
+    expect(asked).toHaveBeenCalled();
   });
 
   it('says which copy of the painting each kept thing was made from', () => {

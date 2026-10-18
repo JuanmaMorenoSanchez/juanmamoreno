@@ -3765,6 +3765,52 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R173 — Every picture is told the same two things · met
+Two things are added to every image and every clip the atelier makes, whoever
+asked for them, and they are different in kind.
+
+**The negative is in the repository**: *Cartoonish, Illustration, Comic*. It
+is a fact about the models rather than about him — left alone they drift
+towards the flat, outlined, evenly lit look of an illustration, and his
+painting is none of those things. Each model keeps whatever else it needs
+after those three: Wan's own long list of don'ts, and the editor, which used
+to be given a single space because a pipeline with no negative prompt quietly
+stops guiding at all.
+
+**The hand is not in the repository.** Which painters he wants the work to
+lean towards is his and nobody else's, so it lives in `local/style.txt`,
+which git ignores, and a clone of this project has no idea. It is read on
+every call rather than at startup, so an edit lands on the next run; it is
+added at the end of a prompt and named as the manner of the thing, because a
+prompt that opens with painters' names is a prompt about painters; and an
+engine that has never been told answers with an empty string and changes
+nothing at all.
+
+**And it is editable from the page**, over `GET /hand` and `PUT /hand`,
+because editing a file on disk to change a prompt is a thing nobody does
+twice.
+*Proven by:* `test_house.py` (10 tests: the negative says those three things
+and carries a model's own as well without a dangling comma; a hand that was
+never written is nothing and leaves a prompt alone; a hand that was written
+says whose manner at the end; it is read again every time, so an edit lands on
+the next run rather than the next restart; emptying it puts the prompts back
+as they were; and it makes the folder it needs)
+
+### R174 — What the atelier makes is the next thing it works from · met
+A kept piece has a **Work from this** button, which makes it the painting
+everything else on the page works from. The bytes are already there as the
+thumbnail's own url, so it costs nothing but reading them back — and it drops
+the catalogue token, because a piece off the shelf is not the painting that
+token names and Run must stop offering to fetch a bigger copy of it.
+
+And a **Full size** button, which is the browser's own fullscreen on the
+picture or the clip: one call, Escape leaves it, a clip keeps its controls.
+A thumbnail is not enough to judge a render by, and the alternative was
+downloading every try to look at it.
+*Proven by:* `atelier.component.spec.ts` "works from a kept piece, and forgets
+the catalogue it did not come from" and "shows a kept piece at the size of the
+screen"
+
 ### R171 — Ipad light · met
 *Reflejo de luz de iPad* (2025) as a moving page at `/generative/ipad-light`,
 registered by hand like the other two.

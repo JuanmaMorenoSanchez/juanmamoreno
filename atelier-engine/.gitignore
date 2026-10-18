@@ -10,3 +10,6 @@ __pycache__/
 # The style references, downloaded from his own public catalogue.
 references/
 llama/
+
+# What he wants the work to lean towards. His, not the repository's.
+local/

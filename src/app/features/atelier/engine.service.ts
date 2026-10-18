@@ -371,6 +371,38 @@ export class AtelierEngineService {
   }
 
   /**
+   * The painters the work leans towards, as the engine has them.
+   *
+   * Nowhere near git and nowhere near the backend: the engine keeps them in a
+   * file this repository ignores, and this is the only way the page sees
+   * them. An engine that has never been told answers with nothing, which is
+   * also what a fresh clone does, and the prompts are then the prompts.
+   */
+  async hand(): Promise<string> {
+    try {
+      const response = await fetch(`${ENGINE}/hand`, toLocal({ cache: 'no-store' }));
+      if (!response.ok) return '';
+      return ((await response.json()) as { hand?: string }).hand ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  /** Writes them down. Empty puts the prompts back as they were. */
+  async setHand(hand: string): Promise<string> {
+    const response = await fetch(
+      `${ENGINE}/hand`,
+      toLocal({
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hand }),
+      })
+    );
+    if (!response.ok) throw new Error(await complaint(response));
+    return ((await response.json()) as { hand?: string }).hand ?? '';
+  }
+
+  /**
    * Start a graph running. Answers at once with the run's name.
    *
    * It used to wait for the whole thing, which was fine at twenty seconds and

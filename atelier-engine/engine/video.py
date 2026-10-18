@@ -34,6 +34,7 @@ from typing import Callable
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
+from . import house
 from .nodes import GraphError
 
 MODELS = Path(__file__).resolve().parent.parent / "models"
@@ -550,7 +551,7 @@ def animate(
     # painting read as a render. "painting" and "artwork" are in here on
     # purpose — they push it away from imitating brushwork it cannot do, and
     # towards moving what it was given.
-    negative = (
+    negative = house.never(
         "bright colours, overexposed, static, blurred detail, subtitles, "
         "style, artwork, painting, picture, still, overall grey, worst quality, "
         "low quality, JPEG artefacts, ugly, deformed, extra fingers, "
@@ -560,7 +561,7 @@ def animate(
     )
     # Encoded here rather than by the pipeline, which cannot do it without
     # `ftfy`. See `embed`.
-    said = embed(pipeline, [prompt.strip(), negative]).to(
+    said = embed(pipeline, [house.asked(prompt), negative]).to(
         device="cuda", dtype=pipeline.transformer.dtype
     )
 

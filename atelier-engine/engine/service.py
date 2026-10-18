@@ -31,6 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
 
+from . import house
 from .catalogue import CATALOGUE
 from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
@@ -338,6 +339,28 @@ def nodes() -> JSONResponse:
     whole reason the list lives here rather than in a template.
     """
     return JSONResponse({"nodes": [node.published() for node in CATALOGUE.values()]})
+
+
+@app.get("/hand")
+def hand() -> JSONResponse:
+    """The painters the work leans towards, if he has named any.
+
+    Not in git and never sent anywhere: the file sits in `local/`, which the
+    repository ignores, and this is the only route that reads it. An engine
+    that has never been told answers with an empty string, which is also what
+    a fresh clone does.
+    """
+    return JSONResponse({"hand": house.hand()})
+
+
+@app.put("/hand")
+def set_hand(hand: str = Body("", embed=True)) -> JSONResponse:
+    """Writes it down, so it can be changed from the page.
+
+    Editing a file on disk to change a prompt is a thing nobody does twice.
+    Empty puts it back to nothing.
+    """
+    return JSONResponse({"hand": house.set_hand(hand)})
 
 
 @app.get("/flows")

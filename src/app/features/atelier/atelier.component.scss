@@ -423,3 +423,48 @@
   flex-wrap: wrap;
   gap: 0.4rem;
 }
+
+/* The hand, and the one thing on this page that is not in the repository. */
+.atelier-hand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 0;
+}
+
+.atelier-hand-says {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 24rem;
+  min-width: 0;
+
+  span {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+  }
+}
+
+.atelier-hand .atelier-caveat {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+/* The thumbnail is a box of its own so the Full size button can find it. */
+.atelier-shelf-media {
+  display: contents;
+}

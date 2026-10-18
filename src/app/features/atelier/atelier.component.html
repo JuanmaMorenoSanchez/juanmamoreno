@@ -433,6 +433,37 @@
     </section>
   }
 
+  <!-- The hand every picture and every clip is asked for, which is his and is
+       not in this repository: the engine keeps it in a file git ignores, and
+       this is the only place it is ever shown. Empty on a fresh clone, and
+       the prompts are then the prompts. -->
+  <section class="atelier-hand">
+    <label class="atelier-hand-says">
+      <span>Style and composition</span>
+      <input
+        type="text"
+        [value]="hand()"
+        (input)="handTyped($event)"
+        (keydown.enter)="saveHand()"
+        placeholder="Painters whose hand and composition the work should lean towards"
+        data-testid="hand"
+      />
+    </label>
+    <button
+      type="button"
+      class="atelier-minor"
+      (click)="saveHand()"
+      [disabled]="handSaving()"
+      data-testid="hand-save"
+    >
+      {{ handSaving() ? 'Saving…' : handSaved() ? 'Saved' : 'Save' }}
+    </button>
+    <p class="atelier-caveat">
+      Added to the end of every image and video prompt as the manner of the thing. Kept on this
+      machine only. Every picture is also told not to be cartoonish, an illustration or a comic.
+    </p>
+  </section>
+
   <!-- What has been kept, which is the only thing here that outlives the run. -->
   @if (kept.pieces().length) {
     <section class="atelier-shelf" data-testid="shelf">
@@ -444,11 +475,17 @@
         @for (piece of kept.pieces(); track piece.id) {
           <li>
             @if (kept.urls()[piece.id]; as bytes) {
-              @if (kept.isClip(piece)) {
-                <video [src]="bytes" controls playsinline preload="metadata"></video>
-              } @else {
-                <img [src]="bytes" [alt]="piece.name || piece.kind" loading="lazy" />
-              }
+              <!-- Named so the Full size button can find it. The button sits
+                   below the details and cannot reach a template reference
+                   declared inside a branch, and the two branches are two
+                   different tags. -->
+              <span class="atelier-shelf-media" [attr.data-media]="piece.id">
+                @if (kept.isClip(piece)) {
+                  <video [src]="bytes" controls playsinline preload="metadata"></video>
+                } @else {
+                  <img [src]="bytes" [alt]="piece.name || piece.kind" loading="lazy" />
+                }
+              </span>
             } @else if (kept.trouble()[piece.id]; as why) {
               <!-- Said rather than left blank: an unlabelled box with no
                    picture in it is indistinguishable from a piece that never
@@ -480,6 +517,24 @@
               }
             </dl>
             <span class="atelier-shelf-does">
+              <button
+                type="button"
+                class="atelier-minor"
+                (click)="workFrom(piece)"
+                [disabled]="!kept.urls()[piece.id]"
+                [attr.data-testid]="'work-from-' + piece.id"
+              >
+                Work from this
+              </button>
+              <button
+                type="button"
+                class="atelier-minor"
+                (click)="fullSize(piece)"
+                [disabled]="!kept.urls()[piece.id]"
+                [attr.data-testid]="'full-size-' + piece.id"
+              >
+                Full size
+              </button>
               <button
                 type="button"
                 class="atelier-minor"

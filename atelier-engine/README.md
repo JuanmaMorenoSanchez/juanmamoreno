@@ -26,6 +26,27 @@ built on it. The reasons, decided 2026-10-09:
 See `../docs/atelier-plan.md` for the feasibility assessment, the models and
 why each was chosen.
 
+## What every picture is told
+
+Two things are added to every image and every clip, whoever asked for them,
+and they live in `engine/house.py`.
+
+**The negative is committed**: *Cartoonish, Illustration, Comic*. That is a
+fact about the models rather than about him — left alone they drift towards
+the flat, outlined, evenly lit look of an illustration, and his painting is
+none of those things. Each model keeps whatever else it needs: Wan's own long
+list of don'ts comes after these three.
+
+**The hand is not committed.** Which painters he wants the work to lean
+towards is his business, so it lives in `local/style.txt`, which git ignores,
+and this repository ships without it. `hand()` reads the file on every call,
+`asked()` puts it at the end of a prompt as the manner of the thing rather
+than the subject of it, and an engine that has never been told answers with an
+empty string and changes nothing. It is editable from the atelier — the page
+reads `GET /hand` and writes `PUT /hand` — because editing a file on disk to
+change a prompt is a thing nobody does twice.
+
+
 ## Setup
 
 Python 3.11. From this folder:

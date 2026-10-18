@@ -30,6 +30,7 @@ from typing import Any
 import numpy as np
 from PIL import Image, ImageFilter
 
+from . import house
 from .nodes import StoppedEarly
 
 HERE = Path(__file__).resolve().parent.parent
@@ -176,8 +177,9 @@ def edit(
         prompt=instruction,
         # Without a negative prompt the pipeline quietly disables guidance and
         # follows the instruction more loosely, which is the opposite of why
-        # this model is here.
-        negative_prompt=" ",
+        # this model is here. It used to be a single space for exactly that
+        # reason; now that there is something worth saying, it says it.
+        negative_prompt=house.never(),
         num_inference_steps=steps,
         true_cfg_scale=guidance,
         generator=torch.Generator().manual_seed(seed),
