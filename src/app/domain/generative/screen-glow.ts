@@ -7,33 +7,28 @@ export interface Cast {
 
 /**
  * What the light is most of the time: the cold white of a lit screen.
+ *
+ * Short of white on every channel on purpose. It is added to paint, and a
+ * light with no headroom has nowhere to go but white, which is what a blown
+ * forehead is.
  */
-const COLD_WHITE: Cast = { red: 0xcf, green: 0xe4, blue: 0xff };
+const COLD_WHITE: Cast = { red: 0xc4, green: 0xd4, blue: 0xec };
 
 /**
  * And what it takes on instead, now and then.
  *
  * A screen is not one colour. What is on it changes, and with it the cast of
- * the light it throws — warmer for a photograph, redder for one thing, bluer
- * for another. These are the directions it goes in, never the colours it
- * becomes: only a share of each is ever mixed in.
+ * the light it throws. These are written close to the cold white already —
+ * the change wanted is the one you notice without being able to name it —
+ * and then levelled, below, so that none of them is any dimmer than it.
  */
-const CASTS: readonly Cast[] = [
-  { red: 0xff, green: 0xaa, blue: 0x96 }, // red
-  { red: 0x96, green: 0xbe, blue: 0xff }, // blue
-  { red: 0xff, green: 0xeb, blue: 0x96 }, // yellow
-  { red: 0xaa, green: 0xff, blue: 0xc8 }, // green
-  { red: 0xd7, green: 0xaa, blue: 0xff }, // violet
+const PAINTED: readonly Cast[] = [
+  { red: 228, green: 202, blue: 202 }, // red
+  { red: 176, green: 214, blue: 250 }, // blue
+  { red: 232, green: 220, blue: 182 }, // yellow
+  { red: 182, green: 224, blue: 198 }, // green
+  { red: 214, green: 202, blue: 248 }, // violet
 ];
-
-/**
- * How much of a cast is mixed in.
- *
- * A third, so the light is still the same light. A screen that went properly
- * red would be a different lamp rather than the same one showing something
- * else, and the face it falls on is paint, which has its own colour to keep.
- */
-const HOW_FAR = 0.35;
 
 /**
  * How often the light is simply its own colour.
@@ -42,6 +37,18 @@ const HOW_FAR = 0.35;
  * the five casts share the other half between them.
  */
 const PLAIN = 0.5;
+
+/**
+ * How far a change of level may wander from the beat, as a share of it.
+ *
+ * A screen does not change on a metronome. Under a half the boundaries
+ * cannot overtake each other, so the intervals stay in order while none of
+ * them is the same length as the one before.
+ */
+const WANDERS = 0.45;
+
+/** How long a change takes to arrive, in seconds, whatever the interval. */
+const ARRIVES = 0.35;
 
 /**
  * The brightness of a screen somebody is looking at, over time.
@@ -54,11 +61,12 @@ const PLAIN = 0.5;
  * - a slow drift, so it is never quite still;
  * - a faster, smaller ripple at a frequency that does not divide the first,
  *   so the two never line up into an obvious beat;
- * - a step, every few seconds, to a new level — which is the one that reads
- *   as a screen rather than as a candle.
+ * - a step, every couple of seconds and never twice the same couple, to a new
+ *   level and a new cast — which is the one that reads as a screen rather
+ *   than as a candle.
  *
- * Pure arithmetic of `t`: the same second always gives the same brightness,
- * so a sketch that is paused and resumed does not jump.
+ * Pure arithmetic of `t`: the same second always gives the same light, so a
+ * sketch that is paused and resumed does not jump.
  */
 export class ScreenGlow {
   constructor(
@@ -66,7 +74,7 @@ export class ScreenGlow {
     private readonly least = 0.45,
     /** The brightest. Over one is allowed: the mask is drawn additively. */
     private readonly most = 1.15,
-    /** How long a level is held before it steps somewhere else, in seconds. */
+    /** About how long a level is held before it steps, in seconds. */
     private readonly holds = 2
   ) {}
 
@@ -74,8 +82,6 @@ export class ScreenGlow {
   at(t: number): number {
     const drift = Math.sin(t * 0.31);
     const ripple = Math.sin(t * 1.27 + 1.1) * 0.35;
-    // A new level every `holds` seconds, eased into over a third of a second
-    // rather than cut to: a hard jump reads as a dropped frame.
     const step = this.stepAt(t);
 
     const mixed = (drift + ripple) / 1.35; // back into -1..1
@@ -86,17 +92,14 @@ export class ScreenGlow {
   /**
    * The colour of the light at `t` seconds.
    *
-   * It changes when the level changes and across the same easing, because it
-   * is the same event: something else came up on the screen, and it is both
-   * brighter and a different colour. Half the intervals are the plain cold
-   * white and the rest lean a third of the way towards one of five casts, so
-   * what it mostly is, is itself.
+   * It changes when the level changes and across the same arrival, because
+   * it is the same event: something else came up on the screen, and it is
+   * both brighter and a different colour. Half the intervals are the plain
+   * cold white and the rest take a cast, so what it mostly is, is itself.
    */
   tint(t: number): Cast {
-    const index = Math.floor(t / this.holds);
-    const into = (t - index * this.holds) / this.holds;
-    const ease = smooth(Math.min(1, into / 0.1));
-    return mix(castAt(index), castAt(index + 1), ease);
+    const { index, arrived } = this.whenAt(t);
+    return mix(castAt(index), castAt(index + 1), arrived);
   }
 
   /**
@@ -107,11 +110,41 @@ export class ScreenGlow {
    * started agree about what the screen was doing at eleven seconds.
    */
   private stepAt(t: number): number {
-    const index = Math.floor(t / this.holds);
-    const into = (t - index * this.holds) / this.holds;
-    const ease = Math.min(1, into / 0.1); // a tenth of the hold to arrive
-    return level(index) + (level(index + 1) - level(index)) * smooth(ease);
+    const { index, arrived } = this.whenAt(t);
+    return level(index) + (level(index + 1) - level(index)) * arrived;
   }
+
+  /**
+   * Which interval `t` falls in, and how far through its arrival it is.
+   *
+   * The boundaries sit near multiples of `holds` and are pushed either side
+   * of it by a draw on their own number, so no two gaps are the same length
+   * and none can overtake its neighbour. The arrival is a fixed number of
+   * seconds rather than a share of the gap, or a short interval would snap
+   * where a long one eased.
+   */
+  private whenAt(t: number): { index: number; arrived: number } {
+    let index = Math.floor(t / this.holds);
+    while (changesAt(index, this.holds) > t) index--;
+    while (changesAt(index + 1, this.holds) <= t) index++;
+
+    const since = t - changesAt(index, this.holds);
+    return { index, arrived: smooth(Math.min(1, since / ARRIVES)) };
+  }
+}
+
+/**
+ * When the nth change happens, in seconds.
+ *
+ * Near the nth beat and pushed either side of it by a draw on its own
+ * number, so no two gaps are the same length. `WANDERS` is under a half,
+ * which is what keeps a boundary from overtaking the one after it.
+ *
+ * Exported because it is the whole of the irregularity and the only way to
+ * check it without inferring boundaries from the brightness either side.
+ */
+export function changesAt(index: number, holds: number): number {
+  return (index + (level(index * 31 + 11) - 0.5) * WANDERS) * holds;
 }
 
 /** The colour the nth interval is lit in. */
@@ -122,11 +155,34 @@ function castAt(index: number): Cast {
   if (pick < PLAIN) return COLD_WHITE;
 
   const which = Math.min(
-    CASTS.length - 1,
-    Math.floor(((pick - PLAIN) / (1 - PLAIN)) * CASTS.length)
+    PAINTED.length - 1,
+    Math.floor(((pick - PLAIN) / (1 - PLAIN)) * PAINTED.length)
   );
-  return mix(COLD_WHITE, CASTS[which], HOW_FAR);
+  return CASTS[which];
 }
+
+/** How much light a colour is, which is not how much of it there is. */
+function brightness(colour: Cast): number {
+  return 0.2126 * colour.red + 0.7152 * colour.green + 0.0722 * colour.blue;
+}
+
+/**
+ * A cast lifted or dropped bodily until it is exactly as bright as the cold
+ * white.
+ *
+ * Without this, a cast reads as the light going out rather than as the light
+ * changing colour: the eye is far better at brightness than at hue, and a
+ * redder white is a dimmer one unless something is done about it. Adding the
+ * same amount to all three channels moves brightness without turning the
+ * colour, and brightness is linear, so anything mixed between two levelled
+ * casts is level too.
+ */
+function levelled(cast: Cast): Cast {
+  const lift = brightness(COLD_WHITE) - brightness(cast);
+  return { red: cast.red + lift, green: cast.green + lift, blue: cast.blue + lift };
+}
+
+const CASTS: readonly Cast[] = PAINTED.map(levelled);
 
 /** `how` of the way from one colour to another. */
 function mix(from: Cast, to: Cast, how: number): Cast {

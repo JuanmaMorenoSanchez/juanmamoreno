@@ -3,6 +3,7 @@ import { clamp } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
 import { Cast, ScreenGlow } from '@domain/generative/screen-glow';
 import { Snowfall } from '@domain/generative/snowfall';
+import { SteadyGaze } from '@domain/generative/steady-gaze';
 import { Frame, loadImages, Sketch } from './sketch';
 
 const IMAGES_ROUTE = 'assets/images/canvases/';
@@ -22,11 +23,13 @@ const IMAGES_ROUTE = 'assets/images/canvases/';
  * and the colour comes from the painting at load.
  */
 const CUTS = [
-  { name: 'ground', depth: 0.1 },
   { name: 'limbs', depth: 0.45 },
   { name: 'shirt', depth: 0.72 },
   { name: 'girl', depth: 1 },
 ] as const;
+
+/** How near the ground is. Far, and it is the only thing drawn whole. */
+const GROUND = 0.12;
 
 /**
  * How far the nearest cut moves, in pixels at a thousand-pixel frame.
@@ -37,6 +40,26 @@ const CUTS = [
  * and under twenty you could barely see it move at all.
  */
 const SHIFT = 34;
+
+/**
+ * How bright the light is allowed to get, at the very top of its range.
+ *
+ * It can be most of the way now, because the light is screened over the paint
+ * rather than added to it: adding runs out of room and flattens the cheek to
+ * white, screening cannot go past white at all and keeps the paint's own
+ * modelling all the way up.
+ */
+const MOST_LIGHT = 0.9;
+
+/**
+ * How much of the way a layer goes towards its mark each frame.
+ *
+ * Only to round the corner when the gaze changes direction — the gaze in
+ * front of it already moves at one speed, so there is nothing here for the
+ * easing to rescue, and a slower one would only make every layer lag behind
+ * the drift by a different amount, which is a wobble rather than depth.
+ */
+const EASE = 0.12;
 
 /**
  * How much bigger than a cover fit the painting is drawn.
@@ -105,6 +128,9 @@ export class IpadLightSketch implements Sketch {
   private height = 0;
 
   private painting?: HTMLImageElement;
+  /** The landscape, whole: his paint runs on under where the figures were. */
+  private ground?: HTMLImageElement;
+  private groundParallax?: Parallax;
 
   /** One canvas per cut, and the parallax that moves it. */
   private layers: { sprite: HTMLCanvasElement; parallax: Parallax }[] = [];
@@ -119,6 +145,7 @@ export class IpadLightSketch implements Sketch {
   private readonly snow = new Snowfall(180, 28);
   private readonly glow = new ScreenGlow();
   private readonly drift = new IdleDrift();
+  private readonly gaze = new SteadyGaze();
 
   /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
@@ -127,15 +154,20 @@ export class IpadLightSketch implements Sketch {
     this.width = width;
     this.height = height;
 
-    const wanted: Record<string, string> = { painting: `${IMAGES_ROUTE}ipad-light.jpg` };
+    const wanted: Record<string, string> = {
+      painting: `${IMAGES_ROUTE}ipad-light.jpg`,
+      ground: `${IMAGES_ROUTE}ipad-light-ground.jpg`,
+    };
     for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
 
     const images = await loadImages(wanted);
     this.painting = images['painting'];
+    this.ground = images['ground'];
+    this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
     this.layers = CUTS.map((each) => ({
       sprite: cut(images['painting'], images[each.name]),
-      parallax: new Parallax(each.depth, SHIFT, 0.06),
+      parallax: new Parallax(each.depth, SHIFT, EASE),
     }));
 
     const screen = screenLit(images['painting']);
@@ -155,14 +187,19 @@ export class IpadLightSketch implements Sketch {
     if (!this.painting) return;
     const { x, y, width, height } = this.frame;
 
-    // Where it is looking: the pointer while there is one, the drift
-    // otherwise, and the drift again as soon as the pointer leaves.
-    const looking = frame.pointer.active
+    // Where it is being told to look: the pointer while there is one, the
+    // drift otherwise, and the drift again as soon as the pointer leaves.
+    const told = frame.pointer.active
       ? {
           x: clamp((frame.pointer.x / this.width) * 2 - 1, -1, 1),
           y: clamp((frame.pointer.y / this.height) * 2 - 1, -1, 1),
         }
       : this.drift.at(frame.t);
+
+    // And where it is actually looking, which gets there at one speed. A
+    // pointer thrown across the window moves the scene no faster than the
+    // drift does; all a flick buys is a longer journey.
+    const looking = this.gaze.toward(told.x, told.y, frame.dt);
 
     // Black, not the page's background: the painting is cover-fitted and what
     // shows past it at an extreme window is the edge of the canvas, which
@@ -170,18 +207,22 @@ export class IpadLightSketch implements Sketch {
     ctx.fillStyle = '#07080b';
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // The painting itself first, whole and unmoved, so a cut sliding off
-    // reveals paint rather than a hole — and dimmed into the black, because
-    // the cuts between them cover nearly all of it and the only place it ever
-    // shows is what one of them uncovers. At full strength that sliver is the
-    // same contour drawn twice; dimmed, it is the shadow a near thing casts
-    // on what is behind it.
-    ctx.save();
-    ctx.globalAlpha = 0.45;
-    ctx.drawImage(this.painting, x, y, width, height);
-    ctx.restore();
-
     const scale = Math.max(width, height) / 1000;
+
+    // The landscape first, whole and at its own depth. What a figure in
+    // front of it uncovers is paint rather than a hole or a shadow: his own
+    // paint, pushed in from the rim of each hole where the figures were cut
+    // out, so the sky goes on being this painting's sky.
+    if (this.ground && this.groundParallax) {
+      this.groundParallax.update(looking.x, looking.y);
+      ctx.drawImage(
+        this.ground,
+        x + this.groundParallax.x * scale,
+        y + this.groundParallax.y * scale,
+        width,
+        height
+      );
+    }
     for (const layer of this.layers) {
       layer.parallax.update(looking.x, looking.y);
       ctx.drawImage(
@@ -227,7 +268,7 @@ export class IpadLightSketch implements Sketch {
     const span = 0.37;
 
     if (this.unlit) {
-      const dim = clamp((middle - level) / span, 0, 1) * 0.82;
+      const dim = clamp((middle - level) / span, 0, 1) * 0.75;
       if (dim > 0) {
         ctx.save();
         ctx.globalAlpha = dim;
@@ -236,11 +277,14 @@ export class IpadLightSketch implements Sketch {
       }
     }
 
-    const bright = clamp((level - middle) / span, 0, 1);
+    const bright = clamp((level - middle) / span, 0, 1) * MOST_LIGHT;
     const coloured = bright > 0 ? this.colour(this.glow.tint(t), x, y) : undefined;
     if (coloured) {
       ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
+      // Screened, not added. Added light has nothing above 255 to work with,
+      // so the brightest paint flattens into a white patch; screened, it
+      // approaches white without arriving and the cheek keeps its shape.
+      ctx.globalCompositeOperation = 'screen';
       ctx.globalAlpha = bright;
       ctx.drawImage(coloured, 0, 0);
       ctx.restore();
