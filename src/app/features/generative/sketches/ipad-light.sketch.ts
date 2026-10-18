@@ -51,6 +51,20 @@ const SHIFT = 34;
  */
 const MOST_LIGHT = 0.9;
 
+/** The colour of the light itself, which is the cold white of a screen. */
+const SCREEN_LIGHT: Cast = { red: 0xc4, green: 0xd4, blue: 0xec };
+
+/**
+ * How far a cast is carried into the paint, at its strongest.
+ *
+ * The colour is a pass of its own, blended so that it takes the hue and the
+ * saturation of the cast and the brightness of the paint under it — which is
+ * the only way a coloured light shows on a lit face at all, and which cannot
+ * make anything darker than it already was. Under a half, so it is her face
+ * in a red light and not a red face.
+ */
+const SO_MUCH = 0.7;
+
 /**
  * How much of the way a layer goes towards its mark each frame.
  *
@@ -278,15 +292,35 @@ export class IpadLightSketch implements Sketch {
     }
 
     const bright = clamp((level - middle) / span, 0, 1) * MOST_LIGHT;
-    const coloured = bright > 0 ? this.colour(this.glow.tint(t), x, y) : undefined;
-    if (coloured) {
+    if (bright <= 0) return;
+
+    // First the light, in its own cold white. Screened, not added: added
+    // light has nothing above 255 to work with, so the brightest paint
+    // flattens into a white patch; screened, it approaches white without
+    // arriving and the cheek keeps its shape.
+    const white = this.colour(SCREEN_LIGHT, x, y);
+    if (white) {
       ctx.save();
-      // Screened, not added. Added light has nothing above 255 to work with,
-      // so the brightest paint flattens into a white patch; screened, it
-      // approaches white without arriving and the cheek keeps its shape.
       ctx.globalCompositeOperation = 'screen';
       ctx.globalAlpha = bright;
-      ctx.drawImage(coloured, 0, 0);
+      ctx.drawImage(white, 0, 0);
+      ctx.restore();
+    }
+
+    // Then the cast, if this interval has one. A pass of its own, because a
+    // coloured light that is pale enough to be a screen is white by the time
+    // it has been screened onto a lit face: the two things the eye reads —
+    // how bright it is and what colour it is — have to be laid on separately
+    // or the second is lost in the first. `color` takes the hue and the
+    // saturation from the cast and leaves the brightness exactly as the paint
+    // had it, so a cast can never be a dimming.
+    const how = this.glow.colouring(t) * bright * SO_MUCH;
+    const cast = how > 0.01 ? this.colour(this.glow.tint(t), x, y) : undefined;
+    if (cast) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'color';
+      ctx.globalAlpha = how;
+      ctx.drawImage(cast, 0, 0);
       ctx.restore();
     }
   }

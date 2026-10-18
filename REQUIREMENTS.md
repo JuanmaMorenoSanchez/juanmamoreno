@@ -3747,19 +3747,23 @@ shift before it looks like anything is wrong.
 
 **There is paint under the figures.** The three in front are masks over the
 painting, because a cut is one channel and the colour is already there; the
-ground is a picture of its own, with his paint pushed in from the rim of
-every hole the figures left — blur the whole thing, put back the pixels that
-were never missing, and again, coarse first and then fine. Every value in the
-filled region is a weighted average of paint he put down, and only the first
-sixty pixels or so of it is ever seen, because that is as far as anything in
-front of it moves. **The fills on the shelf could not be used.** Each one
-answers with a blue afternoon, and three of the four cut layers turn out to
-have been cut from that state of the canvas — their sky is daylight where
-this one is dusk — so the shapes are taken from them and the paint from the
-painting.
+ground is a picture of its own, with his paint pushed in under every hole the
+figures left. **A ring at a time, not a blur.** Every unknown pixel with a
+known neighbour takes the average of those neighbours and becomes known, a
+hundred and twenty times over, so colour walks inwards from the rim and keeps
+the variation it had there. A blur was tried first, and at that distance a
+blur is a flat grey plate — which is exactly what showed as a haze the moment
+a figure slid off it. Past the hundred and twenty rings it is out of sight
+for good and is blurred coarsely, because nothing in front of it moves that
+far. Every value in the filled region is a weighted average of paint he put
+down.
 
-Before that, what showed when a cut moved was the painting again, dimmed into
-the black, which read as a shadow but was still a hole.
+**The fills on the shelf could not be used.** Each one answers with a blue
+afternoon, and three of the four cut layers turn out to have been cut from
+that state of the canvas — their sky is daylight where this one is dusk — so
+the shapes are taken from them and the paint from the painting. Before any of
+this, what showed when a cut moved was the painting again, dimmed into the
+black: a shadow, but still a hole.
 
 **Holes in the cuts are closed on the way out**, because the segmentation read
 a dark painted spot inside the hand as not-hand and left a pinprick of the
@@ -3768,17 +3772,24 @@ claims is given to the ground, so the four together leave no gap.
 
 **It drifts on its own, it does not stop, and it cannot be thrown.** A
 painting that moves only when touched is a still painting most of the time,
-and on a phone there is no pointer at all. Two things were wrong with the
-first drift. It was a pair of sines, which is a path that slows to nothing at
-each end and turns around: measured over two minutes, its slowest moment was a
-thousandth of its fastest. And the pointer reached the layers through an
-easing, which steps a fraction of the gap each frame and so is fastest exactly
-when the gap is biggest — a pointer thrown across the window threw the scene
-with it. The drift goes round now at a steady rate, with a smaller turn over
-it at a rate that does not divide the first; and both it and the pointer reach
-the layers through a gaze that moves at one speed, 0.6 of the range a second,
-whether it is following a drift or a flick. All a flick buys is a longer
-journey.
+and on a phone there is no pointer at all. Three faults, each fixed in turn.
+It was a pair of sines, which is a path that slows to nothing at each end and
+turns around: measured over two minutes, its slowest moment was a thousandth
+of its fastest. It was then a single turn, which does not stop but is a thing
+you can predict after watching it once. It is three turns now, of different
+widths and periods, added together and all going the same way round — the
+first deliberately faster than the other two put together, which is what
+keeps the path from doubling back and coming to a halt in the bend. The
+slowest moment is a quarter of the fastest, the widths sum to one so it
+cannot leave the range a pointer gives, and in ten minutes it never comes
+back to where it started.
+
+And the pointer used to reach the layers through an easing, which steps a
+fraction of the gap each frame and so is fastest exactly when the gap is
+biggest — a pointer thrown across the window threw the scene with it. Both
+the drift and the pointer reach the layers through a gaze that moves at one
+speed now, 0.6 of the range a second, whether it is following a drift or a
+flick. All a flick buys is a longer journey.
 
 **The screen changes, and not on a beat.** The paint the tablet lights is
 found once at load, by how near it is to #DBDBDB — the grey he picked, which
@@ -3800,24 +3811,36 @@ two brightest planes of the face, at 145 the face and the collar, and at 170
 her shoulder, the lit side of the coat, the near hand and the goose's head as
 well — and still nothing of the blue shirt behind her.
 
-**And it takes a cast, which is never a dimming.** The colour changes when the
-level does, because it is the same event. Half the intervals are the plain
-cold white and the rest take one of five — a red, a blue, a yellow, a green, a
-violet — each written close to the white to begin with and then lifted or
-dropped bodily until it carries exactly the same brightness. Without that
-levelling a cast reads as the light going out rather than as the light
-changing colour: the eye is far better at brightness than at hue, and a redder
-white is a darker one. Brightness is linear in the three channels, so anything
-mixed between two levelled casts is level too, and the furthest any of them
-sits from the white is the yellow, 64 away and almost all of it in blue —
-which is the difference between a warm screen and a cold one.
+**And it takes a cast, which has to be its own pass.** The colour changes
+when the level does, because it is the same event. Half the intervals are the
+plain white of a screen and the rest take one of five — a red, a blue, a
+yellow, a green, a violet.
 
-**The light is screened over the paint, not added to it.** Added light has
-nothing above 255 to work with, so the brightest paint flattened into a white
-patch and the cheek lost its modelling at the top of every cycle. Screened, it
-approaches white without arriving: measured in Chrome over a cycle, the
-forehead now runs 130 to 208 and the cheek 80 to 194, where adding took both
-to 250 and held them there.
+The first two attempts at this could not be seen at all, and for the same
+reason both times. A coloured light pale enough to be a screen is a white
+light by the time it has been screened onto a lit cheek: screening runs
+towards white on every channel at once, and whatever difference there was
+between a cold white and a warm one is gone. Levelling the casts so that none
+of them was dimmer than the white — which is a real thing, the eye reads
+brightness long before hue, and a redder white is a darker one — stopped them
+reading as a dimming and left them invisible.
+
+So brightness and colour are two passes now. The first is the light itself,
+in one cold white, screened over the paint rather than added to it: adding
+has nothing above 255 to work with, so the brightest paint flattened into a
+white patch and the cheek lost its modelling at the top of every cycle.
+Measured in Chrome, the forehead runs 130 to 208 and the cheek 80 to 194,
+where adding took both to 250 and held them there.
+
+The second pass is the cast, laid on with the blend that takes the hue and
+the saturation of what is drawn and the brightness of what is under it. The
+paint keeps its own brightness exactly, so a cast can never be a dimming by
+construction rather than by arithmetic, and the hues can be properly
+saturated because nothing about them touches how bright anything is. Seven
+tenths of the way at its strongest, so it is her face in a red light and not
+a red face: measured over three minutes, a cast swings her face 40 of red
+against blue, where the levelled pale ones managed nothing a screenshot could
+tell apart.
 
 **The light travels with the face.** It rides on the girl's own cut — the same
 `Parallax` she is drawn with — so it moves exactly as she moves. Before the
@@ -3837,16 +3860,18 @@ this is about. It is drawn five per cent over a cover fit, with all five spent
 below the window: a plain cover fit laid the painted edge of the canvas along
 the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**677 KB of assets** for a 3000×3180 original: the painting and the filled
+**759 KB of assets** for a 3000×3180 original: the painting and the filled
 ground at 1500 px as progressive JPEGs, and the three figures as grey cuts of
 the same size, because a cut has an edge and half resolution would show it.
+The ground's own cut is not shipped — it is an input to the fill and nothing
+at display time needs it.
 *Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole
 flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (10 tests,
-including "does not change on a metronome", "is never dimmer when it is
-coloured", and that the cold white comes up more than twice as often as any
-cast), `steady-gaze.spec.ts` (5 tests, including "cannot be thrown by a
-pointer crossing the window"), `idle-drift.spec.ts` (5 tests, including "never
-stops to turn around"), and `registry.spec.ts` "holds exactly the three that
+including "does not change on a metronome", "is mostly not cast at all" and
+"casts in colours that can be told apart"), `steady-gaze.spec.ts` (5 tests,
+including "cannot be thrown by a pointer crossing the window"),
+`idle-drift.spec.ts` (6 tests, including "never stops to turn around" and
+"wanders rather than going round the same circle"), and `registry.spec.ts` "holds exactly the three that
 are published"
 *Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 —
 no console errors, and the scene measurably answers the pointer in both.

@@ -6,28 +6,24 @@ export interface Cast {
 }
 
 /**
- * What the light is most of the time: the cold white of a lit screen.
+ * The casts the light takes, as hues.
  *
- * Short of white on every channel on purpose. It is added to paint, and a
- * light with no headroom has nowhere to go but white, which is what a blown
- * forehead is.
+ * Saturated, which earlier versions of this were not and which is why they
+ * could not be seen. A pale coloured light screened onto pale paint is a
+ * white light: screening runs towards white on every channel at once, and
+ * what little difference there was between a cold white and a warm one is
+ * gone by the time it lands on a lit cheek. So the brightness and the colour
+ * are two passes now, and this is the colour one — laid on with the blend
+ * that takes the hue and the saturation of what is drawn and the brightness
+ * of what is under it. Nothing here can make the paint darker, whatever its
+ * own brightness: the paint keeps its own.
  */
-const COLD_WHITE: Cast = { red: 0xc4, green: 0xd4, blue: 0xec };
-
-/**
- * And what it takes on instead, now and then.
- *
- * A screen is not one colour. What is on it changes, and with it the cast of
- * the light it throws. These are written close to the cold white already —
- * the change wanted is the one you notice without being able to name it —
- * and then levelled, below, so that none of them is any dimmer than it.
- */
-const PAINTED: readonly Cast[] = [
-  { red: 228, green: 202, blue: 202 }, // red
-  { red: 176, green: 214, blue: 250 }, // blue
-  { red: 232, green: 220, blue: 182 }, // yellow
-  { red: 182, green: 224, blue: 198 }, // green
-  { red: 214, green: 202, blue: 248 }, // violet
+const CASTS: readonly Cast[] = [
+  { red: 0xff, green: 0x6e, blue: 0x5a }, // red
+  { red: 0x5a, green: 0x9b, blue: 0xff }, // blue
+  { red: 0xff, green: 0xd2, blue: 0x4a }, // yellow
+  { red: 0x5a, green: 0xe0, blue: 0x8c }, // green
+  { red: 0xbe, green: 0x6e, blue: 0xff }, // violet
 ];
 
 /**
@@ -103,6 +99,21 @@ export class ScreenGlow {
   }
 
   /**
+   * How much of that colour is actually in the light at `t`: none for the
+   * intervals that are the plain white of a screen, all of it for the rest.
+   *
+   * Separate from the colour so that an interval with no cast still has a
+   * hue to fade towards, and the change is a colour arriving rather than a
+   * swing through grey on the way to it.
+   */
+  colouring(t: number): number {
+    const { index, arrived } = this.whenAt(t);
+    const from = castsAt(index) ? 1 : 0;
+    const to = castsAt(index + 1) ? 1 : 0;
+    return from + (to - from) * arrived;
+  }
+
+  /**
    * The held level at `t`, eased across the change.
    *
    * Deterministic from the index of the interval, so it is the same on every
@@ -147,42 +158,20 @@ export function changesAt(index: number, holds: number): number {
   return (index + (level(index * 31 + 11) - 0.5) * WANDERS) * holds;
 }
 
-/** The colour the nth interval is lit in. */
-function castAt(index: number): Cast {
-  // A different draw from the one the level uses, or every bright interval
-  // would be the same colour as every other bright one.
-  const pick = level(index * 7 + 3);
-  if (pick < PLAIN) return COLD_WHITE;
-
-  const which = Math.min(
-    PAINTED.length - 1,
-    Math.floor(((pick - PLAIN) / (1 - PLAIN)) * PAINTED.length)
-  );
-  return CASTS[which];
-}
-
-/** How much light a colour is, which is not how much of it there is. */
-function brightness(colour: Cast): number {
-  return 0.2126 * colour.red + 0.7152 * colour.green + 0.0722 * colour.blue;
+/** Whether the nth interval is cast at all, or the plain white of a screen. */
+function castsAt(index: number): boolean {
+  return level(index * 7 + 3) >= PLAIN;
 }
 
 /**
- * A cast lifted or dropped bodily until it is exactly as bright as the cold
- * white.
+ * Which colour the nth interval would be cast in, cast or not.
  *
- * Without this, a cast reads as the light going out rather than as the light
- * changing colour: the eye is far better at brightness than at hue, and a
- * redder white is a dimmer one unless something is done about it. Adding the
- * same amount to all three channels moves brightness without turning the
- * colour, and brightness is linear, so anything mixed between two levelled
- * casts is level too.
+ * A different draw from the one that decides whether it is cast, so the
+ * plain intervals are not all drawn from the same end of the list.
  */
-function levelled(cast: Cast): Cast {
-  const lift = brightness(COLD_WHITE) - brightness(cast);
-  return { red: cast.red + lift, green: cast.green + lift, blue: cast.blue + lift };
+function castAt(index: number): Cast {
+  return CASTS[Math.floor(level(index * 13 + 5) * CASTS.length) % CASTS.length];
 }
-
-const CASTS: readonly Cast[] = PAINTED.map(levelled);
 
 /** `how` of the way from one colour to another. */
 function mix(from: Cast, to: Cast, how: number): Cast {

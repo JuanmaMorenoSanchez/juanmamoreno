@@ -9,10 +9,6 @@ import { changesAt, ScreenGlow } from './screen-glow';
  */
 describe('ScreenGlow', () => {
   const glow = new ScreenGlow();
-  const COLD_WHITE = { red: 0xc4, green: 0xd4, blue: 0xec };
-  const brightness = (c: { red: number; green: number; blue: number }) =>
-    0.2126 * c.red + 0.7152 * c.green + 0.0722 * c.blue;
-
   it('stays between the two levels it was given', () => {
     for (let t = 0; t < 120; t += 0.17) {
       expect(glow.at(t)).toBeGreaterThanOrEqual(0.45);
@@ -57,59 +53,54 @@ describe('ScreenGlow', () => {
     expect(gaps.every((gap, n) => n === 0 || Math.abs(gap - gaps[n - 1]) > 1e-9)).toBe(true);
   });
 
-  it('takes a cast when it changes level, and mostly does not', () => {
-    // A screen is not one colour, but it is mostly its own: the cold white
-    // has to come up far more often than any of the five casts, or the face
-    // is being lit by a disco.
-    const seen = new Map<string, number>();
+  it('is mostly not cast at all', () => {
+    // A screen is not one colour, but it is mostly its own. More than half
+    // the intervals carry no cast, or the face is being lit by a disco.
+    let plain = 0;
+    let total = 0;
     for (let t = 0; t < 1200; t += 2) {
-      const { red, green, blue } = glow.tint(t + 1.2); // settled, not arriving
-      const key = `${Math.round(red)},${Math.round(green)},${Math.round(blue)}`;
-      seen.set(key, (seen.get(key) ?? 0) + 1);
+      // Mid-interval, where the arrival is over and it is one thing or the
+      // other rather than on its way between them.
+      const how = glow.colouring(t + 1.2);
+      if (how === 0) plain++;
+      total++;
     }
-    const counts = [...seen.values()].sort((a, b) => b - a);
 
-    expect(seen.size).toBeGreaterThan(3);
-    expect(counts[0]).toBeGreaterThan(counts[1] * 2);
+    expect(plain / total).toBeGreaterThan(0.4);
+    expect(plain / total).toBeLessThan(0.75);
   });
 
-  it('is never dimmer when it is coloured', () => {
-    // The whole complaint about the first colours: a redder white is a
-    // darker one unless it is levelled, and the eye reads darker before it
-    // reads redder. Every cast carries exactly as much light as the white.
-    for (let t = 0; t < 400; t += 0.37) {
-      expect(brightness(glow.tint(t))).toBeCloseTo(brightness(COLD_WHITE), 6);
+  it('casts in colours that can be told apart', () => {
+    // Pale casts were the first attempt and could not be seen at all: a
+    // coloured light that is pale enough to be a screen is white by the time
+    // it has been screened onto a lit face. These are hues, and the blend
+    // takes the brightness from the paint.
+    const hues = new Set<string>();
+    for (let t = 0; t < 1200; t += 2) {
+      const { red, green, blue } = glow.tint(t + 1.2);
+      hues.add(`${Math.round(red)},${Math.round(green)},${Math.round(blue)}`);
     }
-  });
 
-  it('keeps every cast inside what a canvas can draw, and near the white', () => {
-    for (let t = 0; t < 400; t += 0.37) {
-      const tint = glow.tint(t);
-      for (const value of [tint.red, tint.green, tint.blue]) {
-        expect(value).toBeGreaterThanOrEqual(0);
-        expect(value).toBeLessThanOrEqual(255);
-      }
-      const away = Math.hypot(
-        tint.red - COLD_WHITE.red,
-        tint.green - COLD_WHITE.green,
-        tint.blue - COLD_WHITE.blue
-      );
-      // The furthest is the yellow, 64 from the white and almost all of it
-      // in blue: the difference between a warm screen and a cold one, which
-      // is the whole of what is wanted.
-      expect(away).toBeLessThan(70);
+    expect(hues.size).toBe(5);
+    for (const hue of hues) {
+      const [red, green, blue] = hue.split(',').map(Number);
+      // Saturated: something has to be well clear of something else.
+      expect(Math.max(red, green, blue) - Math.min(red, green, blue)).toBeGreaterThan(80);
     }
   });
 
-  it('changes colour the way it changes level: arriving, not snapping', () => {
-    let worst = 0;
+  it('arrives at a colour rather than snapping to it', () => {
+    let worstHue = 0;
+    let worstHow = 0;
     for (let t = 0; t < 60; t += 1 / 60) {
       const now = glow.tint(t);
       const next = glow.tint(t + 1 / 60);
-      worst = Math.max(worst, Math.hypot(next.red - now.red, next.green - now.green));
+      worstHue = Math.max(worstHue, Math.hypot(next.red - now.red, next.green - now.green));
+      worstHow = Math.max(worstHow, Math.abs(glow.colouring(t + 1 / 60) - glow.colouring(t)));
     }
 
-    expect(worst).toBeLessThan(6);
+    expect(worstHue).toBeLessThan(20);
+    expect(worstHow).toBeLessThan(0.1);
   });
 
   it('goes somewhere new rather than repeating a short loop', () => {
