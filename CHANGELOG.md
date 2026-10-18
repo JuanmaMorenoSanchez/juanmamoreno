@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.27.0
+
+- **feat** — _Ipad light_, a third generative page, built from what the
+  atelier kept of _Reflejo de luz de iPad_: the painting cut into six depth
+  bands over its own filled background, drifting by itself and answering the
+  pointer, snow falling through it, and the pixels the tablet lights
+  brightening and dimming as a screen does. **Not deployed** — running
+  locally while he looks at it.
+
 ## 2.26.1
 
 - **fix** — the assets kept for a painting show on its row in the catalogue.

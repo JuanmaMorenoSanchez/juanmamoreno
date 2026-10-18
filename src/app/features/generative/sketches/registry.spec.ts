@@ -10,16 +10,16 @@ import { SKETCHES, SKETCH_LIST } from './registry';
  */
 describe('the sketch registry', () => {
   /**
-   * Two pages, and those two only.
+   * Three pages, and those three only.
    *
-   * `toContain` was too weak: a third sketch could sit in here unnoticed, and
-   * one did — *Wind direction*, commented out of this list but still in the
-   * repository with 220 KB of its own layers shipping in every build. An exact
-   * list is what notices a page nobody decided to publish, and a page nobody
-   * remembers unpublishing.
+   * `toContain` was too weak: a further sketch could sit in here unnoticed,
+   * and one did — *Wind direction*, commented out of this list but still in
+   * the repository with 220 KB of its own layers shipping in every build. An
+   * exact list is what notices a page nobody decided to publish, and a page
+   * nobody remembers unpublishing.
    */
-  it('holds exactly the two that are published', () => {
-    expect(Object.keys(SKETCHES)).toEqual(['believe', 'hide']);
+  it('holds exactly the three that are published', () => {
+    expect(Object.keys(SKETCHES)).toEqual(['believe', 'hide', 'ipad-light']);
   });
 
   /**

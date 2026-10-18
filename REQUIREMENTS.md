@@ -2219,15 +2219,16 @@ Every sketch is written by hand and added by hand, which is one line.
 sketch for whatever it was handed, so a page existed at a public address that
 nobody had decided to publish.
 
-**Two sketches, and the list is exact.** *Believe*, from the layers of
-*Supersticiosos*, and *Hide until everybody is dead*. Asserting that the
-registry merely *contained* those two was too weak to notice the opposite
+**Three sketches, and the list is exact.** *Believe*, from the layers of
+*Supersticiosos*; *Hide until everybody is dead*; and *Ipad light*, built
+from what the atelier kept of *Reflejo de luz de iPad* (R171). Asserting that
+the registry merely *contained* them was too weak to notice the opposite
 mistake: *Wind direction* sat commented out of the list and still in the
 repository, with 220 KB of layers nobody could reach shipping in every build.
 A page nobody decided to publish and a page nobody remembers unpublishing are
-the same fault from either end, so the test names both and no more.
+the same fault from either end, so the test names them all and no more.
 *Proven by:* `registry.spec.ts` "does not answer for an id nobody registered",
-"holds exactly the two that are published" and "lists exactly what it holds,
+"holds exactly the three that are published" and "lists exactly what it holds,
 for the menu"
 
 ### R126 — A painting comes into focus, and does not wash out · met
@@ -3726,3 +3727,47 @@ of a painting he was looking for — which is how he looks for one — found
 nothing while three paintings beginning with them sat in the list.
 *Proven by:* `catalogue-admin.component.spec.ts` "finds one by the first
 digits of its number"
+
+### R171 — Ipad light · built, not yet published
+*Reflejo de luz de iPad* (2025) as a moving page at `/generative/ipad-light`,
+registered by hand like the other two. **Local only for now** — built, tested
+and running on the dev server, waiting on his eye before it is deployed.
+
+Three things move, and all three come out of the painting rather than being
+laid over it.
+
+**Depth.** The atelier measured how far away each part of the canvas is, and
+the page cuts the painting into six bands by that and shifts each by how near
+it is. Behind them sits the same painting with the nearest figure taken out
+and the hole filled — the pieces kept from painting 6, made in the atelier —
+so what a shifted band reveals is paint and not a gap. No model invents
+anything at display time: every pixel that moves is a pixel he painted.
+
+**It drifts on its own.** A painting that moves only when touched is a still
+painting most of the time, and on a phone there is no pointer at all. Two
+sines whose periods do not divide each other, slow enough to read as
+breathing, and the pointer takes over the moment there is one.
+
+**The screen changes.** The pixels the tablet lights are found once at load,
+by how cold each one is against its own brightness, and brightened and dimmed
+over time: a level held while something is read, a step when something else is
+opened, a drift in between. Drawn additively, so the light is added back to
+paint that is already there rather than greying the corner.
+
+And it snows, which is the one thing not in the painting.
+
+**The shape of the canvas is the canvas's.** A window of another shape loses
+some of the painting rather than stretching it, and what it loses is the top:
+the sky and the skyline are what repeats, and the face and the screen are what
+this is about.
+
+**794 KB of assets** for a 3000×3180 original: the painting and the filled
+background at 1500 px as progressive JPEG, the depth map at half that as a
+grey PNG, because depth is smooth and the bytes are better spent on paint.
+*Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole
+flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (5 tests,
+including that it changes level rather than snapping), `idle-drift.spec.ts`
+(4 tests, including that it does not come back to where it started inside a
+viewing), and `registry.spec.ts` "holds exactly the three that are published"
+*Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 —
+no console errors, and the scene measurably answers the pointer in both.

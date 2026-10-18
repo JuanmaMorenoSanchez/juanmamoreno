@@ -1,5 +1,6 @@
 import { BelieveSketch } from './believe.sketch';
 import { DustSketch } from './dust.sketch';
+import { IpadLightSketch } from './ipad-light.sketch';
 import { SketchFactory } from './sketch';
 
 export interface SketchEntry {
@@ -20,6 +21,7 @@ export interface SketchEntry {
 export const SKETCHES: Record<string, SketchEntry> = {
   believe: { label: 'Believe', factory: () => new BelieveSketch() },
   hide: { label: 'Hide until everybody is dead', factory: () => new DustSketch() },
+  'ipad-light': { label: 'Ipad light', factory: () => new IpadLightSketch() },
 };
 
 export const SKETCH_LIST = Object.entries(SKETCHES).map(([id, entry]) => ({
