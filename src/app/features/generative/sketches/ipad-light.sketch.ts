@@ -19,14 +19,39 @@ const SLICES = 6;
  */
 const SHIFT = 16;
 
+/**
+ * How much bigger than a cover fit the painting is drawn.
+ *
+ * A plain cover fit puts the bottom edge of the canvas exactly along the
+ * bottom of the window, and the painted edge of a canvas, seen end-on, reads
+ * as a crop rather than as an edge. Five per cent is enough to carry it out of
+ * the frame and not enough to cost anything at the top.
+ */
+const GROWS = 1.05;
+
 /** Where the screen is in the painting, as a share of the frame. */
-const SCREEN = { x: 0.52, y: 0.88, radius: 0.42 };
+const SCREEN = { x: 0.52, y: 0.88, radius: 0.46 };
 
 /**
- * How blue a pixel has to be, against its own brightness, to count as lit by
- * the screen rather than by the dusk behind.
+ * The colour of the paint the screen lights: #DBDBDB, his pick.
+ *
+ * The tablet is under her chin and what it reaches, he paints as that pale
+ * neutral grey — the forehead, the cheek, the collar, the lit side of the
+ * coat. Keying on it finds exactly those and leaves the dusk alone.
  */
-const COLD = 1.06;
+const SCREEN_GREY = { red: 0xdb, green: 0xdb, blue: 0xdb };
+
+/**
+ * How far from that grey a pixel may be and still count, in RGB distance.
+ *
+ * Measured rather than guessed: at 110 it catches only the two brightest
+ * planes of the face, at 145 it takes the whole of what the tablet lights and
+ * stops short of the blue shirt behind her.
+ */
+const NEAR = 145;
+
+/** The colour added back when the screen brightens: a cold white. */
+const SCREEN_LIGHT = '#cfe4ff';
 
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
@@ -36,20 +61,21 @@ const COLD = 1.06;
  *
  * **It has depth.** The atelier measured how far away each part of the canvas
  * is, and the page cuts the painting into bands by that and shifts each by how
- * near it is. Behind them sits the same painting with the nearest figure taken
- * out and the hole filled in, so what a shifted band reveals is paint and not
- * a gap. Every pixel that moves is a pixel he painted: there is no model here
- * inventing anything.
+ * near it is. Behind them sits the painting again, whole and unmoved, so what
+ * a shifted band reveals is his paint in the colour it already was. Every
+ * pixel that moves is a pixel he painted: there is no model here inventing
+ * anything, and nothing filled in by one either.
  *
  * **It drifts on its own.** A painting that moves only when touched is a still
  * painting most of the time, and on a phone there is no pointer at all. So the
  * scene breathes slowly by itself and the pointer takes over when there is one.
  *
  * **The screen changes.** The face at the bottom is lit from below by a tablet,
- * and the pixels that light reaches are found once, at load, by how cold they
- * are against their own brightness. They are then brightened and dimmed over
- * time: a level held while something is read, a step when something else is
- * opened, a drift in between.
+ * and the paint that light reaches is found once, at load, by how near it is to
+ * the grey he picked. It is then dimmed and brightened over time — dark enough
+ * to read as a screen gone to sleep, bright enough to blow the cheek out — with
+ * a level held while something is read, a step when something else is opened,
+ * and a drift in between.
  *
  * And it snows, which is the one thing that is not in the painting.
  */
@@ -58,18 +84,18 @@ export class IpadLightSketch implements Sketch {
   private height = 0;
 
   private painting?: HTMLImageElement;
-  private behind?: HTMLImageElement;
 
   /** One canvas per depth band, and the parallax that moves it. */
   private bands: { layer: HTMLCanvasElement; parallax: Parallax }[] = [];
-  /** The screen-lit pixels, alone on transparency, drawn back additively. */
+  /** The screen's light and its absence, each alone on transparency. */
   private lit?: HTMLCanvasElement;
+  private unlit?: HTMLCanvasElement;
 
   private readonly snow = new Snowfall();
   private readonly glow = new ScreenGlow();
   private readonly drift = new IdleDrift();
 
-  /** Where the painting is drawn: cover-fit, anchored to the bottom. */
+  /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
 
   async setup(ctx: CanvasRenderingContext2D, width: number, height: number): Promise<void> {
@@ -78,14 +104,14 @@ export class IpadLightSketch implements Sketch {
 
     const images = await loadImages({
       painting: `${IMAGES_ROUTE}ipad-light.jpg`,
-      behind: `${IMAGES_ROUTE}ipad-light-behind.jpg`,
       depth: `${IMAGES_ROUTE}ipad-light-depth.png`,
     });
     this.painting = images['painting'];
-    this.behind = images['behind'];
 
     this.bands = band(images['painting'], images['depth']);
-    this.lit = screenLit(images['painting']);
+    const screen = screenLit(images['painting']);
+    this.lit = screen?.lit;
+    this.unlit = screen?.unlit;
     this.snow.seed();
     this.measure();
   }
@@ -115,9 +141,9 @@ export class IpadLightSketch implements Sketch {
     ctx.fillStyle = '#07080b';
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // The filled background first and unmoved, so a band sliding off reveals
-    // paint rather than a hole.
-    if (this.behind) ctx.drawImage(this.behind, x, y, width, height);
+    // The painting itself first, whole and unmoved, so a band sliding off
+    // reveals paint rather than a hole.
+    ctx.drawImage(this.painting, x, y, width, height);
 
     const scale = Math.max(width, height) / 1000;
     for (const slice of this.bands) {
@@ -136,25 +162,46 @@ export class IpadLightSketch implements Sketch {
   }
 
   /**
-   * The screen brightening and dimming, over the pixels it lights.
+   * The screen brightening and dimming, over the paint it lights.
    *
-   * `lighter` rather than a wash: the light is added back to paint that is
-   * already there, so the brightest parts of the face bloom and the shadows
-   * it never reached stay where they were. A rectangle of translucent blue
-   * would grey the whole corner instead.
+   * Both ways, because one way is not visible. Added light alone reads as a
+   * faint bloom on paint that is already pale; taken away first, the same
+   * swing is a face going dark and then lighting up again, which is what a
+   * screen does to a face. Dimming is drawn over, brightening is drawn
+   * additively, and between them the cheek travels most of its range.
    */
   private drawScreen(ctx: CanvasRenderingContext2D, t: number): void {
-    if (!this.lit) return;
     const { x, y, width, height } = this.frame;
-
     const level = this.glow.at(t);
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    // Half of the level, because the paint already carries the light: this
-    // is the change in it, not the whole of it.
-    ctx.globalAlpha = clamp((level - 0.45) * 0.5, 0, 1);
-    ctx.drawImage(this.lit, x, y, width, height);
-    ctx.restore();
+
+    // Where the two cross, and how far each side reaches. The glow runs 0.45
+    // to 1.15, and the span is the longer half of that, so brightening is at
+    // full strength only at the very top of its range: a shorter span holds
+    // there instead, and a forehead that stays white has stopped being a
+    // screen and become a lamp.
+    const middle = 0.78;
+    const span = 0.37;
+
+    if (this.unlit) {
+      const dim = clamp((middle - level) / span, 0, 1) * 0.6;
+      if (dim > 0) {
+        ctx.save();
+        ctx.globalAlpha = dim;
+        ctx.drawImage(this.unlit, x, y, width, height);
+        ctx.restore();
+      }
+    }
+
+    if (this.lit) {
+      const bright = clamp((level - middle) / span, 0, 1);
+      if (bright > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = bright;
+        ctx.drawImage(this.lit, x, y, width, height);
+        ctx.restore();
+      }
+    }
   }
 
   private drawSnow(ctx: CanvasRenderingContext2D, dt: number): void {
@@ -179,23 +226,33 @@ export class IpadLightSketch implements Sketch {
   }
 
   /**
-   * Cover-fit, anchored to the bottom.
+   * Cover-fit, grown by `GROWS`, anchored so the growth leaves at the bottom.
    *
    * The painting's shape is the painting's and is not negotiable, so a window
    * of another shape loses some of the canvas rather than stretching it. What
    * it loses is the top: the sky and the skyline are the part that repeats,
-   * and the face and the screen at the bottom are the part this is about.
+   * and the face and the screen at the bottom are the part this is about. The
+   * extra five per cent is spent entirely below the window, which is where the
+   * painted edge of the canvas was showing.
    */
   private measure(): void {
     if (!this.painting) return;
-    const scale = Math.max(
+    const cover = Math.max(
       this.width / this.painting.naturalWidth,
       this.height / this.painting.naturalHeight
     );
-    const width = this.painting.naturalWidth * scale;
-    const height = this.painting.naturalHeight * scale;
+    const width = this.painting.naturalWidth * cover * GROWS;
+    const height = this.painting.naturalHeight * cover * GROWS;
 
-    this.frame = { x: (this.width - width) / 2, y: this.height - height, width, height };
+    // The top stays where a plain cover fit would have put it, so everything
+    // the growth adds falls past the bottom edge of the window.
+    const spare = height - this.painting.naturalHeight * cover;
+    this.frame = {
+      x: (this.width - width) / 2,
+      y: this.height - height + spare,
+      width,
+      height,
+    };
   }
 }
 
@@ -257,29 +314,30 @@ function band(
 }
 
 /**
- * The pixels the screen lights, alone on transparency.
+ * The screen's light and its absence, as two masks.
  *
- * Found by colour rather than by hand: the tablet is the only cold light in a
- * painting lit otherwise by a dusk sky, so a pixel whose blue runs ahead of
- * its own average brightness, in the lower middle of the canvas, is lit by it.
- * Everything else is cleared.
- *
- * Done once at load, and the result is an image like any other.
+ * One shape, drawn twice in different colours. A pixel belongs to it by how
+ * near its paint is to `SCREEN_GREY` and how near it is to the screen, and
+ * both of those are soft, so the mask has no edge to see. `lit` is that shape
+ * in cold white, to be added; `unlit` is the same shape in near-black, to be
+ * laid over. Done once at load, and the results are images like any other.
  */
-function screenLit(painting: HTMLImageElement): HTMLCanvasElement | undefined {
+function screenLit(
+  painting: HTMLImageElement
+): { lit: HTMLCanvasElement; unlit: HTMLCanvasElement } | undefined {
   const wide = painting.naturalWidth;
   const high = painting.naturalHeight;
 
-  const canvas = document.createElement('canvas');
-  canvas.width = wide;
-  canvas.height = high;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return undefined;
+  const read = document.createElement('canvas');
+  read.width = wide;
+  read.height = high;
+  const reading = read.getContext('2d', { willReadFrequently: true });
+  if (!reading) return undefined;
 
-  ctx.drawImage(painting, 0, 0);
-  const pixels = ctx.getImageData(0, 0, wide, high);
-  const { data } = pixels;
+  reading.drawImage(painting, 0, 0);
+  const { data } = reading.getImageData(0, 0, wide, high);
 
+  const shape = new Uint8ClampedArray(wide * high * 4);
   for (let at = 0; at < data.length; at += 4) {
     const pixel = at / 4;
     const x = (pixel % wide) / wide;
@@ -290,17 +348,39 @@ function screenLit(painting: HTMLImageElement): HTMLCanvasElement | undefined {
     const away = Math.hypot((x - SCREEN.x) * 1.1, y - SCREEN.y) / SCREEN.radius;
     const reach = 1 - Math.min(1, away) ** 2;
 
-    const red = data[at];
-    const green = data[at + 1];
-    const blue = data[at + 2];
-    const average = (red + green + blue) / 3;
-    // Cold: more blue than the pixel's own brightness, by a margin.
-    const cold = average > 0 ? blue / average : 0;
-    const how = cold < COLD ? 0 : Math.min(1, (cold - COLD) * 3);
+    // And how near its paint is to the grey the screen leaves on her.
+    const red = data[at] - SCREEN_GREY.red;
+    const green = data[at + 1] - SCREEN_GREY.green;
+    const blue = data[at + 2] - SCREEN_GREY.blue;
+    const like = 1 - Math.min(1, Math.sqrt(red * red + green * green + blue * blue) / NEAR);
 
-    data[at + 3] = Math.round(255 * how * reach);
+    shape[at + 3] = Math.round(255 * like * reach);
   }
 
-  ctx.putImageData(pixels, 0, 0);
+  return {
+    lit: paint(shape, wide, high, SCREEN_LIGHT),
+    unlit: paint(shape, wide, high, '#05060a'),
+  };
+}
+
+/** The mask's shape filled with one colour, keeping its alpha. */
+function paint(
+  shape: Uint8ClampedArray,
+  wide: number,
+  high: number,
+  colour: string
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = wide;
+  canvas.height = high;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  ctx.putImageData(new ImageData(new Uint8ClampedArray(shape), wide, high), 0, 0);
+  // Colour in only where the mask already is: `source-in` keeps the alpha it
+  // was given and replaces everything else about it.
+  ctx.globalCompositeOperation = 'source-in';
+  ctx.fillStyle = colour;
+  ctx.fillRect(0, 0, wide, high);
   return canvas;
 }

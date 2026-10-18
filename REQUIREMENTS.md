@@ -3738,32 +3738,42 @@ laid over it.
 
 **Depth.** The atelier measured how far away each part of the canvas is, and
 the page cuts the painting into six bands by that and shifts each by how near
-it is. Behind them sits the same painting with the nearest figure taken out
-and the hole filled — the pieces kept from painting 6, made in the atelier —
-so what a shifted band reveals is paint and not a gap. No model invents
-anything at display time: every pixel that moves is a pixel he painted.
+it is. Behind them sits the painting again, whole and unmoved, so what a
+shifted band reveals is his paint in the colour it already was. The atelier's
+filled-in version was tried there first and taken out: it had repainted the
+dusk as a blue afternoon, so every sliver it showed was the wrong painting.
+No model invents anything at display time and none filled anything in either:
+every pixel that moves, and every pixel behind it, is a pixel he painted.
 
 **It drifts on its own.** A painting that moves only when touched is a still
 painting most of the time, and on a phone there is no pointer at all. Two
 sines whose periods do not divide each other, slow enough to read as
 breathing, and the pointer takes over the moment there is one.
 
-**The screen changes.** The pixels the tablet lights are found once at load,
-by how cold each one is against its own brightness, and brightened and dimmed
-over time: a level held while something is read, a step when something else is
-opened, a drift in between. Drawn additively, so the light is added back to
-paint that is already there rather than greying the corner.
+**The screen changes.** The paint the tablet lights is found once at load, by
+how near it is to #DBDBDB — the grey he picked, which is what the screen
+leaves on her forehead, her collar and the lit side of her coat — inside a
+soft pool at the bottom centre. It is then dimmed and brightened over time: a
+level held while something is read, a step when something else is opened, a
+drift in between. **Both ways, because one way was not visible.** Added light
+alone is a faint bloom on paint that is already pale; taken away first, the
+same swing is a face going dark and lighting up again, which is what a screen
+does to a face. The tolerance is measured rather than guessed: at 110 the key
+catches only the two brightest planes of the face, at 145 it takes the whole
+of what the tablet lights and stops short of the blue shirt behind her.
 
 And it snows, which is the one thing not in the painting.
 
 **The shape of the canvas is the canvas's.** A window of another shape loses
 some of the painting rather than stretching it, and what it loses is the top:
 the sky and the skyline are what repeats, and the face and the screen are what
-this is about.
+this is about. It is drawn five per cent over a cover fit, with all five spent
+below the window: a plain cover fit laid the painted edge of the canvas along
+the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**794 KB of assets** for a 3000×3180 original: the painting and the filled
-background at 1500 px as progressive JPEG, the depth map at half that as a
-grey PNG, because depth is smooth and the bytes are better spent on paint.
+**453 KB of assets** for a 3000×3180 original: the painting at 1500 px as a
+progressive JPEG, the depth map at half that as a grey PNG, because depth is
+smooth and the bytes are better spent on paint.
 *Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole
 flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (5 tests,
 including that it changes level rather than snapping), `idle-drift.spec.ts`
