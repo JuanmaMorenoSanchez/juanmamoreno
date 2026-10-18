@@ -3728,6 +3728,29 @@ nothing while three paintings beginning with them sat in the list.
 *Proven by:* `catalogue-admin.component.spec.ts` "finds one by the first
 digits of its number"
 
+### R172 — The envelope is opened, everywhere the shelf is read
+Every route on the backend answers `{ success, message, data }`: an
+interceptor wraps whatever the controller returned and the controllers never
+see it. The atelier's shelf read the body as the list, so the shelf held the
+envelope — an object, not a list — from the day it was written.
+
+Nothing said so. A shelf that is an object renders nothing, because `.length`
+on it is undefined and the template hides itself; and the next save spread it
+and threw `f is not iterable` out of a minified bundle, with the bytes already
+in the bucket. Guarding the shape caught it and reported `something that is
+not a list`, which is true and says nothing. The message now names what came
+instead — `an object with success, message, data` would have ended it in a
+minute — and the envelope is opened by one shared function, which passes a
+bare payload through unchanged in case the envelope is ever dropped and throws
+what a refusal said rather than letting `data` be `undefined`.
+
+**The essay panel had the same bug**, written the same week and never run
+against the deployed backend. Same function, three call sites.
+*Proven by:* `kept.service.spec.ts` "reads the list out of it", "reads a newly
+kept piece out of it", "says what a refusal inside a success said", "still
+reads a bare list, for when the envelope goes away" and "says what did
+arrive, which is what anybody debugging it needs"
+
 ### R171 — Ipad light · built, not yet published
 *Reflejo de luz de iPad* (2025) as a moving page at `/generative/ipad-light`,
 registered by hand like the other two. **Local only for now** — built, tested

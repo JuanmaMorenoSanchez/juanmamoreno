@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { environment } from '@environments/environment';
+import { inside } from '@shared/types/api-response.type';
 import { AtelierEngineService } from '@features/atelier/engine.service';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { firstValueFrom } from 'rxjs';
@@ -96,8 +97,8 @@ export class EssayPanelComponent {
 
     try {
       this.stage.set('asking the backend for the brief');
-      const brief = await firstValueFrom(
-        this.http.get<Brief>(`${this.where}/brief`, this.authorised())
+      const brief = inside<Brief>(
+        await firstValueFrom(this.http.get<unknown>(`${this.where}/brief`, this.authorised()))
       );
 
       this.stage.set('writing — a minute or two on this card');
@@ -139,22 +140,26 @@ export class EssayPanelComponent {
     }
   }
 
-  private check(body: string): Promise<Checked> {
-    return firstValueFrom(
-      this.http.post<Checked>(
-        `${environment.backendUrl}critics/check`,
-        { body, tokenId: this.painting().tokenId },
-        this.authorised()
+  private async check(body: string): Promise<Checked> {
+    return inside<Checked>(
+      await firstValueFrom(
+        this.http.post<unknown>(
+          `${environment.backendUrl}critics/check`,
+          { body, tokenId: this.painting().tokenId },
+          this.authorised()
+        )
       )
     );
   }
 
-  private store(lang: string, text: string): Promise<Stored> {
-    return firstValueFrom(
-      this.http.post<Stored>(
-        `${this.where}/written`,
-        { translated: [{ lang, text }] },
-        this.authorised()
+  private async store(lang: string, text: string): Promise<Stored> {
+    return inside<Stored>(
+      await firstValueFrom(
+        this.http.post<unknown>(
+          `${this.where}/written`,
+          { translated: [{ lang, text }] },
+          this.authorised()
+        )
       )
     );
   }

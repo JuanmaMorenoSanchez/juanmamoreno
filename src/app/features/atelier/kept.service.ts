@@ -4,13 +4,24 @@ import { firstValueFrom } from 'rxjs';
 import { atelierQuality } from '@domain/artwork/image-sizes';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { inside } from '@shared/types/api-response.type';
 
 /** The most useful sentence available about a failure. */
 const said = (error: unknown): string => {
   const status = (error as { status?: number })?.status;
   if (status === 401 || status === 403) return 'the sign-in has lapsed; sign in again';
   if (status === 404) return 'it is no longer in the bucket';
-  return status ? `the backend answered ${status}` : 'it could not be fetched';
+  if (status) return `the backend answered ${status}`;
+  return (error as { message?: string })?.message || 'it could not be fetched';
+};
+
+/** What arrived, in a few words, for when it was not what was wanted. */
+const shapeOf = (answer: unknown): string => {
+  if (answer === null || answer === undefined) return 'nothing';
+  if (Array.isArray(answer)) return 'a list';
+  if (typeof answer !== 'object') return `a ${typeof answer}`;
+  const keys = Object.keys(answer);
+  return keys.length ? `an object with ${keys.slice(0, 4).join(', ')}` : 'an empty object';
 };
 
 /** One thing he decided was worth keeping. */
@@ -110,13 +121,13 @@ export class KeptService {
   async refresh(): Promise<void> {
     this.asked = Promise.resolve();
     try {
-      const answer = await firstValueFrom(
-        this.http.get<KeptPiece[]>(this.where, this.authorised())
+      const answer = inside<KeptPiece[]>(
+        await firstValueFrom(this.http.get<unknown>(this.where, this.authorised()))
       );
       if (!Array.isArray(answer)) {
         console.error('atelier-pieces answered something that is not a list:', answer);
         this.held.set([]);
-        this.listFailed.set('the backend answered something that is not a list');
+        this.listFailed.set(`the backend answered ${shapeOf(answer)} rather than a list`);
         return;
       }
       this.held.set(answer);
@@ -162,8 +173,8 @@ export class KeptService {
       form.append('height', String(about.height));
       if (about.tokenId) form.append('tokenId', about.tokenId);
 
-      const kept = await firstValueFrom(
-        this.http.post<KeptPiece>(this.where, form, this.authorised())
+      const kept = inside<KeptPiece>(
+        await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()))
       );
       // Guarded here as well as where the list is fetched, because this is
       // the line that threw: a save that reached the bucket must not then

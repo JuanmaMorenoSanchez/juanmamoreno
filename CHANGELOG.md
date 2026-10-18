@@ -18,6 +18,12 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   intervals never twice the same, taking a red, a blue or a yellow cast laid
   on so that it changes the colour of her face without changing its
   brightness. **Not deployed** — running locally while he looks at it.
+- **fix** — the atelier's shelf is empty on the catalogue page. Every route on
+  the backend answers `{ success, message, data }` and the shelf read the body
+  as the list, so it held the envelope: nothing rendered, and a save spread it
+  and threw. The envelope is opened now by one shared function, and a shape
+  that is still wrong says which shape it was. The essay panel had the same
+  bug.
 
 ## 2.26.1
 

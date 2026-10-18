@@ -64,6 +64,58 @@ describe('KeptService', () => {
     expect(kept.pieces()[0].name).toBe('Rockets win I');
   });
 
+  /**
+   * The envelope, which is why the shelf was empty on the catalogue page.
+   *
+   * Every route on the backend answers `{ success, message, data }` — an
+   * interceptor wraps whatever the controller returned, and the controllers
+   * never see it. This service read the envelope as though it were the list,
+   * so the shelf was an object from the day it was written: nothing rendered,
+   * and the next save spread the object and threw.
+   */
+  describe('the envelope the backend sends everything in', () => {
+    it('reads the list out of it', async () => {
+      const { kept } = build({ get: { success: true, message: 'ok', data: [piece()] } });
+      await kept.refresh();
+
+      expect(kept.pieces().map((p) => p.id)).toEqual(['k1']);
+      expect(kept.listTrouble()).toBeNull();
+    });
+
+    it('reads a newly kept piece out of it', async () => {
+      const { kept } = build({
+        get: { success: true, data: [] },
+        post: { success: true, data: piece({ id: 'new' }) },
+      });
+      await kept.refresh();
+
+      const saved = await kept.keep(new Blob(['x']), {
+        name: 'A layer',
+        kind: 'layer',
+        width: 10,
+        height: 10,
+      });
+
+      expect(saved.id).toBe('new');
+      expect(kept.pieces().map((p) => p.id)).toEqual(['new']);
+    });
+
+    it('says what a refusal inside a success said', async () => {
+      const { kept } = build({ get: { success: false, message: 'Forbidden resource' } });
+      await kept.refresh();
+
+      expect(kept.pieces()).toEqual([]);
+      expect(kept.listTrouble()).toBe('Forbidden resource');
+    });
+
+    it('still reads a bare list, for when the envelope goes away', async () => {
+      const { kept } = build({ get: [piece()] });
+      await kept.refresh();
+
+      expect(kept.pieces()).toHaveLength(1);
+    });
+  });
+
   it('puts a newly kept piece at the front, where he will look for it', async () => {
     const { kept } = build({ get: [piece()], post: piece({ id: 'new', name: 'A layer' }) });
     await kept.refresh();
@@ -84,6 +136,15 @@ describe('KeptService', () => {
    */
   describe('an answer that is not a list', () => {
     const notLists = [{}, { pieces: [] }, null, undefined, 'nothing', 7];
+
+    it('says what did arrive, which is what anybody debugging it needs', async () => {
+      const { kept } = build({ get: { pieces: [], total: 0 } });
+      await kept.refresh();
+
+      expect(kept.listTrouble()).toBe(
+        'the backend answered an object with pieces, total rather than a list'
+      );
+    });
 
     it('is not held', async () => {
       for (const answer of notLists) {
