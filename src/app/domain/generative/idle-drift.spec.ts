@@ -43,6 +43,25 @@ describe('IdleDrift', () => {
     expect(closest).toBeGreaterThan(0.001);
   });
 
+  it('never stops to turn around', () => {
+    // A pair of sines slows to nothing at each end and reverses, which reads
+    // as a thing being nudged rather than as a thing drifting. Going round at
+    // a steady rate, the slowest moment is still most of the fastest.
+    let slowest = 9;
+    let fastest = 0;
+    for (let t = 0; t < 120; t += 1 / 30) {
+      const now = drift.at(t);
+      const next = drift.at(t + 1 / 30);
+      const speed = Math.hypot(next.x - now.x, next.y - now.y);
+      slowest = Math.min(slowest, speed);
+      fastest = Math.max(fastest, speed);
+    }
+
+    // A pair of sines comes to a dead stop: measured the same way, its
+    // slowest moment is a thousandth of its fastest.
+    expect(slowest).toBeGreaterThan(fastest * 0.25);
+  });
+
   it('moves slowly enough to read as breathing', () => {
     const step = Math.abs(drift.at(1 / 60).x - drift.at(0).x);
 

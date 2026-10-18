@@ -6,25 +6,30 @@
  * leaves the window and everything stops dead. So the scene keeps drifting on
  * its own, slowly, and the pointer takes over when there is one.
  *
- * Two sines whose periods do not divide each other, so the path never repeats
- * inside a viewing and never reads as a loop. Slow enough that it is noticed
- * as the painting breathing rather than as something sliding about.
+ * **It goes round rather than back and forth.** A pair of sines, one per
+ * axis, is a path that slows to a stop at each end and turns around, and a
+ * painting that keeps stopping reads as a thing being nudged. A turn at a
+ * steady rate never stops: the speed is the same at every moment of it. A
+ * second, smaller turn at a rate that does not divide the first keeps it off
+ * a circle and off a loop anybody would notice.
  */
 export class IdleDrift {
   constructor(
-    /** Seconds for the horizontal sweep. */
-    private readonly across = 23,
-    /** Seconds for the vertical one. Deliberately not a multiple. */
-    private readonly down = 17.3
+    /** Seconds for one turn of the path. */
+    private readonly around = 16,
+    /** Seconds for the smaller turn laid over it. Deliberately not a divisor. */
+    private readonly wobbles = 9.7
   ) {}
 
   /** Where it is looking at `t` seconds: both between -1 and 1. */
   at(t: number): { x: number; y: number } {
+    const turn = (t / this.around) * Math.PI * 2;
+    const over = (t / this.wobbles) * Math.PI * 2;
     return {
-      x: Math.sin((t / this.across) * Math.PI * 2),
+      x: Math.cos(turn) * 0.85 + Math.cos(over * 1.3) * 0.15,
       // Smaller: a painting drifting up and down as far as it drifts sideways
       // reads as a boat.
-      y: Math.sin((t / this.down) * Math.PI * 2 + 0.7) * 0.55,
+      y: (Math.sin(turn) * 0.85 + Math.sin(over) * 0.15) * 0.72,
     };
   }
 }

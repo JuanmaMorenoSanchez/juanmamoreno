@@ -40,6 +40,45 @@ describe('ScreenGlow', () => {
     expect(worst).toBeLessThan(0.08);
   });
 
+  it('takes a cast when it changes level, and mostly does not', () => {
+    // A screen is not one colour, but it is mostly its own: the cold white
+    // has to come up far more often than any of the five casts, or the face
+    // is being lit by a disco.
+    const seen = new Map<string, number>();
+    for (let t = 0; t < 600; t += 2) {
+      const { red, green, blue } = glow.tint(t + 1.5); // settled, not easing
+      seen.set(
+        `${Math.round(red)},${Math.round(green)},${Math.round(blue)}`,
+        (seen.get(`${Math.round(red)},${Math.round(green)},${Math.round(blue)}`) ?? 0) + 1
+      );
+    }
+    const counts = [...seen.values()].sort((a, b) => b - a);
+
+    expect(seen.size).toBeGreaterThan(3);
+    expect(counts[0]).toBeGreaterThan(counts[1] * 2);
+  });
+
+  it('keeps every cast in the same gamut as the light itself', () => {
+    // A third of the way towards a hue, never the hue: a screen that went
+    // properly red would be a different lamp.
+    for (let t = 0; t < 300; t += 0.37) {
+      const { red, green, blue } = glow.tint(t);
+      const away = Math.hypot(red - 0xcf, green - 0xe4, blue - 0xff);
+      expect(away).toBeLessThan(60);
+    }
+  });
+
+  it('changes colour when it changes level, and eases across it', () => {
+    let worst = 0;
+    for (let t = 0; t < 60; t += 1 / 60) {
+      const now = glow.tint(t);
+      const next = glow.tint(t + 1 / 60);
+      worst = Math.max(worst, Math.hypot(next.red - now.red, next.green - now.green));
+    }
+
+    expect(worst).toBeLessThan(6);
+  });
+
   it('goes somewhere new rather than repeating a short loop', () => {
     // The two waves are at frequencies that do not divide each other, and the
     // held level is drawn per interval, so ten seconds apart is not the same.

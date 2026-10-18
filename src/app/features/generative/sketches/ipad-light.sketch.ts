@@ -1,23 +1,42 @@
 import { IdleDrift } from '@domain/generative/idle-drift';
 import { clamp } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
-import { ScreenGlow } from '@domain/generative/screen-glow';
+import { Cast, ScreenGlow } from '@domain/generative/screen-glow';
 import { Snowfall } from '@domain/generative/snowfall';
 import { Frame, loadImages, Sketch } from './sketch';
 
 const IMAGES_ROUTE = 'assets/images/canvases/';
 
-/** How many depth bands the painting is cut into. */
-const SLICES = 6;
+/**
+ * The four cuts the painting comes apart into, farthest first, and how near
+ * each one is.
+ *
+ * These are his cuts, made in the atelier: each one is the painting with
+ * everything outside it made transparent, and no model has invented a pixel
+ * of any of them. The alternative was slicing the canvas by a depth map,
+ * which puts the seams wherever the arithmetic falls — through an arm, along
+ * a fold — and makes every one of them show when the slice moves. A cut that
+ * follows what is in the painting moves the way the thing in it would.
+ *
+ * Only the cut is kept as a file: a cut is one channel, so these are masks,
+ * and the colour comes from the painting at load.
+ */
+const CUTS = [
+  { name: 'ground', depth: 0.1 },
+  { name: 'limbs', depth: 0.45 },
+  { name: 'shirt', depth: 0.72 },
+  { name: 'girl', depth: 1 },
+] as const;
 
 /**
- * How far the nearest band moves, in pixels at a thousand-pixel frame.
+ * How far the nearest cut moves, in pixels at a thousand-pixel frame.
  *
- * Small on purpose. Every pixel that moves is a pixel he painted, and past
- * about twenty the slices come apart at their edges and it reads as cardboard
- * cutouts rather than as depth.
+ * Twice what the depth slices could take. A slice came apart at its edges
+ * past about twenty, because its edges were nowhere in particular; a cut that
+ * is a figure can be moved as far as a figure in front of a landscape moves,
+ * and under twenty you could barely see it move at all.
  */
-const SHIFT = 16;
+const SHIFT = 34;
 
 /**
  * How much bigger than a cover fit the painting is drawn.
@@ -52,45 +71,32 @@ const SCREEN_GREY = { red: 0xdb, green: 0xdb, blue: 0xdb };
  */
 const NEAR = 170;
 
-/** The colour added back when the screen brightens: a cold white. */
-const SCREEN_LIGHT = '#cfe4ff';
-
-/**
- * How much of the light a pixel has to take to count towards its depth.
- *
- * The mask reaches her face, her coat, the near hand and the goose, and those
- * are not all the same distance away, so an average over the whole of it rides
- * at a depth nothing is actually at: measured in Chrome, her face travelled 43
- * pixels and the light following that average travelled 20, which is the light
- * sliding off her face as the pointer crosses. Taken over the part of the mask
- * the light actually lands on, the depth is her face's, and the two travel
- * together.
- */
-const STRONGEST = 0.6;
-
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
  *
  * Three things happen at once, and all three come out of the painting itself
  * rather than being laid over it.
  *
- * **It has depth.** The atelier measured how far away each part of the canvas
- * is, and the page cuts the painting into bands by that and shifts each by how
- * near it is. Behind them sits the painting again, whole and unmoved, so what
- * a shifted band reveals is his paint in the colour it already was. Every
- * pixel that moves is a pixel he painted: there is no model here inventing
- * anything, and nothing filled in by one either.
+ * **It has depth.** The painting comes apart into four cuts he made in the
+ * atelier — the girl, the blue shirt, the limbs, the ground behind them — and
+ * each moves by how near it is. Behind them sits the painting again, whole and
+ * unmoved and dimmed into the black, so what a shifted cut reveals is his
+ * paint in the colour it already was, in shadow. Every pixel that moves is a
+ * pixel he painted: there is no model here inventing anything, and nothing
+ * filled in by one either.
  *
  * **It drifts on its own.** A painting that moves only when touched is a still
  * painting most of the time, and on a phone there is no pointer at all. So the
- * scene breathes slowly by itself and the pointer takes over when there is one.
+ * scene turns slowly by itself, at a steady rate rather than swinging to a
+ * stop at each end, and the pointer takes over when there is one.
  *
- * **The screen changes.** The face at the bottom is lit from below by a tablet,
- * and the paint that light reaches is found once, at load, by how near it is to
- * the grey he picked. It is then dimmed and brightened over time — dark enough
- * to read as a screen gone to sleep, bright enough to blow the cheek out — with
- * a level held while something is read, a step when something else is opened,
- * and a drift in between.
+ * **The screen changes.** The paint the tablet lights is found once, at load,
+ * by how near it is to the grey he picked. It is then dimmed and brightened
+ * over time — dark enough to read as a screen gone to sleep, bright enough to
+ * blow the cheek out — and it takes a cast as it changes, half the time the
+ * plain cold white and the rest a third of the way towards a red, a blue, a
+ * yellow. It rides on the girl's own cut, so the light travels with the face
+ * it is falling on.
  *
  * And it snows, which is the one thing that is not in the painting.
  */
@@ -100,17 +106,13 @@ export class IpadLightSketch implements Sketch {
 
   private painting?: HTMLImageElement;
 
-  /** One canvas per depth band, and the parallax that moves it. */
-  private bands: { layer: HTMLCanvasElement; parallax: Parallax }[] = [];
+  /** One canvas per cut, and the parallax that moves it. */
+  private layers: { sprite: HTMLCanvasElement; parallax: Parallax }[] = [];
   /** The screen's light and its absence, each alone on transparency. */
   private lit?: HTMLCanvasElement;
   private unlit?: HTMLCanvasElement;
-  /**
-   * And the parallax that carries them, at the depth of the paint they fall
-   * on. Without it the light stays put while her face slides out from under
-   * it, which reads as a stain on the glass rather than as her being lit.
-   */
-  private glowParallax?: Parallax;
+  /** A scratch the size of the window, where the light is given its colour. */
+  private tinted?: HTMLCanvasElement;
 
   // Twice the default snow, bigger and more solid: at a hundred small faint
   // flakes it was weather you had to be told about.
@@ -125,17 +127,20 @@ export class IpadLightSketch implements Sketch {
     this.width = width;
     this.height = height;
 
-    const images = await loadImages({
-      painting: `${IMAGES_ROUTE}ipad-light.jpg`,
-      depth: `${IMAGES_ROUTE}ipad-light-depth.png`,
-    });
+    const wanted: Record<string, string> = { painting: `${IMAGES_ROUTE}ipad-light.jpg` };
+    for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
+
+    const images = await loadImages(wanted);
     this.painting = images['painting'];
 
-    this.bands = band(images['painting'], images['depth']);
-    const screen = screenLit(images['painting'], images['depth']);
+    this.layers = CUTS.map((each) => ({
+      sprite: cut(images['painting'], images[each.name]),
+      parallax: new Parallax(each.depth, SHIFT, 0.06),
+    }));
+
+    const screen = screenLit(images['painting']);
     this.lit = screen?.lit;
     this.unlit = screen?.unlit;
-    if (screen) this.glowParallax = new Parallax(screen.depthOf, SHIFT, 0.045);
     this.snow.seed();
     this.measure();
   }
@@ -165,30 +170,30 @@ export class IpadLightSketch implements Sketch {
     ctx.fillStyle = '#07080b';
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // The painting itself first, whole and unmoved, so a band sliding off
+    // The painting itself first, whole and unmoved, so a cut sliding off
     // reveals paint rather than a hole — and dimmed into the black, because
-    // the bands between them cover every pixel of it and the only place it
-    // ever shows is the sliver a shifted band uncovers. At full strength that
-    // sliver is the same contour drawn twice, a hairline tracing her shoulder;
-    // dimmed, it is the shadow a near thing casts on what is behind it.
+    // the cuts between them cover nearly all of it and the only place it ever
+    // shows is what one of them uncovers. At full strength that sliver is the
+    // same contour drawn twice; dimmed, it is the shadow a near thing casts
+    // on what is behind it.
     ctx.save();
     ctx.globalAlpha = 0.45;
     ctx.drawImage(this.painting, x, y, width, height);
     ctx.restore();
 
     const scale = Math.max(width, height) / 1000;
-    for (const slice of this.bands) {
-      slice.parallax.update(looking.x, looking.y);
+    for (const layer of this.layers) {
+      layer.parallax.update(looking.x, looking.y);
       ctx.drawImage(
-        slice.layer,
-        x + slice.parallax.x * scale,
-        y + slice.parallax.y * scale,
+        layer.sprite,
+        x + layer.parallax.x * scale,
+        y + layer.parallax.y * scale,
         width,
         height
       );
     }
 
-    this.drawScreen(ctx, frame.t, looking, scale);
+    this.drawScreen(ctx, frame.t, scale);
     this.drawSnow(ctx, frame.dt);
   }
 
@@ -201,20 +206,17 @@ export class IpadLightSketch implements Sketch {
    * screen does to a face. Dimming is drawn over, brightening is drawn
    * additively, and between them the cheek travels most of its range.
    *
-   * Both move with the paint, at the depth of the paint they were found on.
+   * Both ride on the girl's cut, which is the paint they fall on, so the
+   * light travels with her rather than staying put while she moves out from
+   * under it and reading as a stain on the glass.
    */
-  private drawScreen(
-    ctx: CanvasRenderingContext2D,
-    t: number,
-    looking: { x: number; y: number },
-    scale: number
-  ): void {
+  private drawScreen(ctx: CanvasRenderingContext2D, t: number, scale: number): void {
     const { width, height } = this.frame;
     const level = this.glow.at(t);
 
-    this.glowParallax?.update(looking.x, looking.y);
-    const x = this.frame.x + (this.glowParallax?.x ?? 0) * scale;
-    const y = this.frame.y + (this.glowParallax?.y ?? 0) * scale;
+    const rides = this.layers[this.layers.length - 1]?.parallax;
+    const x = this.frame.x + (rides?.x ?? 0) * scale;
+    const y = this.frame.y + (rides?.y ?? 0) * scale;
 
     // Where the two cross, and how far each side reaches. The glow runs 0.45
     // to 1.15, and the span is the longer half of that, so brightening is at
@@ -234,16 +236,37 @@ export class IpadLightSketch implements Sketch {
       }
     }
 
-    if (this.lit) {
-      const bright = clamp((level - middle) / span, 0, 1);
-      if (bright > 0) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = bright;
-        ctx.drawImage(this.lit, x, y, width, height);
-        ctx.restore();
-      }
+    const bright = clamp((level - middle) / span, 0, 1);
+    const coloured = bright > 0 ? this.colour(this.glow.tint(t), x, y) : undefined;
+    if (coloured) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = bright;
+      ctx.drawImage(coloured, 0, 0);
+      ctx.restore();
     }
+  }
+
+  /**
+   * The light's shape, given the colour it is this second.
+   *
+   * On a scratch the size of the window rather than by keeping a copy of the
+   * mask per colour: the colour moves every couple of seconds and eases while
+   * it moves, so there is no fixed set of them to keep. `source-in` throws
+   * away what the mask was painted in and keeps only its shape.
+   */
+  private colour(tint: Cast, x: number, y: number): HTMLCanvasElement | undefined {
+    if (!this.lit || !this.tinted) return undefined;
+    const onto = this.tinted.getContext('2d');
+    if (!onto) return undefined;
+
+    onto.clearRect(0, 0, this.width, this.height);
+    onto.drawImage(this.lit, x, y, this.frame.width, this.frame.height);
+    onto.globalCompositeOperation = 'source-in';
+    onto.fillStyle = `rgb(${Math.round(tint.red)} ${Math.round(tint.green)} ${Math.round(tint.blue)})`;
+    onto.fillRect(0, 0, this.width, this.height);
+    onto.globalCompositeOperation = 'source-over';
+    return this.tinted;
   }
 
   private drawSnow(ctx: CanvasRenderingContext2D, dt: number): void {
@@ -278,6 +301,10 @@ export class IpadLightSketch implements Sketch {
    * painted edge of the canvas was showing.
    */
   private measure(): void {
+    if (!this.tinted) this.tinted = document.createElement('canvas');
+    this.tinted.width = this.width;
+    this.tinted.height = this.height;
+
     if (!this.painting) return;
     const cover = Math.max(
       this.width / this.painting.naturalWidth,
@@ -299,60 +326,37 @@ export class IpadLightSketch implements Sketch {
 }
 
 /**
- * The painting cut into bands by depth, nearest last.
+ * One cut: the painting, with everything outside the mask made transparent.
  *
- * Each band is the whole frame with everything outside its depth range made
- * transparent, so they can be drawn one over another and shifted
- * independently. Done once at load: it is six passes over a megapixel.
+ * The mask is a grey image and carries the cut alone, because the colour is
+ * already in the painting and keeping four copies of it would be four copies
+ * of the same paint. Done once at load: a pass over a megapixel per cut.
  */
-function band(
-  painting: HTMLImageElement,
-  depth: HTMLImageElement
-): { layer: HTMLCanvasElement; parallax: Parallax }[] {
+function cut(painting: HTMLImageElement, mask: HTMLImageElement): HTMLCanvasElement {
   const wide = painting.naturalWidth;
   const high = painting.naturalHeight;
+
+  const sprite = document.createElement('canvas');
+  sprite.width = wide;
+  sprite.height = high;
 
   const read = document.createElement('canvas');
   read.width = wide;
   read.height = high;
   const reading = read.getContext('2d', { willReadFrequently: true });
-  if (!reading) return [];
+  const onto = sprite.getContext('2d');
+  if (!reading || !onto) return sprite;
 
   reading.drawImage(painting, 0, 0);
   const paint = reading.getImageData(0, 0, wide, high);
 
-  // The depth map is half the size of the painting and that is deliberate:
-  // it is smooth, and the bytes are better spent on the paint.
   reading.clearRect(0, 0, wide, high);
-  reading.drawImage(depth, 0, 0, wide, high);
-  const near = reading.getImageData(0, 0, wide, high);
+  reading.drawImage(mask, 0, 0, wide, high);
+  const shape = reading.getImageData(0, 0, wide, high);
 
-  const bands: { layer: HTMLCanvasElement; parallax: Parallax }[] = [];
-  for (let at = 0; at < SLICES; at++) {
-    const from = (at / SLICES) * 255;
-    const to = ((at + 1) / SLICES) * 255;
-
-    const layer = document.createElement('canvas');
-    layer.width = wide;
-    layer.height = high;
-    const onto = layer.getContext('2d');
-    if (!onto) continue;
-
-    const cut = new ImageData(new Uint8ClampedArray(paint.data), wide, high);
-    for (let pixel = 0; pixel < near.data.length; pixel += 4) {
-      const howNear = near.data[pixel];
-      // A pixel belongs to exactly one band, and the edges overlap by a
-      // little so a slice does not leave a hairline of background behind it.
-      if (howNear < from - 6 || howNear >= to + 6) cut.data[pixel + 3] = 0;
-    }
-    onto.putImageData(cut, 0, 0);
-
-    // Nearer bands move further. The far sky barely moves, which is what
-    // makes the near face read as near.
-    const depthOf = (at + 1) / SLICES;
-    bands.push({ layer, parallax: new Parallax(depthOf, SHIFT, 0.045) });
-  }
-  return bands;
+  for (let at = 0; at < paint.data.length; at += 4) paint.data[at + 3] = shape.data[at];
+  onto.putImageData(paint, 0, 0);
+  return sprite;
 }
 
 /**
@@ -361,17 +365,13 @@ function band(
  * One shape, drawn twice in different colours. A pixel belongs to it by how
  * near its paint is to `SCREEN_GREY` and how near it is to the screen, and
  * both of those are soft, so the mask has no edge to see. `lit` is that shape
- * in cold white, to be added; `unlit` is the same shape in near-black, to be
- * laid over. Done once at load, and the results are images like any other.
- *
- * `depthOf` comes back with them: the average depth of the paint the mask
- * fell on, weighted by how much of each pixel it took. It is what lets the
- * light travel with the face rather than sit still while the face moves.
+ * in white, to be given a colour and added; `unlit` is the same shape in
+ * near-black, to be laid over. Done once at load, and the results are images
+ * like any other.
  */
 function screenLit(
-  painting: HTMLImageElement,
-  depth: HTMLImageElement
-): { lit: HTMLCanvasElement; unlit: HTMLCanvasElement; depthOf: number } | undefined {
+  painting: HTMLImageElement
+): { lit: HTMLCanvasElement; unlit: HTMLCanvasElement } | undefined {
   const wide = painting.naturalWidth;
   const high = painting.naturalHeight;
 
@@ -383,13 +383,6 @@ function screenLit(
 
   reading.drawImage(painting, 0, 0);
   const { data } = reading.getImageData(0, 0, wide, high);
-
-  reading.clearRect(0, 0, wide, high);
-  reading.drawImage(depth, 0, 0, wide, high);
-  const near = reading.getImageData(0, 0, wide, high);
-
-  let deep = 0;
-  let weight = 0;
 
   const shape = new Uint8ClampedArray(wide * high * 4);
   for (let at = 0; at < data.length; at += 4) {
@@ -408,20 +401,12 @@ function screenLit(
     const blue = data[at + 2] - SCREEN_GREY.blue;
     const like = 1 - Math.min(1, Math.sqrt(red * red + green * green + blue * blue) / NEAR);
 
-    const how = like * reach;
-    shape[at + 3] = Math.round(255 * how);
-    if (how > STRONGEST) {
-      deep += near.data[at] / 255;
-      weight += 1;
-    }
+    shape[at + 3] = Math.round(255 * like * reach);
   }
 
   return {
-    lit: paint(shape, wide, high, SCREEN_LIGHT),
+    lit: paint(shape, wide, high, '#ffffff'),
     unlit: paint(shape, wide, high, '#05060a'),
-    // If nothing matched there is nothing to move, and the nearest band is
-    // as good a guess as any.
-    depthOf: weight > 0 ? deep / weight : 1,
   };
 }
 

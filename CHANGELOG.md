@@ -8,12 +8,13 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 ## 2.27.0
 
 - **feat** — _Ipad light_, a third generative page, built from what the
-  atelier kept of _Reflejo de luz de iPad_: the painting cut into six depth
-  bands over an unmoved copy of itself, drifting by itself and answering the
-  pointer, snow falling through it, and the paint the tablet lights — keyed on
-  #DBDBDB, and carried at the depth of the face it lands on — going dark and
-  blowing out again as a screen does. **Not deployed** — running locally while
-  he looks at it.
+  atelier kept of _Reflejo de luz de iPad_: his four cuts of the painting —
+  the girl, the blue shirt, the limbs, the ground — each at its own parallax
+  over an unmoved copy of the whole, turning on their own at a steady rate and
+  answering the pointer, snow falling through them, and the paint the tablet
+  lights — keyed on #DBDBDB, riding on the girl's cut — going dark and blowing
+  out again as a screen does, taking a red, a blue or a yellow cast as it
+  changes. **Not deployed** — running locally while he looks at it.
 
 ## 2.26.1
 

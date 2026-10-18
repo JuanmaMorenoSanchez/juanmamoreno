@@ -3736,19 +3736,38 @@ and running on the dev server, waiting on his eye before it is deployed.
 Three things move, and all three come out of the painting rather than being
 laid over it.
 
-**Depth.** The atelier measured how far away each part of the canvas is, and
-the page cuts the painting into six bands by that and shifts each by how near
-it is. Behind them sits the painting again, whole and unmoved, so what a
-shifted band reveals is his paint in the colour it already was. The atelier's
-filled-in version was tried there first and taken out: it had repainted the
-dusk as a blue afternoon, so every sliver it showed was the wrong painting.
-No model invents anything at display time and none filled anything in either:
-every pixel that moves, and every pixel behind it, is a pixel he painted.
+**Depth, from his own cuts.** The painting comes apart into four layers he
+cut in the atelier — the girl, the blue shirt, the limbs, the ground behind
+them — and each is drawn at its own parallax. It was depth bands first, six
+slices of the canvas by a depth map, and they were wrong twice over: a slice
+puts its seam wherever the arithmetic falls, through an arm or along a fold,
+and every seam shows the moment the slice moves. A cut that follows what is
+in the painting moves the way the thing in it would, and takes twice the
+shift before it looks like anything is wrong. Behind the four sits the
+painting again, whole and unmoved.
 
-**It drifts on its own.** A painting that moves only when touched is a still
-painting most of the time, and on a phone there is no pointer at all. Two
-sines whose periods do not divide each other, slow enough to read as
-breathing, and the pointer takes over the moment there is one.
+**Only the cut is kept as a file.** A cut is one channel, so the four assets
+are grey masks and the colour comes from the painting at load — four copies
+of the same paint would be four times the bytes for nothing. Holes in the
+cuts are closed on the way out, because the segmentation read a dark painted
+spot inside the hand as not-hand and left a pinprick of the layer behind
+showing through each one; and whatever none of the three figures claims is
+given to the ground, so the four together leave no gap.
+
+**Nothing at display time is invented, and nothing was filled in.** The
+atelier's filled-in background was tried behind the layers first and taken
+out: it had repainted the dusk as a blue afternoon, so every sliver it showed
+was the wrong painting. Every pixel that moves, and every pixel behind it, is
+a pixel he painted.
+
+**It drifts on its own, and it does not stop.** A painting that moves only
+when touched is a still painting most of the time, and on a phone there is no
+pointer at all. It was a pair of sines, which is a path that slows to nothing
+at each end and turns around: measured over two minutes, its slowest moment
+was a thousandth of its fastest, which reads as a thing being nudged. It goes
+round now, at a steady rate, with a second smaller turn over it at a rate that
+does not divide the first — slowest moment a third of the fastest, and no loop
+anybody watching would catch.
 
 **The screen changes.** The paint the tablet lights is found once at load, by
 how near it is to #DBDBDB — the grey he picked, which is what the screen
@@ -3763,27 +3782,32 @@ catches only the two brightest planes of the face, at 145 the face and the
 collar, and at 170 her shoulder, the lit side of the coat, the near hand and
 the goose's head as well — and still nothing of the blue shirt behind her.
 
-**And the light travels with the face.** It is drawn at its own parallax, at
-the depth of the paint it lands on, or it sits still while she slides out from
-under it and reads as a stain on the glass. That depth is taken over the part
-of the mask the light actually lands on rather than over all of it: the mask
-reaches her face, her coat, the hand and the goose, which are not the same
-distance away, and the average of all of them is a depth nothing is at. With
-the average, Chrome measured her face travelling 43 px across a pointer sweep
-and the light 20. Taken over the strongest of the mask, the light rides at
-0.979 against her band's 1.0, and the two offsets measured in the running page
-are 28.6 and 29.2 — together, to two per cent.
+**And it takes a cast.** The colour changes when the level does, because it is
+the same event: something else came up on the screen, and it is both brighter
+and a different colour. Half the intervals are the plain cold white and the
+rest lean a third of the way towards a red, a blue, a yellow, a green or a
+violet — a third, never the whole way, or it has stopped being a screen and
+become a stage light. It is coloured on a scratch the size of the window
+rather than by keeping a copy of the mask per colour, because the colour eases
+while it moves and there is no fixed set of them to keep.
+
+**The light travels with the face.** It rides on the girl's own cut, so it
+moves exactly as she moves. Before the cuts it rode at an average depth taken
+over the whole mask — which reaches her face, her coat, the hand and the goose,
+at four different distances — and Chrome measured her face travelling 43 px
+across a pointer sweep while the light travelled 20: the light sliding off her
+face.
 
 **And it snows**, which is the one thing not in the painting: a hundred and
 eighty flakes rather than ninety, half again as big and twice as solid,
 because at the first setting it was weather you had to be told about.
 
-**What is behind the bands is dimmed into the black.** The bands between them
-cover every pixel of the painting, so the only place the copy behind them ever
-shows is the sliver a shifted band uncovers. At full strength that sliver is
-the same contour drawn twice — a hairline tracing her shoulder, which is what
-using the original as the backdrop costs. At 45% it is the shadow a near thing
-casts on what is behind it.
+**What is behind the layers is dimmed into the black.** The four cuts cover
+the painting between them, so the only place the copy behind them ever shows
+is what a shifted cut uncovers. At full strength that is the same contour
+drawn twice — a hairline tracing her shoulder, which is what using the
+original as the backdrop costs. At 45% it is the shadow a near thing casts on
+what is behind it.
 
 **The shape of the canvas is the canvas's.** A window of another shape loses
 some of the painting rather than stretching it, and what it loses is the top:
@@ -3792,13 +3816,15 @@ this is about. It is drawn five per cent over a cover fit, with all five spent
 below the window: a plain cover fit laid the painted edge of the canvas along
 the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**453 KB of assets** for a 3000×3180 original: the painting at 1500 px as a
-progressive JPEG, the depth map at half that as a grey PNG, because depth is
-smooth and the bytes are better spent on paint.
+**604 KB of assets** for a 3000×3180 original: the painting at 1500 px as a
+progressive JPEG, and the four cuts as grey PNGs at the same size, because a
+cut has an edge and half resolution would show it.
 *Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole
-flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (5 tests,
-including that it changes level rather than snapping), `idle-drift.spec.ts`
-(4 tests, including that it does not come back to where it started inside a
-viewing), and `registry.spec.ts` "holds exactly the three that are published"
+flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (8 tests,
+including that it changes level rather than snapping, that the cold white
+comes up more than twice as often as any cast, and that every cast stays in
+the same gamut), `idle-drift.spec.ts` (5 tests, including "never stops to turn
+around" and that it does not come back to where it started inside a viewing),
+and `registry.spec.ts` "holds exactly the three that are published"
 *Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 —
 no console errors, and the scene measurably answers the pointer in both.
