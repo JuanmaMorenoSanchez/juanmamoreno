@@ -22,9 +22,8 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   and the screen caught in the eyes of both birds; and the whole canvas
   breaking into its other state and back, landscape and girl on separate
   clocks, in torn strips rather than a dissolve — and running broken almost
-  all the time for now, at his asking, with the settled timings written
-  beside the trial ones. **Not deployed** — running locally while he looks
-  at it.
+  all the time, which is the setting he chose to publish, with the quieter
+  timings written beside it.
 - **fix** — marking a painting by hand selected the wrong part of it. Clicks
   were measured against the panel rather than the picture, so on a portrait
   painting every mark was recorded at a fraction of a painting it had not been

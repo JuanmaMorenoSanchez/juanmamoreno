@@ -3765,10 +3765,9 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
-### R171 — Ipad light · built, not yet published
+### R171 — Ipad light · met
 *Reflejo de luz de iPad* (2025) as a moving page at `/generative/ipad-light`,
-registered by hand like the other two. **Local only for now** — built, tested
-and running on the dev server, waiting on his eye before it is deployed.
+registered by hand like the other two.
 
 Three things move, and all three come out of the painting rather than being
 laid over it.
@@ -3919,12 +3918,13 @@ another, at different periods and from different draws, so they are often in
 different states at once — the dusk field behind a daylight girl, the geese
 there and then gone. One clock would be a slideshow.
 
-**It is running broken, on purpose and for now.** He asked to see what it
-looks like with the tearing almost never stopping, so the page is at a change
-every two and a half seconds with a tear lasting nearly as long as the hold
-between them. The settled pair is written next to the trial one in the
-sketch: nine seconds and thirteen, with half a second of tearing. Two numbers
-to put it back.
+**It is published broken, on purpose.** Asked which to put on the site, he
+chose this one: a change every two and a half seconds behind and three and a
+half for her, with a tear lasting nearly as long as the hold between them, so
+the painting is coming apart almost all of the time. The quieter pair is
+written next to it in the sketch — nine seconds and thirteen, with half a
+second of tearing — because it is the one to go back to and two numbers is
+all it takes.
 
 **And one extra picture buys all of it.** The second state is a single JPEG:
 the three figure cuts are taken from it with the masks the page already has,
