@@ -3891,6 +3891,26 @@ further off falls as it did. It is the cheapest thing on the page — the snow
 already existed and this is a term in its alpha — and it is what stops the
 weather and the light being two effects that happen to share a page.
 
+**The painting breaks into its other state, and back.** The canvas exists
+twice — at dusk with the city and the geese, and in daylight without them —
+and the page holds both and changes over every nine seconds or so. It does
+not dissolve: a signal changing over tears, in horizontal strips, some still
+showing the old picture, some shoved sideways, each with a ghost of itself a
+few pixels off, and the strips are redrawn twelve times a second rather than
+per frame because a tear that slides is a wipe. Half a second of that, and
+then it is simply the other painting.
+
+**Two clocks, not one.** The landscape changes on one and the girl on
+another, at different periods and from different draws, so they are often in
+different states at once — the dusk field behind a daylight girl, the geese
+there and then gone. One clock would be a slideshow.
+
+**And one extra picture buys all of it.** The second state is a single JPEG:
+the three figure cuts are taken from it with the masks the page already has,
+because the two states were painted on the same canvas and her silhouette in
+one fits the cut from the other to 99.3% of its area. It came off the shelf
+as two kept pieces, a background and a girl, composited back together.
+
 **The field opens and closes, and the focus never leaves her.** It was a
 focus pull at first, off her and out to the landscape and back, and it put
 the subject of the painting out of focus for seven seconds at a time: his
@@ -3921,9 +3941,10 @@ this is about. It is drawn five per cent over a cover fit, with all five spent
 below the window: a plain cover fit laid the painted edge of the canvas along
 the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**759 KB of assets** for a 3000×3180 original: the painting and the filled
-ground at 1500 px as progressive JPEGs, and the three figures as grey cuts of
-the same size, because a cut has an edge and half resolution would show it.
+**1.0 MB of assets** for a 3000×3180 original: the painting and the filled
+ground at 1500 px as progressive JPEGs, the painting's other state as a third,
+and the three figures as grey cuts of the same size, because a cut has an edge
+and half resolution would show it.
 The ground's own cut is not shipped — it is an input to the fill and nothing
 at display time needs it.
 *Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole

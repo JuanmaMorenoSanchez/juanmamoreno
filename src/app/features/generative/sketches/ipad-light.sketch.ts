@@ -1,5 +1,6 @@
 import { IdleDrift } from '@domain/generative/idle-drift';
 import { FocusPull } from '@domain/generative/focus-pull';
+import { Glitch } from '@domain/generative/glitch';
 import { clamp } from '@domain/generative/math';
 import { Parallax } from '@domain/generative/parallax';
 import { Cast, ScreenGlow } from '@domain/generative/screen-glow';
@@ -156,7 +157,10 @@ const EYES = [
  * computed per frame: `filter` on a canvas this size, four times a frame, is
  * not something a laptop should be asked to do sixty times a second.
  */
-const SOFTENS = 5;
+const SOFTENS = 2.2;
+
+/** How many torn strips a change is made of. */
+const STRIPS = 9;
 
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
@@ -197,13 +201,19 @@ export class IpadLightSketch implements Sketch {
   private groundParallax?: Parallax;
   /** Every layer again, soft, for the focus to fade towards. */
   private blurredGround?: HTMLCanvasElement;
+  /** And the whole painting again, in daylight, for it to break into. */
+  private day?: HTMLImageElement;
+  private blurredDay?: HTMLCanvasElement;
   /** The shafts, as one shape, built once and turned a little each frame. */
   private fanned?: HTMLCanvasElement;
 
   /** One canvas per cut, and the parallax that moves it. */
   private layers: {
     sprite: HTMLCanvasElement;
+    /** The same cut of the other state of the painting. */
+    other: HTMLCanvasElement;
     soft: HTMLCanvasElement;
+    otherSoft: HTMLCanvasElement;
     parallax: Parallax;
     depth: number;
   }[] = [];
@@ -220,6 +230,15 @@ export class IpadLightSketch implements Sketch {
   private readonly drift = new IdleDrift();
   private readonly gaze = new SteadyGaze();
   private readonly focus = new FocusPull();
+  /**
+   * The painting changing over to its other state, and back.
+   *
+   * Two of them, on different clocks and with different numbers, so the
+   * landscape and the girl are often in different states at once. One clock
+   * would be a slideshow; two is a thing with a fault in it.
+   */
+  private readonly behind = new Glitch(9, 0.55);
+  private readonly her = new Glitch(13, 0.45, 41);
 
   /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
@@ -231,24 +250,33 @@ export class IpadLightSketch implements Sketch {
     const wanted: Record<string, string> = {
       painting: `${IMAGES_ROUTE}ipad-light.jpg`,
       ground: `${IMAGES_ROUTE}ipad-light-ground.jpg`,
+      day: `${IMAGES_ROUTE}ipad-light-day.jpg`,
     };
     for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
 
     const images = await loadImages(wanted);
     this.painting = images['painting'];
     this.ground = images['ground'];
+    this.day = images['day'];
     this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
     this.layers = CUTS.map((each) => {
       const sprite = cut(images['painting'], images[each.name]);
+      // The same cut of the other state: one extra picture serves all three
+      // figures, because the two states were painted on the same canvas and
+      // the cuts fit both to within a pixel.
+      const other = cut(images['day'], images[each.name]);
       return {
         sprite,
+        other,
         soft: softened(sprite),
+        otherSoft: softened(other),
         parallax: new Parallax(each.depth, SHIFT, EASE),
         depth: each.depth,
       };
     });
     this.blurredGround = softened(images['ground']);
+    this.blurredDay = softened(images['day']);
     this.fanned = fan(1200);
 
     const screen = screenLit(images['painting']);
@@ -301,9 +329,13 @@ export class IpadLightSketch implements Sketch {
       this.lay(
         ctx,
         this.ground,
+        this.day,
         this.blurredGround,
+        this.blurredDay,
         GROUND,
         spread,
+        this.behind,
+        frame.t,
         x + this.groundParallax.x * scale,
         y + this.groundParallax.y * scale
       );
@@ -313,9 +345,13 @@ export class IpadLightSketch implements Sketch {
       this.lay(
         ctx,
         layer.sprite,
+        layer.other,
         layer.soft,
+        layer.otherSoft,
         layer.depth,
         spread,
+        layer.depth === 1 ? this.her : this.behind,
+        frame.t,
         x + layer.parallax.x * scale,
         y + layer.parallax.y * scale
       );
@@ -340,20 +376,98 @@ export class IpadLightSketch implements Sketch {
   private lay(
     ctx: CanvasRenderingContext2D,
     sharp: CanvasImageSource,
+    other: CanvasImageSource | undefined,
     soft: CanvasImageSource | undefined,
+    otherSoft: CanvasImageSource | undefined,
     depth: number,
     spread: number,
+    glitch: Glitch,
+    t: number,
     x: number,
     y: number
   ): void {
     const { width, height } = this.frame;
-    ctx.drawImage(sharp, x, y, width, height);
+    const broken = glitch.at(t);
+    const up = broken.shows === 1 && other;
 
+    ctx.drawImage(up ? (other as CanvasImageSource) : sharp, x, y, width, height);
+    if (broken.tearing > 0.01 && other) {
+      this.tear(ctx, sharp, other, glitch, broken.tearing, t, x, y);
+    }
+
+    // The soft copy has to be of whichever state is up, or going out of
+    // focus fades the other painting in underneath.
+    const blurred = up ? otherSoft : soft;
     const away = Math.min(1, (1 - depth) / spread);
-    if (!soft || away < 0.02) return;
+    if (!blurred || away < 0.02) return;
     ctx.save();
     ctx.globalAlpha = away;
-    ctx.drawImage(soft, x, y, width, height);
+    ctx.drawImage(blurred, x, y, width, height);
+    ctx.restore();
+  }
+
+  /**
+   * The moment of changing over, in torn strips.
+   *
+   * Strips of each state, laid over whichever one is up and shoved sideways
+   * by how broken it is, with a ghost of each a few pixels off so the edges
+   * double the way a bad signal doubles. The strips jump twelve times a
+   * second rather than every frame: a tear that slides is a wipe.
+   */
+  private tear(
+    ctx: CanvasRenderingContext2D,
+    sharp: CanvasImageSource,
+    other: CanvasImageSource,
+    glitch: Glitch,
+    tearing: number,
+    t: number,
+    x: number,
+    y: number
+  ): void {
+    const { width, height } = this.frame;
+    const from = { width: sourceWide(sharp), height: sourceHigh(sharp) };
+    if (!from.width || !from.height) return;
+
+    ctx.save();
+    for (let which = 0; which < STRIPS; which++) {
+      const band = glitch.band(t, which);
+      const high = Math.min(band.high, 1 - band.top);
+      if (high <= 0) continue;
+
+      const strip = band.from === 1 ? other : sharp;
+      const shove = band.shove * width * tearing;
+      ctx.drawImage(
+        strip,
+        0,
+        band.top * from.height,
+        from.width,
+        high * from.height,
+        x + shove,
+        y + band.top * height,
+        width,
+        high * height
+      );
+
+      // The ghost: the same strip again, a little further over and added, so
+      // the edges inside it smear rather than simply moving.
+      if (which % 3 === 0) {
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 0.45 * tearing;
+        ctx.drawImage(
+          strip,
+          0,
+          band.top * from.height,
+          from.width,
+          high * from.height,
+          x + shove * 2.2,
+          y + band.top * height,
+          width,
+          high * height
+        );
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+      }
+    }
     ctx.restore();
   }
 
@@ -843,4 +957,16 @@ function rounded(colour: Cast): string {
 /** A css colour from one. */
 function rgb(colour: Cast): string {
   return `rgb(${rounded(colour)})`;
+}
+
+/** The width of whatever kind of picture this is. */
+function sourceWide(image: CanvasImageSource): number {
+  const sized = image as { naturalWidth?: number; width?: number };
+  return sized.naturalWidth ?? Number(sized.width ?? 0);
+}
+
+/** And its height. */
+function sourceHigh(image: CanvasImageSource): number {
+  const sized = image as { naturalHeight?: number; height?: number };
+  return sized.naturalHeight ?? Number(sized.height ?? 0);
 }
