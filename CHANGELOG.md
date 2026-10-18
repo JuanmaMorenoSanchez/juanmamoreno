@@ -21,8 +21,10 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   through it lighting up, the depth of field opening and closing behind her,
   and the screen caught in the eyes of both birds; and the whole canvas
   breaking into its other state and back, landscape and girl on separate
-  clocks, in torn strips rather than a dissolve. **Not deployed** — running
-  locally while he looks at it.
+  clocks, in torn strips rather than a dissolve — and running broken almost
+  all the time for now, at his asking, with the settled timings written
+  beside the trial ones. **Not deployed** — running locally while he looks
+  at it.
 - **fix** — the atelier's shelf is empty on the catalogue page. Every route on
   the backend answers `{ success, message, data }` and the shelf read the body
   as the list, so it held the envelope: nothing rendered, and a save spread it

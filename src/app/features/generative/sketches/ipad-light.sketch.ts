@@ -157,10 +157,23 @@ const EYES = [
  * computed per frame: `filter` on a canvas this size, four times a frame, is
  * not something a laptop should be asked to do sixty times a second.
  */
-const SOFTENS = 2.2;
+const SOFTENS = 1.4;
 
 /** How many torn strips a change is made of. */
 const STRIPS = 9;
+
+/**
+ * How often the painting changes over, and how long the tear lasts.
+ *
+ * **These are the trial settings, at his asking**: a change every couple of
+ * seconds with the tear lasting nearly as long as the hold between them, so
+ * the page is broken almost all of the time and he can see what that is like.
+ * The settled pair was a change every nine seconds behind and thirteen for
+ * her, with half a second of tearing — `{ holds: 9, tears: 0.55 }` and
+ * `{ holds: 13, tears: 0.45, seed: 41 }`.
+ */
+const BEHIND = { holds: 2.6, tears: 2.2, seed: 0 };
+const HER = { holds: 3.4, tears: 2.9, seed: 41 };
 
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
@@ -237,8 +250,8 @@ export class IpadLightSketch implements Sketch {
    * landscape and the girl are often in different states at once. One clock
    * would be a slideshow; two is a thing with a fault in it.
    */
-  private readonly behind = new Glitch(9, 0.55);
-  private readonly her = new Glitch(13, 0.45, 41);
+  private readonly behind = new Glitch(BEHIND.holds, BEHIND.tears, BEHIND.seed);
+  private readonly her = new Glitch(HER.holds, HER.tears, HER.seed);
 
   /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
@@ -715,8 +728,12 @@ export class IpadLightSketch implements Sketch {
         ctx.fill();
       }
 
+      // Faint until the light reaches it. Snow at full strength across the
+      // whole frame is a screen full of dots; most of it should be weather
+      // you notice afterwards, and only what the tablet finds should be
+      // something you look at.
       ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = Math.min(1, flake.alpha + caught * 0.5);
+      ctx.globalAlpha = Math.min(1, flake.alpha * (0.35 + caught * 0.65) + caught * 0.5);
       ctx.fillStyle = caught > 0.04 ? `rgb(${lit})` : '#e8eef6';
       ctx.beginPath();
       ctx.arc(at.x, at.y, size * (1 + caught * 0.5), 0, Math.PI * 2);

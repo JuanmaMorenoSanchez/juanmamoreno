@@ -3905,6 +3905,13 @@ another, at different periods and from different draws, so they are often in
 different states at once — the dusk field behind a daylight girl, the geese
 there and then gone. One clock would be a slideshow.
 
+**It is running broken, on purpose and for now.** He asked to see what it
+looks like with the tearing almost never stopping, so the page is at a change
+every two and a half seconds with a tear lasting nearly as long as the hold
+between them. The settled pair is written next to the trial one in the
+sketch: nine seconds and thirteen, with half a second of tearing. Two numbers
+to put it back.
+
 **And one extra picture buys all of it.** The second state is a single JPEG:
 the three figure cuts are taken from it with the masks the page already has,
 because the two states were painted on the same canvas and her silhouette in
