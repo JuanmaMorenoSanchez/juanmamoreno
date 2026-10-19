@@ -204,7 +204,7 @@ const ALSO: Record<string, readonly string[]> = {
 };
 
 /**
- * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
+ * "Screenlight" — *Reflejo de luz de iPad* (2025), moving.
  *
  * Three things happen at once, and all three come out of the painting itself
  * rather than being laid over it.

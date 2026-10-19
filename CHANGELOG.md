@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.32.1
+
+- **chore** — the third generative piece is called _Screenlight_. It was
+  _Ipad light_ while it was being made. Its address is unchanged: a name is a
+  name, an address is a promise.
+
+---
+
 ## 2.32.0
 
 - **feat** — a generative page covers itself while the sketch fetches its

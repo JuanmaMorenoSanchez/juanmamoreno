@@ -21,7 +21,9 @@ export interface SketchEntry {
 export const SKETCHES: Record<string, SketchEntry> = {
   believe: { label: 'Believe', factory: () => new BelieveSketch() },
   hide: { label: 'Hide until everybody is dead', factory: () => new DustSketch() },
-  'ipad-light': { label: 'Ipad light', factory: () => new IpadLightSketch() },
+  // The address stays `ipad-light`: it is a published url and the piece has
+  // been up under it. A name is a name; an address is a promise.
+  'ipad-light': { label: 'Screenlight', factory: () => new IpadLightSketch() },
 };
 
 export const SKETCH_LIST = Object.entries(SKETCHES).map(([id, entry]) => ({

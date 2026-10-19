@@ -2220,7 +2220,7 @@ sketch for whatever it was handed, so a page existed at a public address that
 nobody had decided to publish.
 
 **Three sketches, and the list is exact.** *Believe*, from the layers of
-*Supersticiosos*; *Hide until everybody is dead*; and *Ipad light*, built
+*Supersticiosos*; *Hide until everybody is dead*; and *Screenlight*, built
 from what the atelier kept of *Reflejo de luz de iPad* (R171). Asserting that
 the registry merely *contained* them was too weak to notice the opposite
 mistake: *Wind direction* sat commented out of the list and still in the
@@ -3767,7 +3767,7 @@ arrive, which is what anybody debugging it needs"
 
 ### R180 — A generative page says it is loading · met
 A sketch's `setup` fetches its pictures and cuts its sprites before a single
-frame is drawn. *Ipad light* loads five and cuts eleven, and on a cold cache
+frame is drawn. *Screenlight* loads five and cuts eleven, and on a cold cache
 that is a second or two of a black rectangle — which is also exactly what a
 page that has failed looks like.
 
@@ -3948,9 +3948,11 @@ downloading every try to look at it.
 the catalogue it did not come from" and "shows a kept piece at the size of the
 screen"
 
-### R171 — Ipad light · met
+### R171 — Screenlight · met
 *Reflejo de luz de iPad* (2025) as a moving page at `/generative/ipad-light`,
-registered by hand like the other two.
+registered by hand like the other two. **Called *Screenlight*** — it was
+*Ipad light* while it was being built. The address is still the one it was
+published under: a name is a name, and an address is a promise.
 
 Three things move, and all three come out of the painting rather than being
 laid over it.
