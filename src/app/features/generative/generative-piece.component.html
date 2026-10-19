@@ -2,6 +2,24 @@
   <canvas #canvas class="sketch-canvas" [class.hidden]="notFound()"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <!--
+    The black it starts on, said out loud. A sketch's setup fetches its
+    pictures and cuts its sprites, which on a cold cache is a second or two
+    of a black rectangle — and a black rectangle is what a failed page looks
+    like. It fades rather than cuts, so what appears underneath is the
+    painting rather than a jump.
+  -->
+  @if (loading() || settling()) {
+    <div
+      class="sketch-cover"
+      [class.settling]="settling()"
+      role="status"
+      [attr.aria-label]="'generative.loading' | translate"
+      data-testid="sketch-loading"
+    >
+      <span class="sketch-spinner" aria-hidden="true"></span>
+    </div>
+  }
+  <!--
     Gone once the sketch is fullscreen. The whole point of the state is that
     there is nothing on the screen but the drawing, and a button floating over
     it is the one thing still in the way.

@@ -30,7 +30,8 @@
     "terms": "Términos"
   },
   "generative": {
-    "notFound": "No se encontró esta pieza generativa."
+    "notFound": "No se encontró esta pieza generativa.",
+    "loading": "Cargando la pieza…"
   },
   "home": {
     "tagline": "Pintura contemporánea y software"

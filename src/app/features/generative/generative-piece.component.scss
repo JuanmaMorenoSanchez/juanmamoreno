@@ -49,11 +49,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 52%,
-    rgba(0, 0, 0, 0.55) 100%
-  );
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 .not-found {
@@ -64,4 +60,52 @@
   justify-content: center;
   color: #fff;
   opacity: 0.7;
+}
+
+/* What the page is before the sketch has anything to draw.
+   Over everything, including the vignette, because it is the page at that
+   moment rather than something laid on top of it. */
+.sketch-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #07080b;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+
+  &.settling {
+    opacity: 0;
+  }
+}
+
+.sketch-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid rgb(255 255 255 / 25%);
+  border-top-color: rgb(255 255 255 / 85%);
+  border-radius: 50%;
+  animation: sketch-turn 0.9s linear infinite;
+}
+
+@keyframes sketch-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Nothing moves for a reader who asked for less movement: the cover is still
+   there and still says what it is doing, it simply does not spin. */
+@media (prefers-reduced-motion: reduce) {
+  .sketch-spinner {
+    animation: none;
+    border-top-color: rgb(255 255 255 / 55%);
+  }
+
+  .sketch-cover {
+    transition: none;
+  }
 }

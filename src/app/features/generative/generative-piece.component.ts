@@ -15,6 +15,15 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { SKETCHES } from './sketches/registry';
+
+/**
+ * How long the cover takes to go, in milliseconds.
+ *
+ * Matched to the transition in the stylesheet, which is where the fade
+ * actually happens — this only says when the element may leave the document.
+ * A little over it, so nothing is removed mid-fade.
+ */
+const FADES = 900;
 import { Frame, Pointer, Sketch } from './sketches/sketch';
 
 @Component({
@@ -32,6 +41,25 @@ export class GenerativePieceComponent implements AfterViewInit {
   @ViewChild('container') private containerRef!: ElementRef<HTMLElement>;
 
   readonly notFound = signal(false);
+  /**
+   * Whether the sketch is still fetching what it draws with.
+   *
+   * A sketch's `setup` loads its pictures, and the newest of them loads four
+   * of them and cuts eleven sprites out of them. On a cold cache that is a
+   * second or two of a black rectangle, which is indistinguishable from a
+   * page that has failed. So the black rectangle says so, and then gets out
+   * of the way.
+   */
+  readonly loading = signal(false);
+  /**
+   * And whether it is on its way out.
+   *
+   * Two signals rather than one, because the cover has to still be in the
+   * document while it fades: taking it away the moment the sketch is ready
+   * is a cut, and a cut to a painting that has just appeared looks like a
+   * glitch — which this page has enough of on purpose.
+   */
+  readonly settling = signal(false);
   readonly isFullScreen = signal(false);
 
   private ctx: CanvasRenderingContext2D | null = null;
@@ -106,8 +134,13 @@ export class GenerativePieceComponent implements AfterViewInit {
     else if (doc.msExitFullscreen) doc.msExitFullscreen();
   }
 
+  /** The handle for the fade, so leaving the page does not leave it running. */
+  private fading: ReturnType<typeof setTimeout> | null = null;
+
   private async loadSketch(id: string | null): Promise<void> {
     this.stopLoop();
+    if (this.fading !== null) clearTimeout(this.fading);
+    this.fading = null;
     this.sketch?.dispose?.();
     this.sketch = null;
 
@@ -117,16 +150,23 @@ export class GenerativePieceComponent implements AfterViewInit {
     const entry = id ? SKETCHES[id] : undefined;
     if (!entry) {
       this.notFound.set(true);
+      this.loading.set(false);
+      this.settling.set(false);
       return;
     }
     this.notFound.set(false);
+    this.loading.set(true);
+    this.settling.set(false);
     // Title the page by the sketch's own name (the route's translated
     // description stays as-is).
     this.seo.setPageTitle(entry.label);
 
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d');
-    if (!this.ctx) return;
+    if (!this.ctx) {
+      this.loading.set(false);
+      return;
+    }
 
     this.resizeCanvas(); // also establishes the CSS-pixel base transform
     const sketch = entry.factory();
@@ -134,11 +174,18 @@ export class GenerativePieceComponent implements AfterViewInit {
       await sketch.setup(this.ctx, this.cssWidth, this.cssHeight);
     } catch {
       console.error('Error on sketch setup');
+      this.loading.set(false);
       return;
     }
     // A newer route may have superseded this one while setup awaited.
     if (this.sketch !== null) return;
     this.sketch = sketch;
+
+    // The first frame is drawn before the cover starts to go, so what it
+    // fades into is the painting rather than the black behind it.
+    this.loading.set(false);
+    this.settling.set(true);
+    this.fading = setTimeout(() => this.settling.set(false), FADES);
 
     this.startTime = performance.now();
     this.lastTime = this.startTime;

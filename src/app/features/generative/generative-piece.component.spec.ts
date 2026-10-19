@@ -45,6 +45,68 @@ function setup() {
 const button = (fixture: { nativeElement: HTMLElement }) =>
   fixture.nativeElement.querySelector('.fullscreen-btn');
 
+/**
+ * What the page is before the sketch has anything to draw.
+ *
+ * A sketch's setup fetches its pictures and cuts its sprites — the newest
+ * one loads four and cuts eleven — and on a cold cache that is a second or
+ * two of a black rectangle. A black rectangle is also what a failed page
+ * looks like, so it says which it is.
+ */
+describe('GenerativePieceComponent — while it is loading', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    TestBed.resetTestingModule();
+  });
+
+  const cover = (fixture: { nativeElement: HTMLElement }) =>
+    fixture.nativeElement.querySelector('[data-testid="sketch-loading"]');
+
+  it('covers the page and says what it is doing', () => {
+    const fixture = setup();
+    fixture.componentInstance.loading.set(true);
+    fixture.detectChanges();
+
+    expect(cover(fixture)).not.toBeNull();
+    expect(cover(fixture)?.getAttribute('role')).toBe('status');
+  });
+
+  it('fades rather than cutting, so it is still there while it goes', () => {
+    // Taking it away the moment the sketch is ready is a cut, and a cut to a
+    // painting that has just appeared reads as a glitch — which this page
+    // has enough of on purpose.
+    const fixture = setup();
+    fixture.componentInstance.loading.set(false);
+    fixture.componentInstance.settling.set(true);
+    fixture.detectChanges();
+
+    expect(cover(fixture)).not.toBeNull();
+    expect(cover(fixture)?.classList.contains('settling')).toBe(true);
+  });
+
+  it('is gone once it has settled', () => {
+    const fixture = setup();
+    fixture.componentInstance.loading.set(false);
+    fixture.componentInstance.settling.set(false);
+    fixture.detectChanges();
+
+    expect(cover(fixture)).toBeNull();
+  });
+
+  it('does not cover a piece that does not exist', () => {
+    // That page has something to say of its own, and a spinner over it would
+    // be a page still trying.
+    const fixture = setup();
+    fixture.componentInstance.notFound.set(true);
+    fixture.componentInstance.loading.set(false);
+    fixture.detectChanges();
+
+    expect(cover(fixture)).toBeNull();
+    expect(fixture.nativeElement.querySelector('.not-found')).not.toBeNull();
+  });
+});
+
 describe('GenerativePieceComponent — going full screen', () => {
   afterEach(() => {
     vi.unstubAllGlobals();

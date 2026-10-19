@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.32.0
+
+- **feat** — a generative page covers itself while the sketch fetches its
+  pictures, with a spinner in the middle of the room it has, and fades into
+  the piece rather than cutting to it. A black rectangle is what a failed
+  page looks like too.
+
+---
+
 ## 2.31.0
 
 - **feat** — Ipad light glitches between five states rather than two: the

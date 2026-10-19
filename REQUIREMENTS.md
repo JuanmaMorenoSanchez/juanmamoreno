@@ -3765,6 +3765,30 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R180 — A generative page says it is loading · met
+A sketch's `setup` fetches its pictures and cuts its sprites before a single
+frame is drawn. *Ipad light* loads five and cuts eleven, and on a cold cache
+that is a second or two of a black rectangle — which is also exactly what a
+page that has failed looks like.
+
+It is covered now, in the same near-black the sketches sit on, with a spinner
+in the middle of whatever room there is, and it says what it is doing to
+anything reading the page rather than looking at it. **It fades rather than
+cutting.** Taking the cover away the moment the sketch is ready is a cut, and
+a cut to a painting that has just appeared reads as a glitch — which one of
+these pages has enough of on purpose. The first frame is drawn before the
+fade begins, so what it fades into is the painting and not the black behind
+it.
+
+It belongs to the page every sketch is shown on rather than to any sketch, so
+a sketch added later gets it without knowing. Nothing covers a piece that was
+not found: that page has something of its own to say, and a spinner over it
+would be a page still trying.
+*Proven by:* `generative-piece.component.spec.ts` "covers the page and says
+what it is doing", "fades rather than cutting, so it is still there while it
+goes", "is gone once it has settled" and "does not cover a piece that does
+not exist"
+
 ### R179 — The painting is chosen in the Painting box · met
 It was chosen in a strip above the canvas: a file field, a token id, and —
 once there was one — the thumbnail and its name, all sitting over a diagram
