@@ -30,7 +30,8 @@
     "terms": "Terms"
   },
   "generative": {
-    "notFound": "This generative piece was not found."
+    "notFound": "This generative piece was not found.",
+    "loading": "Loading the piece…"
   },
   "home": {
     "tagline": "Contemporary painting and software"
