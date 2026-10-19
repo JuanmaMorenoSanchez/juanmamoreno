@@ -341,3 +341,63 @@
     opacity: 0.4;
   }
 }
+
+/* Choosing the painting, inside the box that is for it. */
+.painting-in {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+
+  input[type='file'] {
+    font: inherit;
+    font-size: 0.65rem;
+    max-width: 100%;
+  }
+}
+
+.painting-or {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font: inherit;
+    font-size: 0.68rem;
+    padding: 0.15rem 0.3rem;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+  }
+}
+
+.painting-fetching {
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* The picture and what it is, beside each other and inside the box. */
+.painting-chosen {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+
+  img {
+    width: 3.4rem;
+    height: 3.4rem;
+    object-fit: contain;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+  }
+
+  span {
+    min-width: 0;
+    opacity: 0.75;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+}

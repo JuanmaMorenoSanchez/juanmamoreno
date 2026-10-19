@@ -11,6 +11,9 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   the sky goes, the field goes a little, the hand in front of her does not.
 - **feat** — a kept piece's buttons are icons with their words on hover, and
   one of them copies the piece's address.
+- **feat** — the painting is chosen inside the Painting box on the canvas,
+  with its thumbnail and its name, instead of in a strip above a diagram
+  whose first box is labelled Painting.
 - **fix** — Stop looked as though it did nothing. It stops between denoising
   steps and one step of an edit is the best part of a minute, so it now says
   what it is waiting for; and stopping a clip was reported as a failed run

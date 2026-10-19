@@ -55,6 +55,81 @@ describe('NodeCanvasComponent', () => {
 
   const aNode = (type = 'edit') => [{ id: 'n1', type, x: 10, y: 20, params: {} }];
 
+  /**
+   * The one node whose value does not come from a parameter.
+   *
+   * Everything else on the canvas is drawn from the catalogue. The painting
+   * comes from a file on his disk or a number in his catalogue, and it used
+   * to be chosen in a strip above the canvas — the diagram saying "the
+   * painting goes here" while the painting went somewhere else.
+   */
+  describe('the Painting box', () => {
+    const PAINTING: NodeTypeDef = {
+      key: 'painting',
+      label: 'Painting',
+      category: 'in',
+      summary: 'The picture to work on.',
+      help: '',
+      inputs: [],
+      outputs: [{ name: 'image', kind: 'image', optional: false }],
+      params: [],
+    };
+    const placed = [{ id: 'n1', type: 'painting', x: 10, y: 10, params: {} }];
+
+    it('is where the painting is chosen', () => {
+      const { host } = build([PAINTING], placed);
+
+      expect(host.querySelector('[data-testid="painting"]')).not.toBeNull();
+      expect(host.querySelector('[data-testid="token-id"]')).not.toBeNull();
+    });
+
+    it('is the only box that offers it', () => {
+      const { host } = build([EDIT], [{ id: 'n1', type: 'edit', x: 10, y: 10, params: {} }]);
+
+      expect(host.querySelector('[data-testid="painting"]')).toBeNull();
+    });
+
+    it('shows the painting and what it is, in the same box', () => {
+      // They used to sit in the strip above, nowhere near the box they are
+      // about.
+      const { fixture, host } = build([PAINTING], placed);
+      fixture.componentRef.setInput('painting', 'blob:a-painting');
+      fixture.componentRef.setInput('paintingName', 'Rockets win I · 1024×1086');
+      fixture.detectChanges();
+
+      const inside = host.querySelector('.painting-in');
+      expect(inside?.querySelector('img')?.getAttribute('src')).toBe('blob:a-painting');
+      expect(inside?.querySelector('[data-testid="chosen"]')?.textContent).toContain(
+        'Rockets win I'
+      );
+    });
+
+    it('grows to make room for it rather than drawing over the ports', () => {
+      const { fixture, host } = build([PAINTING], placed);
+      const shut = Number(host.querySelector('.node-body')?.getAttribute('height'));
+
+      fixture.componentRef.setInput('painting', 'blob:a-painting');
+      fixture.detectChanges();
+      const open = Number(host.querySelector('.node-body')?.getAttribute('height'));
+
+      expect(open).toBeGreaterThan(shut);
+    });
+
+    it('hands the choosing back rather than doing it', () => {
+      // The canvas draws; the page owns the painting. A canvas that fetched
+      // would be a second thing that knows what a token id is.
+      const { fixture, host } = build([PAINTING], placed);
+      const said: string[] = [];
+      fixture.componentInstance.typedToken.subscribe((value: string) => said.push(value));
+
+      const field = host.querySelector('[data-testid="token-id"]') as HTMLInputElement;
+      field.value = '195';
+      field.dispatchEvent(new Event('input'));
+
+      expect(said).toEqual(['195']);
+    });
+  });
+
   it('draws a palette from whatever the engine sent, including a node it has never heard of', () => {
     const { host } = build([{ ...EDIT, key: 'invented', label: 'Invented Later' }]);
 

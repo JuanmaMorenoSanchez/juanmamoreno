@@ -239,6 +239,54 @@
                 }
               </foreignObject>
             }
+
+            <!-- The painting itself, chosen inside the box that is for it.
+                 It was a strip above the canvas, which is the diagram saying
+                 "the painting goes here" while the painting went somewhere
+                 else — and the thumbnail and its name sat up there too,
+                 nowhere near the box they describe. -->
+            @if (node.type === 'painting') {
+              <foreignObject
+                [attr.x]="node.x + 8"
+                [attr.y]="chooserTop(node, type)"
+                [attr.width]="wide(node) - 16"
+                [attr.height]="chooserHeight(node)"
+              >
+                <div class="painting-in" (pointerdown)="$event.stopPropagation()">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    (change)="choseFile.emit($event)"
+                    aria-label="The painting"
+                    data-testid="painting"
+                  />
+                  <span class="painting-or">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      placeholder="…or a token id"
+                      [value]="tokenId()"
+                      (input)="typedToken.emit($any($event.target).value)"
+                      (keydown.enter)="enteredToken.emit()"
+                      aria-label="…or a token id"
+                      data-testid="token-id"
+                    />
+                    @if (fetching()) {
+                      <span class="painting-fetching" data-testid="fetching">Fetching…</span>
+                    }
+                  </span>
+
+                  @if (painting(); as url) {
+                    <span class="painting-chosen">
+                      <img [src]="url" alt="The painting about to be worked on" />
+                      @if (paintingName(); as called) {
+                        <span data-testid="chosen">{{ called }}</span>
+                      }
+                    </span>
+                  }
+                </div>
+              </foreignObject>
+            }
           </g>
         }
       }

@@ -3765,6 +3765,27 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R179 — The painting is chosen in the Painting box · met
+It was chosen in a strip above the canvas: a file field, a token id, and —
+once there was one — the thumbnail and its name, all sitting over a diagram
+whose first box is labelled **Painting**. That is the diagram saying the
+painting goes here while the painting goes somewhere else.
+
+Both fields are inside that box now, and so are the thumbnail and what it is.
+The box grows to make room rather than drawing over its own ports, and it is
+the only box that offers any of it — every other box on the canvas is drawn
+from the catalogue the engine publishes, and this is the one node whose value
+comes from a file on his disk or a number in his catalogue instead of from a
+parameter.
+
+**The canvas draws; the page still owns the painting.** The chooser hands
+back what happened and nothing else: a canvas that fetched would be a second
+thing that knows what a token id is.
+*Proven by:* `node-canvas.component.spec.ts` "is where the painting is
+chosen", "is the only box that offers it", "shows the painting and what it
+is, in the same box", "grows to make room for it rather than drawing over the
+ports" and "hands the choosing back rather than doing it"
+
 ### R178 — A draft before the half hour · met
 An edit takes about thirty minutes, and most of them are spent finding out
 whether the idea was any good. **Draft first** runs the same thing in four

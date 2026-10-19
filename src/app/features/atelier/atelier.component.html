@@ -249,8 +249,15 @@
     [catalogue]="catalogue()"
     [nodes]="nodes()"
     [edges]="edges()"
+    [painting]="preview()"
+    [paintingName]="chosen()"
+    [tokenId]="tokenId()"
+    [fetching]="fetching()"
     (changed)="redraw($event)"
     (drawing)="draw($event)"
+    (choseFile)="chose($event)"
+    (typedToken)="tokenTyped($event)"
+    (enteredToken)="tokenEntered()"
   />
 
   @if (moving(); as map) {

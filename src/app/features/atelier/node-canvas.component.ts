@@ -45,6 +45,18 @@ const TEXT_ROWS = 5;
 /** Room for the line of red under a number outside its sensible band. */
 const CAUTION = 26;
 
+/** Which node is the one the painting goes into. */
+const PAINTING = 'painting';
+
+/**
+ * How much room choosing a painting takes inside its own box: a file button
+ * and a number, one under the other.
+ */
+const CHOOSER = 58;
+
+/** And how much more once there is one to show. */
+const SHOWN = 78;
+
 /**
  * The canvas: boxes, ports, wires.
  *
@@ -102,6 +114,16 @@ export class NodeCanvasComponent {
     return map;
   });
 
+  /** The painting that has been chosen, to show inside its own box. */
+  readonly painting = input<string | null>(null);
+  readonly paintingName = input<string | null>(null);
+  readonly tokenId = input('');
+  readonly fetching = input(false);
+
+  readonly choseFile = output<Event>();
+  readonly typedToken = output<string>();
+  readonly enteredToken = output<void>();
+
   protected typeOf(node: GraphNode): NodeTypeDef | undefined {
     return this.byKey().get(node.type);
   }
@@ -112,7 +134,28 @@ export class NodeCanvasComponent {
 
     const ports = Math.max(type.inputs.length, type.outputs.length);
     const settings = type.params.reduce((all, param) => all + this.rowHeight(node, param), 0);
-    return HEADER + ports * ROW + settings + 12;
+    return HEADER + ports * ROW + settings + this.chooserHeight(node) + 12;
+  }
+
+  /**
+   * How much room the painting's own box needs for choosing one.
+   *
+   * Only the Painting node has any: it is the one node whose value does not
+   * come from a parameter but from a file on his disk or a number in his
+   * catalogue, and it used to be chosen in a strip above the canvas — which
+   * is the diagram saying "the painting goes here" while the painting went
+   * somewhere else.
+   */
+  protected chooserHeight(node: GraphNode): number {
+    if (node.type !== PAINTING) return 0;
+    return CHOOSER + (this.painting() ? SHOWN : 0);
+  }
+
+  /** Where that box begins, under the ports and the settings. */
+  protected chooserTop(node: GraphNode, type: NodeTypeDef): number {
+    const ports = Math.max(type.inputs.length, type.outputs.length);
+    const settings = type.params.reduce((all, param) => all + this.rowHeight(node, param), 0);
+    return node.y + HEADER + ports * ROW + settings;
   }
 
   /**
