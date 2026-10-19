@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  type OnDestroy,
   signal,
 } from '@angular/core';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
@@ -68,6 +69,16 @@ const NODE_WIDTH = 210;
  * Shown in two places and written once, because the two used to be two
  * strings and only one of them ever got corrected.
  */
+/**
+ * How long typing has to stop before a token id is fetched, in milliseconds.
+ *
+ * Long enough that nobody fetches painting 1 and then 19 on the way to 195,
+ * short enough that it does not feel like nothing is happening. The button it
+ * replaced was a second thing to aim at for an action the field had already
+ * described.
+ */
+export const SETTLES = 700;
+
 export const START_BY_HAND = [
   String.raw`cd C:\Users\User\Projects\juanmamoreno\atelier-engine`,
   String.raw`.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860`,
@@ -86,7 +97,7 @@ export const START_BY_HAND = [
   templateUrl: './atelier.component.html',
   styleUrl: './atelier.component.scss',
 })
-export class AtelierComponent {
+export class AtelierComponent implements OnDestroy {
   protected readonly engine = inject(AtelierEngineService);
   private readonly catalogueImages = inject(CataloguePaintingService);
   protected readonly kept = inject(KeptService);
@@ -442,6 +453,50 @@ export class AtelierComponent {
    * Takes the best copy the catalogue has rather than the one a tile would
    * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
    */
+  /** The pending fetch, if typing has not settled yet. */
+  private settling: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Typing an id fetches it, once the typing stops.
+   *
+   * There was a Fetch button beside the field, which is a second thing to aim
+   * at for an action the field has already described. What it protected
+   * against was fetching painting 1 and then 19 on the way to 195, and a
+   * wait does that without asking for a click.
+   */
+  protected tokenTyped(value: string): void {
+    this.tokenId.set(value);
+    this.whenSettled();
+  }
+
+  /** Enter does not wait, because pressing it is the decision itself. */
+  protected tokenEntered(): void {
+    this.stopSettling();
+    void this.byId();
+  }
+
+  private whenSettled(): void {
+    this.stopSettling();
+    this.settling = setTimeout(() => {
+      this.settling = null;
+      const token = this.tokenId().trim();
+      // Nothing typed is nothing to fetch, and the one already loaded is
+      // already loaded. A failed one is not remembered, so retyping it tries
+      // again, which is the only way back from a typo.
+      if (!token || token === this.fromCatalogue()) return;
+      void this.byId();
+    }, SETTLES);
+  }
+
+  private stopSettling(): void {
+    if (this.settling !== null) clearTimeout(this.settling);
+    this.settling = null;
+  }
+
+  ngOnDestroy(): void {
+    this.stopSettling();
+  }
+
   protected async byId(wanted: Wanted = 'web'): Promise<void> {
     const token = this.tokenId().trim();
     if (!token || this.fetching()) return;

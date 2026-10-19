@@ -18,6 +18,9 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 - **fix** — a list holding both pictures and clips laid out as two different
   things at once. Every tile has the same box now and the buttons sit along
   the foot of the row, with the order they were made in left alone.
+- **feat** — a token id typed into the atelier fetches itself once the typing
+  stops, and the Fetch button beside it is gone. Enter does not wait; an
+  empty field and an id already loaded are not requests.
 - **chore** — the command the page gives for starting the engine by hand
   carries the folder to run it from, and the two places that show it share
   one string.

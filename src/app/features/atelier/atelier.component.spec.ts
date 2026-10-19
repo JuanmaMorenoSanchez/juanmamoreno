@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { AtelierComponent } from './atelier.component';
+import { AtelierComponent, SETTLES } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { KeptService } from './kept.service';
 import {
@@ -930,6 +930,79 @@ describe('AtelierComponent', () => {
     at(host, 'download-k1')?.click();
 
     expect(downloaded).toEqual(['k1']);
+  });
+
+  describe('typing a token id', () => {
+    const type = (host: HTMLElement, value: string) => {
+      const field = at(host, 'token-id') as HTMLInputElement;
+      field.value = value;
+      field.dispatchEvent(new Event('input'));
+    };
+
+    it('fetches on its own once the typing stops', async () => {
+      // The Fetch button beside it was a second thing to aim at for an
+      // action the field had already described.
+      vi.useFakeTimers();
+      const { fixture, host, wantedByCall } = build();
+
+      type(host, '195');
+      expect(wantedByCall).toHaveLength(0);
+
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+
+      expect(wantedByCall).toEqual(['web']);
+      vi.useRealTimers();
+    });
+
+    it('does not fetch what was typed on the way', async () => {
+      // 1 and 19 are both paintings. Neither is the one being asked for.
+      vi.useFakeTimers();
+      const { fixture, host, wantedByCall } = build();
+
+      type(host, '1');
+      await vi.advanceTimersByTimeAsync(SETTLES / 3);
+      type(host, '19');
+      await vi.advanceTimersByTimeAsync(SETTLES / 3);
+      type(host, '195');
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+
+      expect(wantedByCall).toHaveLength(1);
+      vi.useRealTimers();
+    });
+
+    it('does not fetch an empty field', async () => {
+      vi.useFakeTimers();
+      const { fixture, host, wantedByCall } = build();
+
+      type(host, '195');
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+      type(host, '');
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+
+      expect(wantedByCall).toHaveLength(1);
+      vi.useRealTimers();
+    });
+
+    it('does not fetch the one it already has', async () => {
+      vi.useFakeTimers();
+      const { fixture, host, wantedByCall } = build();
+
+      type(host, '195');
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+      // Deleting a digit and putting it back is not a new request.
+      type(host, '19');
+      type(host, '195');
+      await vi.advanceTimersByTimeAsync(SETTLES + 10);
+      await fixture.whenStable();
+
+      expect(wantedByCall).toHaveLength(1);
+      vi.useRealTimers();
+    });
   });
 
   it('works from a kept piece, and forgets the catalogue it did not come from', async () => {

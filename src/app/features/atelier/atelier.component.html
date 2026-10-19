@@ -157,25 +157,22 @@
     <!-- Or by number, which is how he knows his own paintings. -->
     <label class="atelier-field">
       <span>…or a token id</span>
+      <!-- No button beside it: typing an id is already the decision, and
+           waiting for the typing to stop does what the button was there to
+           protect against. -->
       <span class="atelier-byid">
         <input
           type="text"
           inputmode="numeric"
           placeholder="195"
           [value]="tokenId()"
-          (input)="tokenId.set($any($event.target).value)"
-          (keydown.enter)="byId()"
+          (input)="tokenTyped($any($event.target).value)"
+          (keydown.enter)="tokenEntered()"
           data-testid="token-id"
         />
-        <button
-          type="button"
-          class="atelier-minor"
-          [disabled]="!tokenId().trim() || fetching()"
-          (click)="byId()"
-          data-testid="fetch-id"
-        >
-          {{ fetching() ? 'Fetching…' : 'Fetch' }}
-        </button>
+        @if (fetching()) {
+          <span class="atelier-fetching" data-testid="fetching">Fetching…</span>
+        }
       </span>
     </label>
 

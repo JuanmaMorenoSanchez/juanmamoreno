@@ -3765,6 +3765,25 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R176 — Typing an id fetches it · met
+The field for a token id had a Fetch button beside it, which is a second
+thing to aim at for an action the field has already described. Typing the id
+*is* the request; pressing a button afterwards says it twice.
+
+It fetches when the typing stops now, seven tenths of a second after the last
+key. That wait is the whole of what the button was protecting against: 1 and
+19 are both paintings, and neither is the one being asked for on the way to
+195. Enter does not wait, because pressing it is the decision itself.
+
+**Nothing is fetched twice and nothing is fetched for nothing.** An empty
+field is not a request, and an id already loaded is already loaded — deleting
+a digit and putting it back is not a new one. An id that *failed* is not
+remembered, so retyping it does try again, which is the only way back from a
+typo.
+*Proven by:* `atelier.component.spec.ts` "fetches on its own once the typing
+stops", "does not fetch what was typed on the way", "does not fetch an empty
+field" and "does not fetch the one it already has"
+
 ### R175 — The shelf is one layout, not two · met
 The list of what a run made and the list of what was kept both hold pictures
 and clips, and they used to lay out as two different things side by side: a
