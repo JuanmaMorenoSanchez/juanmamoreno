@@ -4072,10 +4072,35 @@ few pixels off, and the strips are redrawn twelve times a second rather than
 per frame because a tear that slides is a wipe. Half a second of that, and
 then it is simply the other painting.
 
+**Five states, not two.** The canvas at dusk, the canvas in daylight, the big
+figure corrupted, and two more of her — all of them his, made in the atelier
+and kept on the shelf. The figures go between three and she goes between
+four, so it is a signal that cannot decide what it is carrying rather than a
+thing flickering between itself and one other.
+
+The three that came later carry their own silhouettes rather than borrowing a
+cut already here: the monster's hands are broken away, and neither girl fits
+the other's outline to better than nine parts in ten. Each is stored as a
+colour and a cut — a JPEG and a grey PNG, which is how everything else on
+this page is stored and about a fifth of the bytes of a painted sprite with
+an alpha channel.
+
+**A layer with fewer states than its clock wraps round its own**, which is
+how the sky stays at dusk through an interval the figures spend being
+something else: a signal losing one channel and not another.
+
 **Two clocks, not one.** The landscape changes on one and the girl on
 another, at different periods and from different draws, so they are often in
 different states at once — the dusk field behind a daylight girl, the geese
 there and then gone. One clock would be a slideshow.
+
+**And a change almost never lands where it already was.** The state walks
+rather than being drawn: each interval steps on from the one before, so
+inside a block it cannot repeat. Drawing at random would waste one change in
+four on a tear that resolved back to the same picture. Across a block
+boundary it can repeat, because a walk that never repeats anywhere has to
+remember where it has been, and that memory would have to reach back to the
+beginning of time for an answer that must be the same on every machine.
 
 **It is published broken, on purpose.** Asked which to put on the site, he
 chose this one: a change every two and a half seconds behind and three and a
@@ -4129,7 +4154,7 @@ this is about. It is drawn five per cent over a cover fit, with all five spent
 below the window: a plain cover fit laid the painted edge of the canvas along
 the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**1.0 MB of assets** for a 3000×3180 original: the painting and the filled
+**1.4 MB of assets** for a 3000×3180 original: the painting and the filled
 ground at 1500 px as progressive JPEGs, the painting's other state as a third,
 and the three figures as grey cuts of the same size, because a cut has an edge
 and half resolution would show it.

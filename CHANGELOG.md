@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.31.0
+
+- **feat** — Ipad light glitches between five states rather than two: the
+  canvas at dusk, the canvas in daylight, the big figure corrupted and two
+  more of her, all of them his. The figures go between three and she goes
+  between four, on separate clocks, and a layer with fewer states than its
+  clock wraps round its own — so the sky can stay at dusk while the figures
+  are something else.
+
+---
+
 ## 2.30.0
 
 - **feat** — Ipad light's softness follows the depth map instead of the cuts:

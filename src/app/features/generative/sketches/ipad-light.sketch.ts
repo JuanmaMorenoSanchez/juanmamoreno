@@ -180,8 +180,28 @@ const STRIPS = 9;
  * her, with half a second of tearing — `{ holds: 9, tears: 0.55 }` and
  * `{ holds: 13, tears: 0.45, seed: 41 }`.
  */
-const BEHIND = { holds: 2.6, tears: 2.2, seed: 0 };
-const HER = { holds: 3.4, tears: 2.9, seed: 41 };
+const BEHIND = { holds: 2.6, tears: 2.2, seed: 0, states: 3 };
+const HER = { holds: 3.4, tears: 2.9, seed: 41, states: 4 };
+
+/**
+ * The states each cut can be in, after the painting's own.
+ *
+ * All of them are his, made in the atelier and kept on the shelf: the canvas
+ * in daylight, the big figure corrupted, and two more of her. They carry
+ * their own silhouettes rather than borrowing a cut already here — the
+ * monster's hands are broken away, and neither girl fits the other's outline
+ * to better than nine parts in ten — so each is a colour and a cut of its
+ * own.
+ *
+ * A layer with fewer states than its clock has wraps round its own, which is
+ * how the sky can stay at dusk through an interval the figures spend being
+ * something else.
+ */
+const ALSO: Record<string, readonly string[]> = {
+  limbs: ['monster'],
+  shirt: ['monster'],
+  girl: ['girl-two', 'girl-three'],
+};
 
 /**
  * "Ipad light" — *Reflejo de luz de iPad* (2025), moving.
@@ -230,9 +250,8 @@ export class IpadLightSketch implements Sketch {
 
   /** One canvas per cut, and the parallax that moves it. */
   private layers: {
-    sprite: HTMLCanvasElement;
-    /** The same cut of the other state of the painting. */
-    other: HTMLCanvasElement;
+    /** Every state this cut can be in, the painting's own first. */
+    states: HTMLCanvasElement[];
     parallax: Parallax;
     depth: number;
   }[] = [];
@@ -256,8 +275,8 @@ export class IpadLightSketch implements Sketch {
    * landscape and the girl are often in different states at once. One clock
    * would be a slideshow; two is a thing with a fault in it.
    */
-  private readonly behind = new Glitch(BEHIND.holds, BEHIND.tears, BEHIND.seed);
-  private readonly her = new Glitch(HER.holds, HER.tears, HER.seed);
+  private readonly behind = new Glitch(BEHIND.holds, BEHIND.tears, BEHIND.seed, BEHIND.states);
+  private readonly her = new Glitch(HER.holds, HER.tears, HER.seed, HER.states);
 
   /** Where the painting is drawn: cover-fit, grown, anchored to the bottom. */
   private frame = { x: 0, y: 0, width: 0, height: 0 };
@@ -273,6 +292,10 @@ export class IpadLightSketch implements Sketch {
       depth: `${IMAGES_ROUTE}ipad-light-depth.png`,
     };
     for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
+    for (const also of new Set(Object.values(ALSO).flat())) {
+      wanted[also] = `${IMAGES_ROUTE}ipad-light-${also}.jpg`;
+      wanted[`${also}-cut`] = `${IMAGES_ROUTE}ipad-light-${also}-cut.png`;
+    }
 
     const images = await loadImages(wanted);
     this.painting = images['painting'];
@@ -281,14 +304,17 @@ export class IpadLightSketch implements Sketch {
     this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
     this.layers = CUTS.map((each) => {
-      const sprite = cut(images['painting'], images[each.name]);
-      // The same cut of the other state: one extra picture serves all three
-      // figures, because the two states were painted on the same canvas and
-      // the cuts fit both to within a pixel.
-      const other = cut(images['day'], images[each.name]);
+      // The painting's own, then the daylight canvas through the same cut —
+      // one extra picture serves all three figures, because the two states
+      // were painted on the same canvas and the cuts fit both to within a
+      // pixel — then whatever else this one has, each with its own.
+      const states = [
+        cut(images['painting'], images[each.name]),
+        cut(images['day'], images[each.name]),
+        ...(ALSO[each.name] ?? []).map((also) => cut(images[also], images[`${also}-cut`])),
+      ];
       return {
-        sprite,
-        other,
+        states,
         parallax: new Parallax(each.depth, SHIFT, EASE),
         depth: each.depth,
       };
@@ -352,8 +378,7 @@ export class IpadLightSketch implements Sketch {
       this.groundParallax.update(looking.x, looking.y);
       this.lay(
         ctx,
-        this.ground,
-        this.day,
+        [this.ground, this.day],
         this.behind,
         frame.t,
         x + this.groundParallax.x * scale,
@@ -364,8 +389,7 @@ export class IpadLightSketch implements Sketch {
       layer.parallax.update(looking.x, looking.y);
       this.lay(
         ctx,
-        layer.sprite,
-        layer.other,
+        layer.states,
         layer.depth === 1 ? this.her : this.behind,
         frame.t,
         x + layer.parallax.x * scale,
@@ -378,11 +402,17 @@ export class IpadLightSketch implements Sketch {
     this.drawSnow(ctx, frame.dt, frame.t);
   }
 
-  /** One layer, in whichever of its two states is up. */
+  /**
+   * One layer, in whichever of its states is up.
+   *
+   * Wrapped round its own count, so a layer with two states and a clock with
+   * four spends half its intervals back at the painting rather than going
+   * blank: the sky stays at dusk while the figures are something else, which
+   * is what a signal losing one channel and not another looks like.
+   */
   private lay(
     ctx: CanvasRenderingContext2D,
-    sharp: CanvasImageSource,
-    other: CanvasImageSource | undefined,
+    states: (CanvasImageSource | undefined)[],
     glitch: Glitch,
     t: number,
     x: number,
@@ -390,12 +420,22 @@ export class IpadLightSketch implements Sketch {
   ): void {
     const { width, height } = this.frame;
     const broken = glitch.at(t);
-    const up = broken.shows === 1 && other;
+    const showing = this.oneOf(states, broken.shows);
+    if (!showing) return;
 
-    ctx.drawImage(up ? (other as CanvasImageSource) : sharp, x, y, width, height);
-    if (broken.tearing > 0.01 && other) {
-      this.tear(ctx, sharp, other, glitch, broken.tearing, t, x, y);
+    ctx.drawImage(showing, x, y, width, height);
+    if (broken.tearing > 0.01 && states.length > 1) {
+      this.tear(ctx, states, glitch, broken.tearing, t, x, y);
     }
+  }
+
+  /** The nth state a layer has, counted round. */
+  private oneOf(
+    states: (CanvasImageSource | undefined)[],
+    at: number
+  ): CanvasImageSource | undefined {
+    const there = states.filter((state): state is CanvasImageSource => state !== undefined);
+    return there.length ? there[at % there.length] : undefined;
   }
 
   /**
@@ -428,8 +468,7 @@ export class IpadLightSketch implements Sketch {
    */
   private tear(
     ctx: CanvasRenderingContext2D,
-    sharp: CanvasImageSource,
-    other: CanvasImageSource,
+    states: (CanvasImageSource | undefined)[],
     glitch: Glitch,
     tearing: number,
     t: number,
@@ -437,8 +476,6 @@ export class IpadLightSketch implements Sketch {
     y: number
   ): void {
     const { width, height } = this.frame;
-    const from = { width: sourceWide(sharp), height: sourceHigh(sharp) };
-    if (!from.width || !from.height) return;
 
     ctx.save();
     for (let which = 0; which < STRIPS; which++) {
@@ -446,7 +483,11 @@ export class IpadLightSketch implements Sketch {
       const high = Math.min(band.high, 1 - band.top);
       if (high <= 0) continue;
 
-      const strip = band.from === 1 ? other : sharp;
+      const strip = this.oneOf(states, band.from);
+      if (!strip) continue;
+      const from = { width: sourceWide(strip), height: sourceHigh(strip) };
+      if (!from.width || !from.height) continue;
+
       const shove = band.shove * width * tearing;
       ctx.drawImage(
         strip,
