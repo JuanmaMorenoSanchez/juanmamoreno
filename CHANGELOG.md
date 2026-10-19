@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.30.0
+
+- **feat** — Ipad light's softness follows the depth map instead of the cuts:
+  the sky goes, the field goes a little, the hand in front of her does not.
+- **feat** — a kept piece's buttons are icons with their words on hover, and
+  one of them copies the piece's address.
+- **fix** — Stop looked as though it did nothing. It stops between denoising
+  steps and one step of an edit is the best part of a minute, so it now says
+  what it is waiting for; and stopping a clip was reported as a failed run
+  rather than a stopped one.
+
+---
+
 ## 2.29.0
 
 - **feat** — **Draft first**, on the two nodes that take minutes. The same

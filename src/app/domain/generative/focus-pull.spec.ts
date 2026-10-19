@@ -12,8 +12,8 @@ describe('FocusPull', () => {
 
   it('stays between the two depths of field it was given', () => {
     for (let t = 0; t < 200; t += 0.13) {
-      expect(focus.at(t)).toBeGreaterThanOrEqual(0.42 - 1e-9);
-      expect(focus.at(t)).toBeLessThanOrEqual(1.6);
+      expect(focus.at(t)).toBeGreaterThanOrEqual(0.12 - 1e-9);
+      expect(focus.at(t)).toBeLessThanOrEqual(0.85);
     }
   });
 
@@ -35,8 +35,8 @@ describe('FocusPull', () => {
     let open = 0;
     const step = 1 / 60;
     for (let t = 0; t < focus.cycle; t += step) {
-      if (focus.at(t) < 0.421) shallow += step;
-      if (focus.at(t) > 1.599) open += step;
+      if (focus.at(t) > 0.849) shallow += step;
+      if (focus.at(t) < 0.121) open += step;
     }
 
     expect(shallow).toBeGreaterThan(open * 1.5);
@@ -48,7 +48,7 @@ describe('FocusPull', () => {
       worst = Math.max(worst, Math.abs(focus.at(t + 1 / 60) - focus.at(t)));
     }
 
-    expect(worst).toBeLessThan(0.04);
+    expect(worst).toBeLessThan(0.02);
   });
 
   it('answers the same second the same way, and goes back as well as forward', () => {

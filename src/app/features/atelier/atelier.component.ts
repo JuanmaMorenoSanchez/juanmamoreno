@@ -7,6 +7,8 @@ import {
   type OnDestroy,
   signal,
 } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
@@ -90,6 +92,8 @@ export const START_BY_HAND = [
   imports: [
     BrushOverlayComponent,
     FlowRowComponent,
+    MatIconModule,
+    MatTooltipModule,
     NodeCanvasComponent,
     ParallaxPreviewComponent,
     SketchPreviewComponent,
@@ -542,6 +546,34 @@ export class AtelierComponent implements OnDestroy {
   }
 
   /**
+   * The piece's address, on the clipboard.
+   *
+   * Absolute, because the point of it is to be pasted somewhere that is not
+   * this page — into a message, into a note, into a conversation about which
+   * of four tries was the good one. It is the route the thumbnail is fetched
+   * from and it is behind the admin guard, so it is an address rather than a
+   * way in: anybody who follows it without his sign-in is refused.
+   */
+  protected async copyLink(piece: KeptPiece): Promise<void> {
+    const where = this.kept.imageUrl(piece.id);
+    const address = where.startsWith('http') ? where : new URL(where, location.origin).toString();
+    try {
+      await navigator.clipboard.writeText(address);
+      this.copied.set(piece.id);
+      setTimeout(() => {
+        if (this.copied() === piece.id) this.copied.set(null);
+      }, 2000);
+    } catch {
+      // A clipboard can be refused — a page without focus, a browser without
+      // permission — and a tick that is a lie is worse than no tick.
+      this.failure.set('the clipboard would not take it');
+    }
+  }
+
+  /** Which piece's address was just copied, for the tick on the button. */
+  protected readonly copied = signal<string | null>(null);
+
+  /**
    * The piece, as big as the screen will make it.
    *
    * The browser's own fullscreen rather than an overlay of our own: it is one
@@ -662,6 +694,7 @@ export class AtelierComponent implements OnDestroy {
     this.failure.set(null);
     this.result.set(null);
     this.job.set(null);
+    this.stopping.set(false);
     try {
       // The engine wants nodes keyed by id and edges as flat quadruples.
       const nodes: Record<string, { type: string; params: Record<string, unknown> }> = {};
@@ -712,12 +745,27 @@ export class AtelierComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Whether a stop has been asked for and not yet arrived.
+   *
+   * It looked broken, and it was not: a run stops between the denoising
+   * steps, and one step of an edit is the best part of a minute. Pressing
+   * Stop and watching nothing happen for fifty seconds is indistinguishable
+   * from a button that does nothing, so the button says what it is waiting
+   * for. A single forward pass of a twenty-billion-parameter model cannot be
+   * interrupted; the alternative is killing the process and the model with
+   * it.
+   */
+  protected readonly stopping = signal(false);
+
   protected async stopRun(): Promise<void> {
     const running = this.job();
-    if (!running) return;
+    if (!running || this.stopping()) return;
+    this.stopping.set(true);
     try {
       await this.engine.cancelJob(running.job);
     } catch (error) {
+      this.stopping.set(false);
       this.failure.set(error instanceof Error ? error.message : 'it would not stop');
     }
   }

@@ -18,10 +18,10 @@
  */
 export class FocusPull {
   constructor(
-    /** How far in depth before a layer is fully soft, when it is shallow. */
-    private readonly near = 0.42,
+    /** How much of the far blur is showing when the field is shallow. */
+    private readonly near = 0.85,
     /** And when it has opened up, which is nearly everything in focus. */
-    private readonly far = 1.6,
+    private readonly far = 0.12,
     /** Seconds resting shallow, with only her in focus. */
     private readonly rests = 11,
     /** Seconds resting open. Shorter: it is the away. */
@@ -35,7 +35,7 @@ export class FocusPull {
     return this.rests + this.waits + this.travels * 2;
   }
 
-  /** How deep the field is at `t` seconds, between `near` and `far`. */
+  /** How much of the distance is soft at `t` seconds, between the two. */
   at(t: number): number {
     const cycle = this.cycle;
     const into = ((t % cycle) + cycle) % cycle;

@@ -4070,17 +4070,25 @@ because the two states were painted on the same canvas and her silhouette in
 one fits the cut from the other to 99.3% of its area. It came off the shelf
 as two kept pieces, a background and a girl, composited back together.
 
-**The field opens and closes, and the focus never leaves her.** It was a
-focus pull at first, off her and out to the landscape and back, and it put
-the subject of the painting out of focus for seven seconds at a time: his
-paint, softened, which is the one thing he has said is never acceptable. What
-travels is the depth of field instead. Her cut is never softened; everything
-behind her goes soft in proportion to how far behind her it is and how
-shallow the field is that second, resting shallow for eleven seconds, opening
-over three and a half, resting open for six. Each layer's soft copy is made
-once at load at half size and faded in over the sharp one, because a blur
-filter on four full-size layers every frame is not something to ask of a
-laptop.
+**The distance is soft, and the depth map says how soft.** It was a focus
+pull at first, off her and out to the landscape and back, and it put the
+subject of the painting out of focus for seven seconds at a time: his paint,
+softened, which is the one thing he has said is never acceptable. What
+travels is the depth of field instead, resting shallow for eleven seconds,
+opening over three and a half, resting open for six.
+
+**And it follows the depth map rather than the cuts.** It was a blur per
+layer — four cuts, four amounts of softness, which is a cardboard theatre
+rather than a lens. The map is his, read off the painting in the atelier, and
+it is the one honest answer to how far away each pixel is: the sky goes, the
+field goes a little, the hand in front of her does not go at all. The farness
+is squared, because linear put a haze on her coat.
+
+Each state's distance is blurred once at load, at half size, with everything
+near cut out of it by that mask, so a frame costs one draw and what changes
+is only how much of it is showing. It does not move with the parallax and
+does not need to: what is in it is what is furthest away, which is what moves
+least, and what moves most has been cut out of it.
 
 **And the screen is in two eyes.** A hard little centre in a soft halo, on
 the goose beside her and on the bird behind it, brightening and taking the

@@ -157,7 +157,15 @@ const EYES = [
  * computed per frame: `filter` on a canvas this size, four times a frame, is
  * not something a laptop should be asked to do sixty times a second.
  */
-const SOFTENS = 1.4;
+/**
+ * How far the distance is blurred, in pixels at half size.
+ *
+ * It was a blur per layer: four cuts, four amounts of softness, which is a
+ * cardboard theatre rather than a lens. The depth map is a reading of how far
+ * away every pixel is, so the softness follows that instead — the sky goes,
+ * the field goes a little, the hand in front of her does not go at all.
+ */
+const SOFTENS = 5;
 
 /** How many torn strips a change is made of. */
 const STRIPS = 9;
@@ -212,11 +220,11 @@ export class IpadLightSketch implements Sketch {
   /** The landscape, whole: his paint runs on under where the figures were. */
   private ground?: HTMLImageElement;
   private groundParallax?: Parallax;
-  /** Every layer again, soft, for the focus to fade towards. */
-  private blurredGround?: HTMLCanvasElement;
+  /** The distance, blurred, with the near paint cut out of it. */
+  private faraway?: HTMLCanvasElement;
+  private farawayDay?: HTMLCanvasElement;
   /** And the whole painting again, in daylight, for it to break into. */
   private day?: HTMLImageElement;
-  private blurredDay?: HTMLCanvasElement;
   /** The shafts, as one shape, built once and turned a little each frame. */
   private fanned?: HTMLCanvasElement;
 
@@ -225,8 +233,6 @@ export class IpadLightSketch implements Sketch {
     sprite: HTMLCanvasElement;
     /** The same cut of the other state of the painting. */
     other: HTMLCanvasElement;
-    soft: HTMLCanvasElement;
-    otherSoft: HTMLCanvasElement;
     parallax: Parallax;
     depth: number;
   }[] = [];
@@ -264,6 +270,7 @@ export class IpadLightSketch implements Sketch {
       painting: `${IMAGES_ROUTE}ipad-light.jpg`,
       ground: `${IMAGES_ROUTE}ipad-light-ground.jpg`,
       day: `${IMAGES_ROUTE}ipad-light-day.jpg`,
+      depth: `${IMAGES_ROUTE}ipad-light-depth.png`,
     };
     for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
 
@@ -282,14 +289,17 @@ export class IpadLightSketch implements Sketch {
       return {
         sprite,
         other,
-        soft: softened(sprite),
-        otherSoft: softened(other),
         parallax: new Parallax(each.depth, SHIFT, EASE),
         depth: each.depth,
       };
     });
-    this.blurredGround = softened(images['ground']);
-    this.blurredDay = softened(images['day']);
+
+    // The distance, blurred once at load, with everything near cut out of
+    // it by the depth map. Laid over the sharp scene at whatever strength
+    // the field is at, it is a lens rather than four flat cards.
+    const howFar = farness(images['depth']);
+    this.faraway = blurred(images['ground'], howFar);
+    this.farawayDay = blurred(images['day'], howFar);
     this.fanned = fan(1200);
 
     const screen = screenLit(images['painting']);
@@ -330,8 +340,9 @@ export class IpadLightSketch implements Sketch {
     ctx.fillRect(0, 0, this.width, this.height);
 
     const scale = Math.max(width, height) / 1000;
-    // The focus stays on her; what travels is how much is in focus with her.
-    const spread = this.focus.at(frame.t);
+    // The focus stays on her; what travels is how much of the distance is
+    // soft with her.
+    const softness = this.focus.at(frame.t);
 
     // The landscape first, whole and at its own depth. What a figure in
     // front of it uncovers is paint rather than a hole or a shadow: his own
@@ -343,10 +354,6 @@ export class IpadLightSketch implements Sketch {
         ctx,
         this.ground,
         this.day,
-        this.blurredGround,
-        this.blurredDay,
-        GROUND,
-        spread,
         this.behind,
         frame.t,
         x + this.groundParallax.x * scale,
@@ -359,10 +366,6 @@ export class IpadLightSketch implements Sketch {
         ctx,
         layer.sprite,
         layer.other,
-        layer.soft,
-        layer.otherSoft,
-        layer.depth,
-        spread,
         layer.depth === 1 ? this.her : this.behind,
         frame.t,
         x + layer.parallax.x * scale,
@@ -370,30 +373,16 @@ export class IpadLightSketch implements Sketch {
       );
     }
 
+    this.drawFar(ctx, softness, frame.t);
     this.drawScreen(ctx, frame.t, scale);
     this.drawSnow(ctx, frame.dt, frame.t);
   }
 
-  /**
-   * One layer, as sharp or as soft as the focus leaves it.
-   *
-   * The focus is on her, always — `depth` of 1 is her cut and it is never
-   * softened — and everything behind her goes soft in proportion to how far
-   * behind her it is and how shallow the field is this second.
-   *
-   * The soft copy is faded in over the sharp one rather than a blur being
-   * computed: a tenth of the way out of focus is a tenth of the soft copy,
-   * which is not what a lens does but is what the eye reads, and it costs one
-   * more draw instead of a filter pass per layer per frame.
-   */
+  /** One layer, in whichever of its two states is up. */
   private lay(
     ctx: CanvasRenderingContext2D,
     sharp: CanvasImageSource,
     other: CanvasImageSource | undefined,
-    soft: CanvasImageSource | undefined,
-    otherSoft: CanvasImageSource | undefined,
-    depth: number,
-    spread: number,
     glitch: Glitch,
     t: number,
     x: number,
@@ -407,15 +396,25 @@ export class IpadLightSketch implements Sketch {
     if (broken.tearing > 0.01 && other) {
       this.tear(ctx, sharp, other, glitch, broken.tearing, t, x, y);
     }
+  }
 
-    // The soft copy has to be of whichever state is up, or going out of
-    // focus fades the other painting in underneath.
-    const blurred = up ? otherSoft : soft;
-    const away = Math.min(1, (1 - depth) / spread);
-    if (!blurred || away < 0.02) return;
+  /**
+   * The distance, soft, over the whole scene.
+   *
+   * One draw, because the blur and the cut-out were both done at load: what
+   * changes per frame is only how much of it is showing. It does not move
+   * with the parallax, and it does not need to — what is in it is what is
+   * furthest away, which is what moves least, and what moves most has been
+   * cut out of it entirely.
+   */
+  private drawFar(ctx: CanvasRenderingContext2D, softness: number, t: number): void {
+    const far = this.behind.at(t).shows === 1 ? this.farawayDay : this.faraway;
+    if (!far || softness <= 0.01) return;
+    const { x, y, width, height } = this.frame;
+
     ctx.save();
-    ctx.globalAlpha = away;
-    ctx.drawImage(blurred, x, y, width, height);
+    ctx.globalAlpha = softness;
+    ctx.drawImage(far, x, y, width, height);
     ctx.restore();
   }
 
@@ -885,16 +884,50 @@ function paint(
 }
 
 /**
- * A soft copy of a layer, made once.
+ * How far away each pixel is, as an alpha mask: opaque at the horizon,
+ * transparent on her face.
  *
- * At half the size, because a blurred thing does not need the resolution and
- * four full-size copies is forty megabytes to hold something nobody can see
- * the detail of. Scaling it back up on the way out softens it a little
- * further, which is free and in the right direction.
+ * The map is his, read off the painting in the atelier, and it is the one
+ * honest answer to "how blurry should this be". White is near in it, so the
+ * mask is its inverse. Half the size of the painting, which is all a reading
+ * this smooth deserves.
  */
-function softened(sharp: CanvasImageSource): HTMLCanvasElement {
-  const wide = Math.round(Number((sharp as { width?: number }).width ?? 0) / 2) || 512;
-  const high = Math.round(Number((sharp as { height?: number }).height ?? 0) / 2) || 512;
+function farness(depth: HTMLImageElement): HTMLCanvasElement {
+  const wide = depth.naturalWidth;
+  const high = depth.naturalHeight;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = wide;
+  canvas.height = high;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return canvas;
+
+  ctx.drawImage(depth, 0, 0);
+  const read = ctx.getImageData(0, 0, wide, high);
+  for (let at = 0; at < read.data.length; at += 4) {
+    const near = read.data[at] / 255;
+    read.data[at] = 0;
+    read.data[at + 1] = 0;
+    read.data[at + 2] = 0;
+    // Squared, so the near half of the picture stays sharp and the softness
+    // gathers where the distance actually is. Linear put a haze on her coat.
+    read.data[at + 3] = Math.round(255 * (1 - near) ** 2);
+  }
+  ctx.putImageData(read, 0, 0);
+  return canvas;
+}
+
+/**
+ * One state of the painting, blurred, with everything near cut out of it.
+ *
+ * Half size, because a blurred thing does not need the resolution and the
+ * scaling back up on the way out softens it a little further, which is free
+ * and in the right direction. `destination-in` keeps the blur only where the
+ * mask says the distance is.
+ */
+function blurred(painting: CanvasImageSource, howFar: HTMLCanvasElement): HTMLCanvasElement {
+  const wide = Math.round(sourceWide(painting) / 2) || 512;
+  const high = Math.round(sourceHigh(painting) / 2) || 512;
 
   const canvas = document.createElement('canvas');
   canvas.width = wide;
@@ -903,8 +936,12 @@ function softened(sharp: CanvasImageSource): HTMLCanvasElement {
   if (!ctx) return canvas;
 
   ctx.filter = `blur(${SOFTENS}px)`;
-  ctx.drawImage(sharp, 0, 0, wide, high);
+  ctx.drawImage(painting, 0, 0, wide, high);
   ctx.filter = 'none';
+
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.drawImage(howFar, 0, 0, wide, high);
+  ctx.globalCompositeOperation = 'source-over';
   return canvas;
 }
 

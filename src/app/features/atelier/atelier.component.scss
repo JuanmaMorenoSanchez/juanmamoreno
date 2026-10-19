@@ -438,3 +438,30 @@
   opacity: 0.7;
   white-space: nowrap;
 }
+
+/* The buttons under a kept piece: an icon each, with the word on hover.
+   Square, so five of them read as a row of controls rather than as five
+   different-sized things. */
+.atelier-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

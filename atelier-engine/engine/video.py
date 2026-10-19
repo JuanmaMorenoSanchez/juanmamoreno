@@ -35,7 +35,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 from . import house
-from .nodes import GraphError
+from .nodes import GraphError, StoppedEarly
 
 MODELS = Path(__file__).resolve().parent.parent / "models"
 SPILL = MODELS / "offload"
@@ -543,7 +543,10 @@ def animate(
         if watching is not None:
             watching(step + 1, steps)
         if stopped is not None and stopped():
-            raise StopIteration("stopped between steps")
+            # `StoppedEarly`, not `StopIteration`: the runner knows the first
+            # as a clean stop and catches the second with everything else, so
+            # asking a clip to stop was reported to him as a failed run.
+            raise StoppedEarly("stopped between steps")
         return kwargs
 
     # Wan's own recommendation, and it earns its place: without it the model

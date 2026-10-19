@@ -297,9 +297,24 @@
       }
       <span class="atelier-elapsed">{{ elapsed(going.seconds) }}</span>
       <span class="atelier-spacer"></span>
-      <button type="button" class="atelier-minor" (click)="stopRun()" data-testid="stop">
-        Stop
+      <!-- It says what it is waiting for. A run stops between the denoising
+           steps and one step of an edit is the best part of a minute, so
+           pressing this and watching nothing happen is indistinguishable
+           from a button that does nothing. -->
+      <button
+        type="button"
+        class="atelier-minor"
+        (click)="stopRun()"
+        [disabled]="stopping()"
+        data-testid="stop"
+      >
+        {{ stopping() ? 'Stopping…' : 'Stop' }}
       </button>
+      @if (stopping()) {
+        <span class="atelier-note" data-testid="stopping">
+          at the end of this step — up to a minute on an edit
+        </span>
+      }
     </section>
   }
 
@@ -509,40 +524,63 @@
                 </dd>
               }
             </dl>
+            <!-- Icons rather than five words in a row. Five labelled buttons
+                 under every tile is more text than the tile, and what each
+                 one does is a thing you learn once; the word is on hover and
+                 on the button's own label, so nothing is lost to anyone
+                 reading it with something other than eyes. -->
             <span class="atelier-shelf-does">
               <button
                 type="button"
-                class="atelier-minor"
+                class="atelier-icon"
                 (click)="workFrom(piece)"
                 [disabled]="!kept.urls()[piece.id]"
+                matTooltip="Work from this"
+                aria-label="Work from this"
                 [attr.data-testid]="'work-from-' + piece.id"
               >
-                Work from this
+                <mat-icon>input</mat-icon>
               </button>
               <button
                 type="button"
-                class="atelier-minor"
+                class="atelier-icon"
                 (click)="fullSize(piece)"
                 [disabled]="!kept.urls()[piece.id]"
+                matTooltip="Full size"
+                aria-label="Full size"
                 [attr.data-testid]="'full-size-' + piece.id"
               >
-                Full size
+                <mat-icon>fullscreen</mat-icon>
               </button>
               <button
                 type="button"
-                class="atelier-minor"
+                class="atelier-icon"
+                (click)="copyLink(piece)"
+                matTooltip="Copy the link"
+                aria-label="Copy the link"
+                [attr.data-testid]="'copy-link-' + piece.id"
+              >
+                <mat-icon>{{ copied() === piece.id ? 'check' : 'link' }}</mat-icon>
+              </button>
+              <button
+                type="button"
+                class="atelier-icon"
                 (click)="kept.download(piece)"
+                matTooltip="Download"
+                aria-label="Download"
                 [attr.data-testid]="'download-' + piece.id"
               >
-                Download
+                <mat-icon>download</mat-icon>
               </button>
               <button
                 type="button"
-                class="atelier-cancel atelier-minor"
+                class="atelier-icon atelier-cancel"
                 (click)="kept.forget(piece.id)"
+                matTooltip="Forget it, for good"
+                aria-label="Forget it, for good"
                 [attr.data-testid]="'forget-' + piece.id"
               >
-                Forget
+                <mat-icon>delete</mat-icon>
               </button>
             </span>
           </li>
