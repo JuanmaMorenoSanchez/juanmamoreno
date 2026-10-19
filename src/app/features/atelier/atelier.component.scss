@@ -187,8 +187,25 @@
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
   gap: 1.25rem;
 
-  img {
+  /* Each one a column, so the buttons sit along the bottom of the row
+     however long the name above them ran. */
+  li {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* The same box whatever is in it.
+     A clip had no rule at all and arrived at whatever size it was encoded
+     at, while a tall painting stretched to the full column and took the row
+     with it: two of them side by side were two different layouts. Fixing the
+     box rather than sorting the list keeps them in the order they were made,
+     which is the order he looks for them in. */
+  img,
+  video {
     width: 100%;
+    height: 13rem;
+    object-fit: contain;
     /* A chequer, so transparency reads as absence rather than as white paint. */
     background: repeating-conic-gradient(#8884 0% 25%, transparent 0% 50%) 50% / 16px 16px;
     border: 1px solid currentColor;
@@ -422,6 +439,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  /* Pushed to the foot of the tile, so a piece with a long name and a piece
+     with none have their buttons on the same line. */
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 /* The hand, and the one thing on this page that is not in the repository. */

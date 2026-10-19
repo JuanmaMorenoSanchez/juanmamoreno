@@ -1076,6 +1076,10 @@ describe('AtelierComponent', () => {
       const said = at(host, 'no-flows');
       expect(said?.textContent).toContain('it was started before they existed');
       expect(said?.textContent).toContain('uvicorn engine.service:app');
+      // With the folder to run it from, because the virtualenv and the module
+      // are both relative to it and a console opens wherever it opens.
+      expect(said?.textContent).toContain('cd C:');
+      expect(said?.textContent).toContain('atelier-engine');
     });
 
     it('draws the whole graph, wired, when one is pressed', async () => {

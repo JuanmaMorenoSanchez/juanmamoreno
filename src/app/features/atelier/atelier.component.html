@@ -17,10 +17,8 @@
       <p>Three things do this, and from here they look the same:</p>
       <ul>
         <li>
-          <strong>It is not running.</strong> Start it from <code>atelier-engine/</code>:
-          <code class="atelier-command"
-            >.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860</code
-          >
+          <strong>It is not running.</strong> Start it:
+          <code class="atelier-command" data-testid="start-by-hand">{{ startByHand }}</code>
         </li>
         <li>
           <strong>You are on a different machine.</strong> The models and the card are on the one
@@ -146,9 +144,7 @@
         The ready-made flows come from the engine, and this one does not serve them: it was started
         before they existed. Restart it and they appear here, one button each.
       </p>
-      <code class="atelier-command"
-        >.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860</code
-      >
+      <code class="atelier-command">{{ startByHand }}</code>
     </section>
   }
 

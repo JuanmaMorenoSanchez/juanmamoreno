@@ -3765,6 +3765,28 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R175 — The shelf is one layout, not two · met
+The list of what a run made and the list of what was kept both hold pictures
+and clips, and they used to lay out as two different things side by side: a
+picture stretched to the width of its column and took the whole row's height
+with it, and a clip had no rule at all and arrived at whatever size it had
+been encoded at. One of each next to the other came apart.
+
+Every tile now has the same box, whatever is in it — same width, same height,
+the content fitted inside — and the buttons are pushed to the foot of the
+tile, so a piece with a long name and a piece with none have their buttons on
+the same line. **Sorted by neither kind nor name**: separating the pictures
+from the clips would have fixed the raggedness by taking away the order they
+were made in, which is the order he looks for them in.
+
+**And the command to start the engine carries the folder to run it from.** It
+said "start it from `atelier-engine/`" above a line that cannot work until you
+have, which is a note to the reader where a line of the command would do. The
+two places that show it now share one string, because they were two and only
+one of them ever got corrected.
+*Proven by:* `atelier.component.spec.ts` "names all three reasons it could be
+unreachable, including the one Chrome causes"
+
 ### R173 — Every picture is told the same two things · met
 Two things are added to every image and every clip the atelier makes, whoever
 asked for them, and they are different in kind.

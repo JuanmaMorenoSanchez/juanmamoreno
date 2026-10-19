@@ -55,6 +55,24 @@ const NODE_WIDTH = 210;
  * Nothing it makes is saved anywhere but the engine's own folder until he does
  * something else with it.
  */
+/**
+ * What to paste into a console to start the engine by hand.
+ *
+ * The `cd` is in it because the command is useless without one: the
+ * virtualenv and the module are both relative to the engine's folder, and a
+ * console opens wherever it opens. It is an absolute path on his machine,
+ * which is the only machine this page is of any use on — the route is behind
+ * the admin guard, the engine listens on loopback, and a path to a folder
+ * that does not exist anywhere else is not a thing worth hiding.
+ *
+ * Shown in two places and written once, because the two used to be two
+ * strings and only one of them ever got corrected.
+ */
+export const START_BY_HAND = [
+  String.raw`cd C:\Users\User\Projects\juanmamoreno\atelier-engine`,
+  String.raw`.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860`,
+].join('\n');
+
 @Component({
   selector: 'app-atelier',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -162,6 +180,9 @@ export class AtelierComponent {
    * that has never been told answers with nothing and the field is empty,
    * which is what a fresh clone does.
    */
+  /** The two lines to paste when the engine has to be started by hand. */
+  protected readonly startByHand = START_BY_HAND;
+
   protected readonly hand = signal('');
   protected readonly handSaving = signal(false);
   protected readonly handSaved = signal(false);
