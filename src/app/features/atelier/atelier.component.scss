@@ -136,12 +136,20 @@
   border-radius: 3px;
 }
 
-.atelier-go {
+/* Every button on the page is the same outlined button, written once. It was
+   four separate includes of the same mixin, which compiles to four copies of
+   the same eight declarations. What differs between them is a size and a
+   colour, and that is all that is said separately below. */
+.atelier-go,
+.atelier-minor,
+.atelier-cancel,
+.atelier-choice button {
   @include controls.plain-button;
 }
 
 .atelier-minor {
-  @include controls.plain-button(0.25rem 0.6rem, 0.78rem);
+  font-size: 0.78rem;
+  padding: 0.25rem 0.6rem;
 }
 
 /* A row of choices: same size, same baseline, whatever each one does. The
@@ -151,14 +159,17 @@
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: stretch;
-
-  button {
-    @include controls.plain-button;
-  }
 }
 
+/* Amber rather than red: red is for destroying something, and backing out of
+   a run only declines to start it. */
 .atelier-cancel {
-  @include controls.warning-button;
+  border-color: #b26a00;
+  color: #8a5200;
+
+  &:hover:not([disabled]) {
+    background: rgb(178 106 0 / 10%);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -237,76 +248,6 @@
 }
 
 /* The switch that starts and stops the engine. */
-.engine-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
-}
-
-.engine-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-  font: inherit;
-  font-size: 0.82rem;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-
-  &:hover:not([disabled]) {
-    border-color: currentColor;
-  }
-
-  /* Mid-flight. Not greyed into illegibility: the word beside it is the thing
-     being read, and it says what is happening. */
-  &[disabled] {
-    cursor: progress;
-    opacity: 0.8;
-  }
-}
-
-.engine-track {
-  position: relative;
-  width: 2.1rem;
-  height: 1.1rem;
-  flex: 0 0 auto;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  opacity: 0.55;
-  transition: opacity 120ms ease;
-}
-
-.engine-knob {
-  position: absolute;
-  top: 0.15rem;
-  left: 0.15rem;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: currentColor;
-  transition: left 140ms ease;
-}
-
-.engine-on {
-  opacity: 1;
-  border-color: #1a7f4b;
-
-  .engine-knob {
-    left: 1.1rem;
-    background: #1a7f4b;
-  }
-}
-
-.engine-word {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Choosing a painting by its number rather than by finding the file. */
 .atelier-byid {
   display: flex;
   align-items: center;

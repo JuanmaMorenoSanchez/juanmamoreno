@@ -95,7 +95,9 @@ export const START_BY_HAND = [
     SketchPreviewComponent,
   ],
   templateUrl: './atelier.component.html',
-  styleUrl: './atelier.component.scss',
+  // Two, because the on/off switch is its own widget and says nothing
+  // about the rest of the page.
+  styleUrls: ['./atelier.component.scss', './atelier-switch.scss'],
 })
 export class AtelierComponent implements OnDestroy {
   protected readonly engine = inject(AtelierEngineService);

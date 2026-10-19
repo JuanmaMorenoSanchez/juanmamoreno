@@ -21,6 +21,10 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 - **feat** — a token id typed into the atelier fetches itself once the typing
   stops, and the Fetch button beside it is gone. Enter does not wait; an
   empty field and an id already loaded are not requests.
+- **chore** — the atelier's stylesheet had grown past the size a component
+  stylesheet is allowed, which fails the build. Every button on the page is
+  one rule now instead of four copies of the same mixin, and the engine's
+  on/off switch has its own file, because it is its own thing.
 - **chore** — the command the page gives for starting the engine by hand
   carries the folder to run it from, and the two places that show it share
   one string.

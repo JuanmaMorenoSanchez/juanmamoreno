@@ -3765,6 +3765,27 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R177 — A component's stylesheet stays inside its budget · met
+The build errors at six kilobytes of compiled CSS for one component, and the
+atelier's reached 6.73. **That is the whole point of the budget** — it is the
+page's own stylesheet growing past what anyone reads in one sitting — so it
+was cut rather than raised.
+
+**Every button on the page is one rule.** It was four separate includes of
+the same mixin, which compiles to four copies of the same eight declarations.
+What differs between them is a size and a colour, and only that is said
+separately now. Six hundred bytes.
+
+**And the engine's on/off switch has its own file**, because it is its own
+thing: nothing else on the page is a switch and nothing in that file is about
+anything else.
+
+One thing tried and reverted: grouping six quiet-aside selectors onto a
+shared `opacity` made the file *bigger*. Six selector names cost more than
+six copies of one declaration — grouping only pays when the shared block is
+large, which is why it paid for the buttons and not for this.
+*Proven by:* `npm run build`, which fails the build and therefore CI
+
 ### R176 — Typing an id fetches it · met
 The field for a token id had a Fetch button beside it, which is a second
 thing to aim at for an action the field has already described. Typing the id
