@@ -215,6 +215,23 @@ HELP: dict[str, str] = {
 """One entry per node. A node without one still works; its ? is simply quiet."""
 
 
+#: The draft switch, which both of the slow nodes carry and which says the
+#: same thing on each: the same picture, fewer steps.
+_DRAFT = (
+        "The same picture in four steps instead of all of them: same prompt, "
+        "same seed, same references, same mask, same size. Nothing that decides "
+        "what the picture is changes, so the full run is the thing the draft "
+        "promised — turn this off and run it again and you get it resolved."
+        "\n\n"
+        "Fewer steps rather than fewer pixels, which is the part worth knowing. "
+        "The edit model is twelve gigabytes against eight of card, so it is not "
+        "resident: every step streams the whole of it in from disk. Eighteen "
+        "minutes for twenty steps is fifty-four seconds a step, and twelve "
+        "gigabytes off an SSD is about fifty of them. Making the picture "
+        "smaller saves the rounding error; making the steps fewer saves the "
+        "run."
+)
+
 PARAM_HELP: dict[tuple[str, str], str] = {
     ("brush", "points"): (
         "The marks themselves. Press Draw to put them on the painting: a click "
@@ -236,6 +253,8 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "reel shorter than that, and it refuses it at the point of publishing "
         "— after the twenty-odd minutes of making it."
     ),
+    ("edit", "draft"): _DRAFT,
+    ("video", "draft"): _DRAFT,
     ("video", "steps"): (
         "How many passes over the whole clip. Fewer is faster and mushier, "
         "and below about twenty the motion starts to judder rather than "

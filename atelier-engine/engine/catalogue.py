@@ -25,6 +25,7 @@ from PIL import Image
 
 from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
+from .draft import steps as draft_steps
 from .edit import available as edit_available, edit as edit_painting
 from .style import (
     OFF as STYLE_OFF,
@@ -162,7 +163,7 @@ def _edit(inputs, params, context) -> dict[str, Any]:
                 if hand != STYLE_OFF
                 else None
             ),
-            steps=int(params["steps"]),
+            steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
             guidance=float(params["guidance"]),
             seed=int(params["seed"]),
             saying=saying,
@@ -244,7 +245,7 @@ def _video(inputs, params, context) -> dict[str, Any]:
         inputs["image"],
         params["prompt"],
         seconds=float(params["seconds"]),
-        steps=int(params["steps"]),
+        steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
         guidance=float(params["guidance"]),
         seed=int(params["seed"]),
         longest=int(params["longest"]),
@@ -480,6 +481,10 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
                 Param("guidance", "number", 4.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                # The same picture in four steps instead of twenty. Everything
+                # that decides what the picture is stays where it is, so the
+                # full run is the thing the draft promised.
+                Param("draft", "toggle", False, label="Draft first"),
             ],
             run=_edit,
         ),
@@ -505,6 +510,7 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
                 Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
+                Param("draft", "toggle", False, label="Draft first"),
                 Param(
                     "in_a_scene",
                     "toggle",

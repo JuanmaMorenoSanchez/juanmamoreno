@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.29.0
+
+- **feat** — **Draft first**, on the two nodes that take minutes. The same
+  picture in four steps instead of twenty, with everything that decides what
+  the picture is left alone, so the full run is the thing the draft promised.
+  Fewer steps rather than fewer pixels: the model is streamed from disk every
+  step, so the pixels are the rounding error and the steps are the run.
+
+---
+
 ## 2.28.0
 
 - **feat** — every picture and clip the atelier makes is told not to be

@@ -3765,6 +3765,32 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R178 — A draft before the half hour · met
+An edit takes about thirty minutes, and most of them are spent finding out
+whether the idea was any good. **Draft first** runs the same thing in four
+steps instead of twenty: same prompt, same seed, same references, same mask,
+same size. Nothing that decides what the picture *is* changes, so turning the
+switch off and running it again gives the thing the draft promised, resolved.
+
+**Fewer steps and not fewer pixels, which is the part worth knowing.** The
+obvious way to make a slow generator fast is to make the picture smaller, and
+here it does almost nothing. The edit model is twelve gigabytes against eight
+of card, so it is never resident: every step streams the whole transformer in
+from disk, one block at a time. The recorded measurement is eighteen minutes
+for twenty steps at 768 px — fifty-four seconds a step — and twelve gigabytes
+off an SSD is about fifty of them. The pixels are the rounding error. Halving
+the longest side would save seconds; halving the steps halves the run.
+
+It is on the two nodes that take minutes and off until it is asked for: a run
+nobody asked to be rough should not be. And a draft never takes *longer* than
+the run it drafts — a graph set to three steps is already quicker than a
+draft, and slowing it down to call it one would be absurd.
+*Proven by:* `test_draft.py` (7 tests: a draft is four steps however many were
+asked for, an ordinary run is what it was asked for, a draft never exceeds the
+run it drafts, nonsense is still a step, both slow nodes offer it, it is off by
+default, and its note says both what it does and why it is steps rather than
+pixels)
+
 ### R177 — A component's stylesheet stays inside its budget · met
 The build errors at six kilobytes of compiled CSS for one component, and the
 atelier's reached 6.73. **That is the whole point of the budget** — it is the
