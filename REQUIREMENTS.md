@@ -3770,7 +3770,11 @@ An edit takes about thirty minutes, and most of them are spent finding out
 whether the idea was any good. **Draft first** runs the same thing in four
 steps instead of twenty: same prompt, same seed, same references, same mask,
 same size. Nothing that decides what the picture *is* changes, so turning the
-switch off and running it again gives the thing the draft promised, resolved.
+switch off and running it again is the same picture arrived at finely rather
+than coarsely. **The composition holds and the detail moves**: four steps of a
+twenty-step schedule is the same path walked in bigger strides, not the same
+image at lower quality, and saying otherwise would promise something a sampler
+does not.
 
 **Fewer steps and not fewer pixels, which is the part worth knowing.** The
 obvious way to make a slow generator fast is to make the picture smaller, and

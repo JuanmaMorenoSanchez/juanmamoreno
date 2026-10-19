@@ -220,8 +220,11 @@ HELP: dict[str, str] = {
 _DRAFT = (
         "The same picture in four steps instead of all of them: same prompt, "
         "same seed, same references, same mask, same size. Nothing that decides "
-        "what the picture is changes, so the full run is the thing the draft "
-        "promised — turn this off and run it again and you get it resolved."
+        "what the picture is changes, so the full run is the same picture "
+        "arrived at finely rather than coarsely. Expect the composition to "
+        "hold and the detail to move: four steps of a twenty-step schedule is "
+        "the same path walked in bigger strides, not the same image at lower "
+        "quality."
         "\n\n"
         "Fewer steps rather than fewer pixels, which is the part worth knowing. "
         "The edit model is twelve gigabytes against eight of card, so it is not "
