@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.41.0
+
+- **feat** — the text encoder is kept in half the space. Proper quantisation is
+  shut (`transformers` reads GGUF for `qwen2` and `qwen3`, not for
+  `qwen2_5_vl`, and bitsandbytes would be a dependency to ask about), but
+  layerwise fp8 casting is already in `diffusers` and needs nothing: **the
+  spill goes from 16.58 GiB to 8.8 and a cold first step from 147 seconds to
+  106.** It is lossy, and measured rather than assumed — a mean difference of
+  1.07 in 255 against the bf16 render, largest 7, nothing over 8.
+- **fix** — the hand-rolled pinning from 2.40.0 is removed. It measured no
+  faster than letting `diffusers` pin each group as it fetches it, and it broke
+  the end of a run: every step completed and then the decode died with
+  `CUDA_ERROR_OUT_OF_MEMORY from cuMemcpyDtoHAsync`, because pinned pages are
+  gone from the pool CUDA itself needs to copy the picture back.
+- **A cold four-step run is 186 seconds against 845 this morning**, and a step
+  23.3 against 133.
+
 ## 2.40.0
 
 - **feat** — the blocks that are still streamed are held in pinned host memory

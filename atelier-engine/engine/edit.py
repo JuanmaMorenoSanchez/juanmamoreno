@@ -21,10 +21,9 @@ was asked about is model output and the rest is the original, untouched.
 
 from __future__ import annotations
 
+import gc
 import hashlib
-import os
 import shutil
-import sys
 from functools import lru_cache
 from typing import Callable
 from pathlib import Path
@@ -146,6 +145,7 @@ def _pipeline():
         QwenImageTransformer2DModel,
     )
     from diffusers.hooks import apply_group_offloading
+    from diffusers.hooks.layerwise_casting import apply_layerwise_casting
 
     if not GGUF.exists():
         raise FileNotFoundError(f"Qwen-Image-Edit is not downloaded. Expected {GGUF}")
@@ -182,6 +182,34 @@ def _pipeline():
     SPILL.mkdir(parents=True, exist_ok=True)
 
     if getattr(pipeline, "text_encoder", None) is not None:
+        # Kept in half the space, in fp8, and unpacked a layer at a time.
+        #
+        # The encoder is Qwen2.5-VL at bf16 and sixteen and a half gigabytes,
+        # which is the largest single thing on this machine and the reason the
+        # transformer cannot be pinned whole. Quantising it properly is shut:
+        # `transformers` 5.16 reads GGUF for `qwen2`, `qwen2_moe`, `qwen3` and
+        # `qwen3_moe` and not for `qwen2_5_vl`, and bitsandbytes or torchao
+        # would each be a new dependency to ask about rather than take.
+        #
+        # Layerwise casting is in `diffusers` already and wants nothing: the
+        # weights are **stored** at fp8 and cast back to bfloat16 as each
+        # module is about to run, so the arithmetic is unchanged and only the
+        # keeping is cheaper. It halves what is written to disk at startup and
+        # halves what crosses the bus for an encode.
+        #
+        # Norms and embeddings are left alone. An fp8 norm scale is a number
+        # with four bits of mantissa multiplying everything downstream of it,
+        # and a lookup table has no arithmetic to hide the loss in.
+        #
+        # It is applied before the offloading so that what is spilled is
+        # already small, and the offload hook — registered second, so outermost
+        # — fetches fp8 bytes and the casting underneath unpacks them.
+        apply_layerwise_casting(
+            pipeline.text_encoder,
+            storage_dtype=torch.float8_e4m3fn,
+            compute_dtype=torch.bfloat16,
+            skip_modules_pattern=("norm", "embed", "lm_head", "patch_embed"),
+        )
         apply_group_offloading(
             pipeline.text_encoder,
             onload_device=onload,
@@ -250,10 +278,11 @@ def _pipeline():
     blocks = getattr(pipeline.transformer, "transformer_blocks", None)
     if blocks is not None:
         kept, total = _resident(pipeline.transformer, blocks)
-        pinned, wanted = _pin(list(blocks)[kept:])
+        # The host copies of what just moved across are unreachable now, and
+        # there is no sense carrying them until something else needs the room.
+        gc.collect()
         print(
-            f"atelier: {kept} of {total} transformer blocks on the card, "
-            f"{pinned / 2**30:.1f} of {wanted / 2**30:.1f} GiB pinned for the rest",
+            f"atelier: {kept} of {total} transformer blocks kept on the card",
             flush=True,
         )
     # The vae stays resident: it is a stack of 3D convolutions with no blocks
@@ -291,61 +320,6 @@ def _soft(mask: np.ndarray, size: tuple[int, int]) -> Image.Image:
 LEAVE = int(0.8 * 2**30) + 600 * 2**20 + int(1.1 * 2**30)
 
 
-def _memory() -> tuple[int, int]:
-    """Total and available host memory, in bytes.
-
-    By hand because `psutil` is here as somebody else's transitive dependency
-    and is not in `requirements.txt`. Adding one is a decision to be asked
-    about rather than taken quietly in the middle of something else, and this
-    is fifteen lines of the standard library.
-    """
-    if sys.platform == "win32":
-        import ctypes
-
-        class Status(ctypes.Structure):
-            _fields_ = [
-                ("dwLength", ctypes.c_ulong),
-                ("dwMemoryLoad", ctypes.c_ulong),
-                ("ullTotalPhys", ctypes.c_ulonglong),
-                ("ullAvailPhys", ctypes.c_ulonglong),
-                ("ullTotalPageFile", ctypes.c_ulonglong),
-                ("ullAvailPageFile", ctypes.c_ulonglong),
-                ("ullTotalVirtual", ctypes.c_ulonglong),
-                ("ullAvailVirtual", ctypes.c_ulonglong),
-                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
-            ]
-
-        status = Status()
-        status.dwLength = ctypes.sizeof(Status)
-        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status))
-        return int(status.ullTotalPhys), int(status.ullAvailPhys)
-
-    pages = os.sysconf("SC_PHYS_PAGES")
-    spare = os.sysconf("SC_AVPHYS_PAGES")
-    size = os.sysconf("SC_PAGE_SIZE")
-    return pages * size, spare * size
-
-
-#: What share of host memory may be pinned.
-#:
-#: ComfyUI's number, with their comment beside it: `MAX_PINNED_MEMORY = ram *
-#: 0.40  # Windows limit is apparently 50%`. Pinned pages cannot be paged out,
-#: so this is memory taken away from everything else on the machine, and the
-#: operating system will refuse outright somewhere above half.
-PINNABLE = 0.40
-
-
-def may_pin(ram: int, free: int, want: int) -> int:
-    """How many bytes it is reasonable to pin, of the `want` that would help.
-
-    Two ceilings and no optimism. The first is the share of total memory the
-    system will tolerate being locked; the second is what is actually free
-    right now, less a gigabyte, because this is his working machine and taking
-    the last of it would be worse than being slow.
-    """
-    return max(0, min(want, int(ram * PINNABLE), free - 2**30))
-
-
 def how_many_fit(sizes: list[int], free: int, leave: int = LEAVE) -> int:
     """How many blocks, in order, will fit on the card with room left to work.
 
@@ -366,68 +340,6 @@ def how_many_fit(sizes: list[int], free: int, leave: int = LEAVE) -> int:
         budget -= size
         kept += 1
     return kept
-
-
-def _pin(blocks) -> tuple[int, int]:
-    """Pin what is still streamed, so it crosses the bus at full speed.
-
-    A block that is not resident is fetched twice a step, forever, and how
-    fast it arrives depends entirely on where it is kept. Measured on this
-    machine: straight off the disk onto the card, 0.46 GiB/s; the same bytes
-    held pinned in host memory and copied asynchronously, 4.73 GiB/s.
-
-    **Pinned one weight at a time, against a budget, which is the whole
-    difference.** Asking `diffusers` to do it — `use_stream=True` with
-    `low_cpu_mem_usage=False` — pins the entire model in one call during
-    setup, and twelve gigabytes of that failed here with
-    `cuMemHostAlloc ... CUDA_ERROR_OUT_OF_MEMORY` even though it was under the
-    ceiling, because the text encoder was in memory at the time. ComfyUI pins
-    per weight against `ram * 0.40` and evicts when it is full, which is why
-    they never hit it.
-
-    Each tensor is handed to the hook *and* to the parameter as it is pinned,
-    so the unpinned original is released on the spot. Done the other way the
-    peak is twice the model, which on this machine is the whole of memory.
-
-    Anything the system refuses stops the loop rather than failing the run:
-    half the model pinned is half the model arriving ten times faster, and the
-    rest still works the way it did.
-    """
-    import torch
-    from diffusers.hooks import HookRegistry
-    from diffusers.hooks.group_offloading import _GROUP_OFFLOADING
-
-    whole, spare = _memory()
-    groups = []
-    for block in blocks:
-        hook = HookRegistry.check_if_exists_or_initialize(block).get_hook(_GROUP_OFFLOADING)
-        if hook is not None:
-            groups.append(hook.group)
-
-    want = sum(
-        held.numel() * held.element_size()
-        for group in groups
-        for held in getattr(group, "cpu_param_dict", {}).values()
-    )
-    budget = may_pin(whole, spare, want)
-
-    done = 0
-    for group in groups:
-        for param, held in list(getattr(group, "cpu_param_dict", {}).items()):
-            size = held.numel() * held.element_size()
-            if held.is_pinned() or not held.is_contiguous() or size > budget:
-                continue
-            try:
-                pinned = held.pin_memory()
-            except RuntimeError:
-                # The system said no. Everything already pinned stays pinned.
-                return done, want
-            group.cpu_param_dict[param] = pinned
-            param.data = pinned
-            budget -= size
-            done += size
-    torch.cuda.synchronize()
-    return done, want
 
 
 def _resident(transformer, blocks) -> tuple[int, int]:

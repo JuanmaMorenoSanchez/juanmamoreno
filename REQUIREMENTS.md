@@ -3899,41 +3899,64 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
-### R193 — What is still streamed is held in pinned memory, not on disk · met
+### R194 — The text encoder is kept in half the space · met
+Qwen2.5-VL at bf16 is **16.58 GiB**, the largest single thing on this machine,
+and it is written to disk at every startup and streamed back twice per
+generation.
+
+Quantising it properly is shut: `transformers` 5.16 reads GGUF for `qwen2`,
+`qwen2_moe`, `qwen3` and `qwen3_moe` and **not for `qwen2_5_vl`**, so
+`gguf_file=` cannot load this one; bitsandbytes and torchao would each be a
+new dependency to ask about rather than take.
+
+Layerwise casting is already in `diffusers` and needs nothing: the weights are
+**stored** at `float8_e4m3fn` and cast back to bfloat16 as each module is about
+to run, so the arithmetic is unchanged and only the keeping is cheaper. Norms
+and embeddings are left alone — an fp8 norm scale is four bits of mantissa
+multiplying everything downstream of it, and a lookup table has no arithmetic
+to hide the loss in. It is applied before the offloading, so what is spilled is
+already small and the fetch moves half as many bytes.
+
+**The spill went from 16.58 GiB to 8.8, and the first step from 147 seconds to
+106.** It is lossy, and the cost was measured rather than assumed: against a
+bf16 render of the same four steps at the same seed, **a mean difference of
+1.07 in 255 and a largest of 7, with no pixel differing by more than 8**.
+*Proven by:* the before-and-after render recorded in `PERFORMANCE.md`, and by
+the spill on disk being half what it was
+
+### R193 — What is still streamed is held in memory, not on disk · met
 A block that is not resident is fetched twice a step, forever, and how fast it
 arrives depends entirely on where it is kept. Measured: straight off the disk
-onto the card, **0.46 GiB/s**; the same bytes pinned in host memory and copied
-asynchronously, **4.73 GiB/s**.
+onto the card, **0.46 GiB/s**; held in host memory and copied asynchronously on
+its own stream, **4.73 GiB/s**. Dropping `offload_to_disk_path` and adding
+`use_stream=True` is the whole of it, and it takes the transformer's spill off
+the disk entirely — nothing is written for it at startup any more.
 
-Asking `diffusers` for it fails. `use_stream=True` with the default
-`low_cpu_mem_usage=False` pins the **whole model in one call** during setup,
-and 12.16 GiB of locked pages — under ComfyUI's own 12.65 GiB ceiling, but
-with the text encoder still in memory — is more than the system will give:
+**`low_cpu_mem_usage=True` is what makes that affordable.** Without it,
+`_init_cpu_param_dict` pins the entire model in one call during setup, and
+12.16 GiB of locked pages — under ComfyUI's own 12.65 GiB ceiling, but with the
+text encoder still in memory — is more than the system will give:
 `cuMemHostAlloc ... CUDA_ERROR_OUT_OF_MEMORY`, 167 seconds in, before a step.
+With it, nothing is pinned up front and each group is pinned as it is fetched.
 
-**ComfyUI pins per weight against a budget**, which is why they never hit it,
-and the same works here: nothing pinned at setup, the resident blocks moved to
-the card first so their host copies are freed, then what is left pinned one
-tensor at a time against `min(ram * 0.40, free - 1 GiB)` — their share, and
-ours — handing each pinned copy to the hook *and* to the parameter as it goes
-so the unpinned original is released on the spot. Done the other way the peak
-is twice the model. Anything the system refuses stops the loop rather than
-failing the run: half pinned is half the model arriving ten times faster.
-
-Measured: **21 blocks on the card and 6.4 of the remaining 7.8 GiB pinned**,
-a step of **23.7 seconds against 27.8**, and no transformer spill written at
-startup at all.
+**Pinning it by hand first was tried, shipped, and taken out again.** ComfyUI
+pins per weight against `ram * 0.40`, so the same was built here: 6.8 GiB of
+the remaining 7.8 held pinned for good. It measured **no faster than letting
+`diffusers` pin each group as it goes** — 24.0 s a step against 22.8 — and it
+broke the end of the run, which stepped perfectly and then died copying the
+picture back with `CUDA_ERROR_OUT_OF_MEMORY from cuMemcpyDtoHAsync`. Pinned
+pages are gone from the pool CUDA itself draws on, and the last thing a run
+does is the one thing that needs it. Raising the reserve to two gigabytes did
+not save it; removing the code did.
 
 **A block that is staying has to leave the prefetch chain too.** With a stream,
 `enable_group_offload` puts an execution tracker on every block and afterwards
-reads each executed block's offload hook; one that has had its hook removed
-gives `'NoneType' object has no attribute 'group'`, two and a half minutes in.
-*Proven by:* the engine's `test_resident.py` `MayPinTest` (7 tests: never more
-than would help, ComfyUI's share of the whole machine, a gigabyte of what is
-free left alone, nothing rather than the last of memory, never negative, and
-this machine holding what is left after the card); and by rendering the same
-four steps at the same seed and comparing files — **identical to the byte**
-against both the resident-only and the stream-none configurations
+reads each executed block's offload hook; one that has had its hook removed by
+[R192] gives `'NoneType' object has no attribute 'group'`, two and a half
+minutes in.
+*Proven by:* measured in `PERFORMANCE.md` — 23.3 seconds a step against 27.8
+with the transformer on disk — and by rendering the same four steps at the
+same seed and comparing files, identical to the byte
 
 ### R192 — Whatever fits on the card stays on it · met
 `apply_group_offloading` treats every group alike: onloaded when its turn

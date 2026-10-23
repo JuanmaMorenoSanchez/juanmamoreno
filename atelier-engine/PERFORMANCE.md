@@ -18,22 +18,23 @@ in 61 offload groups, one block each. Its text encoder is Qwen2.5-VL at bf16,
 A four-step edit of a 768×768 picture, through the service, timed from the
 request. Both columns are cold — a fresh process, an empty spill:
 
-| | before | the 16 GiB group fixed | kept on the card | and pinned |
-|---|---|---|---|---|
-| each step | 132.7 / 133.0 / 133.4 s | 34.0 / 32.8 / 33.4 s | 27.3 … 28.3 s | **23.7 / 23.8 / 23.7 s** |
-| to the first step | 416 s | 156 s | 162 s | **147 s** |
-| **a four-step run** | **845 s — 14 minutes** | 257 s | — | **231 s** |
-| twenty steps, by the same arithmetic | ~49 minutes | ~13 minutes | ~11½ minutes | **~10 minutes** |
+| | before | the 16 GiB group fixed | kept on the card | in host memory | and the encoder in fp8 |
+|---|---|---|---|---|---|
+| each step | 133 s | 33.4 s | 27.8 s | 23.3 s | **23.1 … 23.5 s** |
+| to the first step | 416 s | 156 s | 162 s | 147 s | **106 s** |
+| **a four-step run** | **845 s — 14 minutes** | 257 s | — | 231 s | **186 s — 3 minutes** |
+| twenty steps, by the same arithmetic | ~49 minutes | ~13 minutes | ~11½ min | ~10 min | **~9½ minutes** |
 
-**133 seconds a step to 23.7 — 5.6×**, and about 4.9× over a whole twenty-step
-run. It is not noisy: consecutive steps inside a tenth of a second of each
+**133 seconds a step to 23.3 — 5.7×**, and 845 seconds to 186 on a cold
+four-step run, which is 4.5×. It is not noisy: consecutive steps inside a tenth of a second of each
 other in the last column.
 
-**And the picture does not change.** Every one of those columns renders the
-same four steps at the same seed to **the same file, byte for byte** — mean
-absolute difference 0.00, largest difference 0. That is the only check worth
-making on a change that is meant to alter nothing, and the one that caught the
-empty blocks below.
+**And the picture barely changes.** Every column but the last renders the same
+four steps at the same seed to **the same file, byte for byte** — mean absolute
+difference 0.00, largest 0. That is the only check worth making on a change
+meant to alter nothing, and the one that caught the empty blocks below. The
+last column is lossy on purpose, and measures **1.07 in 255 on average and 7
+at worst**, with no pixel differing by more than 8.
 
 A draft takes four of those steps at a quarter of the pixels, so the four-step
 draft that was fourteen minutes is now a little over a minute and a half of
@@ -108,64 +109,74 @@ with the card no longer oversubscribed, some of it overlaps with compute.
 
 ## What else was tried
 
-### Pinned host memory instead of disk — 15%, once it was done their way
+### Host memory instead of disk — 15%, and the hand-rolled pinning was worth nothing
 
-The same bytes, pinned in host memory and copied asynchronously, arrive
-**10.3× faster**. Asking `diffusers` for it — drop `offload_to_disk_path`, add
-`use_stream=True` and `record_stream=True` — failed:
+The same bytes, held in host memory and copied asynchronously on their own
+stream, arrive **10.3x faster** than off the disk. Dropping
+`offload_to_disk_path` and adding `use_stream=True` is the whole of it, and
+there is no transformer spill written at startup any more. Measured: **23.3 s
+a step against 27.8**.
+
+`low_cpu_mem_usage=True` is what makes it affordable. Without it,
+`_init_cpu_param_dict` pins the **entire model in one call** during setup, and
+12.16 GiB of locked pages — under ComfyUI's 12.65 GiB ceiling, but with the
+text encoder still in memory — is more than the system will give:
 
 ```
 CUDA error: out of memory
 Returning 2 (CUDA_ERROR_OUT_OF_MEMORY) from cuMemHostAlloc
 ```
 
-`cuMemHostAlloc`, not a VRAM allocation. With `low_cpu_mem_usage=False`,
-`_init_cpu_param_dict` pins the **entire model in one call** during setup, and
-12.16 GiB of locked pages — under ComfyUI's 12.65 GiB ceiling, but with the
-text encoder still in memory — is more than the system will give.
+**Then pinning by hand, which was built, measured, shipped and removed.**
+ComfyUI pins per weight against `ram * 0.40` and evicts when full, so the same
+was built here and held 6.8 of the remaining 7.8 GiB pinned for good. Two
+things were wrong with it:
 
-**ComfyUI pins per weight against a budget and evicts when it is full**, which
-is why they never hit it, and doing the same works here:
+- it was **not faster** — 24.0 s a step against 22.8 for letting `diffusers`
+  pin each group as it is fetched, which `low_cpu_mem_usage=True` already does;
+- it **broke the end of the run**. Every step completed and then the decode
+  died with `CUDA_ERROR_OUT_OF_MEMORY from cuMemcpyDtoHAsync` — the driver
+  unable to find host memory to copy the finished picture back into. Pinned
+  pages are gone from the pool CUDA itself draws on, and the last thing a run
+  does is the one thing that needs that pool.
 
-- `low_cpu_mem_usage=True`, so `enable_group_offload` pins nothing at setup;
-- the blocks that fit go on the card first, which frees their host copies;
-- what is left is pinned one tensor at a time against `min(ram * 0.40,
-  free - 1 GiB)`, handing each pinned copy to the hook *and* to the parameter
-  as it goes, so the unpinned original is released on the spot — done the
-  other way the peak is twice the model;
-- anything the system refuses stops the loop rather than failing the run.
+Raising the reserve from one gigabyte to two did not save it. Removing the
+code did, and the run that proved it was the one with pinning switched off
+entirely, which finished and was *quicker*. A hundred lines and two failed
+runs to arrive back at the library's default, which is worth writing down.
 
-Measured: **21 blocks on the card and 6.4 of the remaining 7.8 GiB pinned**,
-and a step of **23.7 s against 27.8**. The output is identical to the byte.
-
-There is no transformer spill any more either, so startup writes only the
-encoder.
-
-**One trap, and it cost a run to find.** With a stream, `enable_group_offload`
-puts an execution tracker on every block to learn the order they run in, and
-after the first forward walks the blocks that ran and reads each one's offload
-hook. A block made resident has had that hook removed, so it gives
-`'NoneType' object has no attribute 'group'` — two and a half minutes into the
+**One trap that survived.** With a stream, `enable_group_offload` puts an
+execution tracker on every block to learn the order they run in, and after the
+first forward walks the blocks that ran and reads each one's offload hook. A
+block made resident has had that hook removed, so it gives
+`'NoneType' object has no attribute 'group'` two and a half minutes into the
 run. The tracker has to come off with it.
 
-### A quarter of the pixels — 21%, which is neither nothing nor the prize
+### The text encoder in fp8 — half the space, and a difference of 1 in 255
 
-`draft.py` said for a while that fewer pixels saved nothing, reasoning from a
-step of 54 seconds of which 50 was the model arriving. The step was never 54
-seconds. With the encoder fixed it is **33.4 seconds**, so the question was
-open again: the pipeline works at about a megapixel whatever it is handed, and
-`height`/`width` were never passed.
+Qwen2.5-VL at bf16 is 16.58 GiB, the largest single thing on this machine,
+written to disk at every startup and streamed back twice a generation.
 
-Measured, same four steps and the same already-known prompt, at a quarter of
-the pixels: **26.3 s a step against 33.4 — 21% off**, and the four-step run
-106.5 s against 257. So the pixels are not a rounding error and they are not
-the prize either; what a step mostly costs is 12.16 GiB arriving twice and
-dequantising on the way through, and neither cares how big the picture is.
+Quantising it properly is shut: `transformers` 5.16 reads GGUF for `qwen2`,
+`qwen2_moe`, `qwen3` and `qwen3_moe` and **not for `qwen2_5_vl`**, so
+`gguf_file=` will not load this one, and bitsandbytes or torchao would each be
+a new dependency rather than a setting.
 
-Kept, because a fifth is a fifth and a low-resolution preview is what was
-asked for. The cost is that a model given less canvas composes a little
-differently, so a draft is now a promise about the idea rather than about the
-picture — which the note under the switch says.
+`apply_layerwise_casting` is already in `diffusers`, takes any `nn.Module`, and
+needs nothing: weights are **stored** at `float8_e4m3fn` and cast back to
+bfloat16 as each module is about to run, so the arithmetic is unchanged and
+only the keeping is cheaper. Norms and embeddings are skipped — an fp8 norm
+scale is four bits of mantissa multiplying everything downstream of it. It goes
+on before the offloading, so what is spilled is already small.
+
+| | before | after |
+|---|---|---|
+| the encoder's spill on disk | 16.58 GiB | **8.8 GiB** |
+| to the first step, cold | 147 s | **106 s** |
+
+It is lossy, so this one was checked against a bf16 render of the same four
+steps at the same seed rather than assumed: **mean difference 1.07 in 255,
+largest 7, and no pixel differing by more than 8.**
 
 ### Keeping on the card whatever fits — 17%, and the end of the streaming-everything design
 
