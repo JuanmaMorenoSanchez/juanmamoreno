@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.33.0
+
+- **fix** — the atelier's boxes were white with pale text on them in dark
+  mode. `--surface` was asked for in six stylesheets and defined in none, so
+  every one took its white fallback. It is defined in both palettes now, and
+  a new test found three more of the same fault on the catalogue and publish
+  pages.
+- **fix** — turning a phone killed a generative page. A canvas with no height
+  makes `drawImage` throw, the throw escaped the frame, and nothing asked for
+  another one. A frame that throws no longer takes the loop with it, and a
+  size that is not a size is not passed to the sketch at all.
+- **fix** — the painting could still be chosen in a strip above the canvas as
+  well as in the Painting box. The strip is gone; the box is the only place.
+
+---
+
 ## 2.32.1
 
 - **chore** — the third generative piece is called _Screenlight_. It was

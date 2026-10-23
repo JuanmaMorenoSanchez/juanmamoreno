@@ -148,43 +148,12 @@
     </section>
   }
 
+  <!-- The painting is chosen in the Painting box on the canvas, which is the
+       box that is for it. There was a second copy of all of it up here — the
+       file field, the number, the thumbnail and its name — which is the
+       diagram saying "the painting goes here" while the painting went
+       somewhere else, and then two places to change one thing. -->
   <section class="atelier-bar">
-    <label class="atelier-field">
-      <span>The painting</span>
-      <input type="file" accept="image/*" (change)="chose($event)" data-testid="painting" />
-    </label>
-
-    <!-- Or by number, which is how he knows his own paintings. -->
-    <label class="atelier-field">
-      <span>…or a token id</span>
-      <!-- No button beside it: typing an id is already the decision, and
-           waiting for the typing to stop does what the button was there to
-           protect against. -->
-      <span class="atelier-byid">
-        <input
-          type="text"
-          inputmode="numeric"
-          placeholder="195"
-          [value]="tokenId()"
-          (input)="tokenTyped($any($event.target).value)"
-          (keydown.enter)="tokenEntered()"
-          data-testid="token-id"
-        />
-        @if (fetching()) {
-          <span class="atelier-fetching" data-testid="fetching">Fetching…</span>
-        }
-      </span>
-    </label>
-
-    @if (preview(); as url) {
-      <span class="atelier-chosen">
-        <img class="atelier-preview" [src]="url" alt="The painting about to be worked on" />
-        @if (chosen(); as called) {
-          <span class="atelier-chosen-name" data-testid="chosen">{{ called }}</span>
-        }
-      </span>
-    }
-
     <span class="atelier-spacer"></span>
 
     <button type="button" class="atelier-minor" (click)="clear()" data-testid="clear">

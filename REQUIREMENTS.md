@@ -3765,6 +3765,46 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R181 — A colour asked for is a colour defined · met
+`var(--surface, #fff)` was written in six stylesheets and `--surface` was
+defined in none, so all six quietly took the fallback. White is right in one
+of the two themes: the atelier's boxes were white with pale text on them all
+through dark mode, and nothing anywhere was wrong enough to fail.
+
+It is defined in both palettes now, and so are `--catalog-paper`,
+`--catalog-rule` and `--catalog-sold` — **three more of exactly the same
+fault**, found by the test rather than by him, on the catalogue and publish
+pages. A fallback is meant to be the value before the theme loads, not the
+value.
+
+**The test is the general case**, not those four: every custom property any
+stylesheet asks for must be defined by a stylesheet, or set at runtime from
+code or a template binding — which is how a parallax offset and a zoom level
+arrive and is not the same thing as missing. Material's own tokens are left
+out, since its build generates them.
+*Proven by:* `styles-tokens.spec.ts` "defines every one of them", "defines the
+panel colour in both themes, not just the light one" and "reads more than a
+couple of stylesheets, or it is proving nothing"
+
+### R182 — A frame that throws does not take the loop with it · met
+Turning a phone killed a generative page. A window changing shape can leave
+the canvas with no height for a tick; a canvas with no height makes
+`drawImage` throw `InvalidStateError` rather than draw nothing; the throw
+escaped the frame, nothing asked for another one, and the page stayed on the
+black it had just been cleared to — for ever, because the size coming back is
+not an event anything was still listening for.
+
+Two things now. A frame that throws is caught and reported **once** rather
+than sixty times a second, and the loop goes on. And a size that is not a
+size is not passed on at all: a sketch asked to lay itself out in a box of no
+height builds things of no height, and some of those cannot be drawn.
+
+Measured in Chrome, with the container forced to no height for half a second:
+the page used to come back at nought and stay there, and comes back drawing.
+*Proven by:* Chrome, driven by the e2e harness — a zero-height tick followed
+by a return to full size, then a turn from landscape to portrait, with the
+canvas still being drawn to and no page errors
+
 ### R180 — A generative page says it is loading · met
 A sketch's `setup` fetches its pictures and cuts its sprites before a single
 frame is drawn. *Screenlight* loads five and cuts eleven, and on a cold cache

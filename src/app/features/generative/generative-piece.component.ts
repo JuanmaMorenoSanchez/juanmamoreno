@@ -208,7 +208,30 @@ export class GenerativePieceComponent implements AfterViewInit {
       height: this.cssHeight,
       pointer: this.pointer,
     };
-    this.sketch.draw(this.ctx, frame);
+
+    // A frame that throws must not take the loop with it.
+    //
+    // **This is what turning a phone used to do.** A window changing shape
+    // can leave the canvas with no height for a tick, and a canvas with no
+    // height makes `drawImage` throw `InvalidStateError` rather than draw
+    // nothing. The throw escaped this function, nothing asked for another
+    // frame, and the page stayed on the black it had just been cleared to —
+    // for ever, because the size coming back is not an event anything was
+    // still listening for.
+    //
+    // Reported once rather than sixty times a second: a fault worth fixing
+    // is worth seeing, and a console filling at frame rate hides it.
+    if (frame.width > 0 && frame.height > 0) {
+      try {
+        this.sketch.draw(this.ctx, frame);
+        this.stumbled = false;
+      } catch (trouble) {
+        if (!this.stumbled) {
+          this.stumbled = true;
+          console.error('the sketch threw while drawing; the loop goes on', trouble);
+        }
+      }
+    }
 
     // Velocity decays so the pointer reads as "still" shortly after it stops.
     this.pointer.vx *= 0.85;
@@ -216,6 +239,9 @@ export class GenerativePieceComponent implements AfterViewInit {
 
     this.rafId = requestAnimationFrame(this.loop);
   };
+
+  /** Whether the last frame threw, so the next failure is not said twice. */
+  private stumbled = false;
 
   // Eases the pointer toward a randomly chosen point once real input has
   // been still for a while, so a piece left alone still reads as alive
@@ -265,7 +291,13 @@ export class GenerativePieceComponent implements AfterViewInit {
     this.resizeObserver = new ResizeObserver(() => {
       if (!this.ctx || !this.sketch) return;
       this.resizeCanvas();
-      this.sketch.resize?.(this.ctx, this.cssWidth, this.cssHeight);
+      // Nothing is told about a size that is not a size. A sketch asked to
+      // lay itself out in a box of no height builds things of no height,
+      // and some of those cannot be drawn at all — the next real size is
+      // along in a moment and that is the one worth hearing about.
+      if (this.cssWidth > 0 && this.cssHeight > 0) {
+        this.sketch.resize?.(this.ctx, this.cssWidth, this.cssHeight);
+      }
     });
     this.resizeObserver.observe(this.canvasRef.nativeElement);
   }

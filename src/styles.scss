@@ -53,6 +53,19 @@ main {
   --catalog-faint: #a3a3a3;
   --catalog-accent: #cf2525;
   --catalog-frame-bg: #ebebe9;
+  // A panel standing on the page: a node on the atelier's canvas, the box the
+  // brush is used in, a preview. Six stylesheets already asked for this and
+  // nothing ever defined it, so every one of them fell back to white — which
+  // is only readable in one of the two themes, and the atelier's boxes were
+  // white with pale text on them all through dark mode.
+  --surface: #ffffff;
+  // The opposite of the ink, which is both what a panel is made of and what
+  // reads on top of a block of ink. Three stylesheets asked for it and
+  // nothing defined it, so the admin pages were white panels in dark mode
+  // and near-white text on near-white ink.
+  --catalog-paper: #ffffff;
+  --catalog-rule: rgb(0 0 0 / 12%);
+  --catalog-sold: #b3261e;
 }
 
 // Not an inversion. Paintings are photographed against white and carry their
@@ -67,6 +80,14 @@ main {
   --catalog-faint: #6b6b68;
   --catalog-accent: #ef6a5e;
   --catalog-frame-bg: #262624;
+  // Lifted off the ground rather than equal to it, so a panel has an edge
+  // without needing a border to say so.
+  --surface: #232322;
+  --catalog-paper: #141414;
+  --catalog-rule: rgb(255 255 255 / 14%);
+  // Lifted for the same reason the accent is: #b3261e on near-black is too
+  // dark to read as a colour.
+  --catalog-sold: #ef6a5e;
 }
 
 :root[data-theme='dark'] {

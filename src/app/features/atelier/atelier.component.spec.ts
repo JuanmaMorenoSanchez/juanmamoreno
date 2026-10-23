@@ -234,7 +234,10 @@ describe('AtelierComponent', () => {
             // Through the service, which is what annotates a request to
             // 127.0.0.1 as one the browser is allowed to make.
             layerBytes: () => Promise.resolve(new Blob([new Uint8Array([1])])),
-            catalogue: () => Promise.resolve(options.catalogue ?? [A_NODE]),
+            // SOURCE as well as the node under test: the painting is
+            // chosen inside the Painting box now, so a canvas without one
+            // has nowhere to choose it.
+            catalogue: () => Promise.resolve(options.catalogue ?? [SOURCE, A_NODE]),
             flows: () => Promise.resolve(options.flows ?? []),
             // The painters, which this repository does not have: the engine
             // keeps them in a file git ignores, so the stub has none either.
@@ -933,6 +936,30 @@ describe('AtelierComponent', () => {
   });
 
   describe('typing a token id', () => {
+    /**
+     * The field is inside the Painting box, so the canvas needs one.
+     *
+     * And the clock goes back whatever happens: a fake-timer test that
+     * throws before restoring it leaves every test after it waiting on a
+     * tick that never comes, which once turned four failures into nineteen.
+     */
+    const withABox = async () => {
+      const made = build();
+      // The canvas draws a box only for a type the engine has published, and
+      // the catalogue arrives on a promise — set before it lands, the node
+      // is a type nothing knows and nothing is drawn.
+      // A real turn of the loop, not just a stable view: the catalogue is
+      // fetched in the constructor and nothing renders a box until it lands.
+      await new Promise((settle) => setTimeout(settle, 0));
+      made.fixture.detectChanges();
+      guts(made.fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      made.fixture.detectChanges();
+      vi.useFakeTimers();
+      return made;
+    };
+
+    afterEach(() => vi.useRealTimers());
+
     const type = (host: HTMLElement, value: string) => {
       const field = at(host, 'token-id') as HTMLInputElement;
       field.value = value;
@@ -942,8 +969,7 @@ describe('AtelierComponent', () => {
     it('fetches on its own once the typing stops', async () => {
       // The Fetch button beside it was a second thing to aim at for an
       // action the field had already described.
-      vi.useFakeTimers();
-      const { fixture, host, wantedByCall } = build();
+      const { fixture, host, wantedByCall } = await withABox();
 
       type(host, '195');
       expect(wantedByCall).toHaveLength(0);
@@ -952,13 +978,11 @@ describe('AtelierComponent', () => {
       await fixture.whenStable();
 
       expect(wantedByCall).toEqual(['web']);
-      vi.useRealTimers();
     });
 
     it('does not fetch what was typed on the way', async () => {
       // 1 and 19 are both paintings. Neither is the one being asked for.
-      vi.useFakeTimers();
-      const { fixture, host, wantedByCall } = build();
+      const { fixture, host, wantedByCall } = await withABox();
 
       type(host, '1');
       await vi.advanceTimersByTimeAsync(SETTLES / 3);
@@ -969,12 +993,10 @@ describe('AtelierComponent', () => {
       await fixture.whenStable();
 
       expect(wantedByCall).toHaveLength(1);
-      vi.useRealTimers();
     });
 
     it('does not fetch an empty field', async () => {
-      vi.useFakeTimers();
-      const { fixture, host, wantedByCall } = build();
+      const { fixture, host, wantedByCall } = await withABox();
 
       type(host, '195');
       await vi.advanceTimersByTimeAsync(SETTLES + 10);
@@ -984,12 +1006,10 @@ describe('AtelierComponent', () => {
       await fixture.whenStable();
 
       expect(wantedByCall).toHaveLength(1);
-      vi.useRealTimers();
     });
 
     it('does not fetch the one it already has', async () => {
-      vi.useFakeTimers();
-      const { fixture, host, wantedByCall } = build();
+      const { fixture, host, wantedByCall } = await withABox();
 
       type(host, '195');
       await vi.advanceTimersByTimeAsync(SETTLES + 10);
@@ -1001,7 +1021,6 @@ describe('AtelierComponent', () => {
       await fixture.whenStable();
 
       expect(wantedByCall).toHaveLength(1);
-      vi.useRealTimers();
     });
   });
 
@@ -1024,6 +1043,9 @@ describe('AtelierComponent', () => {
         },
       ],
     });
+    // The name of what is chosen is shown inside the Painting box.
+    guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+    fixture.detectChanges();
     guts(fixture).tokenId.set('195');
     const bytes = new Blob(['a picture'], { type: 'image/png' });
     // A plain stand-in rather than a real Response: jsdom's cannot be built
