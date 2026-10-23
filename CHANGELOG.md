@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.39.0
+
+- **feat** — whatever fits on the card now stays on it. Every block was being
+  fetched, used once and dropped while five gigabytes of the card sat empty;
+  22 of the 60 are resident now, on ComfyUI's own arithmetic read out of their
+  source. **A step is 27.8 seconds against 33.4, and against 133 this
+  morning.**
+- **feat** — a dial for reusing a step that changed almost nothing. A skipped
+  step measures 0.8 seconds against 33.4, because the blocks it skips are
+  never fetched. Off by default, and ranged on measurement: at the threshold
+  the documentation suggests, nothing is skipped at all.
+- **chore** — `PERFORMANCE.md` rewritten against his own ComfyUI install: its
+  constants, why the wholesale pin failed where theirs does not, and the one
+  honest number for the comparison. It was about 8× per byte of model this
+  morning and is about 1.7× now.
+
 ## 2.38.0
 
 - **fix** — the text encoder was being offloaded as a single 16.58 GiB group,

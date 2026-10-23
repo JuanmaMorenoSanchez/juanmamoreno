@@ -18,16 +18,21 @@ in 61 offload groups, one block each. Its text encoder is Qwen2.5-VL at bf16,
 A four-step edit of a 768×768 picture, through the service, timed from the
 request. Both columns are cold — a fresh process, an empty spill:
 
-| | before | after |
-|---|---|---|
-| building the pipeline and writing the spill | 162.4 s | **82.9 s** |
-| encoding the instruction and the negative prompt, and the first step | 253.9 s | **73.0 s** |
-| each step after that | 132.7 / 133.0 / 133.4 s | **34.0 / 32.8 / 33.4 s** |
-| **the whole four-step draft** | **845 s — 14 minutes** | **257 s — 4¼ minutes** |
-| twenty steps, by the same arithmetic | ~49 minutes | **~13 minutes** |
+| | before | the 16 GiB group fixed | blocks kept on the card |
+|---|---|---|---|
+| building the pipeline and writing the spill | 162.4 s | 82.9 s | **~90 s** |
+| encoding the prompts, and the first step | 253.9 s | 73.0 s | **66.5 s** |
+| each step after that | 132.7 / 133.0 / 133.4 s | 34.0 / 32.8 / 33.4 s | **27.3 … 28.3 s** |
+| **a four-step run** | **845 s — 14 minutes** | 257 s | — |
+| twenty steps, by the same arithmetic | ~49 minutes | ~13 minutes | **~11½ minutes** |
 
-It is not noisy: three consecutive steps within 1.2 seconds of each other in
-both columns.
+**133 seconds a step to 27.8 — 4.8×**, and about 4.4× over a whole twenty-step
+run. It is not noisy: seven consecutive steps inside one second of each other
+in the last column.
+
+A draft takes four of those steps at a quarter of the pixels, so the four-step
+draft that was fourteen minutes is now a little over a minute and a half of
+stepping.
 
 ## What was wrong: one sixteen-gigabyte group, found by accident
 
@@ -137,6 +142,65 @@ asked for. The cost is that a model given less canvas composes a little
 differently, so a draft is now a promise about the idea rather than about the
 picture — which the note under the switch says.
 
+### Keeping on the card whatever fits — 17%, and the end of the streaming-everything design
+
+`apply_group_offloading` treats every group alike: onloaded when its turn
+comes, dropped the moment it is done, fetched again next step. Sixty blocks,
+twelve gigabytes, twice a step, forever — while five gigabytes of the card sat
+empty, because keeping anything was never part of the design.
+
+ComfyUI's arithmetic is `free_vram - minimum_required`, and theirs is copied
+here: 0.8 GiB plus the 600 MiB they reserve on Windows, plus 1.1 GiB more for
+the text encoder they do not have to carry (its widest leaf is `lm_head`, a
+3,584 × 152,064 matrix). On this machine that keeps **22 of the 60 blocks**,
+so 37% of the model stops crossing the bus.
+
+Measured on eight steps: **27.8 s a step against 33.4 — 17% off**, which is
+about what a third of the model should buy if arrival is roughly half a step.
+Setting it up costs about 13 seconds at build.
+
+Done by taking the offload hook off a block and moving it across for good,
+before anything runs — the first offload is what replaces a block's weights
+with a placeholder, so afterwards there would be nothing left to move.
+
+### Reusing a step — 40× on a step it skips, and it skips almost none
+
+`FirstBlockCache`, which `diffusers` supports for `QwenImageTransformerBlock`:
+run the first of the sixty blocks, compare what it changed with what it changed
+last step, and if the difference is under a threshold skip the other
+fifty-nine and reuse last step's residual. The saving is not the arithmetic —
+it is that **a skipped block's offload hook never fires**, so it never crosses
+the bus. That holds by luck rather than design: `HookRegistry` wraps the
+current forward each time, so the hook registered last is outermost, and the
+cache is applied per run while group offloading is applied at build.
+
+Measured over eight steps, same seed, same prompt:
+
+| threshold | a step | steps skipped |
+|---|---|---|
+| 0 (off) | 33.0–33.5 s | 0 of 7 |
+| 0.10 | 33.3–33.6 s | **0 of 7** |
+| 0.20 | 0.8 s or 33.9 s | 1 of 7 |
+
+So a skipped step costs **0.8 seconds against 33.4**, and at the threshold
+`diffusers` suggests nothing is skipped at all. Eight steps leave little to
+reuse, because each is still changing the picture a great deal; the longer the
+run the more there is. Exposed as a dial from 0 to 0.5 rather than guessed at,
+off by default, because it is the only setting here that changes the picture
+without being asked to.
+
+### The asynchronous allocator — nothing, measurably
+
+ComfyUI runs on `cudaMallocAsync`, logged as `Device: cuda:0 ... :
+cudaMallocAsync`, and the reason to want it is the churn: a step onloads
+thirty-eight blocks and drops them again, twice over, and the default allocator
+serialises on `cudaFree`.
+
+Measured with `PYTORCH_CUDA_ALLOC_CONF=backend:cudaMallocAsync`: **27.8 s a
+step, against 27.8 without**. Build was 87 s against 96, which is inside the
+run-to-run spread. Reverted — a non-default allocator has its own semantics
+around `empty_cache`, and there is nothing here to pay for them with.
+
 ### Four blocks per group instead of one — 3.5%, and 24 seconds worse to start
 
 If 0.46 GiB/s were per-call overhead rather than bandwidth, bigger groups would
@@ -179,32 +243,66 @@ because emptying the allocator's cache also returns every warm block in it.
 
 ## Why ComfyUI is faster on the same card
 
-Most of the gap was the sixteen-gigabyte group, which is this repository's bug
-and not ComfyUI being clever. What is left:
+Read out of his own install — Comfy Desktop, ComfyUI **0.39.2**, at
+`%LOCALAPPDATA%/Comfy-Desktop/ComfyUI-Installs/Mi Entorno/ComfyUI` — rather
+than recalled. Its log confirms the same machine: `Total VRAM 8188 MB, total
+RAM 32407 MB`.
 
-1. **It keeps what fits resident.** ComfyUI measures free VRAM and loads as
-   many blocks as will stay, streaming only the remainder. There are ~6.9 GiB
-   free on this card against 12.16 GiB of model, so a little over half of it
-   would never cross the bus — and a resident block's dequantised weights are
-   reused instead of being recomputed every pass. `apply_group_offloading` has
-   no equivalent: every group is onloaded, used once, and dropped.
-2. **It never offloads to disk.** Its low-VRAM path holds weights in host
-   memory and copies them pinned and asynchronously — the 0.46 → 4.73 GiB/s in
-   the table. It gets away with it where we did not because it is not also
-   holding a sixteen-gigabyte bf16 text encoder.
-3. **It does not re-encode what has not changed.** Its graph caches each node's
-   output, so changing only the seed re-runs only the sampler. That is what the
-   prompt cache above borrows.
-4. **Its GGUF support dequantises in its own kernels** rather than through
-   `diffusers`' per-tensor Python path. Not measured here.
+**Its constants, which are worth having because they were arrived at the hard
+way:**
+
+| | |
+|---|---|
+| VRAM held back for the run itself | `minimum_inference_memory()` = 0.8 GiB + `EXTRA_RESERVED_VRAM` |
+| `EXTRA_RESERVED_VRAM` | 400 MiB, **600 on Windows** — their comment: *"Windows is higher because of the shared vram issue"* |
+| weights kept resident | `free_vram - minimum_required`, in `load_models_gpu` |
+| `MIN_WEIGHT_MEMORY_RATIO` | 0.4, but **0.0 on NVIDIA** — so on this card the whole remainder is kept |
+| max pinned host memory | `ram * 0.40` — **12,962 MiB** on this machine, logged at startup; their comment: *"Windows limit is apparently 50%"* |
+| pinning granularity | **per weight**, against that budget, with eviction (`pin_memory`, `ensure_pin_registerable`) |
+| allocator | `cudaMallocAsync` |
+| streaming | logged as `Using async weight offloading with 2 streams` |
+
+Two of those are the direct explanation of a failure recorded above. The
+all-or-nothing pin of 12.16 GiB came in just **under** their 12.65 GiB ceiling
+and still failed, because they never pin a model in one call — they pin weight
+by weight against a budget and evict when it is full. And the 600 MiB they
+reserve on Windows *specifically* is a guard against the oversubscription that
+the sixteen-gigabyte group walked straight into: they knew the cliff was there
+and left a margin.
+
+**His install also has `comfy-aimdo` 0.5.5**, which the log shows installing
+six CUDA hooks (`cuda-detour.c`), enabling *NVML pressure*, and matching the
+WDDM adapter (`shmem-detect.c`) before reporting `DynamicVRAM support detected
+and enabled`. It is a native extension that watches how close the card is to
+spilling into shared memory and moves weights out before the driver starts
+paging. That is the oversubscription problem again, solved properly.
+
+**The only honest number for the comparison** comes from the one 20-step run in
+his log — `MiniMaxH3`, a different model and a different architecture, so this
+is indicative and not exact:
+
+| | model on the card | a step | per GiB of model, per step |
+|---|---|---|---|
+| his ComfyUI, MiniMaxH3 | 19,995 MiB staged | 26.0 s | **1.33 s** |
+| here, before any of this | 12,160 MiB | 133 s | 11.0 s |
+| here, now | 12,160 MiB | 27.8 s | **2.30 s** |
+
+So "way faster" was, at the start, about eight times per byte of model. It is
+now about **1.7×**, and the rest of the gap is the two rows of their table
+this repository does not have: per-weight pinning against a budget, and two
+streams to overlap the copy with the compute.
 
 **What is left, in the order worth doing it:**
 
-- A quantised text encoder (~4.5 GiB instead of 16.58), which would take most
-  of the remaining 83 seconds off a cold start **and** make the pinned-memory
-  path fit, which is the 10× one. Needs a download and a decision.
-- Partial residency, by hand: keep what fits on the card and offload the rest.
-  The one change here that `diffusers` will not do for us.
+- **Per-weight pinning against a budget**, their way rather than all-or-nothing.
+  The measured prize is 0.46 → 4.73 GiB/s on whatever gets pinned, and
+  `ram * 0.40` says about 12.6 GiB is allowed. It is the largest remaining
+  item and the one that failed when attempted wholesale.
+- **A quantised text encoder** (~4.5 GiB instead of 16.58), which would take
+  most of the 96-second cold start off and leave far more room for the above.
+  Needs a download and a decision.
+- **Their 2-stream overlap**, which `diffusers` offers as `use_stream=True` and
+  which currently cannot be used because it insists on pinning.
 
 **A note on the spill.** `diffusers` replaces an offloaded tensor with
 `torch.empty_like(tensor, device="cpu")`, which commits the same number of

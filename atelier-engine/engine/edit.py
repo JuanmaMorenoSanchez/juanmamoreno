@@ -238,6 +238,11 @@ def _pipeline():
         num_blocks_per_group=1,
         offload_to_disk_path=str(SPILL / "transformer"),
     )
+
+    blocks = getattr(pipeline.transformer, "transformer_blocks", None)
+    if blocks is not None:
+        kept, total = _resident(pipeline.transformer, blocks)
+        print(f"atelier: {kept} of {total} transformer blocks kept on the card", flush=True)
     # The vae stays resident: it is a stack of 3D convolutions with no blocks
     # for block_level to find, so grouping it leaves its weights on the CPU
     # while CUDA inputs arrive. A few hundred megabytes, and it ends the
@@ -255,6 +260,125 @@ def _soft(mask: np.ndarray, size: tuple[int, int]) -> Image.Image:
     if alpha.size != size:
         alpha = alpha.resize(size, Image.Resampling.BILINEAR)
     return alpha.filter(ImageFilter.GaussianBlur(radius=SEAM))
+
+
+#: How much of the card to leave for the run itself, in bytes.
+#:
+#: Taken from ComfyUI 0.39.2, which arrived at it the hard way:
+#: `minimum_inference_memory()` is 0.8 GiB plus `EXTRA_RESERVED_VRAM`, and that
+#: second number is 400 MiB everywhere except Windows, where it is 600 —
+#: commented, in their source, "Windows is higher because of the shared vram
+#: issue". The shared vram issue is the one measured here: the driver will
+#: oversubscribe into system memory rather than refuse an allocation, so a card
+#: filled to the brim does not fail, it goes slow.
+#:
+#: A third of a gigabyte is added on top of theirs for the text encoder, which
+#: they do not have to carry: it is offloaded by leaf and its widest leaf is
+#: `lm_head`, a 3,584 by 152,064 matrix, 1.09 GiB on its own.
+LEAVE = int(0.8 * 2**30) + 600 * 2**20 + int(1.1 * 2**30)
+
+
+def how_many_fit(sizes: list[int], free: int, leave: int = LEAVE) -> int:
+    """How many blocks, in order, will fit on the card with room left to work.
+
+    Separated from the moving of them because it is the part worth checking:
+    an off-by-one here is a card filled to the brim, which on Windows does not
+    fail but quietly runs at the speed of system memory.
+
+    It stops at the first block that does not fit rather than skipping it and
+    trying the next. The blocks a transformer runs are run in order, so a gap
+    in the middle would be a block fetched between two that were already there,
+    and the point is to make the fetching contiguous and rare.
+    """
+    budget = free - leave
+    kept = 0
+    for size in sizes:
+        if size > budget:
+            break
+        budget -= size
+        kept += 1
+    return kept
+
+
+def _resident(transformer, blocks) -> tuple[int, int]:
+    """Pin as many blocks to the card as will fit, and say how many.
+
+    **The one thing `diffusers` will not do for us.** `apply_group_offloading`
+    treats every group alike: onloaded when its turn comes, dropped the moment
+    it is done, fetched again next step. Sixty blocks, twelve gigabytes, twice
+    a step, forever — while five or six gigabytes of the card sit empty because
+    the design never considered keeping anything.
+
+    ComfyUI's low-vram path does consider it, and the arithmetic is simply
+    `free_vram - minimum_required`: fill the card with weights and stream the
+    remainder. On this machine that is about five and a half gigabytes of the
+    twelve, so nearly half the model stops crossing the bus at all.
+
+    Done by taking the offload hook off a block and moving it across for good.
+    It has to happen before anything runs: the first offload is what replaces a
+    block's weights with a placeholder, so afterwards there would be nothing
+    left to move. Each block is measured as it goes rather than assumed equal,
+    because the first and last of a transformer rarely weigh what the middle
+    ones do.
+    """
+    import torch
+    from diffusers.hooks import HookRegistry
+    from diffusers.hooks.group_offloading import _GROUP_OFFLOADING
+
+    def weighs(block) -> int:
+        return sum(p.numel() * p.element_size() for p in block.parameters()) + sum(
+            b.numel() * b.element_size() for b in block.buffers()
+        )
+
+    free, _ = torch.cuda.mem_get_info()
+    wanted = how_many_fit([weighs(block) for block in blocks], free)
+
+    kept = 0
+    for block in list(blocks)[:wanted]:
+        registry = HookRegistry.check_if_exists_or_initialize(block)
+        if registry.get_hook(_GROUP_OFFLOADING) is None:
+            break
+        registry.remove_hook(_GROUP_OFFLOADING, recurse=False)
+        block.to(torch.device("cuda"))
+        kept += 1
+    return kept, len(blocks)
+
+
+def _reusing(transformer, reuse: float) -> None:
+    """How much of a step may be taken from the step before.
+
+    The one optimisation here that removes work rather than moving it about
+    faster. Every other thing in `PERFORMANCE.md` is about getting twelve
+    gigabytes to the card more quickly; this is about not fetching it.
+
+    **First Block Cache.** The transformer is sixty blocks and a step runs all
+    of them. With this on, the first block is run and what it changed is
+    compared with what it changed last step: if the difference is under the
+    threshold, the remaining fifty-nine are skipped and last step's residual is
+    reused. The saving here is not the arithmetic, which was never the
+    expensive part — it is that a skipped block's offload hook never fires, so
+    the block never crosses the bus at all. A skipped step moves one sixtieth
+    of the model instead of all of it.
+
+    The hook order is what makes that true, and it is true by luck rather than
+    by design: `HookRegistry` wraps the current forward each time, so the hook
+    registered last is the outermost one. Group offloading is applied when the
+    pipeline is built and this when a run starts, so this is outside it and
+    returns the cached answer without the offload hook underneath ever being
+    reached. Were it the other way round the block would be fetched and then
+    not used.
+
+    Zero is off and every step is computed in full. It is off by default
+    because it changes the picture: it is a guess that nothing much happened,
+    and a threshold high enough to skip most steps is high enough to lose the
+    change you asked for.
+    """
+    from diffusers.hooks import FirstBlockCacheConfig
+
+    if getattr(transformer, "_cache_config", None) is not None:
+        transformer.disable_cache()
+    if reuse > 0:
+        transformer.enable_cache(FirstBlockCacheConfig(threshold=reuse))
 
 
 def pulled_back(painting: Image.Image, produced: Image.Image, far: float) -> Image.Image:
@@ -284,6 +408,7 @@ def edit(
     guidance: float = 4.0,
     far: float = 1.0,
     size: tuple[int, int] | None = None,
+    reuse: float = 0.0,
     seed: int = 7,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
@@ -295,8 +420,9 @@ def edit(
     outside it is the original at its original resolution — so the answer to
     "it repainted my whole canvas" is to say which part you meant.
 
-    `size` overrides the megapixel the pipeline would otherwise pick for
-    itself. It is how a draft is drawn small; what comes back is scaled to the
+    `reuse` lets a step be taken from the step before it where little has
+    changed; zero computes every step in full. `size` overrides the megapixel
+    the pipeline would otherwise pick for itself. It is how a draft is drawn small; what comes back is scaled to the
     painting either way, so a draft is the same picture softer and not a
     smaller one.
 
@@ -309,6 +435,7 @@ def edit(
     import torch
 
     pipeline = _pipeline()
+    _reusing(pipeline.transformer, reuse)
 
     # Once the steps start there is something countable, so the note goes.
     if saying is not None:

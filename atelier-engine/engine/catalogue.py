@@ -211,6 +211,7 @@ def _edit(inputs, params, context) -> dict[str, Any]:
             size=draft_size(inputs["image"].size, bool(params.get("draft"))),
             guidance=float(params["guidance"]),
             far=float(params.get("far", 1.0)),
+            reuse=float(params.get("reuse", 0.0)),
             seed=int(params["seed"]),
             saying=saying,
             # Passed down rather than reported by the node, because the node
@@ -531,9 +532,17 @@ CATALOGUE: dict[str, NodeType] = {
                     "far", "slider", 1.0, label="How far from the original", minimum=0.1, maximum=1, step=0.05
                 ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
-                # The same picture in four steps instead of twenty. Everything
-                # that decides what the picture is stays where it is, so the
-                # full run is the thing the draft promised.
+                # The only dial here that removes work rather than hurrying it:
+                # a step whose first block barely moved is taken from the step
+                # before, and the fifty-nine blocks it skips never cross the
+                # bus at all. Off by default, because it is a guess.
+                # Up to a half, because measured on this model a tenth skips
+                # nothing at all and a fifth skips one step in seven. A dial
+                # whose useful range is off its end is a dial that does nothing.
+                Param(
+                    "reuse", "slider", 0.0, label="Reuse a step", minimum=0, maximum=0.5, step=0.05
+                ),
+                # Four steps instead of twenty, at a quarter of the pixels.
                 Param("draft", "toggle", False, label="Draft first"),
             ],
             run=_edit,

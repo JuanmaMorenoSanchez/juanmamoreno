@@ -3899,6 +3899,54 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R192 — Whatever fits on the card stays on it · met
+`apply_group_offloading` treats every group alike: onloaded when its turn
+comes, dropped the moment it is done, fetched again next step. Sixty blocks,
+twelve gigabytes, twice a step — while five gigabytes of the card sat empty,
+because keeping anything was never part of the design.
+
+The arithmetic is ComfyUI's, read out of their source rather than guessed:
+`free_vram - minimum_required`, where theirs is 0.8 GiB plus the 600 MiB they
+reserve on Windows *specifically* — their comment says "because of the shared
+vram issue", which is [R190]'s oversubscription cliff. A further 1.1 GiB is
+left here for the text encoder they do not have to carry.
+
+On this machine that keeps **22 of the 60 blocks**, so 37% of the model stops
+crossing the bus, and a step measures **27.8 seconds against 33.4**. Done by
+taking the offload hook off a block and moving it across for good, which has to
+happen before anything runs: the first offload replaces a block's weights with
+a placeholder, so afterwards there is nothing left to move.
+
+**Together with [R190], a step went from 133 seconds to 27.8.**
+*Proven by:* the engine's `test_resident.py` (9 tests: the reserve never eaten
+into, what there is room for kept, a big enough card keeping all of it,
+stopping rather than skipping what does not fit, blocks measured and not
+assumed equal, and the reserve being ComfyUI's plus the text encoder)
+
+### R191 — A step that changed almost nothing can be taken from the one before · met
+`FirstBlockCache`: run the first of the sixty blocks, compare what it changed
+with what it changed last step, and if the difference is under a threshold skip
+the other fifty-nine and reuse last step's answer. **The saving is not the
+arithmetic** — it is that a skipped block's offload hook never fires, so the
+block never crosses the bus. A skipped step measured **0.8 seconds against
+33.4**.
+
+That holds by luck rather than design and is worth writing down: `HookRegistry`
+wraps the current forward each time a hook is registered, so the last one
+registered is the outermost. Group offloading is applied when the pipeline is
+built and this when a run starts, so this sits outside it and returns the
+cached answer without the fetch underneath ever being reached. The other way
+round, the block would be fetched and then not used.
+
+**Off by default, and ranged on measurement rather than on the documentation.**
+At the 0.05 `diffusers` suggests, and at 0.10, nothing was skipped at all; at
+0.20 one step in seven was. So the dial runs to 0.5. It is the only setting in
+the box that changes the picture without being asked to, which the note says.
+*Proven by:* the engine's `test_reusing.py` (5 tests: zero leaving it exact,
+a threshold turning it on at that threshold, asking twice not stacking two
+caches on a pipeline that is kept between runs, going back to zero taking it
+off, and nothing being taken off when nothing was on)
+
 ### R190 — A model too big for the card is streamed in pieces, and the pieces are found · met
 `apply_group_offloading` decides what a block is by walking `named_children()`
 **one level deep**. The transformer keeps its blocks there and was grouped
