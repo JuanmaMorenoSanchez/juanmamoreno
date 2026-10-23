@@ -18,17 +18,22 @@ in 61 offload groups, one block each. Its text encoder is Qwen2.5-VL at bf16,
 A four-step edit of a 768×768 picture, through the service, timed from the
 request. Both columns are cold — a fresh process, an empty spill:
 
-| | before | the 16 GiB group fixed | blocks kept on the card |
-|---|---|---|---|
-| building the pipeline and writing the spill | 162.4 s | 82.9 s | **~90 s** |
-| encoding the prompts, and the first step | 253.9 s | 73.0 s | **66.5 s** |
-| each step after that | 132.7 / 133.0 / 133.4 s | 34.0 / 32.8 / 33.4 s | **27.3 … 28.3 s** |
-| **a four-step run** | **845 s — 14 minutes** | 257 s | — |
-| twenty steps, by the same arithmetic | ~49 minutes | ~13 minutes | **~11½ minutes** |
+| | before | the 16 GiB group fixed | kept on the card | and pinned |
+|---|---|---|---|---|
+| each step | 132.7 / 133.0 / 133.4 s | 34.0 / 32.8 / 33.4 s | 27.3 … 28.3 s | **23.7 / 23.8 / 23.7 s** |
+| to the first step | 416 s | 156 s | 162 s | **147 s** |
+| **a four-step run** | **845 s — 14 minutes** | 257 s | — | **231 s** |
+| twenty steps, by the same arithmetic | ~49 minutes | ~13 minutes | ~11½ minutes | **~10 minutes** |
 
-**133 seconds a step to 27.8 — 4.8×**, and about 4.4× over a whole twenty-step
-run. It is not noisy: seven consecutive steps inside one second of each other
-in the last column.
+**133 seconds a step to 23.7 — 5.6×**, and about 4.9× over a whole twenty-step
+run. It is not noisy: consecutive steps inside a tenth of a second of each
+other in the last column.
+
+**And the picture does not change.** Every one of those columns renders the
+same four steps at the same seed to **the same file, byte for byte** — mean
+absolute difference 0.00, largest difference 0. That is the only check worth
+making on a change that is meant to alter nothing, and the one that caught the
+empty blocks below.
 
 A draft takes four of those steps at a quarter of the pixels, so the four-step
 draft that was fourteen minutes is now a little over a minute and a half of
@@ -103,25 +108,45 @@ with the card no longer oversubscribed, some of it overlaps with compute.
 
 ## What else was tried
 
-### Pinned host memory instead of disk — ten times faster, and it does not fit
+### Pinned host memory instead of disk — 15%, once it was done their way
 
 The same bytes, pinned in host memory and copied asynchronously, arrive
-**10.3× faster**. It was implemented — drop `offload_to_disk_path`, add
-`use_stream=True` and `record_stream=True` — and failed:
+**10.3× faster**. Asking `diffusers` for it — drop `offload_to_disk_path`, add
+`use_stream=True` and `record_stream=True` — failed:
 
 ```
 CUDA error: out of memory
 Returning 2 (CUDA_ERROR_OUT_OF_MEMORY) from cuMemHostAlloc
 ```
 
-`cuMemHostAlloc`, not a VRAM allocation. Pinning 12.16 GiB means 12.16 GiB that
-cannot be paged out, and by the time the transformer is set up the text encoder
-has already been loaded. It failed after 167 seconds, in the setup, before a
-step.
+`cuMemHostAlloc`, not a VRAM allocation. With `low_cpu_mem_usage=False`,
+`_init_cpu_param_dict` pins the **entire model in one call** during setup, and
+12.16 GiB of locked pages — under ComfyUI's 12.65 GiB ceiling, but with the
+text encoder still in memory — is more than the system will give.
 
-**What would make it work:** more system memory, or a text encoder that is not
-sixteen gigabytes. A Q4 GGUF of Qwen2.5-VL-7B is about 4.5 GiB, which would
-leave room — that is a model to download and a decision to take.
+**ComfyUI pins per weight against a budget and evicts when it is full**, which
+is why they never hit it, and doing the same works here:
+
+- `low_cpu_mem_usage=True`, so `enable_group_offload` pins nothing at setup;
+- the blocks that fit go on the card first, which frees their host copies;
+- what is left is pinned one tensor at a time against `min(ram * 0.40,
+  free - 1 GiB)`, handing each pinned copy to the hook *and* to the parameter
+  as it goes, so the unpinned original is released on the spot — done the
+  other way the peak is twice the model;
+- anything the system refuses stops the loop rather than failing the run.
+
+Measured: **21 blocks on the card and 6.4 of the remaining 7.8 GiB pinned**,
+and a step of **23.7 s against 27.8**. The output is identical to the byte.
+
+There is no transformer spill any more either, so startup writes only the
+encoder.
+
+**One trap, and it cost a run to find.** With a stream, `enable_group_offload`
+puts an execution tracker on every block to learn the order they run in, and
+after the first forward walks the blocks that ran and reads each one's offload
+hook. A block made resident has had that hook removed, so it gives
+`'NoneType' object has no attribute 'group'` — two and a half minutes into the
+run. The tracker has to come off with it.
 
 ### A quarter of the pixels — 21%, which is neither nothing nor the prize
 

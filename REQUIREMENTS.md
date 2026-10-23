@@ -3899,6 +3899,42 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R193 — What is still streamed is held in pinned memory, not on disk · met
+A block that is not resident is fetched twice a step, forever, and how fast it
+arrives depends entirely on where it is kept. Measured: straight off the disk
+onto the card, **0.46 GiB/s**; the same bytes pinned in host memory and copied
+asynchronously, **4.73 GiB/s**.
+
+Asking `diffusers` for it fails. `use_stream=True` with the default
+`low_cpu_mem_usage=False` pins the **whole model in one call** during setup,
+and 12.16 GiB of locked pages — under ComfyUI's own 12.65 GiB ceiling, but
+with the text encoder still in memory — is more than the system will give:
+`cuMemHostAlloc ... CUDA_ERROR_OUT_OF_MEMORY`, 167 seconds in, before a step.
+
+**ComfyUI pins per weight against a budget**, which is why they never hit it,
+and the same works here: nothing pinned at setup, the resident blocks moved to
+the card first so their host copies are freed, then what is left pinned one
+tensor at a time against `min(ram * 0.40, free - 1 GiB)` — their share, and
+ours — handing each pinned copy to the hook *and* to the parameter as it goes
+so the unpinned original is released on the spot. Done the other way the peak
+is twice the model. Anything the system refuses stops the loop rather than
+failing the run: half pinned is half the model arriving ten times faster.
+
+Measured: **21 blocks on the card and 6.4 of the remaining 7.8 GiB pinned**,
+a step of **23.7 seconds against 27.8**, and no transformer spill written at
+startup at all.
+
+**A block that is staying has to leave the prefetch chain too.** With a stream,
+`enable_group_offload` puts an execution tracker on every block and afterwards
+reads each executed block's offload hook; one that has had its hook removed
+gives `'NoneType' object has no attribute 'group'`, two and a half minutes in.
+*Proven by:* the engine's `test_resident.py` `MayPinTest` (7 tests: never more
+than would help, ComfyUI's share of the whole machine, a gigabyte of what is
+free left alone, nothing rather than the last of memory, never negative, and
+this machine holding what is left after the card); and by rendering the same
+four steps at the same seed and comparing files — **identical to the byte**
+against both the resident-only and the stream-none configurations
+
 ### R192 — Whatever fits on the card stays on it · met
 `apply_group_offloading` treats every group alike: onloaded when its turn
 comes, dropped the moment it is done, fetched again next step. Sixty blocks,

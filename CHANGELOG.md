@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.40.0
+
+- **feat** — the blocks that are still streamed are held in pinned host memory
+  rather than on disk. Pinning the whole model in one call is what `diffusers`
+  does and what failed here; pinning weight by weight against a budget is what
+  ComfyUI does and what works. 21 blocks on the card, 6.4 of the remaining 7.8
+  GiB pinned, **23.7 seconds a step against 27.8 — and 133 this morning.**
+  Nothing is written to disk for the transformer at startup any more.
+- The picture is unchanged, checked the only way worth checking: the same four
+  steps at the same seed render the same file, byte for byte, in every
+  configuration measured today.
+
 ## 2.39.1
 
 - **fix** — the blocks kept on the card in 2.39.0 were empty. The offload hook

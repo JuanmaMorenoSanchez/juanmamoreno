@@ -20,7 +20,7 @@ error.
 
 import unittest
 
-from engine.edit import LEAVE, how_many_fit
+from engine.edit import LEAVE, PINNABLE, how_many_fit, may_pin
 
 GIB = 2**30
 
@@ -75,6 +75,49 @@ class HowManyFitTest(unittest.TestCase):
         # encoded.
         self.assertEqual(LEAVE, int(0.8 * GIB) + 600 * 2**20 + int(1.1 * GIB))
 
+
+
+class MayPinTest(unittest.TestCase):
+    """
+    How much host memory it is reasonable to lock.
+
+    Asking `diffusers` to pin the model — `use_stream=True` with
+    `low_cpu_mem_usage=False` — pins all of it in one call during setup, and
+    twelve gigabytes of that failed here with `cuMemHostAlloc ...
+    CUDA_ERROR_OUT_OF_MEMORY` while being *under* the ceiling, because the
+    text encoder was in memory at the time. ComfyUI pins per weight against
+    `ram * 0.40` and evicts when it is full, which is why they never hit it.
+
+    The share is theirs. The second ceiling is ours: this is his working
+    machine, and pinned pages cannot be paged out, so taking the last of what
+    is free would be worse than being slow.
+    """
+
+    def test_it_never_asks_for_more_than_would_help(self) -> None:
+        self.assertEqual(may_pin(ram=32 * GIB, free=30 * GIB, want=2 * GIB), 2 * GIB)
+
+    def test_it_stops_at_comfyuis_share_of_the_whole_machine(self) -> None:
+        self.assertEqual(may_pin(ram=32 * GIB, free=30 * GIB, want=30 * GIB), int(32 * GIB * 0.40))
+
+    def test_it_leaves_a_gigabyte_of_what_is_actually_free(self) -> None:
+        # The share says 12.8; only 4 is free, so 3.
+        self.assertEqual(may_pin(ram=32 * GIB, free=4 * GIB, want=30 * GIB), 3 * GIB)
+
+    def test_it_pins_nothing_rather_than_the_last_of_memory(self) -> None:
+        self.assertEqual(may_pin(ram=32 * GIB, free=GIB // 2, want=8 * GIB), 0)
+
+    def test_it_is_never_negative(self) -> None:
+        self.assertEqual(may_pin(ram=32 * GIB, free=0, want=8 * GIB), 0)
+
+    def test_the_share_is_the_one_comfyui_uses(self) -> None:
+        self.assertEqual(PINNABLE, 0.40)
+
+    def test_this_machine_can_hold_what_is_left_after_the_card(self) -> None:
+        # 60 blocks less the 22 that fit on the card is about 7.7 GiB, which
+        # is the whole point: twelve in one call is what failed.
+        self.assertEqual(
+            may_pin(ram=32 * GIB, free=14 * GIB, want=int(7.7 * GIB)), int(7.7 * GIB)
+        )
 
 if __name__ == "__main__":
     unittest.main()
