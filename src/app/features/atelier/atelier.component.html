@@ -442,9 +442,36 @@
     >
       {{ handSaving() ? 'Saving…' : handSaved() ? 'Saved' : 'Save' }}
     </button>
+    @if (handNames().length) {
+      <!-- A mark against each name. Five of the seven first written here meant
+           nothing to the model, and nothing on the page said so: a name it has
+           never read about does not make the picture look like that painter,
+           it makes it look like whatever the model associates with the shape
+           of the name. A run refuses rather than spending half an hour on it. -->
+      <span class="atelier-hand-names" data-testid="hand-names">
+        @for (one of handNames(); track one.name) {
+          <span
+            class="atelier-name"
+            [class.is-known]="one.known === true"
+            [class.is-unknown]="one.known === false"
+            [class.atelier-cancel]="one.known === false"
+            [matTooltip]="
+              one.known === true
+                ? 'the model has read about this painter'
+                : one.known === false
+                  ? 'the model has never read about this painter — a run will refuse'
+                  : 'not asked about yet — save to find out'
+            "
+          >
+            {{ one.name }}
+          </span>
+        }
+      </span>
+    }
     <p class="atelier-caveat">
       Added to the end of every image and video prompt as the manner of the thing. Kept on this
-      machine only. Every picture is also told not to be cartoonish, an illustration or a comic.
+      machine only. Every picture is also told not to be cartoonish, an illustration or a comic. A
+      name the model has never read about is no style at all — it has to have read the painter.
     </p>
   </section>
 

@@ -350,17 +350,34 @@ def hand() -> JSONResponse:
     that has never been told answers with an empty string, which is also what
     a fresh clone does.
     """
-    return JSONResponse({"hand": house.hand()})
+    return JSONResponse({"hand": house.hand(), "known": house.verdicts()})
 
 
 @app.put("/hand")
 def set_hand(hand: str = Body("", embed=True)) -> JSONResponse:
-    """Writes it down, so it can be changed from the page.
+    """Writes it down, and says which of the names mean anything.
 
     Editing a file on disk to change a prompt is a thing nobody does twice.
     Empty puts it back to nothing.
+
+    **The judging happens here rather than at the start of a run.** It costs
+    a model load, and the moment to spend that is while he is typing names
+    and waiting on the answer — not half an hour into an edit. Each name is
+    asked about once ever and written down; a run then only reads the
+    verdicts, which is free, and refuses if any of them is a no.
     """
-    return JSONResponse({"hand": house.set_hand(hand)})
+    written = house.set_hand(hand)
+
+    decided = house.verdicts()
+    for name in house.names(written):
+        if name in decided:
+            continue
+        try:
+            house.judge(name, lambda asking: write_text(asking, most_tokens=120, temperature=0))
+        except Exception:  # noqa: BLE001 — a name nobody could ask about stays unjudged
+            break
+
+    return JSONResponse({"hand": written, "known": house.verdicts()})
 
 
 @app.get("/flows")

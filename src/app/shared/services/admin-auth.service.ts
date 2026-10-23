@@ -133,6 +133,19 @@ export class AdminAuthService {
    * that is the point at which he has to do something — which is why the way
    * back in also lives in the menu.
    */
+  /**
+   * Asks Google for a fresh token now, rather than when the clock says to.
+   *
+   * Public because a request can be refused before the renewal timer was due
+   * — a laptop asleep through the hour, a clock that drifted, a tab restored
+   * from days ago. The caller that was refused is the one that knows the
+   * session has lapsed, and it is the one holding something worth not
+   * losing.
+   */
+  renewNow(): Promise<boolean> {
+    return this.renew();
+  }
+
   private renew(): Promise<boolean> {
     if (this.renewing) return this.renewing;
     if (!environment.googleClientId) return Promise.resolve(false);

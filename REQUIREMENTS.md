@@ -3765,6 +3765,66 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R183 — A name the model has never read is not a style · met
+Asked which of the seven painters in his hand the model could actually place,
+the answer was two. Those two came back with their centuries and their
+handling of paint; the other five came back `KNOWN: no` — and so did his own
+name. Which names those are is his and is not written down here, for the same
+reason the hand itself is not: it lives in `local/`, which git ignores.
+
+A name it has never read about does not make the picture look like that
+painter. It makes it look like whatever the model associates with the shape
+of the name — the language it is written in, other painters called something
+similar — which is not a style and is worse than asking for nothing, because
+it spends the prompt on it.
+
+**So a run refuses rather than spending half an hour finding out.** Only
+names already judged and found wanting: a name nobody has asked about is let
+through, because refusing a run over a question never put is worse than the
+run. The message says which names and what to do instead.
+
+**Judged when the hand is saved, not when a run starts.** Asking costs
+eighteen gigabytes of model load, and the moment to spend that is while he is
+typing names and waiting on the answer. Each name is asked about once ever
+and written down beside the hand, in `local/`, which git ignores; a run then
+only reads verdicts, which is free. The page marks each name with what came
+back.
+
+**The question matters as much as the answer.** Asked plainly, a model writes
+a plausible paragraph about anyone, because that is what it does. "Guessing
+is worse than saying no" is what makes it refuse — and it is a proxy, said as
+one: this is the text model, and the image model has read *less* about any
+one person, so a name this cannot place is certainly beyond that one.
+
+**And it is why `In my style` is not redundant.** His own name means nothing
+to the model either. Showing it two of his paintings is the only thing that
+transfers a hand it has never read about, which is what that switch does.
+*Proven by:* `test_known_names.py` (13 tests: the hand split into names, a
+verdict written down so nothing is judged twice, the question carrying its
+refusal clause, a judged-unknown name stopping a run with both the name and
+the way out in the message, an unjudged name let through, and no hand
+stopping nothing); `atelier.component.spec.ts` "marks the ones the model has
+read about, and the ones it has not" and "says nothing about a name nobody
+has asked about yet"
+
+### R184 — A save refused once is not refused · met
+Saving a finished piece sometimes answered 403, and the instinct on seeing an
+error after half an hour of rendering is to reload — which is the one thing
+that actually loses it, because the run's results are on the page and the
+page is what a reload throws away.
+
+The usual cause is an hour-old Google token rather than anything about the
+piece, so the credential is renewed and the same bytes are sent again. Once,
+not in a loop: if a fresh token is refused as well then the problem is not
+the token, and sending the same five megabytes a third time helps nobody.
+
+**And if it still fails, the message says where the piece is.** The engine
+wrote it to its own folder when the run finished and it is still there: a
+failed save loses the press, not the picture. Press Save again.
+*Proven by:* `kept.service.spec.ts` "sends it again with a fresh credential
+when it is refused", "gives up after one retry rather than hammering it" and
+"does not renew for a failure that is not about the credential"
+
 ### R181 — A colour asked for is a colour defined · met
 `var(--surface, #fff)` was written in six stylesheets and `--surface` was
 defined in none, so all six quietly took the fallback. White is right in one

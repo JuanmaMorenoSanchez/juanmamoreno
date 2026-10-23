@@ -201,12 +201,33 @@ export class AtelierComponent implements OnDestroy {
   protected readonly startByHand = START_BY_HAND;
 
   protected readonly hand = signal('');
+  /**
+   * What the model makes of each name, by name.
+   *
+   * Asked once per name when the hand is saved and written down on the
+   * engine, because asking costs eighteen gigabytes of model load. Shown as
+   * a mark against each name, because five of the seven he first wrote meant
+   * nothing to it and nothing on the page said so.
+   */
+  protected readonly known = signal<Record<string, boolean>>({});
+
+  /** The hand as the separate names it is, each with what is known of it. */
+  protected readonly handNames = computed(() =>
+    this.hand()
+      .split(',')
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .map((name) => ({ name, known: this.known()[name] }))
+  );
   protected readonly handSaving = signal(false);
   protected readonly handSaved = signal(false);
 
   constructor() {
     void this.wake();
-    void this.engine.hand().then((said) => this.hand.set(said));
+    void this.engine.hand().then((said) => {
+      this.hand.set(said.hand);
+      this.known.set(said.known);
+    });
     this.recall();
     void this.kept.refresh();
 
@@ -228,7 +249,9 @@ export class AtelierComponent implements OnDestroy {
     this.handSaving.set(true);
     this.failure.set(null);
     try {
-      this.hand.set(await this.engine.setHand(this.hand()));
+      const said = await this.engine.setHand(this.hand());
+      this.hand.set(said.hand);
+      this.known.set(said.known);
       this.handSaved.set(true);
     } catch (error) {
       this.failure.set(error instanceof Error ? error.message : 'that could not be written');
@@ -280,7 +303,16 @@ export class AtelierComponent implements OnDestroy {
       // failure here used to leave behind, and it named neither the stage nor
       // the value.
       console.error('keeping a layer failed', error);
-      this.failure.set(error instanceof Error ? error.message : 'it could not be kept');
+      // And where the piece still is, which is the part worth knowing. The
+      // engine wrote it to its own folder when the run finished and it is
+      // still there: a failed save loses the press, not the picture. Say so,
+      // because the instinct on seeing an error after half an hour of
+      // rendering is to reload, and reloading is the only thing that would
+      // actually lose it.
+      const why = error instanceof Error ? error.message : 'it could not be kept';
+      this.failure.set(
+        `${why} — it is still on the engine, so press Save again rather than reloading`
+      );
     } finally {
       this.keeping.set(null);
     }

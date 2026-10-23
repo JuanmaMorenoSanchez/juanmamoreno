@@ -148,6 +148,16 @@ export interface CutResult {
 }
 
 /**
+ * The painters the work leans towards, and whether the model has read about
+ * any of them.
+ */
+export interface Hand {
+  hand: string;
+  /** By name: true if the model could place them, false if it could not. */
+  known: Record<string, boolean>;
+}
+
+/**
  * The browser's half of the conversation with the local engine.
  *
  * Plain `fetch` rather than `HttpClient`, for one reason: the request has to
@@ -378,18 +388,25 @@ export class AtelierEngineService {
    * them. An engine that has never been told answers with nothing, which is
    * also what a fresh clone does, and the prompts are then the prompts.
    */
-  async hand(): Promise<string> {
+  async hand(): Promise<Hand> {
     try {
       const response = await fetch(`${ENGINE}/hand`, toLocal({ cache: 'no-store' }));
-      if (!response.ok) return '';
-      return ((await response.json()) as { hand?: string }).hand ?? '';
+      if (!response.ok) return { hand: '', known: {} };
+      const said = (await response.json()) as Partial<Hand>;
+      return { hand: said.hand ?? '', known: said.known ?? {} };
     } catch {
-      return '';
+      return { hand: '', known: {} };
     }
   }
 
-  /** Writes them down. Empty puts the prompts back as they were. */
-  async setHand(hand: string): Promise<string> {
+  /**
+   * Writes them down, and answers with what the model makes of each name.
+   *
+   * The judging happens here rather than at the start of a run: it costs a
+   * model load, and the moment to spend that is while he is typing names and
+   * waiting on the answer, not half an hour into an edit.
+   */
+  async setHand(hand: string): Promise<Hand> {
     const response = await fetch(
       `${ENGINE}/hand`,
       toLocal({
@@ -399,7 +416,8 @@ export class AtelierEngineService {
       })
     );
     if (!response.ok) throw new Error(await complaint(response));
-    return ((await response.json()) as { hand?: string }).hand ?? '';
+    const said = (await response.json()) as Partial<Hand>;
+    return { hand: said.hand ?? '', known: said.known ?? {} };
   }
 
   /**

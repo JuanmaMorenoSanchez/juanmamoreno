@@ -465,3 +465,36 @@
     cursor: not-allowed;
   }
 }
+
+/* The names in the hand, each with what the model makes of it. */
+.atelier-hand-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  flex: 1 1 100%;
+}
+
+.atelier-name {
+  padding: 0.1rem 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  /* Faint until it has been asked about: not known is not the same as not
+     knowable, and marking an unasked name would be a lie. */
+  opacity: 0.55;
+  cursor: help;
+
+  /* One green for both themes rather than a pair and a media query: it reads
+     on white and on near-black, and this stylesheet has a size to keep. */
+  &.is-known {
+    opacity: 1;
+    color: #2e9e63;
+  }
+}
+
+/* A name that stops a run wears what a cancel wears, which already has its
+   own colour in each theme. Struck through, because it is doing nothing. */
+.atelier-name.is-unknown {
+  opacity: 1;
+  text-decoration: line-through;
+}

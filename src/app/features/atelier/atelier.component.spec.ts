@@ -111,6 +111,7 @@ describe('AtelierComponent', () => {
       catalogue?: NodeTypeDef[];
       flows?: FlowDef[];
       hand?: string;
+      known?: Record<string, boolean>;
       run?: () => Promise<GraphRun>;
       states?: JobState[];
       kept?: unknown[];
@@ -241,8 +242,9 @@ describe('AtelierComponent', () => {
             flows: () => Promise.resolve(options.flows ?? []),
             // The painters, which this repository does not have: the engine
             // keeps them in a file git ignores, so the stub has none either.
-            hand: () => Promise.resolve(options.hand ?? ''),
-            setHand: (saying: string) => Promise.resolve(saying.trim()),
+            hand: () => Promise.resolve({ hand: options.hand ?? '', known: options.known ?? {} }),
+            setHand: (saying: string) =>
+              Promise.resolve({ hand: saying.trim(), known: options.known ?? {} }),
             startGraph: (_p: Blob, graph: unknown) => {
               sent.push(graph);
               // A rejecting `run` now stands for the engine refusing the graph.
@@ -891,6 +893,53 @@ describe('AtelierComponent', () => {
 
     expect(keptCalls).toHaveLength(0);
     expect(at(host, 'save-a-girl.png')).not.toBeNull();
+  });
+
+  /**
+   * The painters in the hand, and what the model makes of each.
+   *
+   * Five of the seven first written there meant nothing to it, and nothing
+   * on the page said so. A name the model has never read about does not make
+   * the picture look like that painter — it makes it look like whatever the
+   * model associates with the shape of the name.
+   */
+  describe('the names in the hand', () => {
+    it('marks the ones the model has read about, and the ones it has not', async () => {
+      const { fixture, host } = build({
+        hand: 'Goya, Someone Nobody Wrote About',
+        known: { Goya: true, 'Someone Nobody Wrote About': false },
+      });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      const names = at(host, 'hand-names');
+      const known = names?.querySelector('.is-known');
+      const unknown = names?.querySelector('.is-unknown');
+
+      expect(known?.textContent?.trim()).toBe('Goya');
+      expect(unknown?.textContent?.trim()).toBe('Someone Nobody Wrote About');
+    });
+
+    it('says nothing about a name nobody has asked about yet', async () => {
+      // Not asked is not the same as not known, and marking it as refused
+      // would be a lie about a question never put.
+      const { fixture, host } = build({ hand: 'Someone Unjudged', known: {} });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      const names = at(host, 'hand-names');
+      expect(names?.querySelector('.is-known')).toBeNull();
+      expect(names?.querySelector('.is-unknown')).toBeNull();
+      expect(names?.textContent).toContain('Someone Unjudged');
+    });
+
+    it('shows no names at all when the hand is empty', async () => {
+      const { fixture, host } = build({ hand: '' });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      expect(at(host, 'hand-names')).toBeNull();
+    });
   });
 
   it('shows what has already been kept, which outlives the engine', () => {

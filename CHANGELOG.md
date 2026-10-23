@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.34.0
+
+- **feat** — a run refuses to start if the style names a painter the model
+  has never read about. Asked about the seven in his hand, it could place
+  two. A name it does not know is not a style — it is whatever the
+  model associates with the shape of the name — and half an hour is too long
+  to find that out at the end. Each name is judged once when the hand is
+  saved, written down beside it, and marked on the page.
+- **fix** — a save refused with 403 renews the credential and sends the same
+  bytes again, once. If it still fails, the message says the piece is still
+  on the engine and to press Save rather than reload — reloading was the only
+  thing that actually lost it.
+
+---
+
 ## 2.33.0
 
 - **fix** — the atelier's boxes were white with pale text on them in dark

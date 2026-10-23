@@ -25,6 +25,7 @@ from PIL import Image
 
 from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
+from . import house
 from .draft import steps as draft_steps
 from .edit import available as edit_available, edit as edit_painting
 from .style import (
@@ -135,6 +136,8 @@ def _edit(inputs, params, context) -> dict[str, Any]:
     around — the registry holds one model at a time and this is the moment
     that rule earns itself.
     """
+    house.refuse_unknown()
+
     hand = str(params.get("style") or STYLE_OFF)
     if hand != STYLE_OFF and not style_available(hand):
         raise GraphError(
@@ -236,6 +239,8 @@ def _video(inputs, params, context) -> dict[str, Any]:
     registry = context.get("registry")
     if registry is not None:
         registry.evict()
+
+    house.refuse_unknown()
 
     saying = context.get("saying")
     if saying is not None:

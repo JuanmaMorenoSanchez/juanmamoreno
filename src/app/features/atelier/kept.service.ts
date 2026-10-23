@@ -173,9 +173,12 @@ export class KeptService {
       form.append('height', String(about.height));
       if (about.tokenId) form.append('tokenId', about.tokenId);
 
-      const kept = inside<KeptPiece>(
-        await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()))
-      );
+      // Refused once is not refused. A save is the end of a run that took
+      // half an hour, and the usual reason for a 403 is an hour-old token
+      // rather than anything about the piece — so the credential is renewed
+      // and the same bytes are sent again. Renewal is silent when Google is
+      // willing, which it is whenever he is still signed in there.
+      const kept = inside<KeptPiece>(await this.sending(form));
       // Guarded here as well as where the list is fetched, because this is
       // the line that threw: a save that reached the bucket must not then
       // fail on the shelf it is being added to.
@@ -183,6 +186,26 @@ export class KeptService {
       return kept;
     } finally {
       this.busy.set(false);
+    }
+  }
+
+  /**
+   * Posts the piece, and once more with a fresh credential if it was refused.
+   *
+   * Once, not in a loop: if a new token is refused as well then the problem
+   * is not the token, and sending the same five megabytes a third time helps
+   * nobody.
+   */
+  private async sending(form: FormData): Promise<unknown> {
+    try {
+      return await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()));
+    } catch (error) {
+      const status = (error as { status?: number })?.status;
+      if (status !== 401 && status !== 403) throw error;
+
+      const back = await this.admin.renewNow();
+      if (!back) throw error;
+      return await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()));
     }
   }
 

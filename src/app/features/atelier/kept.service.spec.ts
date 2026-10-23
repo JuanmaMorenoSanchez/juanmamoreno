@@ -27,8 +27,13 @@ describe('KeptService', () => {
     ...over,
   });
 
-  const build = (answers: { get?: unknown; post?: unknown } = {}) => {
+  const build = (
+    answers: { get?: unknown; post?: unknown } = {},
+    options: { refusals?: number; renews?: boolean; breaks?: number } = {}
+  ) => {
     const calls: { method: string; url: string }[] = [];
+    const renewals: boolean[] = [];
+    let refusalsLeft = options.refusals ?? 0;
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
@@ -42,6 +47,11 @@ describe('KeptService', () => {
             },
             post: (url: string) => {
               calls.push({ method: 'post', url });
+              if (options.breaks) return throwError(() => ({ status: options.breaks }));
+              if (refusalsLeft > 0) {
+                refusalsLeft--;
+                return throwError(() => ({ status: 403 }));
+              }
               return of(answers.post ?? piece({ id: 'new' }));
             },
             delete: (url: string) => {
@@ -50,10 +60,19 @@ describe('KeptService', () => {
             },
           },
         },
-        { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        {
+          provide: AdminAuthService,
+          useValue: {
+            bearerToken: () => 'a-token',
+            renewNow: () => {
+              renewals.push(true);
+              return Promise.resolve(options.renews ?? true);
+            },
+          },
+        },
       ],
     });
-    return { kept: TestBed.inject(KeptService), calls };
+    return { kept: TestBed.inject(KeptService), calls, renewals };
   };
 
   it('holds what the backend sent', async () => {
@@ -113,6 +132,44 @@ describe('KeptService', () => {
       await kept.refresh();
 
       expect(kept.pieces()).toHaveLength(1);
+    });
+  });
+
+  /**
+   * The save that answered 403 after half an hour of rendering.
+   *
+   * The instinct on seeing that is to reload, and reloading is the one thing
+   * that actually loses the piece: the run's results are on the page. The
+   * usual cause is an hour-old token rather than anything about the piece.
+   */
+  describe('a save that is refused', () => {
+    const saving = (kept: KeptService) =>
+      kept.keep(new Blob(['x']), { name: 'A layer', kind: 'layer', width: 10, height: 10 });
+
+    it('sends it again with a fresh credential when it is refused', async () => {
+      const { kept, calls, renewals } = build({}, { refusals: 1 });
+
+      const saved = await saving(kept);
+
+      expect(renewals).toHaveLength(1);
+      expect(calls.filter((call) => call.method === 'post')).toHaveLength(2);
+      expect(saved.id).toBe('new');
+    });
+
+    it('gives up after one retry rather than hammering it', async () => {
+      // If a fresh token is refused as well then the problem is not the
+      // token, and sending the same five megabytes a third time helps nobody.
+      const { kept, calls } = build({}, { refusals: 5 });
+
+      await expect(saving(kept)).rejects.toBeTruthy();
+      expect(calls.filter((call) => call.method === 'post')).toHaveLength(2);
+    });
+
+    it('does not renew for a failure that is not about the credential', async () => {
+      const { kept, renewals } = build({}, { breaks: 500 });
+
+      await expect(saving(kept)).rejects.toBeTruthy();
+      expect(renewals).toHaveLength(0);
     });
   });
 

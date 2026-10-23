@@ -13,7 +13,9 @@ from tempfile import TemporaryDirectory
 
 from PIL import Image
 
-from engine import style
+from unittest import mock
+
+from engine import house, style
 from engine.catalogue import CATALOGUE
 from engine.nodes import GraphError
 
@@ -129,6 +131,18 @@ class NodeTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.node = CATALOGUE["edit"]
+        # His own hand lives in `local/`, which these tests must not read:
+        # a run refuses before it starts if the hand names a painter the
+        # model has never heard of, and whose names are in that file on this
+        # machine is not a thing any test should depend on.
+        room = TemporaryDirectory()
+        self.addCleanup(room.cleanup)
+        empty = Path(room.name) / "local"
+        patched = mock.patch.multiple(
+            house, LOCAL=empty, HAND=empty / "style.txt", JUDGED=empty / "hand-known.json"
+        )
+        patched.start()
+        self.addCleanup(patched.stop)
 
     def test_it_offers_the_styles_as_a_list_rather_than_a_text_field(self) -> None:
         # A typed style would be a typo discovered eighteen minutes later.
