@@ -55,8 +55,19 @@ def available() -> bool:
     return GGUF.exists()
 
 
-def forget() -> None:
-    """Drop the pipeline, and with it the card and the pinned host memory.
+def ready() -> bool:
+    """Whether the pipeline is already built, so nothing has to be prepared.
+
+    Asked so that the note about the first edit of a session taking minutes is
+    only shown when it is true. Measured, a run whose prompt is already known
+    reaches its first step in 1.2 seconds, and telling somebody to expect
+    minutes is as bad as telling them nothing.
+    """
+    return _pipeline.cache_info().currsize > 0
+
+
+def forget() -> bool:
+    """Drop the pipeline, and with it the card and the host memory it holds.
 
     The registry can hand back the models it built, and these two were not
     among them: the editor and the clip model are each held by an `lru_cache`
@@ -64,11 +75,14 @@ def forget() -> None:
     half gigabytes of it stayed held — and the next edit spent three and a
     half minutes preparing before dying of "CUDA error: out of memory".
 
-    It matters more now that the transformer sits pinned in host memory, which
-    cannot be paged out and so is twelve gigabytes nothing else on the machine
-    can have.
+    Answers whether there was anything to drop, because asking the driver for
+    the memory back is not free: it returns the allocator's warm blocks too,
+    and the first edit of a session is measurably slower than the second
+    largely because every block it onloads has to be allocated afresh.
     """
+    held = _pipeline.cache_info().currsize > 0
     _pipeline.cache_clear()
+    return held
 
 
 def _remembering(encode: Callable[..., Any]) -> Callable[..., Any]:
@@ -170,8 +184,34 @@ def _pipeline():
             pipeline.text_encoder,
             onload_device=onload,
             offload_device=offload,
-            offload_type="block_level",
-            num_blocks_per_group=1,
+            # A layer at a time, and by leaf rather than by block.
+            #
+            # `block_level` walks `named_children()` and groups whatever it
+            # finds that is a `ModuleList`. This encoder's children are `model`
+            # and `lm_head`, and the layers are two levels further in, under
+            # `model.language_model.layers` and `model.visual.blocks`. So
+            # nothing matched, everything fell into the group that holds what
+            # did not match, and the whole encoder was offloaded as a **single
+            # 16.58 GiB file** — which it then put on an 8 GiB card in one go.
+            #
+            # On Windows that does not fail. The driver oversubscribes into
+            # system memory and the card is left with no free VRAM at all, so
+            # the transformer's blocks land in paged memory for the rest of the
+            # run. Measured on four-step runs: a step after an encode is 105 s,
+            # a step in a run whose prompt was already known is 34 s. The
+            # encode cost 254 seconds of its own and then made every step three
+            # times slower.
+            #
+            # `block_modules=["model", "language_model", "visual"]` does find
+            # the lists, and fails differently: the outer model reaches
+            # `embed_tokens` without going through `language_model.forward`, so
+            # the embedding is still on the CPU when the ids arrive on the card
+            # — "Expected all tensors to be on the same device". `leaf_level`
+            # has no such gap, because every Linear and every Embedding carries
+            # its own hook and fetches itself when it is called. It costs more
+            # synchronising, which would matter for something that runs forty
+            # times a generation and does not for something that runs twice.
+            offload_type="leaf_level",
             offload_to_disk_path=str(SPILL / "text_encoder"),
         )
 
@@ -243,6 +283,7 @@ def edit(
     steps: int = 20,
     guidance: float = 4.0,
     far: float = 1.0,
+    size: tuple[int, int] | None = None,
     seed: int = 7,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
@@ -253,6 +294,11 @@ def edit(
     With a mask, only the masked region is taken from the model and everything
     outside it is the original at its original resolution — so the answer to
     "it repainted my whole canvas" is to say which part you meant.
+
+    `size` overrides the megapixel the pipeline would otherwise pick for
+    itself. It is how a draft is drawn small; what comes back is scaled to the
+    painting either way, so a draft is the same picture softer and not a
+    smaller one.
 
     `watching` is told each step as it finishes, which is the only honest
     progress this has: eighteen minutes of silence is indistinguishable from a
@@ -287,6 +333,9 @@ def edit(
         # reason; now that there is something worth saying, it says it.
         negative_prompt=house.never(),
         num_inference_steps=steps,
+        # The pipeline works at about a megapixel whatever it is handed,
+        # unless it is told otherwise. A draft tells it otherwise.
+        **({"width": size[0], "height": size[1]} if size else {}),
         true_cfg_scale=guidance,
         generator=torch.Generator().manual_seed(seed),
         callback_on_step_end=each_step,

@@ -26,11 +26,12 @@ from PIL import Image
 from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from . import house
-from .draft import steps as draft_steps
+from .draft import size as draft_size, steps as draft_steps
 from .edit import (
     available as edit_available,
     edit as edit_painting,
     forget as forget_editor,
+    ready as editor_ready,
 )
 from .style import (
     OFF as STYLE_OFF,
@@ -45,6 +46,7 @@ from .inpaint import fill as fill_behind
 from .video import (
     animate as animate_painting,
     forget as forget_clips,
+    ready as clips_ready,
     scenes as scene_by_scene,
     shown as shown_size,
     write_video,
@@ -80,16 +82,20 @@ def _make_room(context: dict[str, Any], keeping: str) -> None:
     `keeping` is the one pipeline this box is about to use, by name, so that two
     edits in a row do not rebuild the editor between them. The driver is asked
     for the memory back last, because until the thing holding it has been
-    dropped there is nothing to hand over.
+    dropped there is nothing to hand over — and only if something *was*
+    dropped, because emptying the allocator's cache also returns every warm
+    block in it, and a step that has to allocate each of sixty-one groups from
+    the driver is measurably slower than one that does not.
     """
     registry = context.get("registry")
     if registry is not None:
         registry.evict()
+    dropped = False
     if keeping != "edit":
-        forget_editor()
+        dropped = forget_editor() or dropped
     if keeping != "video":
-        forget_clips()
-    if registry is not None:
+        dropped = forget_clips() or dropped
+    if dropped and registry is not None:
         registry.release()
 
 
@@ -183,9 +189,11 @@ def _edit(inputs, params, context) -> dict[str, Any]:
     _make_room(context, keeping="edit")
 
     saying = context.get("saying")
-    if saying is not None:
-        # Measured at about four minutes the first time in a process: the
-        # spill is cleared and twelve gigabytes written back out.
+    if saying is not None and not editor_ready():
+        # Measured at about two and a half minutes the first time in a process:
+        # the spill is cleared and the text encoder written back out. Said only
+        # when it is about to happen — a run whose prompt is already known
+        # reaches its first step in 1.2 seconds.
         saying("preparing the model — the first edit of a session takes a few minutes before it starts")
 
     mask = inputs.get("mask")
@@ -200,6 +208,7 @@ def _edit(inputs, params, context) -> dict[str, Any]:
                 else None
             ),
             steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
+            size=draft_size(inputs["image"].size, bool(params.get("draft"))),
             guidance=float(params["guidance"]),
             far=float(params.get("far", 1.0)),
             seed=int(params["seed"]),
@@ -273,7 +282,7 @@ def _video(inputs, params, context) -> dict[str, Any]:
     house.refuse_unknown()
 
     saying = context.get("saying")
-    if saying is not None:
+    if saying is not None and not clips_ready():
         saying("preparing the model — the first clip of a session spends minutes before a step runs")
 
     frames = animate_painting(
@@ -327,7 +336,7 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
     _make_room(context, keeping="video")
 
     saying = context.get("saying")
-    if saying is not None:
+    if saying is not None and not clips_ready():
         saying("preparing the model — the first clip of a session spends minutes before a step runs")
 
     frames = scene_by_scene(

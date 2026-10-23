@@ -5,6 +5,26 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.38.0
+
+- **fix** — the text encoder was being offloaded as a single 16.58 GiB group,
+  because block detection only looks one level into a model and this one keeps
+  its layers two levels down. Put on an 8 GiB card in one call, Windows
+  oversubscribes rather than failing, and the card is left with no free VRAM,
+  so every step after an encode ran in paged memory. Offloaded by leaf now.
+  **A cold four-step edit went from 845 seconds to 257**, and a twenty-step one
+  from about forty-nine minutes to about thirteen.
+- **feat** — a draft is quicker in both of the ways it can be: four steps of
+  the twenty, and a quarter of the pixels. Measured at a fifth off a step; the
+  note under the switch says what it costs, which is a little of the
+  composition.
+- **fix** — the allocator's cache is emptied only when something was actually
+  dropped. It was being emptied before every edit, which returns every warm
+  block in it for nothing.
+- **fix** — "preparing the model — takes a few minutes" is only said when it is
+  true. A run whose prompt is already known reaches its first step in 1.2
+  seconds.
+
 ## 2.37.0
 
 - **feat** — an edit remembers the prompt it has already encoded. The text

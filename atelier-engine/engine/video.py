@@ -105,9 +105,16 @@ def ffmpeg() -> str:
     )
 
 
-def forget() -> None:
-    """Drop the pipeline and hand the card back. See `edit.forget`."""
+def ready() -> bool:
+    """Whether the pipeline is already built. See `edit.ready`."""
+    return _pipeline.cache_info().currsize > 0
+
+
+def forget() -> bool:
+    """Drop the pipeline, and say whether there was one. See `edit.forget`."""
+    held = _pipeline.cache_info().currsize > 0
     _pipeline.cache_clear()
+    return held
 
 
 @lru_cache(maxsize=1)

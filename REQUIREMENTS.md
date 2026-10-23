@@ -3899,6 +3899,55 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R190 — A model too big for the card is streamed in pieces, and the pieces are found · met
+`apply_group_offloading` decides what a block is by walking `named_children()`
+**one level deep**. The transformer keeps its blocks there and was grouped
+correctly, sixty-one of them. The text encoder does not: its children are
+`model` and `lm_head`, and the layers are two levels further in. Nothing
+matched, everything fell into the group that holds what did not match, and the
+**whole 16.58 GiB encoder was offloaded as one file** — then put on an 8 GiB
+card in a single call.
+
+On Windows that does not fail. The driver oversubscribes into system memory,
+the card is left with **no free VRAM at all**, and the transformer's blocks
+spend the rest of the run in paged memory. Measured on four-step runs: a step
+after an encode was 105 s; a step in a run whose prompt was already known was
+34 s. One group found by accident was adding about seventy seconds to **every
+step of every run**.
+
+The encoder is offloaded by leaf now, where every `Linear` and `Embedding`
+carries its own hook and fetches itself when it is called. Naming the models in
+between finds the lists but fails differently: the outer model reaches
+`embed_tokens` without entering `language_model.forward`, so the ids are on the
+card and the embedding is not.
+
+**A cold four-step edit went from 845 seconds to 257, and a twenty-step one
+from about forty-nine minutes to about thirteen.**
+*Proven by:* measured end to end in `PERFORMANCE.md`, both columns cold, three
+consecutive steps within 1.2 s of each other in each
+
+### R189 — A draft is quicker in both of the ways it can be · met
+Four steps of the twenty, **and** a quarter of the pixels. The second half was
+refused for a while on the reasoning that a step was fifty-four seconds of
+which fifty was the model arriving, so the pixels were the rounding error. The
+step was never fifty-four seconds; measured, with [R190] fixed, it is 33.4, and
+at a quarter of the pixels 26.3 — **a fifth off**, which is neither nothing nor
+the prize.
+
+The painting's shape is kept, both sides are a multiple of sixteen so the
+pipeline does not round them and warn, and the size he uploaded still decides
+nothing because the pipeline resizes to its own megapixel before it starts.
+What comes back is scaled to the painting either way, so a draft is the same
+picture softer and not a smaller one.
+
+**What it costs is a little honesty about the composition**, because a model
+given less canvas arranges things differently, and the note under the switch
+says so: a draft is a promise about the idea, not about the picture.
+*Proven by:* the engine's `test_draft.py` `SizeTest` (6 tests: a full run left
+to the pipeline, a square halved on each side, the uploaded size not changing
+the answer, the shape kept, both sides a multiple of sixteen, and a shape with
+no pixels in it left alone)
+
 ### R188 — A prompt is encoded once per picture · met
 The text encoder is Qwen2.5-VL at bf16, sixteen and a half gigabytes, streamed
 from disk like everything else, and it runs twice per generation — once for the

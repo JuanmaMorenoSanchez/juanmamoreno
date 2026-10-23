@@ -1,23 +1,30 @@
 """A rough version of the same picture, in a fraction of the time.
 
-**Why fewer steps and not fewer pixels.** The obvious way to make a slow
-generator fast is to make the picture smaller, and here it does almost
-nothing. The edit model is twelve gigabytes against eight of card, so it is
-not resident: every step streams the whole transformer in from disk one block
-at a time. The recorded measurement is eighteen minutes for twenty steps at
-768 px — fifty-four seconds a step — and twelve gigabytes off an SSD is about
-fifty seconds of it. The pixels are the rounding error. Halving the longest
-side would save seconds; halving the steps saves half the run.
+**Fewer steps first, and then fewer pixels.** This said for a while that fewer
+pixels saved nothing, reasoning from a step of fifty-four seconds of which
+fifty was the model arriving from disk. The step was never fifty-four seconds.
+Measured properly it was a hundred and thirty-three, of which about seventy was
+the text encoder having left the card oversubscribed — a bug, now fixed — and
+the honest figure is **33.4 seconds a step** at the megapixel the pipeline
+picks for itself.
 
-So a draft is **the same picture with fewer steps**: same prompt, same seed,
-same references, same mask, same size. Nothing that decides what the picture
-*is* changes, which is the whole point — the full run has to be the thing the
-draft promised, or a draft is just another picture.
+Measured again at a quarter of those pixels: **26.3 seconds a step, 21% off**.
+So the pixels are not the rounding error the old note claimed, and they are not
+the prize either. What a step still mostly costs is twelve gigabytes of
+transformer arriving twice — once for the instruction and once for the negative
+prompt — and dequantising on the way through, neither of which cares how big
+the picture is.
 
-What it costs is resolution of detail rather than resolution in pixels: four
-steps of a twenty-step schedule is the composition arrived at and the surface
-not yet there. Enough to know whether the idea was right, which is what is
-being asked at four minutes rather than thirty.
+A draft therefore takes both: **four steps of the twenty, at a quarter of the
+pixels.** Four steps is five times quicker, the pixels another fifth, and the
+four-step draft that was fourteen minutes is now a hundred and seven seconds.
+
+What it costs is honesty about the surface, and a little about the composition.
+Same prompt, same seed, same references, same mask — but a model given less
+canvas composes a little differently, so a draft is a promise about the idea
+and not a promise about the picture. That was the reason for keeping the size
+when the size was thought to be free; it is not a reason to pay a fifth for
+nothing, now that it is known what it costs.
 """
 
 from __future__ import annotations
@@ -39,3 +46,39 @@ def steps(asked: int, drafting: bool) -> int:
     """
     wanted = max(1, int(asked))
     return min(wanted, STEPS) if drafting else wanted
+
+
+#: How many pixels a draft is drawn at, against the full run's.
+#:
+#: The pipeline works at about one megapixel whatever it is handed — it resizes
+#: the painting to fit that before it starts, so the size he uploads has never
+#: decided anything — and a quarter of that is half the side, with a quarter as
+#: many latent tokens to attend over.
+PIXELS = 0.25
+
+#: What the pipeline works at when it is not told otherwise.
+FULL = 1024 * 1024
+
+#: Both sides have to be a multiple of this or the pipeline rounds them itself
+#: and says so in a warning.
+STEP = 16
+
+
+def size(shape: tuple[int, int], drafting: bool) -> tuple[int, int] | None:
+    """How wide and high to draw, or `None` for the pipeline's own choice.
+
+    The painting's shape is kept: a draft at a different aspect would be a
+    different composition, and then it is not a draft of anything.
+    """
+    if not drafting:
+        return None
+    width, height = shape
+    if width <= 0 or height <= 0:
+        return None
+    area = FULL * PIXELS
+    across = (area * width / height) ** 0.5
+    down = area / across
+    return (
+        max(STEP, round(across / STEP) * STEP),
+        max(STEP, round(down / STEP) * STEP),
+    )
