@@ -48,7 +48,12 @@ export interface ParamDef {
    * `points` is not a field: it is edited by marking the painting itself, and
    * the canvas draws a button for it rather than an input.
    */
-  kind: 'text' | 'number' | 'toggle' | 'choice' | 'points';
+  /**
+   * `slider` is a number with a band worth seeing, drawn as a range. Every
+   * rule about numbers applies to it unchanged — the engine range-checks it
+   * the same way before a run.
+   */
+  kind: 'text' | 'number' | 'slider' | 'toggle' | 'choice' | 'points';
   default: string | number | boolean;
   label: string;
   /** Every value a `choice` may take, in the order to offer them. Empty otherwise. */

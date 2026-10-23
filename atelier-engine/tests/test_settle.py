@@ -57,6 +57,18 @@ class SettleTest(unittest.TestCase):
         with self.assertRaises(GraphError):
             settle(kind, {"steps": 1})
 
+    def test_a_slider_is_checked_like_a_number(self) -> None:
+        # A slider cannot be dragged out of its range, but the page is not the
+        # only thing that posts a graph, and the check used to look only for
+        # the word "number" — so every setting drawn as a slider arrived
+        # unchecked the day it stopped being drawn as a field.
+        kind = a_box(Param("far", "slider", 1.0, label="How far", minimum=0.1, maximum=1.0))
+
+        with self.assertRaises(GraphError) as refused:
+            settle(kind, {"far": 4})
+
+        self.assertIn("How far", str(refused.exception))
+
     def test_something_that_is_not_a_number_is_refused(self) -> None:
         kind = a_box(Param("steps", "number", 20, minimum=4, maximum=50, step=1))
 

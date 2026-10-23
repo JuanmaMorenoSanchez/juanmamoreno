@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.36.0
+
+- **feat** — a dial for how far from the painting an edit ends up, and both of
+  the numbers that decide how an edit looks are sliders rather than fields. A
+  slider is range-checked by the engine like any other number, which it was
+  not.
+
 ## 2.35.0
 
 - **feat** — two more states for Screenlight's glitch, both made under the new

@@ -130,6 +130,24 @@ def _soft(mask: np.ndarray, size: tuple[int, int]) -> Image.Image:
     return alpha.filter(ImageFilter.GaussianBlur(radius=SEAM))
 
 
+def pulled_back(painting: Image.Image, produced: Image.Image, far: float) -> Image.Image:
+    """The edit, taken as far as it was asked to go and no further.
+
+    The editor has no denoise strength to turn down — it is instruction-led
+    and regenerates the whole canvas, which is why the mask is what keeps the
+    rest. So "closer to the original" is done at the end instead: the result
+    mixed back over the painting it came from. One is the edit as the model
+    made it; a half is the edit half-taken; a tenth is a suggestion of it.
+
+    It is applied before the mask, so a masked edit is pulled back inside its
+    own mask and the paint outside it stays exactly as it was either way.
+    """
+    carried = max(0.0, min(1.0, far))
+    if carried >= 1:
+        return produced
+    return Image.blend(painting.convert("RGB"), produced.convert("RGB"), carried)
+
+
 def edit(
     painting: Image.Image,
     instruction: str,
@@ -137,6 +155,7 @@ def edit(
     references: list[Image.Image] | None = None,
     steps: int = 20,
     guidance: float = 4.0,
+    far: float = 1.0,
     seed: int = 7,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
@@ -189,6 +208,8 @@ def edit(
     # It normalises to its own resolution, which is rarely the one it was given.
     if produced.size != painting.size:
         produced = produced.resize(painting.size, Image.Resampling.LANCZOS)
+
+    produced = pulled_back(painting, produced, far)
 
     if mask is None:
         return produced

@@ -3899,6 +3899,32 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R186 — How far from the painting · met
+A number is either right or it is being guessed at, and the two numbers that
+decide what an edit looks like — how hard the instruction is pushed, and how
+much of the result to keep — were both typed into fields. A field invites a
+number; aiming wants a range you can feel the ends of.
+
+Both are sliders now, drawn with their band and with the value said beside
+them, reporting while they are dragged rather than when they are let go.
+**A slider is still checked by the engine**: the range check looked for the
+word *number*, so a setting arrived unchecked the day it stopped being drawn
+as a field.
+
+**How far** is the dial other tools call denoise strength, done at the other
+end. This editor has no such setting — it is instruction-led and regenerates
+the whole canvas, which is why a mask is what keeps the rest — so the result
+is mixed back over the painting it came from, before the mask, so a masked
+edit is pulled back inside its own mask. The cost is the same either way: the
+model has finished by the time it applies, which the note under the dial says.
+*Proven by:* the engine's `test_how_far.py` (6 tests: all the way is the edit
+itself, half way is half way, a tenth is a suggestion of it, and neither end
+can be asked for more than it has), `test_settle.py`
+"test_a_slider_is_checked_like_a_number", `test_advice.py`
+"test_only_numbers_are_advised", and `node-canvas.component.spec.ts` "is drawn
+as a range, with its band", "says the value as well as showing it" and
+"reports while it is dragged rather than when it is let go"
+
 ### R179 — The painting is chosen in the Painting box · met
 It was chosen in a strip above the canvas: a file field, a token id, and —
 once there was one — the thumbnail and its name, all sitting over a diagram

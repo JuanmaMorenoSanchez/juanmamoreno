@@ -401,3 +401,19 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* A number with its band shown. */
+.param-slide {
+  flex: 1 1 auto;
+  min-width: 0;
+  accent-color: currentColor;
+}
+
+/* The value, still said: aiming is one thing and knowing where you landed
+   is another. Fixed width so the row does not jump as it is dragged. */
+.param-reading {
+  width: 2.4rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}

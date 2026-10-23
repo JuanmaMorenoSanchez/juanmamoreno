@@ -63,6 +63,63 @@ describe('NodeCanvasComponent', () => {
    * to be chosen in a strip above the canvas — the diagram saying "the
    * painting goes here" while the painting went somewhere else.
    */
+  /**
+   * A number with a band worth seeing.
+   *
+   * A box asks you to know that four is ordinary and seven and a half is a
+   * lot. Steps and seeds stay boxes: a step count is a budget reasoned about
+   * in whole units, and a seed is a name rather than a quantity.
+   */
+  describe('a slider', () => {
+    const DIAL: NodeTypeDef = {
+      ...EDIT,
+      key: 'dial',
+      params: [
+        {
+          name: 'guidance',
+          kind: 'slider',
+          default: 4,
+          label: 'How literally',
+          choices: [],
+          minimum: 1,
+          maximum: 10,
+          step: 0.5,
+          help: 'How hard to push towards the words.',
+        },
+      ],
+    };
+    const placed = [{ id: 'n1', type: 'dial', x: 10, y: 10, params: { guidance: 4 } }];
+
+    it('is drawn as a range, with its band', () => {
+      const { host } = build([DIAL], placed);
+      const slide = host.querySelector('.param-slide') as HTMLInputElement;
+
+      expect(slide.getAttribute('type')).toBe('range');
+      expect(slide.getAttribute('min')).toBe('1');
+      expect(slide.getAttribute('max')).toBe('10');
+      expect(slide.getAttribute('step')).toBe('0.5');
+    });
+
+    it('says the value as well as showing it', () => {
+      // Aiming is one thing; knowing where you landed is another.
+      const { host } = build([DIAL], placed);
+
+      expect(host.querySelector('.param-reading')?.textContent?.trim()).toBe('4');
+    });
+
+    it('reports while it is dragged rather than when it is let go', () => {
+      const { fixture, host } = build([DIAL], placed);
+      const changes: unknown[] = [];
+      fixture.componentInstance.changed.subscribe((drawn: unknown) => changes.push(drawn));
+
+      const slide = host.querySelector('.param-slide') as HTMLInputElement;
+      slide.value = '7.5';
+      slide.dispatchEvent(new Event('input'));
+
+      expect(changes).toHaveLength(1);
+    });
+  });
+
   describe('the Painting box', () => {
     const PAINTING: NodeTypeDef = {
       key: 'painting',

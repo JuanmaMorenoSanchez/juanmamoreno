@@ -184,6 +184,24 @@
                       (change)="setParam(node, param, $any($event.target).value)"
                       (pointerdown)="$event.stopPropagation()"
                     />
+                  } @else if (param.kind === 'slider') {
+                    <!-- A number with a band worth seeing. A box asks you to
+                         know that four is ordinary and seven and a half is a
+                         lot; this shows the range and where in it you are,
+                         with the number beside it because the value still
+                         matters once you have aimed. -->
+                    <input
+                      type="range"
+                      class="param-slide"
+                      [attr.aria-label]="param.label || param.name"
+                      [value]="node.params[param.name]"
+                      [attr.min]="param.minimum"
+                      [attr.max]="param.maximum"
+                      [attr.step]="param.step"
+                      (input)="setParam(node, param, $any($event.target).value)"
+                      (pointerdown)="$event.stopPropagation()"
+                    />
+                    <span class="param-reading">{{ node.params[param.name] }}</span>
                   } @else if (param.kind === 'choice') {
                     <!-- The engine says what the values are, so a style added
                          there is an option here with nothing released. -->

@@ -62,12 +62,27 @@ class Advice:
     high: str = ""
 
 
+#: The kinds that hold a quantity, and so have a band to be inside.
+#:
+#: A slider is a number drawn differently, and every rule about numbers —
+#: the range check before a run, the warning at an unwise value — applies to
+#: it unchanged. Making it a kind of its own without saying so here let a
+#: slider past the check that exists to stop a typo costing eighteen minutes.
+NUMERIC = ("number", "slider")
+
+
 @dataclass(frozen=True)
 class Param:
     name: str
     kind: str
-    """`text`, `number`, `toggle` or `choice` — enough for everything here, and
-    the editor draws a control per kind."""
+    """`text`, `number`, `slider`, `toggle` or `choice` — enough for everything
+    here, and the editor draws a control per kind.
+
+    A `slider` is a number with a band worth seeing. A box asks you to know
+    that four is ordinary and seven and a half is a lot; a slider shows the
+    range and where in it you are. Steps and seeds stay boxes: a step count
+    is a budget reasoned about in whole units, and a seed is a name rather
+    than a quantity."""
     default: Value
     label: str = ""
     minimum: float | None = None
@@ -267,7 +282,7 @@ def settle(kind: NodeType, given: dict[str, Any]) -> dict[str, Value]:
             continue
         value = given[param.name]
 
-        if param.kind == "number":
+        if param.kind in NUMERIC:
             try:
                 number = float(value)
             except (TypeError, ValueError):

@@ -258,6 +258,22 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ),
     ("edit", "draft"): _DRAFT,
     ("video", "draft"): _DRAFT,
+    ("edit", "far"): (
+        "How much of the edit to keep. One is the edit as the model made it; "
+        "a half is the edit half-taken, mixed back over the painting it came "
+        "from; a tenth is a suggestion of it.\n\n"
+        "This is the dial other tools call denoise strength, done at the "
+        "other end. A pipeline with a strength starts the sampler part way "
+        "through, already holding your picture, so it has less of the "
+        "trajectory left to change it. This model has no such setting — it "
+        "is led by an instruction and regenerates the whole canvas, which is "
+        "why a mask is what keeps the rest — so the result is mixed back "
+        "instead. The effect on the picture is much the same and the cost is "
+        "not: the run takes exactly as long either way, because the model "
+        "has already done the work by the time this applies.\n\n"
+        "It is taken before the mask, so a masked edit is pulled back inside "
+        "its own mask and the paint outside it is untouched either way."
+    ),
     ("video", "steps"): (
         "How many passes over the whole clip. Fewer is faster and mushier, "
         "and below about twenty the motion starts to judder rather than "

@@ -15,6 +15,7 @@ printed beside it is a guess in red, which is worse than nothing.
 import unittest
 
 from engine.catalogue import CATALOGUE
+from engine.nodes import NUMERIC
 
 
 def advised():
@@ -71,9 +72,10 @@ class AdviceTest(unittest.TestCase):
                         self.assertIsNone(param.advice)
 
     def test_only_numbers_are_advised(self) -> None:
+        # A slider counts: it is a number that shows its band.
         for key, param in advised():
             with self.subTest(param=f"{key}.{param.name}"):
-                self.assertEqual(param.kind, "number")
+                self.assertIn(param.kind, NUMERIC)
 
     def test_the_two_slow_models_are_both_advised(self) -> None:
         # The ones worth a warning at all: an edit is a hundred seconds a pass

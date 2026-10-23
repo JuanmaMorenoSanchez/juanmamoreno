@@ -168,6 +168,7 @@ def _edit(inputs, params, context) -> dict[str, Any]:
             ),
             steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
             guidance=float(params["guidance"]),
+            far=float(params.get("far", 1.0)),
             seed=int(params["seed"]),
             saying=saying,
             # Passed down rather than reported by the node, because the node
@@ -484,7 +485,15 @@ CATALOGUE: dict[str, NodeType] = {
                 ),
                 Param("pick", "number", 0, label="Which references", minimum=0, maximum=20, step=1),
                 Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
-                Param("guidance", "number", 4.0, label="How literally", minimum=1, maximum=10, step=0.5),
+                Param(
+                    "guidance", "slider", 4.0, label="How literally", minimum=1, maximum=10, step=0.5
+                ),
+                # How far from the painting it is allowed to end up, which is
+                # the thing a denoise strength would do on a pipeline that had
+                # one. This model has none, so it is done at the end.
+                Param(
+                    "far", "slider", 1.0, label="How far from the original", minimum=0.1, maximum=1, step=0.05
+                ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
                 # The same picture in four steps instead of twenty. Everything
                 # that decides what the picture is stays where it is, so the
@@ -513,7 +522,9 @@ CATALOGUE: dict[str, NodeType] = {
                 Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
                 Param("seconds", "number", 3.0, label="How long", minimum=3.0, maximum=5.0, step=0.5),
                 Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
-                Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
+                Param(
+                    "guidance", "slider", 5.0, label="How literally", minimum=1, maximum=10, step=0.5
+                ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
                 Param("draft", "toggle", False, label="Draft first"),
                 Param(
