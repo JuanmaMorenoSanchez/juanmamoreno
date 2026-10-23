@@ -159,9 +159,20 @@ Measured on eight steps: **27.8 s a step against 33.4 — 17% off**, which is
 about what a third of the model should buy if arrival is roughly half a step.
 Setting it up costs about 13 seconds at build.
 
-Done by taking the offload hook off a block and moving it across for good,
-before anything runs — the first offload is what replaces a block's weights
-with a placeholder, so afterwards there would be nothing left to move.
+**A block has to be fetched before it can be kept, and getting that wrong is
+invisible in a timing.** `GroupOffloadingHook.initialize_hook` calls
+`group.offload_()` the moment the hook is registered — not on the first
+forward — and offloading to disk writes the weights out and then replaces them
+with `torch.empty_like`. The first version of this moved *those* to the card
+and removed the hook, giving a model whose first twenty-two blocks were nothing
+at all. The blocks still ran, so the step time was the same 27.8 seconds, and
+the 17% was reported and released before anybody looked at a picture. It is
+onloaded through the group's own code path first now.
+
+The way to check is not to look. **The same four steps with the same seed,
+once keeping 22 blocks and once keeping none, produce files that are identical
+to the byte** — 27.8 seconds a step against 33.0. That is the only
+comparison worth making about a change that is meant to alter nothing.
 
 ### Reusing a step — 40× on a step it skips, and it skips almost none
 

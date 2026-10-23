@@ -3917,11 +3917,24 @@ taking the offload hook off a block and moving it across for good, which has to
 happen before anything runs: the first offload replaces a block's weights with
 a placeholder, so afterwards there is nothing left to move.
 
+**A block has to be fetched before it can be kept.**
+`GroupOffloadingHook.initialize_hook` offloads its group the moment the hook is
+registered — not on the first forward — and offloading to disk writes the
+weights out and replaces them with `torch.empty_like`. Moving *that* to the
+card and removing the hook gives a model whose first twenty-two blocks are
+nothing at all, and it is both wrong and exactly as fast, so it reported its
+17% and was released before anybody looked at a picture. Each block is
+onloaded through the group's own code path first now, and only then is the
+hook taken off.
+
 **Together with [R190], a step went from 133 seconds to 27.8.**
 *Proven by:* the engine's `test_resident.py` (9 tests: the reserve never eaten
 into, what there is room for kept, a big enough card keeping all of it,
 stopping rather than skipping what does not fit, blocks measured and not
-assumed equal, and the reserve being ComfyUI's plus the text encoder)
+assumed equal, and the reserve being ComfyUI's plus the text encoder); and for
+the part no unit test can reach, by rendering the same four steps with the
+same seed twice, once keeping 22 blocks and once keeping none, and comparing
+the files — **identical to the byte**, 27.8 seconds a step against 33.0
 
 ### R191 — A step that changed almost nothing can be taken from the one before · met
 `FirstBlockCache`: run the first of the sixty blocks, compare what it changed

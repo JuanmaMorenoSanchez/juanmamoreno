@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.39.1
+
+- **fix** — the blocks kept on the card in 2.39.0 were empty. The offload hook
+  spills its group the moment it is registered, not on the first forward, so
+  by the time they were moved across they held `torch.empty_like` and nothing
+  else — and because they still ran, the step time was identical and the
+  measurement looked fine. They are fetched before they are kept now, and the
+  check is that the same seed renders the same file to the byte with 22 blocks
+  resident and with none.
+
 ## 2.39.0
 
 - **feat** — whatever fits on the card now stays on it. Every block was being

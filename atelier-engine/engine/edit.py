@@ -315,11 +315,22 @@ def _resident(transformer, blocks) -> tuple[int, int]:
     twelve, so nearly half the model stops crossing the bus at all.
 
     Done by taking the offload hook off a block and moving it across for good.
-    It has to happen before anything runs: the first offload is what replaces a
-    block's weights with a placeholder, so afterwards there would be nothing
-    left to move. Each block is measured as it goes rather than assumed equal,
-    because the first and last of a transformer rarely weigh what the middle
-    ones do.
+    **A block has to be fetched before it can be kept**, which is not obvious
+    and cost a whole measurement to learn. `GroupOffloadingHook.initialize_hook`
+    calls `group.offload_()` the moment the hook is registered — not on the
+    first forward — and offloading to disk writes the weights out and then
+    replaces them with `torch.empty_like`. So by the time this runs, every
+    block holds a placeholder full of nothing.
+
+    Moving that to the card and removing its hook gives a model whose first
+    twenty-two blocks are garbage that will never be filled in, which is both
+    wrong and *faster*, and a run of it reported a 17% improvement before
+    anybody looked at the picture. So each block is onloaded through the
+    group's own code path first, which reads it back from the spill onto the
+    card, and only then is the hook taken off so it is never sent away again.
+
+    Each block is measured as it goes rather than assumed equal, because the
+    first and last of a transformer rarely weigh what the middle ones do.
     """
     import torch
     from diffusers.hooks import HookRegistry
@@ -336,10 +347,11 @@ def _resident(transformer, blocks) -> tuple[int, int]:
     kept = 0
     for block in list(blocks)[:wanted]:
         registry = HookRegistry.check_if_exists_or_initialize(block)
-        if registry.get_hook(_GROUP_OFFLOADING) is None:
+        hook = registry.get_hook(_GROUP_OFFLOADING)
+        if hook is None:
             break
+        hook.group.onload_()
         registry.remove_hook(_GROUP_OFFLOADING, recurse=False)
-        block.to(torch.device("cuda"))
         kept += 1
     return kept, len(blocks)
 
