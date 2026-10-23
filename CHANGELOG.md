@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.35.0
+
+- **feat** — two more states for Screenlight's glitch, both made under the new
+  hand: a third whole canvas and a fifth girl. The figures now go between
+  four states and she between five, each with its own soft distance.
+- **fix** — the box offering the ready-made flows kept showing the line for
+  starting the engine by hand to an engine that had just been started. The
+  switch fetched the palette and not the flows; now it fetches both.
+
+---
+
 ## 2.34.0
 
 - **feat** — a run refuses to start if the style names a painter the model

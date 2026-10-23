@@ -3765,6 +3765,16 @@ kept piece out of it", "says what a refusal inside a success said", "still
 reads a bare list, for when the envelope goes away" and "says what did
 arrive, which is what anybody debugging it needs"
 
+### R185 — The flows arrive with the engine · met
+The box that offers the ready-made flows went on showing the line for
+starting the engine by hand *to an engine that had just been started*. The
+switch fetched the palette when the engine came up and not the flows, so the
+only way to see them was to reload the page.
+
+Both now, on the way up, and both cleared on the way down.
+*Proven by:* `atelier.component.spec.ts` "arrive with the engine, rather than
+at the next reload"
+
 ### R183 — A name the model has never read is not a style · met
 Asked which of the seven painters in his hand the model could actually place,
 the answer was two. Those two came back with their centuries and their
@@ -4198,10 +4208,11 @@ few pixels off, and the strips are redrawn twelve times a second rather than
 per frame because a tear that slides is a wipe. Half a second of that, and
 then it is simply the other painting.
 
-**Five states, not two.** The canvas at dusk, the canvas in daylight, the big
-figure corrupted, and two more of her — all of them his, made in the atelier
-and kept on the shelf. The figures go between three and she goes between
-four, so it is a signal that cannot decide what it is carrying rather than a
+**Seven states, not two.** The canvas at dusk, the canvas in daylight, a
+third canvas made under the new hand, the big figure corrupted, and three
+more of her — all of them his, made in the atelier
+and kept on the shelf. The figures go between four and she goes between
+five, so it is a signal that cannot decide what it is carrying rather than a
 thing flickering between itself and one other.
 
 The three that came later carry their own silhouettes rather than borrowing a
@@ -4257,7 +4268,8 @@ field goes a little, the hand in front of her does not go at all. The farness
 is squared, because linear put a haze on her coat.
 
 Each state's distance is blurred once at load, at half size, with everything
-near cut out of it by that mask, so a frame costs one draw and what changes
+near cut out of it by that mask — one per state the ground can be in and in
+the same order, so the distance that is soft is the distance that is up, so a frame costs one draw and what changes
 is only how much of it is showing. It does not move with the parallax and
 does not need to: what is in it is what is furthest away, which is what moves
 least, and what moves most has been cut out of it.
@@ -4280,7 +4292,7 @@ this is about. It is drawn five per cent over a cover fit, with all five spent
 below the window: a plain cover fit laid the painted edge of the canvas along
 the bottom of the screen, where an edge seen end-on reads as a crop.
 
-**1.4 MB of assets** for a 3000×3180 original: the painting and the filled
+**1.5 MB of assets** for a 3000×3180 original: the painting and the filled
 ground at 1500 px as progressive JPEGs, the painting's other state as a third,
 and the three figures as grey cuts of the same size, because a cut has an edge
 and half resolution would show it.

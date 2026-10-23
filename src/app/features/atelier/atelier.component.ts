@@ -644,11 +644,16 @@ export class AtelierComponent implements OnDestroy {
     try {
       if (this.engine.unreachable()) {
         await this.engine.start();
-        // The palette comes from the engine, so it arrives with the engine.
+        // The palette comes from the engine, so it arrives with the engine —
+        // and so do the ready-made flows, which did not. The box that offers
+        // them went on showing the line for starting the engine by hand, to
+        // an engine that had just been started, until the page was reloaded.
         this.catalogue.set(await this.engine.catalogue());
+        this.flows.set(await this.engine.flows());
       } else {
         await this.engine.stop();
         this.catalogue.set([]);
+        this.flows.set([]);
       }
     } catch (error) {
       this.failure.set(error instanceof Error ? error.message : 'the switch did not work');

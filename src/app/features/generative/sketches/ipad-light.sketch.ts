@@ -180,8 +180,8 @@ const STRIPS = 9;
  * her, with half a second of tearing — `{ holds: 9, tears: 0.55 }` and
  * `{ holds: 13, tears: 0.45, seed: 41 }`.
  */
-const BEHIND = { holds: 2.6, tears: 2.2, seed: 0, states: 3 };
-const HER = { holds: 3.4, tears: 2.9, seed: 41, states: 4 };
+const BEHIND = { holds: 2.6, tears: 2.2, seed: 0, states: 4 };
+const HER = { holds: 3.4, tears: 2.9, seed: 41, states: 5 };
 
 /**
  * The states each cut can be in, after the painting's own.
@@ -200,8 +200,19 @@ const HER = { holds: 3.4, tears: 2.9, seed: 41, states: 4 };
 const ALSO: Record<string, readonly string[]> = {
   limbs: ['monster'],
   shirt: ['monster'],
-  girl: ['girl-two', 'girl-three'],
+  girl: ['girl-two', 'girl-three', 'girl-four'],
 };
+
+/**
+ * The whole canvas, in each of the states it exists in.
+ *
+ * The painting's own is not here: it is the ground, which is the landscape
+ * with his paint pushed in under the figures and is a different picture from
+ * the canvas. These are the ones that are whole — the daylight state and the
+ * one he made under the new hand — and each serves twice, as a state of the
+ * ground and as the paint the three figure cuts are taken from.
+ */
+const CANVASES = ['day', 'canvas-three'] as const;
 
 /**
  * "Screenlight" — *Reflejo de luz de iPad* (2025), moving.
@@ -241,10 +252,14 @@ export class IpadLightSketch implements Sketch {
   private ground?: HTMLImageElement;
   private groundParallax?: Parallax;
   /** The distance, blurred, with the near paint cut out of it. */
-  private faraway?: HTMLCanvasElement;
-  private farawayDay?: HTMLCanvasElement;
-  /** And the whole painting again, in daylight, for it to break into. */
-  private day?: HTMLImageElement;
+  /**
+   * The distance, blurred, one per state the ground can be in and in the
+   * same order — so whichever is up has its own soft distance rather than
+   * the dusk one laid over a daylight field.
+   */
+  private faraway: HTMLCanvasElement[] = [];
+  /** And the whole painting again, in its other states, to break into. */
+  private canvases: HTMLImageElement[] = [];
   /** The shafts, as one shape, built once and turned a little each frame. */
   private fanned?: HTMLCanvasElement;
 
@@ -288,9 +303,9 @@ export class IpadLightSketch implements Sketch {
     const wanted: Record<string, string> = {
       painting: `${IMAGES_ROUTE}ipad-light.jpg`,
       ground: `${IMAGES_ROUTE}ipad-light-ground.jpg`,
-      day: `${IMAGES_ROUTE}ipad-light-day.jpg`,
       depth: `${IMAGES_ROUTE}ipad-light-depth.png`,
     };
+    for (const canvas of CANVASES) wanted[canvas] = `${IMAGES_ROUTE}ipad-light-${canvas}.jpg`;
     for (const each of CUTS) wanted[each.name] = `${IMAGES_ROUTE}ipad-light-${each.name}.png`;
     for (const also of new Set(Object.values(ALSO).flat())) {
       wanted[also] = `${IMAGES_ROUTE}ipad-light-${also}.jpg`;
@@ -300,7 +315,7 @@ export class IpadLightSketch implements Sketch {
     const images = await loadImages(wanted);
     this.painting = images['painting'];
     this.ground = images['ground'];
-    this.day = images['day'];
+    this.canvases = CANVASES.map((canvas) => images[canvas]);
     this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
     this.layers = CUTS.map((each) => {
@@ -310,7 +325,7 @@ export class IpadLightSketch implements Sketch {
       // pixel — then whatever else this one has, each with its own.
       const states = [
         cut(images['painting'], images[each.name]),
-        cut(images['day'], images[each.name]),
+        ...CANVASES.map((canvas) => cut(images[canvas], images[each.name])),
         ...(ALSO[each.name] ?? []).map((also) => cut(images[also], images[`${also}-cut`])),
       ];
       return {
@@ -324,8 +339,7 @@ export class IpadLightSketch implements Sketch {
     // it by the depth map. Laid over the sharp scene at whatever strength
     // the field is at, it is a lens rather than four flat cards.
     const howFar = farness(images['depth']);
-    this.faraway = blurred(images['ground'], howFar);
-    this.farawayDay = blurred(images['day'], howFar);
+    this.faraway = [images['ground'], ...this.canvases].map((state) => blurred(state, howFar));
     this.fanned = fan(1200);
 
     const screen = screenLit(images['painting']);
@@ -378,7 +392,7 @@ export class IpadLightSketch implements Sketch {
       this.groundParallax.update(looking.x, looking.y);
       this.lay(
         ctx,
-        [this.ground, this.day],
+        [this.ground, ...this.canvases],
         this.behind,
         frame.t,
         x + this.groundParallax.x * scale,
@@ -448,7 +462,11 @@ export class IpadLightSketch implements Sketch {
    * cut out of it entirely.
    */
   private drawFar(ctx: CanvasRenderingContext2D, softness: number, t: number): void {
-    const far = this.behind.at(t).shows === 1 ? this.farawayDay : this.faraway;
+    // Counted round, the same way a layer counts round its own states, so
+    // the distance that is soft is the distance that is up.
+    const far = this.faraway.length
+      ? this.faraway[this.behind.at(t).shows % this.faraway.length]
+      : undefined;
     if (!far || softness <= 0.01) return;
     const { x, y, width, height } = this.frame;
 

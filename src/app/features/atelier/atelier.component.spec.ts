@@ -287,6 +287,7 @@ describe('AtelierComponent', () => {
       catalogue: { (): NodeTypeDef[] };
       redraw(drawn: unknown): void;
       run(wanted?: 'web' | 'high'): Promise<void>;
+      toggleEngine(): Promise<void>;
       behind: { (): string | null };
       tokenId: { set(v: string): void };
       byId(wanted?: 'web' | 'high'): Promise<void>;
@@ -1189,6 +1190,32 @@ describe('AtelierComponent', () => {
       ],
       edges: [['painting', 'image', 'find', 'image']],
     };
+
+    it('arrive with the engine, rather than at the next reload', async () => {
+      // The box that offers them went on showing the line for starting the
+      // engine by hand, to an engine that had just been started: the switch
+      // fetched the palette and not these, and only F5 put it right.
+      const { fixture, host, unreachable } = build({
+        flows: [A_FLOW],
+        unreachable: true,
+        // Starting it is what makes it answer, so the stub answers from then.
+        onStart: () => {
+          unreachable.set(false);
+          return Promise.resolve();
+        },
+      });
+      await drained();
+      fixture.detectChanges();
+      // Nothing from the engine yet, because there was no engine to ask.
+      expect(at(host, 'flow-change-a-part')).toBeNull();
+
+      await guts(fixture).toggleEngine();
+      await drained();
+      fixture.detectChanges();
+
+      expect(at(host, 'flow-change-a-part')).not.toBeNull();
+      expect(at(host, 'no-flows')).toBeNull();
+    });
 
     it('offers the flows the engine published, not a list of its own', async () => {
       // The same promise the palette makes: a flow added to the engine is a
