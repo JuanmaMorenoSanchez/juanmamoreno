@@ -73,15 +73,20 @@ class ModelRegistry:
 
         self._built = None
         self._resident = None
-        gc.collect()
-        self._release()
+        self.release()
 
-    def _release(self) -> None:
+    def release(self) -> None:
         """Hand the memory back to the driver.
+
+        Public because the registry is not the only thing on this machine that
+        holds a model: the editor and the clip pipeline are each kept by a
+        cache of their own, and once those have been dropped somebody has to
+        ask the driver for the memory back.
 
         Split out so a test can run the whole registry without torch having to
         be importable, and so the one CUDA-specific line lives in one place.
         """
+        gc.collect()
         try:
             import torch
 

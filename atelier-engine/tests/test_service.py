@@ -200,6 +200,27 @@ class ServiceTest(unittest.TestCase):
         finally:
             (self.out / "a-layer.png").unlink(missing_ok=True)
 
+    def test_evicting_forgets_the_heavy_pipelines_too(self) -> None:
+        # It said the card had been handed back while six and a half gigabytes
+        # of it stayed held, because the editor and the clip model are each
+        # kept by a cache outside the registry and nothing ever told them. The
+        # next edit spent 218 seconds preparing and then died of CUDA OOM.
+        asked: list[str] = []
+        kept = service.edit.forget, service.video.forget, service.registry.release
+        service.edit.forget = lambda: asked.append("edit")
+        service.video.forget = lambda: asked.append("video")
+        service.registry.release = lambda: asked.append("release")
+        try:
+            self.assertEqual(self.client.post("/evict").status_code, 200)
+        finally:
+            service.edit.forget, service.video.forget, service.registry.release = kept
+
+        self.assertIn("edit", asked)
+        self.assertIn("video", asked)
+        # And after them, not before: the memory cannot be handed over until
+        # the thing holding it has been dropped.
+        self.assertEqual(asked[-1], "release")
+
     def test_it_publishes_its_ready_made_flows(self) -> None:
         # Served rather than written into the page, so a flow added here is a
         # button on the deployed site without the site being released.

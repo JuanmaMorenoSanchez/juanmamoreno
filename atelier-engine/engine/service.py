@@ -35,6 +35,7 @@ from . import house
 from .catalogue import CATALOGUE
 from .images import bounds, coverage, remainder, to_layer
 from .inpaint import fill
+from . import edit, video
 from .jobs import Job, Runner, stopping
 from .flows import as_json as as_flows
 from .writer import write as write_text
@@ -324,8 +325,16 @@ def evict() -> JSONResponse:
 
     Here because the machine that runs this is also the machine he works on, and
     a model sitting in VRAM between sessions is two gigabytes he cannot use.
+
+    The editor and the clip model are held outside the registry, each by a
+    cache of its own, so they have to be told separately — until they were,
+    this said the card had been handed back while six and a half gigabytes of
+    it stayed held, and the next edit died of it.
     """
     registry.evict()
+    edit.forget()
+    video.forget()
+    registry.release()
     vram = registry.vram()
     return JSONResponse({"resident": None, "vram_free_mib": vram[0] if vram else None})
 

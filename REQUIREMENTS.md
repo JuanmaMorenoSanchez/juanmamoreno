@@ -3899,6 +3899,45 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R188 — A prompt is encoded once per picture · met
+The text encoder is Qwen2.5-VL at bf16, sixteen and a half gigabytes, streamed
+from disk like everything else, and it runs twice per generation — once for the
+instruction and once for the negative prompt. Measured: **254 seconds** between
+the pipeline being ready and the first step reporting.
+
+It ran again, in full, on every run, and almost every run after the first asks
+it a question it has already answered. **Draft first** and then the same
+instruction at twenty steps is the same prompt on the same picture. So is
+re-rolling the seed, and so is moving guidance or how far.
+
+The answer is kept now, keyed on the prompt **and on the bytes of the
+pictures** — this encoder sees the image, so the picture is part of the
+question, and the page sends a fresh decode of the same file every run so being
+the same object proves nothing. Four are kept, because an instruction and a
+negative prompt are both asked on every run and keeping one must not lose the
+other.
+*Proven by:* the engine's `test_remembering.py` (8 tests: the same question
+asked once, a picture known by its bytes, another instruction and another
+painting each a new question, the instruction and the negative prompt not
+evicting each other, what comes back being a copy, and a bound on how much is
+kept), and measured end to end in `PERFORMANCE.md`
+
+### R187 — The card is handed back when it is asked for · met
+`/evict` exists because the machine that runs the engine is the machine he
+works on. It reported the card handed back while **6,525 MiB of it stayed
+held**, with `/health` saying nothing was resident — and the next edit spent
+**218 seconds preparing and then died** of `CUDA error: out of memory`.
+
+The registry can drop what it built. The editor and the clip pipeline are not
+among those: each is held by a cache of its own, outside the registry, and
+nothing ever told them. Both have a `forget()` now, `/evict` calls both, and
+then asks the driver for the memory back — which has to happen after the drop,
+not before, or there is nothing yet to hand over.
+*Proven by:* the engine's `test_service.py`
+"test_evicting_forgets_the_heavy_pipelines_too", and `catalogue.py`
+`_make_room`, which every box that wants the card calls with the one pipeline
+it is about to use
+
 ### R186 — How far from the painting · met
 A number is either right or it is being guessed at, and the two numbers that
 decide what an edit looks like — how hard the instruction is pushed, and how

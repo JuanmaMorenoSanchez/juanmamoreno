@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.37.0
+
+- **feat** — an edit remembers the prompt it has already encoded. The text
+  encoder is sixteen gigabytes streamed from disk and it ran twice on every
+  run; Draft first and then the same instruction at twenty steps asks it the
+  identical question. Measured at 254 seconds a run.
+- **fix** — two twelve-gigabyte pipelines, one eight-gigabyte card, and neither
+  dropped the other: a clip followed by an edit found six and a half gigabytes
+  of the card gone and died of CUDA out of memory after 218 seconds of
+  preparing. `/evict` could not free it either.
+- **chore** — `PERFORMANCE.md`: where an edit's time actually goes, measured,
+  including the ten-times-faster fix that does not fit on this machine and what
+  it would take.
+
 ## 2.36.0
 
 - **feat** — a dial for how far from the painting an edit ends up, and both of

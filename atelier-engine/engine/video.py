@@ -105,6 +105,11 @@ def ffmpeg() -> str:
     )
 
 
+def forget() -> None:
+    """Drop the pipeline and hand the card back. See `edit.forget`."""
+    _pipeline.cache_clear()
+
+
 @lru_cache(maxsize=1)
 def _pipeline():
     """Built once and kept. Setting it up is minutes, not seconds."""

@@ -409,7 +409,14 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ),
     ("edit", "guidance"): (
         "How literally to take the instruction. Higher follows the words more closely "
-        "and can look forced; lower wanders. Four is a reasonable place to start."
+        "and can look forced; lower wanders. Four is a reasonable place to start.\n\n"
+        "At the very bottom of the slider it is also the cost. Anything above one "
+        "runs the model a second time on every step, against the negative prompt, "
+        "and takes the difference between the two answers — so a step at guidance "
+        "two costs exactly twice a step at one. At one it is a single pass: the same "
+        "number of steps in half the time, following the instruction loosely. That is "
+        "the quickest look at an idea there is, quicker than Draft first, and the two "
+        "together are four steps at one pass each."
     ),
     ("edit", "seed"): (
         "Which random start to use. The same seed and instruction give the same "

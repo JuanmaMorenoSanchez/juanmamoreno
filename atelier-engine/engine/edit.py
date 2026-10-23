@@ -21,6 +21,7 @@ was asked about is model output and the rest is the original, untouched.
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 from functools import lru_cache
 from typing import Callable
@@ -54,6 +55,71 @@ def available() -> bool:
     return GGUF.exists()
 
 
+def forget() -> None:
+    """Drop the pipeline, and with it the card and the pinned host memory.
+
+    The registry can hand back the models it built, and these two were not
+    among them: the editor and the clip model are each held by an `lru_cache`
+    of their own, so `/evict` reported the card handed back while six and a
+    half gigabytes of it stayed held — and the next edit spent three and a
+    half minutes preparing before dying of "CUDA error: out of memory".
+
+    It matters more now that the transformer sits pinned in host memory, which
+    cannot be paged out and so is twelve gigabytes nothing else on the machine
+    can have.
+    """
+    _pipeline.cache_clear()
+
+
+def _remembering(encode: Callable[..., Any]) -> Callable[..., Any]:
+    """Encode a prompt once per picture rather than once per run.
+
+    The text encoder here is Qwen2.5-VL, sixteen gigabytes, and it is streamed
+    from disk like everything else. Measured: two hundred and fifty-four
+    seconds between the pipeline being ready and the first step reporting,
+    which is this running twice — once for the instruction and once for the
+    negative prompt.
+
+    It is run again, in full, every time, and almost every run after the first
+    asks it the same question. **Draft first** and then the same instruction at
+    twenty steps is the same prompt on the same picture. So is re-rolling the
+    seed, and so is moving guidance or how far. Four minutes, paid again for an
+    answer already given.
+
+    The embedding depends on the prompt and on the pictures — this model's
+    encoder sees the image — so the key is both, and a picture is identified by
+    its bytes rather than by being the same object, because the page sends a
+    fresh decode of the same file every time. Four are kept: an instruction and
+    a negative prompt for the current picture, and room for the pair before it.
+    """
+    held: dict[tuple[Any, ...], Any] = {}
+
+    def encoding(prompt=None, image=None, **rest):  # noqa: ANN001 - diffusers' shape
+        shown = image if isinstance(image, list) else [image] if image is not None else []
+        try:
+            seen = tuple(
+                hashlib.blake2b(each.tobytes(), digest_size=16).digest() for each in shown
+            )
+        except AttributeError:
+            # Not pictures we can fingerprint. Encode it and remember nothing.
+            return encode(prompt=prompt, image=image, **rest)
+
+        key = (prompt if isinstance(prompt, str) else tuple(prompt or ()), seen)
+        if key not in held:
+            if len(held) >= 4:
+                held.clear()
+            held[key] = encode(prompt=prompt, image=image, **rest)
+        embeds, mask = held[key]
+        # Handed out as copies: what the pipeline does with them afterwards is
+        # its own business, and the point of keeping them is that they stay as
+        # they were. The mask is genuinely absent when no token was padded —
+        # the pipeline drops a mask that is all ones — so it is only copied if
+        # it is there.
+        return embeds.clone(), None if mask is None else mask.clone()
+
+    return encoding
+
+
 @lru_cache(maxsize=1)
 def _pipeline():
     """Built once and kept. Setting it up costs about twenty seconds."""
@@ -81,29 +147,24 @@ def _pipeline():
 
     onload, offload = torch.device("cuda"), torch.device("cpu")
 
-    # Thrown away and rewritten every time the pipeline is built.
+    # The text encoder goes first, and to disk.
     #
-    # Disk offloading reloads each block with `safetensors.load_file`, and a
-    # GGUF-quantised tensor does not survive that round trip — reading one back
-    # cold fails with "Attempted to access the data pointer on an invalid
-    # python storage". The first run in a process gets away with it because the
-    # tensors are still in memory when they are written; the second run, and
-    # any later process, reads from disk and dies.
+    # It is sixteen gigabytes and it runs twice per generation — once for the
+    # instruction and once for the negative prompt — not once per step, so what
+    # it costs to fetch is paid twice rather than forty times. Spilling it
+    # first is what makes room for the transformer below: until it is on disk,
+    # both models are in host memory at once, which on this machine is
+    # twenty-nine gigabytes against thirty-one.
     #
-    # So the spill is treated as scratch belonging to this process. It costs
-    # one slow write of twelve gigabytes per start, against a failure on every
-    # run but the first.
+    # The spill is thrown away and rewritten every time the pipeline is built,
+    # because reloading a block with `safetensors.load_file` works only while
+    # the tensors are still in memory from the write. Read back cold, in a
+    # later process, it fails with "Attempted to access the data pointer on an
+    # invalid python storage".
     if SPILL.exists():
         shutil.rmtree(SPILL, ignore_errors=True)
     SPILL.mkdir(parents=True, exist_ok=True)
 
-    pipeline.transformer.enable_group_offload(
-        onload_device=onload,
-        offload_device=offload,
-        offload_type="block_level",
-        num_blocks_per_group=1,
-        offload_to_disk_path=str(SPILL / "transformer"),
-    )
     if getattr(pipeline, "text_encoder", None) is not None:
         apply_group_offloading(
             pipeline.text_encoder,
@@ -113,12 +174,38 @@ def _pipeline():
             num_blocks_per_group=1,
             offload_to_disk_path=str(SPILL / "text_encoder"),
         )
+
+    # The transformer is streamed from disk, a block at a time.
+    #
+    # Measured on this machine, that is the slow part of an edit and not by a
+    # little: a block arrives by `safetensors.load_file(path, device="cuda")`,
+    # a synchronous read straight onto the card with nothing overlapped, at
+    # 0.46 GiB/s. One pass over the twelve gigabytes is 26.6 seconds, and a
+    # step is two passes whenever guidance is above one, because the model is
+    # run again for the negative prompt. Fifty-three seconds of a
+    # hundred-and-thirty-three-second step is the model arriving.
+    #
+    # The obvious fix does not fit here. The same bytes held pinned in host
+    # memory and copied asynchronously measured 4.73 GiB/s — ten times faster
+    # — but pinning twelve gigabytes is twelve gigabytes that cannot be paged,
+    # and with the text encoder already loaded `cuMemHostAlloc` refuses it on
+    # a thirty-two gigabyte machine. It is written down in `PERFORMANCE.md`
+    # with what it would take.
+    pipeline.transformer.enable_group_offload(
+        onload_device=onload,
+        offload_device=offload,
+        offload_type="block_level",
+        num_blocks_per_group=1,
+        offload_to_disk_path=str(SPILL / "transformer"),
+    )
     # The vae stays resident: it is a stack of 3D convolutions with no blocks
     # for block_level to find, so grouping it leaves its weights on the CPU
     # while CUDA inputs arrive. A few hundred megabytes, and it ends the
     # "Input type (CUDABFloat16Type) and weight type (CPUBFloat16Type)" failure.
     if getattr(pipeline, "vae", None) is not None:
         pipeline.vae.to(onload)
+
+    pipeline.encode_prompt = _remembering(pipeline.encode_prompt)
 
     return pipeline
 

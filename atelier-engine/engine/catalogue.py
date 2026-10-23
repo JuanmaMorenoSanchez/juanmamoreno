@@ -27,7 +27,11 @@ from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from . import house
 from .draft import steps as draft_steps
-from .edit import available as edit_available, edit as edit_painting
+from .edit import (
+    available as edit_available,
+    edit as edit_painting,
+    forget as forget_editor,
+)
 from .style import (
     OFF as STYLE_OFF,
     STYLES,
@@ -40,6 +44,7 @@ from .images import coverage, grow as grow_mask, remainder, to_layer
 from .inpaint import fill as fill_behind
 from .video import (
     animate as animate_painting,
+    forget as forget_clips,
     scenes as scene_by_scene,
     shown as shown_size,
     write_video,
@@ -56,6 +61,36 @@ def _painting(inputs, params, context) -> dict[str, Any]:
     if painting is None:
         raise ValueError("no painting was sent with this graph")
     return {"image": painting}
+
+
+def _make_room(context: dict[str, Any], keeping: str) -> None:
+    """Hand the card to the box that is about to use it, and to nothing else.
+
+    There are two twelve-gigabyte pipelines here and one eight-gigabyte card.
+    Every box that needs the card already dropped whatever the registry was
+    holding; none of them dropped the *other* pipeline, because each is kept by
+    a cache of its own that the registry knows nothing about.
+
+    So a clip followed by an edit found six and a half gigabytes of the card
+    already gone, with `/health` reporting nothing resident, and died of
+    "CUDA error: out of memory" after two hundred and eighteen seconds of
+    preparing — which is the worst shape a failure can have: long, silent, and
+    at the end.
+
+    `keeping` is the one pipeline this box is about to use, by name, so that two
+    edits in a row do not rebuild the editor between them. The driver is asked
+    for the memory back last, because until the thing holding it has been
+    dropped there is nothing to hand over.
+    """
+    registry = context.get("registry")
+    if registry is not None:
+        registry.evict()
+    if keeping != "edit":
+        forget_editor()
+    if keeping != "video":
+        forget_clips()
+    if registry is not None:
+        registry.release()
 
 
 def _find(inputs, params, context) -> dict[str, Any]:
@@ -145,9 +180,7 @@ def _edit(inputs, params, context) -> dict[str, Any]:
             "Run `python fetch_references.py` in atelier-engine."
         )
 
-    registry = context.get("registry")
-    if registry is not None:
-        registry.evict()
+    _make_room(context, keeping="edit")
 
     saying = context.get("saying")
     if saying is not None:
@@ -204,9 +237,7 @@ def _sketch(inputs, params, context) -> dict[str, Any]:
     The segmenter is dropped first: even the small coder wants three gigabytes,
     and the big one is split across the card, memory and disk.
     """
-    registry = context.get("registry")
-    if registry is not None:
-        registry.evict()
+    _make_room(context, keeping="nothing")
 
     saying = context.get("saying")
     if saying is not None:
@@ -237,9 +268,7 @@ def _video(inputs, params, context) -> dict[str, Any]:
     a block at a time and the text encoder is eleven gigabytes on its own, so
     anything else resident is memory this has to work around.
     """
-    registry = context.get("registry")
-    if registry is not None:
-        registry.evict()
+    _make_room(context, keeping="video")
 
     house.refuse_unknown()
 
@@ -295,9 +324,7 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
     length the card could not hold in one pass, and what it costs is the paint
     softening with every hop.
     """
-    registry = context.get("registry")
-    if registry is not None:
-        registry.evict()
+    _make_room(context, keeping="video")
 
     saying = context.get("saying")
     if saying is not None:
