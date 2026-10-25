@@ -245,6 +245,29 @@ def embed(pipeline, prompts: list[str], length: int = 512):
     )
 
 
+def latents_to_drop(seconds: float) -> int:
+    """How many latent frames to cut off the front to lose `seconds` of clip.
+
+    **Cut before decoding, which is ComfyUI's way and the cheap way.** Their
+    `TrimVideoLatent` is one line — `samples[:, :, trim_amount:]` — and it runs
+    on the latent rather than on the picture, so the frames thrown away are
+    never decoded at all. That matters more here than there: decoding is the
+    step that runs this card out of memory, far more than any denoising step,
+    which is why the decoder is tiled and sliced.
+
+    Time is compressed four to one, so this is coarse on purpose: a latent
+    frame is a sixth of a second at twenty-four, and asking to lose a twentieth
+    of a second loses nothing. ComfyUI lives with the same granularity.
+
+    Rounded **down**, so that it never cuts more than it was told to. Rounding
+    to nearest would have made a second and a quarter into thirty-two frames
+    rather than twenty-eight, and those four extra frames are generated as well
+    as discarded — enough, measured, to push a staged three-second clip past
+    what `afford` will allow.
+    """
+    return max(0, int(seconds * FPS / 4))
+
+
 def frames_for(seconds: float) -> int:
     """A frame count the model will accept.
 
@@ -347,10 +370,41 @@ def even(size: tuple[int, int]) -> tuple[int, int]:
 #: Overridden by typing a width or a height, like everything else here.
 SCENE_SHAPE = (16, 9)
 
+#: The most lopsided a frame may be before the model stops drawing pictures.
+#:
+#: Wan 2.2 TI2V-5B ships at 1280x704 and 704x1280 — one point eight two to one
+#: — and is trained near 480p in the shapes a camera makes. Asked for something
+#: far outside that it does not fail; it draws, and what comes back is not a
+#: picture.
+#:
+#: **Bracketed by three clips rather than read off the model card**, which is
+#: how it was first set, at 1.85, where it refused shapes that work:
+#:
+#:   2.00 to one   clean from the first frame to the seventy-third
+#:   3.00 to one   clean for five frames, then vertical tearing that worsens
+#:   4.33 to one   tearing from the fifth frame, and never a picture again
+#:
+#: The last of those is one of his own landscapes, 1999x447, which `fit`
+#: faithfully turned into 832x192 — a latent twelve rows tall. The stock
+#: diffusers pipeline does the same thing on it, so it is the shape and not
+#: anything this module does to it.
+#:
+#: So the edge is somewhere between two and three, and this sits just above the
+#: measured-good one. Erring that way on purpose: the way out of a refusal is
+#: **The painting in a scene**, which works, whereas letting a bad shape
+#: through costs a quarter of an hour and a clip he cannot use.
+DRAWABLE = 2.2
+
+
+def lopsidedness(size: tuple[int, int]) -> float:
+    """How far from square a shape is, the long side over the short one."""
+    wide, high = size
+    return max(wide, high) / max(1, min(wide, high))
+
 #: How much of the frame the painting takes when it is part of a scene.
 ROOM = 45.0
 
-#: How long the model takes to turn the staging into a place, in seconds.
+#: How long a staged clip takes to turn its staging into a place, in seconds.
 #:
 #: The first moments of a staged clip are the model resolving a frame that was
 #: assembled rather than photographed: the horizon sharpens, an easel appears
@@ -363,6 +417,23 @@ ROOM = 45.0
 #: the first third of a second, which is the kind of thing that cannot be
 #: unseen once it has been. It costs that much more generation, which is the
 #: price of a clip that starts clean.
+#:
+#: **Staged only, and the attempt to apply it to plain clips is worth writing
+#: down.** A plain clip was believed to have an opening of its own to lose —
+#: the handover from the given first frame into the invented ones. It was
+#: measured on one of his landscapes and the numbers were damning: brightness
+#: swinging between 40 and 131, whole frames going near-black, no steadiness
+#: until frame 31.
+#:
+#: That painting is 1999x447. The clip was not settling, it was **torn by its
+#: own aspect ratio** — see `DRAWABLE` — and the measurement was of the tearing.
+#: Measured again on a near-square painting of his at thirty steps, the opening
+#: is flat: a frame-to-frame change of 0.1 to 1.0 and brightness steady at 62
+#: from the first frame to the twenty-third. There is nothing there to cut.
+#:
+#: So plain clips are not trimmed. It would cost twenty-eight generated-and-
+#: discarded frames and cap them at three seconds, for a fault nobody has been
+#: able to show.
 SETTLES = 1.25
 
 
@@ -518,6 +589,45 @@ def afford(frames: int, width: int, height: int) -> None:
     )
 
 
+def decoded(pipeline, latents):
+    """Latents into frames, the way the pipeline would have done it.
+
+    Lifted out of `WanImageToVideoPipeline.__call__` rather than invented: the
+    same four lines it runs when `output_type` is anything but `"latent"`. They
+    are here because the clip has to be trimmed in between, and a pipeline that
+    decodes for you gives you no in between.
+
+    Kept next to the call that depends on it, so that a `diffusers` upgrade
+    that changes the normalisation is one diff away from being noticed.
+
+    **Under `no_grad`, which is not optional.** The pipeline's `__call__` is
+    decorated with it, so the decode it does for you inherits it; a decode
+    lifted out of that call does not, and autograd quietly keeps every
+    intermediate of a tiled decode over seventy-odd frames. Measured: thirty
+    steps finished, and then the card ran out of memory on the last thing it
+    had to do. Twenty-two minutes to find out.
+    """
+    import torch
+
+    vae = pipeline.vae
+    # The pipeline casts here and so must this. Handed back as latents they
+    # arrive in the transformer's dtype, because the line that moves them to
+    # the decoder's lives inside the branch this replaces.
+    latents = latents.to(vae.dtype)
+    mean = (
+        torch.tensor(vae.config.latents_mean)
+        .view(1, vae.config.z_dim, 1, 1, 1)
+        .to(latents.device, latents.dtype)
+    )
+    spread = 1.0 / torch.tensor(vae.config.latents_std).view(
+        1, vae.config.z_dim, 1, 1, 1
+    ).to(latents.device, latents.dtype)
+    with torch.no_grad():
+        latents = latents / spread + mean
+        video = vae.decode(latents, return_dict=False)[0]
+        return pipeline.video_processor.postprocess_video(video, output_type="np")[0]
+
+
 def animate(
     painting: Image.Image,
     prompt: str,
@@ -540,8 +650,28 @@ def animate(
     import torch
 
     width, height = fit(painting, longest, in_a_scene)
+
+    # A shape the model cannot draw is refused here rather than discovered at
+    # the end. `afford` already turns away a clip that will not fit in the
+    # card; this turns away one that will fit and come back as tearing.
+    #
+    # The scene path is never refused: it generates at `SCENE_SHAPE` whatever
+    # the painting is, and stands the painting inside it. So the way out of
+    # this message is a switch he already has.
+    if not in_a_scene and lopsidedness((width, height)) > DRAWABLE:
+        raise GraphError(
+            f"this painting is {lopsidedness(painting.size):.1f} to one, and the model draws "
+            f"reliably up to about {DRAWABLE} to one — asked for {width}x{height} it returns "
+            "colour tearing rather than a picture. Turn on **The painting in a scene**, which "
+            "stands it in a frame the model can draw, or crop it closer to square first."
+        )
     # Generated with the settling time on top, and handed back without it.
-    count = frames_for(seconds + SETTLES if in_a_scene else seconds)
+    #
+    # Decided first, and the clip grown by exactly that much, so what comes
+    # back is the length he asked for rather than that length minus whatever
+    # rounding time's four-to-one compression happened to leave.
+    drop = latents_to_drop(SETTLES) if in_a_scene else 0
+    count = frames_for(seconds) + 4 * drop
     afford(count, width, height)
 
     pipeline = _pipeline()
@@ -591,7 +721,9 @@ def animate(
             num_inference_steps=steps,
             guidance_scale=guidance,
             generator=torch.Generator(device="cuda").manual_seed(seed),
-            output_type="np",
+            # Handed back as latents so the settling frames can be cut off
+            # before anything decodes them. See `latents_to_drop`.
+            output_type="latent",
             callback_on_step_end=stepped,
         )
     except torch.cuda.OutOfMemoryError as ran_out:
@@ -607,17 +739,18 @@ def animate(
             "so they cost more than the size does."
         ) from ran_out
 
+    # The settling frames go here, while they are still latents and cost
+    # nothing to throw away. Never so many that there is no clip left.
+    latents = result.frames
+    if drop:
+        latents = latents[:, :, drop:]
+
+    video = decoded(pipeline, latents)
+
     # (frames, h, w, 3) in 0..1 — written out as 8-bit here rather than left
     # for the caller to guess at, which is the asymmetry that cost a day in
     # the inpainter.
-    frames = [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in result.frames[0]]
-
-    # The settling frames go. What they hold is the staged frame becoming a
-    # place, which is scaffolding coming down and not a thing to watch.
-    if in_a_scene:
-        settling = min(round(SETTLES * FPS), max(0, len(frames) - frames_for(0)))
-        frames = frames[settling:]
-    return frames
+    return [(frame * 255).round().clip(0, 255).astype(np.uint8) for frame in video]
 
 
 #: The most scenes one run will chain.

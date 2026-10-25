@@ -3899,6 +3899,59 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R196 — A shape the model cannot draw is refused before it is generated · met
+`fit` takes the painting's own proportions, and `afford` checks the frame
+*count* against the card. Nothing checked the frame's **shape**, so a panoramic
+painting was faithfully turned into something the model cannot draw and the
+clip came back as vertical colour tearing — after a quarter of an hour.
+
+Measured on three clips rather than read off the model card, which is how the
+limit was first set, at 1.85, where it refused shapes that work:
+
+| shape | what came back |
+|---|---|
+| 2.00 to one | clean from the first frame to the seventy-third |
+| 3.00 to one | clean for five frames, then tearing that worsens |
+| 4.33 to one | tearing from the fifth frame, and never a picture again |
+
+The last is his own 1999×447 landscape, which `fit` turned into 832×192 — a
+latent twelve rows tall. **The stock diffusers pipeline does the same thing on
+it**, so it is the shape and nothing this engine does to it.
+
+So the limit is 2.2, just above the measured-good one, and the refusal names
+the way out: **The painting in a scene** generates at a fixed 16:9 whatever the
+painting is and stands the painting inside it, so panoramas still animate.
+Erring towards refusing is deliberate — a refusal costs a click, and letting a
+bad shape through costs fifteen minutes and a clip he cannot use.
+*Proven by:* the engine's `test_shape.py` (9 tests: his panorama refused with
+the shape it would have asked for, the scene path never refused at any
+proportion, the shapes he actually paints all drawn, and the limit covering
+the sizes the model ships with)
+
+### R195 — Settling frames are cut before they are decoded, and only where there are any · met
+A staged clip is generated with settling time on top and handed back without
+it. It was cut **after** decoding, which means the card decoded frames that
+were about to be thrown away — and decoding is the step that runs this card out
+of memory, far more than any denoising step.
+
+Cut as latents now, which is what ComfyUI's `TrimVideoLatent` does and the
+reason it is a node at all: one line, `samples[:, :, trim_amount:]`, before
+anything is decoded. The trim is decided first and the clip grown by exactly
+that much, so what comes back is the length that was asked for rather than that
+length minus whatever rounding time's four-to-one compression left behind.
+
+**Plain clips are not trimmed, and the attempt to trim them is the part worth
+keeping.** A plain opening was measured on one of his landscapes and looked far
+worse than the staged case — brightness swinging between 40 and 131, whole
+frames near-black, no steadiness until frame 31. That painting is 1999×447:
+the clip was not settling, it was being torn apart by its aspect ratio
+([R196]), and the measurement was of the tearing. Measured again on a
+near-square painting at thirty steps, the opening is flat from the first frame.
+*Proven by:* the engine's `test_settling.py` (13 tests: a staged clip generated
+longer and handed back short, a plain one not trimmed, only the staged one
+paying for settling, the length asked for being the length returned at every
+size tried, and the three-second floor still cleared)
+
 ### R194 — The text encoder is kept in half the space · met
 Qwen2.5-VL at bf16 is **16.58 GiB**, the largest single thing on this machine,
 and it is written to disk at every startup and streamed back twice per

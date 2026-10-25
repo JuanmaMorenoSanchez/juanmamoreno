@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.42.0
+
+- **fix** — a painting too far from square is refused before it is generated
+  rather than after. A panorama of his, 1999×447, came back as vertical colour
+  tearing a quarter of an hour later; the limit is 2.2 to one, bracketed by
+  three clips (2:1 clean throughout, 3:1 tearing after five frames, 4.33:1
+  never a picture), and the message names **The painting in a scene**, which
+  draws any shape.
+- **feat** — a staged clip's settling frames are cut while they are still
+  latents, the way ComfyUI's `TrimVideoLatent` does it, so the card no longer
+  decodes frames that are about to be thrown away. The trim is decided first,
+  so a clip comes back at the length that was asked for.
+- Plain clips are **not** trimmed. They were, briefly, on a measurement taken
+  from the panorama above — which was being torn apart by its shape rather
+  than settling. On a near-square painting at thirty steps the opening is flat
+  from the first frame.
+
 ## 2.41.0
 
 - **feat** — the text encoder is kept in half the space. Proper quantisation is
