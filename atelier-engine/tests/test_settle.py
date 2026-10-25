@@ -132,12 +132,26 @@ class RunGraphTest(unittest.TestCase):
         self.assertEqual(ran, [])
 
     def test_the_real_catalogue_refuses_the_numbers_that_broke_it(self) -> None:
-        # The two from the failures: twelve seconds into a five-second field,
-        # and a guidance of fifty into one built for ten.
-        for setting, value in (("seconds", 12), ("guidance", 50), ("longest", 2000)):
+        # Twelve seconds into a five-second field is the original failure, and
+        # it is still the shape of the check. Guidance and longest were the
+        # other two and are no longer settings at all: they are worked out
+        # from the Fun dial and from what the card was measured to hold, which
+        # is a better answer than refusing a number he should not have been
+        # offered. See `dials.fun`.
+        for setting, value in (("seconds", 12), ("fun", 900)):
             with self.subTest(setting=setting):
                 with self.assertRaises(GraphError):
                     settle(CATALOGUE["video"], {setting: value})
+
+    def test_a_number_that_is_no_longer_offered_cannot_be_smuggled_in(self) -> None:
+        # The page is not the only thing that posts a graph. A setting the box
+        # has never heard of is dropped rather than passed through to the
+        # model, so an old saved graph with a guidance of fifty in it runs at
+        # whatever the dial says instead.
+        settled = settle(CATALOGUE["video"], {"guidance": 50, "longest": 2000})
+
+        self.assertNotIn("guidance", settled)
+        self.assertNotIn("longest", settled)
 
 
 if __name__ == "__main__":

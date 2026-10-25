@@ -158,6 +158,19 @@ class NodeTest(unittest.TestCase):
 
         self.assertEqual(published["choices"], ("none", "oil", "watercolour"))
 
+    def test_no_note_is_left_behind_for_a_setting_that_is_gone(self) -> None:
+        # Ten settings were taken off the boxes at once and twenty-seven notes
+        # went stale in the same move. A note for something nobody can set is
+        # not harmless: it is documentation of a control that is not there,
+        # and it reads exactly like documentation of one that is.
+        from engine.help import PARAM_ADVICE, PARAM_HELP
+
+        alive = {(key, p.name) for key, node in CATALOGUE.items() for p in node.params}
+        for written in (PARAM_HELP, PARAM_ADVICE):
+            for pair in written:
+                with self.subTest(pair=pair):
+                    self.assertIn(pair, alive, f"{pair[0]}.{pair[1]} is explained but not offered")
+
     def test_it_arrives_explained_like_every_other_box(self) -> None:
         # The explanations are written in `help.py` and fastened on after the
         # catalogue is built, replacing whatever the node was declared with.

@@ -5,6 +5,30 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.43.0
+
+- **feat** — the Edit, Video and Scenes boxes ask questions a painter has.
+  **Boring to fun** over guidance and denoise strength, **Shape** over the
+  Instagram proportions, **Draft first** as it was. **Thirty settings across
+  the three boxes become nineteen.**
+- The direction of Fun was found by generating five results and asking him,
+  not by reasoning: he ranked the untouched painting last and the gentlest
+  result second last. So boring is no edit rather than a soft one, and the
+  forced end — hard edges, flat speckled colour — is the lossy look he wanted.
+  It stops at a guidance of seven because seven is the highest anybody has
+  looked at.
+- **chore** — ten settings removed: guidance and far (they are Fun), steps and
+  longest (held at what works), reuse (measured to change nothing visible),
+  pick (0–20 of which only 0–3 did anything — it follows the seed now), width
+  and height (they were Shape, badly), room (its own note said both ends were
+  wrong). Twenty-seven stale notes went with them, and a test now refuses to
+  let a note outlive its setting.
+- **fix** — the card is handed back before every box that wants it, not only
+  when a pipeline was dropped. An edit keeps the editor, so nothing was
+  dropped, so the allocator's cache was never emptied and what each run left
+  behind accumulated until the card had no free memory: **the first of five
+  edits took 361 seconds and the second 4,179.**
+
 ## 2.42.0
 
 - **fix** — a painting too far from square is refused before it is generated

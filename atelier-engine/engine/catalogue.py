@@ -26,6 +26,7 @@ from PIL import Image
 from .coder import write_sketch
 from .depth import as_image as depth_image, measure as measure_depth
 from . import house
+from . import dials
 from .draft import size as draft_size, steps as draft_steps
 from .edit import (
     available as edit_available,
@@ -82,20 +83,30 @@ def _make_room(context: dict[str, Any], keeping: str) -> None:
     `keeping` is the one pipeline this box is about to use, by name, so that two
     edits in a row do not rebuild the editor between them. The driver is asked
     for the memory back last, because until the thing holding it has been
-    dropped there is nothing to hand over — and only if something *was*
-    dropped, because emptying the allocator's cache also returns every warm
-    block in it, and a step that has to allocate each of sixty-one groups from
-    the driver is measurably slower than one that does not.
+    dropped there is nothing to hand over.
+
+    **Asked every time, which was briefly not the case.** Emptying the
+    allocator's cache also returns every warm block in it, so it was made
+    conditional on something actually having been dropped — and measured, on a
+    single run, that cost nothing either way.
+
+    Across runs it is ruinous. An edit keeps the editor, so nothing is dropped,
+    so the cache was never emptied, and what each run leaves behind accumulates
+    until the card has no free memory at all. Then Windows does what it does:
+    it oversubscribes into system memory rather than failing. Measured on five
+    edits in a row — the first took 361 seconds and the second **4,179**, with
+    `/health` reporting nought free and the card at a hundred per cent.
+
+    It is the same cliff `LEAVE` is about, reached from the other direction.
     """
     registry = context.get("registry")
     if registry is not None:
         registry.evict()
-    dropped = False
     if keeping != "edit":
-        dropped = forget_editor() or dropped
+        forget_editor()
     if keeping != "video":
-        dropped = forget_clips() or dropped
-    if dropped and registry is not None:
+        forget_clips()
+    if registry is not None:
         registry.release()
 
 
@@ -163,6 +174,32 @@ def _fill(inputs, params, context) -> dict[str, Any]:
     return {"image": fill_behind(inputs["image"], np.asarray(inputs["mask"], dtype=bool))}
 
 
+#: How many steps an edit takes when it is not drafting.
+#:
+#: Held rather than offered. It was a field from four to fifty, and the only
+#: two answers anybody needs are "enough" and "this is a draft" — which is what
+#: the switch beside it already says.
+EDIT_STEPS = 20
+
+#: The same, for a clip.
+CLIP_STEPS = 30
+
+#: How big a clip is generated, on the long side.
+#:
+#: Also held. 832 is the size the card has been measured to hold for three
+#: seconds; the field offered 448 to 1280 and anything past 832 runs out of
+#: memory at the length he actually asks for.
+CLIP_LONGEST = 832
+
+#: How much of the frame a staged painting takes.
+#:
+#: Held at the middle of what used to be a field. Its own note said that under
+#: twenty-five the painting loses its detail and over sixty there is no scene
+#: left to stand it in — a dial whose both ends are wrong is a default wearing
+#: a disguise.
+CLIP_ROOM = 45
+
+
 def _edit(inputs, params, context) -> dict[str, Any]:
     """Change part of a painting by asking for it, in his hand or in anyone's.
 
@@ -197,22 +234,37 @@ def _edit(inputs, params, context) -> dict[str, Any]:
         saying("preparing the model — the first edit of a session takes a few minutes before it starts")
 
     mask = inputs.get("mask")
+    seed = int(params["seed"])
+    drafting = bool(params.get("draft"))
+    far, guidance = dials.fun(float(params.get("fun", dials.FUN_USUALLY)))
+
+    # Cut to shape before anything else, so what the model is shown is what
+    # comes back. A mask belongs to the painting it was drawn on, so cropping
+    # is refused rather than silently moving it out from under one.
+    painting = dials.cropped(inputs["image"], str(params.get("shape") or dials.KEEP))
+    if mask is not None and painting is not inputs["image"]:
+        raise GraphError(
+            "a shape cannot be chosen for a painting that has a mask on it — the mask was "
+            "drawn on the whole picture and cropping would move it. Crop first, then mask."
+        )
+
     return {
         "image": edit_painting(
-            inputs["image"],
+            painting,
             style_instruction(hand, str(params["instruction"])),
             mask=np.asarray(mask, dtype=bool) if mask is not None else None,
+            # Which pair of his paintings, from the seed. It used to be a
+            # setting of its own, 0 to 20, of which only 0 to 3 did anything.
+            # Tied here instead, so the same seed is the same picture all the
+            # way through.
             references=(
-                style_references(hand, int(params.get("pick") or 0))
-                if hand != STYLE_OFF
-                else None
+                style_references(hand, seed % 4) if hand != STYLE_OFF else None
             ),
-            steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
-            size=draft_size(inputs["image"].size, bool(params.get("draft"))),
-            guidance=float(params["guidance"]),
-            far=float(params.get("far", 1.0)),
-            reuse=float(params.get("reuse", 0.0)),
-            seed=int(params["seed"]),
+            steps=draft_steps(EDIT_STEPS, drafting),
+            size=draft_size(painting.size, drafting),
+            guidance=guidance,
+            far=far,
+            seed=seed,
             saying=saying,
             # Passed down rather than reported by the node, because the node
             # finishes once and the steps are what take the eighteen minutes.
@@ -286,16 +338,23 @@ def _video(inputs, params, context) -> dict[str, Any]:
     if saying is not None and not clips_ready():
         saying("preparing the model — the first clip of a session spends minutes before a step runs")
 
+    # A clip is cut to shape before it moves, so the model composes inside the
+    # frame it will be posted in rather than having it taken off afterwards.
+    painting = dials.cropped(
+        inputs["image"], str(params.get("shape") or dials.KEEP), moving=True
+    )
+    _, guidance = dials.fun(float(params.get("fun", dials.FUN_USUALLY)))
+
     frames = animate_painting(
-        inputs["image"],
+        painting,
         params["prompt"],
         seconds=float(params["seconds"]),
-        steps=draft_steps(int(params["steps"]), bool(params.get("draft"))),
-        guidance=float(params["guidance"]),
+        steps=draft_steps(CLIP_STEPS, bool(params.get("draft"))),
+        guidance=guidance,
         seed=int(params["seed"]),
-        longest=int(params["longest"]),
+        longest=CLIP_LONGEST,
         in_a_scene=bool(params["in_a_scene"]),
-        room=float(params["room"]),
+        room=CLIP_ROOM,
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
     )
@@ -307,13 +366,14 @@ def _video(inputs, params, context) -> dict[str, Any]:
     name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-clip.mp4"
 
     # The shape he painted, not the multiple of sixteen the model needed. The
-    # frames are generated at the model's size and written at the painting's,
-    # unless he has typed one of his own.
+    # frames are generated at the model's size and written at the painting's —
+    # which is the cropped one when a shape was chosen, so the file comes out
+    # at the proportions it will be posted at.
     size = shown_size(
-        inputs["image"],
+        painting,
         frames[0].shape[1::-1],
-        width=int(params["width"]),
-        height=int(params["height"]),
+        width=0,
+        height=0,
         in_a_scene=bool(params["in_a_scene"]),
     )
     write_video(frames, OUT / name, size=size)
@@ -340,16 +400,21 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
     if saying is not None and not clips_ready():
         saying("preparing the model — the first clip of a session spends minutes before a step runs")
 
+    painting = dials.cropped(
+        inputs["image"], str(params.get("shape") or dials.KEEP), moving=True
+    )
+    _, guidance = dials.fun(float(params.get("fun", dials.FUN_USUALLY)))
+
     frames = scene_by_scene(
-        inputs["image"],
+        painting,
         str(params["asking"]).splitlines(),
         seconds=float(params["seconds"]),
-        steps=int(params["steps"]),
-        guidance=float(params["guidance"]),
+        steps=CLIP_STEPS,
+        guidance=guidance,
         seed=int(params["seed"]),
-        longest=int(params["longest"]),
+        longest=CLIP_LONGEST,
         in_a_scene=bool(params["in_a_scene"]),
-        room=float(params["room"]),
+        room=CLIP_ROOM,
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
         saying=saying,
@@ -361,10 +426,10 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
     OUT.mkdir(exist_ok=True)
     name = f"{context.get('batch') or uuid.uuid4().hex[:8]}-scenes.mp4"
     size = shown_size(
-        inputs["image"],
+        painting,
         frames[0].shape[1::-1],
-        width=int(params["width"]),
-        height=int(params["height"]),
+        width=0,
+        height=0,
         in_a_scene=bool(params["in_a_scene"]),
     )
     write_video(frames, OUT / name, size=size)
@@ -520,28 +585,24 @@ CATALOGUE: dict[str, NodeType] = {
                     label="In my style",
                     choices=(STYLE_OFF, *STYLES),
                 ),
-                Param("pick", "number", 0, label="Which references", minimum=0, maximum=20, step=1),
-                Param("steps", "number", 20, label="Steps", minimum=4, maximum=50, step=1),
+                # One dial over two of the model's numbers. See `dials.fun`.
                 Param(
-                    "guidance", "slider", 4.0, label="How literally", minimum=1, maximum=10, step=0.5
+                    "fun",
+                    "slider",
+                    dials.FUN_USUALLY,
+                    label="Boring to fun",
+                    minimum=dials.FUN_LEAST,
+                    maximum=dials.FUN_MOST,
+                    step=0.5,
                 ),
-                # How far from the painting it is allowed to end up, which is
-                # the thing a denoise strength would do on a pipeline that had
-                # one. This model has none, so it is done at the end.
                 Param(
-                    "far", "slider", 1.0, label="How far from the original", minimum=0.1, maximum=1, step=0.05
+                    "shape",
+                    "choice",
+                    dials.KEEP,
+                    label="Shape",
+                    choices=dials.SHAPES,
                 ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
-                # The only dial here that removes work rather than hurrying it:
-                # a step whose first block barely moved is taken from the step
-                # before, and the fifty-nine blocks it skips never cross the
-                # bus at all. Off by default, because it is a guess.
-                # Up to a half, because measured on this model a tenth skips
-                # nothing at all and a fifth skips one step in seven. A dial
-                # whose useful range is off its end is a dial that does nothing.
-                Param(
-                    "reuse", "slider", 0.0, label="Reuse a step", minimum=0, maximum=0.5, step=0.05
-                ),
                 # Four steps instead of twenty, at a quarter of the pixels.
                 Param("draft", "toggle", False, label="Draft first"),
             ],
@@ -566,9 +627,21 @@ CATALOGUE: dict[str, NodeType] = {
             params=[
                 Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
                 Param("seconds", "number", 3.0, label="How long", minimum=3.0, maximum=5.0, step=0.5),
-                Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
                 Param(
-                    "guidance", "slider", 5.0, label="How literally", minimum=1, maximum=10, step=0.5
+                    "fun",
+                    "slider",
+                    dials.FUN_USUALLY,
+                    label="Boring to fun",
+                    minimum=dials.FUN_LEAST,
+                    maximum=dials.FUN_MOST,
+                    step=0.5,
+                ),
+                Param(
+                    "shape",
+                    "choice",
+                    dials.KEEP,
+                    label="Shape",
+                    choices=dials.SHAPES,
                 ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
                 Param("draft", "toggle", False, label="Draft first"),
@@ -578,18 +651,6 @@ CATALOGUE: dict[str, NodeType] = {
                     False,
                     label="The painting in a scene",
                 ),
-                Param(
-                    "room",
-                    "number",
-                    45,
-                    label="How much of the frame",
-                    minimum=15,
-                    maximum=80,
-                    step=5,
-                ),
-                Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
-                Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
-                Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
             ],
             run=_video,
         ),
@@ -626,8 +687,22 @@ CATALOGUE: dict[str, NodeType] = {
                     label="The scenes",
                 ),
                 Param("seconds", "number", 3.0, label="Each scene", minimum=3.0, maximum=5.0, step=0.5),
-                Param("steps", "number", 30, label="Steps", minimum=10, maximum=50, step=1),
-                Param("guidance", "number", 5.0, label="How literally", minimum=1, maximum=10, step=0.5),
+                Param(
+                    "fun",
+                    "slider",
+                    dials.FUN_USUALLY,
+                    label="Boring to fun",
+                    minimum=dials.FUN_LEAST,
+                    maximum=dials.FUN_MOST,
+                    step=0.5,
+                ),
+                Param(
+                    "shape",
+                    "choice",
+                    dials.KEEP,
+                    label="Shape",
+                    choices=dials.SHAPES,
+                ),
                 Param("seed", "number", 7, label="Seed", minimum=0, maximum=99999, step=1),
                 Param(
                     "in_a_scene",
@@ -635,18 +710,6 @@ CATALOGUE: dict[str, NodeType] = {
                     False,
                     label="The painting in a scene",
                 ),
-                Param(
-                    "room",
-                    "number",
-                    45,
-                    label="How much of the frame",
-                    minimum=15,
-                    maximum=80,
-                    step=5,
-                ),
-                Param("longest", "number", 832, label="Longest side", minimum=448, maximum=1280, step=64),
-                Param("width", "number", 0, label="Width out", minimum=0, maximum=4096, step=2),
-                Param("height", "number", 0, label="Height out", minimum=0, maximum=4096, step=2),
             ],
             run=_scenes,
         ),

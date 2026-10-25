@@ -3899,6 +3899,49 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R197 — The boxes ask questions a painter has · met
+The Edit and Video boxes showed the model's own settings: guidance, denoise
+strength, step count, frame width, how much of the frame, which reference pair.
+Each is a real number with a real effect and **not one of them is a question a
+painter has**. Thirty settings across three boxes; nineteen now.
+
+**One dial may move several numbers, in different directions, under a name he
+would say.** *Boring to fun* drives how much of the model's version survives and
+how hard the instruction is pushed. *Shape* crops to a proportion Instagram
+shows whole. *Draft first* was already right.
+
+**The direction of Fun was found by generating, not by reasoning.** It was built
+with gentle at the fun end, on the assumption that forcing an instruction makes
+a model obedient and dull. Shown five results from one painting he ranked the
+**untouched painting last and the gentlest result second last**, and liked
+everything above the middle. So boring is not a softer edit, it is *no* edit:
+the bottom of the dial lands within a couple of counts of his own paint, and
+the top is forced — hard edges, flat speckled colour — which is the lossy look
+he asked for, and four times slower with it.
+
+It stops at a guidance of seven because seven is the highest that has been
+generated and looked at; the model would take ten.
+
+**Ten settings removed**, each for a reason:
+
+| gone | why |
+|---|---|
+| guidance, far | they *are* Fun |
+| steps ×3, longest | held at what works; **Draft first** is the only answer anybody needs |
+| reuse | measured to change nothing visible at any setting it offered |
+| pick | 0–20, of which only 0–3 did anything; follows the seed now |
+| width, height ×2 | two numbers that were Shape, badly |
+| room ×2 | its own note said both ends of it were wrong |
+
+*Proven by:* the engine's `test_dials.py` (15 tests: the boring end landing on
+his painting, the fun end taking all of the model, both numbers moving one way
+only, forced being the fun end and not the boring one, the dial stopping where
+the looking stopped, opening where he said he likes it, every shape on offer
+landing inside what the model will draw, and a panorama keeping a strip of
+itself), `test_style.py` "test_no_note_is_left_behind_for_a_setting_that_is_gone",
+and `test_advice.py`
+"test_the_dials_need_no_warning_because_every_place_on_them_works"
+
 ### R196 — A shape the model cannot draw is refused before it is generated · met
 `fit` takes the painting's own proportions, and `afford` checks the frame
 *count* against the card. Nothing checked the frame's **shape**, so a panoramic

@@ -217,6 +217,23 @@ HELP: dict[str, str] = {
 
 #: The draft switch, which both of the slow nodes carry and which says the
 #: same thing on each: the same picture, fewer steps.
+_FUN = (
+        "Boring is your painting barely touched. Fun is the model's own version of it, taken whole and pushed hard. One dial, over two of the model's settings."
+        "\n\n"
+        "It was built the other way round first. Shown five results from one painting you ranked the untouched painting last and the gentlest result second last, and liked everything above the middle — so boring is not a softer edit, it is no edit, and the bottom of this lands within a couple of counts of your own paint. Keep it low for a precise change like a roof going grey; push it up when you want the model to have the idea."
+        "\n\n"
+        "The top end is forced rather than obedient: edges harden, colour goes flat and speckles, the brushwork reads as plastic. That is the lossy look, and it is also four times slower — the gentle end measured ninety seconds against four hundred and twenty-nine, because anything forced runs the model a second time for the negative prompt. It stops where the looking stopped; the model would go further and nobody has watched it."
+)
+
+_SHAPE = (
+        "What proportions to end up in. **Keep** leaves the painting as you painted it; the other two crop it, from the middle, to a shape Instagram shows whole — 1.91 to one across, and down the page four to five for a picture or nine to sixteen for a clip, because a feed and a reel do not want the same tall shape."
+        "\n\n"
+        "Cropping means cropping. A panorama taken to a reel keeps a strip of itself and loses the rest — 1999 across by 447 down keeps about an eighth of its width. Crop it yourself first if you want a different part of it."
+        "\n\n"
+        "It is also how a painting too far from square gets animated at all. The model tears a frame it was never trained to draw, so a shape that is refused for being lopsided will go through once a posted shape is chosen."
+)
+
+
 _DRAFT = (
         "Four steps instead of all of them, at a quarter of the pixels: same "
         "prompt, same seed, same references, same mask. Expect the composition "
@@ -241,6 +258,12 @@ _DRAFT = (
 )
 
 PARAM_HELP: dict[tuple[str, str], str] = {
+    ("edit", "fun"): _FUN,
+    ("video", "fun"): _FUN,
+    ("scenes", "fun"): _FUN,
+    ("edit", "shape"): _SHAPE,
+    ("video", "shape"): _SHAPE,
+    ("scenes", "shape"): _SHAPE,
     ("brush", "points"): (
         "The marks themselves. Press Draw to put them on the painting: a click "
         "keeps, a shift-click excludes. They are stored on the node, so they "
@@ -263,57 +286,10 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ),
     ("edit", "draft"): _DRAFT,
     ("video", "draft"): _DRAFT,
-    ("edit", "far"): (
-        "How much of the edit to keep. One is the edit as the model made it; "
-        "a half is the edit half-taken, mixed back over the painting it came "
-        "from; a tenth is a suggestion of it.\n\n"
-        "This is the dial other tools call denoise strength, done at the "
-        "other end. A pipeline with a strength starts the sampler part way "
-        "through, already holding your picture, so it has less of the "
-        "trajectory left to change it. This model has no such setting — it "
-        "is led by an instruction and regenerates the whole canvas, which is "
-        "why a mask is what keeps the rest — so the result is mixed back "
-        "instead. The effect on the picture is much the same and the cost is "
-        "not: the run takes exactly as long either way, because the model "
-        "has already done the work by the time this applies.\n\n"
-        "It is taken before the mask, so a masked edit is pulled back inside "
-        "its own mask and the paint outside it is untouched either way."
-    ),
-    ("video", "steps"): (
-        "How many passes over the whole clip. Fewer is faster and mushier, "
-        "and below about twenty the motion starts to judder rather than "
-        "flow. Thirty is a reasonable place to start."
-    ),
-    ("video", "guidance"): (
-        "How literally to take the sentence. Higher follows the words and can "
-        "force motion that was not in the painting; lower drifts and "
-        "sometimes barely moves at all."
-    ),
     ("video", "seed"): (
         "Which random start to use. The same seed, sentence and painting give "
         "the same clip, so change it to roll again and keep it when something "
         "nearly worked."
-    ),
-    ("video", "longest"): (
-        "How big to generate, on the long side. The painting is thousands of "
-        "pixels across and the model was trained near this size — asked for "
-        "the full thing it would run out of memory long before it finished. "
-        "Raise it only once the motion is right."
-    ),
-    ("video", "width"): (
-        "The width to write the clip at. Zero means the painting's own, which "
-        "is what you want unless somewhere else has asked for a size: nothing "
-        "here changes the shape of a painting on its own.\n\n"
-        "Type one of width or height and the other follows from the painting, "
-        "so the shape is kept. Type both and both are obeyed, which is how to "
-        "ask for a shape of your own.\n\n"
-        "It does not change what the model generates, which has to be a "
-        "multiple of sixteen near 832. It changes the file."
-    ),
-    ("video", "height"): (
-        "The height to write the clip at. Zero means the painting's own.\n\n"
-        "Typed on its own, the width follows from the painting. 1920 with the "
-        "width left at zero is the usual way to ask for something tall."
     ),
     ("scenes", "asking"): (
         "One scene per line. Each starts from the last frame of the one above it, so "
@@ -323,27 +299,9 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "How long each scene runs, not the whole clip. Six scenes at three seconds is "
         "eighteen seconds of film and six times the wait of one."
     ),
-    ("scenes", "steps"): (
-        "How many passes over each scene. Multiplied by the number of scenes, so this "
-        "is the setting that decides whether the run is twenty minutes or two hours."
-    ),
-    ("scenes", "guidance"): (
-        "How literally to take each sentence. The same dial as Video, applied to every "
-        "scene."
-    ),
     ("scenes", "seed"): (
         "The random start for the first scene; the others walk up from it. Changing a "
         "later sentence does not reroll the scenes before it."
-    ),
-    ("scenes", "longest"): (
-        "How big to generate, on the long side. Costs what it costs in Video, once per "
-        "scene."
-    ),
-    ("scenes", "width"): (
-        "The width to write the joined clip at. Zero means the painting's own."
-    ),
-    ("scenes", "height"): (
-        "The height to write the joined clip at. Zero means the painting's own."
     ),
     ("video", "in_a_scene"): (
         "What the painting is to the model. Off, it is the whole frame and the sentence "
@@ -356,20 +314,10 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "is given is the first frame, so a painting that fills the frame can only be "
         "the scene."
     ),
-    ("video", "room"): (
-        "How much of the frame the painting takes when it is standing in a scene. "
-        "Forty-five per cent leaves room for an easel and a horizon; past about sixty "
-        "there is no scene left to put it in, and under twenty-five the painting is too "
-        "small for the model to keep its detail."
-    ),
     ("scenes", "in_a_scene"): (
         "As on Video, and applied to the first scene only: after it the frame already "
         "holds the scene, and staging it again would put a picture of the mountain on "
         "an easel in another mountain."
-    ),
-    ("scenes", "room"): (
-        "How much of the first frame the painting takes. The scenes after it carry on "
-        "from what the first one made."
     ),
     ("sketch", "asking"): (
         "What the piece should do, in a sentence. Concrete and visual works best — "
@@ -408,47 +356,6 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "deep red works; a red jumper is weaker. Say what should stay the same too, if "
         "it matters."
     ),
-    ("edit", "steps"): (
-        "How many passes. More is slower and usually slightly better, and each one "
-        "costs about a hundred seconds here. Below ten it tends to come apart."
-    ),
-    ("edit", "guidance"): (
-        "How literally to take the instruction. Higher follows the words more closely "
-        "and can look forced; lower wanders. Four is a reasonable place to start.\n\n"
-        "At the very bottom of the slider it is also the cost. Anything above one "
-        "runs the model a second time on every step, against the negative prompt, "
-        "and takes the difference between the two answers — so a step at guidance "
-        "two costs exactly twice a step at one. At one it is a single pass: the same "
-        "number of steps in half the time, following the instruction loosely. That is "
-        "the quickest look at an idea there is, quicker than Draft first, and the two "
-        "together are four steps at one pass each."
-    ),
-    ("edit", "reuse"): (
-        "How much of a step may be taken from the step before it. Zero computes "
-        "every step in full and is the exact picture; above zero, the first of "
-        "the sixty blocks is run and what it changed is compared with what it "
-        "changed last step — and if the difference is under this, the other "
-        "fifty-nine are skipped and last step's answer is reused."
-        "\n\n"
-        "This is the only dial here that removes work instead of hurrying it. A "
-        "step costs twelve gigabytes of model arriving, and a skipped block is "
-        "never fetched, so a skipped step moves a sixtieth of the model rather "
-        "than all of it. Measured on eight steps: a skipped step took 0.8 "
-        "seconds against 33.4."
-        "\n\n"
-        "Measured on the same eight steps, it does nothing at all below about a "
-        "fifth — at 0.10, every step still ran in full — and at 0.20 one step "
-        "in seven was skipped. Few steps leave little for it to find, because "
-        "each one is still changing the picture a great deal; the longer the "
-        "run the more there is to reuse, so it is worth most at twenty steps "
-        "and nothing at four."
-        "\n\n"
-        "It is also the only dial that changes the picture without being asked "
-        "to: it is a guess that nothing much happened, and set high enough to "
-        "skip most steps it is high enough to skip the change you asked for. "
-        "Raise it while you are looking for something, and put it back to zero "
-        "for the one you keep."
-    ),
     ("edit", "seed"): (
         "Which random start to use. The same seed and instruction give the same "
         "picture, so change it to roll again and keep it to reproduce something you "
@@ -458,11 +365,6 @@ PARAM_HELP: dict[tuple[str, str], str] = {
         "Oil or watercolour. Each is a different set of his paintings, and the two "
         "hands are not interchangeable: a watercolour reference will thin an oil "
         "painting out."
-    ),
-    ("edit", "pick"): (
-        "Which pair of his paintings to show it. Zero is the first two, one the next "
-        "two, and it wraps round. The cheapest thing to change when the hand is "
-        "wrong."
     ),
     ("save", "name"): (
         "What to call the file. A run can keep several things and they are told apart "
@@ -495,76 +397,10 @@ PARAM_ADVICE: dict[tuple[str, str], Advice] = {
         high="Past four pixels it stops looking like a join and starts looking "
         "like a glow around the layer.",
     ),
-    ("edit", "steps"): Advice(
-        below=12,
-        above=35,
-        low="Below about ten passes it tends to come apart: the change is there "
-        "and the paint around it is mush.",
-        high="Each pass costs about a hundred seconds here, so this is over an "
-        "hour, and past thirty-five the picture barely changes. Raise the "
-        "seed instead and run it again.",
-    ),
-    ("edit", "guidance"): Advice(
-        below=2.5,
-        above=7,
-        low="Under about 2.5 it wanders off the instruction and repaints "
-        "whatever it likes.",
-        high="Over about seven it forces the words through: edges harden, "
-        "colour goes flat, and the brushwork reads as plastic.",
-    ),
-    ("edit", "pick"): Advice(
-        above=3,
-        high="There are eight references per style, two to a pair, so anything "
-        "over three wraps round to a pair already offered.",
-    ),
     ("video", "seconds"): Advice(
         above=4,
         high="The model works on the whole clip at once, so five seconds is "
         "well over twice the wait of three. Find the motion at three.",
-    ),
-    ("video", "steps"): Advice(
-        below=20,
-        above=40,
-        low="Below about twenty the motion judders rather than flows.",
-        high="Over about forty is minutes of extra waiting for motion that "
-        "looks the same.",
-    ),
-    ("video", "guidance"): Advice(
-        below=3,
-        above=7,
-        low="Under about three it drifts, and sometimes barely moves at all.",
-        high="Over about seven it forces motion the painting never suggested.",
-    ),
-    ("video", "longest"): Advice(
-        above=960,
-        high="The model was trained near 832, and the time and the memory both "
-        "grow with the area. Raise this only once the motion is right.",
-    ),
-    ("scenes", "steps"): Advice(
-        below=20,
-        above=35,
-        low="Below about twenty the motion judders rather than flows, in every scene.",
-        high="Multiplied by the number of scenes: thirty-five across six scenes is "
-        "already an afternoon.",
-    ),
-    ("scenes", "guidance"): Advice(
-        below=3,
-        above=7,
-        low="Under about three it drifts, and a scene that barely moves is a scene "
-        "wasted.",
-        high="Over about seven it forces motion the frame never suggested.",
-    ),
-    ("scenes", "longest"): Advice(
-        above=960,
-        high="Once per scene, so this is where a run turns into hours.",
-    ),
-    ("video", "room"): Advice(
-        below=25,
-        above=60,
-        low="Under about twenty-five per cent the painting is too small for the model to "
-        "hold its detail, and it comes back as a smudge on an easel.",
-        high="Past about sixty per cent there is no scene left to put it in, which is "
-        "the thing this switch is for.",
     ),
     ("sketch", "most_tokens"): Advice(
         below=400,

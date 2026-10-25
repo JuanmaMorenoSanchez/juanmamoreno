@@ -77,16 +77,25 @@ class AdviceTest(unittest.TestCase):
             with self.subTest(param=f"{key}.{param.name}"):
                 self.assertIn(param.kind, NUMERIC)
 
-    def test_the_two_slow_models_are_both_advised(self) -> None:
-        # The ones worth a warning at all: an edit is a hundred seconds a pass
-        # and a clip is twenty minutes, so a number set badly here costs the
-        # afternoon rather than a retry. There were three until Edit absorbed
-        # My style, which was the same model with two reference images.
-        for key in ("edit", "video"):
-            with self.subTest(node=key):
-                advice = {p.name for p in CATALOGUE[key].params if p.advice}
-                self.assertIn("steps", advice)
-                self.assertIn("guidance", advice)
+    def test_what_is_left_to_advise_is_what_is_left_to_get_wrong(self) -> None:
+        # Advice was for the slow models' numbers: a step count and a guidance
+        # set badly cost the afternoon rather than a retry. Both are gone from
+        # the boxes — worked out from the Fun dial and from what the card holds
+        # — and a dial whose every position is usable has nothing to warn
+        # about. What remains is how long a clip is, which still costs real
+        # minutes per extra second.
+        advised = {p.name for p in CATALOGUE["video"].params if p.advice}
+
+        self.assertIn("seconds", advised)
+
+    def test_the_dials_need_no_warning_because_every_place_on_them_works(self) -> None:
+        # The test that would catch a dial being given a range nobody checked.
+        for key in ("edit", "video", "scenes"):
+            for name in ("fun", "shape"):
+                found = [p for p in CATALOGUE[key].params if p.name == name]
+                with self.subTest(node=key, param=name):
+                    self.assertTrue(found, f"{key} has no {name}")
+                    self.assertIsNone(found[0].advice)
 
 
 if __name__ == "__main__":
