@@ -66,6 +66,60 @@ def _painting(inputs, params, context) -> dict[str, Any]:
     return {"image": painting}
 
 
+#: How much of the card has to be free before a model is worth building, in MiB.
+#:
+#: The atelier wants the whole thing. The editor is twelve gigabytes streamed
+#: through eight, and what is not streamed is held resident precisely because
+#: there is nothing else to hold — so "a bit of the card" is not a state it can
+#: work in.
+#:
+#: Four gigabytes rather than the seven that are actually free on an idle
+#: machine, because the driver and the desktop take their share and this is
+#: meant to catch something *large*, not to be a tripwire.
+ENOUGH_CARD = 4096
+
+
+def _alone_on_the_card(context: dict[str, Any], building: str) -> None:
+    """Refuse before building a model if something else is using the card.
+
+    **Forty-four minutes to find out otherwise.** A clip was started while a
+    game was running: the card was at 7,865 of 8,188 MiB and a hundred per
+    cent, the machine was at 98% of its commit limit, and the engine had forty
+    gigabytes committed with seven hundred megabytes of it resident — paged
+    almost entirely out. One step took three quarters of an hour; the clip
+    would have finished some time the next day.
+
+    Nothing about it was wrong except the company. By token count that clip was
+    0.98 of the measured point — the same work as one that runs at twenty
+    seconds a step. `afford` had no view on it, because `afford` is arithmetic
+    about the clip and this is a fact about the machine.
+
+    Only checked when the model is about to be **built**. Once it is up the
+    engine holds the card itself and free memory is legitimately small — on a
+    second edit it is about a gigabyte and a half, which is working as
+    intended and must not read as somebody else's.
+    """
+    registry = context.get("registry")
+    if registry is None:
+        return
+    reading = registry.vram()
+    if reading is None:
+        return
+
+    free, total = reading
+    if free >= ENOUGH_CARD:
+        return
+
+    raise GraphError(
+        f"the card has {free} MiB free of {total}, and {building} needs most of it. "
+        "Something else on this machine is using it — a game, another model, a browser "
+        "doing something clever. The atelier streams a twelve-gigabyte model through "
+        "eight gigabytes of card and cannot share it: a run started like this does not "
+        "fail, it pages, and a step takes an hour instead of twenty seconds.\n\n"
+        "Close whatever it is and start again."
+    )
+
+
 def _make_room(context: dict[str, Any], keeping: str) -> None:
     """Hand the card to the box that is about to use it, and to nothing else.
 
@@ -225,6 +279,9 @@ def _edit(inputs, params, context) -> dict[str, Any]:
 
     _make_room(context, keeping="edit")
 
+    if not editor_ready():
+        _alone_on_the_card(context, "the editor")
+
     saying = context.get("saying")
     if saying is not None and not editor_ready():
         # Measured at about two and a half minutes the first time in a process:
@@ -334,6 +391,9 @@ def _video(inputs, params, context) -> dict[str, Any]:
 
     house.refuse_unknown()
 
+    if not clips_ready():
+        _alone_on_the_card(context, "the clip model")
+
     saying = context.get("saying")
     if saying is not None and not clips_ready():
         saying("preparing the model — the first clip of a session spends minutes before a step runs")
@@ -396,6 +456,9 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
     softening with every hop.
     """
     _make_room(context, keeping="video")
+
+    if not clips_ready():
+        _alone_on_the_card(context, "the clip model")
 
     saying = context.get("saying")
     if saying is not None and not clips_ready():

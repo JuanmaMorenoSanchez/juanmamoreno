@@ -3899,6 +3899,30 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R199 — A model is not built while something else has the card · met
+A clip was started while a game was running. The card was at **7,865 of 8,188
+MiB and a hundred per cent**, the machine at 98% of its commit limit, and the
+engine had forty gigabytes committed with **seven hundred megabytes of it
+resident** — paged almost entirely out. One step took **forty-four minutes**.
+The clip would have finished the following day.
+
+Nothing about the clip was wrong. By token count it was 0.98 of the measured
+point: the same work as one that runs at twenty seconds a step. [R193]'s
+`afford` had no view on it, because `afford` is arithmetic about the clip and
+this is a fact about the machine — and a run in that state does not fail, it
+pages, which is the one failure that looks exactly like working.
+
+So each of the three boxes asks, **before building its model**, whether it has
+the card to itself, and refuses with the two numbers and what to do about it.
+Only before building: once a model is up the engine holds the card itself and
+free memory is legitimately small — about a gigabyte and a half on a second
+edit — which must not read as somebody else's.
+*Proven by:* the engine's `test_make_room.py` `AloneOnTheCardTest` (6 tests:
+an empty card allowed, a shared one refused with both numbers and what is
+being built, the refusal saying what to do, a machine with no CUDA device
+passing, no registry not being an error, and the bar set clear of what the
+engine itself leaves free)
+
 ### R198 — A clip may start in the motion rather than on the painting · met
 A clip opens on the painting and holds it while the model works out what to do
 with it, then begins to move. There is nothing wrong with that second — it is

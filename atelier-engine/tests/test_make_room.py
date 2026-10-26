@@ -19,6 +19,7 @@ the result. A single run cannot tell the difference; only the next one can.
 import unittest
 
 from engine import catalogue
+from engine.nodes import GraphError
 
 
 class Watching:
@@ -89,3 +90,65 @@ class MakeRoomTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AloneOnTheCardTest(unittest.TestCase):
+    """
+    Refusing to build a model while something else has the card.
+
+    A clip was started while a game was running. The card was at 7,865 of
+    8,188 MiB and a hundred per cent, the machine was at 98% of its commit
+    limit, and the engine had forty gigabytes committed with seven hundred
+    megabytes resident — paged almost entirely out. One step took forty-four
+    minutes; the clip would have finished the next day.
+
+    Nothing about the clip was wrong. By token count it was 0.98 of the
+    measured point, the same work as one that runs at twenty seconds a step.
+    `afford` had no view on it, because `afford` is arithmetic about the clip
+    and this is a fact about the machine.
+    """
+
+    class Card:
+        def __init__(self, free, total=8188):
+            self.reading = (free, total)
+
+        def vram(self):
+            return self.reading
+
+    def test_an_empty_card_is_fine(self) -> None:
+        catalogue._alone_on_the_card({"registry": self.Card(7096)}, "the editor")
+
+    def test_a_card_a_game_is_using_is_refused(self) -> None:
+        with self.assertRaises(GraphError) as refused:
+            catalogue._alone_on_the_card({"registry": self.Card(92)}, "the clip model")
+
+        said = str(refused.exception)
+        self.assertIn("92", said)
+        self.assertIn("8188", said)
+        self.assertIn("clip model", said)
+
+    def test_the_refusal_says_what_to_do(self) -> None:
+        with self.assertRaises(GraphError) as refused:
+            catalogue._alone_on_the_card({"registry": self.Card(92)}, "the editor")
+
+        self.assertIn("Close", str(refused.exception))
+
+    def test_it_says_nothing_about_a_machine_with_no_card(self) -> None:
+        # `vram()` answers None where there is no CUDA device, and a machine
+        # without one has other problems than this.
+
+        class NoCard:
+            def vram(self):
+                return None
+
+        catalogue._alone_on_the_card({"registry": NoCard()}, "the editor")
+
+    def test_no_registry_is_not_an_error(self) -> None:
+        catalogue._alone_on_the_card({}, "the editor")
+
+    def test_it_leaves_room_for_the_engine_holding_the_card_itself(self) -> None:
+        # Once a model is up, free memory is legitimately small — about a
+        # gigabyte and a half on a second edit, which is working as intended.
+        # That is why this is only asked before building, and why the bar is
+        # not set near it.
+        self.assertGreater(catalogue.ENOUGH_CARD, 1536)

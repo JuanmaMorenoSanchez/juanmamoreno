@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.45.0
+
+- **feat** — a box refuses to build its model when something else is using the
+  card, with the two numbers and what to do. A clip started while a game was
+  running spent **forty-four minutes on one step** — the card was at 7,865 of
+  8,188 MiB, and the engine had forty gigabytes committed with seven hundred
+  megabytes resident. Nothing about the clip was wrong; by token count it was
+  0.98 of the measured point. A run in that state does not fail, it pages.
+
 ## 2.44.0
 
 - **feat** — **Start on the painting**, on the clip boxes. On, a clip opens on
