@@ -370,15 +370,21 @@ class AffordTest(unittest.TestCase):
     def test_the_biggest_size_is_refused_even_at_three_seconds(self) -> None:
         self.assertFalse(self.allowed(3, 1280))
 
-    def test_it_says_which_numbers_to_lower(self) -> None:
+    def test_it_says_which_dials_to_move_and_in_what_order(self) -> None:
+        # Shape before seconds. What costs here is frames times pixels, and a
+        # painting kept at its own proportions is often the widest and tallest
+        # it can be — a near-square one at four seconds is 1.58 of the budget
+        # and 0.95 as a reel, so the seconds he asked for are usually
+        # affordable at the shape he was going to post in anyway. Telling him
+        # to shorten the clip first is telling him to pay for nothing.
         wide, high = video.fit(self.painting, 1280)
         with self.assertRaises(GraphError) as refused:
             video.afford(video.frames_for(5), wide, high)
 
         said = str(refused.exception)
         self.assertIn("frames", said)
-        self.assertIn("Three seconds at 832", said)
-        self.assertIn("Lower the seconds first", said)
+        self.assertIn("shape", said.lower())
+        self.assertLess(said.lower().index("shape"), said.lower().index("lower the seconds"))
 
     def test_it_refuses_before_anything_is_loaded(self) -> None:
         # The point of the check. `afford` touches no model and no card: it is

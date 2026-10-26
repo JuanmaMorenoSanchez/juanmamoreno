@@ -234,6 +234,15 @@ _SHAPE = (
 )
 
 
+_FROM_THE_PAINTING = (
+        "On, a clip opens on your painting and then begins to move. Off, it opens where the moving has already started — the first second and a quarter is generated and then cut off."
+        "\n\n"
+        "Which you want depends on what the clip is for. Opening on the painting is right when the painting is the subject and the motion is the surprise. It is wrong when the painting is already a picture you have: a reel of it coming to life spends its first second being a still, which is a second of a reel."
+        "\n\n"
+        "It is paid for in frames. The second and a quarter is generated either way and simply thrown away when it is off, so a clip costs about twenty-eight frames more — enough, on a painting kept at its own proportions, to push a three second clip past what the card holds. Choose a shape and it fits comfortably."
+    )
+
+
 _DRAFT = (
         "Four steps instead of all of them, at a quarter of the pixels: same "
         "prompt, same seed, same references, same mask. Expect the composition "
@@ -258,6 +267,8 @@ _DRAFT = (
 )
 
 PARAM_HELP: dict[tuple[str, str], str] = {
+    ("video", "from_the_painting"): _FROM_THE_PAINTING,
+    ("scenes", "from_the_painting"): _FROM_THE_PAINTING,
     ("edit", "fun"): _FUN,
     ("video", "fun"): _FUN,
     ("scenes", "fun"): _FUN,

@@ -195,3 +195,82 @@ class FakeSaid:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StartingPointTest(unittest.TestCase):
+    """
+    Whether a clip opens on the painting or in the motion.
+
+    A clip holds the painting while the model works out what to do with it,
+    and then it starts moving. There is nothing wrong with that second — it is
+    his painting — which is why it is not cut by default. But a painting is
+    already a picture he has, and a reel of it coming to life spends its
+    opening being a still, so he can ask for the moving part.
+
+    The machinery is the staged clip's: generate the time on top, cut it as
+    latents before anything decodes it. What is new is that it is a question.
+    """
+
+    def setUp(self) -> None:
+        self.was = video._pipeline
+
+        class FakePipeline:
+            transformer = type("T", (), {"dtype": None})()
+
+            def __call__(self, **kw):
+                self.kw = kw
+                return type(
+                    "R",
+                    (),
+                    {"frames": torch.zeros(1, 16, latent_frames(kw["num_frames"]), 8, 8)},
+                )()
+
+        self.fake = FakePipeline()
+        video._pipeline = lambda: self.fake
+        self.embed_was = video.embed
+        video.embed = lambda pipeline, said: FakeSaid()
+        self.decoded_was = video.decoded
+        video.decoded = lambda pipeline, latents: np.zeros(
+            ((latents.shape[2] - 1) * 4 + 1, 8, 8, 3), dtype=np.float32
+        )
+
+    def tearDown(self) -> None:
+        video._pipeline = self.was
+        video.embed = self.embed_was
+        video.decoded = self.decoded_was
+
+    def made(self, **kw) -> list:
+        return video.animate(Image.new("RGB", (480, 832)), "it moves", **kw)
+
+    def test_on_the_painting_is_what_it_does_unasked(self) -> None:
+        self.made(seconds=3.0)
+
+        self.assertEqual(self.fake.kw["num_frames"], video.frames_for(3.0))
+
+    def test_turning_it_off_generates_the_opening_and_cuts_it(self) -> None:
+        frames = self.made(seconds=3.0, from_the_painting=False)
+
+        self.assertEqual(
+            self.fake.kw["num_frames"],
+            video.frames_for(3.0) + 4 * video.latents_to_drop(video.SETTLES),
+        )
+        self.assertEqual(len(frames), video.frames_for(3.0))
+
+    def test_the_length_is_the_same_either_way(self) -> None:
+        # The opening is taken off the front, not out of the middle of what
+        # he asked for.
+        on = self.made(seconds=3.5)
+        off = self.made(seconds=3.5, from_the_painting=False)
+
+        self.assertEqual(len(on), len(off))
+
+    def test_a_staged_clip_loses_its_opening_whatever_this_says(self) -> None:
+        # What is at the front of a staged clip is the staging coming down,
+        # which is nobody's painting.
+        for starting in (True, False):
+            with self.subTest(starting=starting):
+                self.made(seconds=3.0, in_a_scene=True, from_the_painting=starting)
+                self.assertEqual(
+                    self.fake.kw["num_frames"],
+                    video.frames_for(3.0) + 4 * video.latents_to_drop(video.SETTLES),
+                )

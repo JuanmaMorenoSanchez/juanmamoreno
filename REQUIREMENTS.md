@@ -3899,6 +3899,34 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R198 — A clip may start in the motion rather than on the painting · met
+A clip opens on the painting and holds it while the model works out what to do
+with it, then begins to move. There is nothing wrong with that second — it is
+his painting — which is why it is not cut by default and why the attempt to cut
+it as a fault was reverted ([R195]).
+
+But a painting is already a picture he has, and a reel of it coming to life
+spends its opening being a still. **Start on the painting**, turned off,
+generates the second and a quarter and cuts it, so the clip begins where the
+moving has already started. The length he asked for is what comes back either
+way: the opening comes off the front, not out of the middle.
+
+It uses the staged clip's machinery — generate the time on top, cut it as
+latents before anything decodes it — and the same second and a quarter, for the
+same reason: that is how long the model takes to get going. A staged clip still
+loses its opening whatever this says, because what is at the front of one is
+the staging coming down and that is nobody's painting. In **Scenes** only the
+first scene is cut; every later one starts on the last frame of the one before,
+which is already in the motion.
+
+**Paid for in frames**, about twenty-eight of them, which `afford` counts — on
+a painting kept at its own proportions that is enough to push a three-second
+clip past what the card holds, and choosing a shape makes it fit.
+*Proven by:* the engine's `test_settling.py` `StartingPointTest` (4 tests: on
+the painting being what it does unasked, turning it off generating the opening
+and cutting it, the length being the same either way, and a staged clip losing
+its opening regardless)
+
 ### R197 — The boxes ask questions a painter has · met
 The Edit and Video boxes showed the model's own settings: guidance, denoise
 strength, step count, frame width, how much of the frame, which reference pair.

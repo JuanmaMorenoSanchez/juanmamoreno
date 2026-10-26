@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.44.0
+
+- **feat** — **Start on the painting**, on the clip boxes. On, a clip opens on
+  the painting and then begins to move; off, it opens where the moving has
+  already started. The length asked for is what comes back either way.
+- **fix** — the refusal when a clip will not fit now says to choose a shape
+  before shortening it. What costs is frames times pixels, and a painting kept
+  at its own proportions is often the widest and tallest it can be: four
+  seconds near-square is 1.58 of the budget and 0.95 as a reel. **The four
+  seconds that was refused fits at the shape it was going to be posted in.**
+
 ## 2.43.0
 
 - **feat** — the Edit, Video and Scenes boxes ask questions a painter has.

@@ -431,9 +431,17 @@ ROOM = 45.0
 #: is flat: a frame-to-frame change of 0.1 to 1.0 and brightness steady at 62
 #: from the first frame to the twenty-third. There is nothing there to cut.
 #:
-#: So plain clips are not trimmed. It would cost twenty-eight generated-and-
-#: discarded frames and cap them at three seconds, for a fault nobody has been
-#: able to show.
+#: So plain clips are not trimmed **for a fault**. There is nothing wrong with
+#: their opening; it is simply the painting, held, while the model works out
+#: what to do with it.
+#:
+#: They are trimmed **when he asks**, which is a different thing and the reason
+#: this number is still here. A clip starts on the painting and then begins to
+#: move, and sometimes what he wants is the moving part — the painting is
+#: already a picture he has, and a reel of it coming to life spends its first
+#: second being a still. **Start on the painting** turned off cuts that second
+#: off, and the same second and a quarter is the right amount for the same
+#: reason it was for a staged one: it is how long the model takes to get going.
 SETTLES = 1.25
 
 
@@ -581,11 +589,15 @@ def afford(frames: int, width: int, height: int) -> None:
 
     raise GraphError(
         f"{frames} frames at {width}×{height} is {asked / MEASURED:.1f} times the biggest clip "
-        "this card has been measured to hold. Three seconds at 832 fits, and takes sixteen "
-        "minutes. Half as much again took eight hours and came back without a scene in it — "
-        "the decode stops fitting, and the model is trained near 480p and stops composing one "
-        "far past it. Lower the seconds first: the model works on the whole clip at once, so "
-        "they cost more than the size does."
+        "this card has been measured to hold. Half as much again took eight hours and came "
+        "back without a scene in it — the decode stops fitting, and the model is trained near "
+        "480p and stops composing one far past it.\n\n"
+        "**Choose a shape first.** What costs here is frames times pixels, and a painting "
+        "kept at its own proportions is often the widest and tallest it can be. A near-square "
+        "one at 832 is 1.58 of the budget at four seconds and 0.95 at nine to sixteen — so "
+        "the same four seconds that is refused here fits as a reel, which is the shape it was "
+        "going to be posted in. Lower the seconds only after that: the model works on the "
+        "whole clip at once, so they cost more than the size does."
     )
 
 
@@ -638,6 +650,7 @@ def animate(
     longest: int = 832,
     in_a_scene: bool = False,
     room: float = ROOM,
+    from_the_painting: bool = True,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
 ) -> list[np.ndarray]:
@@ -670,7 +683,11 @@ def animate(
     # Decided first, and the clip grown by exactly that much, so what comes
     # back is the length he asked for rather than that length minus whatever
     # rounding time's four-to-one compression happened to leave.
-    drop = latents_to_drop(SETTLES) if in_a_scene else 0
+    #
+    # A staged clip always loses its opening, because what is there is the
+    # staging coming down. A plain one loses it only when he says so, because
+    # what is there is his painting.
+    drop = latents_to_drop(SETTLES) if in_a_scene or not from_the_painting else 0
     count = frames_for(seconds) + 4 * drop
     afford(count, width, height)
 
@@ -772,6 +789,7 @@ def scenes(
     longest: int = 832,
     in_a_scene: bool = False,
     room: float = ROOM,
+    from_the_painting: bool = True,
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
     saying: Callable[[str | None], None] | None = None,
@@ -824,6 +842,10 @@ def scenes(
             # on an easel in another mountain.
             in_a_scene=in_a_scene and at == 0,
             room=room,
+            # Only the first scene again. Every scene after it starts on the
+            # last frame of the one before, which is already in the motion —
+            # cutting its opening would cut the film rather than the still.
+            from_the_painting=from_the_painting or at > 0,
             watching=watching,
             stopped=stopped,
         )
