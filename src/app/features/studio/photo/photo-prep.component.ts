@@ -617,8 +617,24 @@ export class PhotoPrepComponent {
     return !!width && !!height && width > 0 && height > 0;
   });
 
+  /**
+   * Whether the measurements are needed at all.
+   *
+   * They are what the picture is squared up *to*: `correctedSize` takes the
+   * shape from `realWidth / realHeight` when **Square the picture up to these**
+   * is on, and from the four corners themselves when it is off. So with it off
+   * they are certificate metadata and nothing more, and the render does not
+   * read them.
+   *
+   * They were demanded either way, which made straightening a photograph
+   * conditional on knowing what the painting measures — so the corrector could
+   * not be used as an image editor without first answering a question only a
+   * certificate asks.
+   */
+  protected readonly needsMeasuring = computed(() => this.adaptToSize());
+
   protected readonly canProcess = computed(
-    () => !!this.corners() && this.measured() && !this.busy()
+    () => !!this.corners() && (!this.needsMeasuring() || this.measured()) && !this.busy()
   );
 
   /**
@@ -1336,7 +1352,12 @@ export class PhotoPrepComponent {
     const corners = this.corners();
     const realWidth = this.realWidth();
     const realHeight = this.realHeight();
-    if (!corners || !realWidth || !realHeight || !this.photo()) {
+    // The measurements are only read when the picture is being squared up to
+    // them. Without that, the shape comes from the corners and these are
+    // passed as the ones the corners describe, so `correctedSize` has two
+    // numbers to divide whether or not anybody typed any.
+    const squaring = this.adaptToSize();
+    if (!corners || !this.photo() || (squaring && (!realWidth || !realHeight))) {
       // Answered rather than ignored: something may be waiting on this.
       this.handoff.couldNot();
       return;
@@ -1349,8 +1370,8 @@ export class PhotoPrepComponent {
       const { image, report } = await preparePhoto(this.rasterAt(), {
         quad: corners,
         bows: this.bows() ?? undefined,
-        realWidth,
-        realHeight,
+        realWidth: realWidth || 1,
+        realHeight: realHeight || 1,
         adaptToSize: this.adaptToSize(),
         takeShineOff: this.takeShineOff(),
         edits: this.allEdits(),

@@ -486,8 +486,11 @@
     <p class="prep-actions">
       @if (busy()) {
         <span class="prep-busy">{{ busyLabel() }}…</span>
-      } @else if (!measured()) {
-        <span class="prep-busy">Give the painting's height and width to go on.</span>
+      } @else if (needsMeasuring() && !measured()) {
+        <span class="prep-busy">
+          Give the painting's height and width, or turn off
+          <em>square the picture up to these</em> to straighten it without them.
+        </span>
       } @else {
         <button type="button" class="prep-link" [disabled]="!canProcess()" (click)="process()">
           Just download the JPEG

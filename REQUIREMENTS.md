@@ -3899,6 +3899,32 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R200 — The corrector is an image editor, not only a step towards a certificate · met
+Perspective off a photograph, the light evened out, the edges found, the
+brushwork left alone — the studio's corrector does all of it, and it was
+reachable only by somebody on their way to minting. Two separate things made
+that so, and both are fixed.
+
+**It would not render without the painting's real measurements.** `correctedSize`
+reads them only when *Square the picture up to these* is on; with it off the
+shape comes from the four corners and the numbers are never touched. They were
+demanded either way, so straightening a photograph was conditional on answering
+a question only a certificate asks. They are required now when, and only when,
+the picture is being squared up to them, and the message says as much.
+
+**The only buttons that asked it to render both stored a certificate.**
+**Edit and download** sits beside them and files nothing: no upload, no version
+to decide, no studio cleared afterwards — he may want to mint the same picture
+after taking a copy of it. It asks for no title, because a title is what a
+certificate is filed under. It is the same render the other two ask for, so a
+file taken here and a file minted later are the same file.
+*Proven by:* `mint-form.component.spec.ts` "MintFormComponent, downloading
+without minting" (7 tests: offered without a title which the other two
+require, handing over the corrector's own file, named after the title when
+there is one, a name a file system will accept, filing nothing and not
+clearing the studio, letting go of the url it made, and downloading nothing
+when the corrector cannot render)
+
 ### R199 — A model is not built while something else has the card · met
 A clip was started while a game was running. The card was at **7,865 of 8,188
 MiB and a hundred per cent**, the machine at 98% of its commit limit, and the

@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.46.0
+
+- **feat** — **Edit and download**, beside Save for later and Prepare and sign.
+  The corrector is a perfectly good image editor and was reachable only by
+  somebody on their way to a certificate. It files nothing and asks for no
+  title, and it is the same render the other two ask for.
+- **fix** — straightening a photograph no longer requires the painting's real
+  measurements. They are what the picture is squared up *to*, and with
+  **Square the picture up to these** off they were never read — but they were
+  demanded anyway, which made editing an image conditional on answering a
+  question only a certificate asks.
+
 ## 2.45.0
 
 - **feat** — a box refuses to build its model when something else is using the

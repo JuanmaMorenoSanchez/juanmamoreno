@@ -148,6 +148,16 @@ export class MintFormComponent {
   );
 
   /**
+   * Enough to hand him a file, which is less.
+   *
+   * No title: a title is what a certificate is filed under, and this files
+   * nothing. The corrector above is a perfectly good image editor — perspective
+   * off a photograph, the light evened out, the edges found — and it was
+   * reachable only by somebody on their way to minting.
+   */
+  protected readonly canDownload = computed(() => this.handoff.canProduce() && !this.busy());
+
+  /**
    * Says how it went, over the page rather than in it.
    *
    * What used to happen was a copy of the certificate appearing below the form:
@@ -284,6 +294,46 @@ export class MintFormComponent {
 
     // Closed with the escape key is not a yes.
     return replace ? String(standing.nextVersion) : null;
+  }
+
+  /**
+   * The corrected photograph, straight to his disk, and nothing else.
+   *
+   * Deliberately the short road: no certificate, no upload, no version to
+   * decide, no studio cleared afterwards — he may want to go on and mint the
+   * same picture, and taking a copy should not be a decision about that.
+   *
+   * It is the same render the other two buttons ask for, so a file taken here
+   * and a file minted later are the same file.
+   */
+  protected async download(): Promise<void> {
+    if (!this.canDownload()) return;
+
+    this.busy.set(true);
+    try {
+      const prepared = this.handoff.take() ?? (await this.handoff.request());
+      if (!prepared) {
+        this.say('The photograph above could not be prepared, so there is nothing to save.', 'bad');
+        return;
+      }
+
+      // The measurements come back from the corrector whether or not they were
+      // needed to render, and they are the ones the form would have filed.
+      this.height.set(prepared.height);
+      this.width.set(prepared.width);
+
+      const named = this.name().trim();
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(prepared.file);
+      link.href = url;
+      link.download = named ? `${named.replace(/[\\/:*?"<>|]/g, '-')}.jpg` : prepared.file.name;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      this.say('Downloaded. Nothing was stored.', 'good');
+    } finally {
+      this.busy.set(false);
+    }
   }
 
   protected async prepare(signNow = false): Promise<void> {

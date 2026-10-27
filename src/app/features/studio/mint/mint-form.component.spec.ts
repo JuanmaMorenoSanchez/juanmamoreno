@@ -219,3 +219,141 @@ describe('MintFormComponent, replacing a frontal view', () => {
     });
   });
 });
+
+/**
+ * Taking a copy without filing anything.
+ *
+ * The corrector above is a perfectly good image editor — perspective off a
+ * photograph, the light evened out, the edges found — and it was reachable only
+ * by somebody on their way to a certificate. Two separate things made that so:
+ * it would not render without the painting's real measurements, and the only
+ * buttons that asked it to render were the two that store a certificate.
+ */
+describe('MintFormComponent, downloading without minting', () => {
+  let clicked: { download: string }[];
+  let prepared: unknown;
+  let api: Record<string, unknown>;
+
+  const setup = async () => {
+    clicked = [];
+    prepared = { file: new File(['x'], 'a-flat.jpg'), height: '130', width: '130' };
+    api = {
+      frontalView: vi.fn().mockResolvedValue({}),
+      prepare: vi.fn(),
+      waiting: vi.fn().mockResolvedValue([]),
+    };
+
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:made');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const realCreate = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const made = realCreate(tag) as HTMLAnchorElement;
+      if (tag === 'a') made.click = () => clicked.push({ download: made.download });
+      return made;
+    });
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [MintFormComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        provideTranslateService(),
+        { provide: MintApiService, useValue: api },
+        { provide: MatDialog, useValue: { open: vi.fn(() => ({ afterClosed: () => of(true) })) } },
+        { provide: MatSnackBar, useValue: { open: vi.fn() } },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () => of([]),
+            getTraitValue: () => '',
+            filterFrontalArtworks: () => [],
+          },
+        },
+        {
+          provide: ImageMatchService,
+          useValue: { ready: () => undefined, like: () => [], learn: async () => undefined },
+        },
+        {
+          provide: StudioHandoffService,
+          useValue: {
+            size: signal(null),
+            sample: () => null,
+            canProduce: () => true,
+            startAgain: vi.fn(),
+            take: () => prepared,
+            request: async () => prepared,
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(MintFormComponent);
+    await fixture.whenStable();
+    return fixture.componentInstance as never as {
+      canDownload: () => boolean;
+      ready: () => boolean;
+      name: ReturnType<typeof signal<string>>;
+      download: () => Promise<void>;
+    };
+  };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('offers it without a title, which the other two require', async () => {
+    const form = await setup();
+
+    expect(form.canDownload()).toBe(true);
+    expect(form.ready()).toBe(false);
+  });
+
+  it('hands over the file the corrector rendered', async () => {
+    const form = await setup();
+    await form.download();
+
+    expect(clicked).toHaveLength(1);
+    expect(clicked[0].download).toBe('a-flat.jpg');
+  });
+
+  it('names it after the title when there is one', async () => {
+    const form = await setup();
+    form.name.set('Secuestro en la rave');
+    await form.download();
+
+    expect(clicked[0].download).toBe('Secuestro en la rave.jpg');
+  });
+
+  it('keeps a name a file system will accept', async () => {
+    const form = await setup();
+    form.name.set('a/b:c*d?e');
+    await form.download();
+
+    expect(clicked[0].download).toBe('a-b-c-d-e.jpg');
+  });
+
+  it('files nothing and does not clear the studio', async () => {
+    // The whole point. He may want to mint the same picture after taking a
+    // copy of it, so nothing is stored and nothing is reset.
+    const form = await setup();
+    await form.download();
+
+    expect(api['prepare']).not.toHaveBeenCalled();
+    expect(TestBed.inject(StudioHandoffService).startAgain).not.toHaveBeenCalled();
+  });
+
+  it('lets go of the url it made', async () => {
+    const form = await setup();
+    await form.download();
+
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:made');
+  });
+
+  it('downloads nothing when the corrector cannot render', async () => {
+    const form = await setup();
+    prepared = null;
+    await form.download();
+
+    expect(clicked).toHaveLength(0);
+  });
+});
