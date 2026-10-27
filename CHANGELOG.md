@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.48.0
+
+- **fix** — a four-and-a-half-hour clip that the page would not show. It looked
+  for boxes of type `video` and two kinds of box film: **Scenes** is the other,
+  and it is the one you use for length. A clip is found by its file now, every
+  clip a run filmed is shown rather than the first, and *Nothing was kept* no
+  longer appears above a clip waiting to be kept.
+- **feat** — **Still on this machine**: everything the engine has made and not
+  thrown away, with **Keep** on any of it. The file was always on the disk and
+  there was no way back to it from the page that asked for it — nor from any
+  run whose page had been reloaded.
+
 ## 2.47.0
 
 - **feat** — a kept clip can be carried on, and clips can be joined. **Work

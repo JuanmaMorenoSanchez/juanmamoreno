@@ -332,8 +332,10 @@
         </p>
       }
 
-      @if (filmed(); as clip) {
-        <figure class="atelier-clip" data-testid="clip">
+      <!-- Every clip, not the first one. A graph can film more than once —
+           a Video and a Scenes in the same run — and this showed one. -->
+      @for (clip of filmed(); track clip.file) {
+        <figure class="atelier-clip" [attr.data-testid]="'clip-' + clip.file">
           <!-- `controls` and nothing else: no autoplay, no loop. A clip takes
                the better part of an hour and is looked at deliberately. -->
           <video [src]="layerUrl(clip.file)" controls playsinline preload="metadata"></video>
@@ -347,7 +349,7 @@
                 class="atelier-minor"
                 [disabled]="keeping() !== null"
                 (click)="save(clip.file)"
-                data-testid="save-clip"
+                [attr.data-testid]="'save-' + clip.file"
               >
                 {{ keeping() === clip.file ? 'Saving…' : 'Keep this clip' }}
               </button>
@@ -409,7 +411,15 @@
             </li>
           }
         </ul>
-      } @else {
+      }
+
+      <!--
+        Only when there is genuinely nothing. `saved` is pictures, and a clip
+        is deliberately not in it — so a run that filmed for four and a half
+        hours ended on "Nothing was kept", with the clip and its Keep button
+        a few lines above. It read as a run that had produced nothing.
+      -->
+      @if (!run.saved.length && !filmed().length && !written()) {
         <p class="atelier-caveat">
           Nothing was kept. Join a <strong>Keep</strong> node to whatever you want written out.
         </p>
@@ -645,4 +655,75 @@
       </ul>
     </section>
   }
+
+  <!--
+    The way back to a finished run. A clip that took four and a half hours was
+    written, reported and never shown — the page looked for one kind of box and
+    the box that filmed was the other — and there was no route from the page to
+    a file on the disk it had just asked for. The same is true of any run whose
+    page was reloaded, which is the same loss with an ordinary cause.
+
+    Every rule here belongs to `.atelier-layers` already: this page's
+    stylesheet errors the build at six kilobytes and has about fifty bytes
+    spare.
+  -->
+  <section class="atelier-shelf" data-testid="on-disk">
+    <h2>Still on this machine</h2>
+    <p class="atelier-caveat">
+      Everything the engine has made and not thrown away, newest first. Nothing here has left this
+      machine; <strong>Keep</strong> is the only thing that sends one to the bucket.
+    </p>
+    @if (!looked()) {
+      <p class="atelier-choice">
+        <button
+          type="button"
+          [disabled]="looking() || engine.unreachable()"
+          (click)="lookOnDisk()"
+          data-testid="look-on-disk"
+        >
+          {{ looking() ? 'Looking…' : 'Look' }}
+        </button>
+      </p>
+      @if (engine.unreachable()) {
+        <p class="atelier-caveat">The engine is not running, so there is nothing to ask.</p>
+      }
+    } @else if (!onDisk().length) {
+      <p class="atelier-caveat">The engine has nothing left — its folder has been cleared.</p>
+    } @else {
+      <ul class="atelier-layers">
+        @for (made of onDisk(); track made.file) {
+          <li>
+            @if (made.media === 'video/mp4') {
+              <!-- `metadata`: the shape is in the header and no frame has to
+                   be decoded, which for two dozen clips is the difference
+                   between a list and a stall. -->
+              <video [src]="layerUrl(made.file)" controls playsinline preload="metadata"></video>
+            } @else {
+              <img [src]="layerUrl(made.file)" [alt]="made.file" loading="lazy" />
+            }
+            <h3>{{ made.file }}</h3>
+            <dl>
+              <dt>Made</dt>
+              <dd>{{ whenOf(made.when) }}</dd>
+              <dt>Size</dt>
+              <dd>{{ sizeIn(made.bytes) }}</dd>
+            </dl>
+            @if (alreadyKept().has(made.file)) {
+              <span class="atelier-kept">Kept</span>
+            } @else {
+              <button
+                type="button"
+                class="atelier-minor"
+                [disabled]="keeping() !== null"
+                (click)="save(made.file)"
+                [attr.data-testid]="'recover-' + made.file"
+              >
+                {{ keeping() === made.file ? 'Keeping…' : 'Keep' }}
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
 </article>

@@ -14,6 +14,7 @@ import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
 import { KeptService, type KeptPiece } from './kept.service';
+import { clipSize } from './last-frame';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
 import { SketchPreviewComponent } from './sketch-preview.component';
 import {
@@ -22,6 +23,7 @@ import {
   type GraphRun,
   type JobState,
   type NodeTypeDef,
+  type StillHere,
 } from './engine.service';
 import {
   NodeCanvasComponent,
@@ -282,11 +284,13 @@ export class AtelierComponent implements OnDestroy {
       // A clip cannot be measured with an `Image`, and asking costs a decode
       // of the whole file. The engine named it, so the node that made it is
       // what says how big it is.
-      const film = this.filmed();
-      const clip = film?.file === file || got.type === 'video/mp4';
-      const size = clip
-        ? { width: film?.width ?? 0, height: film?.height ?? 0 }
-        : await this.sizeOf(got);
+      const film = this.filmed().find((made) => made.file === file);
+      const clip = film !== undefined || got.type === 'video/mp4';
+      // The box that filmed it, where there still is one. A clip recovered
+      // from the engine's folder has no box behind it any more — its run is
+      // over — so it is measured by loading it, which for a video means
+      // reading the header and not decoding a frame.
+      const size = film ?? (clip ? await clipSize(got) : await this.sizeOf(got));
 
       await this.kept.keep(got, {
         name: this.chosen() ?? file,
@@ -623,6 +627,54 @@ export class AtelierComponent implements OnDestroy {
 
   /** Which piece's address was just copied, for the tick on the button. */
   protected readonly copied = signal<string | null>(null);
+
+  /**
+   * What the engine still has in its run folder.
+   *
+   * **The way back to a finished run.** A clip that took four and a half hours
+   * was written, reported, and never shown, because the page looked for boxes
+   * of one type and the box that filmed was the other. The file was on the
+   * disk the whole time and there was no route to it from the page that had
+   * asked for it — and there is none either for a run whose page was reloaded,
+   * which is the same loss with a more ordinary cause.
+   *
+   * `out/` is scratch and is never swept, so everything is still there. Asked
+   * for rather than fetched on load: the engine is usually not running, and a
+   * page that reaches for it on every visit is a page that fails on every
+   * visit.
+   */
+  protected readonly onDisk = signal<StillHere[]>([]);
+  protected readonly looking = signal(false);
+  protected readonly looked = signal(false);
+
+  protected async lookOnDisk(): Promise<void> {
+    this.looking.set(true);
+    this.failure.set(null);
+    try {
+      this.onDisk.set(await this.engine.stillHere());
+      this.looked.set(true);
+    } catch (error) {
+      this.failure.set(
+        error instanceof Error && error.message
+          ? error.message
+          : 'the engine would not say what it has'
+      );
+    } finally {
+      this.looking.set(false);
+    }
+  }
+
+  /** When one was written, as a clock rather than a count of seconds. */
+  protected whenOf(when: number): string {
+    return new Date(when * 1000).toLocaleString();
+  }
+
+  /** How big one is, in the unit a person would use. */
+  protected sizeIn(bytes: number): string {
+    return bytes >= 1024 * 1024
+      ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+      : `${Math.round(bytes / 1024)} KB`;
+  }
 
   /**
    * Which clips are picked for joining, in the order they were picked.
@@ -984,32 +1036,44 @@ export class AtelierComponent implements OnDestroy {
   });
 
   /**
-   * The clip this run filmed, if it filmed one.
+   * Every clip this run filmed.
    *
-   * Found through the graph like the depth map and the written piece, rather
-   * than by guessing at a filename. It is deliberately not in `run.saved`:
-   * that list is pictures, shown in an `img` and offered to the bucket, and an
-   * mp4 in it rendered as a broken image beside a Save that would not work.
+   * Clips are deliberately not in `run.saved`: that list is pictures, shown
+   * in an `img` and offered to the bucket, and an mp4 in it rendered as a
+   * broken image beside a Save that would not work. So they are found here.
+   *
+   * **Found by the file, not by the kind of box that made it.** This asked
+   * for boxes of type `video` and there are two kinds that film — `Scenes`
+   * is the other, and it is the one you reach for when you want length. A
+   * four-and-a-half-hour Scenes run finished, wrote `28e867e2-scenes.mp4`,
+   * reported success, and the page showed no player and no **Keep this
+   * clip**: nothing was wrong except that nothing was looking for it. An
+   * `.mp4` is a clip whatever drew it, which is a fact about the file rather
+   * than a list of box names to keep in step with the engine.
+   *
+   * **A list, because a graph can film more than once.** It returned the
+   * first and stopped, so a graph with a Video and a Scenes in it lost one of
+   * them the same silent way.
    */
   protected readonly filmed = computed(() => {
     const run = this.result();
-    if (!run) return null;
+    if (!run) return [];
+
+    const clips: { file: string; width: number; height: number }[] = [];
     for (const node of this.nodes()) {
-      if (node.type !== 'video') continue;
       const made = run.produced?.[node.id];
       const file = made?.['file'];
-      if (typeof file === 'string' && file.length) {
-        return {
-          file,
-          // Reported by the box that made it. A video cannot be measured by
-          // loading it into an `Image`, and decoding one to ask would cost
-          // megabytes for two numbers.
-          width: Number(made?.['width']) || 0,
-          height: Number(made?.['height']) || 0,
-        };
-      }
+      if (typeof file !== 'string' || !file.endsWith('.mp4')) continue;
+      clips.push({
+        file,
+        // Reported by the box that made it. A video cannot be measured by
+        // loading it into an `Image`, and decoding one to ask would cost
+        // megabytes for two numbers.
+        width: Number(made?.['width']) || 0,
+        height: Number(made?.['height']) || 0,
+      });
     }
-    return null;
+    return clips;
   });
 
   /** A duration as a person says it: 47s, 20m 47s, 2h 04m. */

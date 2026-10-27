@@ -144,6 +144,15 @@ export interface CutLayer {
   coverage: number;
 }
 
+/** One file the engine still has in its run folder. */
+export interface StillHere {
+  file: string;
+  bytes: number;
+  /** Whole seconds since the epoch, which is enough to say which one. */
+  when: number;
+  media: string;
+}
+
 export interface CutResult {
   batch: string;
   seconds: number;
@@ -481,6 +490,21 @@ export class AtelierEngineService {
    * these bytes did not: a url is enough for an `img`, which the browser
    * annotates for itself, and not enough for a `fetch`, which it refuses.
    */
+  /**
+   * What the engine still has in its run folder, newest first.
+   *
+   * The way back to a finished run's output. `out/` is scratch and is never
+   * swept, so everything a run ever made is still there — and a page that has
+   * been reloaded, or that looked for the wrong kind of box, has no other
+   * route to it.
+   */
+  async stillHere(): Promise<StillHere[]> {
+    const response = await fetch(`${ENGINE}/out`, toLocal({ cache: 'no-store' }));
+    if (!response.ok) throw new Error(await complaint(response));
+    const body = (await response.json()) as { files?: StillHere[] };
+    return body.files ?? [];
+  }
+
   /**
    * Several clips, in the order given, as one longer one.
    *

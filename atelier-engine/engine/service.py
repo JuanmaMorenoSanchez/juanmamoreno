@@ -295,6 +295,62 @@ def layer(name: str) -> FileResponse:
     return FileResponse(path, media_type=SERVES.get(path.suffix.lower(), "image/png"))
 
 
+#: What the listing offers back: pictures and clips.
+#:
+#: Not everything `SERVES` can hand over. A sketch is javascript and is kept
+#: as the code it is, through its own button and its own route — offering it
+#: here would post it to the bucket as a png.
+RECOVERABLE = {".png": "image/png", ".mp4": "video/mp4"}
+
+
+#: The most files the engine will list. Newest first, so the rest are old.
+#:
+#: `out/` is scratch and is never swept: it holds months of runs. The page
+#: wants the ones a run just made and nobody scrolls a hundred of them.
+MOST_LISTED = 24
+
+
+@app.get("/out")
+def still_here() -> JSONResponse:
+    """What this run folder still holds, newest first.
+
+    **Because a finished run can lose its own output.** A four-and-a-half-hour
+    clip was written, reported, and never shown: the page looked for boxes of
+    one type and the box that filmed was the other. The file was on the disk
+    the whole time, with no way to reach it from the page that had asked for
+    it, and the same is true of any run whose page was reloaded.
+
+    So this is the way back to anything the engine still has. It lists, it does
+    not keep — keeping is a press in the browser, through the browser's own
+    credential, and nothing here can reach the bucket.
+    """
+    if not OUT.is_dir():
+        return JSONResponse({"files": []})
+
+    found = [
+        path
+        for path in OUT.iterdir()
+        if path.is_file() and path.suffix.lower() in RECOVERABLE
+    ]
+    found.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+
+    return JSONResponse(
+        {
+            "files": [
+                {
+                    "file": path.name,
+                    "bytes": path.stat().st_size,
+                    # Whole seconds: this is "which of these is the one I was
+                    # just waiting for", not a measurement.
+                    "when": int(path.stat().st_mtime),
+                    "media": RECOVERABLE[path.suffix.lower()],
+                }
+                for path in found[:MOST_LISTED]
+            ]
+        }
+    )
+
+
 @app.post("/describe")
 def describe(asked: dict = Body(...)) -> JSONResponse:
     """The short description of a painting, written on this machine.

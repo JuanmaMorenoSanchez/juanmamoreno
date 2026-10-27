@@ -2995,8 +2995,11 @@ browser says nothing about why.
 "test_every_side_is_a_multiple_of_the_stride" and
 "test_writes_a_clip_that_a_player_will_open", which `npm test` does not run.
 *Also proven by:* `atelier.component.spec.ts` "plays it, rather than trying to
-show it as a picture", "gives it controls and leaves it stopped" and "finds it
-through the graph rather than by guessing at a filename".
+show it as a picture", "gives it controls and leaves it stopped" and "plays
+nothing when the run produced no clip, whatever else it produced". The last of
+those was about finding a clip through the graph; R202 made a clip something
+found by its own file, so what it guards now is that a png is not turned into
+one.
 
 ### R146 — A clip can be kept, and kept assets live under their painting · met
 A clip is kept the same way a layer is: a press, and nothing without one. It
@@ -3898,6 +3901,51 @@ would be a page still trying.
 what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
+
+### R202 — A clip is found by the file, and a finished run can be recovered · met
+**Four and a half hours of card time, and the page showed nothing.** A Scenes
+run finished, wrote `28e867e2-scenes.mp4`, reported success — and there was no
+player and no **Keep this clip**. Nothing was wrong with the clip. Three things
+were wrong with the page.
+
+**It looked for the wrong kind of box.** The search for a clip asked for nodes
+of type `video`, and two kinds of node film: `Scenes` is the other, and it is
+the one you reach for when you want length, which is why the run that exposed
+this took four and a half hours. A clip is now found by its **file** — an
+`.mp4` is a clip whatever drew it — which is a fact about the file rather than a
+list of node names to keep in step with the engine.
+
+**It stopped at the first one.** A graph holding a Video and a Scenes lost one
+of them the same silent way. Every clip a run filmed is shown.
+
+**And it said the opposite of the truth.** `saved` is the list of pictures and a
+clip is deliberately not in it, so a run that filmed for four and a half hours
+ended on *Nothing was kept. Join a Keep node* — which reads as a run that
+produced nothing. That line now appears only when there is genuinely nothing.
+
+**The file was on the disk the whole time**, and there was no route to it from
+the page that had asked for it — nor is there for any run whose page was
+reloaded, which is the same loss with an ordinary cause. `out/` is scratch and
+is never swept, so everything is still there: the engine lists it at `GET /out`
+and the page offers **Keep** on any of it. Pictures and clips only, because a
+sketch is javascript and is kept as the code it is. Asked for rather than
+fetched on load, because the engine is usually not running. The listing lists
+and nothing more — keeping is a press in the browser, through the browser's own
+credential, and nothing in the engine can reach the bucket. A recovered clip's
+shape is measured from the file, since the box that would have reported it
+belongs to a run that is over.
+*Proven by:* `atelier.component.spec.ts` "a clip" ("plays a clip filmed by
+Scenes, not only one filmed by Video", "plays every clip a run filmed, not the
+first one", "does not say nothing was kept when there is a clip to keep",
+"plays nothing when the run produced no clip, whatever else it produced") and
+"what the engine still has" (6 tests: not asking until asked, refusing while
+the engine is unreachable, playing what it finds at `preload=metadata`, keeping
+one with its shape measured from the file, an empty folder said rather than
+shown, and the engine's own words when it will not answer); the engine's
+`test_still_here.py` (8 tests, including a sketch not offered back, newest
+first, the listing capped, a cleared folder answering empty, and that asking
+keeps nothing); `last-frame.spec.ts` "clipSize" (3 tests); and
+`engine.service.spec.ts` "asks what the engine still has"
 
 ### R201 — A kept clip can be carried on, and clips can be joined · met
 The shelf could be worked from, as long as what was on it was a picture.

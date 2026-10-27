@@ -76,6 +76,35 @@ export async function lastFrame(clip: string): Promise<Blob> {
   }
 }
 
+/**
+ * How big a clip is, by loading it and asking.
+ *
+ * The box that filmed a clip reports its shape, because a video cannot be
+ * measured by loading it into an `Image` and decoding one costs megabytes for
+ * two numbers. But a clip recovered from the engine's folder has no box behind
+ * it any more — the run it belonged to is over — and the shelf needs its size
+ * to say which copy of the painting it was made from.
+ *
+ * `metadata` is enough: the dimensions are in the header and no frame has to
+ * be decoded.
+ */
+export async function clipSize(clip: Blob): Promise<{ width: number; height: number }> {
+  const url = URL.createObjectURL(clip);
+  const video = document.createElement('video');
+  video.muted = true;
+  video.preload = 'metadata';
+  video.src = url;
+
+  try {
+    await happens(video, 'loadedmetadata');
+    return { width: video.videoWidth, height: video.videoHeight };
+  } finally {
+    URL.revokeObjectURL(url);
+    video.removeAttribute('src');
+    video.load();
+  }
+}
+
 /** The next one of an event, or the element's own complaint about why not. */
 function happens(video: HTMLVideoElement, named: string): Promise<void> {
   return new Promise<void>((done, no) => {

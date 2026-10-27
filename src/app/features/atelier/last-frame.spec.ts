@@ -1,4 +1,4 @@
-import { justBeforeTheEnd, lastFrame } from './last-frame';
+import { clipSize, justBeforeTheEnd, lastFrame } from './last-frame';
 
 /**
  * jsdom decodes nothing, so the video and the canvas are stood in for.
@@ -38,6 +38,7 @@ function fakeClip(about: Partial<FakeVideo> = {}) {
       // The two the reader waits for, answered on the next tick so the order
       // is the real one: it must have asked before it is told.
       if (named === 'loadeddata') setTimeout(call, 0);
+      if (named === 'loadedmetadata') setTimeout(call, 0);
       if (named === 'seeked') setTimeout(call, 0);
     },
     removeEventListener() {
@@ -141,5 +142,39 @@ describe('lastFrame', () => {
 
     await lastFrame('blob:clip');
     expect(video.muted).toBe(true);
+  });
+});
+
+describe('clipSize', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('reads the shape off the clip itself', async () => {
+    // The box that filmed a clip reports its shape, but a clip recovered from
+    // the engine's folder has no box behind it any more — its run is over —
+    // and the shelf needs the size to say which copy it was made from.
+    const video = fakeClip({ videoWidth: 784, videoHeight: 832 });
+    standingIn(video);
+
+    expect(await clipSize(new Blob(['mp4'], { type: 'video/mp4' }))).toEqual({
+      width: 784,
+      height: 832,
+    });
+  });
+
+  it('asks for the header only, not for a frame', async () => {
+    // Two dozen clips in a list is the difference between a page and a stall.
+    const video = fakeClip();
+    standingIn(video);
+
+    await clipSize(new Blob(['mp4'], { type: 'video/mp4' }));
+    expect(video.preload).toBe('metadata');
+  });
+
+  it('lets go of the decoder afterwards', async () => {
+    const video = fakeClip();
+    standingIn(video);
+
+    await clipSize(new Blob(['mp4'], { type: 'video/mp4' }));
+    expect(video.letGo).toBe(true);
   });
 });

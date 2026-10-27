@@ -117,6 +117,9 @@ describe('AtelierComponent', () => {
       kept?: unknown[];
       onKeep?: () => Promise<unknown>;
       onJoin?: () => Promise<Blob>;
+      stillHere?: { file: string; bytes: number; when: number; media: string }[];
+      layerType?: string;
+      onDisk?: () => Promise<never>;
       stored?: string;
     } = {}
   ) => {
@@ -244,7 +247,8 @@ describe('AtelierComponent', () => {
             layerUrl: (file: string) => `http://127.0.0.1:7860/layer/${file}`,
             // Through the service, which is what annotates a request to
             // 127.0.0.1 as one the browser is allowed to make.
-            layerBytes: () => Promise.resolve(new Blob([new Uint8Array([1])])),
+            layerBytes: () =>
+              Promise.resolve(new Blob([new Uint8Array([1])], { type: options.layerType ?? '' })),
             // SOURCE as well as the node under test: the painting is
             // chosen inside the Painting box now, so a canvas without one
             // has nowhere to choose it.
@@ -266,6 +270,7 @@ describe('AtelierComponent', () => {
               did.push('cancel');
               return Promise.resolve();
             },
+            stillHere: () => options.onDisk?.() ?? Promise.resolve(options.stillHere ?? []),
             // What was sent to be joined, and in what order — the order is
             // the whole of what a join decides.
             join: (clips: Blob[], size: { width: number; height: number }) => {
@@ -835,7 +840,7 @@ describe('AtelierComponent', () => {
       const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
       await ran(fixture);
 
-      const player = at(host, 'clip')?.querySelector('video');
+      const player = at(host, 'clip-a-clip.mp4')?.querySelector('video');
       expect(player).not.toBeNull();
       expect(player?.getAttribute('src')).toContain('a-clip.mp4');
     });
@@ -844,7 +849,7 @@ describe('AtelierComponent', () => {
       // An hour of work is looked at deliberately. Nothing autoplays.
       const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
       await ran(fixture);
-      const player = at(host, 'clip')?.querySelector('video');
+      const player = at(host, 'clip-a-clip.mp4')?.querySelector('video');
 
       expect(player?.hasAttribute('controls')).toBe(true);
       expect(player?.hasAttribute('autoplay')).toBe(false);
@@ -855,7 +860,7 @@ describe('AtelierComponent', () => {
       const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
       await ran(fixture);
 
-      expect(at(host, 'clip')?.textContent).toContain('until you keep it');
+      expect(at(host, 'clip-a-clip.mp4')?.textContent).toContain('until you keep it');
     });
 
     it('offers to keep it, and keeps nothing without being asked', async () => {
@@ -866,7 +871,7 @@ describe('AtelierComponent', () => {
       const stop = engineServes();
 
       expect(keptCalls).toHaveLength(0);
-      at(host, 'save-clip')?.click();
+      at(host, 'save-a-clip.mp4')?.click();
       await new Promise((settle) => setTimeout(settle, 0));
 
       expect(keptCalls).toHaveLength(1);
@@ -884,7 +889,7 @@ describe('AtelierComponent', () => {
       await ran(fixture);
       const stop = engineServes();
 
-      at(host, 'save-clip')?.click();
+      at(host, 'save-a-clip.mp4')?.click();
       await new Promise((settle) => setTimeout(settle, 0));
 
       expect(keptCalls[0]['width']).toBe(768);
@@ -892,13 +897,102 @@ describe('AtelierComponent', () => {
       stop();
     });
 
-    it('finds it through the graph rather than by guessing at a filename', async () => {
-      // Nothing produced by the Video box means nothing to play, even with
-      // other files about.
+    it('plays nothing when the run produced no clip, whatever else it produced', async () => {
+      // A depth map is a png and has its own button. Matching on the file's
+      // own extension must not turn one into a clip.
       const { fixture, host } = build(filmed({ other: { file: 'a-depth.png' } }));
       await ran(fixture);
 
-      expect(at(host, 'clip')).toBeNull();
+      expect(host.querySelector('.atelier-clip')).toBeNull();
+    });
+
+    /**
+     * The four-and-a-half-hour loss.
+     *
+     * `filmed` asked for boxes of type `video`, and two kinds of box film.
+     * **Scenes** is the other — the one you reach for when you want length,
+     * which is why the run that found this took four and a half hours. It
+     * wrote `28e867e2-scenes.mp4`, reported success, and the page showed no
+     * player and no Keep: nothing was wrong except that nothing looked.
+     */
+    it('plays a clip filmed by Scenes, not only one filmed by Video', async () => {
+      const { fixture, host } = build({
+        states: [
+          going(),
+          done({
+            batch: 'a',
+            seconds: 16_080,
+            produced: {
+              film: { file: '28e867e2-scenes.mp4', frames: 145, width: 784, height: 832 },
+            },
+            saved: [],
+          }),
+        ],
+      });
+      const parts = guts(fixture);
+      parts.painting.set(aPainting());
+      parts.redraw({
+        nodes: [
+          { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+          { id: 'film', type: 'scenes', x: 0, y: 0, params: {} },
+        ],
+        edges: [{ from: ['src', 'image'], to: ['film', 'image'] }],
+      });
+      const running = parts.run();
+      await new Promise((settle) => setTimeout(settle, 1100));
+      await running;
+      fixture.detectChanges();
+
+      const player = at(host, 'clip-28e867e2-scenes.mp4')?.querySelector('video');
+      expect(player?.getAttribute('src')).toContain('28e867e2-scenes.mp4');
+      expect(at(host, 'save-28e867e2-scenes.mp4')).not.toBeNull();
+    });
+
+    it('plays every clip a run filmed, not the first one', async () => {
+      // A graph can hold a Video and a Scenes. It returned the first match
+      // and stopped, so one of the two was lost the same silent way.
+      const { fixture, host } = build({
+        states: [
+          going(),
+          done({
+            batch: 'a',
+            seconds: 3600,
+            produced: {
+              film: { file: 'one.mp4', frames: 25 },
+              again: { file: 'two.mp4', frames: 25 },
+            },
+            saved: [],
+          }),
+        ],
+      });
+      const parts = guts(fixture);
+      parts.painting.set(aPainting());
+      parts.redraw({
+        nodes: [
+          { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+          { id: 'film', type: 'video', x: 0, y: 0, params: {} },
+          { id: 'again', type: 'scenes', x: 0, y: 0, params: {} },
+        ],
+        edges: [{ from: ['src', 'image'], to: ['film', 'image'] }],
+      });
+      const running = parts.run();
+      await new Promise((settle) => setTimeout(settle, 1100));
+      await running;
+      fixture.detectChanges();
+
+      expect(at(host, 'clip-one.mp4')).not.toBeNull();
+      expect(at(host, 'clip-two.mp4')).not.toBeNull();
+    });
+
+    it('does not say nothing was kept when there is a clip to keep', async () => {
+      // `saved` is pictures and a clip is deliberately not in it, so a run
+      // that filmed for four and a half hours ended on "Nothing was kept"
+      // with the clip a few lines above it. It read as a run that produced
+      // nothing at all.
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      await ran(fixture);
+
+      expect(at(host, 'result')?.textContent).not.toContain('Nothing was kept');
     });
   });
 
@@ -1351,6 +1445,129 @@ describe('AtelierComponent', () => {
     at(host, 'full-size-k1')?.click();
 
     expect(asked).toHaveBeenCalled();
+  });
+
+  /**
+   * The way back to a finished run.
+   *
+   * A Scenes clip that took four and a half hours was written, reported, and
+   * never shown. The file was on the disk the whole time with no route to it
+   * from the page that had asked for it — and there is none either for a run
+   * whose page was reloaded, which is the same loss with an ordinary cause.
+   */
+  describe('what the engine still has', () => {
+    const aClipOnDisk = {
+      file: '28e867e2-scenes.mp4',
+      bytes: 5_353_076,
+      when: 1_793_127_364,
+      media: 'video/mp4',
+    };
+
+    const settle = () => new Promise((done) => setTimeout(done, 0));
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('does not ask until it is asked', async () => {
+      // The engine is usually not running, and a page that reaches for it on
+      // every visit is a page that fails on every visit.
+      const { host } = build({ stillHere: [aClipOnDisk] });
+
+      expect(at(host, 'look-on-disk')).not.toBeNull();
+      expect(at(host, 'recover-28e867e2-scenes.mp4')).toBeNull();
+    });
+
+    it('will not ask while the engine is unreachable, and says why', async () => {
+      const { host } = build({ stillHere: [aClipOnDisk], unreachable: true });
+
+      expect((at(host, 'look-on-disk') as HTMLButtonElement).disabled).toBe(true);
+      expect(at(host, 'on-disk')?.textContent).toContain('engine is not running');
+    });
+
+    it('plays what it finds, so the right one can be told from five others', async () => {
+      const { fixture, host } = build({ stillHere: [aClipOnDisk] });
+
+      at(host, 'look-on-disk')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      const player = at(host, 'on-disk')?.querySelector('video');
+      expect(player?.getAttribute('src')).toContain('28e867e2-scenes.mp4');
+      expect(player?.getAttribute('preload')).toBe('metadata');
+    });
+
+    /**
+     * A decoder, since jsdom has none.
+     *
+     * Only `video`: everything else is made by the real `createElement`, so
+     * Angular's own rendering is untouched. The element is a real jsdom video
+     * with its dimensions defined and the one event the reader waits for
+     * fired, because nothing in jsdom will ever fire it.
+     */
+    const decoding = (size = { width: 784, height: 832 }) => {
+      const real = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation(((what: string) => {
+        if (what !== 'video') return real(what);
+        const video = real('video');
+        Object.defineProperty(video, 'videoWidth', { value: size.width });
+        Object.defineProperty(video, 'videoHeight', { value: size.height });
+        const was = video.addEventListener.bind(video);
+        video.addEventListener = ((named: string, call: EventListener, how?: never) => {
+          was(named, call, how);
+          if (named === 'loadedmetadata') {
+            setTimeout(() => video.dispatchEvent(new Event('loadedmetadata')), 0);
+          }
+        }) as typeof video.addEventListener;
+        return video;
+      }) as never);
+    };
+
+    it('keeps one, measuring the clip because no box reported its shape', async () => {
+      // The run it belonged to is over, so there is nothing left to ask. The
+      // shelf needs the size to say which copy of the painting it came from.
+      const { fixture, host, keptCalls } = build({
+        stillHere: [aClipOnDisk],
+        layerType: 'video/mp4',
+      });
+
+      at(host, 'look-on-disk')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      decoding();
+      at(host, 'recover-28e867e2-scenes.mp4')?.click();
+      await settle();
+      await settle();
+
+      expect(keptCalls).toHaveLength(1);
+      expect(keptCalls[0]).toMatchObject({
+        kind: 'clip',
+        media: 'video/mp4',
+        width: 784,
+        height: 832,
+      });
+    });
+
+    it('says the folder is empty rather than showing an empty list', async () => {
+      const { fixture, host } = build({ stillHere: [] });
+
+      at(host, 'look-on-disk')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(at(host, 'on-disk')?.textContent).toContain('nothing left');
+    });
+
+    it('says why when the engine would not answer', async () => {
+      const { fixture, host } = build({
+        onDisk: () => Promise.reject(new Error('the engine answered 500')),
+      });
+
+      at(host, 'look-on-disk')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(at(host, 'failure')?.textContent).toContain('answered 500');
+    });
   });
 
   it('says which copy of the painting each kept thing was made from', () => {

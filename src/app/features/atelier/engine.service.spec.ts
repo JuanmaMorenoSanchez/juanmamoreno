@@ -139,6 +139,16 @@ describe('AtelierEngineService', () => {
     expect(result.notFound).toEqual(['a cathedral']);
   });
 
+  it('asks what the engine still has, and gets nothing rather than undefined', async () => {
+    // The way back to a finished run. An answer without a `files` key must be
+    // an empty shelf, not a crash in a template.
+    answering({ files: [{ file: 'a-scenes.mp4', bytes: 5, when: 1, media: 'video/mp4' }] });
+    expect(await service.stillHere()).toHaveLength(1);
+
+    answering({});
+    expect(await service.stillHere()).toEqual([]);
+  });
+
   it('sends every clip under one field, in order, with the shape to join at', async () => {
     // The order is the film, and the shape is sent rather than measured
     // because the shelf knows every clip's size and ffprobe is a second
