@@ -227,6 +227,24 @@
             <input type="checkbox" [checked]="adaptToSize()" (change)="toggleAdaptToSize()" />
             Square the picture up to these
           </label>
+          <!--
+            Said here because this is where it is decided, and because it was
+            not obvious: with the squaring on these two numbers are what the
+            picture is squared up *to*, so nothing can be rendered until they
+            are filled in — and that read as the whole studio being shut until
+            a certificate was on its way.
+          -->
+          <p class="prep-hint">
+            @if (needsMeasuring()) {
+              With this on, the measurements are the shape the picture is squared up to, so
+              <strong>nothing can be rendered until both are filled in</strong>. Turn it off and the
+              picture keeps the shape the corners describe — which is what you want when you are
+              only straightening a photograph.
+            } @else {
+              The picture will keep the shape the corners describe. The measurements are not read,
+              and are needed only for a certificate.
+            }
+          </p>
         </fieldset>
 
         <fieldset class="prep-field">
@@ -489,12 +507,8 @@
       } @else if (needsMeasuring() && !measured()) {
         <span class="prep-busy">
           Give the painting's height and width, or turn off
-          <em>square the picture up to these</em> to straighten it without them.
+          <em>square the picture up to these</em> to go on without them.
         </span>
-      } @else {
-        <button type="button" class="prep-link" [disabled]="!canProcess()" (click)="process()">
-          Just download the JPEG
-        </button>
       }
     </p>
   }
@@ -532,9 +546,6 @@
 
       @if (resultUrl(); as url) {
         <img class="prep-preview" [src]="url" alt="The flattened painting" />
-        <p class="prep-actions">
-          <a class="prep-download" [href]="url" [download]="downloadName()">Download JPEG</a>
-        </p>
       }
     </div>
   }

@@ -321,16 +321,6 @@
   margin-bottom: tokens.$spacing-md;
 }
 
-.prep-download {
-  display: inline-block;
-  padding: 0.55rem 1.4rem;
-  border: 1px solid var(--catalog-accent);
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  color: var(--catalog-accent);
-  text-decoration: none;
-}
-
 .prep-alert {
   max-width: 62ch;
   padding: tokens.$spacing-sm tokens.$spacing-md;

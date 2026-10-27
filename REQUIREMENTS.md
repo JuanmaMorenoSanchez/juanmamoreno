@@ -3918,6 +3918,13 @@ to decide, no studio cleared afterwards — he may want to mint the same picture
 after taking a copy of it. It asks for no title, because a title is what a
 certificate is filed under. It is the same render the other two ask for, so a
 file taken here and a file minted later are the same file.
+
+**And it is the only one.** The corrector's own *Just download the JPEG* and
+the *Download JPEG* beside the finished preview were the same action in two
+more places, which is three ways to ask for one file; both are gone, along
+with the rule that styled them. The measurements now say what they are for
+where they are typed, because the connection between an empty size box and a
+studio that would not render was the part nobody could see.
 *Proven by:* `mint-form.component.spec.ts` "MintFormComponent, downloading
 without minting" (7 tests: offered without a title which the other two
 require, handing over the corrector's own file, named after the title when

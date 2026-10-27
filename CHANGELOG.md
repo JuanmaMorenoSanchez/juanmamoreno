@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.46.1
+
+- **chore** — one download, not three. The corrector's *Just download the JPEG*
+  and the *Download JPEG* beside the finished preview did what **Edit and
+  download** does; both are gone, with the rule that styled them.
+- **feat** — the measurements say what they are for where they are typed: with
+  the squaring on they are the shape the picture is squared up to and nothing
+  renders until both are filled in, and with it off they are not read at all.
+
 ## 2.46.0
 
 - **feat** — **Edit and download**, beside Save for later and Prepare and sign.
