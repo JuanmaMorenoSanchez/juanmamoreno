@@ -482,6 +482,37 @@
       <p class="atelier-caveat">
         These are in the bucket, not on this machine, so they are still here when the engine is not.
       </p>
+      <!--
+        Joining, which only appears once two clips are picked. The model cannot
+        make a long clip in one go — it holds every frame in memory at once —
+        so a long film is made in pieces, each carrying on from the last frame
+        of the one before, and put together here.
+      -->
+      @if (picked().length) {
+        <!--
+          A caveat and a choice row, both of which this page already has rules
+          for. Its stylesheet errors the build at six kilobytes and sits a few
+          bytes under: a flex row of its own for this would have been 226 bytes
+          it does not have, and it does not need one.
+        -->
+        <p class="atelier-caveat" data-testid="joining">
+          {{ picked().length }} picked, and they join in the order they were picked.
+          @if (picked().length < 2) {
+            Pick another.
+          }
+        </p>
+        <p class="atelier-choice">
+          <button
+            type="button"
+            [disabled]="!canJoin()"
+            (click)="joinPicked()"
+            data-testid="join-picked"
+          >
+            {{ joining() ? 'Joining…' : 'Join into one clip' }}
+          </button>
+          <button type="button" (click)="picked.set([])">Clear</button>
+        </p>
+      }
       <ul class="atelier-layers">
         @for (piece of kept.pieces(); track piece.id) {
           <li>
@@ -533,12 +564,35 @@
                  on the button's own label, so nothing is lost to anyone
                  reading it with something other than eyes. -->
             <span class="atelier-shelf-does">
+              <!-- Only on clips: joining two pictures is not a thing, and a
+                   picked picture would be a thing to explain. -->
+              @if (kept.isClip(piece)) {
+                <button
+                  type="button"
+                  class="atelier-icon"
+                  (click)="pick(piece)"
+                  [matTooltip]="isPicked(piece) ? 'Picked for joining' : 'Pick for joining'"
+                  [attr.aria-pressed]="isPicked(piece)"
+                  aria-label="Pick for joining"
+                  [attr.data-testid]="'pick-' + piece.id"
+                >
+                  <!-- The number, not a tick, and in place of the icon rather
+                       than beside a filled square: the order is what the join
+                       is, and a digit where a glyph was is the whole of what
+                       picked has to look like. -->
+                  @if (isPicked(piece)) {
+                    {{ pickedAt(piece) }}
+                  } @else {
+                    <mat-icon>playlist_add</mat-icon>
+                  }
+                </button>
+              }
               <button
                 type="button"
                 class="atelier-icon"
                 (click)="workFrom(piece)"
                 [disabled]="!kept.urls()[piece.id]"
-                matTooltip="Work from this"
+                [matTooltip]="kept.isClip(piece) ? 'Work from its last frame' : 'Work from this'"
                 aria-label="Work from this"
                 [attr.data-testid]="'work-from-' + piece.id"
               >

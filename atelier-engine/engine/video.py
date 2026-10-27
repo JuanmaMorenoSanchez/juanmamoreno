@@ -933,3 +933,95 @@ def write_video(
         raise RuntimeError(f"ffmpeg refused the frames: {said[-1] if said else 'no reason given'}")
 
     return where
+
+
+#: The most clips one join will take.
+#:
+#: Not a limit of ffmpeg's — the concat filter will take a hundred. It is that
+#: every clip is a file he chose and pressed a button about, and a mistake that
+#: joins forty of them produces a file nobody wants to wait for. Six matches
+#: `MOST_SCENES`, which is the same decision made inside a single run.
+MOST_CLIPS = 6
+
+
+def joining(clips: list[Path], where: Path, size: tuple[int, int], fps: int = FPS) -> list[str]:
+    """The ffmpeg arguments that join clips into one, in order.
+
+    Separated from running them because this is the part that can be wrong:
+    a filter graph is a string with indices in it, and the way to find out it
+    was built wrong is otherwise to wait for ffmpeg to refuse it.
+
+    **Every clip after the first loses its first frame.** A continued clip
+    begins on the frame the one before it ended on — that is what continuing
+    means, and `scenes` drops it for the same reason when it chains scenes
+    inside one run. Keeping it would put a one-frame stutter at every join.
+    Clips that were not continued from each other lose a twenty-fourth of a
+    second each, which is not a thing anybody can see.
+
+    Everything is scaled to `size`, the first clip's shape, because the concat
+    filter refuses inputs that disagree about their dimensions.
+
+    Audio is not carried over. Each clip has a silent track of its own and
+    concatenating those would be concatenating silence; one fresh silent track
+    over the whole thing is the same file and one fewer thing to go wrong.
+    """
+    if len(clips) < 2:
+        raise GraphError("joining takes two clips or more — choose another")
+    if len(clips) > MOST_CLIPS:
+        raise GraphError(
+            f"{len(clips)} clips is more than this will join at once. {MOST_CLIPS} is the most. "
+            "Join those, keep the result, and join it with the rest."
+        )
+
+    wide, high = size
+    chains = []
+    for at, _ in enumerate(clips):
+        steps = [] if at == 0 else ["trim=start_frame=1", "setpts=PTS-STARTPTS"]
+        steps += [f"scale={wide}:{high}:flags=lanczos", "setsar=1"]
+        chains.append(f"[{at}:v]{','.join(steps)}[v{at}]")
+
+    taking = "".join(f"[v{at}]" for at in range(len(clips)))
+    graph = ";".join(chains) + f";{taking}concat=n={len(clips)}:v=1:a=0[joined]"
+
+    inputs: list[str] = []
+    for clip in clips:
+        inputs += ["-i", str(clip)]
+
+    return [
+        ffmpeg(),
+        "-y",
+        *inputs,
+        # The silence, as `write_video` writes it, and for the same reason:
+        # Meta's spec lists audio requirements and never says audio is
+        # optional, so a video-only file might be refused.
+        "-f", "lavfi",
+        "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
+        "-filter_complex", graph,
+        "-map", "[joined]",
+        "-map", f"{len(clips)}:a",
+        "-shortest",
+        "-c:a", "aac",
+        "-b:a", "128k",
+        "-ar", "48000",
+        "-ac", "2",
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        "-crf", "17",
+        "-preset", "slow",
+        # Pinned, because the inputs carry their own timestamps and the concat
+        # filter passes them through: one clip written at a different rate
+        # would otherwise make the join play at a different speed.
+        "-r", str(fps),
+        "-movflags", "+faststart",
+        str(where),
+    ]
+
+
+def joined(clips: list[Path], where: Path, size: tuple[int, int], fps: int = FPS) -> Path:
+    """Several clips as one longer mp4, through ffmpeg."""
+    where.parent.mkdir(parents=True, exist_ok=True)
+    ran = subprocess.run(joining(clips, where, size, fps), capture_output=True)
+    if ran.returncode != 0:
+        said = (ran.stderr or b"").decode("utf-8", "replace").strip().splitlines()
+        raise RuntimeError(f"ffmpeg refused the clips: {said[-1] if said else 'no reason given'}")
+    return where

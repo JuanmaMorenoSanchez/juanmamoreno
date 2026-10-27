@@ -481,6 +481,32 @@ export class AtelierEngineService {
    * these bytes did not: a url is enough for an `img`, which the browser
    * annotates for itself, and not enough for a `fetch`, which it refuses.
    */
+  /**
+   * Several clips, in the order given, as one longer one.
+   *
+   * On the engine because ffmpeg is there and proven there — it writes every
+   * clip this returns — and because the alternative was putting it in Cloud
+   * Run to serve an operation only ever asked for from this machine. Nothing
+   * leaves it either way: the bytes go up from the browser, which already
+   * holds them for the shelf, and come straight back.
+   *
+   * `size` is the shape to join at, which is the first clip's. Sent rather
+   * than measured, because the shelf knows every clip's size and asking
+   * ffprobe for a number already in hand means finding a second binary.
+   */
+  async join(clips: Blob[], size: { width: number; height: number }): Promise<Blob> {
+    const form = new FormData();
+    clips.forEach((clip, at) => form.append('clips', clip, `${at}.mp4`));
+    form.append('width', String(size.width));
+    form.append('height', String(size.height));
+
+    const response = await fetch(`${ENGINE}/join`, toLocal({ method: 'POST', body: form }));
+    // The engine's own words: it is the thing that knows a clip was refused
+    // for its shape rather than for being one clip.
+    if (!response.ok) throw new Error(await complaint(response));
+    return response.blob();
+  }
+
   async layerBytes(file: string): Promise<Blob> {
     const response = await fetch(this.layerUrl(file), toLocal({ cache: 'no-store' }));
     if (!response.ok) throw new Error('that is no longer on this machine');

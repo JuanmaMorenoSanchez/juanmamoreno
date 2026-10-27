@@ -116,6 +116,7 @@ describe('AtelierComponent', () => {
       states?: JobState[];
       kept?: unknown[];
       onKeep?: () => Promise<unknown>;
+      onJoin?: () => Promise<Blob>;
       stored?: string;
     } = {}
   ) => {
@@ -131,6 +132,8 @@ describe('AtelierComponent', () => {
     const keptCalls: Record<string, unknown>[] = [];
     const wantedByCall: string[] = [];
     const downloaded: string[] = [];
+    const framed: string[] = [];
+    const joined: { clips: Blob[]; width: number; height: number }[] = [];
     let asked = -1;
     const queued: JobState[] = options.states ?? [
       {
@@ -185,6 +188,13 @@ describe('AtelierComponent', () => {
               Math.min(piece.width, piece.height) >= 2500 ? 'high' : 'web',
             trouble: signal<Record<string, string>>({}),
             isClip: (piece: { media?: string }) => piece.media === 'video/mp4',
+            // Which clips were read back as a still. The decoding itself has
+            // its own spec, driven against a stand-in video element; jsdom
+            // decodes nothing.
+            lastFrame: (piece: { id: string }) => {
+              framed.push(piece.id);
+              return Promise.resolve(new Blob(['a frame'], { type: 'image/png' }));
+            },
             download: (piece: { id: string }) => {
               downloaded.push(piece.id);
               return Promise.resolve();
@@ -256,6 +266,14 @@ describe('AtelierComponent', () => {
               did.push('cancel');
               return Promise.resolve();
             },
+            // What was sent to be joined, and in what order — the order is
+            // the whole of what a join decides.
+            join: (clips: Blob[], size: { width: number; height: number }) => {
+              joined.push({ clips, ...size });
+              return (
+                options.onJoin?.() ?? Promise.resolve(new Blob(['mp4'], { type: 'video/mp4' }))
+              );
+            },
           },
         },
       ],
@@ -272,6 +290,8 @@ describe('AtelierComponent', () => {
       keptCalls,
       wantedByCall,
       downloaded,
+      joined,
+      framed,
     };
   };
 
@@ -1110,6 +1130,201 @@ describe('AtelierComponent', () => {
 
     expect(at(host, 'chosen')?.textContent).toContain('Rockets win I');
     vi.restoreAllMocks();
+  });
+
+  /**
+   * Continuing a clip, and putting the pieces together.
+   *
+   * The model holds every frame of a clip in memory at once, so a long clip is
+   * not a thing the card can make. A long film is made in pieces — each
+   * carrying on from the last frame of the one before — and joined. Both
+   * halves of that were missing from the shelf: **Work from this** sent the
+   * engine an mp4 and was answered *that file is not an image*, and there was
+   * no way to put two kept clips together at all.
+   */
+  describe('carrying a clip on', () => {
+    const aClip = (id: string, over: Record<string, unknown> = {}) => ({
+      id,
+      name: `clip ${id}`,
+      tokenId: null,
+      kind: 'clip',
+      media: 'video/mp4',
+      width: 832,
+      height: 480,
+      bytes: 1,
+      created: '',
+      ...over,
+    });
+
+    const aPicture = (id: string) => ({
+      id,
+      name: `picture ${id}`,
+      tokenId: null,
+      kind: 'layer',
+      media: 'image/png',
+      width: 1024,
+      height: 1086,
+      bytes: 1,
+      created: '',
+    });
+
+    /** Bytes that say which url they came from, so order can be asserted on. */
+    const fetchByUrl = () =>
+      vi.spyOn(globalThis, 'fetch').mockImplementation((asked: RequestInfo | URL) =>
+        Promise.resolve({
+          blob: () => Promise.resolve(new Blob([String(asked)], { type: 'video/mp4' })),
+        } as unknown as Response)
+      );
+
+    const settle = () => new Promise((done) => setTimeout(done, 0));
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('works from a clip last frame rather than from the file', async () => {
+      // The bug this is here for: the mp4 went to the engine as the painting
+      // and came back refused, with the whole file uploaded first.
+      const { fixture, host, framed } = build({ kept: [aClip('k1')] });
+      guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      fixture.detectChanges();
+
+      at(host, 'work-from-k1')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(framed).toEqual(['k1']);
+      // Said in the name, because the preview is a still and nothing else on
+      // the page says which of the two it is.
+      expect(at(host, 'chosen')?.textContent).toContain('last frame');
+    });
+
+    it('works from a picture as the file it is', async () => {
+      // The other side of the same branch: a png is already a painting and
+      // decoding it as a video would be absurd.
+      const { fixture, host, framed } = build({ kept: [aPicture('k1')] });
+      guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      fixture.detectChanges();
+      fetchByUrl();
+
+      at(host, 'work-from-k1')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(framed).toEqual([]);
+      expect(at(host, 'chosen')?.textContent).not.toContain('last frame');
+    });
+
+    it('offers joining on clips and not on pictures', async () => {
+      const { host } = build({ kept: [aClip('k1'), aPicture('k2')] });
+      expect(at(host, 'pick-k1')).not.toBeNull();
+      // A picked picture would be a thing to explain.
+      expect(at(host, 'pick-k2')).toBeNull();
+    });
+
+    it('joins the picked clips in the order they were picked', async () => {
+      // The order is the film. Two clips joined the other way round are a
+      // different clip, which is why the picking is a list and not a set.
+      const { fixture, host, joined, keptCalls } = build({
+        kept: [aClip('k1'), aClip('k2')],
+      });
+      fetchByUrl();
+
+      at(host, 'pick-k2')?.click();
+      fixture.detectChanges();
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+
+      at(host, 'join-picked')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(joined.length).toBe(1);
+      expect(await Promise.all(joined[0].clips.map((clip) => clip.text()))).toEqual([
+        'blob:fake/k2',
+        'blob:fake/k1',
+      ]);
+      // Kept through the same route everything else is kept through, so the
+      // result is a piece like any other and can be picked again.
+      expect(keptCalls.at(-1)).toMatchObject({ kind: 'joined', media: 'video/mp4' });
+    });
+
+    it('joins at the first clip shape', async () => {
+      // ffmpeg concat refuses inputs that disagree about their size, and two
+      // clips off the shelf have no reason to agree — one was cropped to 9:16
+      // and the next was left alone.
+      const { fixture, host, joined } = build({
+        kept: [aClip('k1'), aClip('k2', { width: 480, height: 832 })],
+      });
+      fetchByUrl();
+
+      at(host, 'pick-k2')?.click();
+      fixture.detectChanges();
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+      at(host, 'join-picked')?.click();
+      await settle();
+
+      expect(joined[0]).toMatchObject({ width: 480, height: 832 });
+    });
+
+    it('will not join one clip, and says to pick another', async () => {
+      const { fixture, host } = build({ kept: [aClip('k1'), aClip('k2')] });
+
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+
+      expect((at(host, 'join-picked') as HTMLButtonElement).disabled).toBe(true);
+      expect(at(host, 'joining')?.textContent).toContain('Pick another');
+    });
+
+    it('will not join while the engine is unreachable', async () => {
+      // ffmpeg is on the engine, and the engine is a program on his machine
+      // that is usually not running.
+      const { fixture, host } = build({ kept: [aClip('k1'), aClip('k2')], unreachable: true });
+
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+      at(host, 'pick-k2')?.click();
+      fixture.detectChanges();
+
+      expect((at(host, 'join-picked') as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it('says the engine own words when a join is refused', async () => {
+      // It is the thing that knows a pair was refused for its shape rather
+      // than for being one clip.
+      const { fixture, host } = build({
+        kept: [aClip('k1'), aClip('k2')],
+        onJoin: () => Promise.reject(new Error('ffmpeg refused the clips: no such filter')),
+      });
+      fetchByUrl();
+
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+      at(host, 'pick-k2')?.click();
+      fixture.detectChanges();
+      at(host, 'join-picked')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(host.textContent).toContain('no such filter');
+    });
+
+    it('forgets the picking once the clips are joined', async () => {
+      // The result is on the shelf and is the thing to carry on from; leaving
+      // its parts picked offers to join them to it again.
+      const { fixture, host } = build({ kept: [aClip('k1'), aClip('k2')] });
+      fetchByUrl();
+
+      at(host, 'pick-k1')?.click();
+      fixture.detectChanges();
+      at(host, 'pick-k2')?.click();
+      fixture.detectChanges();
+      at(host, 'join-picked')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(at(host, 'joining')).toBeNull();
+    });
   });
 
   it('shows a kept piece at the size of the screen', () => {

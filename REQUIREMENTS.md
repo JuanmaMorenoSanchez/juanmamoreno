@@ -3899,6 +3899,52 @@ what it is doing", "fades rather than cutting, so it is still there while it
 goes", "is gone once it has settled" and "does not cover a piece that does
 not exist"
 
+### R201 — A kept clip can be carried on, and clips can be joined · met
+The shelf could be worked from, as long as what was on it was a picture.
+**Work from this** on a clip sent the engine the mp4 as the painting and was
+answered *that file is not an image* — with the whole file uploaded first.
+
+**A clip now comes back as its last frame.** That is what a continuation has to
+start from, and it is exactly what `scenes` hands to the scene after it inside
+a single run; picking a clip up hours later is the same operation on a file off
+the shelf. The name says *last frame*, because the preview is then a still and
+nothing else on the page would say which of the two it is. A clip that does not
+declare its duration is refused with a reason rather than waited on: its
+`currentTime` would be NaN and the seek never completes.
+
+**And the pieces can be put together.** Clips are picked on the shelf — a list
+and not a set, because the order *is* the film — and joined into one longer
+clip, which is kept like anything else and so can be picked again. A long clip
+is not a thing the card can make in one go: the model holds every frame in
+memory at once, so twelve seconds is four times the memory three seconds needs.
+Long films are made in pieces and joined, which is what `scenes` does inside
+one run and what this does to runs hours apart.
+
+Joined on the engine, where ffmpeg already is and where it already writes every
+clip — putting it in Cloud Run would mean a bigger image for an operation only
+ever asked for from his machine. Nothing leaves it: the bytes go up from the
+browser, which already holds them for the shelf, and come straight back, and
+nothing is written down on either side. **Every clip after the first loses its
+first frame**, because a continued clip begins on the frame the one before it
+ended on and keeping both is a one-frame stutter at every join. Everything is
+scaled to the first clip's shape, sent rather than measured because the shelf
+knows every size and ffprobe is a second binary to find.
+*Proven by:* the engine's `test_joining.py` (15 tests: every clip an input, the
+first keeping its first frame and the rest losing theirs, the scale to one
+shape, the concat taking the chains in order, the silence counted as the input
+after the clips, the rate pinned, one clip and seven refused, and two real
+joins through ffmpeg — thirteen frames and thirteen coming back as twenty-five,
+and a 48x64 clip joined into a 64x48 one), `last-frame.spec.ts` (8 tests,
+including the seek landing inside the last frame rather than past it, drawing
+the end and not the beginning, and a clip with no duration refused),
+`atelier.component.spec.ts` "carrying a clip on" (9 tests, including the order
+the clips were picked in, the first clip's shape, joining offered on clips and
+not on pictures, and one clip refused), `kept.service.spec.ts` "a clip read
+back as a still" (2 tests), `engine.service.spec.ts` "sends every clip under
+one field, in order, with the shape to join at", and the engine's
+`test_joining.py` "JoinEndpointTest" (4 tests, including that nothing is left
+behind in `out/`)
+
 ### R200 — The corrector is an image editor, not only a step towards a certificate · met
 Perspective off a photograph, the light evened out, the edges found, the
 brushwork left alone — the studio's corrector does all of it, and it was

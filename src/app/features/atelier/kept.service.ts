@@ -5,6 +5,7 @@ import { atelierQuality } from '@domain/artwork/image-sizes';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { inside } from '@shared/types/api-response.type';
+import { lastFrame } from './last-frame';
 
 /** The most useful sentence available about a failure. */
 const said = (error: unknown): string => {
@@ -284,6 +285,22 @@ export class KeptService {
     const stem = `${piece.name || piece.kind || 'kept'}-${piece.kind}`.replace(/[^\w.-]+/g, '-');
     link.download = `${stem}.${this.isClip(piece) ? 'mp4' : 'png'}`;
     link.click();
+  }
+
+  /**
+   * The last frame of a kept clip, as a picture.
+   *
+   * Here rather than in the page because the bytes are this service's: it
+   * fetched them through the credential to draw the thumbnail, and the frame
+   * is read off the same object url. The decoding itself is in `last-frame`,
+   * which knows nothing about pieces and can be driven against a stand-in
+   * video element.
+   */
+  async lastFrame(piece: KeptPiece): Promise<Blob> {
+    await this.show(piece.id);
+    const url = this.shown()[piece.id];
+    if (!url) throw new Error(this.failed()[piece.id] ?? 'that clip could not be read back');
+    return lastFrame(url);
   }
 
   /** Lets go of one object url. Called when a piece is forgotten. */

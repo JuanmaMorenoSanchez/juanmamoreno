@@ -139,6 +139,47 @@ describe('AtelierEngineService', () => {
     expect(result.notFound).toEqual(['a cathedral']);
   });
 
+  it('sends every clip under one field, in order, with the shape to join at', async () => {
+    // The order is the film, and the shape is sent rather than measured
+    // because the shelf knows every clip's size and ffprobe is a second
+    // binary to go and find.
+    const fetched = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      blob: () => Promise.resolve(new Blob(['mp4'], { type: 'video/mp4' })),
+    });
+    vi.stubGlobal('fetch', fetched);
+
+    const made = await service.join(
+      [new Blob(['one'], { type: 'video/mp4' }), new Blob(['two'], { type: 'video/mp4' })],
+      { width: 480, height: 832 }
+    );
+
+    const body = fetched.mock.calls[0][1].body as FormData;
+    expect(await Promise.all(body.getAll('clips').map((clip) => (clip as Blob).text()))).toEqual([
+      'one',
+      'two',
+    ]);
+    expect(body.get('width')).toBe('480');
+    expect(body.get('height')).toBe('832');
+    expect(made.type).toBe('video/mp4');
+  });
+
+  it('repeats what the engine said about a join it would not do', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ detail: 'joining takes two clips or more' }),
+      })
+    );
+
+    await expect(service.join([new Blob()], { width: 64, height: 48 })).rejects.toThrow(
+      'two clips or more'
+    );
+  });
+
   it('throws with what the engine said, so the page can repeat it', async () => {
     vi.stubGlobal(
       'fetch',

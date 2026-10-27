@@ -564,16 +564,35 @@ export class AtelierComponent implements OnDestroy {
    * from, so this costs nothing but reading them back. What it does cost is
    * the catalogue link: a piece off the shelf has no token, so Run must stop
    * offering to go and fetch a bigger copy of a painting this no longer is.
+   *
+   * **A clip comes back as its last frame, not as itself.** The engine takes
+   * a picture and a sentence and has never taken a video: this button sent it
+   * the mp4 and was answered *that file is not an image*, with the whole file
+   * uploaded first. The final frame is what a continuation has to start from
+   * anyway — it is exactly what `scenes` hands to the scene after it inside
+   * one run — so picking up a clip hours later is the same operation on a file
+   * off the shelf.
    */
   protected async workFrom(piece: KeptPiece): Promise<void> {
     const url = this.kept.urls()[piece.id];
     if (!url) return;
     try {
-      const bytes = await fetch(url).then((answer) => answer.blob());
-      this.take(bytes, piece.name || piece.kind || piece.id);
+      const bytes = this.kept.isClip(piece)
+        ? await this.kept.lastFrame(piece)
+        : await fetch(url).then((answer) => answer.blob());
+      // Said in the name, because the preview is then a still and there is
+      // otherwise nothing to show which of the two it is.
+      const called = piece.name || piece.kind || piece.id;
+      this.take(bytes, this.kept.isClip(piece) ? `${called} — last frame` : called);
       this.fromCatalogue.set(null);
-    } catch {
-      this.failure.set('that piece could not be read back');
+    } catch (error) {
+      // The reader's own words where it has any: "does not say how long it is"
+      // names the file, and "could not be read back" named nothing.
+      this.failure.set(
+        error instanceof Error && error.message
+          ? error.message
+          : 'that piece could not be read back'
+      );
     }
   }
 
@@ -604,6 +623,96 @@ export class AtelierComponent implements OnDestroy {
 
   /** Which piece's address was just copied, for the tick on the button. */
   protected readonly copied = signal<string | null>(null);
+
+  /**
+   * Which clips are picked for joining, in the order they were picked.
+   *
+   * An ordered list of ids rather than a set, because the order *is* the film.
+   * Two clips joined the other way round are a different clip, and a Set
+   * would hand them over in whatever order the shelf happens to be in.
+   */
+  protected readonly picked = signal<string[]>([]);
+
+  protected isPicked(piece: KeptPiece): boolean {
+    return this.picked().includes(piece.id);
+  }
+
+  /** Where in the join this one sits, for the number on its tile. */
+  protected pickedAt(piece: KeptPiece): number {
+    return this.picked().indexOf(piece.id) + 1;
+  }
+
+  protected pick(piece: KeptPiece): void {
+    this.picked.update((all) =>
+      all.includes(piece.id) ? all.filter((id) => id !== piece.id) : [...all, piece.id]
+    );
+  }
+
+  /** The picked clips, as the shelf knows them, in picked order. */
+  private readonly picking = computed(() => {
+    const shelf = this.kept.pieces();
+    return this.picked()
+      .map((id) => shelf.find((piece) => piece.id === id))
+      .filter((piece): piece is KeptPiece => piece !== undefined);
+  });
+
+  protected readonly canJoin = computed(
+    () => this.picking().length >= 2 && !this.joining() && !this.engine.unreachable()
+  );
+
+  protected readonly joining = signal(false);
+
+  /**
+   * The picked clips as one longer clip, kept.
+   *
+   * **This is the other half of continuing one.** `workFrom` hands a clip's
+   * last frame back as the painting, so the next run carries on from where it
+   * stopped — but that leaves two files, and the film is the two of them in
+   * order. The model cannot make a long clip in one go: it holds every frame
+   * in memory at once, so twelve seconds is four times the card three seconds
+   * needs. Long clips are made in pieces and put together, which is what
+   * `scenes` does inside one run and what this does to runs hours apart.
+   *
+   * Joined on the engine, where ffmpeg already is. Kept through the same
+   * button everything else is kept through, so the result is a piece like any
+   * other — pickable again, so a long film is built in several joins.
+   */
+  protected async joinPicked(): Promise<void> {
+    const clips = this.picking();
+    if (clips.length < 2) return;
+
+    this.joining.set(true);
+    this.failure.set(null);
+    try {
+      // From the shelf's own object urls, which are already fetched: these
+      // are the bytes the thumbnails are drawn from.
+      const bytes = await Promise.all(
+        clips.map(async (piece) => {
+          await this.kept.show(piece.id);
+          const url = this.kept.urls()[piece.id];
+          if (!url) throw new Error(`${piece.name || piece.kind} could not be read back`);
+          return fetch(url).then((answer) => answer.blob());
+        })
+      );
+
+      const first = clips[0];
+      const made = await this.engine.join(bytes, { width: first.width, height: first.height });
+      await this.kept.keep(made, {
+        name: first.name || first.kind || 'joined',
+        kind: 'joined',
+        media: 'video/mp4',
+        width: first.width,
+        height: first.height,
+      });
+      this.picked.set([]);
+    } catch (error) {
+      this.failure.set(
+        error instanceof Error && error.message ? error.message : 'those clips would not join'
+      );
+    } finally {
+      this.joining.set(false);
+    }
+  }
 
   /**
    * The piece, as big as the screen will make it.

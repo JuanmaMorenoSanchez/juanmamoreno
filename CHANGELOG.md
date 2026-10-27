@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.47.0
+
+- **feat** — a kept clip can be carried on, and clips can be joined. **Work
+  from this** on a clip hands back its last frame, which is what a
+  continuation has to start from — it used to send the engine the mp4 and be
+  answered *that file is not an image*. Clips are then picked on the shelf, in
+  the order they are to play, and joined into one longer clip through ffmpeg on
+  the engine; the result is kept like anything else, so a long film is built in
+  several joins.
+
 ## 2.46.1
 
 - **chore** — one download, not three. The corrector's *Just download the JPEG*

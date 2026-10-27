@@ -412,6 +412,46 @@ describe('KeptService', () => {
     });
   });
 
+  describe('a clip read back as a still', () => {
+    /**
+     * Because the engine takes a picture and a sentence and has never taken a
+     * video. The decoding itself is `last-frame`, which has its own spec
+     * driven against a stand-in video element — jsdom decodes nothing. What is
+     * this service's own is fetching the bytes first and naming the reason
+     * when they do not arrive.
+     */
+    const building = (refusal: unknown) => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {
+            provide: HttpClient,
+            useValue: { get: () => throwError(() => refusal) },
+          },
+          { provide: AdminAuthService, useValue: { bearerToken: () => 'a-token' } },
+        ],
+      });
+      return TestBed.inject(KeptService);
+    };
+
+    it('says the sign-in has lapsed rather than that the clip has no frames', async () => {
+      // The usual cause, and the one that read as a broken clip: an
+      // hour-old token, not anything about the file.
+      const kept = building({ status: 403 });
+
+      await expect(kept.lastFrame(piece({ media: 'video/mp4' }))).rejects.toThrow('sign in again');
+    });
+
+    it('says it is gone when the bucket no longer has it', async () => {
+      const kept = building({ status: 404 });
+
+      await expect(kept.lastFrame(piece({ media: 'video/mp4' }))).rejects.toThrow(
+        'no longer in the bucket'
+      );
+    });
+  });
+
   it('says which copy of the painting a piece was made from', () => {
     const { kept } = build();
 

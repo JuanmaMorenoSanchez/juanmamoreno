@@ -24,11 +24,12 @@ import threading
 import time
 import uuid
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 from fastapi import Body, FastAPI, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from PIL import Image
 
 from . import house
@@ -317,6 +318,50 @@ def describe(asked: dict = Body(...)) -> JSONResponse:
     registry.evict()
     text = write_text(prompt, images, most_tokens=int(asked.get("most_tokens") or 300))
     return JSONResponse({"text": text})
+
+
+@app.post("/join")
+def join(
+    clips: list[UploadFile],
+    width: int = Form(...),
+    height: int = Form(...),
+) -> Response:
+    """Several clips, in the order they were sent, as one longer mp4.
+
+    **Why the engine and not the backend.** ffmpeg is already here and proven
+    here — it is what writes every clip — and putting it in Cloud Run would
+    mean a bigger image to carry an operation that is only ever asked for from
+    this machine. Nothing leaves it: the bytes come up from the browser, which
+    already has them, and go straight back.
+
+    The shape is sent rather than measured. The page knows every clip's size
+    from the shelf, so asking ffprobe for a number already in hand would mean
+    finding a second binary.
+
+    Nothing is kept. The uploads and the result live in a temporary folder for
+    the length of the request, because a join is a file he is given, not a
+    piece the engine holds — the only thing on this machine that outlives a run
+    is what he presses Keep on.
+    """
+    if width <= 0 or height <= 0:
+        raise HTTPException(status_code=400, detail="the clips' shape was not sent")
+
+    with TemporaryDirectory(dir=str(OUT)) as folder:
+        here = Path(folder)
+        sent = []
+        for at, clip in enumerate(clips):
+            where = here / f"{at}.mp4"
+            where.write_bytes(clip.file.read())
+            sent.append(where)
+
+        try:
+            made = video.joined(sent, here / "joined.mp4", (width, height))
+        except GraphError as refused:
+            raise HTTPException(status_code=400, detail=str(refused)) from refused
+        except RuntimeError as refused:
+            raise HTTPException(status_code=400, detail=str(refused)) from refused
+
+        return Response(content=made.read_bytes(), media_type="video/mp4")
 
 
 @app.post("/evict")
