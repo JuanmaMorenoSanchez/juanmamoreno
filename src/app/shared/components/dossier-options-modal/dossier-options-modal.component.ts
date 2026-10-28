@@ -13,6 +13,7 @@ import {
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { ARTIST } from '@domain/artwork/mint-vocabulary';
 import { DEFAULT_MULTIPLIER, usableMultiplier } from '@domain/artwork/pricing';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -39,6 +40,18 @@ export class DossierOptionsModalComponent {
   customTitle = '';
   customText = '';
   includeContact = false;
+  /**
+   * The name at the head of the contact page, when it is not his own.
+   *
+   * Blank is the ordinary case and means the name the paintings are signed
+   * with, which is what the placeholder shows. A dossier sent through somebody
+   * else — a gallery, an agent, a competition entry under a shorter form of the
+   * name — wants that name at the top instead, and this is the one page where
+   * saying who to write to is the whole point.
+   */
+  contactName = '';
+  /** What blank means, shown in the field rather than described. */
+  protected readonly defaultName = ARTIST;
   includeCv = false;
   /** The biography in place of the list, when one has been written. */
   cvAsProse = false;
@@ -82,6 +95,10 @@ export class DossierOptionsModalComponent {
   submit() {
     this.isSubmitting = true;
     const options = {
+      // Resolved here rather than in the builder: this is where the choice is
+      // made, and what is handed on is then a name and never a blank to be
+      // interpreted further down.
+      contactName: this.contactName.trim() || ARTIST,
       customTitle: this.customTitle,
       customText: this.customText,
       includeContact: this.includeContact,

@@ -253,7 +253,15 @@ export class PdfService {
      * the catalogue or saved by the api; it exists for as long as this document
      * takes to build and nowhere afterwards.
      */
-    prices?: Multipliers | null
+    prices?: Multipliers | null,
+    /**
+     * The name at the head of the contact page.
+     *
+     * His own unless he typed another, which the dialog has already resolved —
+     * a dossier going out through a gallery or under a shorter form of the name
+     * says so on the one page whose job is to say who to write to.
+     */
+    contactName: string = ARTIST
   ): Promise<jsPDF> {
     const writer = await this.newWriter();
     // Report progress (0..1) after each section so the button can show a
@@ -296,7 +304,7 @@ export class PdfService {
     }
     if (includeContact) {
       writer.newPage();
-      this.addContact(writer);
+      this.addContact(writer, contactName);
       step();
     }
     writer.addPageNumbers();
@@ -574,7 +582,7 @@ export class PdfService {
 
   // --- Contact: single centered block ---
 
-  private addContact(writer: PdfWriter): void {
+  private addContact(writer: PdfWriter, name: string): void {
     writer.y = 70;
     const centered = { align: 'center' as const, lineHeight: 6 };
 
@@ -582,7 +590,7 @@ export class PdfService {
       align: 'center',
     });
     writer.space(6);
-    writer.paragraph('Juanma Moreno Sánchez', centered);
+    writer.paragraph(name, centered);
     writer.paragraph('(+34) 635820462', {
       ...centered,
       color: PDF_COLORS.soft,

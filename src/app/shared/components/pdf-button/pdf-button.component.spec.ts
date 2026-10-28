@@ -12,8 +12,8 @@ import { PdfButtonComponent } from './pdf-button.component';
 
 const PAINTING = { tokenId: '7', name: 'Un cuadro', image: 'ipfs://one' } as unknown as Nft;
 
-function setup(type: DOWNLOADTYPES, nfts: Nft[]) {
-  const open = vi.fn(() => ({ afterClosed: () => of(null) }));
+function setup(type: DOWNLOADTYPES, nfts: Nft[], chose: Record<string, unknown> | null = null) {
+  const open = vi.fn(() => ({ afterClosed: () => of(chose) }));
   const createTechnicalSheet = vi.fn(() => Promise.resolve({ save: vi.fn() }));
   const createDossier = vi.fn(() => Promise.resolve({ save: vi.fn() }));
 
@@ -35,7 +35,7 @@ function setup(type: DOWNLOADTYPES, nfts: Nft[]) {
   fixture.componentRef.setInput('nfts', nfts);
   fixture.detectChanges();
 
-  return { button: fixture.componentInstance, open, createTechnicalSheet };
+  return { button: fixture.componentInstance, open, createTechnicalSheet, createDossier };
 }
 
 /**
@@ -71,5 +71,30 @@ describe('PdfButtonComponent — which document', () => {
     const { button } = setup(DOWNLOADTYPES.DOSSIER, [PAINTING]);
 
     expect(button.getTooltip()).toBe('download.portfolio');
+  });
+});
+
+/**
+ * What the dialog answered has to reach the builder. The name on the contact
+ * page is the one of these the dialog resolves itself — blank means his own —
+ * so what arrives here is always a name.
+ */
+describe('PdfButtonComponent — the options reach the builder', () => {
+  it('passes on the name chosen for the contact page', async () => {
+    const { button, createDossier } = setup(DOWNLOADTYPES.DOSSIER, [PAINTING], {
+      includeContact: true,
+      includeCv: false,
+      includeStatement: false,
+      customTitle: '',
+      customText: '',
+      prices: null,
+      contactName: 'Galería Zunino',
+    });
+
+    button.createPDF();
+    await Promise.resolve();
+
+    expect(createDossier).toHaveBeenCalledTimes(1);
+    expect(createDossier.mock.calls[0]).toContain('Galería Zunino');
   });
 });

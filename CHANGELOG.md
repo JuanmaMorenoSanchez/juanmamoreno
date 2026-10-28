@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.50.0
+
+- **feat** The contact page of a dossier can carry a name other than his own.
+  A field under the contact switch, where blank means the name the paintings are
+  signed with — which is what the placeholder shows.
+
 ## 2.49.0
 
 - **feat** A dossier can be made from one painting. It took two, because a

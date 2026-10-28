@@ -115,6 +115,7 @@
   "dossier": {
     "title": "Dossier options",
     "includeContact": "Include contact info",
+    "contactName": "Name on the contact page",
     "includeCv": "Include CV",
     "includeStatement": "Include Statement",
     "customTitle": "Custom title",

@@ -5,6 +5,20 @@
       <mat-slide-toggle [(ngModel)]="includeContact">
         {{ 'dossier.includeContact' | translate }}
       </mat-slide-toggle>
+
+      <!--
+        Only when there is a contact page to put a name on. The placeholder is
+        the name itself rather than a sentence about it, so leaving the field
+        alone shows what leaving it alone does.
+      -->
+      @if (includeContact) {
+        <div class="pdf-options-nested">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'dossier.contactName' | translate }}</mat-label>
+            <input matInput [(ngModel)]="contactName" [placeholder]="defaultName" />
+          </mat-form-field>
+        </div>
+      }
     </div>
 
     <div class="pdf-options-group">

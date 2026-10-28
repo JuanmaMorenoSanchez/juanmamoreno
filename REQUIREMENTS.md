@@ -2095,6 +2095,29 @@ when one is taken out" and "generates from one painting") and its "opening one"
 dossier from one painting when a dossier is what was asked for" and "still makes
 a technical sheet from one painting on its own page")
 
+### R203 — The contact page can carry a name other than his own · met
+A field in the dossier options, under the switch that puts the contact page in,
+holding the name at the head of that page. **Blank means his own name**, which
+is what the field's placeholder shows: the choice is made by typing or not
+typing rather than by a switch, because leaving it alone is the answer almost
+every time.
+
+It is the one page in the document whose job is to say who to write to, and a
+dossier does not always go out under the painter's own name — through the
+gallery, through an agent, or into a competition that wants the shorter form of
+it. Everything else on the page is unchanged, the gallery's own block included:
+this replaces a name, not the contact details.
+
+**Resolved in the dialog, not in the builder.** What the dialog hands on is
+always a name, so nothing downstream has to decide what a blank field meant.
+`ARTIST` is the single place that name is written, which the contact page had
+been quietly duplicating as a literal.
+*Proven by:* `dossier-options-modal.component.spec.ts` "the name on the contact
+page" (4 tests: "sends his own name when nothing was typed", "sends the name he
+typed instead", "treats a field of spaces as nothing typed" and "trims what he
+typed") and `pdf-button.component.spec.ts` "the options reach the builder"
+(1 test, that the chosen name reaches `createDossier`)
+
 ### R119 — A dossier can carry prices, and no price is ever stored · met
 A switch in the dossier options, **off by default**, revealing two multipliers
 that start at 11. Height plus width in centimetres, times one of them: the first

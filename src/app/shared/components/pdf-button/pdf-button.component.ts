@@ -102,6 +102,7 @@ export class PdfButtonComponent {
           customTitle,
           customText,
           prices,
+          contactName,
         } = result;
         this.saveDocument(
           this.pdfService.createDossier(
@@ -113,7 +114,8 @@ export class PdfButtonComponent {
             customText,
             (fraction) => this.progress.set(fraction),
             cvAsProse ? prose : null,
-            prices ?? null
+            prices ?? null,
+            contactName
           ),
           'dossier-juanmamoreno.pdf'
         );

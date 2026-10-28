@@ -7,6 +7,7 @@ import { DossierOptionsModalComponent } from './dossier-options-modal.component'
 type Options = {
   prices: { painting: number; paper: number } | null;
   includeCv: boolean;
+  contactName: string;
 };
 
 function setup() {
@@ -30,6 +31,7 @@ function setup() {
     paperMultiplier: number | null;
     multipliersUsable: boolean;
     canSubmit: boolean;
+    contactName: string;
     submit(): void;
   };
 
@@ -123,5 +125,52 @@ describe('DossierOptionsModalComponent — prices', () => {
 
       expect(dialog.canSubmit).toBe(true);
     });
+  });
+});
+
+/**
+ * The name at the head of the contact page.
+ *
+ * His own is the answer almost every time, so blank means his own and the
+ * field shows it as the placeholder rather than describing it. A dossier going
+ * out through somebody else — a gallery, an agent, an entry under a shorter
+ * form of the name — says so there, which is the one page whose job is to say
+ * who to write to.
+ */
+describe('DossierOptionsModalComponent — the name on the contact page', () => {
+  it('sends his own name when nothing was typed', () => {
+    const { dialog, sent } = setup();
+
+    dialog.submit();
+
+    expect(sent().contactName).toBe('Juanma Moreno Sánchez');
+  });
+
+  it('sends the name he typed instead', () => {
+    const { dialog, sent } = setup();
+    dialog.contactName = 'Galería Zunino';
+
+    dialog.submit();
+
+    expect(sent().contactName).toBe('Galería Zunino');
+  });
+
+  /** Typed and then cleared is the same as never typed, not an empty heading. */
+  it('treats a field of spaces as nothing typed', () => {
+    const { dialog, sent } = setup();
+    dialog.contactName = '   ';
+
+    dialog.submit();
+
+    expect(sent().contactName).toBe('Juanma Moreno Sánchez');
+  });
+
+  it('trims what he typed', () => {
+    const { dialog, sent } = setup();
+    dialog.contactName = '  Galería Zunino  ';
+
+    dialog.submit();
+
+    expect(sent().contactName).toBe('Galería Zunino');
   });
 });
