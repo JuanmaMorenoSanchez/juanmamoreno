@@ -25,25 +25,10 @@
   }
 }
 
-/// The same button, in the colour a cancel wears.
-///
-/// Backing out of something is not the same press as doing it, and across the
-/// web it is not drawn the same. Amber rather than red: red is for destroying
-/// something, and this only declines to start.
-@mixin warning-button($padding: 0.6rem 1.4rem, $size: inherit) {
-  @include plain-button($padding, $size);
-
-  border-color: #b26a00;
-  color: #8a5200;
-
-  &:hover:not([disabled]) {
-    background: rgb(178 106 0 / 10%);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .warning-button-dark {
-    border-color: #ffb74d;
-    color: #ffb74d;
-  }
-}
+// `warning-button` and `.warning-button-dark` were here too, and are gone.
+//
+// Nothing included the mixin — the one cancel on the site, the atelier's, wrote
+// the amber out by hand — and `.warning-button-dark` was named in no template
+// at all. That one was not merely unused: it sat at the top level of this file
+// rather than inside a mixin, so `@use`ing this file *emitted* it, and six
+// component stylesheets each carried the rule for a class none of them used.

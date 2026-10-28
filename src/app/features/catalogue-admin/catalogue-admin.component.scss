@@ -258,15 +258,6 @@
   opacity: 0.7;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
 /* What Instagram said, under the row that says where the painting went. */
 .cat-metrics {
   display: flex;

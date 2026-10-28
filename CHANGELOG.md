@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.48.1
+
+- **chore** — the stylesheets near the six-kilobyte budget, cut. Fifteen dead
+  rules removed (seven in the atelier alone, styling markup that had moved into
+  a child component), a dark-mode block that `_controls.scss` was emitting into
+  six sheets for a class nothing uses, and the repeated ones — `.visually-hidden`,
+  the link-drawn button, the three overlays' scrim and panel — moved to the
+  global sheet, where they are written once instead of per component. The
+  atelier's page goes from 50 bytes of headroom to 1.09 kB. Nothing changed
+  appearance: every moved rule was checked declaration by declaration.
+
 ## 2.48.0
 
 - **fix** — a four-and-a-half-hour clip that the page would not show. It looked

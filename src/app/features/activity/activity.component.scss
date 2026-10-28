@@ -117,21 +117,6 @@
   white-space: nowrap;
 }
 
-.activity-spend {
-  margin: 0;
-  font-size: 0.95rem;
-  font-variant-numeric: tabular-nums;
-
-  &.is-late {
-    color: #b00020;
-  }
-
-  a {
-    margin-left: 0.6rem;
-    font-size: 0.82rem;
-  }
-}
-
 .activity-note {
   display: flex;
   gap: 0.5rem;

@@ -79,17 +79,6 @@
   margin: tokens.$spacing-xs 0 tokens.$spacing-sm;
 }
 
-.prep-link {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--catalog-accent);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
 /**
  * Lets the photograph out of the column the prose is set in.
  *

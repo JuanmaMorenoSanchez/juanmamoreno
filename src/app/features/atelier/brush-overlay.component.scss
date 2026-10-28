@@ -1,36 +1,13 @@
-.brush-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background: rgb(0 0 0 / 62%);
-}
-
 .brush-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
   max-width: min(60rem, 100%);
   /* No scrollbar on it: the picture gives way instead, which is what a
      preview is for. */
   height: 100%;
   overflow: hidden;
-  padding: 1rem 1.25rem 1.25rem;
-  border-radius: 5px;
-  background: var(--surface, #fff);
-  color: inherit;
 }
 
 .brush-head {
   flex: 0 0 auto;
-
-  h2 {
-    margin: 0 0 0.25rem;
-    font-size: 1.05rem;
-  }
 
   p {
     margin: 0;

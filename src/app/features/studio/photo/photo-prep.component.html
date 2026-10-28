@@ -37,7 +37,7 @@
         -->
         <em class="prep-source">{{ sourceNote() }}</em>
       }
-      <button type="button" class="prep-link" (click)="reset()">Choose another</button>
+      <button type="button" class="link-button" (click)="reset()">Choose another</button>
     </p>
 
     <p class="prep-hint">
@@ -359,7 +359,7 @@
             Take the shine off
           </label>
           @if (anyAdjustment()) {
-            <button type="button" class="prep-link" (click)="resetAdjustments()">
+            <button type="button" class="link-button" (click)="resetAdjustments()">
               Back to as shot
             </button>
           }
@@ -443,7 +443,7 @@
                 : 'Nothing brushed, so the sliders apply to the whole photograph.'
             }}
           </p>
-          <button type="button" class="prep-link" [disabled]="!hasArea()" (click)="clearArea()">
+          <button type="button" class="link-button" [disabled]="!hasArea()" (click)="clearArea()">
             Unselect all
           </button>
         </fieldset>

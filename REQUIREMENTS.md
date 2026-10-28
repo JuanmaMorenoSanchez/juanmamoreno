@@ -4478,6 +4478,43 @@ One thing tried and reverted: grouping six quiet-aside selectors onto a
 shared `opacity` made the file *bigger*. Six selector names cost more than
 six copies of one declaration — grouping only pays when the shared block is
 large, which is why it paid for the buttons and not for this.
+
+**Cut again, and the same lesson held.** The atelier's page had reached 5.95 kB
+— fifty bytes of headroom — so a second pass went through every stylesheet near
+the limit. Measured, not guessed: each file was compiled and minified the way
+the budget counts it, and the duplication was found by comparing declaration
+blocks across all of them rather than by eye. **Nothing on the site changed
+appearance.** Each moved rule was checked declaration by declaration against
+what it said before.
+
+- **Dead rules.** Seven in the atelier's own sheet — `.atelier-field`,
+  `.atelier-check`, `.atelier-preview`, `.atelier-byid`, `.atelier-chosen`,
+  `.atelier-chosen-name`, `.atelier-fetching` — styling markup that had moved
+  into the Painting box, which is a child component a parent's styles cannot
+  reach anyway. A kilobyte, from one file. Eight more across six other sheets:
+  `.activity-spend`, `.art-piece-desc`, `.sort-desc`, `.project-open`,
+  `.dg-signs` and its two labels, `.mint-error`, and the three `.prepared-*`
+  rules. `.mat-drawer-backdrop` was left alone — Material applies it at
+  runtime, so no template names it and it is not dead.
+- **A shared file that charged everyone for nothing.** `_controls.scss` had a
+  `@media (prefers-color-scheme: dark)` block at its top level rather than
+  inside a mixin, so `@use`ing the file *emitted* it: six component sheets each
+  carried a rule for `.warning-button-dark`, a class no template has ever used.
+  The `warning-button` mixin beside it was included nowhere.
+- **Repeated styles, moved to the global sheet.** Global and not a mixin,
+  because a mixin compiles into every file that includes it and so saves
+  nothing: the per-component budget is the one that errors. `.visually-hidden`
+  was in three sheets, twice as the canonical ten declarations and once as a
+  weaker six, and is now the ten everywhere. `.link-button` replaces the
+  identical eight declarations the studio's sign-out and the corrector's three
+  asides each wrote out. `.overlay-scrim`, `.overlay-panel` and
+  `.overlay-head h2` replace the three overlays' own copies — the scrims were
+  identical and the panels agreed on seven of nine declarations, so each
+  component now says only how wide it wants to be and whether it scrolls.
+
+The atelier's sheet is **4.91 kB** and the largest on the site is the
+corrector's at 5.31; everything has at least 0.69 kB of room. Two files,
+`art-pieces-list` and `mint-form`, dropped under the 2 kB warning as well.
 *Proven by:* `npm run build`, which fails the build and therefore CI
 
 ### R176 — Typing an id fetches it · met

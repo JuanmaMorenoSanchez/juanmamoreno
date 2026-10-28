@@ -71,12 +71,6 @@
 .field select:focus-visible,
 .field textarea:focus-visible,
 .mint-button:focus-visible,
-.mint-error {
-  margin: 0.8rem 0 0;
-  font-size: 0.85rem;
-  color: #b3261e;
-}
-
 /*
   No margin of its own: it used to stand alone under the form, and now it stands
   in a row beside the gated one, which has none. The row supplies the space, and
@@ -99,26 +93,6 @@
 
 // Shown at four times its real size on purpose: this is the image that will be
 // inside the token forever, and it should be looked at before it is signed for.
-.prepared-thumb {
-  display: block;
-  width: 448px;
-  max-width: 100%;
-  image-rendering: auto;
-  background: rgba(128, 128, 128, 0.15);
-}
-
-.prepared-desc {
-  margin: 0.6rem 0 0;
-  font-size: 0.9rem;
-}
-
-.prepared-note {
-  margin: 0.9rem 0 0.4rem;
-  font-size: 0.85rem;
-  opacity: 0.8;
-  max-width: 52ch;
-}
-
 // Save and mint, side by side: the same preparation either way, differing only
 // in whether the chain is asked now or on the first cheap morning.
 .mint-choices {

@@ -1,18 +1,5 @@
 // Kept out of view but left in the text and in the accessibility tree, so the
 // dot beside it is not the only thing saying the painting has sold.
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .dot {
   height: 1rem;
   width: 1rem;
@@ -34,10 +21,6 @@
     font-weight: 400;
     margin: 0.83em 0;
   }
-}
-
-.art-piece-desc {
-  white-space: pre-line;
 }
 
 .separator {

@@ -152,6 +152,80 @@ p {
   line-height: 1.8;
 }
 
+/*
+  Written out in several component stylesheets, now written once.
+
+  Global rather than a mixin: a mixin compiles into every file that includes it,
+  so sharing one that way costs exactly as much as not sharing it. These are
+  classes the markup names directly, and the budget that matters is the
+  per-component one — the build errors at six kilobytes of compiled css for a
+  single component, and the atelier's page had fifty bytes left.
+*/
+
+/* Hidden from the screen and not from a screen reader. It was in three
+   stylesheets, twice as the canonical ten declarations and once as a shorter
+   six; this is the ten, which hides at least as thoroughly. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A button that is drawn as a link, because what it does is go somewhere or
+   undo something rather than submit anything. The studio's sign-out and the
+   corrector's three asides were the same eight declarations twice. */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--catalog-accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/*
+  The three overlays — the brush, the parallax preview, the sketch frame.
+
+  Each had its own scrim, its own panel and its own head, and the scrim was
+  identical in all three while the panels agreed on seven of their nine
+  declarations. What differs is how wide each one wants to be and whether it
+  scrolls, and that is all each component still says.
+*/
+.overlay-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgb(0 0 0 / 62%);
+}
+
+.overlay-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: 5px;
+  background: var(--surface, #fff);
+  color: inherit;
+}
+
+.overlay-head h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+}
+
 .catalog-heading {
   font-weight: 500;
   text-transform: uppercase;

@@ -41,7 +41,6 @@
   opacity: 0.85;
 }
 
-.project-open,
 .project-links {
   margin: 0 0 1rem;
   padding-left: 1.1rem;
@@ -138,22 +137,6 @@
 
 // The one arrow that leaves the machinery. Drawn heavier because it is the
 // only step a person takes, and the reason the key is nowhere on a server.
-.dg-signs {
-  stroke-width: 2;
-  opacity: 1;
-}
-
-// Up the right-hand side, so it sits beside its own line rather than on it.
-.dg-builds-label {
-  text-anchor: start;
-}
-
-.dg-signs-label {
-  text-anchor: start;
-  opacity: 1;
-  font-size: 10px;
-}
-
 // The name of a zone in the diagram: the cloud, and what is outside it. Set
 // small and spaced, like the headings on the page, so it reads as a label on
 // the box rather than as another thing inside it.
