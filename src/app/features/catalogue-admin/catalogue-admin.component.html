@@ -85,7 +85,7 @@
         <button type="button" class="cat-link" (click)="chooseAll()">Choose all</button>
       }
       @if (canGenerate()) {
-        <app-pdf-button [nfts]="chosen()"></app-pdf-button>
+        <app-pdf-button [nfts]="chosen()" [downloadFileType]="dossierType"></app-pdf-button>
       }
     </span>
   </div>

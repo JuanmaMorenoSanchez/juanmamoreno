@@ -236,12 +236,18 @@ describe('CatalogueAdminComponent', () => {
       expect(page.positionOf(second)).toBeNull();
     });
 
-    /** One painting is a technical sheet, which has its own button elsewhere. */
-    it('will not generate from fewer than two', () => {
+    /**
+     * It took two until 2.49.0, on the reasoning that a dossier of one is a
+     * technical sheet. They are different documents — the sheet is the
+     * painting's facts, a dossier of one is that painting with a cover, the
+     * statement and the biography — so one painting is enough.
+     */
+    it('generates from one painting', () => {
       const page = setup([]);
-      page.toggleChosen(page.rows()[0]);
-
       expect(page.canGenerate()).toBe(false);
+
+      page.toggleChosen(page.rows()[0]);
+      expect(page.canGenerate()).toBe(true);
 
       page.toggleChosen(page.rows()[1]);
       expect(page.canGenerate()).toBe(true);

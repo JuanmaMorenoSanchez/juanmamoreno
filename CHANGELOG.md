@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.49.0
+
+- **feat** A dossier can be made from one painting. It took two, because a
+  dossier of one was taken to be a technical sheet; they are different
+  documents, and which of them the button makes is now said rather than counted
+  from the length of the list.
+
 ## 2.48.1
 
 - **chore** — the stylesheets near the six-kilobyte budget, cut. Fifteen dead

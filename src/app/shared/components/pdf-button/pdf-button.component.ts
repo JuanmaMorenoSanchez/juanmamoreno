@@ -36,7 +36,6 @@ export class PdfButtonComponent {
   // yet" (the spinner stays indeterminate for the quick single-page downloads).
   public progress = signal(0);
   public progressPercent = computed(() => Math.round(this.progress() * 100));
-  public isSingleArtPage = computed(() => this.nfts().length <= 1);
 
   public getTooltip(): string {
     switch (this.downloadFileType()) {
@@ -44,13 +43,11 @@ export class PdfButtonComponent {
         return this.translateService.instant('download.cv');
       case DOWNLOADTYPES.STATEMENT:
         return this.translateService.instant('download.statement');
+      case DOWNLOADTYPES.DOSSIER:
+        return this.translateService.instant('download.portfolio');
       case DOWNLOADTYPES.IMAGE:
       default:
-        if (this.isSingleArtPage()) {
-          return this.translateService.instant('download.sheet');
-        } else {
-          return this.translateService.instant('download.portfolio');
-        }
+        return this.translateService.instant('download.sheet');
     }
   }
 
@@ -64,18 +61,18 @@ export class PdfButtonComponent {
       case DOWNLOADTYPES.STATEMENT:
         this.saveDocument(this.pdfService.createStatement(), 'statement-juanmamoreno.pdf');
         break;
-      case DOWNLOADTYPES.IMAGE:
-      default:
-        if (this.isSingleArtPage()) {
-          const nft = this.nfts()[0];
-          this.saveDocument(
-            this.pdfService.createTechnicalSheet(nft),
-            `${nft.name || 'juanmamoreno'}.pdf`
-          );
-        } else {
-          void this.openDossierDialog();
-        }
+      case DOWNLOADTYPES.DOSSIER:
+        void this.openDossierDialog();
         break;
+      case DOWNLOADTYPES.IMAGE:
+      default: {
+        const nft = this.nfts()[0];
+        this.saveDocument(
+          this.pdfService.createTechnicalSheet(nft),
+          `${nft.name || 'juanmamoreno'}.pdf`
+        );
+        break;
+      }
     }
   }
 

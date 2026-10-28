@@ -2075,10 +2075,25 @@ painting at the end and choosing again takes it out and closes the gap. It is
 **one click**, on a button of its own, because choosing twenty out of a hundred
 and sixty-seven is the one thing here done in bulk — and opening a row is a
 different gesture, since that one leads to a permanent record being rewritten.
-*Proven by:* `catalogue-admin.component.spec.ts` "building a dossier" (5 tests,
-including "keeps the paintings in the order they were chosen" and "closes the
-gap when one is taken out") and its "opening one" (3 tests, which prove the two
-gestures stay apart)
+**One painting is enough.** It took two until 2.49.0, on the reasoning that a
+dossier of one is a technical sheet. They are not the same document: a sheet is
+the painting's own facts on one page, and a dossier of one is that painting with
+a cover, the statement, the biography and a way to get in touch — which is what
+a single piece offered to a gallery needs. He is the one who knows which he
+wants, so both are askable and neither is inferred.
+
+Which of the two the button makes is therefore **said rather than counted**. It
+used to read the length of the list — one painting meant a sheet — which is why
+a dossier of one could not be asked for at all, and why lowering the minimum on
+its own would have answered with a sheet. The catalogue's button names the
+dossier; the painting's own page names the sheet.
+*Proven by:* `catalogue-admin.component.spec.ts` "building a dossier" (6 tests,
+including "keeps the paintings in the order they were chosen", "closes the gap
+when one is taken out" and "generates from one painting") and its "opening one"
+(3 tests, which prove the two gestures stay apart); and
+`pdf-button.component.spec.ts` "which document" (3 tests, including "makes a
+dossier from one painting when a dossier is what was asked for" and "still makes
+a technical sheet from one painting on its own page")
 
 ### R119 — A dossier can carry prices, and no price is ever stored · met
 A switch in the dossier options, **off by default**, revealing two multipliers

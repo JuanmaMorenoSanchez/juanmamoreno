@@ -10,6 +10,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { VALIDTRAITS } from '@domain/artwork/artwork.constants';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { AvailabilityService } from '@shared/services/availability.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
@@ -332,8 +333,20 @@ export class CatalogueAdminComponent {
   protected readonly chosen = signal<Nft[]>([]);
   protected readonly chosenCount = computed(() => this.chosen().length);
 
-  /** A dossier needs at least two paintings; one is a technical sheet. */
-  protected readonly canGenerate = computed(() => this.chosenCount() > 1);
+  /**
+   * One painting is enough.
+   *
+   * It used to take two, on the reasoning that a dossier of one is a technical
+   * sheet — but they are not the same document and he is the one who knows
+   * which he wants. A sheet is the painting's own facts; a dossier of one is
+   * that painting with a cover, the statement, the biography and a way to get
+   * in touch, which is what a single piece offered to a gallery needs. The
+   * sheet is still on the painting's own page, unchanged.
+   */
+  protected readonly canGenerate = computed(() => this.chosenCount() > 0);
+
+  /** Chosen here means a dossier, however many were chosen. */
+  protected readonly dossierType = DOWNLOADTYPES.DOSSIER;
 
   protected trait(nft: Nft, key: VALIDTRAITS): string {
     return this.artworkService.getTraitValue(nft, key);
