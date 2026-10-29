@@ -1639,6 +1639,67 @@ describe('AtelierComponent', () => {
       });
     });
 
+    it('files it under what the painting is called, not the line under the preview', async () => {
+      // `chosen` carries the size and whether the original was reduced, which
+      // is the right line to read under a picture and the wrong name for an
+      // asset: every piece kept off a catalogue painting was called "Rockets
+      // win I · 1024×1086". Nobody noticed while there were a dozen; a night
+      // of cutting writes hundreds.
+      // jsdom loads no image, so `sizeOf` would neither succeed nor fail and
+      // the save would sit on its five-second guard. The size is not what is
+      // being tested.
+      class Blind {
+        onload: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        naturalWidth = 0;
+        naturalHeight = 0;
+        set src(_url: string) {
+          setTimeout(() => this.onerror?.(), 0);
+        }
+      }
+      // On the global rather than on `window`: the component resolves `Image`
+      // as a free identifier, and in this environment the two are not the
+      // same property.
+      vi.stubGlobal('Image', Blind);
+      onTestFinished(() => {
+        vi.unstubAllGlobals();
+      });
+
+      const { fixture, host, keptCalls } = build({
+        stillHere: [{ file: 'a1b2c3d4-the-girl.png', bytes: 2048, when: 1, media: 'image/png' }],
+      });
+      // The field is inside the Painting box, so the canvas needs one, and the
+      // box is only drawn once the engine's node types have landed.
+      await settle();
+      fixture.detectChanges();
+      guts(fixture).nodes.set([{ id: 'a', type: 'painting', x: 0, y: 0, params: {} }]);
+      fixture.detectChanges();
+
+      const field = at(host, 'token-id') as HTMLInputElement;
+      field.value = '195';
+      field.dispatchEvent(new Event('input'));
+      // Enter rather than waiting out the debounce: pressing it is the
+      // decision, and this test is not about the debounce.
+      field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await settle();
+      fixture.detectChanges();
+
+      at(host, 'look-on-disk')?.click();
+      await settle();
+      fixture.detectChanges();
+
+      expect(at(host, 'chosen')?.textContent).toContain('Rockets win I');
+      expect(at(host, 'recover-a1b2c3d4-the-girl.png')).not.toBeNull();
+      at(host, 'recover-a1b2c3d4-the-girl.png')?.click();
+      await settle();
+      await settle();
+      await settle();
+
+      expect(keptCalls).toHaveLength(1);
+      expect(keptCalls[0]['name']).toBe('Rockets win I');
+      expect(keptCalls[0]['kind']).toBe('layer-the-girl');
+    });
+
     it('says the folder is empty rather than showing an empty list', async () => {
       const { fixture, host } = build({ stillHere: [] });
 

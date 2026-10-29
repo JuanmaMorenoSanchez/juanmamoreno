@@ -5,6 +5,27 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.52.0
+
+- **feat** The catalogue cuts itself up overnight. From one in the morning,
+  unattended, the vision model names the separate things in each painting, the
+  segmenter cuts each of them out, and the atelier page keeps what survives, so
+  that a painting becomes a library of parts. A ledger beside the hand records
+  refusals as well as keeps, which is what lets the catalogue finish rather
+  than offering the same bad subject every night for ever.
+
+  Nothing looks at the cuts: the bars are coverage, size and the segmenter's
+  own confidence. Arithmetic does catch the failure that mattered, though —
+  asked for a woman, a man and a kiss on a canvas holding an embrace, the same
+  mask came back three times, all three plausible and all three the same
+  picture, so the engine now reports where each mask actually is and a cut in
+  the same place at the same size is refused as a copy of one already kept.
+
+  A kept layer carries its subject in its kind, where it used to be thrown away
+  at the moment of saving — five things cut out of one painting all arrived
+  called *layer* — and an asset is filed under the painting's name rather than
+  the line under the preview, which carried its pixel dimensions with it.
+
 ## 2.51.0
 
 - **feat** The style can be switched on and off beside the painters' names, and

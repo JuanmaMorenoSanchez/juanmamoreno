@@ -4630,6 +4630,68 @@ switched on says whose manner at the end; it is read again every time, so an
 edit lands on the next run rather than the next restart; emptying it puts the
 prompts back as they were; and it makes the folder it needs)
 
+### R205 — The catalogue cuts itself up overnight · met
+Each night from one o'clock, on this laptop and unattended, every painting in
+the catalogue is cut into the separate things in it and each of those is kept
+as its own asset — so that a painting is a library of parts rather than one
+flat picture. A painting whose things have all been decided is skipped, and the
+catalogue finishes.
+
+**What to cut comes from the model that can see the painting**, not from a word
+list. Grounding DINO does not answer whether a thing is in a canvas, only where
+it would be if it were: asked for a unicorn on a painting with none it returns
+the arms at 0.395 against 0.418 for a girl who is really there. A vocabulary
+run over the whole catalogue would therefore cut something for every word in
+it. So the local vision model names what it sees, three to six things, and the
+segmenter confirms a description instead of hunting a guess.
+
+**Nothing looks at the cuts.** That is a decision, taken knowing what it costs:
+the bars are coverage above 85% (the mask is the painting, not a thing in it),
+below half a percent (a speck), and SAM's own confidence under 0.7 (the box
+held two things). What survives is a region of plausible size that the
+segmenter was sure of, which is as far as arithmetic goes.
+
+**Arithmetic does catch one thing an eye would.** Asked for "a woman in green",
+"a man in red" and "a kiss" on a canvas holding an embrace, the detector
+returned the same box three times and the segmenter the same mask — coverage
+0.482, 0.484, 0.485 — each plausible, each passing every bar, and all three the
+same picture. So the engine reports where each mask actually is, and a cut that
+sits in nearly the same place at nearly the same size as one already kept is
+refused as a copy of it. A kiss is not a thing with edges.
+
+**The ledger remembers refusals, not only keeps.** A record of successes looks
+sufficient and is not: a painting with one subject that cuts badly is first in
+the queue again every night for ever, and the catalogue never empties.
+
+**Only the browser can save.** The engine cannot reach the bucket — keeping is
+a press in the browser, through the browser's own credential — so the cut is
+done over plain http, where it is fast and needs nobody, and the keeping goes
+through the real page and the real button, with its own renewal of an hour-old
+token. The runner reads the sign-in's expiry and never the token itself.
+
+**And a kept layer carries what it is.** The subject was in the engine's file
+name and thrown away at the moment of saving, so a painting cut into five
+things arrived as five assets all called "layer" — and *which of this
+painting's things are already cut* had no answer when every answer was the same
+word.
+*Proven by:* `night.test.mjs` (34 tests across "what the night keeps", "one cut
+with two names", "everything one painting decided", "what the night does next",
+"the ledger on disk" and "what the painting said is in it" — including that a refused subject is never offered
+again, that a painting whose every subject was refused counts as done, that a
+half-written ledger reads as a machine that has never run, and that the three
+names for one embrace are caught by their boxes, and that every subject asked
+about comes back either kept or refused); `kind-of.spec.ts` (7 tests:
+the phrase survives into the kind, the run it came from does not, a background
+stays a background); `atelier.component.spec.ts` "files it under what the
+painting is called, not the line under the preview"; and `test_reduced.py`
+"ReducedTest" (5 tests: the shorter side comes down to 2500, the shape is kept,
+a small copy is never enlarged, and zero means cut what was sent)
+*Checked by:* one painting through the whole pipeline against the real engine —
+"Cuando éramos felices" described as a woman in green, a man in red, a blue
+cup, a white railing, a tree shadow and a kiss; the railing refused at iou
+0.48, the shadow at 85.6% of the canvas, the man and the kiss as copies of the
+woman; three layers cut at 2500×2500.
+
 ### R204 — A clip is photographic unless a manner is asked for · met
 A switch beside the painters' names, **off until he presses it**, and a clip
 asked for a manner stops being told not to be a painting.

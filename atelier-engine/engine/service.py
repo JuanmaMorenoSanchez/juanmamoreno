@@ -34,7 +34,7 @@ from PIL import Image
 
 from . import house
 from .catalogue import CATALOGUE
-from .images import bounds, coverage, remainder, to_layer
+from .images import bounds, coverage, reduced, remainder, to_layer
 from .inpaint import fill
 from . import edit, video
 from .jobs import Job, Runner, stopping
@@ -186,11 +186,17 @@ def find_things(image: UploadFile, phrase: str = Form(...)) -> JSONResponse:
 
 @app.post("/cut")
 def cut(
-    image: UploadFile, labels: str = Form(...), fill_behind: bool = Form(False)
+    image: UploadFile,
+    labels: str = Form(...),
+    fill_behind: bool = Form(False),
+    # Zero means cut what was sent, which is what every caller before the night
+    # did: the page reduces in the browser before it uploads anything.
+    shortest: int = Form(0),
 ) -> JSONResponse:
     """Name things, get layers, plus the background they were lifted off.
 
-    `labels` is one phrase per line.
+    `labels` is one phrase per line. `shortest` reduces the painting before
+    anything looks at it, for a caller that has no canvas of its own.
 
     **A layer coming back is not evidence the thing is in the painting.** Asked
     for "a unicorn" on a canvas with none, this returns the arms and the
@@ -200,15 +206,17 @@ def cut(
     the coverage rather than a verdict: the page shows the cut, and he decides.
     """
     with Busy():
-        return _cut(image, labels, fill_behind)
+        return _cut(image, labels, fill_behind, shortest)
 
 
-def _cut(image: UploadFile, labels: str, fill_behind: bool) -> JSONResponse:
+def _cut(image: UploadFile, labels: str, fill_behind: bool, shortest: int = 0) -> JSONResponse:
     wanted = [line.strip() for line in labels.splitlines() if line.strip()]
     if not wanted:
         raise HTTPException(status_code=400, detail="name at least one thing to cut")
 
-    painting = _read(image)
+    # Reduced before anything looks at it, so every layer and the background
+    # are the same size as each other and as the copy they were cut from.
+    painting = reduced(_read(image), shortest)
     batch = uuid.uuid4().hex[:8]
     OUT.mkdir(exist_ok=True)
     started = time.perf_counter()
@@ -227,7 +235,8 @@ def _cut(image: UploadFile, labels: str, fill_behind: bool) -> JSONResponse:
     masks = []
     for phrase, hit in boxes.items():
         mask, iou = isolate(registry, painting, box=hit.box)
-        if bounds(mask) is None:
+        at = bounds(mask)
+        if at is None:
             missed.append(phrase)
             continue
         name = f"{batch}-{phrase.replace(' ', '-')}.png"
@@ -240,6 +249,13 @@ def _cut(image: UploadFile, labels: str, fill_behind: bool) -> JSONResponse:
                 "score": round(hit.score, 4),
                 "iou": round(iou, 4),
                 "coverage": round(coverage(mask), 4),
+                # Where the mask actually is. Reported rather than used,
+                # because two phrases that found the same thing and two
+                # phrases that found two things are indistinguishable from
+                # the scores alone: asked for the woman, the man and the kiss,
+                # one canvas returned the same half of itself three times,
+                # all three plausible and all three the same picture.
+                "box": list(at),
             }
         )
 

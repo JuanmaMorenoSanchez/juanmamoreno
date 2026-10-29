@@ -9,6 +9,8 @@ enough that the join is not a line, not so much that the thing goes soft.
 
 from __future__ import annotations
 
+from math import ceil
+
 import numpy as np
 from PIL import Image, ImageFilter
 
@@ -19,6 +21,39 @@ Small on purpose. At 1.8 the cut reads as painted rather than trimmed; by 4 it
 reads as a sticker with a glow. The number was chosen by looking, which is the
 only way to choose it.
 """
+
+
+#: The shorter side of the medium download, which is the largest copy worth cutting.
+#:
+#: The same 2500 the site already offers a buyer and the same number the
+#: browser reduces to for a high-quality run, so "high" here and "high" on the
+#: shelf mean one thing. Above it a model spends its time on canvas weave.
+MEDIUM_SHORTEST = 2500
+
+
+def reduced(painting: Image.Image, shortest: int = MEDIUM_SHORTEST) -> Image.Image:
+    """The painting with its shorter side brought down to `shortest`.
+
+    **Here because the night has no canvas.** A run started from the page
+    fetches the original and reduces it in the browser; a run started without
+    one fetches it in node, where there is nothing to resize with — and sending
+    the original uncut means forty megabytes of weave through a segmenter that
+    will resize it anyway, badly and at full size.
+
+    Never enlarges: inventing pixels would meet the number and not the reason
+    for it. Rounds up, so no side lands on 2499 and gets filed as the small
+    copy.
+    """
+    if shortest <= 0:
+        return painting
+    side = min(painting.width, painting.height)
+    if side <= shortest:
+        return painting
+    scale = shortest / side
+    return painting.resize(
+        (ceil(painting.width * scale), ceil(painting.height * scale)),
+        Image.LANCZOS,
+    )
 
 
 def to_alpha(mask: np.ndarray) -> Image.Image:

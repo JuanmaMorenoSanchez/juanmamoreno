@@ -14,6 +14,7 @@ import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
 import { KeptService, type KeptPiece } from './kept.service';
+import { kindOf } from './kind-of';
 import { clipSize } from './last-frame';
 import { ParallaxPreviewComponent } from './parallax-preview.component';
 import { SketchPreviewComponent } from './sketch-preview.component';
@@ -114,6 +115,16 @@ export class AtelierComponent implements OnDestroy {
   protected readonly preview = signal<string | null>(null);
   /** What the chosen painting is, for the line under the preview. */
   protected readonly chosen = signal<string | null>(null);
+  /**
+   * What the painting is called, without the line's arithmetic.
+   *
+   * `chosen` is written for the preview and carries the size and whether the
+   * original was reduced — which is the right line to read under a picture and
+   * the wrong name to file an asset under. Every piece kept off a catalogue
+   * painting was called "Painting 202 · 2500×1875 · reduced to the medium
+   * size", which nobody noticed while there were a dozen of them.
+   */
+  protected readonly called = signal<string | null>(null);
   protected readonly tokenId = signal('');
 
   /**
@@ -331,7 +342,7 @@ export class AtelierComponent implements OnDestroy {
       const size = film ?? (clip ? await clipSize(got) : await this.sizeOf(got));
 
       await this.kept.keep(got, {
-        name: this.chosen() ?? file,
+        name: this.called() ?? this.chosen() ?? file,
         kind: clip ? 'clip' : kindOf(file),
         media: clip ? 'video/mp4' : 'image/png',
         tokenId: this.tokenId().trim() || undefined,
@@ -587,7 +598,7 @@ export class AtelierComponent implements OnDestroy {
       const got = await this.catalogueImages.byId(token, wanted);
       const size = got.width ? ` · ${got.width}×${got.height}` : '';
       const note = got.reduced ? ' · reduced to the medium size' : '';
-      this.take(got.blob, `${got.name}${size}${note}`);
+      this.take(got.blob, `${got.name}${size}${note}`, got.name);
       // Remembered so the Run button can offer to go and get the big copy,
       // and so that a file chosen by hand does not pretend it can.
       this.fromCatalogue.set(token);
@@ -820,12 +831,15 @@ export class AtelierComponent implements OnDestroy {
     void media?.requestFullscreen?.().catch(() => undefined);
   }
 
-  private take(painting: Blob | null, called: string | null): void {
+  private take(painting: Blob | null, called: string | null, named: string | null = null): void {
     const old = this.preview();
     if (old) URL.revokeObjectURL(old);
 
     this.painting.set(painting);
     this.chosen.set(called);
+    // Only a painting fetched from the catalogue has a name of its own; a file
+    // chosen by hand is named by its line, which is its file name.
+    this.called.set(named);
     this.preview.set(painting ? URL.createObjectURL(painting) : null);
     this.result.set(null);
     this.failure.set(null);
@@ -1167,13 +1181,4 @@ export class AtelierComponent implements OnDestroy {
   protected layerUrl(file: string): string {
     return this.engine.layerUrl(file);
   }
-}
-
-/** What a layer is, read from the name the engine gave it. */
-function kindOf(file: string): string {
-  if (file.includes('background-filled')) return 'background';
-  if (file.includes('background')) return 'background';
-  if (file.includes('depth')) return 'depth';
-  if (file.includes('edit')) return 'edit';
-  return 'layer';
 }

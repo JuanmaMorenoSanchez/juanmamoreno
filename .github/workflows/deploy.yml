@@ -59,6 +59,12 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      # The night's own decisions: what it keeps, and what it never offers
+      # itself again. They run on one laptop at three in the morning with
+      # nobody watching, so this is the only place anything checks them.
+      - name: The night's decisions
+        run: pnpm run test:night
+
       # Prerenders 388 pages, writes the sitemap, then verifies every page has
       # its own canonical, title, hreflang pair and content.
       - name: Build and verify
