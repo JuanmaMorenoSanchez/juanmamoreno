@@ -460,11 +460,19 @@ def hand() -> JSONResponse:
     that has never been told answers with an empty string, which is also what
     a fresh clone does.
     """
-    return JSONResponse({"hand": house.hand(), "known": house.verdicts()})
+    return JSONResponse(
+        {"hand": house.hand(), "known": house.verdicts(), "using": house.using()}
+    )
 
 
 @app.put("/hand")
-def set_hand(hand: str = Body("", embed=True)) -> JSONResponse:
+def set_hand(
+    hand: str = Body("", embed=True),
+    # Optional, and only written when it is given: the names and the switch are
+    # saved by two different gestures on the page, and neither should reset the
+    # other by being left out.
+    using: bool | None = Body(None, embed=True),
+) -> JSONResponse:
     """Writes it down, and says which of the names mean anything.
 
     Editing a file on disk to change a prompt is a thing nobody does twice.
@@ -477,6 +485,8 @@ def set_hand(hand: str = Body("", embed=True)) -> JSONResponse:
     verdicts, which is free, and refuses if any of them is a no.
     """
     written = house.set_hand(hand)
+    if using is not None:
+        house.set_using(using)
 
     decided = house.verdicts()
     for name in house.names(written):
@@ -487,7 +497,9 @@ def set_hand(hand: str = Body("", embed=True)) -> JSONResponse:
         except Exception:  # noqa: BLE001 — a name nobody could ask about stays unjudged
             break
 
-    return JSONResponse({"hand": written, "known": house.verdicts()})
+    return JSONResponse(
+        {"hand": written, "known": house.verdicts(), "using": house.using()}
+    )
 
 
 @app.get("/flows")

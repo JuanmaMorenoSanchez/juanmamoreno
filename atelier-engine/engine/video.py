@@ -640,6 +640,49 @@ def decoded(pipeline, latents):
         return pipeline.video_processor.postprocess_video(video, output_type="np")[0]
 
 
+#: What a clip is told not to be, whichever way the style switch is set.
+#:
+#: Wan's own recommendation, and it earns its place: without it the model
+#: drifts towards the over-saturated, over-sharpened look that makes a painting
+#: read as a render.
+NOT_IN_A_CLIP = (
+    "bright colours, overexposed, static, blurred detail, subtitles",
+    "still, overall grey, worst quality, low quality, JPEG artefacts, ugly, "
+    "deformed, extra fingers, poorly drawn hands, poorly drawn face, "
+    "malformed, disfigured, fused fingers, motionless, cluttered background, "
+    "three legs, walking backwards",
+)
+
+#: The four words that forbid paint itself, asked for only when nothing else is.
+#:
+#: **This is why a clip asked for a painter's manner came back photographic.**
+#: They are in Wan's recommended negative and they earn their place when
+#: nothing has been asked of the manner: left alone the model imitates
+#: brushwork it cannot do, and invented impasto is worse than a clip that
+#: simply moves what it was given.
+#:
+#: But a hand is a request for exactly the thing these forbid. With
+#: "In the manner of Goya, Neo Rauch" in the positive and "style, artwork,
+#: painting, picture" in the negative, the two cancel — and the negative wins,
+#: being longer and more specific — so the names cost the prompt and bought
+#: nothing. They are dropped for as long as a manner is asked for.
+NOT_A_PAINTING = "style, artwork, painting, picture"
+
+
+def unwanted(styling: bool) -> str:
+    """The negative prompt for a clip, with or without the words that forbid paint.
+
+    `styling` is whether a hand has been asked for. Pure, and separate from
+    the generating, so that what the model is told can be read in a test
+    rather than inferred from a clip four hours later.
+    """
+    parts = [NOT_IN_A_CLIP[0]]
+    if not styling:
+        parts.append(NOT_A_PAINTING)
+    parts.append(NOT_IN_A_CLIP[1])
+    return house.never(", ".join(parts))
+
+
 def animate(
     painting: Image.Image,
     prompt: str,
@@ -708,19 +751,7 @@ def animate(
             raise StoppedEarly("stopped between steps")
         return kwargs
 
-    # Wan's own recommendation, and it earns its place: without it the model
-    # drifts towards the over-saturated, over-sharpened look that makes a
-    # painting read as a render. "painting" and "artwork" are in here on
-    # purpose — they push it away from imitating brushwork it cannot do, and
-    # towards moving what it was given.
-    negative = house.never(
-        "bright colours, overexposed, static, blurred detail, subtitles, "
-        "style, artwork, painting, picture, still, overall grey, worst quality, "
-        "low quality, JPEG artefacts, ugly, deformed, extra fingers, "
-        "poorly drawn hands, poorly drawn face, malformed, disfigured, "
-        "fused fingers, motionless, cluttered background, three legs, "
-        "walking backwards"
-    )
+    negative = unwanted(bool(house.applied()))
     # Encoded here rather than by the pipeline, which cannot do it without
     # `ftfy`. See `embed`.
     said = embed(pipeline, [house.asked(prompt), negative]).to(

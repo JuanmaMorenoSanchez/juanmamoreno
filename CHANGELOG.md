@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.51.0
+
+- **feat** The style can be switched on and off beside the painters' names, and
+  a clip asked for a manner stops being told not to be a painting. The names
+  alone never worked: the clip's negative said *style, artwork, painting,
+  picture* in every clip, so the two cancelled and the output was photographic.
+  Off is the default and makes byte-for-byte the clip it made before.
+
 ## 2.50.0
 
 - **feat** The contact page of a dossier can carry a name other than his own.

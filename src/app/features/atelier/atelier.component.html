@@ -452,6 +452,24 @@
     >
       {{ handSaving() ? 'Saving…' : handSaved() ? 'Saved' : 'Save' }}
     </button>
+    <!-- The switch, which is the whole difference between a photographic clip
+         and a clip in somebody's manner. Saved on the press: it is one bit and
+         there is nothing to type. -->
+    <button
+      type="button"
+      class="atelier-minor"
+      [attr.aria-pressed]="styling()"
+      [disabled]="handSaving()"
+      (click)="toggleStyling()"
+      [matTooltip]="
+        styling()
+          ? 'a clip is asked for these painters’ manner — press for photographic'
+          : 'photographic: the names are kept, and not asked for'
+      "
+      data-testid="hand-using"
+    >
+      {{ styling() ? 'Style: on' : 'Style: off' }}
+    </button>
     @if (handNames().length) {
       <!-- A mark against each name. Five of the seven first written here meant
            nothing to the model, and nothing on the page said so: a name it has
@@ -479,9 +497,14 @@
       </span>
     }
     <p class="atelier-caveat">
-      Added to the end of every image and video prompt as the manner of the thing. Kept on this
-      machine only. Every picture is also told not to be cartoonish, an illustration or a comic. A
-      name the model has never read about is no style at all — it has to have read the painter.
+      Switched off, a clip is photographic and these names are only kept. Switched on, they go at
+      the end of a clip's prompt as its manner — the colour, the brushwork, the composition, the
+      mood, never its subject — and the four words that forbid paint come out of the clip's
+      negative, which is what lets a manner through at all. Clips only: a still edit takes its
+      manner from In my style, which shows the model his own paintings rather than naming anybody.
+      Kept on this machine only. Every picture is also told not to be cartoonish, an illustration
+      or a comic. A name the model has never read about is no style at all — it has to have read
+      the painter.
     </p>
   </section>
 

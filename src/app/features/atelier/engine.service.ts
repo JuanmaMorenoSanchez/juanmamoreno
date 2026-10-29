@@ -169,6 +169,14 @@ export interface Hand {
   hand: string;
   /** By name: true if the model could place them, false if it could not. */
   known: Record<string, boolean>;
+  /**
+   * Whether the names are being asked for at all.
+   *
+   * Off is the engine's own default and the state every engine behaved as
+   * before the switch existed. The names outlive it being turned off, which is
+   * the point of its being a switch rather than an empty field.
+   */
+  using: boolean;
 }
 
 /**
@@ -405,11 +413,11 @@ export class AtelierEngineService {
   async hand(): Promise<Hand> {
     try {
       const response = await fetch(`${ENGINE}/hand`, toLocal({ cache: 'no-store' }));
-      if (!response.ok) return { hand: '', known: {} };
+      if (!response.ok) return { hand: '', known: {}, using: false };
       const said = (await response.json()) as Partial<Hand>;
-      return { hand: said.hand ?? '', known: said.known ?? {} };
+      return { hand: said.hand ?? '', known: said.known ?? {}, using: said.using ?? false };
     } catch {
-      return { hand: '', known: {} };
+      return { hand: '', known: {}, using: false };
     }
   }
 
@@ -420,18 +428,21 @@ export class AtelierEngineService {
    * model load, and the moment to spend that is while he is typing names and
    * waiting on the answer, not half an hour into an edit.
    */
-  async setHand(hand: string): Promise<Hand> {
+  async setHand(hand: string, using?: boolean): Promise<Hand> {
     const response = await fetch(
       `${ENGINE}/hand`,
       toLocal({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hand }),
+        // The switch is left out rather than guessed when this is a save of
+        // the names alone: the engine only writes what it is given, so saving
+        // names cannot turn the style off underneath him.
+        body: JSON.stringify(using === undefined ? { hand } : { hand, using }),
       })
     );
     if (!response.ok) throw new Error(await complaint(response));
     const said = (await response.json()) as Partial<Hand>;
-    return { hand: said.hand ?? '', known: said.known ?? {} };
+    return { hand: said.hand ?? '', known: said.known ?? {}, using: said.using ?? false };
   }
 
   /**

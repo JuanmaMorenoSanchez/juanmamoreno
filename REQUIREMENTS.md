@@ -4620,12 +4620,63 @@ nothing at all.
 **And it is editable from the page**, over `GET /hand` and `PUT /hand`,
 because editing a file on disk to change a prompt is a thing nobody does
 twice.
-*Proven by:* `test_house.py` (10 tests: the negative says those three things
+
+**The hand is switched on, not merely written** — see [R204](#r204), which is
+the requirement that makes it do anything.
+*Proven by:* `test_house.py` (18 tests: the negative says those three things
 and carries a model's own as well without a dangling comma; a hand that was
-never written is nothing and leaves a prompt alone; a hand that was written
-says whose manner at the end; it is read again every time, so an edit lands on
-the next run rather than the next restart; emptying it puts the prompts back
-as they were; and it makes the folder it needs)
+never written is nothing and leaves a prompt alone; a hand that was written and
+switched on says whose manner at the end; it is read again every time, so an
+edit lands on the next run rather than the next restart; emptying it puts the
+prompts back as they were; and it makes the folder it needs)
+
+### R204 — A clip is photographic unless a manner is asked for · met
+A switch beside the painters' names, **off until he presses it**, and a clip
+asked for a manner stops being told not to be a painting.
+
+It exists because a clip asked for "Goya, Neo Rauch" came back photographic,
+and nothing was wrong with the hand: the names were in the positive prompt
+exactly as written. They were cancelled by the clip's own negative, which said
+*style, artwork, painting, picture* in **every** clip whatever had been asked
+for. Longer and more specific than the manner sentence, so the negative won and
+the paint lost — the names cost the prompt and bought nothing, which is the same
+failure the unreadable-name check already exists to prevent, arriving by a
+different road.
+
+Those four words earn their place when nothing has been asked of the manner:
+left alone the model imitates brushwork it cannot do, and invented impasto is
+worse than a clip that simply moves what it was given. So they are **dropped
+for exactly as long as a manner is asked for**, and a clip made with the switch
+off has byte-for-byte the negative every clip had before the switch existed.
+
+**A switch and not an empty field.** The names and whether to use them are two
+different questions — he wants photographic clips and clips in somebody's
+manner — and emptying the field to get the first loses the names. The switch has
+a file of its own in `local/`, is written the moment it is pressed, and the
+page's Save sends no switch at all, so saving a name cannot turn the style off
+underneath him: that is a mistake which costs four hours of generating to
+notice.
+
+**The manner names what a style is.** Not "in the manner of Goya", which reads
+as licence to paint Goya's subjects, but his colour, his brushwork, his
+composition and his mood. A style decides how the thing looks and never what is
+in it.
+
+**A hand switched off refuses nothing.** The unreadable-name check stops a run
+before it starts, which is right when the names are in the prompt and wrong
+when they are not.
+*Proven by:* `test_unwanted.py` "UnwantedTest" (6 tests: the four words are
+there when no manner was asked for and gone when one was; everything that is
+not about paint survives either way; an illustration is still refused either
+way; and the style-off negative is asserted as the whole string, so a clip made
+with the switch off is the clip this made before); `test_house.py` "SwitchTest"
+(8 tests: off on an engine never told; names written but not switched on reach
+no prompt; switched on they do; switching off keeps the names; the manner names
+the colour, the brushwork, the composition and the mood; and a hand switched off
+refuses nothing while a hand switched on still refuses an unreadable name);
+`test_hand_route.py` "HandRouteTest" (6 tests, of which the one that matters is
+that a save of the names alone leaves the switch where it was); and
+`atelier.component.spec.ts` "the style switch" (5 tests)
 
 ### R174 — What the atelier makes is the next thing it works from · met
 A kept piece has a **Work from this** button, which makes it the painting

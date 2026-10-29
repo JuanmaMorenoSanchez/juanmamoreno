@@ -12,6 +12,13 @@ towards is his business and nobody else's, so it lives in `local/`, which git
 ignores, and the repository ships without it. An engine with no such file
 behaves exactly as it did before: `hand()` answers an empty string and the
 prompts are the prompts.
+
+**The hand is switched on, not merely written.** The names and whether to use
+them are two different questions: a photographic clip and a clip in somebody's
+manner are both things he wants, and emptying the field to get the first one
+loses the names. So the switch has a file of its own and is **off until he
+turns it on** — which is the state every engine before this one behaved as,
+whatever was written in the field.
 """
 
 from __future__ import annotations
@@ -25,6 +32,8 @@ from .nodes import GraphError
 HERE = Path(__file__).resolve().parent.parent
 LOCAL = HERE / "local"
 HAND = LOCAL / "style.txt"
+#: Whether the hand is being used. Beside it, and equally not in git.
+USING = LOCAL / "style-on.txt"
 
 #: What no picture here is meant to look like.
 #:
@@ -46,6 +55,35 @@ def hand() -> str:
         return ""
 
 
+def using() -> bool:
+    """Whether the names in the hand are being asked for at all.
+
+    Off unless the file says so, which includes an engine that has never been
+    told. Written down rather than inferred from the field being filled in:
+    the names are worth keeping while the clip they are not wanted on is made.
+    """
+    try:
+        return USING.read_text(encoding="utf-8").strip().lower() == "on"
+    except (OSError, UnicodeDecodeError):
+        return False
+
+
+def set_using(on: bool) -> bool:
+    """Turns it on or off, and answers with where it now stands."""
+    LOCAL.mkdir(parents=True, exist_ok=True)
+    USING.write_text("on" if on else "off", encoding="utf-8", newline="\n")
+    return using()
+
+
+def applied() -> str:
+    """The names, if they are switched on, and nothing if they are not.
+
+    The one place the two files are read together, so that nothing else has to
+    remember that a written hand and a used hand are different things.
+    """
+    return hand() if using() else ""
+
+
 def set_hand(saying: str) -> str:
     """Writes it down, and answers with what is now there.
 
@@ -57,20 +95,29 @@ def set_hand(saying: str) -> str:
     return hand()
 
 
+#: How the hand is put, which is as a manner and never as a subject.
+#:
+#: The four things named one by one are what a style is here: the colour, the
+#: handling of paint, the composition, the mood. "In the manner of Goya" on
+#: its own reads to the model as licence to paint Goya's subjects, and what is
+#: wanted is his light on whatever is already in the frame. A style decides how
+#: the thing looks, never what is in it.
+MANNER = "In the manner of {who} — their colour, their brushwork, their composition, their mood."
+
+
 def asked(prompt: str) -> str:
-    """A prompt with the hand added, if there is one.
+    """A prompt with the hand added, if there is one and it is switched on.
 
     Added at the end and named for what it is — the manner of the thing, not
     its subject — so that it colours the picture rather than becoming it. A
     prompt that starts with painters' names is a prompt about painters.
     """
     wanted = (prompt or "").strip()
-    manner = hand()
+    manner = applied()
     if not manner:
         return wanted
-    if not wanted:
-        return f"In the manner of {manner}."
-    return f"{wanted} In the manner of {manner}."
+    saying = MANNER.format(who=manner)
+    return f"{wanted} {saying}" if wanted else saying
 
 
 def never(also: str = "") -> str:
@@ -168,8 +215,11 @@ def refuse_unknown() -> None:
 
     Only names already judged and found wanting. A name nobody has asked
     about is let through — refusing a run over a question never put is worse
-    than the run.
+    than the run. **A hand that is switched off refuses nothing**: the names
+    are not in the prompt, so they cannot spend it.
     """
+    if not using():
+        return
     missing = unknown()
     if not missing:
         return

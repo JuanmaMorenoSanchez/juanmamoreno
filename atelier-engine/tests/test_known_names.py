@@ -63,6 +63,12 @@ class JudgingTest(unittest.TestCase):
 
 
 class RefusingTest(unittest.TestCase):
+    """What stops a run before it starts, when the hand is switched on.
+
+    Switched on throughout: a hand that is off is not in the prompt, so it
+    refuses nothing, and that is `SwitchTest` in `test_house`.
+    """
+
     def setUp(self) -> None:
         room = TemporaryDirectory()
         self.addCleanup(room.cleanup)
@@ -71,10 +77,12 @@ class RefusingTest(unittest.TestCase):
             house,
             LOCAL=local,
             HAND=local / "style.txt",
+            USING=local / "style-on.txt",
             JUDGED=local / "hand-known.json",
         )
         patched.start()
         self.addCleanup(patched.stop)
+        house.set_using(True)
 
     def test_a_hand_of_painters_it_knows_runs(self) -> None:
         house.set_hand("Goya, Rembrandt")

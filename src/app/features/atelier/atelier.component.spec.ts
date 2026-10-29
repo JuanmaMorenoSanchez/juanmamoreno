@@ -112,6 +112,7 @@ describe('AtelierComponent', () => {
       flows?: FlowDef[];
       hand?: string;
       known?: Record<string, boolean>;
+      using?: boolean;
       run?: () => Promise<GraphRun>;
       states?: JobState[];
       kept?: unknown[];
@@ -130,6 +131,8 @@ describe('AtelierComponent', () => {
         : { device: 'cuda', resident: null, vramFreeMib: 7096, vramTotalMib: 8187 }
     );
     const sent: unknown[] = [];
+    /** Every value the switch was written with, in order. */
+    const switched: boolean[] = [];
     const switching = signal(options.switching ?? 'idle');
     const did: string[] = [];
     const keptCalls: Record<string, unknown>[] = [];
@@ -256,9 +259,23 @@ describe('AtelierComponent', () => {
             flows: () => Promise.resolve(options.flows ?? []),
             // The painters, which this repository does not have: the engine
             // keeps them in a file git ignores, so the stub has none either.
-            hand: () => Promise.resolve({ hand: options.hand ?? '', known: options.known ?? {} }),
-            setHand: (saying: string) =>
-              Promise.resolve({ hand: saying.trim(), known: options.known ?? {} }),
+            hand: () =>
+              Promise.resolve({
+                hand: options.hand ?? '',
+                known: options.known ?? {},
+                using: options.using ?? false,
+              }),
+            // The engine writes the switch only when it is given one, so the
+            // stub remembers it the same way: a save of the names alone must
+            // not turn the style off underneath him.
+            setHand: (saying: string, using?: boolean) => {
+              if (using !== undefined) switched.push(using);
+              return Promise.resolve({
+                hand: saying.trim(),
+                known: options.known ?? {},
+                using: using ?? switched[switched.length - 1] ?? options.using ?? false,
+              });
+            },
             startGraph: (_p: Blob, graph: unknown) => {
               sent.push(graph);
               // A rejecting `run` now stands for the engine refusing the graph.
@@ -297,6 +314,7 @@ describe('AtelierComponent', () => {
       downloaded,
       joined,
       framed,
+      switched,
     };
   };
 
@@ -1054,6 +1072,80 @@ describe('AtelierComponent', () => {
       fixture.detectChanges();
 
       expect(at(host, 'hand-names')).toBeNull();
+    });
+  });
+
+  /**
+   * The switch, which is what makes a clip pictorial rather than photographic.
+   *
+   * The names alone never did it: they went into the positive prompt while the
+   * clip's own negative forbade *style, artwork, painting, picture*, so the
+   * two cancelled. Switching the style on is what takes those four words out.
+   */
+  describe('the style switch', () => {
+    it('is off on an engine that has not been told otherwise', async () => {
+      const { fixture, host } = build({ hand: 'Goya, Neo Rauch' });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      const toggle = at(host, 'hand-using');
+      expect(toggle?.textContent).toContain('Style: off');
+      expect(toggle?.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('shows the style on when the engine says it is', async () => {
+      const { fixture, host } = build({ hand: 'Goya', using: true });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      const toggle = at(host, 'hand-using');
+      expect(toggle?.textContent).toContain('Style: on');
+      expect(toggle?.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('turns it on when pressed, and writes it down at once', async () => {
+      const { fixture, host, switched } = build({ hand: 'Goya' });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      (at(host, 'hand-using') as HTMLButtonElement).click();
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      // Saved on the press rather than waiting for Save: it is one bit and
+      // there is nothing to type.
+      expect(switched).toEqual([true]);
+      expect(at(host, 'hand-using')?.textContent).toContain('Style: on');
+    });
+
+    it('turns it off again, and the names are still there', async () => {
+      const { fixture, host, switched } = build({ hand: 'Goya, Neo Rauch', using: true });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      (at(host, 'hand-using') as HTMLButtonElement).click();
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      expect(switched).toEqual([false]);
+      expect(at(host, 'hand-using')?.textContent).toContain('Style: off');
+      // The whole point of a switch rather than an empty field.
+      expect(at(host, 'hand-names')?.textContent).toContain('Goya');
+    });
+
+    it('does not touch the switch when only the names are saved', async () => {
+      const { fixture, host, switched } = build({ hand: 'Goya', using: true });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      (at(host, 'hand-save') as HTMLButtonElement).click();
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      // Nothing written, so the engine keeps what it had. A save that turned
+      // the style off would cost four hours of generating to notice.
+      expect(switched).toEqual([]);
+      expect(at(host, 'hand-using')?.textContent).toContain('Style: on');
     });
   });
 

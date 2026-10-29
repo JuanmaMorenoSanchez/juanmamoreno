@@ -224,11 +224,23 @@ export class AtelierComponent implements OnDestroy {
   protected readonly handSaving = signal(false);
   protected readonly handSaved = signal(false);
 
+  /**
+   * Whether the names are being asked for at all.
+   *
+   * Off is the engine's default, and off is what every clip made before this
+   * switch existed actually looked like: the names went into the prompt while
+   * the clip's own negative forbade *style, artwork, painting, picture*, so
+   * the two cancelled and the paint lost. Turning it on takes those four words
+   * out of the negative, which is what lets a manner through.
+   */
+  protected readonly styling = signal(false);
+
   constructor() {
     void this.wake();
     void this.engine.hand().then((said) => {
       this.hand.set(said.hand);
       this.known.set(said.known);
+      this.styling.set(said.using);
     });
     this.recall();
     void this.kept.refresh();
@@ -254,6 +266,32 @@ export class AtelierComponent implements OnDestroy {
       const said = await this.engine.setHand(this.hand());
       this.hand.set(said.hand);
       this.known.set(said.known);
+      this.styling.set(said.using);
+      this.handSaved.set(true);
+    } catch (error) {
+      this.failure.set(error instanceof Error ? error.message : 'that could not be written');
+    } finally {
+      this.handSaving.set(false);
+    }
+  }
+
+  /**
+   * Turns the style on or off, and writes it down at once.
+   *
+   * Saved on the press rather than waiting for Save: it is one bit, there is
+   * nothing to type, and a switch that needed confirming elsewhere would be
+   * the one control here that did not do what it said when pressed.
+   */
+  protected async toggleStyling(): Promise<void> {
+    if (this.handSaving()) return;
+    const wanted = !this.styling();
+    this.handSaving.set(true);
+    this.failure.set(null);
+    try {
+      const said = await this.engine.setHand(this.hand(), wanted);
+      this.hand.set(said.hand);
+      this.known.set(said.known);
+      this.styling.set(said.using);
       this.handSaved.set(true);
     } catch (error) {
       this.failure.set(error instanceof Error ? error.message : 'that could not be written');
