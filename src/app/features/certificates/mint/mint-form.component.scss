@@ -1,16 +1,5 @@
 @use '../../../../styles/controls';
 
-.mint {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(128, 128, 128, 0.3);
-}
-
-.mint-heading {
-  margin: 0 0 0.35rem;
-  font-size: 1.25rem;
-}
-
 .mint-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));

@@ -2,19 +2,6 @@
 
 @use '../../../../styles/tokens';
 
-.prep {
-  margin-top: tokens.$spacing-xl;
-}
-
-.prep-heading {
-  margin: 0 0 tokens.$spacing-sm;
-  font-size: 1.1rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--catalog-ink);
-}
-
 // The three blocks of running prose, set to the same measure and colour.
 .prep-lead,
 .prep-note,

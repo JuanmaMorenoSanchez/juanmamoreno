@@ -233,6 +233,33 @@ p {
   color: var(--catalog-soft);
 }
 
+/* The sections of a long page, and the headings that name them.
+   Here rather than in each component because they were in each component:
+   the certificates page is the queue, the photograph and the form stacked,
+   each arriving from a page of its own carrying its own idea of a heading —
+   1.1rem uppercase, 1.25rem sentence case, and whatever size a browser gives
+   an h2 — which reads as three pages that happen to be on top of each other.
+   The same family as the page title above them, so the two differ by size
+   rather than by being two different ideas. */
+.catalog-subheading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--catalog-soft);
+}
+
+/* A line and the room around it, so the eye is told where one section ends.
+   Only the form had one, which is why the queue ran into the photograph. No
+   bottom margin: the next section's own top margin is the gap between them,
+   and two of them would collapse into a space nobody chose. */
+.catalog-divided {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--catalog-faint);
+}
+
 .catalog-caption {
   color: var(--catalog-soft);
   letter-spacing: 0.02em;

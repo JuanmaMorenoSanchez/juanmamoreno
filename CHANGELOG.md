@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.53.1
+
+- **fix** The sections of the certificates page are told apart. Each arrived
+  from a page of its own carrying its own idea of a heading — 1.1rem uppercase,
+  1.25rem sentence case, and the shared catalogue heading at whatever size a
+  browser gives an h2 — which read as three pages stacked on top of each other.
+  One heading style now, a size below the page title, and a rule above each
+  section: only the form had one, which is why the queue ran into the
+  photograph. The assets page takes the page title every other one uses.
+
 ## 2.53.0
 
 - **feat** The guarded side is organised around what is being done. The menu
