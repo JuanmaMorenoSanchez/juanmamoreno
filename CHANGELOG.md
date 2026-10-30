@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.53.2
+
+- **fix** Sign out is in the menu and nowhere else. The certificates page
+  carried the signed-in address and a Sign out of its own, from when it was a
+  page arrived at directly; the menu reaches every private page and already had
+  both, so the copy at the foot of the page worked on most was noise.
+
 ## 2.53.1
 
 - **fix** The sections of the certificates page are told apart. Each arrived

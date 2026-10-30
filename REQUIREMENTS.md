@@ -1009,9 +1009,14 @@ including that a reader loads nothing), and the browser probe
 
 ### R39 — The way in and out is his alone · met
 Signed in, the last icon in the bar opens the workshop menu, and every address
-behind the guard hangs off it: the studio, the reels waiting to be published,
-and the way out. One place to add the next private page, and one menu a reader
-can be certain does not appear for them. It sits in the same template as the
+behind the guard hangs off it, along with the way out. One place to add the
+next private page, and one menu a reader can be certain does not appear for
+them.
+
+**And the only way out.** The certificates page carried the signed-in address
+and a Sign out of its own, from when it was a page arrived at directly. The
+menu reaches every private page and already had both, so the copy at the foot
+of the one page worked on most was noise. It sits in the same template as the
 rest of the menu, so on a narrow screen it travels into the drawer with
 everything else.
 

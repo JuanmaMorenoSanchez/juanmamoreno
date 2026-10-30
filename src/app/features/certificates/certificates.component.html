@@ -7,11 +7,4 @@
   <app-photo-prep />
 
   <app-mint-form />
-
-  @if (identity(); as who) {
-    <p class="certificates-who">
-      {{ who.email }}
-      <button type="button" class="link-button" (click)="signOut()">Sign out</button>
-    </p>
-  }
 </div>

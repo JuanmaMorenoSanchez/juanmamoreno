@@ -1,14 +1,3 @@
-@use '../../../styles/tokens';
-
 .certificates {
   min-height: 40vh;
-}
-
-.certificates-who {
-  display: flex;
-  align-items: baseline;
-  gap: tokens.$spacing-md;
-  margin-top: 4rem;
-  font-size: 0.8rem;
-  color: var(--catalog-faint);
 }

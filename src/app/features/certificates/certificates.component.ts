@@ -1,7 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { PendingMintComponent } from '@features/pending-mint/pending-mint.component';
-import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { MintFormComponent } from './mint/mint-form.component';
 import { PhotoPrepComponent } from './photo/photo-prep.component';
 
@@ -18,6 +16,12 @@ import { PhotoPrepComponent } from './photo/photo-prep.component';
  * So: what is waiting first, then the photograph, then the form. The old
  * addresses both still answer — they are in his bookmarks, and a renamed page
  * should not become a 404 for the one person who uses it.
+ *
+ * **The way out is in the menu and nowhere else.** This page carried the
+ * signed-in address and a Sign out beneath the form, from when it was a page
+ * somebody arrived at directly. The menu that reaches every private page has
+ * both, so a second copy at the foot of one of them was noise on the page that
+ * is worked on most.
  */
 @Component({
   selector: 'app-certificates',
@@ -25,14 +29,4 @@ import { PhotoPrepComponent } from './photo/photo-prep.component';
   templateUrl: './certificates.component.html',
   styleUrl: './certificates.component.scss',
 })
-export class CertificatesComponent {
-  private auth = inject(AdminAuthService);
-  private router = inject(Router);
-
-  protected readonly identity = this.auth.identity;
-
-  signOut(): void {
-    this.auth.signOut();
-    this.router.navigateByUrl('/door');
-  }
-}
+export class CertificatesComponent {}
