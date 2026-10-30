@@ -4,7 +4,7 @@
  *
  * One painting at a time: the vision model says what is in it, the segmenter
  * cuts each of those things out, arithmetic throws away the masks that have
- * escaped, and the page keeps what is left. Everything a painting was asked and
+ * escaped, and what is left is kept as an asset. Everything a painting was asked and
  * answered is written down, so the next night starts where this one stopped and
  * the catalogue can actually finish.
  *
@@ -14,36 +14,32 @@
  * model loads; so every painting is described first, then the card is handed
  * over once and every painting is cut.
  *
- * **The browser is here for one reason: it is the only thing that can save.**
- * The engine says so itself — keeping is a press in the browser, through the
- * browser's own credential, and nothing on this machine can reach the bucket.
- * So the cut is done over plain http, where it is fast and needs nobody, and
- * the keeping goes through the real page and the real button: the same code
- * path as a press by hand, including its renewal of an hour-old token and its
- * retry of a refused save.
+ * **There is no browser in this.** There was: keeping is the artist's alone, the
+ * credential lived in the atelier page's own storage, so the night drove Chrome
+ * and pressed the page's save button. That could not be made to work, for a
+ * reason outside this repository — Google refuses its sign-in screens to a
+ * browser something is driving, so the one step that needed a real browser was
+ * the only step a driven one could not do. The night now carries its own
+ * credential from `gcloud` and posts to the same endpoint the page posts to;
+ * `shelf.mjs` has the whole of it.
  *
  *   node scripts/night/cut-the-catalogue.mjs --limit 10
  *   node scripts/night/cut-the-catalogue.mjs --until 08:00
  *
- * The first run needs a Chrome profile signed in to the site. Sign in once,
- * by hand, with the profile this uses:
- *   node scripts/night/cut-the-catalogue.mjs --sign-in
+ * All it needs is a signed-in `gcloud` on this machine, which is checked before
+ * anything is cut. If it is not: `gcloud auth login`.
  */
 
 import { writeFile } from 'node:fs/promises';
-import { chromium } from 'playwright-core';
 
-import { findChrome } from '../../e2e/browser.mjs';
 import { backendUrl, catalogue, paintingBytes } from './catalogue.mjs';
 import { BACKGROUND, decide } from './judge.mjs';
 import * as ledgerOf from './ledger.mjs';
+import { credential, fileBytes, keep, kindFor, sizeOf } from './shelf.mjs';
 import { ASKING, subjectsIn } from './subjects.mjs';
 
 /** Where the engine answers. The same address the page uses. */
 const ENGINE = 'http://127.0.0.1:7860';
-
-/** The site whose page holds the credential. The deployed one, by default. */
-const SITE = 'https://juanmamoreno.com';
 
 /**
  * Beside the hand and the verdicts about the painters, in the folder git
@@ -73,9 +69,8 @@ function options(argv) {
   const there = (name) => argv.includes(`--${name}`);
 
   return {
-    site: flag('site', SITE),
+    backend: flag('backend', null),
     engine: flag('engine', ENGINE),
-    profile: flag('profile', `${LOCAL}/night-chrome`),
     ledger: flag('ledger', `${LOCAL}/night.json`),
     report: flag('report', `${LOCAL}/night-report.md`),
     until: flag('until', '08:00'),
@@ -83,7 +78,6 @@ function options(argv) {
     describeOnly: there('describe-only'),
     cutOnly: there('cut-only'),
     dry: there('dry'),
-    signIn: there('sign-in'),
   };
 }
 
@@ -149,112 +143,24 @@ async function evict(engine) {
   await fetch(`${engine}/evict`, { method: 'POST' }).catch(() => null);
 }
 
-/**
- * When the sign-in in this browser runs out.
- *
- * Read from the token's own expiry claim and nothing else. The credential
- * itself is never returned, printed or written down — the page holds it, the
- * page sends it, and all this needs to know is whether it is still good.
- */
-async function signedInUntil(page) {
-  return page.evaluate(() => {
-    try {
-      const token = window.localStorage.getItem('juanmamoreno.adminToken');
-      if (!token) return null;
-      const claims = JSON.parse(atob(token.split('.')[1]));
-      return typeof claims.exp === 'number' ? claims.exp * 1000 : null;
-    } catch {
-      return null;
-    }
-  });
-}
-
-/**
- * The atelier, open and signed in, or a reason it is not.
- *
- * Reloaded for each painting rather than kept: the shelf's Look button is
- * offered once per visit, and a fresh page is also how the app renews a token
- * that is about to run out.
- */
-async function openAtelier(page, site) {
-  await page.goto(`${site}/atelier`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  // The app restores its sign-in and may renew it, which is a round trip to
-  // Google. Waited for rather than assumed.
-  await page.waitForTimeout(4000);
-  const until = await signedInUntil(page);
-  if (!until) return 'nobody is signed in to this browser profile';
-  if (until < Date.now()) return 'the sign-in in this browser profile has run out';
-  return null;
-}
-
-/**
- * The page ready to keep this painting's files.
- *
- * Once per painting, not once per file. The token id goes in first because
- * that is what the save reads to file an asset under its painting — a keep
- * with an empty field is an asset belonging to nothing — and the Look button
- * is offered once a visit, after which the shelf stays up with every file on
- * it.
- */
-async function readyFor(page, site, token) {
-  const why = await openAtelier(page, site);
-  if (why) throw new Error(why);
-
-  const field = page.getByTestId('token-id');
-  await field.fill(token);
-  await field.press('Enter');
-  // The painting itself is of no use here — the cut is long since done — but
-  // the fetch is what tells the page what the painting is called, and that is
-  // the name the asset is filed under.
-  await page.getByTestId('chosen').waitFor({ timeout: 60_000 });
-
-  const look = page.getByTestId('look-on-disk');
-  if (await look.isDisabled()) {
-    throw new Error('the page cannot reach the engine, so it cannot read the files');
-  }
-  await look.click({ timeout: 30_000 });
-}
-
-/**
- * Keeps one file, through the page's own button.
- *
- * Waits for that button to go away rather than for the word Kept to appear
- * anywhere: the shelf holds every file this painting produced, and "something
- * on the page says Kept" is true as soon as the first one is.
- */
-async function keep(page, file) {
-  const button = page.getByTestId(`recover-${file}`);
-  await button.waitFor({ timeout: 60_000 });
-  await button.click();
-  await button.waitFor({ state: 'detached', timeout: 120_000 });
-}
-
 async function main() {
   const how = options(process.argv.slice(2));
-  const chrome = findChrome();
-  if (!chrome) throw new Error('no Chrome on this machine, so nothing can be kept');
-
-  if (how.signIn) {
-    said('Opening the atelier in the profile the night uses. Sign in, then close the window.');
-    const context = await chromium.launchPersistentContext(how.profile, {
-      executablePath: chrome,
-      headless: false,
-      viewport: null,
-    });
-    await (context.pages()[0] ?? (await context.newPage())).goto(`${how.site}/atelier`);
-    await context.waitForEvent('close', { timeout: 0 });
-    return;
-  }
+  const backend = how.backend ?? (await backendUrl());
 
   const stopAt = deadline(how.until);
   const timeLeft = () => stopAt.getTime() - Date.now();
-  said(`Until ${stopAt.toLocaleTimeString()}, from ${how.site}, through ${how.engine}.`);
+  said(`Until ${stopAt.toLocaleTimeString()}, keeping at ${backend}, through ${how.engine}.`);
 
   const health = await engineUp(how.engine);
   if (!health) throw new Error(`nothing answering at ${how.engine} — start the engine first`);
 
+  // Asked for before a single painting is cut. A credential that is not there
+  // is the failure that costs a whole night, and it costs nothing to find out
+  // now: a cut is minutes of card time spent on something that cannot be kept.
+  if (!how.dry) await credential();
+
   const ledger = await ledgerOf.read(how.ledger);
-  const paintings = await catalogue(await backendUrl());
+  const paintings = await catalogue(backend);
   said(`${paintings.length} paintings in the catalogue.`);
 
   const trouble = [];
@@ -303,68 +209,58 @@ async function main() {
     const toCut = paintings.filter((one) => ledgerOf.leftToCut(ledger, one.tokenId).length);
     said(`\n${toCut.length} paintings have things left to cut.`);
 
-    if (toCut.length) {
-      // No browser for a dry run: the browser is here only to keep things, and
-      // a dry run keeps nothing.
-      const context = how.dry
-        ? null
-        : await chromium.launchPersistentContext(how.profile, {
-            executablePath: chrome,
-            headless: false,
-            viewport: { width: 1400, height: 1000 },
-          });
-      const page = context ? (context.pages()[0] ?? (await context.newPage())) : null;
+    for (const painting of toCut) {
+      if (timeLeft() <= 0 || touched >= how.limit) break;
+
+      const wanted = ledgerOf.leftToCut(ledger, painting.tokenId);
+      const labels = wanted.filter((subject) => subject !== BACKGROUND);
+      said(`\n  ${painting.tokenId} ${painting.name}: ${wanted.join(', ')}`);
 
       try {
-        for (const painting of toCut) {
-          if (timeLeft() <= 0 || touched >= how.limit) break;
+        const { bytes, rung } = await paintingBytes(painting);
+        if (rung > 0) said('    (not the original copy — the asset will be smaller)');
 
-          const wanted = ledgerOf.leftToCut(ledger, painting.tokenId);
-          const labels = wanted.filter((subject) => subject !== BACKGROUND);
-          said(`\n  ${painting.tokenId} ${painting.name}: ${wanted.join(', ')}`);
+        const made = labels.length ? await cut(how.engine, bytes, labels) : {};
+        const { keeping, refused } = decide(made, wanted);
 
-          try {
-            const { bytes, rung } = await paintingBytes(painting);
-            if (rung > 0) said('    (not the original copy — the asset will be smaller)');
-
-            const made = labels.length ? await cut(how.engine, bytes, labels) : {};
-            const { keeping, refused } = decide(made, wanted);
-
-            for (const one of refused) {
-              ledgerOf.recordRefused(ledger, painting.tokenId, one.subject, one.why);
-              said(`    ${one.subject}: ${one.why}`);
-            }
-
-            if (keeping.length && !how.dry) {
-              await readyFor(page, how.site, painting.tokenId);
-            }
-            for (const one of keeping) {
-              if (how.dry) {
-                said(`    ${one.subject}: would keep ${one.file}`);
-                continue;
-              }
-              await keep(page, one.file);
-              ledgerOf.recordKept(ledger, painting.tokenId, one.subject, one.file);
-              said(`    ${one.subject}: kept`);
-            }
-          } catch (error) {
-            // The painting is left in the ledger with its subjects and no
-            // verdicts, so tomorrow tries it again. A failure here is a cold
-            // card or a lapsed sign-in, not a decision about the painting.
-            trouble.push(`${painting.tokenId} ${painting.name}: ${error.message}`);
-            said(`    ${error.message}`);
-            if (/signed in|run out/.test(error.message)) {
-              said('    Stopping: nothing can be kept without a sign-in.');
-              break;
-            }
-          }
-
-          await ledgerOf.write(how.ledger, ledger);
-          touched += 1;
+        for (const one of refused) {
+          ledgerOf.recordRefused(ledger, painting.tokenId, one.subject, one.why);
+          said(`    ${one.subject}: ${one.why}`);
         }
-      } finally {
-        await context?.close();
+
+        for (const one of keeping) {
+          if (how.dry) {
+            said(`    ${one.subject}: would keep ${one.file}`);
+            continue;
+          }
+          const cutBytes = await fileBytes(how.engine, one.file);
+          const { width, height } = sizeOf(cutBytes);
+          await keep(backend, cutBytes, {
+            // The painting's own name, so an asset says which canvas it came
+            // out of, and the subject as its kind, so it says which part.
+            name: painting.name,
+            tokenId: painting.tokenId,
+            kind: kindFor(one.subject),
+            width,
+            height,
+          });
+          ledgerOf.recordKept(ledger, painting.tokenId, one.subject, one.file);
+          said(`    ${one.subject}: kept, ${width}×${height}`);
+        }
+      } catch (error) {
+        // The painting is left in the ledger with its subjects and no
+        // verdicts, so tomorrow tries it again. A failure here is a cold card
+        // or a credential, not a decision about the painting.
+        trouble.push(`${painting.tokenId} ${painting.name}: ${error.message}`);
+        said(`    ${error.message}`);
+        if (/identity token|hand over an identity|shelf answered 40/.test(error.message)) {
+          said('    Stopping: nothing can be kept without a credential.');
+          break;
+        }
       }
+
+      await ledgerOf.write(how.ledger, ledger);
+      touched += 1;
     }
   }
 

@@ -4663,20 +4663,29 @@ refused as a copy of it. A kiss is not a thing with edges.
 sufficient and is not: a painting with one subject that cuts badly is first in
 the queue again every night for ever, and the catalogue never empties.
 
-**Only the browser can save.** The engine cannot reach the bucket — keeping is
-a press in the browser, through the browser's own credential — so the cut is
-done over plain http, where it is fast and needs nobody, and the keeping goes
-through the real page and the real button, with its own renewal of an hour-old
-token. The runner reads the sign-in's expiry and never the token itself.
+**The night carries its own credential, and no browser opens.** Keeping is his
+alone and the credential lived in the atelier page's storage, so the night was
+built to drive Chrome and press the page's save button — which cannot be made
+to work, for a reason outside this repository: Google refuses its sign-in
+screens to a browser something is driving, so the one step that needed a real
+browser was the only step a driven one could not do. So the guard accepts a
+second application as well as the site — the Google Cloud SDK, which stays
+signed in on his own machine — and the night asks `gcloud` for an identity and
+posts to the same endpoint the page posts to. Whose address it is decides
+access, and that check is untouched; what the second audience admits is a token
+minted on a machine already holding the keys to the bucket this guard stands in
+front of. The token is held in memory, never printed, never written down, and
+never put in an error message.
 
 **And a kept layer carries what it is.** The subject was in the engine's file
 name and thrown away at the moment of saving, so a painting cut into five
 things arrived as five assets all called "layer" — and *which of this
 painting's things are already cut* had no answer when every answer was the same
-word.
-*Proven by:* `night.test.mjs` (34 tests across "what the night keeps", "one cut
+word. The subject is now the kind, and its size is read off the png's own
+header rather than measured by loading it into a browser.
+*Proven by:* `night.test.mjs` (39 tests across "what the night keeps", "one cut
 with two names", "everything one painting decided", "what the night does next",
-"the ledger on disk" and "what the painting said is in it" — including that a refused subject is never offered
+"the ledger on disk", "what the shelf is told about a cut" and "what the painting said is in it" — including that a refused subject is never offered
 again, that a painting whose every subject was refused counts as done, that a
 half-written ledger reads as a machine that has never run, and that the three
 names for one embrace are caught by their boxes, and that every subject asked

@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.52.1
+
+- **fix** The night keeps without a browser. It was built to drive Chrome and
+  press the atelier's own save button, because that is where the credential
+  lived — and it could never have worked: Google refuses its sign-in screens to
+  a browser something is driving, so the one step that needed a real browser was
+  the only step a driven one could not do. The night now asks `gcloud` for an
+  identity and posts to the same endpoint the page posts to. Nothing opens at
+  three in the morning, there is no hourly renewal left to lapse, the engine's
+  twenty-four-file listing no longer paces the run, and a cut's size is read off
+  the png's own header rather than measured by loading it into a browser. Needs
+  `CLI_CLIENT_ID` on the backend (api 3.9.0).
+
 ## 2.52.0
 
 - **feat** The catalogue cuts itself up overnight. From one in the morning,

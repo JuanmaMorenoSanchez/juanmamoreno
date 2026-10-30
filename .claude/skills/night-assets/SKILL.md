@@ -1,6 +1,6 @@
 ---
 name: night-assets
-description: Runs the overnight cut of the catalogue — the atelier engine cuts each painting into its separate subjects and the atelier page keeps them as assets. Use when asked to run the night, start the nightly asset run, cut the catalogue overnight, or when woken by the scheduled 1am task. Also use to check what last night did, or to prepare the signed-in Chrome profile the night needs.
+description: Runs the overnight cut of the catalogue — the atelier engine cuts each painting into its separate subjects and each one is kept as its own asset. Use when asked to run the night, start the nightly asset run, cut the catalogue overnight, or when woken by the scheduled 1am task. Also use to check what last night did, or to work out why a night kept nothing.
 ---
 
 # The night that cuts the catalogue
@@ -28,17 +28,19 @@ sentence to say and one thing for him to do, which goes in the report.
 2. **The card is free.** The same answer carries `working` and `resident`. If
    something is already running on it, stop: two things on an eight-gigabyte
    card is how a run dies four hours in.
-3. **Somebody is signed in to the night's Chrome profile.** This is the one
-   that fails quietly. The engine cannot save anything — keeping is a press in
-   the browser, through the browser's own credential — so without a live
-   sign-in the night cuts for hours into a shelf it cannot write to. The runner
-   checks it before the first keep and stops rather than carrying on, but a
-   night that stops at 1:04am is still a wasted night, so it is worth knowing
-   first.
+3. **`gcloud` is signed in.** `gcloud auth print-identity-token` must answer
+   with a token. That is the night's whole credential: it posts to the backend
+   as him, and the guard there accepts the Cloud SDK as well as the site. The
+   runner asks for it before it cuts anything, so a missing one costs a minute
+   rather than a night — but check it anyway, because it is the only thing
+   between a working engine and a shelf nothing can be written to.
 
-   There is nothing you can do about a lapsed sign-in: Google's One Tap needs a
-   person. Say so, and give him the command:
-   `node scripts/night/cut-the-catalogue.mjs --sign-in`
+   Never print the token, write it to a file, or put it in a report. If it is
+   missing, the command is his to run: `gcloud auth login`.
+
+   **There is no browser in this and no Chrome profile to check.** There was,
+   and it could not work: Google refuses its sign-in screens to a browser
+   something is driving. Do not propose going back to it.
 
 ## Running it
 
@@ -52,8 +54,8 @@ It stops itself at the deadline, between paintings, and writes its report.
   first or cautious night.
 - `--dry` — cut and judge, keep nothing, open no browser. The way to see what
   the thresholds would do before they do it.
-- `--describe-only` — the vision pass alone. It needs no sign-in at all, so it
-  is what to run on a night when the credential is the problem.
+- `--describe-only` — the vision pass alone. It needs no credential at all, so
+  it is what to run on a night when the credential is the problem.
 - `--cut-only` — skip straight to cutting what has already been described.
 
 Run it in the background and wait to be told it finished. Do not poll it: a
@@ -94,6 +96,10 @@ card falling back to a worse copy of the painting, a vision model naming
 actions and effects rather than objects, and a painting whose subjects really
 are not separable.
 
+A night that *cut* and kept nothing is a different fault and almost always the
+credential: every painting in the report will say the shelf answered 401 or
+403.
+
 Say plainly if nothing was kept, and why. Never report a night as done on the
 strength of the script exiting.
 
@@ -101,10 +107,9 @@ strength of the script exiting.
 
 - **Do not raise the thresholds, change the prompt, or edit the ledger** to
   make a night look better. Report what happened.
-- **Do not touch the credential.** The token lives in the page's own storage,
-  lasts an hour, and the app renews it. Never read it out, print it, write it
-  to a file or pass it to anything. The runner reads its expiry and nothing
-  else, on purpose.
+- **Do not touch the credential.** It comes from `gcloud`, lasts an hour, and
+  the runner asks for a fresh one when it needs it. Never read it out, print
+  it, write it to a file, or pass it to anything else.
 - **Do not keep anything by hand** to make up a shortfall. Keeping is the only
   route by which anything leaves this machine and it is never taken unasked.
 - **Do not start a second run** while one is going. One card, one engine.
@@ -112,7 +117,7 @@ strength of the script exiting.
 ## Setting up the 1am task
 
 Windows Task Scheduler, not `/schedule` — a scheduled cloud agent cannot reach
-this laptop's engine or its Chrome.
+this laptop's engine or its card.
 
 Import the task once:
 

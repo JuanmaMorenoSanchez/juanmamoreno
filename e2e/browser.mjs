@@ -48,14 +48,8 @@ const LAUNCH_ARGS = process.env.CI
   ? ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
   : [];
 
-/**
- * The Chrome on this machine, or null.
- *
- * Exported because the night's own runner drives the same browser from
- * `scripts/night/`, and two copies of this list would drift the first time a
- * path changed.
- */
-export function findChrome() {
+/** The Chrome on this machine, or null. */
+function findChrome() {
   return CHROME_CANDIDATES.find((path) => existsSync(path)) ?? null;
 }
 

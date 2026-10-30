@@ -16,6 +16,7 @@ import { describe, it } from 'node:test';
 
 import { BACKGROUND, TOO_LITTLE, TOO_MUCH, TOO_UNSURE, copyOf, decide, verdict } from './judge.mjs';
 import * as ledger from './ledger.mjs';
+import { kindFor, sizeOf } from './shelf.mjs';
 import { MOST_SUBJECTS, subjectsIn } from './subjects.mjs';
 
 /** A layer as the engine reports one, good unless something is said otherwise. */
@@ -269,6 +270,43 @@ describe('the ledger on disk', () => {
 
     // Written beside and renamed, so what is at this path is always whole.
     assert.equal(JSON.parse(await readFile(where, 'utf8')).version, 1);
+  });
+});
+
+describe('what the shelf is told about a cut', () => {
+  /** A png is a signature and then the chunk that says how big it is. */
+  const png = (width, height) => {
+    const bytes = Buffer.alloc(24);
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(bytes);
+    bytes.write('IHDR', 12, 'ascii');
+    bytes.writeUInt32BE(width, 16);
+    bytes.writeUInt32BE(height, 20);
+    return bytes;
+  };
+
+  it('reads the size off the header', () => {
+    // What the page needed a browser and an Image element to measure.
+    assert.deepEqual(sizeOf(png(2500, 1876)), { width: 2500, height: 1876 });
+  });
+
+  it('says nothing rather than nonsense about something that is not a png', () => {
+    assert.deepEqual(sizeOf(Buffer.from('not a picture')), { width: 0, height: 0 });
+  });
+
+  it('files a cut under the subject it is', () => {
+    // The rule `kindOf` applies to the engine's file name, applied to the
+    // subject itself — which is where that file name came from.
+    assert.equal(kindFor('a woman in green'), 'layer-a-woman-in-green');
+  });
+
+  it('files the remainder as the background', () => {
+    assert.equal(kindFor(BACKGROUND), 'background');
+  });
+
+  it('keeps a kind usable as a name', () => {
+    // It is read back as a key and shown on the shelf, so a subject with
+    // punctuation in it must not arrive as punctuation.
+    assert.equal(kindFor("the girl's chair, broken"), 'layer-the-girl-s-chair-broken');
   });
 });
 
