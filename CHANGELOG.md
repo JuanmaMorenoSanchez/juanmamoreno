@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.54.0
+
+- **feat** The queue of certificates waiting to be written is gone. It could
+  not write anything: the contract has no mint function — a certificate is
+  minted through OpenSea, by hand — and the backend's own path wants a
+  `MINTER_KEY` and a `COLLECTION_OWNER` that are set in no environment, so the
+  button's only possible answer was "no minting key is configured". A control
+  that cannot do what it offers reads as a step in the work and is not one.
+  Preparing a certificate and **Save for later** are untouched; R84, R99 and
+  R100 are withdrawn and R117 says what is still true.
+
 ## 2.53.2
 
 - **fix** Sign out is in the menu and nowhere else. The certificates page

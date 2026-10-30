@@ -58,18 +58,6 @@ describe('MintApiService', () => {
     expect((await promise).map((one) => one.tokenId)).toEqual([197, 198, 199]);
   });
 
-  it('asks for the waiting ones to be written, and passes back what came of it', async () => {
-    const promise = api.mintWaiting();
-    const request = http.expectOne(`${base}/pending/mint`);
-    expect(request.request.method).toBe('POST');
-    request.flush(envelope({ minted: [197], skipped: 'gas is 0.9 gwei, above the 0.7 limit' }));
-
-    await expect(promise).resolves.toEqual({
-      minted: [197],
-      skipped: 'gas is 0.9 gwei, above the 0.7 limit',
-    });
-  });
-
   it('sends the studio form as it stands, so the photograph survives the trip', async () => {
     const form = new FormData();
     form.append('name', 'Rockets win III');
@@ -102,25 +90,6 @@ describe('MintApiService', () => {
       http.expectOne(`${base}/pending/198/clues`).flush(envelope({ clues: '' }));
 
       expect(await promise).toBe('');
-    });
-
-    /** The correction carries it, and an empty one is how a note is taken back. */
-    it('sends it with a correction', async () => {
-      const promise = api.amend(198, {
-        name: 'A title',
-        medium: 'Oil on canvas',
-        height: '25',
-        width: '20',
-        unit: 'cm',
-        year: '2026',
-        imageType: 'Frontal view',
-        clues: '',
-      });
-      const sent = http.expectOne(`${base}/pending/198`);
-      sent.flush(envelope(waiting(198)));
-
-      await promise;
-      expect(sent.request.body.clues).toBe('');
     });
   });
 
@@ -206,8 +175,6 @@ describe('MintApiService', () => {
       const calls: Array<[() => void, string, string]> = [
         [() => void api.waiting(), 'GET', `${base}/pending`],
         [() => void api.prepare(new FormData()), 'POST', `${base}/prepare`],
-        [() => void api.mintWaiting(), 'POST', `${base}/pending/mint`],
-        [() => void api.confirmWritten(197), 'POST', `${base}/pending/197/written`],
         [() => void api.discard(197), 'DELETE', `${base}/pending/197`],
       ];
 
@@ -218,19 +185,6 @@ describe('MintApiService', () => {
         expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
         request.flush(envelope([]));
       }
-    });
-
-    it('goes with the one that carries a query as well', async () => {
-      // The easiest to get wrong: the options object already had something in
-      // it, so the headers had to join it rather than replace it.
-      void api.signable(197, '0xD7D0');
-      const request = http.expectOne((candidate) =>
-        candidate.url.endsWith('/pending/197/transaction')
-      );
-
-      expect(request.request.params.get('to')).toBe('0xD7D0');
-      expect(request.request.headers.get('Authorization')).toBe('Bearer his-token');
-      request.flush(envelope({}));
     });
   });
 });

@@ -832,41 +832,27 @@ caught, both ways of putting it right, and the same answer whichever way up the
 painting stands) and `photo-prep.component.spec.ts` "measurements that do not
 match the corners" (5 tests)
 
-### R100 — A waiting certificate can be corrected where it waits · met
-Every row on the waiting list opens into the fields the studio asks for — title,
-medium, kind of photograph, height, width, unit, year, description — and saves
-them against that certificate. Nothing on the list has reached the chain, and
-every fault the migration's audit found in the old collection was a typed one,
-so a title with a letter wrong is a thing to fix rather than a reason to throw
-the certificate away.
+### R100 — A waiting certificate can be corrected where it waits · withdrawn
+Every row on the waiting list opened into the fields the studio asks for and
+saved them against that certificate, because nothing on the list had reached
+the chain and every fault the migration's audit found was a typed one.
 
-Not the photograph, and the page says why rather than leaving it out: what is
-stored is the flattened picture, and the corners and the brushwork that shaped
-it were never stored anywhere. Changing the measurements is allowed and warned
-about in red — the picture was squared up to the old ones and stays that shape,
-so this corrects what the certificate says and not the picture. A year the list
-does not offer is kept rather than quietly swapped for the first one. A refusal
-from the api leaves the form open with what was typed still in it.
-*Proven by:* `pending-mint.component.spec.ts` "correcting what a certificate
-says" (8 tests — the certificate read into the form, the correction sent against
-the right token, a half-written measurement tidied, an empty title refused, the
-warning when the measurements change, an unlisted year kept, a refusal leaving
-the form open, and cancelling forgetting the draft)
+Withdrawn with the waiting list itself (R84). A prepared certificate is still a
+record the api can amend; there is no longer a page here that does it, and a
+certificate wrong enough to matter is prepared again.
+*Proven by:* nothing — the page this described has been removed
+*Withdrawn because:* the list it hung on could not do the thing it existed for
+### R99 — The photograph can be taken back off a prepared certificate · withdrawn
+Every certificate on the waiting list carried the download button the artwork
+pages carry, offering the full stored file and the medium size — because a
+prepared certificate is the one place the photograph exists in full and cannot
+be reached.
 
-### R99 — The photograph can be taken back off a prepared certificate · met
-Every certificate on the waiting list carries the download button the artwork
-pages carry, offering the full stored file and the medium size.
-
-A prepared certificate is the one place the photograph exists in full and
-cannot be reached: it is in the originals bucket under the token id, the
-painting has no page because it is not on the chain, and the list showed a
-thumbnail the size of a postage stamp. The original is offered first and the web
-copy second, and the file is named for the token as well as the title, since two
-certificates can share a title — the studio warns about exactly that.
-*Proven by:* `pending-mint.component.spec.ts` (3 tests — the original offered
-first with the web copy behind it, the file named for the token, and nothing
-offered when nothing is waiting)
-
+Withdrawn with the waiting list itself (R84): there is no page that lists a
+prepared certificate any more, so there is nowhere for the button to be. The
+file is still in the originals bucket under the token id.
+*Proven by:* nothing — the page this described has been removed
+*Withdrawn because:* the list it hung on could not do the thing it existed for
 ### R98 — The sliders stay where they were left · met
 Brightness, temperature, whites, darks and colour keep their positions between
 photographs and between sessions, so the next picture opens with the correction
@@ -1656,34 +1642,27 @@ arrived"), and `gas-price.service.spec.ts` ("allows exactly the ceiling",
 backend, as B34 there — moving the ceiling here does not move that one. The
 ceiling can be moved by hand: R135.
 
-### R84 — A certificate can wait for a cheap morning · met
-Preparing and writing are separate. **Save for later** stores the prepared
-certificate, images and all, and the last step of every cron run writes whatever
-is waiting while gas is cheap. `/pendingmint` is the same list by hand, behind
-the admin guard: what is waiting, the live price, one button to write them, and
-a way to discard one that was a mistake.
+### R84 — A certificate is prepared before it is written · withdrawn
+Preparing and writing are separate: **Save for later** stores the prepared
+certificate, images and all, and it waits as a record until somebody writes it
+to the chain.
 
-A certificate leaves the list only once its transaction has landed. Removed any
-earlier it would be gone from both places at once.
+**What is withdrawn is the writing, not the preparing.** This used to promise
+that the last step of every cron run wrote whatever was waiting while gas was
+cheap, and that `/pendingmint` was the same list by hand with a button to write
+them now. Neither could happen. The contract has no mint function — a
+certificate is minted through OpenSea, by hand — and the backend's own path
+wants a `MINTER_KEY` and a `COLLECTION_OWNER` that are set in no environment,
+so the button's only possible answer, and the nightly job's, was "no minting
+key is configured". The page is gone; the record and **Save for later** remain,
+and what writes one is a person at OpenSea.
 
-**The page says when it does not know.** "Nothing is waiting" and "the api did
-not answer" were the same blank page: every failure was caught and written down
-as an empty list, so a certificate sitting there perfectly well looked like no
-certificate at all, and the only way to find out was to reload and watch the
-page change its mind. They are three answers now — asking, could not ask, and
-nothing — and the middle one offers to ask again.
-
-It asks twice before giving up. The service behind it scales to nothing when
-nobody is using it, so the first request after a quiet hour is a container
-starting up — which is exactly when this page is opened, because it is opened to
-write something that has been waiting since yesterday.
-*Proven by:* `pending-mint.component.ts`, reached only through `adminOnly` in
-`app-routing.module.ts` and, like the studio, listed in `app.routes.server.ts` as
-client-rendered so no copy of it is ever written into the published site;
-`pending-mint.component.spec.ts` (15 tests, four of them on this: that a
-failure is not reported as an empty list, that it asks a second time, and that
-it can be asked again by hand). The waiting and the writing are the backend's
-B34.
+The nightly job still runs and still answers that it was skipped, which is the
+honest remaining half of this and is the backend's B34.
+*Proven by:* `mint-form.component.spec.ts` (preparing a certificate and what is
+sent with it, including the frontal-view version and the note for the essay)
+*Withdrawn because:* measured — `MINTER_KEY` and `COLLECTION_OWNER` are set in
+no environment, and the contract has no mint function for them to use
 
 ### R85 — A dependency cannot arrive unwatched · met
 Two rules, both enforced by pnpm on every install rather than only when
@@ -2051,31 +2030,20 @@ other field becomes a certificate that is public, permanent and cannot be
 amended; this one is a private note kept for whatever writes the painting's
 essay months later, and the studio is the only place it is ever shown.
 
-**The same box is on the correction form**, so a note can be written or changed
-for as long as the certificate is waiting. A certificate can sit for weeks
-before a cheap morning, and what a painting was made alongside is exactly the
-sort of thing remembered the day after it was prepared. Emptying the box takes
-the note back.
-
-**A correction that could not read the stored note says nothing about it.** An
-empty box means "take it back", so saving a title correction while the request
-for the existing note had failed would otherwise throw that note away without
-saying so. The field is simply left out of the correction, which the api reads
-as "leave it alone" — unless he typed a note himself, which is an answer whether
-or not the old one ever arrived. A note that arrives late does not land on top
-of one he has started writing.
+**It is written when the certificate is prepared, and not afterwards.** There
+used to be a second copy of the box on the correction form, so a note could be
+changed for as long as the certificate waited; that form went with the waiting
+list (R84), and with it the care about a correction that could not read the
+stored note. The note the api holds is still read and still used by whatever
+writes the essay — there is no longer a page here that edits it.
 
 **Nothing is sent when nothing is typed**, and a note of only spaces is no note,
 so a certificate prepared without one is prepared exactly as it was before.
 *Proven by:* `mint-form.component.spec.ts` "the note for the essay" (4 tests:
 "sends what was typed", "sends no field at all when nothing was typed", which
 also checks the rest of the form is unchanged, "sends nothing for a note of only
-spaces" and "trims it"), `pending-mint.component.spec.ts` "the note for the
-essay" (7 tests, including "says nothing about the note when the stored one
-could not be read", "still sends a note he typed while the stored one was
-unreachable", "does not overwrite a note he began typing before the stored one
-arrived" and "sends an empty note when the box is cleared, which is how it is
-taken back"), and `mint-api.service.spec.ts` "the note for the essay" (3 tests)
+spaces" and "trims it") and `mint-api.service.spec.ts` "the note for the essay"
+(3 tests)
 
 ### R118 — A dossier is built from the artist's own catalogue · met
 On `/catalogue`, behind the admin guard. The public catalogue no longer makes

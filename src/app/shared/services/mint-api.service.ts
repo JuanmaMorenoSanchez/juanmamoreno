@@ -90,12 +90,6 @@ export interface CertificateStanding {
   heldByOwner: boolean;
 }
 
-/** What came of asking for the waiting certificates to be written. */
-export interface MintOutcome {
-  minted: number[];
-  skipped: string;
-}
-
 /**
  * The one place that knows the mint endpoints.
  *
@@ -190,48 +184,6 @@ export class MintApiService {
     );
   }
 
-  /** Asks for everything waiting to be written, which it may decline to do. */
-  public mintWaiting(): Promise<MintOutcome> {
-    return firstValueFrom(
-      this.http
-        .post<ApiResponse<MintOutcome>>(`${this.base}/pending/mint`, {}, this.authorised())
-        .pipe(map(MintApiService.unwrap<MintOutcome>))
-    );
-  }
-
-  /**
-   * The transaction that writes one certificate, for a wallet to sign.
-   *
-   * Assembled by the api, because what a certificate says is decided in one
-   * place. Nothing here builds metadata or encodes a call.
-   */
-  public signable(tokenId: number, to: string): Promise<SignableTransaction> {
-    return firstValueFrom(
-      this.http
-        .get<ApiResponse<SignableTransaction>>(`${this.base}/pending/${tokenId}/transaction`, {
-          params: { to },
-          ...this.authorised(),
-        })
-        .pipe(map(MintApiService.unwrap<SignableTransaction>))
-    );
-  }
-
-  /**
-   * Asks the api to check the chain, take it off the list, and read the
-   * catalogue again so the painting is on the site.
-   */
-  public confirmWritten(tokenId: number): Promise<{ written: boolean; shown: boolean }> {
-    return firstValueFrom(
-      this.http
-        .post<ApiResponse<{ written: boolean; shown: boolean }>>(
-          `${this.base}/pending/${tokenId}/written`,
-          {},
-          this.authorised()
-        )
-        .pipe(map(MintApiService.unwrap<{ written: boolean; shown: boolean }>))
-    );
-  }
-
   /**
    * The note he wrote for this painting's essay, if he wrote one.
    *
@@ -248,27 +200,6 @@ export class MintApiService {
         )
         .pipe(map(MintApiService.unwrap<{ clues: string }>))
     ).then((answer) => answer?.clues ?? '');
-  }
-
-  /**
-   * Corrects what a waiting certificate says.
-   *
-   * Everything but the photograph. What is stored is the flattened picture the
-   * studio produced rather than the photograph it was made from, and the
-   * corners and the brushwork that made it were never stored anywhere — so a
-   * different picture is a different certificate, and preparing one is what
-   * that is for.
-   */
-  public amend(tokenId: number, facts: MintFacts): Promise<PendingMint> {
-    return firstValueFrom(
-      this.http
-        .patch<ApiResponse<PendingMint>>(
-          `${this.base}/pending/${tokenId}`,
-          facts,
-          this.authorised()
-        )
-        .pipe(map(MintApiService.unwrap<PendingMint>))
-    );
   }
 
   /**

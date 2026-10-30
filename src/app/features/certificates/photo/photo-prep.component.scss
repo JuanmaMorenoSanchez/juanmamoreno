@@ -2,6 +2,12 @@
 
 @use '../../../../styles/tokens';
 
+// The first section on the page now, so room above it rather than a rule: a
+// line directly under the page title divides a heading from its own page.
+.prep {
+  margin-top: tokens.$spacing-lg;
+}
+
 // The three blocks of running prose, set to the same measure and colour.
 .prep-lead,
 .prep-note,
