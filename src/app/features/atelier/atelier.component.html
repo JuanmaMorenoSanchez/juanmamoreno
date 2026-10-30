@@ -548,7 +548,14 @@
       }
       <ul class="atelier-layers">
         @for (piece of kept.pieces(); track piece.id) {
-          <li>
+          <!--
+            Fetched when the tile is scrolled to, not when the page opens. The
+            shelf used to ask for every kept piece at once, which was nothing
+            when it held a morning's work and gigabytes once the nightly run
+            started filling it: two hundred layers of ten megabytes, every
+            visit, before anything was on screen.
+          -->
+          <li appLazyLoad (visible)="kept.show(piece.id)">
             @if (kept.urls()[piece.id]; as bytes) {
               <!-- Named so the Full size button can find it. The button sits
                    below the details and cannot reach a template reference

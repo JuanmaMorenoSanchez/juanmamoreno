@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.52.3
+
+- **fix** The atelier shelf fetches a piece when you scroll to it. It asked
+  for every kept piece the moment the page opened, which was nothing while the
+  shelf held a morning's work — and gigabytes once the nightly run began
+  filling it, since a layer is ten megabytes and there will be hundreds.
+
 ## 2.52.2
 
 - **fix** The scheduled night actually reaches the runner. The batch file calls

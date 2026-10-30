@@ -2,11 +2,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   type OnDestroy,
   signal,
 } from '@angular/core';
+import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
@@ -95,6 +95,7 @@ export const START_BY_HAND = [
   imports: [
     BrushOverlayComponent,
     FlowRowComponent,
+    LazyLoadDirective,
     MatIconModule,
     MatTooltipModule,
     NodeCanvasComponent,
@@ -255,12 +256,6 @@ export class AtelierComponent implements OnDestroy {
     });
     this.recall();
     void this.kept.refresh();
-
-    // The shelf shows the bytes, and the route they come from wants a
-    // credential an `img` cannot send.
-    effect(() => {
-      for (const piece of this.kept.pieces()) void this.kept.show(piece.id);
-    });
   }
 
   protected handTyped(event: Event): void {

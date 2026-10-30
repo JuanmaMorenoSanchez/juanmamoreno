@@ -11,6 +11,27 @@ import {
   type NodeTypeDef,
 } from './engine.service';
 
+// jsdom has no IntersectionObserver, and the shelf now waits for one before it
+// fetches a piece. Reporting every tile as visible is what the old eager fetch
+// did, so what these tests observe is unchanged.
+class MockIntersectionObserver {
+  constructor(private readonly callback: IntersectionObserverCallback) {}
+
+  observe(target: Element): void {
+    this.callback(
+      [{ isIntersecting: true, target } as IntersectionObserverEntry],
+      this as unknown as IntersectionObserver
+    );
+  }
+
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+// Before each rather than once: a test further down stubs `Image` and clears
+// every global stub when it finishes, which used to take this one with it.
+beforeEach(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+
 const ISOLATE: NodeTypeDef = {
   key: 'isolate',
   label: 'Isolate',
@@ -139,6 +160,8 @@ describe('AtelierComponent', () => {
     const wantedByCall: string[] = [];
     const downloaded: string[] = [];
     const framed: string[] = [];
+    /** Which pieces the shelf actually asked for the bytes of. */
+    const fetched: string[] = [];
     const joined: { clips: Blob[]; width: number; height: number }[] = [];
     let asked = -1;
     const queued: JobState[] = options.states ?? [
@@ -180,7 +203,10 @@ describe('AtelierComponent', () => {
                 ((options.kept ?? []) as { id: string }[]).map((p) => [p.id, `blob:fake/${p.id}`])
               )
             ),
-            show: () => Promise.resolve(),
+            show: (id: string) => {
+              fetched.push(id);
+              return Promise.resolve();
+            },
             saving: signal(false),
             refresh: () => Promise.resolve(),
             keep: (picture: Blob, about: Record<string, unknown>) => {
@@ -314,6 +340,7 @@ describe('AtelierComponent', () => {
       downloaded,
       joined,
       framed,
+      fetched,
       switched,
     };
   };
@@ -1166,6 +1193,40 @@ describe('AtelierComponent', () => {
     });
 
     expect(at(host, 'shelf')?.textContent).toContain('Rockets win I');
+  });
+
+  it('asks for a kept piece only once it is scrolled to', () => {
+    // The shelf used to fetch every piece the moment the page opened, which
+    // was nothing when it held a morning's work. The nightly run puts
+    // hundreds of layers on it, ten megabytes each, and the page was asking
+    // for all of them before anything was on screen.
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+      }
+    );
+
+    const { fetched, host } = build({
+      kept: [
+        {
+          id: 'k1',
+          name: 'Rockets win I',
+          tokenId: '195',
+          kind: 'layer-the-girl',
+          width: 2500,
+          height: 2500,
+          bytes: 10_000_000,
+          created: '',
+        },
+      ],
+    });
+
+    // On the shelf, named, and costing nothing until it is looked at.
+    expect(at(host, 'shelf')?.textContent).toContain('Rockets win I');
+    expect(fetched).toEqual([]);
   });
 
   it('offers to hand a kept piece over as a file', async () => {
