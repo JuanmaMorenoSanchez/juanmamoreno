@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.52.2
+
+- **fix** The scheduled night actually reaches the runner. The batch file calls
+  the engine's launcher, which cds into the engine's own folder to find its
+  python — and a called script shares the caller's directory, so every path
+  after it resolved one folder too deep: the runner was not found and the log
+  had nowhere to be written. The task failed in seconds having done nothing,
+  and left no output to say so. It also no longer waits with `timeout`, which
+  wants a console the scheduler does not give it and so refused to wait at all.
+
 ## 2.52.1
 
 - **fix** The night keeps without a browser. It was built to drive Chrome and
