@@ -32,6 +32,12 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'publish', renderMode: RenderMode.Client },
   { path: 'pendingmint', renderMode: RenderMode.Client },
   { path: 'catalogue', renderMode: RenderMode.Client },
+  { path: 'certificates', renderMode: RenderMode.Client },
+  { path: 'es/certificates', renderMode: RenderMode.Client },
+  // What the nights cut, which needs the sign-in and the backend to show
+  // anything at all.
+  { path: 'assets', renderMode: RenderMode.Client },
+  { path: 'es/assets', renderMode: RenderMode.Client },
   { path: 'es/door', renderMode: RenderMode.Client },
   { path: 'es/mint', renderMode: RenderMode.Client },
   { path: 'es/publish', renderMode: RenderMode.Client },

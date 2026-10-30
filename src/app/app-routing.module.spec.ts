@@ -19,34 +19,38 @@ describe('the route table', () => {
   }
 
   /**
-   * It was `/studio` until the atelier arrived and the two names read as the
-   * same room: one is where a photograph becomes a certificate, the other where
-   * a painting is cut into layers.
+   * It was `/studio`, then `/mint`, and the queue of certificates waiting was
+   * a page of its own at `/pendingmint` — so choosing between them meant
+   * knowing which of the two you wanted before you had found the painting.
+   * They are the queue and the act of one job, on one object.
    */
-  it('prepares certificates at /mint', () => {
-    const mint = at('mint');
+  it('does everything about a certificate at /certificates', () => {
+    const page = at('certificates');
 
-    expect(mint).toBeDefined();
-    expect(mint?.loadComponent).toBeDefined();
-    expect(mint?.data?.['title']).toBe('Mint');
+    expect(page).toBeDefined();
+    expect(page?.loadComponent).toBeDefined();
+    expect(page?.data?.['title']).toBe('Certificates');
     // Guarded, and never offered to a reader.
-    expect(mint?.canActivate).toHaveLength(2);
-    expect(mint?.data?.['noindex']).toBe(true);
+    expect(page?.canActivate).toHaveLength(2);
+    expect(page?.data?.['noindex']).toBe(true);
   });
 
   /**
    * He has the old address in his bookmarks, and a page that was renamed should
    * not become a 404 for the one person who uses it.
    */
-  it('still answers at the old address, by sending it to the new one', () => {
-    expect(at('studio')?.redirectTo).toBe('/mint');
-    expect(at('es/studio')?.redirectTo).toBe('/mint');
+  it('still answers at every old address, by sending it to the new one', () => {
+    for (const old of ['studio', 'es/studio', 'mint', 'es/mint', 'pendingmint', 'es/pendingmint']) {
+      expect(at(old)?.redirectTo).toBe('/certificates');
+    }
   });
 
   /** The old address redirects; it does not still render anything of its own. */
   it('no longer draws a page at the old address', () => {
-    expect(at('studio')?.loadComponent).toBeUndefined();
-    expect(at('studio')?.component).toBeUndefined();
+    for (const old of ['studio', 'mint', 'pendingmint']) {
+      expect(at(old)?.loadComponent).toBeUndefined();
+      expect(at(old)?.component).toBeUndefined();
+    }
   });
 
   /**
@@ -56,11 +60,13 @@ describe('the route table', () => {
    */
   it('sends the Spanish address of every one-language page back to it', () => {
     for (const [spanish, english] of [
-      ['es/mint', '/mint'],
+      ['es/mint', '/certificates'],
+      ['es/certificates', '/certificates'],
       ['es/door', '/door'],
       ['es/publish', '/publish'],
-      ['es/pendingmint', '/pendingmint'],
+      ['es/pendingmint', '/certificates'],
       ['es/catalogue', '/catalogue'],
+      ['es/assets', '/assets'],
     ]) {
       expect(at(spanish)?.redirectTo).toBe(english);
     }
@@ -75,7 +81,7 @@ describe('the route table', () => {
     const parent = routes.findIndex((route) => route.path === 'es');
 
     expect(parent).toBeGreaterThan(-1);
-    for (const spanish of ['es/mint', 'es/studio', 'es/door']) {
+    for (const spanish of ['es/mint', 'es/studio', 'es/door', 'es/assets']) {
       expect(routes.findIndex((route) => route.path === spanish)).toBeLessThan(parent);
     }
   });

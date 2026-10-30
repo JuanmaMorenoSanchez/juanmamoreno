@@ -1,0 +1,141 @@
+.assets {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.assets-head h1 {
+  margin: 0;
+}
+
+.assets-said {
+  max-width: 44rem;
+  margin: 0.25rem 0 1.25rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  opacity: 0.7;
+}
+
+.assets-trouble {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+}
+
+.assets-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.assets-painting {
+  border-bottom: 1px solid rgb(128 128 128 / 25%);
+}
+
+/* A row with nothing under it is still worth reading — it is the work left —
+   but it should not look like something to press. */
+.assets-none .assets-row {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.assets-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.65rem 0.25rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.assets-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assets-count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.assets-parts {
+  display: grid;
+  /* Wide enough for a 480-pixel thumbnail to be worth looking at, and narrow
+     enough that four fit across a laptop. */
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 1.25rem;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  h3 {
+    margin: 0.4rem 0 0;
+    font-size: 0.82rem;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* The cuts have transparent backgrounds, and a transparent png on a dark
+       page is a picture of nothing. */
+    background: repeating-conic-gradient(rgb(128 128 128 / 18%) 0% 25%, transparent 0% 50%) 50% /
+      16px 16px;
+    border-radius: 3px;
+  }
+}
+
+.assets-missed {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.assets-size {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  opacity: 0.6;
+}
+
+.assets-rename {
+  margin-top: 0.4rem;
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.4rem;
+  background: none;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+
+.assets-does {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  /* At the foot of the tile, so a part with a long name and one with a short
+     name have their buttons on the same line. */
+  margin-top: auto;
+  padding-top: 0.5rem;
+}

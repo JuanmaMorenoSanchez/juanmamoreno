@@ -127,19 +127,26 @@
   would promise a Spanish page that is not there.
 -->
 <mat-menu #adminMenu="matMenu">
+  <!--
+    Status first, then the things waiting to be decided about, then the
+    workshop that makes them. Each one is a noun naming a single kind of
+    thing: "waiting" was part of two of these names and said the same thing
+    twice while hiding that three of them are the same shape — something a
+    machine made overnight, waiting to be published or binned.
+  -->
   <a mat-menu-item routerLink="/activity">Activity</a>
-  <a mat-menu-item routerLink="/mint">Mint</a>
-  <a mat-menu-item routerLink="/publish">Reels waiting</a>
-  <a mat-menu-item routerLink="/pendingmint">Certificates waiting</a>
   <a mat-menu-item routerLink="/catalogue">Catalogue</a>
+  <a mat-menu-item routerLink="/certificates">Certificates</a>
+  <a mat-menu-item routerLink="/publish">Reels</a>
+  <a mat-menu-item routerLink="/pieces">Sketches</a>
   <!--
     The atelier and what it keeps, which were reachable only by typing the
     address. Both are guarded and noindex like everything else here, and this
     menu is where a private page is found: a page nobody can navigate to is a
     page that exists for whoever remembers it.
   -->
+  <a mat-menu-item routerLink="/assets">Assets</a>
   <a mat-menu-item routerLink="/atelier">Atelier</a>
-  <a mat-menu-item routerLink="/pieces">Pieces</a>
   <button mat-menu-item type="button" (click)="signOut()">Sign out</button>
 </mat-menu>
 

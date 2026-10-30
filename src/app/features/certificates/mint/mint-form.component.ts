@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
-import { StudioHandoffService } from '../studio-handoff.service';
+import { HandoffService } from '../handoff.service';
 import {
   ReplaceFrontalDialogComponent,
   type ReplaceFrontalQuestion,
@@ -53,7 +53,7 @@ export class MintFormComponent {
   private readonly images = inject(ImageMatchService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
-  private readonly handoff = inject(StudioHandoffService);
+  private readonly handoff = inject(HandoffService);
   private readonly dialog = inject(MatDialog);
 
   protected readonly mediums = MEDIUMS;

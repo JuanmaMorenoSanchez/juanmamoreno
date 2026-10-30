@@ -1,0 +1,113 @@
+<section class="assets">
+  <header class="assets-head">
+    <h1>Assets</h1>
+    <p class="assets-said">
+      What the nights cut out of the catalogue, under the painting each came from.
+      @if (asked()) {
+        <strong data-testid="done-count">{{ done() }} of {{ cuts().length }}</strong>
+        paintings have parts.
+      }
+    </p>
+  </header>
+
+  @if (trouble(); as why) {
+    <p class="assets-trouble" data-testid="trouble">{{ why }}</p>
+  }
+
+  @if (!asked()) {
+    <p class="assets-said">Looking…</p>
+  } @else if (!cuts().length) {
+    <p class="assets-said" data-testid="empty">
+      Nothing in the catalogue yet, so there is nothing to have cut.
+    </p>
+  }
+
+  <ul class="assets-list" data-testid="paintings">
+    @for (cut of cuts(); track cut.tokenId) {
+      <li class="assets-painting" [class.assets-none]="!cut.parts.length">
+        <button
+          type="button"
+          class="assets-row"
+          [attr.data-testid]="'painting-' + cut.tokenId"
+          [disabled]="!cut.parts.length"
+          (click)="show(cut.tokenId)"
+        >
+          <span class="assets-name">{{ cut.name }}</span>
+          <!-- A dash rather than a nought: nothing has been cut from it, which
+               is a different thing from having been cut into nothing. -->
+          <span class="assets-count" [attr.data-testid]="'count-' + cut.tokenId">
+            {{ cut.parts.length || '—' }}
+          </span>
+        </button>
+
+        @if (open() === cut.tokenId) {
+          <ul class="assets-parts" [attr.data-testid]="'parts-' + cut.tokenId">
+            @for (piece of cut.parts; track piece.id) {
+              <!-- Fetched when scrolled to, and the small copy rather than the
+                   piece: a cut layer is ten megabytes and this is a page for
+                   looking at many of them. -->
+              <li appLazyLoad (visible)="kept.showSmall(piece.id)">
+                @if (kept.smallUrls()[piece.id]; as small) {
+                  <img [src]="small" [alt]="piece.kind" />
+                } @else if (kept.trouble()[piece.id]; as why) {
+                  <p class="assets-missed" [attr.data-testid]="'missed-' + piece.id">{{ why }}</p>
+                } @else {
+                  <p class="assets-missed">…</p>
+                }
+
+                @if (renaming() === piece.id) {
+                  <input
+                    class="assets-rename"
+                    [attr.data-testid]="'rename-' + piece.id"
+                    [value]="piece.kind"
+                    (keyup.enter)="rename(piece, $any($event.target).value)"
+                    (keyup.escape)="renaming.set(null)"
+                  />
+                } @else {
+                  <h3 [attr.data-testid]="'kind-' + piece.id">{{ piece.kind }}</h3>
+                }
+                <p class="assets-size">{{ piece.width }}×{{ piece.height }}</p>
+
+                <span class="assets-does">
+                  <!-- Hands it to the workshop, which fetches the full copy:
+                       what is drawn here is 480 pixels and working from that
+                       would throw away what the night spent the card on. -->
+                  <a
+                    mat-icon-button
+                    routerLink="/atelier"
+                    [queryParams]="{ from: piece.id }"
+                    matTooltip="Work from this"
+                    aria-label="Work from this"
+                    [attr.data-testid]="'work-from-' + piece.id"
+                  >
+                    <mat-icon>brush</mat-icon>
+                  </a>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Rename"
+                    aria-label="Rename"
+                    [attr.data-testid]="'start-rename-' + piece.id"
+                    (click)="renaming.set(piece.id)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Forget"
+                    aria-label="Forget"
+                    [attr.data-testid]="'forget-' + piece.id"
+                    (click)="forget(piece)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </li>
+    }
+  </ul>
+</section>

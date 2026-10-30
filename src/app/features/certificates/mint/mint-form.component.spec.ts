@@ -10,7 +10,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService } from '@shared/services/mint-api.service';
 import { of } from 'rxjs';
-import { StudioHandoffService } from '../studio-handoff.service';
+import { HandoffService } from '../handoff.service';
 import { MintFormComponent } from './mint-form.component';
 
 /**
@@ -68,7 +68,7 @@ describe('MintFormComponent, replacing a frontal view', () => {
           useValue: { ready: () => undefined, like: () => [], learn: async () => undefined },
         },
         {
-          provide: StudioHandoffService,
+          provide: HandoffService,
           useValue: {
             size: signal(null),
             sample: () => null,
@@ -276,7 +276,7 @@ describe('MintFormComponent, downloading without minting', () => {
           useValue: { ready: () => undefined, like: () => [], learn: async () => undefined },
         },
         {
-          provide: StudioHandoffService,
+          provide: HandoffService,
           useValue: {
             size: signal(null),
             sample: () => null,
@@ -339,7 +339,7 @@ describe('MintFormComponent, downloading without minting', () => {
     await form.download();
 
     expect(api['prepare']).not.toHaveBeenCalled();
-    expect(TestBed.inject(StudioHandoffService).startAgain).not.toHaveBeenCalled();
+    expect(TestBed.inject(HandoffService).startAgain).not.toHaveBeenCalled();
   });
 
   it('lets go of the url it made', async () => {

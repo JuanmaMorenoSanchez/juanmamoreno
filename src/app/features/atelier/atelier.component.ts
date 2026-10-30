@@ -9,6 +9,7 @@ import {
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute } from '@angular/router';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
 import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
@@ -111,6 +112,7 @@ export class AtelierComponent implements OnDestroy {
   protected readonly engine = inject(AtelierEngineService);
   private readonly catalogueImages = inject(CataloguePaintingService);
   protected readonly kept = inject(KeptService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly painting = signal<Blob | null>(null);
   protected readonly preview = signal<string | null>(null);
@@ -256,6 +258,31 @@ export class AtelierComponent implements OnDestroy {
     });
     this.recall();
     void this.kept.refresh();
+
+    const from = this.route.snapshot.queryParamMap.get('from');
+    if (from) void this.continueFrom(from);
+  }
+
+  /**
+   * Picks up the piece named in the address, as if it had been taken off the
+   * shelf by hand.
+   *
+   * So the Assets page can hand a cut layer straight to the workshop. The
+   * shelf here is what this session made; the library of everything the
+   * nights cut is a page of its own, and walking back to find a layer on a
+   * list of hundreds is not a thing anybody would do twice.
+   */
+  private async continueFrom(id: string): Promise<void> {
+    await this.kept.ensure();
+    const piece = this.kept.pieces().find((one) => one.id === id);
+    if (!piece) {
+      this.failure.set('that piece is not on the shelf any more');
+      return;
+    }
+    // The bytes, which `workFrom` reads back from the url the shelf fetched —
+    // and nothing has been scrolled to here, so nothing has fetched them.
+    await this.kept.show(id);
+    await this.workFrom(piece);
   }
 
   protected handTyped(event: Event): void {

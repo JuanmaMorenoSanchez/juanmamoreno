@@ -79,6 +79,14 @@ describe('AssetsPanelComponent', () => {
               asked.push(id);
               return Promise.resolve();
             },
+            // A picture is drawn from its small copy here: four cut layers is
+            // forty megabytes to glance at one painting. Same store in this
+            // stub, so what the tests assert about the tag is unchanged.
+            smallUrls: shown,
+            showSmall: (id: string) => {
+              asked.push(id);
+              return Promise.resolve();
+            },
             ensure: () => {
               ensured += 1;
               return Promise.resolve();

@@ -240,7 +240,7 @@ async function main() {
             // out of, and the subject as its kind, so it says which part.
             name: painting.name,
             tokenId: painting.tokenId,
-            kind: kindFor(one.subject),
+            kind: kindFor(one.subject, one.also),
             width,
             height,
           });

@@ -121,13 +121,26 @@ export function sizeOf(png) {
  * the subject is known, and the two agree because the engine names each file
  * after the subject it cut.
  */
-export function kindFor(subject) {
+export function kindFor(subject, also = []) {
   if (subject.includes('background')) return 'background';
-  const slug = subject
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return slug ? `layer-${slug}` : 'layer';
+
+  // Every name this one cut answered to, not only the first. Three at most:
+  // the backend keeps eighty characters and a name nobody can read is no
+  // better than a wrong one.
+  const named = [subject, ...also];
+  const slug = named
+    .slice(0, 3)
+    .map((one) =>
+      one
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+    )
+    .filter(Boolean)
+    .join('-and-');
+
+  if (!slug) return 'layer';
+  return named.length > 3 ? `layer-${slug}-and-more` : `layer-${slug}`;
 }
 
 /**

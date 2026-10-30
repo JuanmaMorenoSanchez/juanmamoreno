@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { AtelierComponent, SETTLES } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
@@ -192,6 +193,12 @@ describe('AtelierComponent', () => {
       imports: [AtelierComponent],
       providers: [
         provideZonelessChangeDetection(),
+        // The atelier reads `?from=` so the Assets page can hand it a layer.
+        // Nothing in these tests arrives that way.
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({}) } },
+        },
         {
           provide: KeptService,
           useValue: {

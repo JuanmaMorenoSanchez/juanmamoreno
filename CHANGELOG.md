@@ -5,6 +5,29 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.53.0
+
+- **feat** The guarded side is organised around what is being done. The menu
+  reads status, then what is waiting to be decided about, then the workshop
+  that makes it, and every entry is a noun naming one kind of thing: "waiting"
+  was part of two names and said the same thing twice while hiding that three
+  of those pages are the same shape.
+- **feat** `/certificates` is the queue and the form in one page. Choosing
+  between `/mint` and `/pendingmint` meant knowing which of the two you wanted
+  before you had found the painting; they are the queue and the act of one job.
+  Both old addresses still answer, and `features/studio` is finally named after
+  the page it draws.
+- **feat** `/assets` lists what the nights cut, under the painting each came
+  out of — drawn from the small copies (api 3.10.0), fetched when a tile is
+  scrolled to. A painting with nothing cut from it is listed too, because the
+  ledger that knows what is done lives in a file on one laptop and this says
+  the same thing from the bucket. A part can be forgotten, renamed, or handed
+  to the atelier to work from.
+- **fix** A cut that answered to several subjects is named for all of them. One
+  mask came back for a woman in green, a man in red and a kiss on a canvas
+  holding an embrace, and the picture kept was all three — filed under whichever
+  the model listed first, it was named for half of what is in it.
+
 ## 2.52.3
 
 - **fix** The atelier shelf fetches a piece when you scroll to it. It asked

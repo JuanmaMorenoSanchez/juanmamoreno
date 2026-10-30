@@ -9,7 +9,7 @@ import {
 } from '@domain/image/quad';
 import { describe, expect, it } from 'vitest';
 import { PhotoPrepComponent } from './photo-prep.component';
-import { StudioHandoffService } from '../studio-handoff.service';
+import { HandoffService } from '../handoff.service';
 
 /**
  * The bows are the part of the studio a test can reach without a photograph:
@@ -330,7 +330,7 @@ describe('PhotoPrepComponent — going in closer', () => {
 describe('PhotoPrepComponent — starting again', () => {
   it('clears the photograph when the form says the certificate is stored', () => {
     const { fixture, component } = setup();
-    const handoff = TestBed.inject(StudioHandoffService);
+    const handoff = TestBed.inject(HandoffService);
     component.fileName.set('DSC_0101.NEF');
     component.widthText.set('116');
     component.heightText.set('140,5');

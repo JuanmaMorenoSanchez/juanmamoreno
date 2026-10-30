@@ -26,7 +26,7 @@ export interface PreparedForMint {
 }
 
 @Injectable({ providedIn: 'root' })
-export class StudioHandoffService {
+export class HandoffService {
   private readonly held = signal<PreparedForMint | null>(null);
   private readonly asked = signal(0);
   private askers: ((prepared: PreparedForMint | null) => void)[] = [];

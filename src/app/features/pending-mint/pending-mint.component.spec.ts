@@ -287,7 +287,7 @@ describe('PendingMintComponent — when the api does not answer', () => {
   it('says plainly that nothing is waiting when nothing is', async () => {
     const fixture = asking(() => Promise.resolve([]));
 
-    expect(await settle(fixture, 0)).toContain('Nothing is waiting. Prepare a certificate');
+    expect(await settle(fixture, 0)).toContain('Nothing is waiting. Prepare one below.');
   });
 
   /**
@@ -300,7 +300,7 @@ describe('PendingMintComponent — when the api does not answer', () => {
 
     const said = await settle(fixture);
 
-    expect(said).not.toContain('Nothing is waiting. Prepare a certificate');
+    expect(said).not.toContain('Nothing is waiting. Prepare one below.');
     expect(said).toContain('did not answer');
   });
 

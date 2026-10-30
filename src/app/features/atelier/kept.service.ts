@@ -217,6 +217,22 @@ export class KeptService {
   }
 
   /**
+   * Corrects what a piece is a kind of.
+   *
+   * The only thing about a kept piece that can be changed, and it exists for
+   * the nightly run: a layer is named after the subject the segmenter was
+   * asked for, and when one mask answers three of them the name kept is
+   * whichever came first — so a cut holding two figures arrives called "a
+   * woman in green". The picture is right and the word is not.
+   */
+  async rename(id: string, kind: string): Promise<void> {
+    const named = inside<KeptPiece>(
+      await firstValueFrom(this.http.patch<unknown>(`${this.where}/${id}`, { kind }, this.authorised()))
+    );
+    this.held.update((all) => all.map((piece) => (piece.id === id ? { ...piece, ...named } : piece)));
+  }
+
+  /**
    * Object urls for pieces already fetched, by id.
    *
    * Because `imageUrl` cannot be put in an `img` or a `video`. The route is
@@ -305,14 +321,18 @@ export class KeptService {
 
   /** Lets go of one object url. Called when a piece is forgotten. */
   private release(id: string): void {
-    const url = this.shown()[id];
-    if (!url) return;
-    URL.revokeObjectURL(url);
-    this.shown.update((all) => {
-      const left = { ...all };
-      delete left[id];
-      return left;
-    });
+    // Both copies. A forgotten piece leaves nothing behind to be shown, and a
+    // blob url that outlives its piece is a handle on bytes nobody can reach.
+    for (const held of [this.shown, this.smallShown]) {
+      const url = held()[id];
+      if (!url) continue;
+      URL.revokeObjectURL(url);
+      held.update((all) => {
+        const left = { ...all };
+        delete left[id];
+        return left;
+      });
+    }
   }
 
   /**
@@ -324,6 +344,43 @@ export class KeptService {
    */
   imageUrl(id: string): string {
     return `${this.where}/${id}/image`;
+  }
+
+  /** Where to look at a small copy of one. Pictures only; a clip has none. */
+  thumbUrl(id: string): string {
+    return `${this.where}/${id}/thumbnail`;
+  }
+
+  /**
+   * Small copies, by id, for a page that shows many pieces at once.
+   *
+   * Kept apart from the full ones rather than replacing them. The atelier
+   * works *from* a piece — it hands the bytes back to the engine as the next
+   * thing's input — and working from a 480-pixel copy of a 2500-pixel layer
+   * would quietly throw away everything the night spent the card on.
+   */
+  private readonly smallShown = signal<Record<string, string>>({});
+  readonly smallUrls = this.smallShown.asReadonly();
+
+  /** Fetches a small copy so it can be displayed. Safe to call again. */
+  async showSmall(id: string): Promise<void> {
+    if (this.smallShown()[id] || this.asking.has(`small:${id}`)) return;
+    this.asking.add(`small:${id}`);
+    try {
+      const bytes = await firstValueFrom(
+        this.http.get(this.thumbUrl(id), { ...this.authorised(), responseType: 'blob' })
+      );
+      this.smallShown.update((all) => ({ ...all, [id]: URL.createObjectURL(bytes) }));
+      this.failed.update((all) => {
+        const left = { ...all };
+        delete left[id];
+        return left;
+      });
+    } catch (error) {
+      this.failed.update((all) => ({ ...all, [id]: said(error) }));
+    } finally {
+      this.asking.delete(`small:${id}`);
+    }
   }
 
   /** Whether this one needs a player rather than an `img`. */

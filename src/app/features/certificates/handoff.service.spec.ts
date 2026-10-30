@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { StudioHandoffService } from './studio-handoff.service';
+import { HandoffService } from './handoff.service';
 
 /**
  * The contract between the two halves of the studio.
@@ -9,8 +9,8 @@ import { StudioHandoffService } from './studio-handoff.service';
  * which is what removed a row of buttons whose only job was to say "now do the
  * expensive part".
  */
-describe('StudioHandoffService', () => {
-  let handoff: StudioHandoffService;
+describe('HandoffService', () => {
+  let handoff: HandoffService;
 
   const prepared = () => ({
     file: new File([new Uint8Array([1, 2, 3])], 'painting.jpg', { type: 'image/jpeg' }),
@@ -20,7 +20,7 @@ describe('StudioHandoffService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    handoff = TestBed.inject(StudioHandoffService);
+    handoff = TestBed.inject(HandoffService);
   });
 
   it('says nothing is ready until the corrector says so', () => {

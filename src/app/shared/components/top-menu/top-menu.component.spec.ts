@@ -204,14 +204,16 @@ describe('TopMenuComponent workshop menu', () => {
     expect(trigger?.getAttribute('aria-label')).toBe('Admin');
     // Activity first: whether the machine did its job is the thing worth
     // knowing before choosing which task to open.
+    // Each one a noun naming a single kind of thing: status, then what is
+    // waiting to be decided about, then the workshop that makes it.
     expect(itemsOf(trigger)).toEqual([
       'Activity',
-      'Mint',
-      'Reels waiting',
-      'Certificates waiting',
       'Catalogue',
+      'Certificates',
+      'Reels',
+      'Sketches',
+      'Assets',
       'Atelier',
-      'Pieces',
       'Sign out',
     ]);
   });
@@ -226,12 +228,12 @@ describe('TopMenuComponent workshop menu', () => {
     );
     expect(links).toEqual([
       '/activity',
-      '/mint',
-      '/publish',
-      '/pendingmint',
       '/catalogue',
-      '/atelier',
+      '/certificates',
+      '/publish',
       '/pieces',
+      '/assets',
+      '/atelier',
     ]);
   });
 

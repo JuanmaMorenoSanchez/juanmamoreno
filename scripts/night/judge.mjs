@@ -165,15 +165,21 @@ export function decide(made, wanted) {
     const copy = copyOf(layer, taken);
     if (copy) {
       refused.push({ subject: layer.label, why: `it is the same cut as "${copy}"` });
+      // The cut it is a copy of is named for both of them. One mask came back
+      // for "a woman in green", "a man in red" and "a kiss" on a canvas
+      // holding an embrace, and the picture kept was all three of them: named
+      // for whichever the model listed first, it is filed under a woman who
+      // is only half of what is in it.
+      keeping.find((one) => one.subject === copy)?.also.push(layer.label);
       continue;
     }
     taken.push(layer);
-    keeping.push({ subject: layer.label, file: layer.file });
+    keeping.push({ subject: layer.label, file: layer.file, also: [] });
   }
 
   if (wanted.includes(BACKGROUND)) {
     if (made?.background?.file) {
-      keeping.push({ subject: BACKGROUND, file: made.background.file });
+      keeping.push({ subject: BACKGROUND, file: made.background.file, also: [] });
     } else {
       // The background is the remainder of what was lifted off the canvas, so
       // a painting that gave up nothing has no remainder either. Said now

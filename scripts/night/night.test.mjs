@@ -147,6 +147,12 @@ describe('everything one painting decided', () => {
   };
   const wanted = [...made.layers.map((one) => one.label), BACKGROUND];
 
+  it('names the kept cut for the two it swallowed', () => {
+    const { keeping } = decide(made, wanted);
+
+    assert.deepEqual(keeping[0].also, ['a man in red', 'a kiss']);
+  });
+
   it('keeps the woman, the cup and the background, and nothing else', () => {
     const { keeping } = decide(made, wanted);
 
@@ -301,6 +307,22 @@ describe('what the shelf is told about a cut', () => {
 
   it('files the remainder as the background', () => {
     assert.equal(kindFor(BACKGROUND), 'background');
+  });
+
+  it('names a cut for every subject it answered to', () => {
+    // The embrace: one mask came back for three subjects and the picture
+    // kept is all three of them. Named for the first alone it is filed under
+    // a woman who is only half of what is in it.
+    assert.equal(
+      kindFor('a woman in green', ['a man in red', 'a kiss']),
+      'layer-a-woman-in-green-and-a-man-in-red-and-a-kiss'
+    );
+  });
+
+  it('stops at three names, however many one cut swallowed', () => {
+    // The backend keeps eighty characters, and a name nobody can read is no
+    // better than a wrong one.
+    assert.equal(kindFor('a', ['b', 'c', 'd']), 'layer-a-and-b-and-c-and-more');
   });
 
   it('keeps a kind usable as a name', () => {

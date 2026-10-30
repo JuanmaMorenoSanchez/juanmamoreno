@@ -59,8 +59,16 @@ export class AssetsPanelComponent {
 
     // The bytes cannot be fetched by the tag itself: the route wants an
     // Authorization header and neither an img nor a video can send one.
+    //
+    // The small copy for a picture, since this is a thumbnail in a row and a
+    // cut layer is a 2500-pixel png of ten megabytes — four of them is forty
+    // megabytes to glance at one painting. A clip has no small copy and is
+    // fetched as itself.
     effect(() => {
-      for (const piece of this.mine()) void this.kept.show(piece.id);
+      for (const piece of this.mine()) {
+        if (this.kept.isClip(piece)) void this.kept.show(piece.id);
+        else void this.kept.showSmall(piece.id);
+      }
     });
   }
 
@@ -83,7 +91,8 @@ export class AssetsPanelComponent {
 
   /** Empty until the bytes have been fetched, which is one frame later. */
   protected url(piece: KeptPiece): string {
-    return this.kept.urls()[piece.id] ?? '';
+    if (this.kept.isClip(piece)) return this.kept.urls()[piece.id] ?? '';
+    return this.kept.smallUrls()[piece.id] ?? '';
   }
 
   /** Roughly, because the exact byte count of a clip tells nobody anything. */

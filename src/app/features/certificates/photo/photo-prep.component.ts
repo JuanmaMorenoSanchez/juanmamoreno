@@ -36,7 +36,7 @@ import {
 } from '@domain/image/selection';
 import { solveHomography, warpPerspective } from '@domain/image/perspective';
 import { inject } from '@angular/core';
-import { StudioHandoffService } from '../studio-handoff.service';
+import { HandoffService } from '../handoff.service';
 
 import {
   bowControls,
@@ -602,7 +602,7 @@ export class PhotoPrepComponent {
   protected readonly resultUrl = signal<string | null>(null);
   /** Kept as well as the url, so the result can be handed on without a round trip through disk. */
   private readonly resultBlob = signal<Blob | null>(null);
-  private readonly handoff = inject(StudioHandoffService);
+  private readonly handoff = inject(HandoffService);
   protected readonly handedOver = signal(false);
   protected readonly problem = signal('');
 

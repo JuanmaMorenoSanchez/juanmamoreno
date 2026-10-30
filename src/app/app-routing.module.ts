@@ -111,12 +111,16 @@ export const routes: Routes = [
   // Sending it back to the page it is the translation of keeps the switcher
   // honest, and catches a bookmarked /es address too. Listed before the `es`
   // parent, which would otherwise claim the prefix and fail on the child.
-  { path: 'es/mint', redirectTo: '/mint' },
+  { path: 'es/mint', redirectTo: '/certificates' },
   // It was /studio until the atelier arrived and the two names read as the same
   // room. The old address still answers, because it is in his bookmarks and a
   // renamed page should not become a 404 for the one person who uses it.
-  { path: 'studio', redirectTo: '/mint' },
-  { path: 'es/studio', redirectTo: '/mint' },
+  { path: 'studio', redirectTo: '/certificates' },
+  { path: 'es/studio', redirectTo: '/certificates' },
+  // The queue and the form became one page. Both halves kept their address.
+  { path: 'mint', redirectTo: '/certificates' },
+  { path: 'pendingmint', redirectTo: '/certificates' },
+  { path: 'es/pendingmint', redirectTo: '/certificates' },
   { path: 'es/door', redirectTo: '/door' },
   { path: 'es/publish', redirectTo: '/publish' },
   // Outside the language trees: these are not pages anyone reads, so they need
@@ -127,12 +131,17 @@ export const routes: Routes = [
     loadComponent: () => import('@features/door/door.component').then((m) => m.DoorComponent),
     data: { title: 'Door', hideBreadcrumb: true, noindex: true },
   },
+  // The queue and the writing of a certificate, which were two pages: you had
+  // to know which of them you wanted before you had found the painting. Both
+  // old addresses still answer, because they are in his bookmarks.
   {
-    path: 'mint',
+    path: 'certificates',
     canActivate: [readerLanguage, adminOnly],
-    loadComponent: () => import('@features/studio/studio.component').then((m) => m.StudioComponent),
-    data: { title: 'Mint', hideBreadcrumb: true, noindex: true },
+    loadComponent: () =>
+      import('@features/certificates/certificates.component').then((m) => m.CertificatesComponent),
+    data: { title: 'Certificates', hideBreadcrumb: true, noindex: true },
   },
+  { path: 'es/certificates', redirectTo: '/certificates' },
   // Reels made overnight and waiting to be looked at. Alongside the mint page and
   // for the same reasons: his, unreadable to anyone else, and not a page.
   {
@@ -142,16 +151,7 @@ export const routes: Routes = [
       import('@features/publish/publish.component').then((m) => m.PublishComponent),
     data: { title: 'Publish', hideBreadcrumb: true, noindex: true },
   },
-  // The certificates that are ready and not yet written. His, like the studio
-  // and the reels: not a page, and never offered to a reader.
-  {
-    path: 'pendingmint',
-    canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/pending-mint/pending-mint.component').then((m) => m.PendingMintComponent),
-    data: { title: 'Pending mints', hideBreadcrumb: true, noindex: true },
-  },
-  { path: 'es/pendingmint', redirectTo: '/pendingmint' },
+
   // The catalogue as the artist sees it: one page where there were three —
   // what had lately gone to Instagram, the certificates that could be
   // corrected, and the paintings a dossier was built from. All three were the
@@ -205,6 +205,19 @@ export const routes: Routes = [
     data: { title: 'Pieces', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/pieces', redirectTo: '/pieces' },
+  // What the nights cut out of the catalogue, under the painting each came
+  // from. Its own page rather than the atelier's shelf: that shelf is what
+  // this session made, and hundreds of layers on it buried what the room is
+  // for. It is also the only place that says how much of the catalogue has
+  // been cut, since the ledger that knows lives on one laptop.
+  {
+    path: 'assets',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/assets/assets.component').then((m) => m.AssetsComponent),
+    data: { title: 'Assets', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/assets', redirectTo: '/assets' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

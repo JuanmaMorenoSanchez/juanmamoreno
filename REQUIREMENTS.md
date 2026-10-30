@@ -925,7 +925,7 @@ chosen file, the photograph on the stage, the corners, the measurements, the
 brushwork and the magnification all go, leaving the studio as it opens. The
 corrector hears this through the same handoff the form asks for the photograph
 on, counted rather than flagged so a second certificate clears it again.
-*Proven by:* `studio-handoff.service.spec.ts` (the count, and the held
+*Proven by:* `handoff.service.spec.ts` (the count, and the held
 photograph dropped) and `photo-prep.component.spec.ts` "starting again"
 
 ### R27 — The file says whose it is · met
@@ -1025,6 +1025,13 @@ Not translated, alone among the menus: these pages exist at one address rather
 than two and are written in one language, so a Spanish label would promise a
 Spanish page that is not there.
 
+**Every entry is a noun naming one kind of thing, in the order the work is
+done**: status, then what is waiting to be decided about, then the workshop
+that makes it. "Waiting" was part of two of the names and said the same thing
+twice while hiding that three of them are the same shape — something a machine
+made overnight, waiting to be published or binned. What is waiting is a count
+beside a name, not part of it.
+
 None of it is a security boundary — the guard on each route decides what is
 drawn and the backend decides what happens. This decides only what is offered.
 
@@ -1115,16 +1122,23 @@ the colour temperature, the tones, and the focus. A pass that found nothing
 wrong says so rather than staying silent.
 *Proven by:* the studio probe, which reads all five lines back
 
-### R65 — The mint page has no Spanish twin, and does not 404 · met
-`/es/mint` and `/es/door` lead to the English pages rather than the 404. The
-page is one person's workshop and is written in one language, but the language
-switcher builds its target from the address alone. `/es/studio` and `/studio`
-land there too, so a bookmark of the old name still works.
+### R65 — The private pages have no Spanish twin, and do not 404 · met
+`/es/certificates`, `/es/door` and the rest lead to the English pages rather
+than to the 404. They are one person's workshop and are written in one
+language, but the language switcher builds its target from the address alone.
+
+**Every name these pages have ever had still answers.** `/studio` became
+`/mint` when the atelier arrived and the two names read as the same room, and
+`/mint` and `/pendingmint` became `/certificates` when the queue of
+certificates waiting and the form that writes one stopped being two pages. All
+of them, and their Spanish twins, redirect to where the page is now: they are
+in his bookmarks, and a renamed page should not become a 404 for the one person
+who uses it.
 *Proven by:* `app-routing.module.spec.ts` "sends the Spanish address of every
-one-language page back to it", "still answers at the old address, by sending it
-to the new one", "no longer draws a page at the old address", and "declares them
-before the parent that would swallow them" — which is the fault that made every
-Spanish admin address a 404
+one-language page back to it", "still answers at every old address, by sending
+it to the new one", "no longer draws a page at the old address", and "declares
+them before the parent that would swallow them" — which is the fault that made
+every Spanish admin address a 404
 
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less
@@ -1615,7 +1629,7 @@ which is one more chance to type them differently.
 
 Downloading is still offered beside it, since a photograph is often wanted for
 something other than a certificate.
-*Proven by:* `studio-handoff.service.ts` and its use in both halves; the size
+*Proven by:* `handoff.service.ts` and its use in both halves; the size
 travels in the notation the collection writes, comma and all, so the form
 receives what it expects rather than something it has to correct.
 
@@ -1767,7 +1781,7 @@ a person might want without minting anything.
 
 On a screen with room, the photograph sits beside the controls and stays put as
 they scroll. Stacked, every slider was below the thing it moved.
-*Proven by:* `studio-handoff.service.spec.ts` (6 tests, including "answers an
+*Proven by:* `handoff.service.spec.ts` (6 tests, including "answers an
 ask that cannot be met, rather than leaving it waiting" and "answers every ask,
 not just the first"), which is the contract that lets the form offer its buttons
 before anything has been rendered.
@@ -4629,6 +4643,42 @@ never written is nothing and leaves a prompt alone; a hand that was written and
 switched on says whose manner at the end; it is read again every time, so an
 edit lands on the next run rather than the next restart; emptying it puts the
 prompts back as they were; and it makes the folder it needs)
+
+### R206 — What the nights cut has a page, and it says what is left · met
+Every picture the nightly run keeps is listed under the painting it came out
+of, at `/assets`, behind the guard like everything else of his.
+
+**They used to land on the atelier's shelf**, which is what this session made —
+so hundreds of layers buried the room they were made in, and *which parts does
+this painting have* had no answer. A painting with nothing cut from it is
+listed too, with a dash rather than a nought, because that is the other half of
+the page: the ledger that knows what the nights have done lives in a file on
+one laptop that the site cannot read and a reinstall would take with it. This
+says the same thing from the other side, derived from what actually reached the
+bucket, so it is true even when the ledger is not.
+
+**A clip is not a part of a painting.** A reel is filmed from a canvas and
+carries its token, so it would otherwise be counted here as one of the things
+cut out of it.
+
+**It is drawn from the small copies** (B-series: `GET
+/atelier-pieces/:id/thumbnail`), fetched when a tile is scrolled to. A cut
+layer is a 2500-pixel png of about ten megabytes, and a page of them drawn
+full-size is gigabytes to decide which one to open. The same is true of the
+atelier's own shelf, which asked for every kept piece as the page opened and
+now waits until one is scrolled to.
+
+**What can be done to one is what only a person can do**: forget it, correct
+what it is called, or hand it to the atelier to work from — which fetches the
+full copy, since working from a 480-pixel thumbnail would throw away what the
+night spent the card on. Nothing here publishes anything.
+*Proven by:* `assets.component.spec.ts` (7 tests on the grouping, which is the
+whole page: each part under its own painting, a painting with nothing kept as
+the work left, the catalogue's own order, a clip left out, a piece belonging to
+no painting left out); `atelier.component.spec.ts` "asks for a kept piece only
+once it is scrolled to"
+*Checked by:* the four cuts of "Cuando éramos felices" listed under it with
+their sizes
 
 ### R205 — The catalogue cuts itself up overnight · met
 Each night from one o'clock, on this laptop and unattended, every painting in

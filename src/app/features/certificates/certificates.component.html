@@ -1,0 +1,17 @@
+<div class="container margin-top certificates">
+  <h1 class="catalog-heading">Certificates</h1>
+
+  <!-- What is waiting first: it is the reason to be on this page most days. -->
+  <app-pending-mint />
+
+  <app-photo-prep />
+
+  <app-mint-form />
+
+  @if (identity(); as who) {
+    <p class="certificates-who">
+      {{ who.email }}
+      <button type="button" class="link-button" (click)="signOut()">Sign out</button>
+    </p>
+  }
+</div>

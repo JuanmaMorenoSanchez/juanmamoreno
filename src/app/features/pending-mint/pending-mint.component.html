@@ -1,5 +1,10 @@
-<div class="container margin-top pending">
-  <h1 class="catalog-heading">Waiting to be written</h1>
+<!--
+  A section of the certificates page rather than a page of its own: the queue
+  and the writing are one job, and this used to be at its own address with the
+  reels between them in the menu.
+-->
+<section class="pending">
+  <h2 class="catalog-heading">Waiting to be written</h2>
 
   <!--
     The price sits beside the button because it is the whole of what this costs:
@@ -259,6 +264,6 @@
     </ul>
   } @else if (waiting()) {
     <!-- Only when the api actually said so. Not knowing is said above. -->
-    <p class="pending-note">Nothing is waiting. Prepare a certificate in the studio.</p>
+    <p class="pending-note">Nothing is waiting. Prepare one below.</p>
   }
-</div>
+</section>
