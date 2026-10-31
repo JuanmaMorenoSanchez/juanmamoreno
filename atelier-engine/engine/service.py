@@ -63,7 +63,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    # PUT is here because `/hand` is one, and a method left out of this list is
+    # not a 405 from the route: the preflight is refused before the request is
+    # ever made, so the page says "Failed to fetch" and the engine's log is
+    # empty. Every verb any route answers to has to be named here.
+    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
     allow_headers=["*"],
 )
 

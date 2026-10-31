@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.55.1
+
+- **fix** The style switch can reach the engine. `PUT` was missing from the
+  engine's allowed CORS methods, so the browser's preflight was refused before
+  the request was made: the page said "Failed to fetch" and the engine's log
+  was empty, because nothing arrived. `/hand` is the only PUT there is, which
+  is how it went unnoticed — and it is why the switch appeared not to work.
+
 ## 2.55.0
 
 - **feat** The style is a switch, and the names are dead while it is off. It

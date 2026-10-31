@@ -67,6 +67,22 @@ class HandRouteTest(unittest.TestCase):
 
         self.assertTrue(said["using"])
 
+    def test_a_browser_may_ask_to_put(self) -> None:
+        # The switch is the only PUT on this engine, and PUT was missing from
+        # the allowed methods: the preflight was refused, so the page said
+        # "Failed to fetch" and nothing reached the route to be logged.
+        said = self.client.options(
+            "/hand",
+            headers={
+                "Origin": "https://juanmamoreno.com",
+                "Access-Control-Request-Method": "PUT",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+
+        self.assertEqual(said.status_code, 200)
+        self.assertIn("PUT", said.headers.get("access-control-allow-methods", ""))
+
     def test_flipping_the_switch_alone_does_not_erase_the_names(self) -> None:
         # The mirror of the test above, and the one that was missing. `hand`
         # defaulted to "" and was written whether or not it was sent, so a
