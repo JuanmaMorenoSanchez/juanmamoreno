@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.54.2
+
+- **fix** The page of cut assets can be reached. It was at `/assets`, which can
+  never work: the build writes the images, the fonts and the translations into
+  `assets/`, so a static host resolves that address as the directory it is —
+  301 to `/assets/`, then 404 — and the router never saw it. It is at `/parts`
+  now, and is still called Assets everywhere a person reads it.
+- **fix** robots.txt disallows every guarded address. `/atelier` and `/pieces`
+  went behind the guard and were never added; `/certificates` and `/parts`
+  arrived later still. That is the second time this list has failed the same
+  way — quietly, by not growing — so a test now reads the route table and
+  asserts every `adminOnly` route is disallowed in both languages.
+
 ## 2.54.1
 
 - **fix** The 2018 interview on `/texts` carries its byline. María Regina Pérez

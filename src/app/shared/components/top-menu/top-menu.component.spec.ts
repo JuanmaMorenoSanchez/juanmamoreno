@@ -232,7 +232,7 @@ describe('TopMenuComponent workshop menu', () => {
       '/certificates',
       '/publish',
       '/pieces',
-      '/assets',
+      '/parts',
       '/atelier',
     ]);
   });

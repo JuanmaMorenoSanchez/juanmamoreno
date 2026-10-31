@@ -35,9 +35,10 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'certificates', renderMode: RenderMode.Client },
   { path: 'es/certificates', renderMode: RenderMode.Client },
   // What the nights cut, which needs the sign-in and the backend to show
-  // anything at all.
-  { path: 'assets', renderMode: RenderMode.Client },
-  { path: 'es/assets', renderMode: RenderMode.Client },
+  // anything at all. At `/parts` because the build writes its own `assets/`
+  // directory and a static host resolves that first.
+  { path: 'parts', renderMode: RenderMode.Client },
+  { path: 'es/parts', renderMode: RenderMode.Client },
   { path: 'es/door', renderMode: RenderMode.Client },
   { path: 'es/mint', renderMode: RenderMode.Client },
   { path: 'es/publish', renderMode: RenderMode.Client },

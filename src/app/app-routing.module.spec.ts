@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { Route } from '@angular/router';
 import { RenderMode } from '@angular/ssr';
+import { adminOnly } from '@shared/guards/admin.guard';
 import { routes } from './app-routing.module';
 import { serverRoutes } from './app.routes.server';
 
@@ -66,7 +68,7 @@ describe('the route table', () => {
       ['es/publish', '/publish'],
       ['es/pendingmint', '/certificates'],
       ['es/catalogue', '/catalogue'],
-      ['es/assets', '/assets'],
+      ['es/parts', '/parts'],
     ]) {
       expect(at(spanish)?.redirectTo).toBe(english);
     }
@@ -81,8 +83,40 @@ describe('the route table', () => {
     const parent = routes.findIndex((route) => route.path === 'es');
 
     expect(parent).toBeGreaterThan(-1);
-    for (const spanish of ['es/mint', 'es/studio', 'es/door', 'es/assets']) {
+    for (const spanish of ['es/mint', 'es/studio', 'es/door', 'es/parts']) {
       expect(routes.findIndex((route) => route.path === spanish)).toBeLessThan(parent);
+    }
+  });
+
+  /**
+   * Robots is a list, and a list only names what somebody remembered to add.
+   *
+   * It has now failed twice the same way. `/pendingmint`, `/catalogue` and
+   * `/activity` were missing once and the file's own note says so; `/atelier`
+   * and `/pieces` then went behind the guard and were never added either, and
+   * `/certificates` and `/parts` arrived after that. Each time the file was
+   * right about every address anybody thought of.
+   *
+   * So this reads the route table instead. Both languages, because the Spanish
+   * address redirects rather than 404ing and is as much a way in.
+   */
+  it('disallows every guarded address, in both languages', () => {
+    const robots = readFileSync('src/robots.txt', 'utf8');
+    const disallowed = new Set(
+      robots
+        .split(/\r?\n/)
+        .filter((line) => line.startsWith('Disallow:'))
+        .map((line) => line.slice('Disallow:'.length).trim())
+    );
+
+    const guarded = routes
+      .filter((route) => (route.canActivate ?? []).includes(adminOnly))
+      .map((route) => route.path);
+
+    expect(guarded.length).toBeGreaterThan(0);
+    for (const path of guarded) {
+      expect(disallowed).toContain(`/${path}`);
+      expect(disallowed).toContain(`/es/${path}`);
     }
   });
 

@@ -572,15 +572,21 @@ prompt.
 *Proven by:* `admin-auth.service.spec.ts` "remembers the session"
 
 ### R18 — The page a certificate is prepared on is not public · met
-`/mint`, `/door`, `/publish`, `/pendingmint`, `/catalogue` and `/activity` are
-never prerendered, are excluded from the sitemap, are disallowed in robots.txt
-and carry `noindex`. Every one of them, not the three that existed when this
-was written: the later ones were missing from robots.txt until 1.95.0, which is
-the same way the build's own list of guarded addresses had failed — quietly, by
-not growing. `/studio`, which is what `/mint` was called before and which still
-redirects to it, is disallowed too — it is still a way in.
-*Proven by:* `app.routes.server.ts`, `robots.txt`, `verify-render` (none of them
-appears among the built pages)
+Every guarded address is never prerendered, is excluded from the sitemap, is
+disallowed in robots.txt and carries `noindex`, in both languages — the Spanish
+twin redirects rather than 404ing, so it is as much a way in. The addresses a
+page was called before are disallowed too, because they still redirect.
+
+**The list failed twice the same way, and is no longer a list.** `/pendingmint`,
+`/catalogue` and `/activity` were missing until 1.95.0; `/atelier` and `/pieces`
+then went behind the guard and were never added either, and `/certificates` and
+`/parts` arrived after that. Each time robots.txt was right about every address
+anybody thought of, which is how a hand-kept list fails: quietly, by not
+growing. A test now reads the route table, takes every route carrying
+`adminOnly`, and asserts robots.txt disallows it in both languages.
+*Proven by:* `app-routing.module.spec.ts` "disallows every guarded address, in
+both languages"; `app.routes.server.ts`, `robots.txt`, `verify-render` (none of
+them appears among the built pages)
 
 > **Not a security boundary.** The site is static: the bundle is public and
 > localStorage belongs to the reader, so the guard decides what the interface
@@ -4619,7 +4625,13 @@ prompts back as they were; and it makes the folder it needs)
 
 ### R206 — What the nights cut has a page, and it says what is left · met
 Every picture the nightly run keeps is listed under the painting it came out
-of, at `/assets`, behind the guard like everything else of his.
+of, at `/parts`, behind the guard like everything else of his.
+
+**Called Assets, addressed `/parts`.** It was at `/assets` for a day and could
+not be reached: the build writes the images, the fonts and the translations
+into `assets/`, so a static host resolved the address as that directory —
+301 to `/assets/`, then 404 — and the router never saw it. The page is Assets
+everywhere a person reads it; only the address gave way.
 
 **They used to land on the atelier's shelf**, which is what this session made —
 so hundreds of layers buried the room they were made in, and *which parts does

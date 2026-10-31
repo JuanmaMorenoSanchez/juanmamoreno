@@ -210,14 +210,20 @@ export const routes: Routes = [
   // this session made, and hundreds of layers on it buried what the room is
   // for. It is also the only place that says how much of the catalogue has
   // been cut, since the ledger that knows lives on one laptop.
+  //
+  // **Not `/assets`, which cannot work.** The build writes the images, the
+  // fonts and the translations into `assets/`, so a static host resolves that
+  // address as the directory it is: it answered 301 to `/assets/` and then
+  // 404, and the router was never reached. The page is called Assets
+  // everywhere a person sees it; only the address had to give way.
   {
-    path: 'assets',
+    path: 'parts',
     canActivate: [readerLanguage, adminOnly],
     loadComponent: () =>
       import('@features/assets/assets.component').then((m) => m.AssetsComponent),
     data: { title: 'Assets', hideBreadcrumb: true, noindex: true },
   },
-  { path: 'es/assets', redirectTo: '/assets' },
+  { path: 'es/parts', redirectTo: '/parts' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {
