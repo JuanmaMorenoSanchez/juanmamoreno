@@ -669,17 +669,25 @@ NOT_IN_A_CLIP = (
 NOT_A_PAINTING = "style, artwork, painting, picture"
 
 
-def unwanted(styling: bool) -> str:
+def unwanted(styling: bool, avoid: str = "") -> str:
     """The negative prompt for a clip, with or without the words that forbid paint.
 
     `styling` is whether a hand has been asked for. Pure, and separate from
     the generating, so that what the model is told can be read in a test
     rather than inferred from a clip four hours later.
+
+    `avoid` is this clip's own, and goes last. The rest of this is about what a
+    clip should never be; what one particular painting must not turn into is
+    not a thing to keep in a constant — a nude that comes back in a dress is
+    about that canvas, and the next clip wants nothing to do with it.
     """
     parts = [NOT_IN_A_CLIP[0]]
     if not styling:
         parts.append(NOT_A_PAINTING)
     parts.append(NOT_IN_A_CLIP[1])
+    said = (avoid or "").strip().strip(",")
+    if said:
+        parts.append(said)
     return house.never(", ".join(parts))
 
 
@@ -694,6 +702,7 @@ def animate(
     in_a_scene: bool = False,
     room: float = ROOM,
     from_the_painting: bool = True,
+    avoid: str = "",
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
 ) -> list[np.ndarray]:
@@ -751,7 +760,7 @@ def animate(
             raise StoppedEarly("stopped between steps")
         return kwargs
 
-    negative = unwanted(bool(house.applied()))
+    negative = unwanted(bool(house.applied()), avoid)
     # Encoded here rather than by the pipeline, which cannot do it without
     # `ftfy`. See `embed`.
     said = embed(pipeline, [house.asked(prompt), negative]).to(
@@ -821,6 +830,7 @@ def scenes(
     in_a_scene: bool = False,
     room: float = ROOM,
     from_the_painting: bool = True,
+    avoid: str = "",
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
     saying: Callable[[str | None], None] | None = None,
@@ -877,6 +887,9 @@ def scenes(
             # last frame of the one before, which is already in the motion —
             # cutting its opening would cut the film rather than the still.
             from_the_painting=from_the_painting or at > 0,
+            # The same for every scene: what this painting must not turn into
+            # does not stop being true at the second sentence.
+            avoid=avoid,
             watching=watching,
             stopped=stopped,
         )

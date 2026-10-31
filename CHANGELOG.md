@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.56.0
+
+- **feat** A clip can say what this painting must not become. **Not this**, on
+  both clip nodes, goes last in the negative prompt and is empty unless he
+  types in it. The standing negative is about what a clip should never be and
+  is the same for every canvas; a nude that comes back in a dress is about one
+  canvas, and there was nowhere to say so without editing a constant every
+  other clip reads. Every scene of a chained clip gets it.
+
 ## 2.55.1
 
 - **fix** The style switch can reach the engine. `PUT` was missing from the

@@ -4777,6 +4777,15 @@ wiped them, in silence, answering as though nothing had happened. Both fields
 are optional now and each is written only when it is given. An empty one that
 *is* sent still clears the names, which is how they are taken back.
 
+**A clip can say what this painting must not become.** The standing negative
+is about what a clip should never be — grey, static, six-fingered — and that is
+the same for every canvas. What one painting must not turn into is not: asked
+to film *Stolen pic II*, a nude, the model dressed her, and there was nowhere
+to say otherwise without editing a constant that every other clip reads. **Not
+this** sits under the sentence on both clip nodes, goes last in the negative,
+and is empty unless he types in it. Every scene of a chained clip gets it, since
+what a painting must not become does not stop being true at the second sentence.
+
 **The manner names what a style is.** Not "in the manner of Goya", which reads
 as licence to paint Goya's subjects, but his colour, his brushwork, his
 composition and his mood. A style decides how the thing looks and never what is
@@ -4785,7 +4794,7 @@ in it.
 **A hand switched off refuses nothing.** The unreadable-name check stops a run
 before it starts, which is right when the names are in the prompt and wrong
 when they are not.
-*Proven by:* `test_unwanted.py` "UnwantedTest" (6 tests: the four words are
+*Proven by:* `test_unwanted.py` "UnwantedTest" (9 tests, including "test_a_clip_can_say_what_this_painting_must_not_become", "test_saying_nothing_leaves_the_negative_as_it_was" and "test_a_stray_comma_does_not_double_up": the four words are
 there when no manner was asked for and gone when one was; everything that is
 not about paint survives either way; an illustration is still refused either
 way; and the style-off negative is asserted as the whole string, so a clip made

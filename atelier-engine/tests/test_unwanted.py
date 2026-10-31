@@ -83,6 +83,26 @@ class UnwantedTest(unittest.TestCase):
         self.assertNotIn(",,", unwanted(True))
         self.assertNotIn(", ,", unwanted(True))
 
+    def test_a_clip_can_say_what_this_painting_must_not_become(self) -> None:
+        # Written for "Stolen pic II", a nude the clip model kept putting a
+        # dress on. The standing negative is about what a clip should never
+        # be and is the same for every painting; this is about one canvas.
+        said = unwanted(False, "a dress, clothed")
+
+        self.assertTrue(said.endswith("a dress, clothed"))
+        # And everything that was there before it is still there.
+        self.assertIn("Cartoonish", said)
+        self.assertIn("walking backwards", said)
+
+    def test_saying_nothing_leaves_the_negative_as_it_was(self) -> None:
+        self.assertEqual(unwanted(False), unwanted(False, ""))
+        self.assertEqual(unwanted(True), unwanted(True, "   "))
+
+    def test_a_stray_comma_does_not_double_up(self) -> None:
+        # Typed as a list, and a trailing comma is what a person leaves.
+        self.assertEqual(unwanted(False, "a dress,"), unwanted(False, "a dress"))
+        self.assertNotIn(",,", unwanted(False, "a dress,"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -416,6 +416,7 @@ def _video(inputs, params, context) -> dict[str, Any]:
         in_a_scene=bool(params["in_a_scene"]),
         room=CLIP_ROOM,
         from_the_painting=bool(params.get("from_the_painting", True)),
+        avoid=str(params.get("avoid") or ""),
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
     )
@@ -480,6 +481,7 @@ def _scenes(inputs, params, context) -> dict[str, Any]:
         in_a_scene=bool(params["in_a_scene"]),
         room=CLIP_ROOM,
         from_the_painting=bool(params.get("from_the_painting", True)),
+        avoid=str(params.get("avoid") or ""),
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
         saying=saying,
@@ -691,6 +693,12 @@ CATALOGUE: dict[str, NodeType] = {
             ],
             params=[
                 Param("prompt", "text", "the dust drifts slowly, the light shifts", label="What happens"),
+                # What this one canvas must not turn into. The standing
+                # negative says what a clip should never be — grey, static,
+                # six-fingered — and that is the same for every painting. This
+                # is not: a nude that comes back in a dress is about that
+                # canvas, and the next clip wants nothing to do with it.
+                Param("avoid", "text", "", label="Not this"),
                 Param("seconds", "number", 3.0, label="How long", minimum=3.0, maximum=5.0, step=0.5),
                 Param(
                     "fun",
@@ -757,6 +765,8 @@ CATALOGUE: dict[str, NodeType] = {
                     ),
                     label="The scenes",
                 ),
+                # As on a single clip: what this canvas must not turn into.
+                Param("avoid", "text", "", label="Not this"),
                 Param("seconds", "number", 3.0, label="Each scene", minimum=3.0, maximum=5.0, step=0.5),
                 Param(
                     "fun",
