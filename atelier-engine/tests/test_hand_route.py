@@ -67,6 +67,30 @@ class HandRouteTest(unittest.TestCase):
 
         self.assertTrue(said["using"])
 
+    def test_flipping_the_switch_alone_does_not_erase_the_names(self) -> None:
+        # The mirror of the test above, and the one that was missing. `hand`
+        # defaulted to "" and was written whether or not it was sent, so a
+        # request carrying only the switch wiped the names in silence and
+        # answered as if nothing had happened. The page sends both, so nothing
+        # on it ever showed this; a curl, or anything else asking this engine,
+        # lost them.
+        self.client.put("/hand", json={"hand": "Goya, Neo Rauch", "using": True})
+
+        said = self.client.put("/hand", json={"using": False}).json()
+
+        self.assertEqual(said["hand"], "Goya, Neo Rauch")
+        self.assertFalse(said["using"])
+        self.assertEqual(house.hand(), "Goya, Neo Rauch")
+
+    def test_an_empty_hand_still_clears_it(self) -> None:
+        # Sent and empty is an answer; left out is not. Emptying the box is
+        # how the names are taken back, and that has to keep working.
+        self.client.put("/hand", json={"hand": "Goya", "using": True})
+
+        said = self.client.put("/hand", json={"hand": ""}).json()
+
+        self.assertEqual(said["hand"], "")
+
     def test_turns_it_off_again_and_keeps_the_names(self) -> None:
         self.client.put("/hand", json={"hand": "Goya", "using": True})
 

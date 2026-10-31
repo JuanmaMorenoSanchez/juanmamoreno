@@ -356,6 +356,14 @@
     background: transparent;
     color: inherit;
   }
+
+  /* Switched off the names are kept and not asked for, so the box has to look
+     like what it is: still readable, because they are worth seeing, and
+     plainly not in use. */
+  input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }
 
 .atelier-hand .atelier-caveat {

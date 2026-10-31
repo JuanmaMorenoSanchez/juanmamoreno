@@ -4763,6 +4763,20 @@ page's Save sends no switch at all, so saving a name cannot turn the style off
 underneath him: that is a mistake which costs four hours of generating to
 notice.
 
+**It is drawn as a switch, and the box beside it is dead while it is off.** It
+was a button reading "Style: off" — a control that describes a state rather
+than one that shows it — next to a field that still took typing, so nothing on
+the page said the names were being ignored. It is the same switch the engine
+has at the top of the page, and while it is off the names are visible, faded
+and not editable.
+
+**Neither half can be erased by saving the other.** The page always sent both,
+so this never showed there, but `PUT /hand` defaulted the names to empty and
+wrote them whether or not they were sent: a request carrying only the switch
+wiped them, in silence, answering as though nothing had happened. Both fields
+are optional now and each is written only when it is given. An empty one that
+*is* sent still clears the names, which is how they are taken back.
+
 **The manner names what a style is.** Not "in the manner of Goya", which reads
 as licence to paint Goya's subjects, but his colour, his brushwork, his
 composition and his mood. A style decides how the thing looks and never what is
@@ -4782,7 +4796,10 @@ the colour, the brushwork, the composition and the mood; and a hand switched off
 refuses nothing while a hand switched on still refuses an unreadable name);
 `test_hand_route.py` "HandRouteTest" (6 tests, of which the one that matters is
 that a save of the names alone leaves the switch where it was); and
-`atelier.component.spec.ts` "the style switch" (5 tests)
+`atelier.component.spec.ts` "the style switch" (5 tests); `atelier.component.spec.ts` "the style switch" (7 tests, including "will not
+let the names be typed while the style is off" and "lets them be typed once the
+style is on"); `test_hand_route.py` "test_flipping_the_switch_alone_does_not_erase_the_names"
+and "test_an_empty_hand_still_clears_it"
 
 ### R174 — What the atelier makes is the next thing it works from · met
 A kept piece has a **Work from this** button, which makes it the painting

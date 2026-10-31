@@ -1123,8 +1123,8 @@ describe('AtelierComponent', () => {
       fixture.detectChanges();
 
       const toggle = at(host, 'hand-using');
-      expect(toggle?.textContent).toContain('Style: off');
-      expect(toggle?.getAttribute('aria-pressed')).toBe('false');
+      expect(toggle?.textContent).toContain('Style off');
+      expect(toggle?.getAttribute('aria-checked')).toBe('false');
     });
 
     it('shows the style on when the engine says it is', async () => {
@@ -1133,8 +1133,31 @@ describe('AtelierComponent', () => {
       fixture.detectChanges();
 
       const toggle = at(host, 'hand-using');
-      expect(toggle?.textContent).toContain('Style: on');
-      expect(toggle?.getAttribute('aria-pressed')).toBe('true');
+      expect(toggle?.textContent).toContain('Style on');
+      expect(toggle?.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('will not let the names be typed while the style is off', async () => {
+      // Switched off the names are kept and not asked for, so a box that
+      // still took typing read as a field that was being used.
+      const { fixture, host } = build({ hand: 'Goya, Neo Rauch' });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      expect((at(host, 'hand') as HTMLInputElement).disabled).toBe(true);
+      expect((at(host, 'hand-save') as HTMLButtonElement).disabled).toBe(true);
+      // Kept, not cleared: they are worth having for the clip they are not
+      // wanted on.
+      expect((at(host, 'hand') as HTMLInputElement).value).toBe('Goya, Neo Rauch');
+    });
+
+    it('lets them be typed once the style is on', async () => {
+      const { fixture, host } = build({ hand: 'Goya', using: true });
+      await new Promise((settle) => setTimeout(settle, 0));
+      fixture.detectChanges();
+
+      expect((at(host, 'hand') as HTMLInputElement).disabled).toBe(false);
+      expect((at(host, 'hand-save') as HTMLButtonElement).disabled).toBe(false);
     });
 
     it('turns it on when pressed, and writes it down at once', async () => {
@@ -1149,7 +1172,7 @@ describe('AtelierComponent', () => {
       // Saved on the press rather than waiting for Save: it is one bit and
       // there is nothing to type.
       expect(switched).toEqual([true]);
-      expect(at(host, 'hand-using')?.textContent).toContain('Style: on');
+      expect(at(host, 'hand-using')?.textContent).toContain('Style on');
     });
 
     it('turns it off again, and the names are still there', async () => {
@@ -1162,7 +1185,7 @@ describe('AtelierComponent', () => {
       fixture.detectChanges();
 
       expect(switched).toEqual([false]);
-      expect(at(host, 'hand-using')?.textContent).toContain('Style: off');
+      expect(at(host, 'hand-using')?.textContent).toContain('Style off');
       // The whole point of a switch rather than an empty field.
       expect(at(host, 'hand-names')?.textContent).toContain('Goya');
     });
@@ -1179,7 +1202,7 @@ describe('AtelierComponent', () => {
       // Nothing written, so the engine keeps what it had. A save that turned
       // the style off would cost four hours of generating to notice.
       expect(switched).toEqual([]);
-      expect(at(host, 'hand-using')?.textContent).toContain('Style: on');
+      expect(at(host, 'hand-using')?.textContent).toContain('Style on');
     });
   });
 

@@ -483,10 +483,15 @@ def hand() -> JSONResponse:
 
 @app.put("/hand")
 def set_hand(
-    hand: str = Body("", embed=True),
-    # Optional, and only written when it is given: the names and the switch are
-    # saved by two different gestures on the page, and neither should reset the
-    # other by being left out.
+    # Both optional, and each written only when it is given: the names and the
+    # switch are saved by two different gestures on the page, and neither
+    # should reset the other by being left out.
+    #
+    # `hand` defaulted to "" and was written unconditionally, so a request that
+    # carried only the switch erased the names — in silence, with the answer
+    # looking perfectly ordinary. The page always sent both, so nothing on it
+    # ever showed the fault; anything else asking this engine lost them.
+    hand: str | None = Body(None, embed=True),
     using: bool | None = Body(None, embed=True),
 ) -> JSONResponse:
     """Writes it down, and says which of the names mean anything.
@@ -500,7 +505,7 @@ def set_hand(
     asked about once ever and written down; a run then only reads the
     verdicts, which is free, and refuses if any of them is a no.
     """
-    written = house.set_hand(hand)
+    written = house.set_hand(hand) if hand is not None else house.hand()
     if using is not None:
         house.set_using(using)
 

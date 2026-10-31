@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.55.0
+
+- **feat** The style is a switch, and the names are dead while it is off. It
+  was a button reading "Style: off" — a control that describes a state rather
+  than one that shows it — beside a field that still took typing, so nothing
+  said the names were being ignored. It is the same switch the engine has at
+  the top of the page; switched off the names stay visible, faded and not
+  editable, and the engine was already ignoring them.
+- **fix** The switch can no longer erase the names. `PUT /hand` defaulted the
+  names to empty and wrote them whether or not they were sent, so a request
+  carrying only the switch wiped them in silence. The page always sent both, so
+  it never showed there. Needs the engine restarting to take effect.
+
 ## 2.54.2
 
 - **fix** The page of cut assets can be reached. It was at `/assets`, which can

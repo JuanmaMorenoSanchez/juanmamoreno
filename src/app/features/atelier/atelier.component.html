@@ -432,13 +432,42 @@
        this is the only place it is ever shown. Empty on a fresh clone, and
        the prompts are then the prompts. -->
   <section class="atelier-hand">
+    <!-- The switch first, because it decides whether the box beside it means
+         anything. The same switch the engine has at the top of the page: it
+         was a button reading "Style: off", which is a button that describes a
+         state rather than a control that shows one. Saved on the press — it is
+         one bit and there is nothing to type. -->
+    <button
+      type="button"
+      class="engine-switch"
+      role="switch"
+      [attr.aria-checked]="styling()"
+      [disabled]="handSaving()"
+      (click)="toggleStyling()"
+      [matTooltip]="
+        styling()
+          ? 'a clip is asked for these painters’ manner — switch off for photographic'
+          : 'photographic: the names are kept, and not asked for'
+      "
+      data-testid="hand-using"
+    >
+      <span class="engine-track" [class.engine-on]="styling()">
+        <span class="engine-knob"></span>
+      </span>
+      <span class="engine-word">{{ styling() ? 'Style on' : 'Style off' }}</span>
+    </button>
     <label class="atelier-hand-says">
       <span>Style and composition</span>
+      <!-- Switched off, the names are kept and not asked for, so the box is
+           not a thing to type in: it said nothing about that and read as a
+           field that was being used. -->
       <input
         type="text"
         [value]="hand()"
         (input)="handTyped($event)"
         (keydown.enter)="saveHand()"
+        [disabled]="!styling() || handSaving()"
+        [attr.title]="styling() ? null : 'switch the style on to change these'"
         placeholder="Painters whose hand and composition the work should lean towards"
         data-testid="hand"
       />
@@ -447,28 +476,10 @@
       type="button"
       class="atelier-minor"
       (click)="saveHand()"
-      [disabled]="handSaving()"
+      [disabled]="!styling() || handSaving()"
       data-testid="hand-save"
     >
       {{ handSaving() ? 'Saving…' : handSaved() ? 'Saved' : 'Save' }}
-    </button>
-    <!-- The switch, which is the whole difference between a photographic clip
-         and a clip in somebody's manner. Saved on the press: it is one bit and
-         there is nothing to type. -->
-    <button
-      type="button"
-      class="atelier-minor"
-      [attr.aria-pressed]="styling()"
-      [disabled]="handSaving()"
-      (click)="toggleStyling()"
-      [matTooltip]="
-        styling()
-          ? 'a clip is asked for these painters’ manner — press for photographic'
-          : 'photographic: the names are kept, and not asked for'
-      "
-      data-testid="hand-using"
-    >
-      {{ styling() ? 'Style: on' : 'Style: off' }}
     </button>
     @if (handNames().length) {
       <!-- A mark against each name. Five of the seven first written here meant
