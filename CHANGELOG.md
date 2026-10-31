@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.54.1
+
+- **fix** The 2018 interview on `/texts` carries its byline. María Regina Pérez
+  Castillo wrote it, and it was the one entry on the page with no author.
+
 ## 2.54.0
 
 - **feat** The queue of certificates waiting to be written is gone. It could

@@ -51,6 +51,7 @@ export const PUBLISHED_TEXTS: PublishedText[] = [
   },
   {
     title: 'Lo peor y lo mejor de la selfie generation',
+    author: 'María Regina Pérez Castillo',
     publication: 'Plataforma de Arte Contemporáneo',
     year: 2018,
     kind: 'textsPage.kind.interview',
