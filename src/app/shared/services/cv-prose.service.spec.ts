@@ -37,6 +37,25 @@ describe('CvProseService', () => {
     it('separates the sections, so the model can tell a show from a prize', () => {
       expect(service.asList()).toContain('\n\n');
     });
+
+    /**
+     * Two of the entries were translation keys in the old array and were put
+     * into the list unresolved, so the model was told the artist had won a
+     * `cv.awards.fag`; eleven more arrived wrapped in the `<a>` tags the page
+     * rendered them with. The entries carry their own text now.
+     */
+    it('names the award, rather than handing over a key or a tag', () => {
+      // The entry's own line: the country on it is still a key, and here with
+      // no dictionary loaded it stays one. The title is the claim.
+      const line = service
+        .asList()
+        .split('\n')
+        .find((one) => one.includes('Antonio Gala'));
+
+      expect(line).toBeDefined();
+      expect(line).not.toContain('cv.awards');
+      expect(line).not.toContain('<a');
+    });
   });
 
   it('asks the api for the language being read', async () => {

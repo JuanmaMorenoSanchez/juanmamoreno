@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CV_OBJECT } from '@domain/cv/cv.constants';
+import { cvSections } from '@domain/cv/cv';
 import { environment } from '@environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { CvService } from '@shared/services/cv.service';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { catchError, firstValueFrom, map, of } from 'rxjs';
 
@@ -17,16 +18,17 @@ export interface CvProse {
  * The cv as a biography rather than a table.
  *
  * The api writes it and keeps it; this asks for it, and — for the one person
- * allowed to — asks for a new one. The list is rendered here and sent with the
- * request, because the cv lives in this repository and nowhere else: a copy on
- * the server would be a second thing to remember to update, and the stale one
- * would be the one nobody was looking at.
+ * allowed to — asks for a new one. The list is still rendered here and sent
+ * with the request, which was once a necessity and is now a choice: the cv
+ * lives in the api too, so the biography is written about the list he was
+ * looking at when he asked for it.
  */
 @Injectable({ providedIn: 'root' })
 export class CvProseService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
   private readonly auth = inject(AdminAuthService);
+  private readonly cv = inject(CvService);
 
   /** What has been written in this language, or null if nothing has. */
   public read(lang: string): Promise<CvProse | null> {
@@ -60,16 +62,24 @@ export class CvProseService {
    * Year, then what happened, then where — the same three the page shows in
    * three columns, which a model reads as well as a reader does and better than
    * it reads a table.
+   *
+   * The titles are text now. They used to be whatever was in the array: two of
+   * them were translation keys and reached the model as `cv.awards.fag`, and
+   * eleven more arrived wrapped in the `<a>` tags the page rendered them with.
    */
   public asList(): string {
-    const say = (key?: string) => (key ? (this.translate.instant(key) as string) : '');
+    const lang = this.translate.currentLang()?.startsWith('es') ? 'es' : 'en';
 
-    return CV_OBJECT.map((section) => {
-      const lines = section.items.map((item) => {
-        const where = [say(item.venue), item.city, say(item.country)].filter(Boolean).join(', ');
-        return `${item.year} — ${item.title}${where ? `, ${where}` : ''}`;
-      });
-      return `${say(section.title)}\n${lines.join('\n')}`;
-    }).join('\n\n');
+    return cvSections(this.cv.entries(), lang)
+      .map((section) => {
+        const lines = section.items.map((item) => {
+          const where = [item.venue, item.city, this.translate.instant(item.countryKey) as string]
+            .filter(Boolean)
+            .join(', ');
+          return `${item.year} — ${item.title}${where ? `, ${where}` : ''}`;
+        });
+        return `${this.translate.instant(section.title) as string}\n${lines.join('\n')}`;
+      })
+      .join('\n\n');
   }
 }

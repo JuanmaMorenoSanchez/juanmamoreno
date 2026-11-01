@@ -8,10 +8,11 @@ import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTIST } from '@domain/artwork/mint-vocabulary';
 import { formatPrice, Multipliers, priceOf } from '@domain/artwork/pricing';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
-import { CV_OBJECT } from '@domain/cv/cv.constants';
+import { cvSections } from '@domain/cv/cv';
 import { STATEMENT_OBJECT } from '@domain/statement/statement.constants';
 import { TranslateService } from '@ngx-translate/core';
 import { AvailabilityService } from '@shared/services/availability.service';
+import { CvService } from '@shared/services/cv.service';
 import type { jsPDF } from 'jspdf';
 import { compressImage, grayscaleZoomedSquare, loadFirstAvailableImage } from './pdf-image.utils';
 import { PDF_COLORS, PDF_PAGE, PDF_TYPE } from './pdf-theme';
@@ -45,6 +46,7 @@ export class PdfService {
   private artworkService = inject(ARTWORK_PORT);
   private translateService = inject(TranslateService);
   private availability = inject(AvailabilityService);
+  private cv = inject(CvService);
 
   // The jsPDF module is loaded on demand so it stays out of the initial
   // bundle; cached after first use so repeat downloads don't re-import.
@@ -263,6 +265,10 @@ export class PdfService {
      */
     contactName: string = ARTIST
   ): Promise<jsPDF> {
+    // Before anything is drawn, because the cv page is written near the end
+    // and a dossier is often the first thing a visit asks for.
+    if (includeCv) await this.cv.refresh();
+
     const writer = await this.newWriter();
     // Report progress (0..1) after each section so the button can show a
     // percentage — the artwork pages (each loading and compressing an image)
@@ -326,6 +332,7 @@ export class PdfService {
    * with who it belongs to and the one line that places him.
    */
   public async createCV(): Promise<jsPDF> {
+    await this.cv.refresh();
     const writer = await this.newWriter(PDF_PAGE.a4);
 
     writer.paragraph(ARTIST, { size: PDF_TYPE.size.coverArtist, style: 'bold' });
@@ -536,12 +543,21 @@ export class PdfService {
 
   // --- CV: quiet year column, one airy entry per line ---
 
+  /**
+   * The career, read from the api's copy rather than from a constant.
+   *
+   * The entries carry their own two languages, so only the five headings and
+   * the six countries are still looked up. A sheet cannot be clicked, so the
+   * links the entries carry are not printed — they were markup inside the
+   * titles until now, and the writer stripped them out of this page anyway.
+   */
   private addCv(writer: PdfWriter): void {
     const yearColumn = 18;
     const entryX = writer.margin + yearColumn;
     const entryWidth = writer.contentWidth - yearColumn;
+    const lang = this.translateService.currentLang()?.startsWith('es') ? 'es' : 'en';
 
-    CV_OBJECT.forEach((section) => {
+    cvSections(this.cv.entries(), lang).forEach((section) => {
       writer.ensureRoom(26);
       writer.heading(this.translateService.instant(section.title));
       writer.space(3);
@@ -553,18 +569,14 @@ export class PdfService {
           color: PDF_COLORS.faint,
         });
 
-        writer.paragraph(this.translateService.instant(item.title), {
+        writer.paragraph(item.title, {
           x: entryX,
           maxWidth: entryWidth,
           style: 'italic',
           lineHeight: 4.8,
         });
 
-        const details = [
-          item.venue && this.translateService.instant(item.venue),
-          item.city,
-          this.translateService.instant(item.country),
-        ]
+        const details = [item.venue, item.city, this.translateService.instant(item.countryKey)]
           .filter(Boolean)
           .join(', ');
         writer.paragraph(details, {

@@ -5,6 +5,26 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.57.0
+
+- **feat** The cv comes from the api, in both languages. It was an array of
+  translation keys in this repository, so adding a show meant an edit, a commit
+  and a deploy of four hundred pages - and the labels those keys pointed at
+  lived in `en.json` and `es.json`, which only a deploy could change either, so
+  the one document on the site that changes several times a year was the one he
+  could not change. Each entry now carries its own English and Spanish, with
+  Spanish absent meaning the same as English, which is most of them. The five
+  headings and the six countries are still keys, because a closed set the page
+  names is the page's own words. `prebuild` writes the api's answer into the
+  bundled copy the prerendered page is drawn from, so `/cv` is still a whole
+  page with no javascript, and a build that cannot reach the api keeps the cv
+  it already has. Links became fields instead of `<a>` tags inside the titles:
+  one of those anchors had never been closed, nine opened a single reused
+  window, and the printed cv and `artist.json` both had to strip them to read
+  the text - `artist.json` now carries the link instead. The biography's list
+  is fixed as a side effect: two titles used to reach the model as raw keys.
+  Nothing a reader sees has changed, bar one duplicate link on Interpaisajes.
+
 ## 2.56.0
 
 - **feat** A clip can say what this painting must not become. **Not this**, on

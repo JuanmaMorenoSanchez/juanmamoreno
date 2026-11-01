@@ -7,10 +7,13 @@
 // languages, so an assistant can state them instead of guessing from whatever
 // it happens to remember about the name.
 //
-// **Built from the same data the cv page renders**, not from a copy. The page
-// is a list of translation keys over `CV_OBJECT`, so this reads that array and
-// resolves the keys through the same dictionaries — a show added to the cv is
-// in this file at the next build, and a show that is not on the cv cannot be.
+// **Built from the same data the cv page renders**, not from a copy. The career
+// comes from the api now, and `prebuild` writes that answer into
+// `cv-fallback.constants.ts` — the very constant the prerendered page draws
+// itself from. So this reads that file rather than asking the api again: a show
+// on the cv is in this file at the next build, a show that is not on the cv
+// cannot be, and the file cannot disagree with the page even if a show is added
+// between one request and the next.
 //
 // No price, and nothing that costs money to serve; the same two rules as the
 // catalogue, checked the same way at the end.
@@ -20,7 +23,8 @@ const ORIGIN = 'https://juanmamoreno.com';
 const OUTPUT = 'dist/juanmamoreno/browser/artist.json';
 const LANGUAGES = ['en', 'es'];
 
-const CV_SOURCE = 'src/app/domain/cv/cv.constants.ts';
+const CV_SOURCE = 'src/app/domain/cv/cv-fallback.constants.ts';
+const CV_SECTIONS_SOURCE = 'src/app/domain/cv/cv-entry.entity.ts';
 const STATEMENT_SOURCE = 'src/app/domain/statement/statement.constants.ts';
 
 /**
@@ -75,16 +79,6 @@ function balanced(source, from, file, name) {
   throw new Error(`could not find the end of ${name} in ${file}`);
 }
 
-/** The `COUNTRIES` enum, which the cv items refer to by member. */
-async function countries(file) {
-  const source = await readFile(file, 'utf8');
-  const block = source.slice(source.indexOf('enum COUNTRIES'), source.indexOf('}', source.indexOf('enum COUNTRIES')));
-  const members = {};
-  for (const [, member, key] of block.matchAll(/(\w+)\s*=\s*'([^']+)'/g)) members[member] = key;
-  if (!Object.keys(members).length) throw new Error('the COUNTRIES enum has moved');
-  return members;
-}
-
 const dictionaries = Object.fromEntries(
   await Promise.all(
     LANGUAGES.map(async (lang) => [
@@ -112,21 +106,39 @@ const asText = (html) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const COUNTRIES = await countries(CV_SOURCE);
-const cvObject = await literal(CV_SOURCE, 'CV_OBJECT', { COUNTRIES });
+const cvEntries = await literal(CV_SOURCE, 'CV_AT_LAST_BUILD');
+const sectionTitles = await literal(CV_SECTIONS_SOURCE, 'CV_SECTION_TITLES');
 const statement = await literal(STATEMENT_SOURCE, 'STATEMENT_OBJECT');
 
+if (!cvEntries.length) throw new Error(`${CV_SOURCE} holds no cv entries`);
+
+/** Spanish where it has its own words, English where the two are one sentence. */
+const inLanguage = (text, lang) =>
+  text ? ((lang === 'es' ? text.es : undefined) ?? text.en) : undefined;
+
+/**
+ * The career, sectioned as the page sections it.
+ *
+ * A kind nothing sits under gets no section, the same as on the page — and the
+ * links the entries carry come through, which they could not when they were
+ * `<a>` tags inside the titles and had to be stripped to be read as text.
+ */
 const career = (lang) =>
-  cvObject.map((section) => ({
-    section: say(lang, section.title),
-    items: section.items.map((item) => ({
-      year: item.year,
-      title: asText(say(lang, item.title)),
-      venue: asText(say(lang, item.venue)) || undefined,
-      city: item.city,
-      country: asText(say(lang, item.country)) || undefined,
-    })),
-  }));
+  Object.entries(sectionTitles)
+    .map(([kind, titleKey]) => ({
+      section: say(lang, titleKey),
+      items: cvEntries
+        .filter((entry) => entry.kind === kind)
+        .map((entry) => ({
+          year: entry.year,
+          title: inLanguage(entry.title, lang),
+          venue: inLanguage(entry.venue, lang),
+          city: entry.city,
+          country: asText(say(lang, `cv.countries.${entry.country}`)) || undefined,
+          url: entry.titleUrl ?? entry.venueUrl,
+        })),
+    }))
+    .filter((section) => section.items.length);
 
 const statementIn = (lang) => [
   asText(say(lang, statement.introduction.content)),

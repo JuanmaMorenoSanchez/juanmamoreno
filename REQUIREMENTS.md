@@ -505,6 +505,45 @@ three carries an icon and a label and no word, that a reader is shown the door
 and nothing behind it, and that the theme names what it will switch to rather
 than what is already showing)
 
+### R207 — The cv is data, in both languages, and not in this repository · met
+The career — the solo shows, the collective shows, the awards and residencies,
+the conference, the education — comes from `GET /cv/entries` rather than from an
+array in this repository, and each entry carries its own English and Spanish
+instead of pointing at a translation key.
+
+It exists because the one document on this site that changes several times a
+year was the one he could not change. Adding a show meant an edit, a commit and
+a deploy of four hundred pages, and the labels the entries pointed at lived in
+`en.json` and `es.json`, which only a deploy could change either. It also exists
+so that a painting has something to point at: an exhibition on a painting's page
+will be an id into this list.
+
+**The page is still whole without javascript.** `prebuild` writes the api's
+answer into `cv-fallback.constants.ts` and the prerendered page is drawn from
+that, so the career is in the html before any request is sent and a show added
+since appears a moment later. A build that cannot reach the api keeps the copy
+it already has: a cv a week old is worth having and an empty one is not.
+
+**Where the line falls between a key and a field.** The five headings and the
+six countries are still translation keys, because a closed set the page names is
+the page's own words and nobody adds a seventh country from a phone. Everything
+he can add to — titles, venues, award names — is data. Spanish absent means the
+same as English, which is most of the cv: the titles are Spanish proper nouns
+that an English page shows unchanged.
+
+**Links became fields.** They were `<a>` tags inside the titles, rendered with
+`innerHTML`, which is why anything that was not a browser had to strip them —
+`artist.json` did, and so did the printed cv. Three faults went out with them:
+one anchor had never been closed, nine opened one reused window instead of a new
+tab, and *Interpaisajes* lost the second of its two links, an entry carrying one
+per field. Nine dead keys went out of both dictionaries with them.
+*Proven by:* `cv.spec.ts` (10 tests, including that Spanish falls back to
+English and never the other way, that a kind nothing sits under gets no heading,
+and that the order the api gave is not re-sorted); `cv-entries.service.spec.ts` in the
+backend; and the prerendered `/cv` and `/es/cv` compared line by line against
+the pages the old array rendered — same entries, same order, same links bar the
+one recorded above
+
 ### R110 — The cv can be read as a life rather than a table · met
 Beside the download on the cv page, a second button offers the same career as
 three or four paragraphs. A dossier can carry either.
@@ -521,16 +560,20 @@ also a biography of a living person written by a machine, so he reads it before
 anybody else does. Until he has written one the page offers nothing, because an
 empty offer is worse than no offer.
 
-The list is rendered here and sent with the request. The cv lives in this
-repository and nowhere else, and a copy on the server would be a second thing to
-remember to update — the stale one being the one nobody was looking at.
+The list is rendered here and sent with the request. That was once a necessity,
+because the cv lived in this repository and nowhere else; since [R207](#r207) it
+lives in the api too, so this is now a choice — the biography is written about
+the list he was looking at when he asked for it. The titles in that list are his
+words now rather than translation keys: two of them used to reach the model
+unresolved, as `cv.awards.fag`.
 
 **The cv downloaded on its own opens with his name and one line placing him**;
 inside a dossier it does not, because the cover has already said both and the
 reader has come through twenty pages of paintings to reach it.
-*Proven by:* `cv-prose.service.spec.ts` (5 tests, including what the list looks
-like by the time a model sees it), and the downloaded cv read back from the
-file: A4, and carrying the name, the year, the city and the gallery
+*Proven by:* `cv-prose.service.spec.ts` (6 tests, including what the list looks
+like by the time a model sees it, and that an award reaches it by its name
+rather than as a key or a tag), and the downloaded cv read back from the file:
+A4, and carrying the name, the year, the city and the gallery
 
 ### R103 — Nothing on the site says what a painting costs · met
 Not the page, not the structured data, not the offer that says the painting is
@@ -1855,10 +1898,15 @@ from whatever it remembers of the name, which is nothing, or invents something.
 The facts that settle it — the Pollock-Krasner award, the Antonio Gala
 residency, the gallery — were on the cv page and reachable only by reading it.
 
-**Built out of the cv page's own data, not a copy of it.** The generator reads
-`CV_OBJECT` and `STATEMENT_OBJECT` from the source and resolves their keys
-through the same dictionaries the page uses, so a show added to the cv is in the
-file at the next build and a show that is not on the cv cannot be in it. Two
+**Built out of the cv page's own data, not a copy of it.** The career comes from
+the api since [R207](#r207), and `prebuild` writes that answer into
+`cv-fallback.constants.ts` — the constant the prerendered page itself is drawn
+from. The generator reads that file and `STATEMENT_OBJECT`, so a show added to
+the cv is in the file at the next build, a show that is not on the cv cannot be
+in it, and the file cannot disagree with the page even if a show is added
+between one request and the next. Each entry now also carries its link, which
+it could not while the links were `<a>` tags inside the titles that had to be
+stripped to be read as text. Two
 facts it will not restate are taken from the sentences that already carry them:
 the gallery out of `contact.representedBy`, the year of birth out of
 `cv.shortBio` — and the build fails rather than guessing if either sentence is
