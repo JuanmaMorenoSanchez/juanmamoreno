@@ -143,23 +143,14 @@
       "title": "Exposiciones colectivas (selección)"
     },
     "conferences": {
-      "title": "Conferencias",
-      "unia": "<a href='https://www.unia.es/' target='blank'>Universidad Internacional de Andalucía</a>",
-      "invierno-ia": "<a href='https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas' target='blank'>¿Hacia un nuevo invierno de la IA?</a>"
+      "title": "Conferencias"
     },
     "awards": {
-      "title": "Premios y becas (selección)",
-      "lefranc": "Becas Lefranc&Bourgueois",
-      "fag": "<a href='http://www.fundacionantoniogala.org/' target='blank'>Fundación Antonio Gala para jóvenes creadores</a>"
+      "title": "Premios y becas (selección)"
     },
     "education": {
-      "title": "Educacion",
-      "degree": "Licenciado en Bellas Artes",
-      "ugr": "<a href='http://bellasartes.ugr.es/' target='blank'>Universidad de Granada",
-      "erasmus": "Beca LLP Erasmus",
-      "burg": "<a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design</a>"
+      "title": "Educacion"
     },
-    "zunino": "<a href='https://galeriazunino.com/' target='_blank'>Galería Zunino</a>",
     "countries": {
       "online": "Online",
       "spain": "España",

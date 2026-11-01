@@ -40,14 +40,16 @@
             "title": "El valle inquietante",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2021,
             "title": "El sueño de los robots",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2019,
@@ -115,7 +117,8 @@
             "title": "Outsiders. Vol. 1",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2024,
@@ -129,7 +132,8 @@
             "title": "Pintores pensando la pintura",
             "venue": "Espacio 75 Art Gallery",
             "city": "Madrid",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://www.espacio75.com/"
           },
           {
             "year": 2023,
@@ -143,38 +147,44 @@
             "title": "Los únicos que saben de arte son los artistas",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2022,
             "title": "Discovery Art Fair Cologne",
             "city": "Cologne",
-            "country": "Germany"
+            "country": "Germany",
+            "url": "https://discoveryartfair.com/fairs/koeln/"
           },
           {
             "year": 2021,
             "title": "Lucca Art Fair",
-            "country": "Online"
+            "country": "Online",
+            "url": "https://www.luccaartfair.com/"
           },
           {
             "year": 2021,
             "title": "Figuración Fantástica Sevillana",
             "venue": "Galería Impulso",
             "city": "Querétaro",
-            "country": "Mexico"
+            "country": "Mexico",
+            "url": "https://impulsogaleria.com/en/home/"
           },
           {
             "year": 2020,
             "title": "Interpaisajes",
             "venue": "Eldevenir & Zunino Gallery",
-            "country": "Online"
+            "country": "Online",
+            "url": "https://www.eldevenirartgallery.com/"
           },
           {
             "year": 2019,
             "title": "72 horas",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2019,
@@ -188,14 +198,16 @@
             "title": "Redes de fe",
             "venue": "Galería Renace Art",
             "city": "Jaen",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://renace.art/"
           },
           {
             "year": 2018,
             "title": "Todo encaja",
             "venue": "Zunino gallery",
             "city": "Sevilla",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2017,
@@ -216,7 +228,8 @@
             "title": "A paloma muerta",
             "venue": "Estudio22",
             "city": "Logroño",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "http://estudio22photo.es"
           },
           {
             "year": 2015,
@@ -272,14 +285,16 @@
             "title": "Weisser TV",
             "venue": "129 Gallery",
             "city": "Berlin",
-            "country": "Germany"
+            "country": "Germany",
+            "url": "https://www.129gallery.com/"
           },
           {
             "year": 2011,
             "title": "Mehr Licht, tributo a Chema Alvargonzalez",
             "venue": "GlogauAIR Project Space",
             "city": "Berlin",
-            "country": "Germany"
+            "country": "Germany",
+            "url": "https://glogauair.net/"
           },
           {
             "year": 2011,
@@ -318,19 +333,22 @@
             "year": 2014,
             "title": "The Pollock-Krasner Foundation award",
             "city": "New York",
-            "country": "USA"
+            "country": "USA",
+            "url": "http://www.pkf.org/"
           },
           {
             "year": 2012,
             "title": "Antonio Gala Foundation Residence Program",
             "city": "Córdoba",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "http://www.fundacionantoniogala.org/"
           },
           {
             "year": 2010,
             "title": "GlogauAIR Residence Program",
             "city": "Berlín",
-            "country": "Germany"
+            "country": "Germany",
+            "url": "http://www.glogauair.net/"
           },
           {
             "year": 2006,
@@ -348,7 +366,8 @@
             "title": "Towards a New AI Winter",
             "venue": "International University of Andalucia",
             "city": "Baeza",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas"
           }
         ]
       },
@@ -360,14 +379,16 @@
             "title": "Bachelor on arts degree",
             "venue": "University of Granada",
             "city": "Granada",
-            "country": "Spain"
+            "country": "Spain",
+            "url": "http://bellasartes.ugr.es/"
           },
           {
             "year": 2008,
             "title": "LLP Erasmus Scholarship",
             "venue": "Burg Giebichenstein, Hochschule für Kunst und Design",
             "city": "Halle Saale",
-            "country": "Germany"
+            "country": "Germany",
+            "url": "http://www.burg-halle.de/"
           }
         ]
       }
@@ -381,14 +402,16 @@
             "title": "El valle inquietante",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2021,
             "title": "El sueño de los robots",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2019,
@@ -456,7 +479,8 @@
             "title": "Outsiders. Vol. 1",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2024,
@@ -470,7 +494,8 @@
             "title": "Pintores pensando la pintura",
             "venue": "Espacio 75 Art Gallery",
             "city": "Madrid",
-            "country": "España"
+            "country": "España",
+            "url": "https://www.espacio75.com/"
           },
           {
             "year": 2023,
@@ -484,38 +509,44 @@
             "title": "Los únicos que saben de arte son los artistas",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2022,
             "title": "Discovery Art Fair Cologne",
             "city": "Cologne",
-            "country": "Alemania"
+            "country": "Alemania",
+            "url": "https://discoveryartfair.com/fairs/koeln/"
           },
           {
             "year": 2021,
             "title": "Lucca Art Fair",
-            "country": "Online"
+            "country": "Online",
+            "url": "https://www.luccaartfair.com/"
           },
           {
             "year": 2021,
             "title": "Figuración Fantástica Sevillana",
             "venue": "Galería Impulso",
             "city": "Querétaro",
-            "country": "México"
+            "country": "México",
+            "url": "https://impulsogaleria.com/en/home/"
           },
           {
             "year": 2020,
             "title": "Interpaisajes",
             "venue": "Eldevenir & Zunino Gallery",
-            "country": "Online"
+            "country": "Online",
+            "url": "https://www.eldevenirartgallery.com/"
           },
           {
             "year": 2019,
             "title": "72 horas",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2019,
@@ -529,14 +560,16 @@
             "title": "Redes de fe",
             "venue": "Galería Renace Art",
             "city": "Jaen",
-            "country": "España"
+            "country": "España",
+            "url": "https://renace.art/"
           },
           {
             "year": 2018,
             "title": "Todo encaja",
             "venue": "Galería Zunino",
             "city": "Sevilla",
-            "country": "España"
+            "country": "España",
+            "url": "https://galeriazunino.com/"
           },
           {
             "year": 2017,
@@ -557,7 +590,8 @@
             "title": "A paloma muerta",
             "venue": "Estudio22",
             "city": "Logroño",
-            "country": "España"
+            "country": "España",
+            "url": "http://estudio22photo.es"
           },
           {
             "year": 2015,
@@ -613,14 +647,16 @@
             "title": "Weisser TV",
             "venue": "129 Gallery",
             "city": "Berlin",
-            "country": "Alemania"
+            "country": "Alemania",
+            "url": "https://www.129gallery.com/"
           },
           {
             "year": 2011,
             "title": "Mehr Licht, tributo a Chema Alvargonzalez",
             "venue": "GlogauAIR Project Space",
             "city": "Berlin",
-            "country": "Alemania"
+            "country": "Alemania",
+            "url": "https://glogauair.net/"
           },
           {
             "year": 2011,
@@ -659,19 +695,22 @@
             "year": 2014,
             "title": "The Pollock-Krasner Foundation award",
             "city": "New York",
-            "country": "USA"
+            "country": "USA",
+            "url": "http://www.pkf.org/"
           },
           {
             "year": 2012,
             "title": "Fundación Antonio Gala para jóvenes creadores",
             "city": "Córdoba",
-            "country": "España"
+            "country": "España",
+            "url": "http://www.fundacionantoniogala.org/"
           },
           {
             "year": 2010,
             "title": "GlogauAIR Residence Program",
             "city": "Berlín",
-            "country": "Alemania"
+            "country": "Alemania",
+            "url": "http://www.glogauair.net/"
           },
           {
             "year": 2006,
@@ -689,7 +728,8 @@
             "title": "¿Hacia un nuevo invierno de la IA?",
             "venue": "Universidad Internacional de Andalucía",
             "city": "Baeza",
-            "country": "España"
+            "country": "España",
+            "url": "https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas"
           }
         ]
       },
@@ -701,14 +741,16 @@
             "title": "Licenciado en Bellas Artes",
             "venue": "Universidad de Granada",
             "city": "Granada",
-            "country": "España"
+            "country": "España",
+            "url": "http://bellasartes.ugr.es/"
           },
           {
             "year": 2008,
             "title": "Beca LLP Erasmus",
             "venue": "Burg Giebichenstein, Hochschule für Kunst und Design",
             "city": "Halle Saale",
-            "country": "Alemania"
+            "country": "Alemania",
+            "url": "http://www.burg-halle.de/"
           }
         ]
       }
@@ -726,6 +768,6 @@
     "catalogue": "https://juanmamoreno.com/catalogue.json",
     "contact": "https://juanmamoreno.com/contact/"
   },
-  "generated": "2026-10-31",
+  "generated": "2026-11-01",
   "pricing": "Not published. Every price is quoted by the artist for the particular work: https://juanmamoreno.com/contact"
 }

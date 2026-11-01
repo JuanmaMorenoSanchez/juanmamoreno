@@ -143,23 +143,14 @@
       "title": "Collective exhibitions (selection)"
     },
     "awards": {
-      "title": "Artistic awards and residencies (selection)",
-      "lefranc": "Lefranc&Bourgueois art award",
-      "fag": "<a href='http://www.fundacionantoniogala.org/' target='blank'>Antonio Gala Foundation Residence Program</a>"
+      "title": "Artistic awards and residencies (selection)"
     },
     "conferences": {
-      "title": "Conferences",
-      "unia": "<a href='https://www.unia.es/' target='blank'>International University of Andalucia</a>",
-      "invierno-ia": "<a href='https://www.unia.es/estudios-y-acceso/oferta-academica/cursos-de-verano/fundamentos-de-inteligencia-artificial-modelos-generativos-y-aplicaciones-avanzadas' target='blank'>Towards a New AI Winter</a>"
+      "title": "Conferences"
     },
     "education": {
-      "title": "Education",
-      "degree": "Bachelor on arts degree",
-      "ugr": "<a href='http://bellasartes.ugr.es/' target='blank'>University of Granada",
-      "erasmus": "LLP Erasmus Scholarship",
-      "burg": "<a href='http://www.burg-halle.de/' target='blank'>Burg Giebichenstein, Hochschule für Kunst und Design</a>"
+      "title": "Education"
     },
-    "zunino": "<a href='https://galeriazunino.com/' target='_blank'>Zunino gallery</a>",
     "countries": {
       "online": "Online",
       "spain": "Spain",
