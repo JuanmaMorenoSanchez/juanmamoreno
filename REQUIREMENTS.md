@@ -4965,248 +4965,208 @@ registered by hand like the other two. **Called *Screenlight*** — it was
 *Ipad light* while it was being built. The address is still the one it was
 published under: a name is a name, and an address is a promise.
 
-Three things move, and all three come out of the painting rather than being
-laid over it.
+**Everything that moves comes out of the painting** rather than being laid over
+it: his own cuts, his own depth map, his own paint, and other states of the same
+canvas. [R209](#r209) to [R218](#r218) are each one application of that.
 
-**Depth, from his own cuts.** The painting comes apart into four layers he
-cut in the atelier — the girl, the blue shirt, the limbs, the ground behind
-them — and each is drawn at its own parallax. It was depth bands first, six
-slices of the canvas by a depth map, and they were wrong twice over: a slice
-puts its seam wherever the arithmetic falls, through an arm or along a fold,
-and every seam shows the moment the slice moves. A cut that follows what is
-in the painting moves the way the thing in it would, and takes twice the
-shift before it looks like anything is wrong.
+**Why each number is the number it is lives in the code**, beside the number, in
+`domain/generative/*.ts` — which is where somebody about to simplify one is
+looking. These entries hold the behaviour, the measurement and the proof; they
+do not restate the reasoning. They did, for a while, and the two copies said the
+same thing in nearly the same words.
 
-**There is paint under the figures.** The three in front are masks over the
-painting, because a cut is one channel and the colour is already there; the
-ground is a picture of its own, with his paint pushed in under every hole the
-figures left. **A ring at a time, not a blur.** Every unknown pixel with a
-known neighbour takes the average of those neighbours and becomes known, a
-hundred and twenty times over, so colour walks inwards from the rim and keeps
-the variation it had there. A blur was tried first, and at that distance a
-blur is a flat grey plate — which is exactly what showed as a haze the moment
-a figure slid off it. Past the hundred and twenty rings it is out of sight
-for good and is blurred coarsely, because nothing in front of it moves that
-far. Every value in the filled region is a weighted average of paint he put
-down.
+It was one entry of two hundred and fifty lines. That entry cited five spec
+files, silently left out two more holding sixteen tests, and miscounted a third
+— which is what one `Proven by:` over a dozen behaviours does.
+*Proven by:* `registry.spec.ts` "holds exactly the three that are published"
+*Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 — no
+console errors, the scene measurably answers the pointer in both, and the draw
+loop holds 120 frames a second with every effect below running.
 
-**The fills on the shelf could not be used.** Each one answers with a blue
-afternoon, and three of the four cut layers turn out to have been cut from
-that state of the canvas — their sky is daylight where this one is dusk — so
-the shapes are taken from them and the paint from the painting. Before any of
-this, what showed when a cut moved was the painting again, dimmed into the
-black: a shadow, but still a hole.
+### R209 — Screenlight's depth is his own cuts, with his paint behind them · met
+Four layers he cut in the atelier — the girl, the blue shirt, the limbs, the
+ground behind them — each drawn at its own parallax. **Not depth bands:** a
+slice by depth map puts its seam wherever the arithmetic falls, and every seam
+shows the moment it moves.
 
-**Holes in the cuts are closed on the way out**, because the segmentation read
-a dark painted spot inside the hand as not-hand and left a pinprick of the
-layer behind showing through each one; and whatever none of the three figures
-claims is given to the ground, so the four together leave no gap.
+The three in front are masks over the painting, because a cut is one channel and
+the colour is already there. The ground is a picture of its own with his paint
+pushed in under every hole the figures left, **a ring at a time and not a
+blur**: every unknown pixel with a known neighbour takes the average of those
+neighbours, **120 times over**, so colour walks inwards from the rim and keeps
+the variation it had there. Every value in the filled region is a weighted
+average of paint he put down.
 
-**It drifts on its own, it does not stop, and it cannot be thrown.** A
-painting that moves only when touched is a still painting most of the time,
-and on a phone there is no pointer at all. Three faults, each fixed in turn.
-It was a pair of sines, which is a path that slows to nothing at each end and
-turns around: measured over two minutes, its slowest moment was a thousandth
-of its fastest. It was then a single turn, which does not stop but is a thing
-you can predict after watching it once. It is three turns now, of different
-widths and periods, added together and all going the same way round — the
-first deliberately faster than the other two put together, which is what
-keeps the path from doubling back and coming to a halt in the bend. The
-slowest moment is a quarter of the fastest, the widths sum to one so it
-cannot leave the range a pointer gives, and in ten minutes it never comes
-back to where it started.
+Holes inside the cuts are closed on the way out, and whatever none of the three
+figures claims is given to the ground, so the four together leave no gap.
+*Proven by:* nothing automated. The cuts, the fill and the depth map are assets
+made once in the atelier; what catches a regression is the Chrome check in
+[R171](#r171).
 
-And the pointer used to reach the layers through an easing, which steps a
-fraction of the gap each frame and so is fastest exactly when the gap is
-biggest — a pointer thrown across the window threw the scene with it. Both
-the drift and the pointer reach the layers through a gaze that moves at one
-speed now, 0.6 of the range a second, whether it is following a drift or a
-flick. All a flick buys is a longer journey.
+### R210 — Screenlight drifts on its own, never stops, and cannot be thrown · met
+A painting that moves only when touched is a still painting most of the time,
+and on a phone there is no pointer at all.
 
-**The screen changes, and not on a beat.** The paint the tablet lights is
-found once at load, by how near it is to #DBDBDB — the grey he picked, which
-is what the screen leaves on her forehead, her collar and the lit side of her
-coat — inside a soft pool at the bottom centre. It is then dimmed and
-brightened over time: a level held while something is read, a step when
-something else is opened, a drift in between. The steps are about two seconds
-apart and never twice the same, each boundary pushed either side of the beat
-by a draw on its own number — under half a beat, which is what keeps one from
-overtaking the next — and each change arrives over a fixed third of a second
+**Three turns added together**, of different widths and periods, all going the
+same way round, the first faster than the other two put together. The slowest
+moment is **a quarter of the fastest** — a pair of sines measured a thousandth —
+the widths **sum to one** so it cannot leave the range a pointer gives, and in
+**ten minutes** it never returns to where it started.
+
+**One speed, 0.6 of the range a second**, whether it is following the drift or a
+flick. An easing steps a fraction of the gap each frame and so is fastest
+exactly when the gap is biggest: a pointer thrown across the window threw the
+scene with it. All a flick buys now is a longer journey.
+*Proven by:* `idle-drift.spec.ts` (6 tests, including "never stops to turn
+around", "wanders rather than going round the same circle" and "does not come
+back to where it started inside a viewing") and `steady-gaze.spec.ts` (5,
+including "cannot be thrown by a pointer crossing the window")
+
+### R211 — Screenlight's screen changes, and not on a beat · met
+A level held while something is read, a step when something else is opened, a
+drift in between.
+
+Steps **about two seconds apart and never twice the same**, each boundary pushed
+either side of the beat by a draw on its own number, **under half a beat** so one
+cannot overtake the next. Each change arrives over **a fixed third of a second**
 rather than a share of the gap, so a short interval does not snap where a long
-one eased.
+one eased. The same second always answers the same way.
+*Proven by:* `screen-glow.spec.ts` (9 tests, including "does not change on a
+metronome", "changes level rather than snapping to it", "answers the same for
+the same second, every time" and "goes somewhere new rather than repeating a
+short loop")
 
-**Both ways, because one way was not visible.** Added light alone is a faint
-bloom on paint that is already pale; taken away first, the same swing is a
-face going dark and lighting up again, which is what a screen does to a face.
-The tolerance is measured rather than guessed: at 110 the key catches only the
-two brightest planes of the face, at 145 the face and the collar, and at 170
-her shoulder, the lit side of the coat, the near hand and the goose's head as
-well — and still nothing of the blue shirt behind her.
+### R212 — Screenlight's light dims as well as brightens, at a measured tolerance · met
+The paint the tablet lights is found once at load by how near it is to
+**#DBDBDB** — the grey he picked — inside a soft pool at the bottom centre. It
+is taken away before it is added: added light alone is a faint bloom on paint
+that is already pale.
 
-**And it takes a cast, which has to be its own pass.** The colour changes
-when the level does, because it is the same event. Half the intervals are the
-plain white of a screen and the rest take one of five — a red, a blue, a
-yellow, a green, a violet.
+**The tolerance is measured, not guessed.** At 110 the key catches only the two
+brightest planes of the face; at 145 the face and the collar; at 170 her
+shoulder, the lit side of the coat, the near hand and the goose's head — and
+still nothing of the blue shirt behind her.
 
-The first two attempts at this could not be seen at all, and for the same
-reason both times. A coloured light pale enough to be a screen is a white
-light by the time it has been screened onto a lit cheek: screening runs
-towards white on every channel at once, and whatever difference there was
-between a cold white and a warm one is gone. Levelling the casts so that none
-of them was dimmer than the white — which is a real thing, the eye reads
-brightness long before hue, and a redder white is a darker one — stopped them
-reading as a dimming and left them invisible.
+**Screened, not added.** Measured in Chrome, screening runs the forehead
+**130 to 208** and the cheek **80 to 194**; adding took both to 250 and held
+them there.
 
-So brightness and colour are two passes now. The first is the light itself,
-in one cold white, screened over the paint rather than added to it: adding
-has nothing above 255 to work with, so the brightest paint flattened into a
-white patch and the cheek lost its modelling at the top of every cycle.
-Measured in Chrome, the forehead runs 130 to 208 and the cheek 80 to 194,
-where adding took both to 250 and held them there.
+**The light rides the girl's own cut**, not an average depth over the whole
+mask, which reaches her face, her coat, the hand and the goose at four
+different distances: Chrome measured her face travelling **43 px** across a
+pointer sweep while the light travelled **20**.
+*Proven by:* `screen-glow.spec.ts` "stays between the two levels it was given",
+and the four measurements above, taken in Chrome against the built page
 
-The second pass is the cast, laid on with the blend that takes the hue and
-the saturation of what is drawn and the brightness of what is under it. The
-paint keeps its own brightness exactly, so a cast can never be a dimming by
-construction rather than by arithmetic, and the hues can be properly
-saturated because nothing about them touches how bright anything is. Seven
-tenths of the way at its strongest, so it is her face in a red light and not
-a red face: measured over three minutes, a cast swings her face 40 of red
-against blue, where the levelled pale ones managed nothing a screenshot could
-tell apart.
+### R213 — A cast in Screenlight is a hue, never a dimming · met
+Half the intervals are the plain white of a screen; the rest take one of five —
+red, blue, yellow, green, violet — and the colour changes when the level does,
+because it is the same event.
 
-**The light travels with the face.** It rides on the girl's own cut — the same
-`Parallax` she is drawn with — so it moves exactly as she moves. Before the
-cuts it rode at an average depth taken over the whole mask, which reaches her
-face, her coat, the hand and the goose at four different distances, and Chrome
-measured her face travelling 43 px across a pointer sweep while the light
-travelled 20: the light sliding off her face.
+**Brightness and colour are two passes.** The cast is laid on with the blend
+that takes the hue and saturation of what is drawn and the brightness of what is
+under it, so **a cast cannot be a dimming by construction rather than by
+arithmetic**, and the hues can be fully saturated. **Seven tenths** at its
+strongest, so it is her face in a red light and not a red face: measured over
+three minutes a cast swings her face **40 of red against blue**, where pale
+casts levelled against the white managed nothing a screenshot could tell apart.
+*Proven by:* `screen-glow.spec.ts` "is mostly not cast at all", "casts in
+colours that can be told apart" and "arrives at a colour rather than snapping to
+it", and the swing above measured in Chrome
 
-**Four more things happen in the light**, chosen off still samples
-composited from his own layers rather than described.
+### R214 — The tablet throws shafts, and the snow in them picks the light up · met
+A fan of soft rays out of the screen into the falling snow, strongest when the
+screen is, turning a few degrees over a minute. **Six lobes from a hand-written
+table**, unevenly spaced and unevenly wide, with a floor subtracted so the gaps
+stay open — evenly spaced rays of equal width are a sunburst. Built once at load
+and thereafter only turned and faded.
 
-**The tablet throws shafts.** A fan of soft rays rising out of the screen
-into the falling snow, strongest when the screen is, turning a few degrees
-over a minute. The lobes are a hand-written table of six, unevenly spaced and
-unevenly wide, with a floor subtracted so the gaps between them stay open:
-evenly spaced rays of equal width are a sunburst, and what makes this read as
-light through snowy air is that some of it is blocked. Built once at load as
-one shape and thereafter only turned and faded — a fan computed per frame is
-a megapixel of trigonometry sixty times a second for something that barely
-changes.
+**And it snows**, which is the one thing not in the painting: **180 flakes**,
+half again as big and twice as solid as the first setting, which was weather you
+had to be told about. A flake near the tablet is brighter, takes the colour of
+the screen and carries a halo; everything further off falls as it did.
+*Proven by:* `snowfall.spec.ts` (7 tests, including "counts arrivals in whole
+flakes, so a fast frame is not a blizzard" and "gives the near flakes the size,
+the weight and the speed together")
 
-**The snow in the light picks it up.** A flake near the tablet is brighter,
-the colour of whatever is on the screen, and carries a halo; everything
-further off falls as it did. It is the cheapest thing on the page — the snow
-already existed and this is a term in its alpha — and it is what stops the
-weather and the light being two effects that happen to share a page.
+### R215 — Screenlight breaks into another state of its own canvas, and back · met
+The canvas exists more than once — at dusk with the city and the geese, in
+daylight without them — and the page holds both and changes over every few
+seconds. **It does not dissolve:** horizontal strips, some still showing the old
+picture, some shoved sideways, each with a ghost of itself a few pixels off,
+**redrawn twelve times a second** rather than per frame.
 
-**The painting breaks into its other state, and back.** The canvas exists
-twice — at dusk with the city and the geese, and in daylight without them —
-and the page holds both and changes over every nine seconds or so. It does
-not dissolve: a signal changing over tears, in horizontal strips, some still
-showing the old picture, some shoved sideways, each with a ghost of itself a
-few pixels off, and the strips are redrawn twelve times a second rather than
-per frame because a tear that slides is a wipe. Half a second of that, and
-then it is simply the other painting.
+**Seven states, not two:** the canvas at dusk, in daylight, a third made under
+the new hand, the big figure corrupted, and three more of her — all of them his,
+made in the atelier. The figures go between four and she between five.
 
-**Seven states, not two.** The canvas at dusk, the canvas in daylight, a
-third canvas made under the new hand, the big figure corrupted, and three
-more of her — all of them his, made in the atelier
-and kept on the shelf. The figures go between four and she goes between
-five, so it is a signal that cannot decide what it is carrying rather than a
-thing flickering between itself and one other.
+**Two clocks**, at different periods and from different draws, so the landscape
+and the girl are often in different states at once. **A layer with fewer states
+than its clock wraps round its own**, which is how the sky stays at dusk through
+an interval the figures spend being something else.
 
-The three that came later carry their own silhouettes rather than borrowing a
-cut already here: the monster's hands are broken away, and neither girl fits
-the other's outline to better than nine parts in ten. Each is stored as a
-colour and a cut — a JPEG and a grey PNG, which is how everything else on
-this page is stored and about a fifth of the bytes of a painted sprite with
-an alpha channel.
+**The state walks rather than being drawn**, so inside a block it cannot repeat;
+it may repeat across a block boundary, because never repeating anywhere means
+remembering everywhere, and that memory has to give the same answer on every
+machine.
 
-**A layer with fewer states than its clock wraps round its own**, which is
-how the sky stays at dusk through an interval the figures spend being
-something else: a signal losing one channel and not another.
+**It is published broken, on purpose:** two and a half seconds behind and three
+and a half for her, with a tear lasting nearly as long as the hold between them.
+The quieter pair — nine seconds and thirteen, half a second of tearing — is
+written beside it in the sketch, because it is the one to go back to.
 
-**Two clocks, not one.** The landscape changes on one and the girl on
-another, at different periods and from different draws, so they are often in
-different states at once — the dusk field behind a daylight girl, the geese
-there and then gone. One clock would be a slideshow.
+**One extra picture buys the second state:** a single JPEG, its three figure
+cuts taken by the masks the page already has, because her silhouette in one state
+fits the cut from the other to **99.3%** of its area. The three that came later
+carry their own silhouettes, fitting no better than nine parts in ten, each a
+JPEG and a grey PNG — about a fifth of the bytes of a sprite with an alpha
+channel.
+*Proven by:* `glitch.spec.ts` (11 tests, including "almost never lands where it
+already was", "holds a state for seconds, not frames", "tears around the change
+and nowhere else", "redraws the strips on its own clock, not every frame" and
+"can be given a number of its own so two do not change together") — a spec the
+old single entry never cited
 
-**And a change almost never lands where it already was.** The state walks
-rather than being drawn: each interval steps on from the one before, so
-inside a block it cannot repeat. Drawing at random would waste one change in
-four on a tear that resolved back to the same picture. Across a block
-boundary it can repeat, because a walk that never repeats anywhere has to
-remember where it has been, and that memory would have to reach back to the
-beginning of time for an answer that must be the same on every machine.
+### R216 — The distance in Screenlight is soft, and his paint never is · met
+**The focus never leaves her.** What travels is the depth of field: resting
+shallow for **eleven seconds**, opening over **three and a half**, resting open
+for **six**. A focus pull put the subject of the painting out of focus for seven
+seconds at a time.
 
-**It is published broken, on purpose.** Asked which to put on the site, he
-chose this one: a change every two and a half seconds behind and three and a
-half for her, with a tear lasting nearly as long as the hold between them, so
-the painting is coming apart almost all of the time. The quieter pair is
-written next to it in the sketch — nine seconds and thirteen, with half a
-second of tearing — because it is the one to go back to and two numbers is
-all it takes.
-
-**And one extra picture buys all of it.** The second state is a single JPEG:
-the three figure cuts are taken from it with the masks the page already has,
-because the two states were painted on the same canvas and her silhouette in
-one fits the cut from the other to 99.3% of its area. It came off the shelf
-as two kept pieces, a background and a girl, composited back together.
-
-**The distance is soft, and the depth map says how soft.** It was a focus
-pull at first, off her and out to the landscape and back, and it put the
-subject of the painting out of focus for seven seconds at a time: his paint,
-softened, which is the one thing he has said is never acceptable. What
-travels is the depth of field instead, resting shallow for eleven seconds,
-opening over three and a half, resting open for six.
-
-**And it follows the depth map rather than the cuts.** It was a blur per
-layer — four cuts, four amounts of softness, which is a cardboard theatre
-rather than a lens. The map is his, read off the painting in the atelier, and
-it is the one honest answer to how far away each pixel is: the sky goes, the
-field goes a little, the hand in front of her does not go at all. The farness
-is squared, because linear put a haze on her coat.
+**It follows the depth map, not the cuts** — four cuts and four amounts of
+softness is a cardboard theatre rather than a lens. The map is his, read off the
+painting in the atelier: the sky goes, the field goes a little, the hand in front
+of her does not go at all. **The farness is squared**, because linear put a haze
+on her coat.
 
 Each state's distance is blurred once at load, at half size, with everything
-near cut out of it by that mask — one per state the ground can be in and in
-the same order, so the distance that is soft is the distance that is up, so a frame costs one draw and what changes
-is only how much of it is showing. It does not move with the parallax and
-does not need to: what is in it is what is furthest away, which is what moves
-least, and what moves most has been cut out of it.
+near cut out of it by that mask, so a frame costs one draw and only how much of
+it shows changes. It does not move with the parallax: what is in it is what is
+furthest away, and what moves most has been cut out of it.
+*Proven by:* `focus-pull.spec.ts` (5 tests, including "spends most of its time
+resting, not travelling", "rests shallow longer than it rests open" and "answers
+the same second the same way, and goes back as well as forward") — a spec the
+old single entry never cited
 
-**And the screen is in two eyes.** A hard little centre in a soft halo, on
-the goose beside her and on the bird behind it, brightening and taking the
-cast with the rest of the light. Each had to be given the cut its eye is
-painted on — the goose is inside the girl's cut and moves with her, the bird
-belongs to no figure and moves with the ground — or the highlight swims about
-inside the eye as the scene moves.
+### R217 — The screen in Screenlight is in two eyes · met
+A hard little centre in a soft halo, on the goose beside her and on the bird
+behind it, brightening and taking the cast with the rest of the light. Each is
+given the cut its eye is painted on — the goose moves with the girl, the bird
+with the ground — or the highlight swims about inside the eye as the scene moves.
+*Proven by:* nothing automated; two coordinates on two cuts, caught by the
+Chrome check in [R171](#r171)
 
-**And it snows**, which is the one thing not in the painting: a hundred and
-eighty flakes rather than ninety, half again as big and twice as solid,
-because at the first setting it was weather you had to be told about.
+### R218 — Screenlight keeps the shape of its canvas, in 1.5 MB · met
+A window of another shape loses some of the painting rather than stretching it,
+and what it loses is the top: the sky and the skyline are what repeats, and the
+face and the screen are what this is about. Drawn **five per cent over a cover
+fit, with all five spent below the window** — a plain cover fit laid the painted
+edge of the canvas along the bottom of the screen, where an edge seen end-on
+reads as a crop.
 
-**The shape of the canvas is the canvas's.** A window of another shape loses
-some of the painting rather than stretching it, and what it loses is the top:
-the sky and the skyline are what repeats, and the face and the screen are what
-this is about. It is drawn five per cent over a cover fit, with all five spent
-below the window: a plain cover fit laid the painted edge of the canvas along
-the bottom of the screen, where an edge seen end-on reads as a crop.
-
-**1.5 MB of assets** for a 3000×3180 original: the painting and the filled
-ground at 1500 px as progressive JPEGs, the painting's other state as a third,
-and the three figures as grey cuts of the same size, because a cut has an edge
-and half resolution would show it.
-The ground's own cut is not shipped — it is an input to the fill and nothing
-at display time needs it.
-*Proven by:* `snowfall.spec.ts` (7 tests, including arrivals counted in whole
-flakes so a fast frame is not a blizzard), `screen-glow.spec.ts` (10 tests,
-including "does not change on a metronome", "is mostly not cast at all" and
-"casts in colours that can be told apart"), `steady-gaze.spec.ts` (5 tests,
-including "cannot be thrown by a pointer crossing the window"),
-`idle-drift.spec.ts` (6 tests, including "never stops to turn around" and
-"wanders rather than going round the same circle"), and `registry.spec.ts` "holds exactly the three that
-are published"
-*Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 —
-no console errors, the scene measurably answers the pointer in both, and the
-draw loop holds 120 frames a second with all four of the new effects running.
+**1.5 MB of assets** for a 3000×3180 original: the painting, the filled ground
+and the other state at 1500 px as progressive JPEGs, and the three figures as
+grey cuts of the same size, because a cut has an edge and half resolution would
+show it. The ground's own cut is not shipped — it is an input to the fill.
+*Proven by:* nothing automated; the fit is a line of arithmetic in the sketch
+and the weight is what is in `assets/images/canvases/`

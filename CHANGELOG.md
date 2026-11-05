@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.59.2
+
+- **chore** Screenlight is eleven requirements instead of one of two hundred
+  and sixty-six lines. That entry had one `Proven by:` over a dozen
+  behaviours, which meant it cited five spec files while silently leaving out
+  `glitch.spec.ts` and `focus-pull.spec.ts` - sixteen tests nothing in the
+  document pointed at, so deleting either would have been noticed by nothing -
+  and it miscounted a third. Three parts of the piece turn out to have no
+  automated proof at all, and the report names them now. It is also 65 lines
+  shorter, because the reasoning was a second copy of the comments in
+  `domain/generative/*.ts`, which is where somebody about to simplify a number
+  is actually looking; the behaviour, the measurements and the proofs stay
+  here.
+
 ## 2.59.1
 
 - **fix** The record reads as one line an entry:
