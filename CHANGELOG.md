@@ -5,6 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.3
+
+- **fix** A browser that refuses storage no longer reports an error on every
+  catalogue update. All seven writes the site makes itself were wrapped against
+  a refusal; the eighth was not, and it is the one that writes the whole
+  catalogue — Akita's `persistState` calls `setItem` bare inside a store
+  subscription. On iOS Safari with "Block All Cookies", or in any browser that
+  has filled its quota, that throws. The page always worked, because the
+  catalogue draws from memory, which is why nobody noticed. Such a reader now
+  simply fetches it again next visit.
+- **chore** The magnification and the hand that moves the view are their own
+  class, `photo-viewport.ts`, the way the brush and the rights fields already
+  were. It was the part of a 1577-line component that a wrong edit could make
+  unusable without failing a test, because nothing could ask it anything without
+  a photograph, a canvas and a real pointer. Moving it turned up one rule that
+  had only ever been implicit: a pointer-up lets go of the view without putting
+  the hand away, since the space bar is still held and the next drag pans again.
+
 ## 2.60.2
 
 - **fix** The WhatsApp button on every artwork page is shaped like the icons

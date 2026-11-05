@@ -27,6 +27,7 @@ import { qualityFor, readJpegSource, type JpegSource } from '@domain/image/jpeg-
 import { isRawPhotograph, largestEmbeddedJpeg } from '@domain/image/raw-preview';
 import { measurementAsTyped, measurementValue } from '@domain/artwork/mint-vocabulary';
 import { PhotoBrush } from './photo-brush';
+import { MAX_ZOOM, PhotoViewport } from './photo-viewport';
 import { PhotoRights } from './photo-rights';
 import {
   createSelection,
@@ -144,7 +145,6 @@ const HANDLE_SIZE = 46;
  * as far as it is worth going — beyond that the preview itself, capped at two
  * thousand pixels, has no more detail to show.
  */
-const MAX_ZOOM = 4;
 
 /**
  * Where the sliders were last left.
@@ -321,82 +321,44 @@ export class PhotoPrepComponent {
 
   protected readonly maxZoom = MAX_ZOOM;
 
-  /** How far the stage is magnified. One is the whole photograph, as before. */
-  protected readonly zoom = signal(1);
+  /**
+   * The magnification and the hand that moves the view.
+   *
+   * Lifted out whole into `photo-viewport.ts`, the way the brush and the rights
+   * fields already were. The methods below stay because the template and the
+   * host listeners call them by these names; everything they used to do now
+   * happens in a class that can be asked about it without a photograph.
+   */
+  private readonly view = new PhotoViewport(
+    () => this.viewport()?.nativeElement,
+    () => Boolean(this.size()),
+  );
+
+  protected readonly zoom = this.view.zoom;
+  protected readonly panning = this.view.panning;
 
   protected setZoom(event: Event): void {
-    const value = Number((event.target as HTMLInputElement).value);
-    this.zoom.set(Number.isFinite(value) ? Math.min(MAX_ZOOM, Math.max(1, value)) : 1);
-    if (this.zoom() <= 1) this.stopPanning();
+    this.view.setZoom(Number((event.target as HTMLInputElement).value));
   }
 
-  /**
-   * Whether the pointer is moving the view rather than the picture.
-   *
-   * The hand tool, and held down rather than switched on for the same reason it
-   * is in every other program: panning happens in the middle of placing a
-   * corner, and a mode you have to leave and come back to is a mode you forget
-   * you are in.
-   */
-  protected readonly panning = signal(false);
-
-  /** Where the pointer was and where the view was, at the moment of the grab. */
-  private panFrom: { x: number; y: number; left: number; top: number } | null = null;
-
-  /**
-   * Claims the space bar, but only where it is worth claiming.
-   *
-   * Space does something already: it types, it ticks a checkbox, it presses the
-   * button that has the focus. So it is taken only when there is a photograph
-   * on the stage that is magnified — which is the only time there is anywhere
-   * to pan to — and never while something is being typed into. Buttons and the
-   * sliders give it up in that case, which is the one real cost; Enter still
-   * presses a button.
-   */
   protected takeSpace(event: KeyboardEvent): void {
-    if (event.code !== 'Space' || !this.size() || this.zoom() <= 1) return;
-    if (isTypingInto(event.target)) return;
-    // Otherwise the page jumps a screenful down under the picture being panned.
-    event.preventDefault();
-    this.panning.set(true);
+    this.view.takeSpace(event);
   }
 
   protected releaseSpace(event: KeyboardEvent): void {
-    if (event.code === 'Space') this.stopPanning();
+    this.view.releaseSpace(event);
   }
 
-  /** Also on losing the window, where no keyup is ever going to arrive. */
   protected stopPanning(): void {
-    this.panning.set(false);
-    this.panFrom = null;
+    this.view.stopPanning();
   }
 
   private startPan(event: PointerEvent): void {
-    const viewport = this.viewport()?.nativeElement;
-    if (!viewport) return;
-    this.panFrom = {
-      x: event.clientX,
-      y: event.clientY,
-      left: viewport.scrollLeft,
-      top: viewport.scrollTop,
-    };
-    (event.target as Element).setPointerCapture?.(event.pointerId);
-    event.preventDefault();
+    this.view.startPan(event);
   }
 
-  /**
-   * Moves the view under the hand, the opposite way to a scrollbar.
-   *
-   * The picture follows the pointer exactly, which is what makes this more
-   * intuitive than the scrollbars it replaces: the distance dragged is the
-   * distance the painting moves, in the direction it was dragged.
-   */
   protected pan(event: PointerEvent): void {
-    const from = this.panFrom;
-    const viewport = this.viewport()?.nativeElement;
-    if (!from || !viewport) return;
-    viewport.scrollLeft = from.left - (event.clientX - from.x);
-    viewport.scrollTop = from.top - (event.clientY - from.y);
+    this.view.pan(event);
   }
 
   protected readonly fileName = signal('');
@@ -1030,7 +992,7 @@ export class PhotoPrepComponent {
   protected release(): void {
     this.dragging = null;
     this.brushing = false;
-    this.panFrom = null;
+    this.view.releaseGrab();
   }
 
   // --- showing what the controls are doing -------------------------------
@@ -1436,8 +1398,7 @@ export class PhotoPrepComponent {
     this.adaptToSize.set(true);
     this.takeShineOff.set(false);
     this.shineOnPreview = null;
-    this.zoom.set(1);
-    this.stopPanning();
+    this.view.reset();
     this.handedOver.set(false);
     // Changes belong to the photograph they were made to, and the brush's mask
     // is measured in that photograph's straightened rectangle. Carried into the
@@ -1457,25 +1418,6 @@ export class PhotoPrepComponent {
   }
 }
 
-/**
- * Whether a key belongs to what has the focus rather than to the page.
- *
- * Only where the space bar already means something: a box being written in, a
- * list being chosen from, a box being ticked. A range slider and a button do
- * nothing with it that Enter cannot also do.
- */
-function isTypingInto(target: EventTarget | null): boolean {
-  const element = target as HTMLElement | null;
-  if (!element) return false;
-  if (element.isContentEditable) return true;
-
-  const tag = element.tagName;
-  if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
-  if (tag !== 'INPUT') return false;
-
-  const type = (element as HTMLInputElement).type;
-  return type !== 'range' && type !== 'button' && type !== 'submit';
-}
 
 function textIn(event: Event): string {
   return (event.target as HTMLInputElement).value;

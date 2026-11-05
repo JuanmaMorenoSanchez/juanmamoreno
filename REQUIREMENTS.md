@@ -1083,10 +1083,22 @@ taking: a photograph on the stage, magnified past one, and the focus not in a
 box being typed into, a list, or a checkbox. Buttons and sliders give it up,
 which is the one real cost, and Enter still presses a button. Nothing is
 brushed and no corner is dragged while the hand has it.
-*Proven by:* `photo-prep.component.spec.ts` "moving the view" (7 tests — the key
-claimed only when magnified, left alone while typing, released on keyup and on
-losing the window, the view moved by exactly the distance dragged, and no mark
-left by a brush that is in hand)
+**The hand is its own class now**, `photo-viewport.ts`, the way `photo-brush.ts`
+and `photo-rights.ts` already were. It held the magnification, whether the hand
+was down and where the view was when it went down, inside a component of 1577
+lines doing seven jobs — so none of it could be asked anything without a
+photograph, a canvas and a real pointer. Moving it turned up one rule that was
+only ever implicit: a pointer-up lets go of the view without putting the hand
+away, because the space bar is still held and the next drag pans again. Putting
+it away there would have dropped out of hand mode mid-gesture, and nothing would
+have failed.
+*Proven by:* `photo-viewport.spec.ts` (17 tests — the key claimed only when
+there is a magnified photograph, left alone while typing and when there is no
+photograph at all, released on keyup, the view moved by exactly the distance
+dragged the other way, the hand kept through a pointer-up while the key is down,
+both hand and grab dropped on losing the window, and the magnification bounded
+at either end); and `photo-prep.component.spec.ts` "moving the view" (7 tests,
+including that no mark is left by a brush that is in hand)
 
 ### R97 — The two ends of the scale move separately, and the colour with them · met
 Whites, darks and colour are three sliders where whites and darks were one.
@@ -5247,3 +5259,29 @@ grey cuts of the same size, because a cut has an edge and half resolution would
 show it. The ground's own cut is not shipped — it is an input to the fill.
 *Proven by:* nothing automated; the fit is a line of arithmetic in the sketch
 and the weight is what is in `assets/images/canvases/`
+
+### R220 — A browser that refuses storage still shows the catalogue · met
+Every write to the reader's own storage is wrapped so that a refusal costs the
+convenience and not the page. On iOS Safari with "Block All Cookies", and in any
+browser that has filled its quota, `setItem` throws.
+
+This was true of the seven writes the site makes itself — the language choice,
+the preferences, the brush, the admin token, the atelier graph, the photograph
+sliders, the rights fields — and not of the eighth, which is the one that
+matters most: Akita's `persistState` calls `setItem` bare inside a store
+subscription, and it is what writes the whole catalogue, around 430 kB, on every
+update. Such a reader got an unhandled error reported on every catalogue change
+and nothing ever cached. The page worked throughout, because the catalogue draws
+from memory, which is why it went unnoticed.
+
+`persistState` is given a storage of the site's own that swallows the throw. A
+reader who cannot be written to simply fetches the catalogue again next visit,
+which is what a cache that cannot be written should do.
+
+The site's own seven writes each have a test that a refused write is not an
+error; this eighth one does not, because it is three try/catch blocks in
+`main.ts` and a test would be asserting that `try` works. Naming those other
+specs here would hide this entry from the report of requirements nothing would
+notice the loss of, which is the report it belongs in.
+*Checked by:* nothing automatic — read `main.ts` and see that all three of
+`getItem`, `setItem` and `clear` are wrapped.
