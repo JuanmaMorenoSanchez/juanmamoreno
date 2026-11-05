@@ -685,8 +685,20 @@ tests, including that a write asks the api again and that nothing is asked at
 all during the prerender); and `cv-entries.service.spec.ts` in the backend
 
 ### R110 — The cv can be read as a life rather than a table · met
-Beside the download on the cv page, a second button offers the same career as
-three or four paragraphs. A dossier can carry either.
+The same career, as three or four paragraphs instead of a list. A dossier can
+carry either.
+
+**The button for it is off the cv page, and has been since 18 September 2026.**
+What the brief writes is correct about every fact and empty of the person, and a
+soulless biography is worse than none: the list at least does not pretend to be
+about anybody. Everything behind it stays — the api writes one and keeps it, and
+the dossier switch still offers it — so this entry is about a capability that
+works and a button that is parked, not about a button on a page. Turning it back
+on is uncommenting one line in `cv.component.html` and putting
+`CvProseButtonComponent` back in that component's `imports`, which the comment
+there says. This paragraph exists because the entry read "beside the download on
+the cv page, a second button offers…" for seven weeks after the button stopped
+being there.
 
 They are two things for two readers. A gallery wants the list — it is scanned,
 not read, and being a table is the point of it. Somebody deciding whether to
@@ -2181,6 +2193,17 @@ The mark is drawn in the page as one path taking the same ink as the icons
 beside it, not fetched and not a font. The icon font carries no brand marks, and
 this is the one glyph that has to be recognised on sight or the button does not
 do its job.
+
+**And it is shaped like the icons beside it, which it was not until 5 November
+2026.** The component imported `MatAnchor`, which is an alias for `MatButton`
+and whose selector is `a[mat-button]`; the template has `a[mat-icon-button]`,
+which is `MatIconAnchor`. So the directive never matched and the link rendered
+as a bare anchor in a row of four round icon buttons — on every artwork page,
+for as long as the button has existed. Its own stylesheet sizes the glyph and
+nothing else, so there was nothing to make up the difference. The compiler had
+been reporting it all along, as `NG8113: MatButton is not used within the
+template`, which is the lesson: the one build warning nobody had looked at was
+the one describing a visible fault.
 *Proven by:* `whatsapp-button.component.spec.ts` (5 tests, including "carries no
 telephone number, only an address on the service", "says which painting, and in
 which language the page was read", "is an anchor carrying the mark, not a

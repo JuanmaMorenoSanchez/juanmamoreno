@@ -5,6 +5,28 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.2
+
+- **fix** The WhatsApp button on every artwork page is shaped like the icons
+  beside it. It imported `MatAnchor`, an alias for `MatButton` whose selector is
+  `a[mat-button]`, while its template has `a[mat-icon-button]` — so the directive
+  never matched and the link drew as a bare anchor in a row of four round icon
+  buttons. Its own stylesheet sizes the glyph and nothing else. The compiler had
+  been saying so as `NG8113` since the button was written, which is why the other
+  item below is worth having: a build with a warning nobody acts on is a build
+  whose warnings nobody reads, and one of these two was a visible fault.
+- **chore** `CvProseButtonComponent` is no longer imported by the cv page. Its
+  tag has been commented out since September, so the import was a warning on
+  every build, and a build with a warning nobody acts on is a build whose
+  warnings nobody reads. The comment beside the parked tag now names both lines
+  to put back.
+- **chore** R110 said a button offered the biography "beside the download on the
+  cv page". It has not been on that page since 18 September. The capability is
+  intact — the api writes one and the dossier carries it — so the entry now
+  describes that instead of a button that is not there.
+- **chore** Removed `month` from `CvEntry`, declared in this repo and the api and
+  never set or read by either.
+
 ## 2.60.1
 
 - **fix** The record's heading is centred, like the technical sheet above it and

@@ -26,7 +26,6 @@ export interface CvEntry {
   id: string;
   kind: CvKind;
   year: number;
-  month?: number;
   title: Bilingual;
   venue?: Bilingual;
   /** A place name, which is not translated. */

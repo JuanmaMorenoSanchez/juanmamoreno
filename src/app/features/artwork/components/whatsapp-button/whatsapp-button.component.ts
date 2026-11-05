@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { MatAnchor } from '@angular/material/button';
+import { MatIconAnchor } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { environment } from '@environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -31,7 +31,12 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
   selector: 'app-whatsapp-button',
   templateUrl: './whatsapp-button.component.html',
   styleUrl: './whatsapp-button.component.scss',
-  imports: [MatAnchor, MatTooltip, TranslatePipe],
+  // `MatIconAnchor`, not `MatAnchor`: the latter is an alias for `MatButton`,
+  // whose selector is `a[mat-button]` and does not match the `a[mat-icon-button]`
+  // in the template — so the directive never applied and the button rendered as
+  // a bare anchor beside four round ones. The compiler had been saying so, as
+  // NG8113, since the component was written.
+  imports: [MatIconAnchor, MatTooltip, TranslatePipe],
 })
 export class WhatsappButtonComponent {
   private readonly lang = inject(LanguageUrlService);

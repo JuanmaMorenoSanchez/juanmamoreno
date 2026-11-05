@@ -10,8 +10,12 @@
           Off for now. The biography it writes reads as soulless: correct about
           the facts and empty of the person, which is worse than no biography.
           Everything behind it stays — the api still writes and keeps one, and a
-          dossier can still carry it — so turning it back on is uncommenting
-          this line once the brief writes something worth reading.
+          dossier can still carry it — so turning it back on, once the brief
+          writes something worth reading, is uncommenting the line below and
+          putting `CvProseButtonComponent` back in this component's `imports`.
+          It was taken out of them because a component imported and not used is
+          a warning on every build, and a build with a warning nobody acts on is
+          a build whose warnings nobody reads.
         -->
         <!-- <app-cv-prose-button></app-cv-prose-button> -->
       </h2>

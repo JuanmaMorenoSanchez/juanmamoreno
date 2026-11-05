@@ -13,7 +13,6 @@ import { CvService } from '@shared/services/cv.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '../../shared/components/pdf-button/pdf-button.component';
 import { CvEntryFormComponent } from './cv-entry-form.component';
-import { CvProseButtonComponent } from './cv-prose-button.component';
 
 /**
  * The career.
@@ -37,7 +36,6 @@ import { CvProseButtonComponent } from './cv-prose-button.component';
     MatIconModule,
     PdfButtonComponent,
     CvEntryFormComponent,
-    CvProseButtonComponent,
     MatDivider,
     TranslatePipe,
   ],
