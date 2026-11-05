@@ -531,6 +531,12 @@ worth keeping on its own.
 two sparse columns rather than as one record, and it ran straight into the essay
 underneath. One line an entry now, with room under the list.
 
+**The heading is centred**, like the technical sheet above it and the essay's own
+line below. It was left-aligned because the style it wears is shared with the
+certificates pages, where the same heading names a panel rather than a section
+of a painting's page — so the one heading on that page that was not centred was
+this one.
+
 **Absent for a reader when there is nothing to say.** Most of the catalogue has
 no record and a heading over an empty list is worse than no heading. He sees it
 either way, because an empty record is the one he needs in order to add a first

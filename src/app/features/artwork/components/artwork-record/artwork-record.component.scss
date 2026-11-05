@@ -3,6 +3,16 @@
   margin: 2.5rem 0 3.5rem;
 }
 
+/*
+  Centred, like the essay's own line directly underneath it. The shared
+  `.catalog-subheading` is left-aligned because the certificates pages use it
+  too, where it heads a panel; here it names a section of the painting's page,
+  which is a column of centred headings over text that is not.
+*/
+h2.catalog-subheading {
+  text-align: center;
+}
+
 .record-lines {
   margin: 0;
   padding: 0;

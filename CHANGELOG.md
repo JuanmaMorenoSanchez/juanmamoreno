@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.1
+
+- **fix** The record's heading is centred, like the technical sheet above it and
+  the essay's line below. It wears a style shared with the certificates pages,
+  where that heading names a panel and is left-aligned — which left it the one
+  heading on a painting's page that was not centred.
+
 ## 2.60.0
 
 - **feat** The cv is written from the cv page. An add beside every heading and
