@@ -56,7 +56,13 @@
             the page — which is what the first attempt at this did.
           -->
           <mat-grid-tile [colspan]="descColSpan" role="listitem">
-            <p>
+            <!--
+              Addressable, so a painting's record can link to the show it was
+              in. Built from the year and the title rather than from the id,
+              which says nothing on purpose: an address should follow the title
+              and an id must never move.
+            -->
+            <p [id]="cvItem.anchor">
               @if (cvItem.titleUrl) {
                 <i
                   ><a [href]="cvItem.titleUrl" target="_blank" rel="noopener noreferrer">{{

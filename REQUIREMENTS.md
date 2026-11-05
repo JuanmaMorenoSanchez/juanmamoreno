@@ -511,6 +511,20 @@ the conference, the education — comes from `GET /cv/entries` rather than from 
 array in this repository, and each entry carries its own English and Spanish
 instead of pointing at a translation key.
 
+**An entry's id says nothing, and its address says everything.** The ids are
+sixteen opaque hex characters. They were `2024-el-valle-inquietante` first,
+which was readable and wrong twice over: the id carried the year and the title,
+both of which he can correct, so it would have gone on saying 2024 about a show
+moved to 2025 — and it looked derivable, so something would eventually have
+computed one rather than looked it up, and a corrected typo would have detached
+every painting from its exhibition history. What a readable id was buying was an
+address, which wants the opposite rule, so `/cv#2024-el-valle-inquietante` is
+built from the year and the English title as the page is drawn and is the `id`
+of the entry's own paragraph. The anchor follows the title; the id never moves.
+A stale anchor costs a scroll, a stale id costs a painting's history. The
+English title in both languages, so one anchor addresses the entry wherever it
+is linked from.
+
 It exists because the one document on this site that changes several times a
 year was the one he could not change. Adding a show meant an edit, a commit and
 a deploy of four hundred pages, and the labels the entries pointed at lived in
@@ -537,9 +551,10 @@ that an English page shows unchanged.
 one anchor had never been closed, nine opened one reused window instead of a new
 tab, and *Interpaisajes* lost the second of its two links, an entry carrying one
 per field. Nine dead keys went out of both dictionaries with them.
-*Proven by:* `cv.spec.ts` (10 tests, including that Spanish falls back to
+*Proven by:* `cv.spec.ts` (15 tests, including that Spanish falls back to
 English and never the other way, that a kind nothing sits under gets no heading,
-and that the order the api gave is not re-sorted); `cv-entries.service.spec.ts` in the
+that the order the api gave is not re-sorted, and that an anchor owes nothing to
+the opaque id and is the English title in both languages); `cv-entries.service.spec.ts` in the
 backend; and the prerendered `/cv` and `/es/cv` compared line by line against
 the pages the old array rendered — same entries, same order, same links bar the
 one recorded above

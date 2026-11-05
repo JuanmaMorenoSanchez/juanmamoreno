@@ -7,7 +7,7 @@ import { CvEntry } from './cv-entry.entity';
 
 export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
   {
-    "id": "2024-el-valle-inquietante",
+    "id": "4790ab4546bf78fb",
     "kind": "solo",
     "year": 2024,
     "title": {
@@ -22,7 +22,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2021-el-sueno-de-los-robots",
+    "id": "069fd81d0cccbbc8",
     "kind": "solo",
     "year": 2021,
     "title": {
@@ -37,7 +37,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2019-33-el-desengano",
+    "id": "ab3d09a718504872",
     "kind": "solo",
     "year": 2019,
     "title": {
@@ -50,7 +50,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2017-blessed",
+    "id": "e2d006becf81f950",
     "kind": "solo",
     "year": 2017,
     "title": {
@@ -63,7 +63,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2017-i-was-there",
+    "id": "b37386b8cd2eedd1",
     "kind": "solo",
     "year": 2017,
     "title": {
@@ -76,7 +76,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2016-never-gone-forever",
+    "id": "62266b50fc6ab279",
     "kind": "solo",
     "year": 2016,
     "title": {
@@ -89,7 +89,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2014-pintura-aumentada",
+    "id": "5dfbf4e1d333f63b",
     "kind": "solo",
     "year": 2014,
     "title": {
@@ -102,7 +102,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2013-historias-aparentemente-inconexas",
+    "id": "38dc378c84cc92dd",
     "kind": "solo",
     "year": 2013,
     "title": {
@@ -115,7 +115,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2012-juanma-moreno",
+    "id": "8f6f6f3da32a1586",
     "kind": "solo",
     "year": 2012,
     "title": {
@@ -128,7 +128,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2008-transeuntes",
+    "id": "22449c295542bd10",
     "kind": "solo",
     "year": 2008,
     "title": {
@@ -141,7 +141,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "germany"
   },
   {
-    "id": "2024-outsiders-vol-1",
+    "id": "1c6b1a0396dd55e5",
     "kind": "collective",
     "year": 2024,
     "title": {
@@ -156,7 +156,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2024-anna-jonsson-juanma-moreno",
+    "id": "569775435cb39ae2",
     "kind": "collective",
     "year": 2024,
     "title": {
@@ -169,7 +169,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2023-pintores-pensando-la-pintura",
+    "id": "c45534b738716510",
     "kind": "collective",
     "year": 2023,
     "title": {
@@ -183,7 +183,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://www.espacio75.com/"
   },
   {
-    "id": "2023-nocturnos",
+    "id": "a5f32ad8a66500b3",
     "kind": "collective",
     "year": 2023,
     "title": {
@@ -196,7 +196,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2023-los-unicos-que-saben-de-arte-son-los-artistas",
+    "id": "cf3e6d8f3a2b26f5",
     "kind": "collective",
     "year": 2023,
     "title": {
@@ -211,7 +211,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2022-discovery-art-fair-cologne",
+    "id": "6b3530832ba03756",
     "kind": "collective",
     "year": 2022,
     "title": {
@@ -222,7 +222,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "titleUrl": "https://discoveryartfair.com/fairs/koeln/"
   },
   {
-    "id": "2021-lucca-art-fair",
+    "id": "9dd6662d24b96d31",
     "kind": "collective",
     "year": 2021,
     "title": {
@@ -232,7 +232,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "titleUrl": "https://www.luccaartfair.com/"
   },
   {
-    "id": "2021-figuracion-fantastica-sevillana",
+    "id": "b30ad80ca6893f41",
     "kind": "collective",
     "year": 2021,
     "title": {
@@ -246,7 +246,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://impulsogaleria.com/en/home/"
   },
   {
-    "id": "2020-interpaisajes",
+    "id": "914b9e1a7c8ac6cd",
     "kind": "collective",
     "year": 2020,
     "title": {
@@ -259,7 +259,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://www.eldevenirartgallery.com/"
   },
   {
-    "id": "2019-72-horas",
+    "id": "fdc3ccc88436e541",
     "kind": "collective",
     "year": 2019,
     "title": {
@@ -274,7 +274,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2019-homenaje-a-dolores-montijano",
+    "id": "a9114df8e5260755",
     "kind": "collective",
     "year": 2019,
     "title": {
@@ -287,7 +287,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2019-redes-de-fe",
+    "id": "99009cdeb333423c",
     "kind": "collective",
     "year": 2019,
     "title": {
@@ -301,7 +301,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://renace.art/"
   },
   {
-    "id": "2018-todo-encaja",
+    "id": "ce090999a3275899",
     "kind": "collective",
     "year": 2018,
     "title": {
@@ -316,7 +316,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://galeriazunino.com/"
   },
   {
-    "id": "2017-lodo",
+    "id": "df6d0387fe24922f",
     "kind": "collective",
     "year": 2017,
     "title": {
@@ -329,7 +329,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2015-escozor",
+    "id": "7b037cec06674222",
     "kind": "collective",
     "year": 2015,
     "title": {
@@ -342,7 +342,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2015-a-paloma-muerta",
+    "id": "e34e5fd749f45d4e",
     "kind": "collective",
     "year": 2015,
     "title": {
@@ -356,7 +356,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "http://estudio22photo.es"
   },
   {
-    "id": "2015-nemoart-festival-digital-art",
+    "id": "843aef3ba369776d",
     "kind": "collective",
     "year": 2015,
     "title": {
@@ -369,7 +369,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2015-promocion-equis",
+    "id": "ff786c2209fc2396",
     "kind": "collective",
     "year": 2015,
     "title": {
@@ -382,7 +382,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2015-en-azucar-de-sandia",
+    "id": "8bd6f86416fff5e1",
     "kind": "collective",
     "year": 2015,
     "title": {
@@ -395,7 +395,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2014-el-tamano-no-importa",
+    "id": "2cd55ee718ff78c7",
     "kind": "collective",
     "year": 2014,
     "title": {
@@ -408,7 +408,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2014-multi-tutti-fest",
+    "id": "14135e1bc3b528c4",
     "kind": "collective",
     "year": 2014,
     "title": {
@@ -421,7 +421,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2013-plato-del-dia",
+    "id": "201762d23308702b",
     "kind": "collective",
     "year": 2013,
     "title": {
@@ -434,7 +434,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2013-lo-mejorcito-de-cada-casa",
+    "id": "84302a3a85a36dbf",
     "kind": "collective",
     "year": 2013,
     "title": {
@@ -447,7 +447,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2011-weisser-tv",
+    "id": "b3c985d47cd09ae1",
     "kind": "collective",
     "year": 2011,
     "title": {
@@ -461,7 +461,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://www.129gallery.com/"
   },
   {
-    "id": "2011-mehr-licht-tributo-a-chema-alvargonzalez",
+    "id": "c711555116950f0e",
     "kind": "collective",
     "year": 2011,
     "title": {
@@ -475,7 +475,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://glogauair.net/"
   },
   {
-    "id": "2011-modern-classic-influence-of-the-past-in-today-s-",
+    "id": "52a410152fecfa68",
     "kind": "collective",
     "year": 2011,
     "title": {
@@ -488,7 +488,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "germany"
   },
   {
-    "id": "2010-the-mac-gyver-problem",
+    "id": "9e88fbd95cf01e1c",
     "kind": "collective",
     "year": 2010,
     "title": {
@@ -501,7 +501,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "germany"
   },
   {
-    "id": "2009-xxl-art-nuevas-tendencias-de-la-figuracion-en-gr",
+    "id": "e1e9774529367700",
     "kind": "collective",
     "year": 2009,
     "title": {
@@ -514,7 +514,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2009-la-mas-elegante-del-invernadero-iii",
+    "id": "74fb42dad98e9fd9",
     "kind": "collective",
     "year": 2009,
     "title": {
@@ -527,7 +527,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2014-the-pollock-krasner-foundation-award",
+    "id": "5a950bf5bd6ff563",
     "kind": "award",
     "year": 2014,
     "title": {
@@ -538,7 +538,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "titleUrl": "http://www.pkf.org/"
   },
   {
-    "id": "2012-antonio-gala-foundation-residence-program",
+    "id": "3462becaf15896df",
     "kind": "award",
     "year": 2012,
     "title": {
@@ -550,7 +550,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "titleUrl": "http://www.fundacionantoniogala.org/"
   },
   {
-    "id": "2010-glogauair-residence-program",
+    "id": "0eb0bef9af46c8f3",
     "kind": "award",
     "year": 2010,
     "title": {
@@ -561,7 +561,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "titleUrl": "http://www.glogauair.net/"
   },
   {
-    "id": "2006-lefranc-bourgueois-art-award",
+    "id": "d58024d99289fbd0",
     "kind": "award",
     "year": 2006,
     "title": {
@@ -572,7 +572,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
-    "id": "2025-towards-a-new-ai-winter",
+    "id": "090493feed6a82de",
     "kind": "conference",
     "year": 2025,
     "title": {
@@ -589,7 +589,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "https://www.unia.es/"
   },
   {
-    "id": "2009-bachelor-on-arts-degree",
+    "id": "8fd481e74a1e6942",
     "kind": "education",
     "year": 2009,
     "title": {
@@ -605,7 +605,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "venueUrl": "http://bellasartes.ugr.es/"
   },
   {
-    "id": "2008-llp-erasmus-scholarship",
+    "id": "5b24c76e7cb1538f",
     "kind": "education",
     "year": 2008,
     "title": {

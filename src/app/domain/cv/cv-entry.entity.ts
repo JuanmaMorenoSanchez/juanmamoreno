@@ -13,7 +13,15 @@ export interface Bilingual {
   es?: string;
 }
 
-/** One line of the cv, as the api serves it. */
+/**
+ * One line of the cv, as the api serves it.
+ *
+ * The id says nothing about the entry — sixteen random hex characters — because
+ * an id built out of the year and the title goes stale the moment either is
+ * corrected, and because one that looks derivable gets derived instead of
+ * looked up. What a readable id was for is an address, and that is `anchor`
+ * below, which has the opposite rule.
+ */
 export interface CvEntry {
   id: string;
   kind: CvKind;
@@ -34,6 +42,18 @@ export interface CvEntry {
 /** One line with its language already chosen, which is what a page draws. */
 export interface CvLine {
   id: string;
+  /**
+   * Where this entry is on the cv page: `/cv#2024-el-valle-inquietante`.
+   *
+   * Built from the year and the English title as the page is drawn, not stored
+   * — so it follows the title, which is what an address for a reader should do
+   * and exactly what an id must not. A renamed show moves its anchor and an old
+   * link lands at the top of the page; a renamed show must never move its id.
+   *
+   * From the English title in both languages, so one anchor addresses the entry
+   * wherever it is linked from.
+   */
+  anchor: string;
   year: number;
   title: string;
   titleUrl?: string;

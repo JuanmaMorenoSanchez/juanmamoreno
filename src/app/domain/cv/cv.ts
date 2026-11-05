@@ -38,11 +38,33 @@ export function cvSections(entries: readonly CvEntry[], lang: 'en' | 'es'): CvSe
   return sections;
 }
 
+/**
+ * The address of one entry on the cv page.
+ *
+ * The readable half of what an id used to be, and kept apart from it on
+ * purpose: this is built from the year and the title every time the page is
+ * drawn, so renaming a show moves its anchor — which is right for an address
+ * and would be wrong for an id. The English title in both languages, so a
+ * provenance line links to the same place whichever language it is written in.
+ */
+export function cvAnchor(entry: CvEntry): string {
+  const slug = entry.title.en
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48);
+
+  return `${entry.year}-${slug}`;
+}
+
 function line(entry: CvEntry, lang: 'en' | 'es'): CvLine {
   const venue = say(entry.venue, lang);
 
   return {
     id: entry.id,
+    anchor: cvAnchor(entry),
     year: entry.year,
     title: say(entry.title, lang),
     ...(entry.titleUrl ? { titleUrl: entry.titleUrl } : {}),

@@ -1,5 +1,5 @@
 import { CvEntry } from './cv-entry.entity';
-import { cvSections, say } from './cv';
+import { cvAnchor, cvSections, say } from './cv';
 
 const entry = (over: Partial<CvEntry>): CvEntry => ({
   id: 'x',
@@ -26,6 +26,56 @@ describe('one of the two languages', () => {
 
   it('says nothing about a field that is not there', () => {
     expect(say(undefined, 'en')).toBe('');
+  });
+});
+
+/**
+ * The readable half of what an id used to be, kept apart from it.
+ *
+ * An address for a reader should follow the title; an id must never move. The
+ * ids are sixteen opaque hex characters for that reason, and this is what a
+ * painting's record will link to.
+ */
+describe('where an entry is on the page', () => {
+  it('reads as the year and the title', () => {
+    expect(cvAnchor(entry({ year: 2024, title: { en: 'El valle inquietante' } }))).toBe(
+      '2024-el-valle-inquietante'
+    );
+  });
+
+  it('owes nothing to the opaque id', () => {
+    const anchor = cvAnchor(entry({ id: '4790ab4546bf78fb', year: 2024, title: { en: 'A show' } }));
+
+    expect(anchor).toBe('2024-a-show');
+    expect(anchor).not.toContain('4790ab');
+  });
+
+  /** A fragment is ascii, and the titles are not. */
+  it('strips the accents and the punctuation', () => {
+    expect(cvAnchor(entry({ year: 2019, title: { en: '33. El desengaño' } }))).toBe(
+      '2019-33-el-desengano'
+    );
+    expect(cvAnchor(entry({ year: 2017, title: { en: '#blessed' } }))).toBe('2017-blessed');
+  });
+
+  /**
+   * The same anchor from either language's page, so a provenance line links to
+   * one place however it is written.
+   */
+  it('is the English title even on the Spanish page', () => {
+    const degree = entry({
+      year: 2009,
+      title: { en: 'Bachelor on arts degree', es: 'Licenciado en Bellas Artes' },
+    });
+
+    expect(cvAnchor(degree)).toBe('2009-bachelor-on-arts-degree');
+    expect(cvSections([degree], 'es')[0].items[0].anchor).toBe('2009-bachelor-on-arts-degree');
+  });
+
+  it('never trails or doubles a dash', () => {
+    expect(cvAnchor(entry({ year: 2014, title: { en: 'MULTI/TUTTI/FEST — ' } }))).toBe(
+      '2014-multi-tutti-fest'
+    );
   });
 });
 

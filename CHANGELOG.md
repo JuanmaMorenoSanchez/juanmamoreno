@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.58.0
+
+- **feat** Each cv entry has an address: `/cv#2024-el-valle-inquietante`, built
+  from the year and the English title as the page is drawn, and carried as the
+  id of the entry's own paragraph. It is what a painting's record will link to
+  when it says which show the painting was in. From the English title in both
+  languages, so one anchor addresses the entry wherever it is linked from.
+- **fix** The entry ids themselves now say nothing - sixteen opaque hex
+  characters from the api instead of `2024-el-valle-inquietante`. An id built
+  out of the year and the title goes stale the moment either is corrected, and
+  one that looks derivable gets derived instead of looked up, which would have
+  detached a painting from its history the first time a typo was fixed. The two
+  halves are now separate on purpose and have opposite rules: the anchor
+  follows the title, the id never moves.
+
 ## 2.57.0
 
 - **feat** The cv comes from the api, in both languages. It was an array of
