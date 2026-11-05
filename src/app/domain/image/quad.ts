@@ -198,10 +198,6 @@ export function isConvex(quad: Quad): boolean {
   return sign !== 0;
 }
 
-export function scaleQuad(quad: Quad, factor: number): Quad {
-  return quad.map((p) => ({ x: p.x * factor, y: p.y * factor })) as Quad;
-}
-
 /** The whole frame, which is what to fall back on when no painting edges stand out. */
 export function fullFrame({ width, height }: Size): Quad {
   return [

@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.4
+
+- **chore** Deleted what nothing uses, found by scanning rather than by
+  guessing: `lerp` from the sketches' maths, `scaleQuad` from the quad helpers,
+  and two test mocks — `responsive.service.mock.ts` and
+  `translate.service.mock.ts` — that no spec has referenced. Twenty-four lines
+  and two files.
+
+Nothing else came up, and the negative results are worth the line: all 340
+translation keys are named somewhere in the source, both dictionaries hold the
+same 340, no runtime dependency is unused, and no exported function is declared
+in two places. `cv-prose-button.component.ts` is unreferenced and stays — it is
+parked on purpose, and the comment in `cv.component.html` says how to bring it
+back.
+
 ## 2.60.3
 
 - **fix** A browser that refuses storage no longer reports an error on every
