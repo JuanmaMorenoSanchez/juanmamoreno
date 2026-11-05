@@ -30,6 +30,21 @@
       <mat-grid-tile [colspan]="yearColSpan"></mat-grid-tile>
       <mat-grid-tile [colspan]="descColSpan" role="listitem">
         <h3 class="catalog-heading">{{ cvSection.title | translate }}</h3>
+        <!--
+          His alone. The api refuses everybody else, which is what makes it
+          safe; not drawing it for everybody else is what keeps this a cv.
+        -->
+        @if (mine()) {
+          <button
+            mat-icon-button
+            type="button"
+            class="cv-admin-button"
+            [attr.aria-label]="'cv.add' | translate"
+            (click)="add(cvSection.kind)"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        }
       </mat-grid-tile>
     </mat-grid-list>
     <mat-grid-list [cols]="totalCols" rowHeight="2.7rem" role="list">
@@ -91,10 +106,34 @@
                 }
                 <span>({{ cvItem.countryKey | translate }})</span>
               </small>
+              @if (mine()) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="cv-admin-button"
+                  [attr.aria-label]="'cv.edit' | translate"
+                  (click)="correct(cvItem.id)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
             </p>
           </mat-grid-tile>
         </div>
       }
     </mat-grid-list>
+    <!--
+      Under the list rather than in it. The tiles have a fixed row height and
+      clip what overflows, so a form field put inside one is drawn with its
+      bottom cut off; and a form where he was looking is worth more than a form
+      beside the exact line.
+    -->
+    @if (mine() && formOpenIn(cvSection.kind)) {
+      <app-cv-entry-form
+        [kind]="formKind(cvSection.kind)"
+        [entry]="correcting()"
+        (done)="closeForm()"
+      ></app-cv-entry-form>
+    }
   }
 </div>

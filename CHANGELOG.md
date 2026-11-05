@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.0
+
+- **feat** The cv is written from the cv page. An add beside every heading and
+  a pencil on every line, for the one person signed in: a form that adds an
+  entry, corrects one, or takes one off the cv, in both languages, with Spanish
+  optional and a year, an English title and a country the only things required.
+  A write asks the api again rather than guessing where the new entry falls,
+  since the order is the api's. Deleting an entry a painting still cites is
+  refused in the api's own words, which name the paintings. A reader is shown a
+  cv and nothing else, which is also what the prerendered pages contain.
+
 ## 2.59.2
 
 - **chore** Screenlight is eleven requirements instead of one of two hundred

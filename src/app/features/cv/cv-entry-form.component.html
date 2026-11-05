@@ -1,0 +1,136 @@
+<div class="cv-form">
+  <mat-form-field appearance="outline" class="cv-kind">
+    <mat-label>{{ 'cv.kind' | translate }}</mat-label>
+    <mat-select [value]="draft().kind" (valueChange)="set('kind', $event)" [disabled]="saving()">
+      @for (one of kinds; track one) {
+        <mat-option [value]="one">{{ headings[one] | translate }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cv-year">
+    <mat-label>{{ 'cv.year' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      [value]="draft().year"
+      (input)="set('year', $any($event.target).valueAsNumber)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cv-country">
+    <mat-label>{{ 'cv.country' | translate }}</mat-label>
+    <mat-select
+      [value]="draft().country"
+      (valueChange)="set('country', $event)"
+      [disabled]="saving()"
+    >
+      @for (one of countries; track one) {
+        <mat-option [value]="one">{{ 'cv.countries.' + one | translate }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!--
+    English first in both pairs, and Spanish beside it rather than on a form of
+    its own: the two are read together, and the one thing to see at a glance is
+    whether they say the same. Left blank, Spanish means they do.
+  -->
+  <mat-form-field appearance="outline" class="cv-title">
+    <mat-label>{{ 'cv.titleEn' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="draft().titleEn"
+      (input)="set('titleEn', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cv-title">
+    <mat-label>{{ 'cv.titleEs' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="draft().titleEs"
+      (input)="set('titleEs', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'cv.venueEn' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="draft().venueEn"
+      (input)="set('venueEn', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'cv.venueEs' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="draft().venueEs"
+      (input)="set('venueEs', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <!-- A place name, which is not translated. -->
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'cv.city' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="draft().city"
+      (input)="set('city', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cv-url">
+    <mat-label>{{ 'cv.titleUrl' | translate }}</mat-label>
+    <input
+      matInput
+      type="url"
+      [value]="draft().titleUrl"
+      (input)="set('titleUrl', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="cv-url">
+    <mat-label>{{ 'cv.venueUrl' | translate }}</mat-label>
+    <input
+      matInput
+      type="url"
+      [value]="draft().venueUrl"
+      (input)="set('venueUrl', $any($event.target).value)"
+      [disabled]="saving()"
+    />
+  </mat-form-field>
+
+  <div class="cv-actions">
+    <button mat-flat-button type="button" [disabled]="!ready() || saving()" (click)="save()">
+      {{ 'cv.save' | translate }}
+    </button>
+    <button mat-button type="button" [disabled]="saving()" (click)="done.emit()">
+      {{ 'cancel' | translate }}
+    </button>
+    @if (correcting()) {
+      <button mat-button type="button" class="cv-delete" [disabled]="saving()" (click)="remove()">
+        {{ 'cv.delete' | translate }}
+      </button>
+    }
+  </div>
+
+  <!--
+    Either a key of ours or the sentence the api refused with, which names the
+    paintings citing the entry. A sentence put through the pipe comes back
+    unchanged, because a missing key resolves to itself — so the two go through
+    the same place without the template having to know which it is holding.
+  -->
+  @if (failed()) {
+    <p class="cv-failed" role="alert">{{ failed() | translate }}</p>
+  }
+</div>

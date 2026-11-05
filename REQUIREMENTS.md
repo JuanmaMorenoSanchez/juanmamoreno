@@ -599,9 +599,11 @@ is linked from.
 It exists because the one document on this site that changes several times a
 year was the one he could not change. Adding a show meant an edit, a commit and
 a deploy of four hundred pages, and the labels the entries pointed at lived in
-`en.json` and `es.json`, which only a deploy could change either. It also exists
-so that a painting has something to point at: an exhibition on a painting's page
-will be an id into this list.
+`en.json` and `es.json`, which only a deploy could change either. Writing it
+from the site itself is [R219](#r219), which is the half that makes that true in
+practice rather than in principle. It also exists so that a painting has
+something to point at: an exhibition on a painting's page is an id into this
+list, which is [R208](#r208).
 
 **The page is still whole without javascript.** `prebuild` writes the api's
 answer into `cv-fallback.constants.ts` and the prerendered page is drawn from
@@ -629,6 +631,52 @@ the opaque id and is the English title in both languages); `cv-entries.service.s
 backend; and the prerendered `/cv` and `/es/cv` compared line by line against
 the pages the old array rendered — same entries, same order, same links bar the
 one recorded above
+
+### R219 — The cv is written from the cv page, by him and nobody else · met
+An add beside every heading and a pencil on every line, for the one person
+signed in: a form of ten fields under the section he opened it from, which
+adds an entry, corrects one, or takes one off the cv. Seeded entries and
+entries added since are equally editable, because a stored document overrides
+the seed by id.
+
+**A year, an English title and a country, and nothing else is required.** A
+conference has no venue, an online show has no city, most of the list has no
+link at all, and Spanish left blank means *the same sentence as the English* —
+which is most of the cv, the titles being Spanish proper nouns an English page
+shows unchanged. A field he left blank is left out of the request rather than
+sent empty, because an empty venue is stored as a venue and renders as a stray
+comma.
+
+**The kind is a select even though the section already said it.** Opening from
+under "Solo shows" opens on `solo`, which is the answer nine times in ten; but
+a kind nothing sits under yet has no section to open from at all — which would
+have made the first conference the one thing unaddable from the site that
+holds the conferences.
+
+**A write asks the api again rather than patching what the page holds.** The
+order is the api's: by kind, newest first, and within a year the order the seed
+was in, which is his. An entry spliced in here would land wherever this code
+guessed and be somewhere else after the next reload.
+
+**A refusal is passed on in the api's own words where they say something.**
+Deleting an entry a painting still cites is refused, and the refusal names the
+paintings — which is what says which records to edit first, where "it could not
+be deleted" would have sent him through a hundred and eighty-six pages. A 500
+is not passed on, because "Internal server error" on his cv page is noise.
+
+**A reader is shown a cv and nothing else**, which is also what the four
+hundred prerendered pages contain: nobody is signed in while they are being
+built, so none of this is in the html. The api verifies the same credential on
+every write, which is what makes it safe; not drawing it is what keeps the page
+a cv.
+*Proven by:* `cv.component.spec.ts` (6 tests, including that a reader has
+nothing to press, that the form is handed the whole entry rather than the line
+the page drew, and that opening one form shuts the other);
+`cv-entry-form.component.spec.ts` (10 tests, including that a blank field is
+left out, that a Spanish repeating its English is not stored twice, and that
+the refusal naming the paintings reaches him intact); `cv.service.spec.ts` (9
+tests, including that a write asks the api again and that nothing is asked at
+all during the prerender); and `cv-entries.service.spec.ts` in the backend
 
 ### R110 — The cv can be read as a life rather than a table · met
 Beside the download on the cv page, a second button offers the same career as

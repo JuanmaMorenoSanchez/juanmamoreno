@@ -1,14 +1,18 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
-import { CvLine } from '@domain/cv/cv-entry.entity';
+import { CvKind, CvLine } from '@domain/cv/cv-entry.entity';
 import { cvSections } from '@domain/cv/cv';
+import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { CvService } from '@shared/services/cv.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '../../shared/components/pdf-button/pdf-button.component';
+import { CvEntryFormComponent } from './cv-entry-form.component';
 import { CvProseButtonComponent } from './cv-prose-button.component';
 
 /**
@@ -27,9 +31,12 @@ import { CvProseButtonComponent } from './cv-prose-button.component';
   templateUrl: './cv.component.html',
   styleUrls: ['./cv.component.scss'],
   imports: [
+    MatButtonModule,
     MatGridList,
     MatGridTile,
+    MatIconModule,
     PdfButtonComponent,
+    CvEntryFormComponent,
     CvProseButtonComponent,
     MatDivider,
     TranslatePipe,
@@ -38,6 +45,7 @@ import { CvProseButtonComponent } from './cv-prose-button.component';
 export class CvComponent {
   private breakpointObserver = inject(BreakpointObserver);
   private readonly cv = inject(CvService);
+  private readonly auth = inject(AdminAuthService);
   private readonly language = inject(LanguageUrlService);
 
   readonly totalCols = 14;
@@ -50,6 +58,26 @@ export class CvComponent {
     cvSections(this.cv.entries(), this.language.contentLanguage())
   );
 
+  /**
+   * Whether the one person who can edit the cv is reading it.
+   *
+   * What the interface shows, and nothing more: the api verifies the same
+   * credential on every write, which is what makes it safe. Not drawing any of
+   * this for everybody else is what keeps the page a cv.
+   */
+  readonly mine = computed(() => this.auth.isAdmin());
+
+  /** Which section an entry is being added under, if one is. */
+  private readonly adding = signal<CvKind | null>(null);
+
+  /** Which entry is being corrected, by id, if one is. */
+  private readonly editing = signal<string | null>(null);
+
+  /** That entry in full, which is more than the drawn line carries. */
+  readonly correcting = computed(
+    () => this.cv.entries().find((entry) => entry.id === this.editing()) ?? null
+  );
+
   public yearColSpan = this.bigScreenYearColSpan;
   public descColSpan = this.totalCols - this.yearColSpan;
 
@@ -58,6 +86,37 @@ export class CvComponent {
   constructor() {
     this.listenToScreenSize();
     void this.cv.refresh();
+  }
+
+  /**
+   * Whether this section is the one holding the open form.
+   *
+   * A section at a time, so the form appears under the list it belongs to —
+   * which is where he was looking. Correcting an entry shows it under that
+   * entry's own section, whichever one that is.
+   */
+  public formOpenIn(kind: CvKind): boolean {
+    return this.adding() === kind || this.correcting()?.kind === kind;
+  }
+
+  /** The kind an open form opens on: the entry's, or the section's. */
+  public formKind(kind: CvKind): CvKind {
+    return this.correcting()?.kind ?? kind;
+  }
+
+  public add(kind: CvKind): void {
+    this.editing.set(null);
+    this.adding.set(kind);
+  }
+
+  public correct(id: string): void {
+    this.adding.set(null);
+    this.editing.set(id);
+  }
+
+  public closeForm(): void {
+    this.adding.set(null);
+    this.editing.set(null);
   }
 
   public numberOfItemsInYear(section: CvLine[], item: CvLine): number {

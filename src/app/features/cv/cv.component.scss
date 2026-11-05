@@ -13,3 +13,24 @@ h2.catalog-heading {
   align-items: center;
   gap: 0.5rem;
 }
+
+/*
+  The two controls only he sees, small enough to live inside a 2.7rem row that
+  clips what overflows — a default icon button is 3rem and was drawn with its
+  bottom edge cut off.
+*/
+.cv-admin-button {
+  flex: 0 0 auto;
+  margin-left: 0.25rem;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  padding: 0 !important;
+  line-height: 1.75rem !important;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    line-height: 1.1rem;
+  }
+}

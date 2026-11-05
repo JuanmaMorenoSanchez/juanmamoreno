@@ -2,10 +2,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { PLATFORM_ID, Injectable, computed, inject, signal } from '@angular/core';
 import { CV_AT_LAST_BUILD } from '@domain/cv/cv-fallback.constants';
-import { CvEntry } from '@domain/cv/cv-entry.entity';
+import { CvEntry, CvWrite } from '@domain/cv/cv-entry.entity';
 import { environment } from '@environments/environment';
 import type { ApiResponse } from '@shared/types/api-response.type';
 import { firstValueFrom } from 'rxjs';
+import { AdminAuthService } from './admin-auth.service';
 
 /**
  * The career: the shows, the awards, the conference, the education.
@@ -23,11 +24,13 @@ import { firstValueFrom } from 'rxjs';
  *
  * **Asked at most once, and only if something wants it.** Two places do: the
  * cv page and the pdf, which can put the cv in a dossier from anywhere in the
- * catalogue. Everywhere else never sends the request.
+ * catalogue. Everywhere else never sends the request — and a write asks again,
+ * because the order a new entry falls into is the api's to decide.
  */
 @Injectable({ providedIn: 'root' })
 export class CvService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AdminAuthService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private readonly known = signal<readonly CvEntry[]>(CV_AT_LAST_BUILD);
@@ -52,6 +55,66 @@ export class CvService {
     if (!this.isBrowser) return;
     this.asked ??= this.ask();
     return this.asked;
+  }
+
+  /** Puts a show, an award or a course on the cv. His, and only his. */
+  public async create(entry: CvWrite): Promise<void> {
+    await firstValueFrom(
+      this.http.post<ApiResponse<CvEntry>>(
+        `${environment.backendUrl}cv/entries`,
+        entry,
+        this.asHim()
+      )
+    );
+    await this.reread();
+  }
+
+  /** Corrects one, seeded or not. The id does not move. */
+  public async update(id: string, entry: CvWrite): Promise<void> {
+    await firstValueFrom(
+      this.http.put<ApiResponse<CvEntry>>(
+        `${environment.backendUrl}cv/entries/${id}`,
+        entry,
+        this.asHim()
+      )
+    );
+    await this.reread();
+  }
+
+  /**
+   * Takes one off the cv.
+   *
+   * The api refuses this while a painting still cites the entry, and names the
+   * paintings in the refusal. That message is worth showing him rather than
+   * replacing with "it failed": it says which records to edit first.
+   */
+  public async remove(id: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete<ApiResponse<{ id: string }>>(
+        `${environment.backendUrl}cv/entries/${id}`,
+        this.asHim()
+      )
+    );
+    await this.reread();
+  }
+
+  /**
+   * Asks the api again after a write, rather than patching what is held.
+   *
+   * The order is the api's: grouped by kind, newest first, and within a year
+   * the order the seed was in, which is his. A new entry spliced in here would
+   * land in whatever position this code guessed, and be somewhere else after
+   * the next reload.
+   */
+  private async reread(): Promise<void> {
+    this.asked = this.ask();
+    return this.asked;
+  }
+
+  /** His credential, which the api verifies before writing anything. */
+  private asHim(): { headers: Record<string, string> } {
+    const token = this.auth.bearerToken();
+    return { headers: token ? { Authorization: `Bearer ${token}` } : {} };
   }
 
   private async ask(): Promise<void> {

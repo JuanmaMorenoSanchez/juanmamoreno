@@ -1,0 +1,57 @@
+/*
+  Outside the grid the list is drawn in, on purpose: the tiles have a fixed
+  2.8rem row and clip what overflows, and an outlined form field is taller than
+  that on its own.
+*/
+.cv-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 2rem;
+
+  mat-form-field {
+    flex: 1 1 11rem;
+    min-width: 0;
+  }
+}
+
+.cv-kind {
+  flex: 1 1 13rem !important;
+}
+
+.cv-year {
+  flex: 0 1 7rem !important;
+}
+
+.cv-country {
+  flex: 0 1 9rem !important;
+}
+
+/* The titles are the long ones, and the pair worth reading side by side. */
+.cv-title {
+  flex: 1 1 16rem !important;
+}
+
+.cv-url {
+  flex: 1 1 100% !important;
+}
+
+.cv-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 100%;
+}
+
+/* Last, and the only thing on the form that cannot be taken back. */
+.cv-delete {
+  margin-left: auto;
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.cv-failed {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 0.85rem;
+}

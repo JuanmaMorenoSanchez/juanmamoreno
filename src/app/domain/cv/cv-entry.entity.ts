@@ -39,6 +39,32 @@ export interface CvEntry {
   venueUrl?: string;
 }
 
+/**
+ * An entry as he writes it on the form: everything but the id.
+ *
+ * The id is the api's to issue and never his to type, which is the whole point
+ * of it saying nothing — there is nothing here to compute one from.
+ */
+export type CvWrite = Omit<CvEntry, 'id'>;
+
+/**
+ * The countries a career has happened in, as keys under `cv.countries`.
+ *
+ * The same closed set the api holds, because the form needs a list to offer
+ * and a page needs words for them. A seventh country is a change in two
+ * repositories and three files, which is the price of the words being the
+ * site's rather than the data's — and the api refuses a key it does not know,
+ * so a drift here is a refused save and never a page with a raw key on it.
+ */
+export const CV_COUNTRIES: readonly string[] = [
+  'online',
+  'spain',
+  'usa',
+  'germany',
+  'mexico',
+  'italy',
+];
+
 /** One line with its language already chosen, which is what a page draws. */
 export interface CvLine {
   id: string;
@@ -66,6 +92,14 @@ export interface CvLine {
 
 /** A heading and the lines under it. */
 export interface CvSection {
+  /**
+   * Which kind this section is.
+   *
+   * The heading beside it is a translation key, so it cannot be asked what it
+   * is a heading for. The form needs that: a new entry added under "Solo
+   * shows" is a `solo`, and nobody should have to pick the kind twice.
+   */
+  kind: CvKind;
   /** A translation key: five headings are a closed set. */
   title: string;
   items: CvLine[];

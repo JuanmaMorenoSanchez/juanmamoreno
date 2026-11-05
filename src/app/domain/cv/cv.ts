@@ -32,7 +32,7 @@ export function cvSections(entries: readonly CvEntry[], lang: 'en' | 'es'): CvSe
 
   for (const kind of Object.keys(CV_SECTION_TITLES) as CvKind[]) {
     const items = entries.filter((entry) => entry.kind === kind).map((entry) => line(entry, lang));
-    if (items.length) sections.push({ title: CV_SECTION_TITLES[kind], items });
+    if (items.length) sections.push({ kind, title: CV_SECTION_TITLES[kind], items });
   }
 
   return sections;
