@@ -167,6 +167,25 @@
     "proseFailed": "The biography could not be written.",
     "proseInDossier": "Biography instead of the list"
   },
+  "record": {
+    "title": "Record",
+    "exhibited": "Exhibited",
+    "sold": "Sold to",
+    "awarded": "Awarded",
+    "acquired": "Acquired by",
+    "collection": "In the collection of",
+    "add": "Add a line",
+    "kind": "What happened",
+    "onTheCv": "On the cv",
+    "who": "Who (English)",
+    "whoEs": "Who (Spanish)",
+    "year": "Year",
+    "month": "Month",
+    "note": "Note",
+    "save": "Save",
+    "remove": "Take this line back",
+    "failed": "That line could not be saved."
+  },
   "statement": {
     "title": "Statement",
     "introduction": {

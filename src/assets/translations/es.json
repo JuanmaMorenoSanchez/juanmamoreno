@@ -167,6 +167,25 @@
     "proseFailed": "No se ha podido escribir la biografía.",
     "proseInDossier": "Biografía en vez de la lista"
   },
+  "record": {
+    "title": "Historial",
+    "exhibited": "Expuesta en",
+    "sold": "Vendida a",
+    "awarded": "Premiada",
+    "acquired": "Adquirida por",
+    "collection": "En la colección de",
+    "add": "Añadir una línea",
+    "kind": "Qué ocurrió",
+    "onTheCv": "En el cv",
+    "who": "Quién (inglés)",
+    "whoEs": "Quién (español)",
+    "year": "Año",
+    "month": "Mes",
+    "note": "Nota",
+    "save": "Guardar",
+    "remove": "Retirar esta línea",
+    "failed": "No se ha podido guardar la línea."
+  },
   "statement": {
     "title": "Statement",
     "introduction": {

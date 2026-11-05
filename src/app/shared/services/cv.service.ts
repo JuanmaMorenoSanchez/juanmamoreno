@@ -1,5 +1,6 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { PLATFORM_ID, Injectable, computed, inject, signal } from '@angular/core';
 import { CV_AT_LAST_BUILD } from '@domain/cv/cv-fallback.constants';
 import { CvEntry } from '@domain/cv/cv-entry.entity';
 import { environment } from '@environments/environment';
@@ -27,6 +28,7 @@ import { firstValueFrom } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CvService {
   private readonly http = inject(HttpClient);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private readonly known = signal<readonly CvEntry[]>(CV_AT_LAST_BUILD);
   private asked: Promise<void> | null = null;
@@ -40,8 +42,14 @@ export class CvService {
    * Never throws and never empties what it already knows: if the api cannot be
    * reached, what the build wrote down is still a better answer than none —
    * and on `/cv` the alternative is a page with no career on it.
+   *
+   * **Nothing is asked while the pages are being built.** `prebuild` has
+   * already written the api's answer into the bundle, so asking again during
+   * the prerender answers a question that is answered — and it would let a
+   * half-finished deploy replace a complete cv with whatever it had.
    */
   public async refresh(): Promise<void> {
+    if (!this.isBrowser) return;
     this.asked ??= this.ask();
     return this.asked;
   }

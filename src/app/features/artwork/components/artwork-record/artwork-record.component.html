@@ -1,0 +1,161 @@
+@if (shown()) {
+  <section class="artwork-record" aria-labelledby="record-heading">
+    <h2 id="record-heading" class="catalog-subheading">{{ 'record.title' | translate }}</h2>
+
+    @if (lines().length) {
+      <ul class="record-lines">
+        @for (line of lines(); track $index) {
+          <li>
+            <span class="record-year">{{ line.year }}</span>
+            <span class="record-said">
+              <span class="record-verb">{{ line.verb | translate }}</span>
+              @if (line.what) {
+                <span aria-hidden="true"> · </span>
+                @if (line.anchor) {
+                  <a [href]="cvLink(line.anchor)">{{ line.what }}</a>
+                } @else {
+                  <span>{{ line.what }}</span>
+                }
+              }
+              @if (line.note) {
+                <small class="record-note">{{ line.note }}</small>
+              }
+            </span>
+            @if (mine()) {
+              <button
+                mat-icon-button
+                type="button"
+                class="record-remove"
+                [disabled]="saving()"
+                [attr.aria-label]="'record.remove' | translate"
+                (click)="remove($index)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <!--
+      His alone. The api refuses everybody else, which is what makes it safe;
+      not drawing it for everybody else is what makes the page quiet.
+    -->
+    @if (mine()) {
+      @if (!adding()) {
+        <button mat-button type="button" class="record-add" (click)="open()">
+          <mat-icon>add</mat-icon>
+          {{ 'record.add' | translate }}
+        </button>
+      } @else {
+        <div class="record-form">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'record.kind' | translate }}</mat-label>
+            <mat-select
+              [value]="draft().kind"
+              (valueChange)="set('kind', $event)"
+              [disabled]="saving()"
+            >
+              @for (kind of kinds; track kind) {
+                <mat-option [value]="kind">{{ 'record.' + kind | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!--
+            The cv and nothing else. The point of a link is that it is a link,
+            and free text here would be a second list of shows that disagreed
+            with the first within a year.
+          -->
+          <mat-form-field appearance="outline" class="record-cv">
+            <mat-label>{{ 'record.onTheCv' | translate }}</mat-label>
+            <mat-select
+              [value]="draft().cv"
+              (valueChange)="set('cv', $event)"
+              [disabled]="saving()"
+            >
+              <mat-option [value]="''">—</mat-option>
+              @for (one of career(); track one.id) {
+                <mat-option [value]="one.id">{{ one.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'record.who' | translate }}</mat-label>
+            <input
+              matInput
+              [value]="draft().whoEn"
+              (input)="set('whoEn', $any($event.target).value)"
+              [disabled]="saving()"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'record.whoEs' | translate }}</mat-label>
+            <input
+              matInput
+              [value]="draft().whoEs"
+              (input)="set('whoEs', $any($event.target).value)"
+              [disabled]="saving()"
+            />
+          </mat-form-field>
+
+          <!--
+            An exhibition has no year of its own: it takes the year of the show
+            it points at, because two years that can disagree eventually do.
+          -->
+          @if (draft().kind !== 'exhibited' && !draft().cv) {
+            <mat-form-field appearance="outline" class="record-year-field">
+              <mat-label>{{ 'record.year' | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                [value]="draft().year"
+                (input)="set('year', $any($event.target).valueAsNumber)"
+                [disabled]="saving()"
+              />
+            </mat-form-field>
+          }
+
+          <mat-form-field appearance="outline" class="record-month-field">
+            <mat-label>{{ 'record.month' | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              max="12"
+              [value]="draft().month"
+              (input)="set('month', $any($event.target).valueAsNumber)"
+              [disabled]="saving()"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="record-note-field">
+            <mat-label>{{ 'record.note' | translate }}</mat-label>
+            <input
+              matInput
+              [value]="draft().noteEn"
+              (input)="set('noteEn', $any($event.target).value)"
+              [disabled]="saving()"
+            />
+          </mat-form-field>
+
+          <div class="record-actions">
+            <button mat-flat-button type="button" [disabled]="!ready() || saving()" (click)="add()">
+              {{ 'record.save' | translate }}
+            </button>
+            <button mat-button type="button" [disabled]="saving()" (click)="close()">
+              {{ 'cancel' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (failed()) {
+        <p class="record-failed">{{ failed() | translate }}</p>
+      }
+    }
+  </section>
+}

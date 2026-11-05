@@ -505,6 +505,63 @@ three carries an icon and a label and no word, that a reader is shown the door
 and nothing behind it, and that the theme names what it will switch to rather
 than what is already showing)
 
+### R208 — A painting's page says what has happened to it · met
+Between the technical sheet and the essay: where the painting was shown, what it
+won, when it was sold. One line per event, oldest first, each one naming the
+year and the thing — and an exhibition links to that show's own place on the cv
+page.
+
+It exists because the sheet says what the painting is and the essay says what it
+is about, and neither says what has become of it. Where a work has been
+exhibited and that it has been sold is what a catalogue entry carries in any
+serious collection, and until now it was in his head.
+
+**Oldest first**, because a record reads as a life rather than as a log: shown,
+shown again, sold.
+
+**Absent for a reader when there is nothing to say.** Most of the catalogue has
+no record and a heading over an empty list is worse than no heading. He sees it
+either way, because an empty record is the one he needs in order to add a first
+line to it.
+
+**In the prerendered html.** `prebuild` writes every record into
+`record-fallback.constants.ts` and the page is drawn from that, so a painting
+carries its own provenance with no javascript — the same rule as the essay above
+it. One request brings the whole catalogue up to date afterwards, because every
+artwork page needs its own record and the lot is a few kilobytes. A build that
+cannot reach the api keeps the records it has rather than stripping them off
+every page.
+
+**And nothing is fetched while the pages are being built.** A build renders 402
+pages, each its own application, so a request in a component is 402 requests —
+measured at 384 calls to the api in one build before this was guarded, for an
+answer the build had already written into the bundle. Worse, the answer replaced
+that bundled copy, so a deploy that was still rolling answered with nothing and
+left the provenance off every page. The cv is bundled for the same reason and is
+guarded the same way.
+
+**No price, and nowhere to type one.** Nothing on this site says what a painting
+costs; a record says that a painting was sold and when, which is what provenance
+publishes. The form has no field for a figure and the api has nowhere to keep
+one, each proved by a test that looks for it.
+
+**The exhibition picker offers the cv and nothing else.** The point of a link is
+that it is a link; free text would be a second list of shows that disagreed with
+the first inside a year. An exhibition carries no year of its own either — it
+takes the year of the show it cites, because two years that can disagree
+eventually do.
+*Proven by:* `record.spec.ts` (9 tests, including that a prize and the
+institution that took the painting are said in one line, and that an exhibition
+addresses the cv entry it cites); `artwork-record.component.spec.ts` (9,
+including that a reader with nothing to read gets no section at all and nothing
+to press, that the artist gets one even when it is empty, that a new line is
+sent on top of the lines already stored, and that there is nowhere to type a
+price); `artwork-record.service.spec.ts` (6, including that the api is asked
+once however often it is asked, that the bundled records survive an api that
+cannot be reached, and that nothing at all is fetched while the pages are being
+built — the one that would have caught the 384 calls); and the backend's own
+`artwork-record.service.spec.ts`
+
 ### R207 — The cv is data, in both languages, and not in this repository · met
 The career — the solo shows, the collective shows, the awards and residencies,
 the conference, the education — comes from `GET /cv/entries` rather than from an

@@ -99,6 +99,12 @@
         </p>
       }
     </div>
+    <!--
+      What has happened to the painting, between what it is and what it is
+      about: where it was shown, what it won, when it sold. Absent for a reader
+      when there is nothing to say, which is most of the catalogue.
+    -->
+    <app-artwork-record [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-record>
     <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
   }
   @if (hasMoreFromSameYear()) {

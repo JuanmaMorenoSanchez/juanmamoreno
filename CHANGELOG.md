@@ -5,6 +5,31 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.59.0
+
+- **feat** A painting's page says what has happened to it. Between the
+  technical sheet and the essay: where it was shown, what it won, when it was
+  sold, oldest first, because a record reads as a life rather than as a log. An
+  exhibition links to that show's own place on the cv. It is absent for a
+  reader when there is nothing to say, which is most of the catalogue, and
+  present for him even when empty, because an empty record is the one he needs
+  to add the first line to. The build writes every record into the bundle, so a
+  painting carries its own provenance in the html with no javascript, the same
+  rule as the essay above it.
+- **feat** He can write one from the painting's own page: a kind of event, the
+  show picked off the cv, who, a year and an optional month, and a note. The
+  picker offers the cv and nothing else, because the point of a link is that it
+  is a link. An exhibition takes the year of the show it cites rather than
+  carrying one that could disagree. The form opens already saying "a private
+  collector", which is most of what he will ever add. There is no field for a
+  price anywhere, and a test looks for one.
+- **fix** Neither the records nor the cv are fetched while the pages are being
+  built. A build renders 402 pages, each one its own application, so a request
+  in a component is 402 requests - measured at 384 calls for an answer the
+  build had already written into the bundle. Worse, the answer replaced that
+  bundled copy, so a deploy still rolling out answered with nothing and left
+  the provenance off every page, which is how this was found.
+
 ## 2.58.0
 
 - **feat** Each cv entry has an address: `/cv#2024-el-valle-inquietante`, built

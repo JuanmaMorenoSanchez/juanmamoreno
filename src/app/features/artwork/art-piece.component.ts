@@ -36,6 +36,7 @@ import { PostedArtworksService } from '@shared/services/posted-artworks.service'
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
 import { ArtworkCriticComponent } from './components/artwork-critic/artwork-critic.component';
+import { ArtworkRecordComponent } from './components/artwork-record/artwork-record.component';
 import { CertificateButtonComponent } from './components/certificate-button/certificate-button.component';
 import { DownloadButtonComponent } from '@shared/components/download-button/download-button.component';
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
@@ -70,6 +71,7 @@ const NO_DESCRIPTION = 'No description available';
     BackButtonComponent,
     ShareButtonComponent,
     ArtworkCriticComponent,
+    ArtworkRecordComponent,
     CertificateButtonComponent,
     SoldToggleComponent,
   ],

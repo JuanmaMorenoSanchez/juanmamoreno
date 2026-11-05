@@ -1,0 +1,95 @@
+.artwork-record {
+  margin: 2.5rem 0 0;
+}
+
+.record-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+  }
+}
+
+/* The same column position the cv page gives a year, so the two read as one site. */
+.record-year {
+  flex: 0 0 3.5rem;
+  color: var(--catalog-soft);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-said {
+  flex: 1 1 auto;
+  line-height: 1.6;
+}
+
+.record-verb {
+  color: var(--catalog-soft);
+}
+
+.record-note {
+  display: block;
+  color: var(--catalog-soft);
+  font-style: italic;
+}
+
+.record-remove {
+  flex: 0 0 auto;
+}
+
+.record-add {
+  margin-top: 0.5rem;
+}
+
+.record-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  mat-form-field {
+    flex: 1 1 11rem;
+    min-width: 0;
+  }
+}
+
+/* The show is the longest thing on the form, and the one worth reading whole. */
+.record-cv {
+  flex: 1 1 100% !important;
+}
+
+.record-year-field,
+.record-month-field {
+  flex: 0 1 7rem !important;
+}
+
+.record-note-field {
+  flex: 1 1 100% !important;
+}
+
+.record-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 100%;
+}
+
+.record-failed {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 599px) {
+  .record-lines li {
+    flex-wrap: wrap;
+  }
+
+  .record-year {
+    flex-basis: 100%;
+  }
+}
