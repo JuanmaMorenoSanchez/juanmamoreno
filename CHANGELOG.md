@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.59.1
+
+- **fix** The record reads as one line an entry:
+  `Expuesta en · Transeúntes, Harz Mensa, Halle Saale (2008)`, the year last in
+  brackets the way the cv page puts the country last. It was a year in its own
+  column with the sentence beside it, which read as two sparse columns rather
+  than as one record, and it ran straight into the essay underneath; there is
+  room under the list now.
+- **fix** Naming who bought a painting is optional, and the verb drops its
+  preposition when nobody is named - "Vendida a" with nothing after it is not a
+  sentence, so a line with no name reads `Vendida (2026)`.
+- **fix** No month on the form. More precision than anybody has, so two things
+  in the same year keep the order they were entered in.
+
 ## 2.59.0
 
 - **feat** A painting's page says what has happened to it. Between the

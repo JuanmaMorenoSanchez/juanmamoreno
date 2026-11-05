@@ -4,4 +4,27 @@
 // page carries its own record without javascript.
 import { ArtworkRecord } from './record.entity';
 
-export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [];
+export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
+  {
+    "tokenId": "167",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2008,
+        "cv": {
+          "id": "22449c295542bd10",
+          "kind": "solo",
+          "year": 2008,
+          "title": {
+            "en": "Transeúntes"
+          },
+          "venue": {
+            "en": "Harz Mensa"
+          },
+          "city": "Halle Saale",
+          "country": "germany"
+        }
+      }
+    ]
+  }
+];

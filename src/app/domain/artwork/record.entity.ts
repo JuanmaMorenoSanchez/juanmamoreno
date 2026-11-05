@@ -27,11 +27,27 @@ export const RECORD_VERBS: Readonly<Record<RecordKind, string>> = {
   collection: 'record.collection',
 };
 
+/**
+ * The same verb with nothing after it.
+ *
+ * Naming who bought a painting is optional — that it was sold, and when, is a
+ * fact on its own — and three of these verbs end in a preposition that needs
+ * something to govern. "Vendida a" with nobody after it is not a sentence.
+ * Exhibited and awarded always cite the cv, so they read the same either way
+ * and have no second key to go stale.
+ */
+export const RECORD_VERBS_ALONE: Readonly<Record<RecordKind, string>> = {
+  exhibited: 'record.exhibited',
+  sold: 'record.soldAlone',
+  awarded: 'record.awarded',
+  acquired: 'record.acquiredAlone',
+  collection: 'record.collectionAlone',
+};
+
 /** One line of a painting's record, as the api serves it. */
 export interface RecordEntry {
   kind: RecordKind;
   year: number;
-  month?: number;
   /** The show, prize or course, resolved — not an id to look up. */
   cv?: CvEntry;
   who?: Bilingual;
@@ -49,7 +65,6 @@ export interface RecordEntryEdit {
   cv?: string;
   who?: Bilingual;
   year?: number;
-  month?: number;
   note?: Bilingual;
 }
 

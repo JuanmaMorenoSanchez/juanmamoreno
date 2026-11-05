@@ -1,5 +1,6 @@
+/* The essay below wants room: the two were running together. */
 .artwork-record {
-  margin: 2.5rem 0 0;
+  margin: 2.5rem 0 3.5rem;
 }
 
 .record-lines {
@@ -7,25 +8,27 @@
   padding: 0;
   list-style: none;
 
+  /*
+    One line an entry. The year had a column of its own and the sentence sat
+    beside it, which read as two sparse columns rather than as one record.
+  */
   li {
     display: flex;
     align-items: baseline;
-    gap: 0.75rem;
-    padding: 0.4rem 0;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
   }
 }
 
-/* The same column position the cv page gives a year, so the two read as one site. */
 .record-year {
-  flex: 0 0 3.5rem;
   color: var(--catalog-soft);
-  font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .record-said {
   flex: 1 1 auto;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .record-verb {
@@ -63,8 +66,7 @@
   flex: 1 1 100% !important;
 }
 
-.record-year-field,
-.record-month-field {
+.record-year-field {
   flex: 0 1 7rem !important;
 }
 
@@ -87,9 +89,5 @@
 @media (max-width: 599px) {
   .record-lines li {
     flex-wrap: wrap;
-  }
-
-  .record-year {
-    flex-basis: 100%;
   }
 }

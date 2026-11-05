@@ -6,7 +6,11 @@
       <ul class="record-lines">
         @for (line of lines(); track $index) {
           <li>
-            <span class="record-year">{{ line.year }}</span>
+            <!--
+              One line an entry, the year last and in brackets, the way the cv
+              page puts the country last. It was a year in its own column and a
+              sentence beside it, which read as two columns of nothing much.
+            -->
             <span class="record-said">
               <span class="record-verb">{{ line.verb | translate }}</span>
               @if (line.what) {
@@ -17,6 +21,7 @@
                   <span>{{ line.what }}</span>
                 }
               }
+              <span class="record-year"> ({{ line.year }})</span>
               @if (line.note) {
                 <small class="record-note">{{ line.note }}</small>
               }
@@ -118,19 +123,6 @@
               />
             </mat-form-field>
           }
-
-          <mat-form-field appearance="outline" class="record-month-field">
-            <mat-label>{{ 'record.month' | translate }}</mat-label>
-            <input
-              matInput
-              type="number"
-              min="1"
-              max="12"
-              [value]="draft().month"
-              (input)="set('month', $any($event.target).valueAsNumber)"
-              [disabled]="saving()"
-            />
-          </mat-form-field>
 
           <mat-form-field appearance="outline" class="record-note-field">
             <mat-label>{{ 'record.note' | translate }}</mat-label>

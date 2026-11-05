@@ -21,7 +21,6 @@ interface Draft {
   whoEn: string;
   whoEs: string;
   year: number | null;
-  month: number | null;
   noteEn: string;
 }
 
@@ -184,7 +183,6 @@ export class ArtworkRecordComponent {
       // An exhibition's year belongs to the show; sending it back would create
       // a second year that could disagree with it.
       ...(entry.cv ? {} : { year: entry.year }),
-      ...(entry.month ? { month: entry.month } : {}),
       ...(entry.note ? { note: entry.note } : {}),
     }));
   }
@@ -199,7 +197,6 @@ export class ArtworkRecordComponent {
       ...(draft.cv ? { cv: draft.cv } : {}),
       ...(whoEn ? { who: { en: whoEn, ...(whoEs && whoEs !== whoEn ? { es: whoEs } : {}) } } : {}),
       ...(draft.cv ? {} : { year: Number(draft.year) }),
-      ...(draft.month ? { month: Number(draft.month) } : {}),
       ...(noteEn ? { note: { en: noteEn } } : {}),
     };
   }
@@ -209,7 +206,9 @@ export class ArtworkRecordComponent {
  * A new line, with the sale already filled in.
  *
  * Most of what he will ever add here is a sale to somebody who does not want
- * naming, so that is what the form opens as — and the two words for it are his.
+ * naming, so that is what the form opens as — and the two words for it are
+ * his. Both of them can be cleared: naming anybody is optional, and a line
+ * saying only that the painting sold, and when, is a fact worth keeping.
  */
 function empty(): Draft {
   return {
@@ -218,7 +217,6 @@ function empty(): Draft {
     whoEn: 'a private collector',
     whoEs: 'un coleccionista privado',
     year: new Date().getFullYear(),
-    month: null,
     noteEn: '',
   };
 }

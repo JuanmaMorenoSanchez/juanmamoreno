@@ -507,9 +507,10 @@ than what is already showing)
 
 ### R208 — A painting's page says what has happened to it · met
 Between the technical sheet and the essay: where the painting was shown, what it
-won, when it was sold. One line per event, oldest first, each one naming the
-year and the thing — and an exhibition links to that show's own place on the cv
-page.
+won, when it was sold. One line per event, oldest first, reading
+`Expuesta en · Transeúntes, Harz Mensa, Halle Saale (2008)` — the verb, the
+thing, and the year last in brackets the way the cv page puts the country last.
+An exhibition links to that show's own place on the cv page.
 
 It exists because the sheet says what the painting is and the essay says what it
 is about, and neither says what has become of it. Where a work has been
@@ -517,7 +518,18 @@ exhibited and that it has been sold is what a catalogue entry carries in any
 serious collection, and until now it was in his head.
 
 **Oldest first**, because a record reads as a life rather than as a log: shown,
-shown again, sold.
+shown again, sold. Two things in the same year keep the order they were entered
+in: a month was asked for and taken out again as more precision than anybody
+has, and a stable sort gives the rest for nothing.
+
+**Naming anybody is optional**, and the verb drops its preposition when nobody
+is named — "Vendida a" with nothing after it is not a sentence, so a line with
+no name reads `Vendida (2026)`. That a painting was sold, and when, is a fact
+worth keeping on its own.
+
+**It was a year in its own column** with the sentence beside it, which read as
+two sparse columns rather than as one record, and it ran straight into the essay
+underneath. One line an entry now, with room under the list.
 
 **Absent for a reader when there is nothing to say.** Most of the catalogue has
 no record and a heading over an empty list is worse than no heading. He sees it
@@ -550,9 +562,11 @@ that it is a link; free text would be a second list of shows that disagreed with
 the first inside a year. An exhibition carries no year of its own either — it
 takes the year of the show it cites, because two years that can disagree
 eventually do.
-*Proven by:* `record.spec.ts` (9 tests, including that a prize and the
-institution that took the painting are said in one line, and that an exhibition
-addresses the cv entry it cites); `artwork-record.component.spec.ts` (9,
+*Proven by:* `record.spec.ts` (12 tests, including that a prize and the
+institution that took the painting are said in one line, that an exhibition
+addresses the cv entry it cites, and that the verb drops its preposition when
+the line names nobody); `artwork-record.component.spec.ts` (11, including that
+a line saves with the who fields cleared and that no month is asked for,
 including that a reader with nothing to read gets no section at all and nothing
 to press, that the artist gets one even when it is empty, that a new line is
 sent on top of the lines already stored, and that there is nowhere to type a

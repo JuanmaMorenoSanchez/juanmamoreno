@@ -95,6 +95,34 @@ describe('a painting’s record as the page draws it', () => {
     expect(lines.map((line) => line.year)).toEqual([2024, 2025]);
   });
 
+  /**
+   * Naming anybody is optional, and "Sold to" with nobody after it is not a
+   * sentence. The verb drops its preposition instead.
+   */
+  it('drops the preposition when the line names nobody', () => {
+    const [sold] = recordLines([entry({ kind: 'sold', year: 2025 })], 'en');
+    const [acquired] = recordLines([entry({ kind: 'acquired', year: 2025 })], 'en');
+    const [collection] = recordLines([entry({ kind: 'collection', year: 2025 })], 'en');
+
+    expect(sold.verb).toBe('record.soldAlone');
+    expect(sold.what).toBe('');
+    expect(acquired.verb).toBe('record.acquiredAlone');
+    expect(collection.verb).toBe('record.collectionAlone');
+  });
+
+  it('keeps the preposition as soon as there is somebody to govern', () => {
+    const [line] = recordLines([entry({ kind: 'sold', who: { en: 'the Foundation' } })], 'en');
+
+    expect(line.verb).toBe('record.sold');
+  });
+
+  /** Exhibited and awarded always cite the cv, so they read the same either way. */
+  it('has one word for the kinds that always cite something', () => {
+    const [line] = recordLines([entry({ kind: 'awarded', cv: PRIZE, year: 2014 })], 'en');
+
+    expect(line.verb).toBe('record.awarded');
+  });
+
   it('carries a note where there is one, and nothing where there is not', () => {
     const [withNote] = recordLines([entry({ note: { en: 'through the gallery' } })], 'en');
     const [without] = recordLines([entry({})], 'en');

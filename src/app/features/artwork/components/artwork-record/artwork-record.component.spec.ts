@@ -179,6 +179,40 @@ describe('the record on an artwork page', () => {
     ]);
   });
 
+  /**
+   * Naming anybody is optional. The form offers the two words he chose and
+   * both can be emptied: that a painting sold, and when, is a fact on its own.
+   */
+  it('saves a line with the who fields cleared', async () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+      add: () => Promise<void>;
+    };
+    component.set('whoEn', '');
+    component.set('whoEs', '');
+    await component.add();
+
+    expect(saved[0].entries).toEqual([{ kind: 'sold', year: new Date().getFullYear() }]);
+  });
+
+  /** It was asked for and taken out: more precision than anybody has. */
+  it('asks for no month', () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    expect(text().toLowerCase()).not.toContain('month');
+    expect(text().toLowerCase()).not.toContain('mes');
+  });
+
   /** There is no field for a figure, and this is the test that says so. */
   it('has nowhere on the form to type what it sold for', () => {
     admin = true;
