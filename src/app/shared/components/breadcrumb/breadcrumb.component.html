@@ -27,6 +27,17 @@
         </mat-chip>
       }
       <!--
+        The two filters, in a box of their own.
+
+        Loose in the chip row they wrapped wherever they happened to land: on a
+        phone the year followed the chips onto the first line and availability
+        dropped alone onto the second, so two controls that are read as a pair
+        sat on different rows against different left edges. Boxed, they wrap
+        together and share the row equally, and on a wide screen they sit
+        inline exactly as before.
+      -->
+      <div class="filters">
+      <!--
         The label stays up whatever happens, like the one beside it. This
         select empties itself after every pick — the year it took has become a
         chip — so left to itself the label would sit in the middle as a
@@ -73,6 +84,7 @@
           }
         </mat-select>
       </mat-form-field>
+      </div>
       @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
         <mat-chip
           color="primary"

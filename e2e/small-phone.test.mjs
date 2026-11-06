@@ -103,3 +103,36 @@ describe('a long Spanish heading on a 320px phone', () => {
     await page.close();
   });
 });
+
+/**
+ * The catalogue's two filters are read as a pair, so they wrap as a pair.
+ *
+ * Loose in the chip row they wrapped wherever they landed: the year rode up
+ * beside the breadcrumb chips and availability dropped alone onto the next
+ * line, against a different left edge and looking like a different kind of
+ * control. Nothing was broken, which is why it survived — it just read as a
+ * staircase rather than as a bar, on the page whose job is to show paintings.
+ */
+describe('the catalogue filters on a 320px phone', () => {
+  it('puts the year and availability on one row, as equal halves', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artworks', 'en-US', SMALL_PHONE);
+    await page.waitForSelector('.filters .small-input', READY);
+
+    const boxes = await page.$$eval('.filters .small-input', (fields) =>
+      fields.map((field) => {
+        const box = field.getBoundingClientRect();
+        return { top: Math.round(box.top), width: Math.round(box.width) };
+      })
+    );
+
+    assert.equal(boxes.length, 2, 'the catalogue should offer two filters');
+    assert.equal(boxes[0].top, boxes[1].top, `they sit on different rows: ${JSON.stringify(boxes)}`);
+    assert.ok(
+      Math.abs(boxes[0].width - boxes[1].width) <= 1,
+      `they are not equal halves: ${JSON.stringify(boxes)}`
+    );
+    await page.close();
+  });
+});

@@ -1,3 +1,32 @@
+@use '../../../../styles/tokens';
+@use '../../../../styles/breakpoints' as bp;
+
+// The two filters are read as a pair, so they wrap as a pair. Inline on a wide
+// screen, exactly as they were; on a phone they take a row of their own and
+// split it in half, which is what stops the year riding up beside the chips
+// and leaving availability alone underneath on a different left edge.
+.filters {
+  display: flex;
+  align-items: flex-start;
+
+  // Phones only. At the medium breakpoint the whole bar already fits on one
+  // line, and giving the filters a row of their own there cost a tablet
+  // thirty-six pixels of its first screen to solve a problem it did not have.
+  @include bp.respond-below(tokens.$breakpoint-sm) {
+    flex: 1 1 100%;
+
+    .small-input {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
 // Wide enough for the longest label either language has — "Disponibilidad" —
 // and no wider. These sit between chips that are as wide as their words, and
 // two boxes half full of nothing read as a form rather than as a filter.

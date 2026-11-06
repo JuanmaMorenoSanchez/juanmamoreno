@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.2
+
+- **fix** The catalogue's two filters wrap as a pair on a phone, in a row of
+  their own split in half. Loose among the breadcrumb chips the year rode up
+  beside them and availability dropped alone onto the next line, against a
+  different left edge — a staircase rather than a bar, on the page whose job is
+  to show paintings. Unchanged from the small breakpoint up, where the whole
+  bar already fits on one line.
+
 ## 2.62.1
 
 - **fix** Every page declared `lang="en"`, the Spanish half included: the
