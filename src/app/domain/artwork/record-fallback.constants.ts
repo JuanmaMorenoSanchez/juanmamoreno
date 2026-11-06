@@ -6,6 +6,30 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "143",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "167",
     "entries": [
       {

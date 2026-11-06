@@ -117,19 +117,28 @@ describe('the record on an artwork page', () => {
     expect(fixture.nativeElement.querySelector('.record-add')).not.toBeNull();
   });
 
-  it('opens a form that already says a private collector', () => {
+  /**
+   * The phrase is a choice and not something to type. Typed, it would arrive
+   * in one language and print English on the Spanish page — and it was two
+   * boxes, one per language, both filled in before anything had happened.
+   */
+  it('opens on the collector nobody names, with nothing to type', () => {
     admin = true;
     build();
 
     fixture.nativeElement.querySelector('.record-add').click();
     fixture.detectChanges();
 
+    const component = fixture.componentInstance as unknown as {
+      draft: () => { buyer: string };
+    };
+    expect(component.draft().buyer).toBe('private');
+
     const inputs: HTMLInputElement[] = Array.from(
       fixture.nativeElement.querySelectorAll('.record-form input')
     );
-
-    expect(inputs.some((input) => input.value === 'a private collector')).toBe(true);
-    expect(inputs.some((input) => input.value === 'un coleccionista privado')).toBe(true);
+    expect(inputs.some((input) => input.value.includes('collector'))).toBe(false);
+    expect(inputs.some((input) => input.value.includes('coleccionista'))).toBe(false);
   });
 
   /**
@@ -180,10 +189,10 @@ describe('the record on an artwork page', () => {
   });
 
   /**
-   * Naming anybody is optional. The form offers the two words he chose and
-   * both can be emptied: that a painting sold, and when, is a fact on its own.
+   * Naming anybody is optional: that a painting sold, and when, is a fact on
+   * its own, and the line then reads "Sold" with nothing after it.
    */
-  it('saves a line with the who fields cleared', async () => {
+  it('saves a sale with nobody named', async () => {
     admin = true;
     build();
 
@@ -194,11 +203,90 @@ describe('the record on an artwork page', () => {
       set: (field: string, value: unknown) => void;
       add: () => Promise<void>;
     };
-    component.set('whoEn', '');
-    component.set('whoEs', '');
+    component.set('buyer', 'named');
     await component.add();
 
     expect(saved[0].entries).toEqual([{ kind: 'sold', year: new Date().getFullYear() }]);
+  });
+
+  /**
+   * An institution is a proper noun: one box, stored as English alone, which
+   * is what the api keeps when there is no different Spanish — so the name
+   * reads the same on both pages. It was two boxes, one per language, and the
+   * Spanish one wanted a translation of a name.
+   */
+  it('names an institution from one box, in both languages at once', async () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+      add: () => Promise<void>;
+    };
+    component.set('buyer', 'named');
+    component.set('whoName', '  Museo Nacional Centro de Arte Reina Sofía  ');
+    await component.add();
+
+    expect(saved[0].entries).toEqual([
+      {
+        kind: 'sold',
+        who: { en: 'Museo Nacional Centro de Arte Reina Sofía' },
+        year: new Date().getFullYear(),
+      },
+    ]);
+  });
+
+  /**
+   * Only a sale has anybody to name. A show and a prize take their name from
+   * the cv entry the line cites, so a second one here would be a name that
+   * could disagree with it — and the boxes were on the form whatever had
+   * happened, asking who for a show that already said where.
+   */
+  it('asks who only for a sale', () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+    const whenSelling = fixture.nativeElement.querySelectorAll('mat-form-field').length;
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+      naming: () => boolean;
+    };
+    expect(component.naming()).toBe(true);
+
+    component.set('kind', 'exhibited');
+    fixture.detectChanges();
+
+    expect(component.naming()).toBe(false);
+    expect(fixture.nativeElement.querySelectorAll('mat-form-field').length).toBeLessThan(
+      whenSelling,
+    );
+  });
+
+  /** Chosen on a sale and then changed to a show, it is not written down. */
+  it('does not carry a name onto a line that cannot have one', async () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+      add: () => Promise<void>;
+    };
+    component.set('buyer', 'named');
+    component.set('whoName', 'The Hepworth Wakefield');
+    component.set('kind', 'exhibited');
+    component.set('cv', SHOW.id);
+    await component.add();
+
+    expect(saved[0].entries).toEqual([{ kind: 'exhibited', cv: SHOW.id }]);
   });
 
   /** It was asked for and taken out: more precision than anybody has. */

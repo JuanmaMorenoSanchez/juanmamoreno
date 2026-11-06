@@ -76,6 +76,11 @@ h2.catalog-subheading {
   flex: 1 1 100% !important;
 }
 
+/* An institution's name is longer than a label: it takes the rest of the row. */
+.record-who-field {
+  flex: 2 1 16rem !important;
+}
+
 .record-year-field {
   flex: 0 1 7rem !important;
 }

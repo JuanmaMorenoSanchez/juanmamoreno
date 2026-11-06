@@ -568,11 +568,31 @@ that it is a link; free text would be a second list of shows that disagreed with
 the first inside a year. An exhibition carries no year of its own either — it
 takes the year of the show it cites, because two years that can disagree
 eventually do.
+
+**Who it went to is asked only for a sale, and asked once.** It was two boxes,
+one per language, on the form whatever had happened — so a show that already
+said where it was asked who as well, and a prize asked who had awarded it when
+the cv entry it cites is the answer. They were also prefilled with the two
+words for the collector nobody names, in both languages, before anything had
+been chosen.
+
+A sale now asks one question with two answers: the private collector, which is
+a phrase and so a choice — typed, it would arrive in one language and print
+English on the Spanish page — or an institution, which is a proper noun and so
+one box, stored as English alone, because the api keeps no Spanish that repeats
+its English and a name reads the same on both pages. Left empty it is nobody,
+which is the line that reads `Vendida (2026)`. Nothing is carried onto a kind
+that cannot have it: choose an institution and then change the line to a show,
+and no name is written down.
+
 *Proven by:* `record.spec.ts` (12 tests, including that a prize and the
 institution that took the painting are said in one line, that an exhibition
 addresses the cv entry it cites, and that the verb drops its preposition when
-the line names nobody); `artwork-record.component.spec.ts` (11, including that
-a line saves with the who fields cleared and that no month is asked for,
+the line names nobody); `artwork-record.component.spec.ts` (14, including that
+who is asked only for a sale, that an institution is named from one box in both
+languages at once, that a sale saves with nobody named, that a name is not
+carried onto a line that cannot have one, that the form opens on the collector
+nobody names with nothing to type, and that no month is asked for,
 including that a reader with nothing to read gets no section at all and nothing
 to press, that the artist gets one even when it is empty, that a new line is
 sent on top of the lines already stored, and that there is nowhere to type a
@@ -966,9 +986,21 @@ to the top left of the certificate. Leaving them would give a certificate of a
 sideways painting squeezed into the shape of an upright one. The brushed area
 and every change kept with it come round too, since the mask lives in the
 straightened rectangle and the painting arrives in it a quarter turn round.
+
+**A second press while the first is still turning is ignored.** Half of a turn
+happens after an await — the canvas is drawn, then the bitmap is decoded — so
+two quick presses both read the same photograph and the same corners. The
+picture came round once, both having worked out the same quarter turn from the
+same place, and the brushed area came round twice, because that half is not
+worked out from the picture but applied to whatever is there. A mask ninety
+degrees out from the painting it was drawn on is the exact fault the paragraph
+above exists to prevent, and nothing reports it: it is a corner brightened that
+nobody asked for.
 *Proven by:* `quad.spec.ts` "turnClockwise" (4 tests — the whole frame stays the
-whole frame, a bent side stays the only bent side, four turns return) and
-`selection.spec.ts` "turning a selection with the photograph" (3 tests)
+whole frame, a bent side stays the only bent side, four turns return),
+`selection.spec.ts` "turning a selection with the photograph" (3 tests) and
+`photo-prep.component.spec.ts` "the rotate button pressed twice" (2 tests: one
+turn of the picture, and the brushed area round exactly once with it)
 
 ### R94 — The picture can be gone into without taking the page with it · met
 The stage magnifies up to four times, and the corner rings keep the size they
@@ -1124,8 +1156,18 @@ chosen file, the photograph on the stage, the corners, the measurements, the
 brushwork and the magnification all go, leaving the studio as it opens. The
 corrector hears this through the same handoff the form asks for the photograph
 on, counted rather than flagged so a second certificate clears it again.
+
+**The measurements were the one thing it left behind**, and this said they went
+— the clearing listed them and the test that proved it checked the corners and
+the magnification. So the next painting opened on an empty stage with the last
+one's height and width already typed, ready to be squared up to, and that is
+the one field here the artist is deliberately never given a starting point for:
+a measurement already in the box is a measurement nobody reads before pressing
+on, and a wrong size on a certificate looks exactly like a right one.
 *Proven by:* `handoff.service.spec.ts` (the count, and the held
-photograph dropped) and `photo-prep.component.spec.ts` "starting again"
+photograph dropped) and `photo-prep.component.spec.ts` "starting again" (the
+corners, the magnification, the file chooser back on the page, and the two
+measurement boxes empty)
 
 ### R27 — The file says whose it is · met
 The corrected jpeg carries the artist's name and a copyright notice as both exif
@@ -4324,15 +4366,28 @@ carried when there are some and left empty when there are none, and the form
 takes them only when it is given them: with the squaring off, the boxes in the
 form are the only ones there are, and overwriting them with nothing emptied
 the form the moment the photograph reached it.
+
+**And so did the brush, the tint and the fingerprint.** Each of the three
+worked out the rectangle the photograph straightens into, and each demanded the
+measurements before working it out — which `correctedSize` does not read with
+the squaring off. So on this requirement's own path, a detail with the boxes
+empty, a dab of the brush painted nothing at all, the tinted area it should
+have shown showed nothing, and no fingerprint was published to compare against
+the collection. None of the three said anything; the brush simply did not work.
+All three now ask one method for that rectangle, and a missing measurement is
+passed as one apiece, exactly as the render has always passed it.
 *Proven by:* `mint-form.component.spec.ts` "MintFormComponent, downloading
 without minting" (9 tests: offered without a title which the other two
 require, handing over the corrector's own file, named after the title when
 there is one, a name a file system will accept, filing nothing and not
 clearing the studio, letting go of the url it made, downloading nothing when
 the corrector cannot render, taking the corrector's measurements, and keeping
-its own when the corrector was given none) and `photo-prep.component.spec.ts`
+its own when the corrector was given none), `photo-prep.component.spec.ts`
 "straightening a detail, with nothing measured" (2 tests: handed over with no
-measurements, and still carrying them when there are some)
+measurements, and still carrying them when there are some) and the same file's
+"brushing a detail, with nothing measured"
+(2 tests: a dab painted with no size to square up to, and shown back on the
+photograph)
 
 ### R199 — A model is not built while something else has the card · met
 A clip was started while a game was running. The card was at **7,865 of 8,188

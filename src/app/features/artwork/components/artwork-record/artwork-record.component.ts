@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { Bilingual } from '@domain/cv/cv-entry.entity';
 import { cvSections } from '@domain/cv/cv';
 import { RECORD_KINDS, RecordEntryEdit, RecordKind } from '@domain/artwork/record.entity';
 import { recordLines } from '@domain/artwork/record';
@@ -18,11 +19,26 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
 interface Draft {
   kind: RecordKind;
   cv: string;
-  whoEn: string;
-  whoEs: string;
+  /** Which of the two answers to "who": the collector nobody names, or a name. */
+  buyer: 'private' | 'named';
+  /** The institution, typed, when that is the answer. */
+  whoName: string;
   year: number | null;
   noteEn: string;
 }
+
+/**
+ * The buyer who is not named, in his words, in both languages.
+ *
+ * The one answer here that is a phrase rather than a proper noun, which is why
+ * it is a choice and not something to type: typed, it would arrive in one
+ * language and print English on the Spanish page. An institution's name is a
+ * proper noun and the same in both, so one box fills both.
+ */
+const PRIVATE_COLLECTOR: Bilingual = {
+  en: 'a private collector',
+  es: 'un coleccionista privado',
+};
 
 /**
  * What has happened to this painting, between the technical sheet and the essay.
@@ -74,6 +90,16 @@ export class ArtworkRecordComponent {
   }
 
   protected readonly kinds = RECORD_KINDS;
+
+  /**
+   * Whether this line has anybody to name.
+   *
+   * Only a sale. An exhibition and a prize take their name from the cv entry
+   * they cite, so a second one here would be a name that could disagree with
+   * it — and the two boxes used to be on the form whatever had happened,
+   * asking who for a show that already said where.
+   */
+  protected readonly naming = computed(() => this.draft().kind === 'sold');
   protected readonly mine = computed(() => this.auth.isAdmin());
 
   /** The lines as the page draws them, in the language the address is in. */
@@ -188,14 +214,13 @@ export class ArtworkRecordComponent {
   }
 
   private asEntry(draft: Draft): RecordEntryEdit {
-    const whoEn = draft.whoEn.trim();
-    const whoEs = draft.whoEs.trim();
+    const who = draft.kind === 'sold' ? whoOf(draft) : undefined;
     const noteEn = draft.noteEn.trim();
 
     return {
       kind: draft.kind,
       ...(draft.cv ? { cv: draft.cv } : {}),
-      ...(whoEn ? { who: { en: whoEn, ...(whoEs && whoEs !== whoEn ? { es: whoEs } : {}) } } : {}),
+      ...(who ? { who } : {}),
       ...(draft.cv ? {} : { year: Number(draft.year) }),
       ...(noteEn ? { note: { en: noteEn } } : {}),
     };
@@ -203,19 +228,32 @@ export class ArtworkRecordComponent {
 }
 
 /**
+ * Who the painting went to, or nobody.
+ *
+ * An institution is taken as a proper noun: one box, stored as English alone,
+ * which is what the api keeps when there is no different Spanish — so the name
+ * reads the same on both pages, as a name should. Left empty it is nobody,
+ * because naming anybody is optional: that a painting sold, and when, is a
+ * fact on its own, and the line then reads "Sold" with nothing after it.
+ */
+function whoOf(draft: Draft): Bilingual | undefined {
+  if (draft.buyer === 'private') return PRIVATE_COLLECTOR;
+  const named = draft.whoName.trim();
+  return named ? { en: named } : undefined;
+}
+
+/**
  * A new line, with the sale already filled in.
  *
  * Most of what he will ever add here is a sale to somebody who does not want
- * naming, so that is what the form opens as — and the two words for it are
- * his. Both of them can be cleared: naming anybody is optional, and a line
- * saying only that the painting sold, and when, is a fact worth keeping.
+ * naming, so that is what the form opens as.
  */
 function empty(): Draft {
   return {
     kind: 'sold',
     cv: '',
-    whoEn: 'a private collector',
-    whoEs: 'un coleccionista privado',
+    buyer: 'private',
+    whoName: '',
     year: new Date().getFullYear(),
     noteEn: '',
   };

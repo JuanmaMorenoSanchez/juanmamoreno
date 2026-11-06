@@ -5,6 +5,46 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.61.0
+
+- **feat** The record form asks who the painting went to only when it was sold,
+  and asks it once. It was two boxes, one per language, on the form whatever
+  had happened — so a show that already said where asked who as well, and a
+  prize asked who had awarded it when the cv entry it cites is the answer. A
+  sale now has two answers: the private collector, which is a phrase and so a
+  choice, because typed it would arrive in one language and print English on
+  the Spanish page; or an institution, which is a proper noun and so one box,
+  stored as English alone and reading the same on both pages.
+- **fix** The brush works on a detail. The studio lets a photograph be
+  straightened with no measurements typed — turn the squaring off and the
+  picture keeps the shape its four corners describe — and three things went on
+  demanding them anyway: a dab of the brush painted nothing at all, the tinted
+  area it should have shown showed nothing, and no fingerprint was published to
+  compare the painting against the collection. All three worked out the
+  rectangle the photograph straightens into, which does not read the
+  measurements with the squaring off. Nothing said so; the brush simply did
+  not work.
+- **fix** The measurements empty with the stage. They were the one thing
+  clearing the studio left behind, so the next painting opened on an empty
+  stage with the last one's height and width already typed and ready to be
+  squared up to — and that is the one box the artist is deliberately never
+  given a starting point in, because a measurement already there is one nobody
+  reads before pressing on and a wrong size on a certificate looks exactly like
+  a right one.
+- **fix** The rotate button pressed twice in quick succession turned the
+  brushed area twice and the picture once, leaving a mask ninety degrees out
+  from the painting it was drawn on — a corner brightened that nobody asked
+  for, and nothing to report it. Half of a turn happens after the bitmap is
+  decoded, so both presses read the same photograph; the second is ignored now.
+- **fix** The finished picture is let go of with its url. Revoking the one
+  without dropping the other kept tens of megabytes of encoded painting alive
+  until the studio was used again.
+- **chore** Two doc comments in the corrector were attached to nothing: a blank
+  line below each one, and under that the next declaration along, which neither
+  described. One explained how the jpeg is encoded and sat above the stage
+  labels; the other explained why the measurement boxes start empty and sat
+  above the file chooser. Both moved onto what they are about.
+
 ## 2.60.7
 
 - **fix** A second photograph chosen while the first is still being read. On

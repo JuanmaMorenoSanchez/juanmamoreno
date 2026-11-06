@@ -87,25 +87,41 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'record.who' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="draft().whoEn"
-              (input)="set('whoEn', $any($event.target).value)"
-              [disabled]="saving()"
-            />
-          </mat-form-field>
+          <!--
+            Only a sale has anybody to name. A show and a prize take their name
+            from the cv entry the line cites, so asking again here would be a
+            second name that could disagree with it.
+          -->
+          @if (naming()) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'record.who' | translate }}</mat-label>
+              <mat-select
+                [value]="draft().buyer"
+                (valueChange)="set('buyer', $event)"
+                [disabled]="saving()"
+              >
+                <mat-option value="private">{{ 'record.privateCollector' | translate }}</mat-option>
+                <mat-option value="named">{{ 'record.institution' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'record.whoEs' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="draft().whoEs"
-              (input)="set('whoEs', $any($event.target).value)"
-              [disabled]="saving()"
-            />
-          </mat-form-field>
+            <!--
+              One box, not one per language: an institution's name is a proper
+              noun and the same sentence in both. The collector who is not
+              named is the phrase that needs two, and that is the option above.
+            -->
+            @if (draft().buyer === 'named') {
+              <mat-form-field appearance="outline" class="record-who-field">
+                <mat-label>{{ 'record.whoName' | translate }}</mat-label>
+                <input
+                  matInput
+                  [value]="draft().whoName"
+                  (input)="set('whoName', $any($event.target).value)"
+                  [disabled]="saving()"
+                />
+              </mat-form-field>
+            }
+          }
 
           <!--
             An exhibition has no year of its own: it takes the year of the show

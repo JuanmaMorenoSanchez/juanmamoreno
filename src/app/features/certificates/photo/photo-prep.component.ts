@@ -53,7 +53,7 @@ import {
   type Point,
   type Quad,
 } from '@domain/image/quad';
-import { sampleBilinear, type Raster } from '@domain/image/raster';
+import { sampleBilinear, type Raster, type Size } from '@domain/image/raster';
 
 /** A slider's position, as a fraction from -1 to 1. */
 function sliderValue(event: Event): number {
@@ -92,26 +92,6 @@ const SAMPLE_LONG_SIDE = 96;
 
 /** Corner finding works on a copy this size, which is all the detail an outline needs. */
 const DETECTION_LONG_SIDE = 720;
-/**
- * How the corrected photograph is written back out.
- *
- * Straightening moves every pixel, so the picture must be encoded again and one
- * generation of loss is unavoidable. What is avoidable is making that
- * generation worse than it needs to be, or the file larger than it needs to be,
- * and those pull in opposite directions — so the answer is taken from the file
- * that arrived rather than fixed here.
- *
- * Measured in the browser this runs in: `canvas.toBlob` writes 4:2:0 at every
- * quality up to 0.99 and 4:4:4 only from 0.995. There is no setting in between.
- * So a photograph that arrived in full colour can only keep it at the top of the
- * scale, which is larger than the original — maximum quality faithfully records
- * the grain and the original's own compression, and neither is extra detail.
- * One whose colour was already halved has nothing left to protect and comes back
- * at the quality it came in at, about the size it was.
- *
- * See `domain/image/jpeg-source.ts`, which reads both facts out of the header.
- */
-
 const STAGE_LABELS: Record<PhotoStage, string> = {
   straightening: 'Straightening the perspective',
   shine: 'Taking the shine off',
@@ -355,7 +335,27 @@ export class PhotoPrepComponent {
   /** How the chosen photograph was written, which decides how it is written back. */
   protected readonly source = signal<JpegSource | null>(null);
 
-  /** The number handed to the encoder, taken from what arrived. */
+  /**
+   * The number handed to the encoder, taken from what arrived.
+   *
+   * Straightening moves every pixel, so the picture must be encoded again and
+   * one generation of loss is unavoidable. What is avoidable is making that
+   * generation worse than it needs to be, or the file larger than it needs to
+   * be, and those pull in opposite directions — so the answer is taken from
+   * the file that arrived rather than fixed here.
+   *
+   * Measured in the browser this runs in: `canvas.toBlob` writes 4:2:0 at
+   * every quality up to 0.99 and 4:4:4 only from 0.995. There is no setting in
+   * between. So a photograph that arrived in full colour can only keep it at
+   * the top of the scale, which is larger than the original — maximum quality
+   * faithfully records the grain and the original's own compression, and
+   * neither is extra detail. One whose colour was already halved has nothing
+   * left to protect and comes back at the quality it came in at, about the
+   * size it was.
+   *
+   * See `domain/image/jpeg-source.ts`, which reads both facts out of the
+   * header.
+   */
   protected readonly encodeQuality = computed(() => {
     const source = this.source();
     return source ? qualityFor(source) : 1;
@@ -429,6 +429,14 @@ export class PhotoPrepComponent {
    * inputs stepping in tenths, which refused a comma outright and called two
    * decimal places invalid. The collection writes "140,5", so the box should
    * take "140,5".
+   *
+   * **Nothing is filled in for the artist.** They used to offer the last size
+   * given, or failing that the proportions of the photograph itself. Both were
+   * only ever a starting point, and a starting point already in the box is a
+   * measurement nobody reads before pressing on — the wrong size on a
+   * certificate looks exactly like the right one. So they are empty, they are
+   * required while the picture is being squared up to them, and `reset` empties
+   * them again with the stage.
    */
   protected readonly widthText = signal('');
   protected readonly heightText = signal('');
@@ -677,6 +685,9 @@ export class PhotoPrepComponent {
     });
   });
 
+  /** True while a turn is in flight, since half of one happens after an await. */
+  private turning = false;
+
   /**
    * Stands the photograph up, a quarter turn at a time.
    *
@@ -688,31 +699,45 @@ export class PhotoPrepComponent {
    * The corners and the brushed area come round with it. Leaving them would
    * give a certificate of a painting on its side squeezed into the shape of an
    * upright one, and an adjustment on the wrong corner.
+   *
+   * **A second press while the first is still turning is ignored.** Half of
+   * this happens after an await, so two quick presses both read the same
+   * photograph and the same corners: the picture came round once, since both
+   * computed the same quarter turn from the same place — and the brushed area
+   * came round twice, because that half is not computed from the picture but
+   * applied to what is there. A mask ninety degrees out from the painting it
+   * was drawn on is the exact fault `turnSelection` exists to prevent, and
+   * nothing reports it: it is a corner brightened that nobody asked for.
    */
   protected async turn(): Promise<void> {
     const photo = this.photo();
     const corners = this.corners();
     const bows = this.bows();
     const size = this.size();
-    if (!photo || !corners || !bows || !size || this.busy()) return;
+    if (!photo || !corners || !bows || !size || this.busy() || this.turning) return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = size.height;
-    canvas.height = size.width;
-    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-    context.translate(canvas.width, 0);
-    context.rotate(Math.PI / 2);
-    context.drawImage(photo, 0, 0);
+    this.turning = true;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = size.height;
+      canvas.height = size.width;
+      const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+      context.translate(canvas.width, 0);
+      context.rotate(Math.PI / 2);
+      context.drawImage(photo, 0, 0);
 
-    const turned = await createImageBitmap(canvas);
-    const geometry = turnClockwise(corners, bows, size);
+      const turned = await createImageBitmap(canvas);
+      const geometry = turnClockwise(corners, bows, size);
 
-    photo.close();
-    this.photo.set(turned);
-    this.size.set({ width: canvas.width, height: canvas.height });
-    this.corners.set(geometry.quad);
-    this.bows.set(geometry.bows);
-    this.turnSelections();
+      photo.close();
+      this.photo.set(turned);
+      this.size.set({ width: canvas.width, height: canvas.height });
+      this.corners.set(geometry.quad);
+      this.bows.set(geometry.bows);
+      this.turnSelections();
+    } finally {
+      this.turning = false;
+    }
   }
 
   /** Every mask there is, brought round with the picture it was painted on. */
@@ -764,17 +789,6 @@ export class PhotoPrepComponent {
   protected setHeight(event: Event): void {
     this.heightText.set(typedInto(event));
   }
-
-  /**
-   * Nothing is filled in for the artist.
-   *
-   * The boxes used to offer the last size given, or failing that the
-   * proportions of the photograph itself. Both were only ever a starting point,
-   * and a starting point that is already in the box is a measurement nobody
-   * reads before pressing on — the wrong size on a certificate looks exactly
-   * like the right one. They are empty now, and required: the painting cannot
-   * be squared up without them, so nothing renders until they are given.
-   */
 
   protected async onFile(event: Event): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -880,6 +894,24 @@ export class PhotoPrepComponent {
   private sampleTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
+   * The rectangle the photograph straightens into.
+   *
+   * The measurements are only what it is squared up *to*: with the squaring
+   * off `correctedSize` takes the shape from the four corners and never reads
+   * them, which is what lets a detail be straightened without a size at all.
+   *
+   * Three things here wanted that rectangle and each demanded the measurements
+   * before working it out — so with the squaring off and the boxes empty the
+   * brush painted nothing, the tint showed nothing and no fingerprint was
+   * published, none of it with a word said, on the one path the page says is
+   * allowed. Missing numbers are passed as one apiece, the way `process`
+   * passes them, so there are always two to divide.
+   */
+  private correctedRectangle(quad: Quad): Size {
+    return correctedSize(quad, this.realWidth() || 1, this.realHeight() || 1, this.adaptToSize());
+  }
+
+  /**
    * A small straightened copy of what is on the stage.
    *
    * Small on purpose: what it is for is a sixty-four bit fingerprint, and the
@@ -888,9 +920,7 @@ export class PhotoPrepComponent {
    */
   private publishSample(): void {
     const corners = this.corners();
-    const realWidth = this.realWidth();
-    const realHeight = this.realHeight();
-    if (!corners || !realWidth || !realHeight || !this.photo()) {
+    if (!corners || !this.photo()) {
       this.handoff.sample.set(null);
       return;
     }
@@ -902,7 +932,7 @@ export class PhotoPrepComponent {
         x: corner.x * scale,
         y: corner.y * scale,
       })) as Quad;
-      const target = correctedSize(scaled, realWidth, realHeight, this.adaptToSize());
+      const target = this.correctedRectangle(scaled);
       const small = warpPerspective(source, scaled, target);
       applyAdjustments(small, this.adjustments(), null);
       this.handoff.sample.set(small);
@@ -1024,12 +1054,10 @@ export class PhotoPrepComponent {
   private inPhotoSpace(selection: Selection | null): Selection | null {
     const corners = this.corners();
     const size = this.size();
-    const realWidth = this.realWidth();
-    const realHeight = this.realHeight();
-    if (!selection || !corners || !size || !realWidth || !realHeight) return null;
+    if (!selection || !corners || !size) return null;
     if (!hasSelection(selection)) return null;
 
-    const target = correctedSize(corners, realWidth, realHeight, this.adaptToSize());
+    const target = this.correctedRectangle(corners);
     const rectangle: Quad = [
       { x: 0, y: 0 },
       { x: target.width, y: 0 },
@@ -1268,11 +1296,9 @@ export class PhotoPrepComponent {
   protected brushAt(at: Point, erase = false): void {
     const corners = this.corners();
     const size = this.size();
-    const realWidth = this.realWidth();
-    const realHeight = this.realHeight();
-    if (!at || !corners || !size || !realWidth || !realHeight) return;
+    if (!at || !corners || !size) return;
 
-    const target = correctedSize(corners, realWidth, realHeight, this.adaptToSize());
+    const target = this.correctedRectangle(corners);
     const rectangle: Quad = [
       { x: 0, y: 0 },
       { x: target.width, y: 0 },
@@ -1399,6 +1425,13 @@ export class PhotoPrepComponent {
     this.fileName.set('');
     this.size.set(null);
     this.corners.set(null);
+    // The boxes empty with the stage. They are deliberately not filled in for
+    // the artist — a starting point already in the box is a measurement nobody
+    // reads before pressing on, and the wrong size on a certificate looks
+    // exactly like the right one. Left as they were, the next painting opened
+    // with the last one's size already typed and ready to be squared up to.
+    this.widthText.set('');
+    this.heightText.set('');
     this.problem.set('');
     this.busy.set(null);
     this.source.set(null);
@@ -1421,6 +1454,11 @@ export class PhotoPrepComponent {
     const url = this.resultUrl();
     if (url) URL.revokeObjectURL(url);
     this.resultUrl.set(null);
+    // The picture itself, which is the whole weight of the result: a painting
+    // of forty megapixels encodes to tens of megabytes, and revoking the url
+    // without letting go of the blob kept every one of them until the studio
+    // was used again.
+    this.resultBlob.set(null);
     this.report.set(null);
   }
 }

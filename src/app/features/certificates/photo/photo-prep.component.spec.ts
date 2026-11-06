@@ -8,6 +8,7 @@ import {
   type Quad,
 } from '@domain/image/quad';
 import { describe, expect, it } from 'vitest';
+import { turnSelection } from '@domain/image/selection';
 import { PhotoPrepComponent } from './photo-prep.component';
 import { HandoffService } from '../handoff.service';
 
@@ -54,8 +55,8 @@ type Internals = {
   rights: () => { artist: string; notice?: string; webStatement?: string } | null;
   // Held as text now, because the boxes take the collection's own notation —
   // "140,5" — which a number input refused outright.
-  widthText: { set(v: string): void };
-  heightText: { set(v: string): void };
+  widthText: { set(v: string): void; (): string };
+  heightText: { set(v: string): void; (): string };
   selecting: { (): boolean; set(v: boolean): void };
   brushMode: { (): 'add' | 'erase'; set(v: 'add' | 'erase'): void };
   useBrush(mode: 'add' | 'erase'): void;
@@ -63,7 +64,9 @@ type Internals = {
   hasArea: () => boolean;
   previewSelection: () => { values: Float32Array } | null;
   open(file: File): Promise<void>;
-  photo: () => { width: number; height: number } | null;
+  turn(): Promise<void>;
+  photo: { (): { width: number; height: number } | null; set(v: unknown): void };
+  selection: () => { values: Float32Array; width: number; height: number } | null;
   fileName: { set(v: string): void; (): string };
   problem: () => string;
   resultBlob: { set(blob: Blob | null): void };
@@ -349,6 +352,13 @@ describe('PhotoPrepComponent — starting again', () => {
 
     expect(component.corners()).toBe(null);
     expect(component.zoom()).toBe(1);
+    // The measurements with them. They are deliberately not filled in for the
+    // artist — one already in the box is one nobody reads before pressing on,
+    // and a wrong size on a certificate looks exactly like a right one — and
+    // they were the one thing the clearing left behind, so the next painting
+    // opened with the last one's size typed in and ready to be squared up to.
+    expect(component.widthText()).toBe('');
+    expect(component.heightText()).toBe('');
     // With no photograph, the file chooser is on the page again — empty,
     // because it is a new one.
     expect(fixture.nativeElement.querySelector('input[type="file"]')).not.toBe(null);
@@ -853,5 +863,106 @@ describe('PhotoPrepComponent — a second photograph chosen while the first is l
 
     expect(first.closed.yes).toBe(true);
     expect(second.closed.yes).toBe(false);
+  });
+});
+
+/**
+ * Selecting an area on a detail, which has no measurements to be squared to.
+ *
+ * The brush paints into the rectangle the photograph straightens into, and
+ * that rectangle takes its shape from the typed measurements only while the
+ * squaring is on — with it off, `correctedSize` reads the four corners and
+ * never looks at them. Three things worked it out and all three demanded the
+ * measurements first, so on the page's own allowed path — a detail, squaring
+ * off, boxes empty — a dab painted nothing and the tint showed nothing, with
+ * no word said either way.
+ */
+describe('PhotoPrepComponent — brushing a detail, with nothing measured', () => {
+  it('paints where it is told without a size to square up to', () => {
+    const { component } = setup();
+    component.adaptToSize.set(false);
+    component.selecting.set(true);
+
+    component.brushAt({ x: 500, y: 400 });
+
+    expect(component.hasArea()).toBe(true);
+  });
+
+  it('shows that area back on the photograph', () => {
+    const { component } = setup();
+    component.adaptToSize.set(false);
+    component.selecting.set(true);
+    component.brushAt({ x: 500, y: 400 });
+
+    const shown = component.previewSelection();
+
+    expect(shown).not.toBeNull();
+    expect(shown ? [...shown.values].some((v) => v > 0.1) : false).toBe(true);
+  });
+});
+
+/**
+ * The rotate button pressed twice in quick succession.
+ *
+ * Half of a turn happens after an await — the canvas is drawn, then the bitmap
+ * is decoded — so two presses both read the same photograph and the same
+ * corners. The picture then came round once, because both worked out the same
+ * quarter turn from the same place; the brushed area came round twice, because
+ * that half is not worked out from the picture but applied to what is there.
+ * A mask ninety degrees out from the painting it was drawn on is what
+ * `turnSelection` exists to prevent, and nothing reports it: it is a corner
+ * brightened that nobody asked for.
+ */
+describe('PhotoPrepComponent — the rotate button pressed twice', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  const studioWithAnArea = () => {
+    let turns = 0;
+    vi.stubGlobal('createImageBitmap', () => {
+      turns += 1;
+      return Promise.resolve({ width: 800, height: 1000, close: () => undefined });
+    });
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+      drawImage: () => undefined,
+      translate: () => undefined,
+      rotate: () => undefined,
+      getImageData: (_x: number, _y: number, w: number, h: number) => ({
+        data: new Uint8ClampedArray(w * h * 4),
+      }),
+      putImageData: () => undefined,
+    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+
+    const { component } = setup();
+    component.photo.set({ width: 1000, height: 800, close: () => undefined });
+    component.selecting.set(true);
+    component.brushAt({ x: 300, y: 200 });
+
+    return { component, turns: () => turns };
+  };
+
+  it('turns the photograph once, however fast the second press comes', async () => {
+    const { component, turns } = studioWithAnArea();
+
+    await Promise.all([component.turn(), component.turn()]);
+
+    expect(turns()).toBe(1);
+  });
+
+  it('brings the brushed area round exactly once with it', async () => {
+    const { component } = studioWithAnArea();
+    const painted = component.selection();
+    const before = {
+      values: new Float32Array(painted!.values),
+      width: painted!.width,
+      height: painted!.height,
+    };
+
+    await Promise.all([component.turn(), component.turn()]);
+
+    const expected = turnSelection(before);
+    expect([...component.selection()!.values]).toEqual([...expected.values]);
   });
 });
