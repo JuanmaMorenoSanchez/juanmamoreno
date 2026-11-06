@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 .piece-panel {
   width: min(56rem, 100%);
   max-height: 100%;
@@ -46,8 +48,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
+  gap: tokens.$spacing-sm;
+  padding: tokens.$spacing-lg;
   border-radius: 4px;
   background: rgb(11 11 12 / 92%);
   color: #f4f4f5;
@@ -57,7 +59,7 @@
 
   code {
     max-width: 100%;
-    padding: 0.3rem 0.5rem;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
     border-radius: 3px;
     background: rgb(255 255 255 / 10%);
     color: #ffb4ab;
@@ -74,7 +76,7 @@
 
 .piece-notes {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: tokens.$spacing-md;
   font-size: 0.75rem;
   opacity: 0.7;
 }
@@ -90,8 +92,8 @@
 
   pre {
     max-height: 18rem;
-    margin: 0.5rem 0 0;
-    padding: 0.6rem 0.7rem;
+    margin: tokens.$spacing-sm 0 0;
+    padding: tokens.$spacing-sm tokens.$spacing-sm-md;
     overflow: auto;
     border-radius: 4px;
     background: rgb(0 0 0 / 5%);
@@ -103,7 +105,7 @@
 .piece-foot {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: tokens.$spacing-sm-md;
 }
 
 .piece-note {
@@ -121,7 +123,7 @@
   flex: 0 0 auto;
   font: inherit;
   font-size: 0.82rem;
-  padding: 0.35rem 0.8rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm-md;
   border: 1px solid currentColor;
   border-radius: 3px;
   background: transparent;

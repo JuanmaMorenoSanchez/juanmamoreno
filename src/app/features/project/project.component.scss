@@ -1,13 +1,15 @@
+@use '../../../styles/tokens';
+
 // Restrained on purpose. The page argues that the reasoning is the work, so it
 // is set like something to be read rather than decorated: one column, a scale
 // of two sizes, and no colour doing a job a sentence should do.
 .project {
   max-width: 44rem;
-  padding-bottom: 4rem;
+  padding-bottom: tokens.$spacing-4xl;
 }
 
 .project-title {
-  margin: 0 0 1rem;
+  margin: 0 0 tokens.$spacing-md;
   /* "juanmamoreno.com," is one word to a browser, and at h1 size it is wider
      than a 320px phone — so the title of this page was the one thing on it
      with its end cut off. Breaking a domain name is better than hiding it. */
@@ -17,52 +19,52 @@
 .project-lead {
   font-size: 1.15rem;
   line-height: 1.6;
-  margin: 0 0 2.5rem;
+  margin: 0 0 tokens.$spacing-2xl;
 }
 
 .project-section {
-  margin: 0 0 2.75rem;
+  margin: 0 0 tokens.$spacing-2xl;
 
   h2 {
     font-size: 1.05rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     opacity: 0.7;
-    margin: 0 0 0.9rem;
+    margin: 0 0 tokens.$spacing-md;
   }
 
   p {
     line-height: 1.65;
-    margin: 0 0 1rem;
+    margin: 0 0 tokens.$spacing-md;
   }
 }
 
 // The sentences worth slowing down for: the failure nobody noticed, and the
 // admission that the wrong end got solved.
 .project-note {
-  padding-left: 1rem;
+  padding-left: tokens.$spacing-md;
   border-left: 2px solid currentColor;
   opacity: 0.85;
 }
 
 .project-links {
-  margin: 0 0 1rem;
-  padding-left: 1.1rem;
+  margin: 0 0 tokens.$spacing-md;
+  padding-left: tokens.$spacing-md;
   line-height: 1.7;
 }
 
 // Numbered, and each one a short case rather than a bullet: they are the three
 // answers to "what is it for", which is the question a recruiter opens with.
 .project-goals {
-  margin: 1.25rem 0 0;
-  padding-left: 1.4rem;
+  margin: tokens.$spacing-md-lg 0 0;
+  padding-left: tokens.$spacing-lg;
 
   li {
-    margin-bottom: 1.25rem;
+    margin-bottom: tokens.$spacing-md-lg;
   }
 
   h3 {
-    margin: 0 0 0.4rem;
+    margin: 0 0 tokens.$spacing-sm;
     font-size: 1rem;
   }
 
@@ -74,7 +76,7 @@
 // One colour, taking its ink from the text around it, so the picture reads on
 // either ground without a second copy of it existing.
 .project-diagram {
-  margin: 2rem 0 2.5rem;
+  margin: tokens.$spacing-xl 0 tokens.$spacing-2xl;
 
   svg {
     width: 100%;
@@ -82,7 +84,7 @@
   }
 
   figcaption {
-    margin-top: 0.75rem;
+    margin-top: tokens.$spacing-sm-md;
     font-size: 0.85rem;
     opacity: 0.7;
   }
@@ -155,7 +157,7 @@
 // a pointer is over it: it is an aside, and the text is what is being read.
 .project-shot {
   /* A picture that ends where the next paragraph begins reads as part of it. */
-  margin: 1.25rem 0 2rem;
+  margin: tokens.$spacing-md-lg 0 tokens.$spacing-xl;
 
   a {
     display: block;
@@ -179,7 +181,7 @@
   }
 
   figcaption {
-    margin: 0.4rem 0 0;
+    margin: tokens.$spacing-sm 0 0;
     font-size: 0.78rem;
     line-height: 1.35;
     opacity: 0.75;

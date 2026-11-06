@@ -1,6 +1,8 @@
+@use '../styles/tokens';
+
 main {
   display: block;
-  padding-bottom: 3rem;
+  padding-bottom: tokens.$spacing-3xl;
 
   &.no-chrome {
     padding-bottom: 0;
@@ -14,7 +16,7 @@ main {
   top: 0;
   left: -100vw;
   z-index: 1001;
-  padding: 0.65rem 1.1rem;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
   background-color: var(--catalog-ink);
   color: var(--catalog-bg);
   font-size: 0.875rem;

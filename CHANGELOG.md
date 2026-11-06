@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.4
+
+- **chore** The studio's own pages follow the reader's: 39 of the 51
+  stylesheets now take their spacing from the scale, against 5 before, and the
+  one literal left is a negative offset tuned against the element above it. A
+  further 169 values moved to the nearest step, all but two of them by two
+  pixels or less; two near-identical section margins on the product page became
+  the same step, which is the whole point. The scale also gained a step at 6rem
+  rather than cutting the one place that wanted it down by thirty-two pixels.
+
 ## 2.62.3
 
 - **chore** The spacing scale gained the three sizes the stylesheets actually
@@ -12,7 +22,7 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
   two — and the eight stylesheets a reader sees now take their margins and
   padding from it rather than from fourteen hand-typed values. Eleven values
   moved to the nearest step; ten of them by two pixels or less, and the
-  eleventh is eight pixels under the essay. The studio's own pages follow.
+  eleventh is eight pixels under the essay.
 
 ## 2.62.2
 

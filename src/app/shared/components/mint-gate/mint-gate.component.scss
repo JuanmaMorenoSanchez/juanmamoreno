@@ -1,9 +1,11 @@
+@use '../../../../styles/tokens';
+
 @use '../../../../styles/controls';
 
 .gate {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: tokens.$spacing-md;
   flex-wrap: wrap;
 }
 
@@ -33,7 +35,7 @@
 .gate-limit {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: tokens.$spacing-xs;
   font-size: 0.85rem;
   opacity: 0.75;
 }
@@ -42,7 +44,7 @@
   width: 5rem;
   font: inherit;
   font-variant-numeric: tabular-nums;
-  padding: 0.2rem 0.35rem;
+  padding: tokens.$spacing-xs tokens.$spacing-xs;
   border: 1px solid currentColor;
   border-radius: 3px;
   background: transparent;

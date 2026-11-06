@@ -1,3 +1,5 @@
+@use '../../../../../styles/tokens';
+
 .link-groups {
   margin: 0;
   padding: 0;
@@ -5,13 +7,13 @@
 }
 
 .link-group + .link-group {
-  margin-top: 0.6rem;
+  margin-top: tokens.$spacing-sm;
 }
 
 .link-group-name {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
   font-size: 0.95rem;
   color: inherit;
   text-decoration: none;
@@ -33,7 +35,7 @@
 // The count is the whole point of grouping: it says how much of the list this
 // one site accounts for.
 .link-group-count {
-  padding: 0 0.4rem;
+  padding: 0 tokens.$spacing-sm;
   border: 1px solid currentcolor;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -41,14 +43,14 @@
 }
 
 .link-pages {
-  margin: 0.3rem 0 0;
-  padding-left: 1rem;
+  margin: tokens.$spacing-xs 0 0;
+  padding-left: tokens.$spacing-md;
   list-style: none;
   font-size: 0.82rem;
   opacity: 0.85;
 
   li + li {
-    margin-top: 0.15rem;
+    margin-top: tokens.$spacing-xs;
   }
 
   a {

@@ -1,7 +1,9 @@
+@use '../../../styles/tokens';
+
 .cat-page {
   max-width: 60rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
   color: var(--catalog-ink);
 }
 
@@ -12,7 +14,7 @@
 }
 
 .cat-lead {
-  margin: 0.3rem 0 0;
+  margin: tokens.$spacing-xs 0 0;
   font-size: 0.85rem;
   opacity: 0.7;
 }
@@ -24,9 +26,9 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin: 1rem 0;
-  padding: 0.5rem 0.6rem;
+  gap: tokens.$spacing-sm;
+  margin: tokens.$spacing-md 0;
+  padding: tokens.$spacing-sm tokens.$spacing-sm;
   border: 1px solid var(--catalog-faint);
   border-radius: 4px;
   background: var(--catalog-paper, #fff);
@@ -38,7 +40,7 @@
 
   input {
     width: 100%;
-    padding: 0.35rem 0.5rem;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
     border: 1px solid var(--catalog-faint);
     border-radius: 3px;
     background: transparent;
@@ -50,11 +52,11 @@
 
 .cat-orders {
   display: flex;
-  gap: 0.2rem;
+  gap: tokens.$spacing-xs;
 }
 
 .cat-order {
-  padding: 0.3rem 0.5rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid var(--catalog-faint);
   border-radius: 3px;
   background: transparent;
@@ -73,7 +75,7 @@
 .cat-dossier {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
   margin-left: auto;
 }
 
@@ -87,7 +89,7 @@
 .cat-link {
   border: 0;
   background: none;
-  padding: 0.25rem;
+  padding: tokens.$spacing-xs;
   font: inherit;
   font-size: 0.78rem;
   color: inherit;
@@ -113,17 +115,17 @@
 .cat-line {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding-right: 0.3rem;
+  gap: tokens.$spacing-sm;
+  padding-right: tokens.$spacing-xs;
 }
 
 .cat-summary {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: tokens.$spacing-sm-md;
   flex: 1;
   min-width: 0;
-  padding: 0.45rem 0.3rem;
+  padding: tokens.$spacing-sm tokens.$spacing-xs;
   border: 0;
   background: none;
   color: inherit;
@@ -169,7 +171,7 @@
   display: inline-block;
   width: 0.4rem;
   height: 0.4rem;
-  margin-left: 0.3rem;
+  margin-left: tokens.$spacing-xs;
   border-radius: 50%;
   background: var(--catalog-accent);
   vertical-align: middle;
@@ -178,7 +180,7 @@
 .cat-marks {
   display: flex;
   flex: none;
-  gap: 0.2rem;
+  gap: tokens.$spacing-xs;
 }
 
 /*
@@ -198,8 +200,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0.4rem 0 0.9rem;
+  gap: tokens.$spacing-sm;
+  margin: tokens.$spacing-sm 0 tokens.$spacing-md;
   font-size: 0.72rem;
   opacity: 0.85;
 
@@ -210,7 +212,7 @@
 }
 
 .cat-forget-one {
-  padding: 0.15rem 0.4rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid var(--catalog-faint);
   border-radius: 3px;
   background: transparent;
@@ -231,7 +233,7 @@
   place-items: center;
   min-width: 1.7rem;
   height: 1.7rem;
-  padding: 0 0.35rem;
+  padding: 0 tokens.$spacing-xs;
   border: 1px solid var(--catalog-faint);
   border-radius: 999px;
   background: transparent;
@@ -249,11 +251,11 @@
 }
 
 .cat-panel {
-  padding: 0.2rem 0.3rem 1.2rem;
+  padding: tokens.$spacing-xs tokens.$spacing-xs tokens.$spacing-md-lg;
 }
 
 .cat-empty {
-  margin: 1.2rem 0;
+  margin: tokens.$spacing-md-lg 0;
   font-size: 0.8rem;
   opacity: 0.7;
 }
@@ -262,8 +264,8 @@
 .cat-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0 0.6rem 0.4rem;
+  gap: tokens.$spacing-sm-md;
+  padding: 0 tokens.$spacing-sm tokens.$spacing-sm;
   font-size: 0.74rem;
   font-variant-numeric: tabular-nums;
   opacity: 0.65;

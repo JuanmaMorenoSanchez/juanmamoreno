@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 // Kept out of view but left in the text and in the accessibility tree, so the
 // dot beside it is not the only thing saying the painting has sold.
 .dot {
@@ -6,7 +8,7 @@
   background-color: var(--catalog-accent);
   border-radius: 50%;
   display: inline-block;
-  margin-left: 0.8rem;
+  margin-left: tokens.$spacing-sm-md;
   vertical-align: middle;
 }
 
@@ -30,7 +32,7 @@
 // Under the technical sheet, at the weight of a footnote: it is a way back for
 // somebody who came from the post, not an advertisement for the account.
 .artwork-instagram {
-  margin: 0.75rem 0 0;
+  margin: tokens.$spacing-sm-md 0 0;
   font-size: 0.8125rem;
 
   a {

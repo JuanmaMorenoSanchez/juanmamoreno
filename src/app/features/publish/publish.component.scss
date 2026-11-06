@@ -93,7 +93,7 @@
 
 .publish-lang {
   margin-left: tokens.$spacing-xs;
-  padding: 0.1rem 0.3rem;
+  padding: tokens.$spacing-xs tokens.$spacing-xs;
   border: 1px solid var(--catalog-rule, rgb(0 0 0 / 20%));
   border-radius: 2px;
   font-size: 0.65rem;
@@ -135,7 +135,7 @@
 .publish-remake,
 .publish-discard,
 .publish-download {
-  padding: 0.5rem 1rem;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
   border: 1px solid currentcolor;
   border-radius: 2px;
   background: none;

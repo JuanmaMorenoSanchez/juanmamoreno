@@ -1,15 +1,17 @@
+@use '../../../styles/tokens';
+
 .pieces {
   max-width: 48rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
 
   h1 {
-    margin: 0 0 0.5rem;
+    margin: 0 0 tokens.$spacing-sm;
     font-size: 1.1rem;
   }
 
   h2 {
-    margin: 1.5rem 0 0.5rem;
+    margin: tokens.$spacing-lg 0 tokens.$spacing-sm;
     font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -36,8 +38,8 @@
 .pieces-kept li {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 0;
+  gap: tokens.$spacing-sm;
+  padding: tokens.$spacing-sm 0;
   border-bottom: 1px solid rgb(127 127 127 / 20%);
   font-size: 0.82rem;
 }
@@ -62,7 +64,7 @@
 .pieces-forget {
   font: inherit;
   font-size: 0.72rem;
-  padding: 0.2rem 0.5rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid currentColor;
   border-radius: 3px;
   background: transparent;

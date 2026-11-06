@@ -1,8 +1,10 @@
+@use '../../../styles/tokens';
+
 .assets {
-  margin-top: 1rem;
+  margin-top: tokens.$spacing-md;
 
   h4 {
-    margin: 0 0 0.5rem;
+    margin: 0 0 tokens.$spacing-sm;
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -17,12 +19,12 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 0.8rem;
+  gap: tokens.$spacing-sm-md;
 
   li {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: tokens.$spacing-xs;
   }
 
   img,
@@ -56,7 +58,7 @@
   align-self: flex-start;
   font: inherit;
   font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid currentColor;
   border-radius: 3px;
   background: transparent;
@@ -71,13 +73,13 @@
 }
 
 .assets-trouble {
-  margin: 0.5rem 0 0;
+  margin: tokens.$spacing-sm 0 0;
   font-size: 0.75rem;
   color: #b3261e;
 }
 
 .assets-note {
-  margin: 0.6rem 0 0;
+  margin: tokens.$spacing-sm 0 0;
   font-size: 0.7rem;
   opacity: 0.6;
 }
@@ -97,7 +99,7 @@
   align-self: flex-start;
   font: inherit;
   font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid currentColor;
   border-radius: 3px;
   background: transparent;
@@ -116,8 +118,8 @@
 .assets-quality {
   align-self: flex-start;
   margin-top: -1.6rem;
-  margin-left: 0.3rem;
-  padding: 0.05rem 0.3rem;
+  margin-left: tokens.$spacing-xs;
+  padding: tokens.$spacing-xs tokens.$spacing-xs;
   border-radius: 2px;
   font-size: 0.62rem;
   letter-spacing: 0.06em;

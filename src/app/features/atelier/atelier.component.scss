@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 @use '../../../styles/controls';
 
 /* Seven rules are gone from this file and nothing on the page changed.
@@ -11,13 +13,13 @@
 .atelier {
   max-width: 62rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
 }
 
 /* Read once and then never again, so it takes as little room as it can. */
 .atelier-lead {
   max-width: 44rem;
-  margin: 0.25rem 0 0;
+  margin: tokens.$spacing-xs 0 0;
   font-size: 0.72rem;
   line-height: 1.45;
   opacity: 0.65;
@@ -27,8 +29,8 @@
 .atelier-down {
   border: 1px solid currentColor;
   border-radius: 4px;
-  padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
+  padding: tokens.$spacing-md tokens.$spacing-md-lg;
+  margin: tokens.$spacing-lg 0;
   opacity: 0.95;
 
   h2 {
@@ -43,18 +45,18 @@
   }
 
   ul {
-    padding-left: 1.1rem;
+    padding-left: tokens.$spacing-md;
   }
 
   li {
-    margin-bottom: 0.6rem;
+    margin-bottom: tokens.$spacing-sm;
   }
 }
 
 .atelier-command {
   display: block;
-  margin-top: 0.35rem;
-  padding: 0.4rem 0.5rem;
+  margin-top: tokens.$spacing-xs;
+  padding: tokens.$spacing-sm tokens.$spacing-sm;
   border: 1px solid currentColor;
   border-radius: 3px;
   font-size: 0.78rem;
@@ -66,9 +68,9 @@
 .atelier-up {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: tokens.$spacing-sm-md;
   flex-wrap: wrap;
-  margin: 1.5rem 0;
+  margin: tokens.$spacing-lg 0;
   font-size: 0.85rem;
   opacity: 0.8;
 }
@@ -89,9 +91,9 @@
 .atelier-bar {
   display: flex;
   align-items: flex-end;
-  gap: 1rem;
+  gap: tokens.$spacing-md;
   flex-wrap: wrap;
-  margin: 1.5rem 0 0.75rem;
+  margin: tokens.$spacing-lg 0 tokens.$spacing-sm-md;
 }
 
 .atelier-spacer {
@@ -100,7 +102,7 @@
 
 .atelier-hint {
   max-width: 48rem;
-  margin: 0.75rem 0 0;
+  margin: tokens.$spacing-sm-md 0 0;
   font-size: 0.8rem;
   opacity: 0.7;
 }
@@ -118,7 +120,7 @@
 
 .atelier-minor {
   font-size: 0.78rem;
-  padding: 0.25rem 0.6rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
 }
 
 /* A row of choices: same size, same baseline, whatever each one does. The
@@ -126,7 +128,7 @@
 .atelier-choice {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: tokens.$spacing-sm;
   align-items: stretch;
 }
 
@@ -165,7 +167,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 1.25rem;
+  gap: tokens.$spacing-md-lg;
 
   /* Each one a column, so the buttons sit along the bottom of the row
      however long the name above them ran. */
@@ -193,14 +195,14 @@
   }
 
   h3 {
-    margin: 0.5rem 0 0.25rem;
+    margin: tokens.$spacing-sm 0 tokens.$spacing-xs;
     font-size: 0.95rem;
   }
 
   dl {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 0 0.5rem;
+    gap: 0 tokens.$spacing-sm;
     margin: 0;
     font-size: 0.78rem;
     opacity: 0.75;
@@ -220,7 +222,7 @@
 /* What is stopping the graph running, said before it is run rather than after. */
 .atelier-wanting {
   max-width: 48rem;
-  margin: 0.75rem 0 0;
+  margin: tokens.$spacing-sm-md 0 0;
   font-size: 0.85rem;
   color: #b3261e;
 }
@@ -230,10 +232,10 @@
 .atelier-progress {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: tokens.$spacing-sm;
   flex-wrap: wrap;
-  margin: 0.75rem 0 0;
-  padding: 0.5rem 0.75rem;
+  margin: tokens.$spacing-sm-md 0 0;
+  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
   border: 1px solid currentColor;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -276,12 +278,12 @@
 
 /* What was kept. In the bucket, so it outlives the engine. */
 .atelier-shelf {
-  margin-top: 2.5rem;
-  padding-top: 1.25rem;
+  margin-top: tokens.$spacing-2xl;
+  padding-top: tokens.$spacing-md-lg;
   border-top: 1px solid currentColor;
 
   h2 {
-    margin: 0 0 0.25rem;
+    margin: 0 0 tokens.$spacing-xs;
     font-size: 1rem;
   }
 }
@@ -294,7 +296,7 @@
 
 /* The one thing here that is not a still. */
 .atelier-clip {
-  margin: 0 0 1rem;
+  margin: 0 0 tokens.$spacing-md;
 
   video {
     display: block;
@@ -305,7 +307,7 @@
   }
 
   figcaption {
-    margin-top: 0.4rem;
+    margin-top: tokens.$spacing-sm;
     font-size: 0.72rem;
     opacity: 0.65;
   }
@@ -316,26 +318,26 @@
 .atelier-shelf-does {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: tokens.$spacing-sm;
   /* Pushed to the foot of the tile, so a piece with a long name and a piece
      with none have their buttons on the same line. */
   margin-top: auto;
-  padding-top: 0.5rem;
+  padding-top: tokens.$spacing-sm;
 }
 
 /* The hand, and the one thing on this page that is not in the repository. */
 .atelier-hand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: tokens.$spacing-sm;
   flex-wrap: wrap;
-  margin: 1rem 0 0;
+  margin: tokens.$spacing-md 0 0;
 }
 
 .atelier-hand-says {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
   flex: 1 1 24rem;
   min-width: 0;
 
@@ -350,7 +352,7 @@
     min-width: 0;
     font: inherit;
     font-size: 0.82rem;
-    padding: 0.35rem 0.5rem;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
     border: 1px solid currentColor;
     border-radius: 3px;
     background: transparent;
@@ -407,12 +409,12 @@
 .atelier-hand-names {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: tokens.$spacing-xs;
   flex: 1 1 100%;
 }
 
 .atelier-name {
-  padding: 0.1rem 0.45rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid currentColor;
   border-radius: 999px;
   font-size: 0.74rem;

@@ -1,7 +1,9 @@
+@use '../../../styles/tokens';
+
 .assets {
   max-width: 62rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
+  padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
 }
 
 .assets-head h1 {
@@ -10,7 +12,7 @@
 
 .assets-said {
   max-width: 44rem;
-  margin: 0.25rem 0 1.25rem;
+  margin: tokens.$spacing-xs 0 tokens.$spacing-md-lg;
   font-size: 0.78rem;
   line-height: 1.45;
   opacity: 0.7;
@@ -19,7 +21,7 @@
 .assets-trouble {
   border: 1px solid currentColor;
   border-radius: 4px;
-  padding: 0.75rem 1rem;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
   font-size: 0.8rem;
 }
 
@@ -44,9 +46,9 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: tokens.$spacing-md;
   width: 100%;
-  padding: 0.65rem 0.25rem;
+  padding: tokens.$spacing-sm-md tokens.$spacing-xs;
   background: none;
   border: 0;
   color: inherit;
@@ -73,10 +75,10 @@
   /* Wide enough for a 480-pixel thumbnail to be worth looking at, and narrow
      enough that four fit across a laptop. */
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  gap: 1rem;
+  gap: tokens.$spacing-md;
   list-style: none;
   margin: 0;
-  padding: 0 0 1.25rem;
+  padding: 0 0 tokens.$spacing-md-lg;
 
   li {
     display: flex;
@@ -85,7 +87,7 @@
   }
 
   h3 {
-    margin: 0.4rem 0 0;
+    margin: tokens.$spacing-sm 0 0;
     font-size: 0.82rem;
     font-weight: 500;
     overflow-wrap: anywhere;
@@ -105,25 +107,25 @@
 
 .assets-missed {
   margin: 0;
-  padding: 2rem 0;
+  padding: tokens.$spacing-xl 0;
   text-align: center;
   font-size: 0.75rem;
   opacity: 0.6;
 }
 
 .assets-size {
-  margin: 0.15rem 0 0;
+  margin: tokens.$spacing-xs 0 0;
   font-size: 0.72rem;
   opacity: 0.6;
 }
 
 .assets-rename {
-  margin-top: 0.4rem;
+  margin-top: tokens.$spacing-sm;
   width: 100%;
   min-width: 0;
   font: inherit;
   font-size: 0.82rem;
-  padding: 0.3rem 0.4rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   background: none;
   color: inherit;
   border: 1px solid currentColor;
@@ -133,9 +135,9 @@
 .assets-does {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: tokens.$spacing-sm;
   /* At the foot of the tile, so a part with a long name and one with a short
      name have their buttons on the same line. */
   margin-top: auto;
-  padding-top: 0.5rem;
+  padding-top: tokens.$spacing-sm;
 }

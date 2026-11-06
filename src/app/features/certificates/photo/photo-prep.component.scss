@@ -256,7 +256,7 @@
 
   input[type='number'] {
     width: 6rem;
-    padding: 0.3rem 0.4rem;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
     border: 1px solid var(--catalog-faint);
     background: transparent;
     font: inherit;
@@ -293,7 +293,7 @@
 
 .prep-report {
   margin: 0 0 tokens.$spacing-lg;
-  padding-left: 1.1rem;
+  padding-left: tokens.$spacing-md;
 }
 
 .prep-preview {
@@ -326,7 +326,7 @@
 .prep-dial {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: tokens.$spacing-xs;
   margin-bottom: tokens.$spacing-sm;
 
   > span {
@@ -376,8 +376,8 @@
    readable without opening anything. */
 .prep-tools {
   display: flex;
-  gap: 0.4rem;
-  margin: 0.4rem 0 0.2rem;
+  gap: tokens.$spacing-sm;
+  margin: tokens.$spacing-sm 0 tokens.$spacing-xs;
 }
 
 .prep-tool {
@@ -428,7 +428,7 @@
 }
 
 .prep-rights[open] > summary {
-  margin-bottom: 0.6rem;
+  margin-bottom: tokens.$spacing-sm;
 }
 
 /*

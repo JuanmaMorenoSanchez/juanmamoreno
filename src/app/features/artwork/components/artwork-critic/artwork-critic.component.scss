@@ -96,7 +96,7 @@
 .artwork-critic-edit,
 .artwork-critic-save,
 .artwork-critic-cancel {
-  padding: 0.4rem 1rem;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
   border: 1px solid var(--catalog-faint);
   background: transparent;
   font: inherit;

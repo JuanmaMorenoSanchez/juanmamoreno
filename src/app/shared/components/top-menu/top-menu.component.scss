@@ -1,10 +1,12 @@
+@use '../../../../styles/tokens';
+
 mat-toolbar-row {
   flex-wrap: wrap;
   height: auto;
   min-height: var(--mat-toolbar-standard-height, 4rem);
-  row-gap: 0.25rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  row-gap: tokens.$spacing-xs;
+  padding-top: tokens.$spacing-sm;
+  padding-bottom: tokens.$spacing-sm;
 }
 
 .spacer {
@@ -46,21 +48,21 @@ mat-toolbar-row {
 .drawer-content {
   display: flex;
   flex-direction: column;
-  padding: 1rem 0;
-  gap: 0.25rem;
+  padding: tokens.$spacing-md 0;
+  gap: tokens.$spacing-xs;
 
   button[mat-button] {
     justify-content: flex-start;
     width: 100%;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: tokens.$spacing-lg;
+    padding-right: tokens.$spacing-lg;
   }
 
   // Everything else in the drawer is a full-width row; the lone icon button
   // would otherwise sit centred in a column of left-aligned words.
   .theme-toggle {
     align-self: flex-start;
-    margin-left: 0.9rem;
+    margin-left: tokens.$spacing-md;
   }
 }
 

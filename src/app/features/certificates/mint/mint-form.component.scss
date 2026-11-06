@@ -1,16 +1,18 @@
+@use '../../../../styles/tokens';
+
 @use '../../../../styles/controls';
 
 .mint-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 0.9rem 1rem;
+  gap: tokens.$spacing-md tokens.$spacing-md;
   align-items: end;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: tokens.$spacing-xs;
   min-width: 0;
 }
 
@@ -36,14 +38,14 @@
   letter-spacing: 0;
   font-style: italic;
   opacity: 0.8;
-  margin-left: 0.4rem;
+  margin-left: tokens.$spacing-sm;
 }
 
 .field input,
 .field select,
 .field textarea {
   font: inherit;
-  padding: 0.5rem 0.6rem;
+  padding: tokens.$spacing-sm tokens.$spacing-sm;
   border: 1px solid rgba(128, 128, 128, 0.45);
   border-radius: 3px;
   background: transparent;
@@ -71,12 +73,12 @@
 
 .prepared,
 .waiting {
-  margin-top: 2rem;
+  margin-top: tokens.$spacing-xl;
 }
 
 .prepared h3,
 .waiting h3 {
-  margin: 0 0 0.6rem;
+  margin: 0 0 tokens.$spacing-sm;
   font-size: 1rem;
 }
 
@@ -87,9 +89,9 @@
 .mint-choices {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: tokens.$spacing-md-lg;
   flex-wrap: wrap;
-  margin-top: 1.2rem;
+  margin-top: tokens.$spacing-md-lg;
 }
 
 /*
@@ -102,10 +104,10 @@
 */
 .mint-notice {
   display: flex;
-  gap: 0.6rem;
+  gap: tokens.$spacing-sm;
   align-items: flex-start;
-  margin: 0.9rem 0 0;
-  padding: 0.8rem 1rem;
+  margin: tokens.$spacing-md 0 0;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
   border-left: 4px solid var(--jm-error);
   border-radius: 4px;
   background: var(--jm-error-bg);
@@ -121,6 +123,6 @@
 .mint-notice-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-top: 0.5rem;
+  gap: tokens.$spacing-sm-md;
+  margin-top: tokens.$spacing-sm;
 }

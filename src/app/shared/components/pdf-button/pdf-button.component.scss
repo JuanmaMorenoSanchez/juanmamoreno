@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens';
+
 // Keep the button and its progress label on one line, vertically centred.
 :host {
   display: inline-flex;
@@ -6,6 +8,6 @@
 
 // Live percentage beside the spinner, at the normal surrounding text size.
 .pdf-progress-label {
-  margin-left: 0.25rem;
+  margin-left: tokens.$spacing-xs;
   font-variant-numeric: tabular-nums;
 }

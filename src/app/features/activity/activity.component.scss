@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 /*
   A board, not a page: scanned rather than read, so what is wrong is at the top
   and everything else is a row with a date on the right.
@@ -7,7 +9,7 @@
 }
 
 .activity-lead {
-  margin: 0 0 1.5rem;
+  margin: 0 0 tokens.$spacing-lg;
   max-width: 40rem;
   font-size: 0.88rem;
   line-height: 1.5;
@@ -15,10 +17,10 @@
 }
 
 .activity-step {
-  margin: 1.75rem 0;
+  margin: tokens.$spacing-lg 0;
 
   h2 {
-    margin: 0 0 0.5rem;
+    margin: 0 0 tokens.$spacing-sm;
     font-size: 0.95rem;
     font-weight: 600;
   }
@@ -26,13 +28,13 @@
 
 /* What is wrong, said once at the top in the only loud thing on the page. */
 .activity-wrong {
-  margin: 0 0 1.5rem;
-  padding: 0.75rem 1rem;
+  margin: 0 0 tokens.$spacing-lg;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
   border-left: 3px solid #b00020;
   background: rgb(176 0 32 / 7%);
 
   h2 {
-    margin: 0 0 0.4rem;
+    margin: 0 0 tokens.$spacing-sm;
     font-size: 0.9rem;
     color: #b00020;
   }
@@ -45,7 +47,7 @@
 
   li {
     display: flex;
-    gap: 0.6rem;
+    gap: tokens.$spacing-sm;
     justify-content: space-between;
     font-size: 0.88rem;
   }
@@ -56,8 +58,8 @@
 }
 
 .activity-fine {
-  margin: 0 0 1.5rem;
-  padding: 0.6rem 1rem;
+  margin: 0 0 tokens.$spacing-lg;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
   border-left: 3px solid rgb(0 0 0 / 25%);
   background: rgb(0 0 0 / 4%);
   font-size: 0.9rem;
@@ -74,9 +76,9 @@
 .activity-run {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: tokens.$spacing-sm;
   align-items: baseline;
-  padding: 0.45rem 0;
+  padding: tokens.$spacing-sm 0;
   border-bottom: 1px solid rgb(0 0 0 / 9%);
   font-size: 0.88rem;
 }
@@ -86,8 +88,8 @@
   flex: 1 1 14rem;
 
   em {
-    margin-left: 0.4rem;
-    padding: 0.05rem 0.35rem;
+    margin-left: tokens.$spacing-sm;
+    padding: tokens.$spacing-xs tokens.$spacing-xs;
     border-radius: 0.6rem;
     background: rgb(0 0 0 / 8%);
     font-style: normal;
@@ -119,13 +121,13 @@
 
 .activity-note {
   display: flex;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
   align-items: center;
   font-size: 0.88rem;
 }
 
 .activity-problem {
-  padding: 0.6rem 0.8rem;
+  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
   border-radius: 0.35rem;
   background: rgb(176 0 32 / 10%);
   color: #b00020;
@@ -133,7 +135,7 @@
 }
 
 .activity-retry {
-  margin-left: 0.5rem;
+  margin-left: tokens.$spacing-sm;
   border: 0;
   background: none;
   color: inherit;
@@ -197,7 +199,7 @@
 }
 
 .activity-open {
-  padding: 0.1rem 0.45rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   font: inherit;
   font-size: 0.8rem;
   color: inherit;
@@ -220,8 +222,8 @@
  */
 .activity-why {
   flex-basis: 100%;
-  margin: 0.4rem 0 0;
-  padding: 0.5rem 0.75rem;
+  margin: tokens.$spacing-sm 0 0;
+  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
   list-style: none;
   font-size: 0.85rem;
   background: rgb(0 0 0 / 4%);
@@ -229,7 +231,7 @@
 
   li {
     display: flex;
-    gap: 0.6rem;
+    gap: tokens.$spacing-sm;
     align-items: baseline;
     justify-content: space-between;
   }

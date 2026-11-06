@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens';
+
 .pdf-options-group {
   margin-bottom: 1em;
   width: 100%;
@@ -7,7 +9,7 @@
 .pdf-multipliers {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: tokens.$spacing-sm-md;
 
   mat-form-field {
     flex: 1 1 8rem;

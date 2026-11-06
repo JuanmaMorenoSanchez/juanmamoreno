@@ -1,8 +1,10 @@
+@use '../../../../styles/tokens';
+
 // Quiet, and the same on every page. It is a way out of the site, not a
 // second menu — the paintings are what the page is for.
 .site-footer {
-  margin-top: 4rem;
-  padding: 2rem 2vw 2.5rem;
+  margin-top: tokens.$spacing-4xl;
+  padding: tokens.$spacing-xl 2vw tokens.$spacing-2xl;
   border-top: 1px solid var(--catalog-frame-bg);
 }
 
@@ -12,7 +14,7 @@
   justify-content: center;
   // The row gap matters as much as the column one: wrapped onto two lines on a
   // narrow screen these would otherwise sit on top of each other.
-  gap: 0.5rem 1.5rem;
+  gap: tokens.$spacing-sm tokens.$spacing-lg;
 }
 
 .footer-link {

@@ -1,12 +1,14 @@
+@use '../../../../../styles/tokens';
+
 .certificate-work {
-  margin: 0 0 1rem;
+  margin: 0 0 tokens.$spacing-md;
 }
 
 .certificate-facts {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.35rem 1rem;
-  margin: 1.25rem 0 0;
+  gap: tokens.$spacing-xs tokens.$spacing-md;
+  margin: tokens.$spacing-md-lg 0 0;
 
   dt {
     opacity: 0.7;
@@ -19,7 +21,7 @@
 }
 
 .certificate-caveat {
-  margin: 1.25rem 0 0;
+  margin: tokens.$spacing-md-lg 0 0;
   font-size: 0.8rem;
   line-height: 1.45;
   opacity: 0.7;
