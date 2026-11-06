@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.5
+
+- **fix** An artwork page shows the painting with javascript off. Both of the
+  viewer's layers are written by the loader and the preview under them is a
+  runtime binding, so the markup carried no picture at all — 186 paintings in
+  two languages, each a letterbox and a caption, while `og:image` advertised a
+  picture to crawlers. The painting is in the html now and is dropped the
+  moment a real layer exists; with javascript it is the same url the loader
+  already fetches, so it costs nothing and arrives sooner. The build looks for
+  it, and a new suite runs the site with javascript disabled.
+
 ## 2.62.4
 
 - **chore** The studio's own pages follow the reader's: 39 of the 51

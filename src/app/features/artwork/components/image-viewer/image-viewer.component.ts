@@ -59,6 +59,22 @@ export class ImageViewerComponent {
     return nft ? this.artworkService.getNftQualityUrls(nft.image) : [];
   });
 
+  /**
+   * The painting as the prerendered html carries it.
+   *
+   * Both layers are written by the loader and the preview is a runtime
+   * binding, so an artwork page shipped with no picture in it at all: with
+   * javascript off it was a letterbox, a title and a caption, on all 186
+   * paintings in both languages — on a site whose whole point is that it is
+   * readable without javascript.
+   *
+   * The same url the loader starts from, so by the time it has decoded its
+   * first layer this one is already in the browser's cache and the swap is a
+   * frame. It is dropped the moment a real layer exists, which is also what
+   * keeps the server's html and the browser's first render identical.
+   */
+  readonly stillImage = computed(() => this.qualityCandidates()[0] ?? '');
+
   // ── Double-buffered hi-res display ─────────────────────────────────────
   // Two stacked <img> layers. Each layer only ever receives a URL that has
   // already been decoded off-DOM, so a src swap can never paint a half-decoded

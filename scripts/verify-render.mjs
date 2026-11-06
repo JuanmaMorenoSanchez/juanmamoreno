@@ -150,12 +150,17 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   if (/^(es\/)?artwork\/\d+$/.test(route)) {
     if (/^(Artwork|Obra) · /.test(title ?? ''))
       fail(route, "no artwork on it: the title never got the painting's name");
-    // The painting itself is not an <img> in the served markup — the viewer
-    // draws it once the page is running — so what is checked is the picture the
-    // page advertises, which comes from the same artwork and is empty without
-    // it.
     if (!/property="og:image" content="https?:\/\//.test(html))
       fail(route, 'no artwork on it: no picture is advertised');
+
+    // And the painting itself, in the markup, which it was not: both of the
+    // viewer's layers are written by the loader and the blurred preview under
+    // them is a runtime binding, so with javascript off every one of these
+    // pages was a letterbox with a caption under it. Advertising a picture to
+    // a crawler while showing the reader none is the one failure this file
+    // could not see, because og:image was all it asked for.
+    if (!/<img[^>]+class="[^"]*art-viewer[^"]*"[^>]+src="https?:\/\//.test(html))
+      fail(route, 'no artwork on it: the painting is not in the markup');
 
     // 6c. And the facts a machine reads rather than the ones a person does.
     //

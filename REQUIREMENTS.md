@@ -287,9 +287,26 @@ read" (4 tests), and backend B4
 ## Search and machines
 
 ### R12 — Every page is readable without JavaScript · met
-388 pages prerendered with their own canonical, title, description and hreflang
+402 pages prerendered with their own canonical, title, description and hreflang
 pair.
-*Proven by:* `scripts/verify-render.mjs`, which fails the build
+
+**And an artwork page shows the painting.** It did not. Both of the viewer's
+image layers are written by the loader and the blurred preview beneath them is
+a runtime binding, so the markup held no picture at all: with javascript off,
+all 186 paintings in both languages were a letterbox, a title and a caption,
+while `og:image` went on advertising a picture to crawlers. The viewer now
+renders the painting straight into the html and drops it the instant a real
+layer exists — the same url the loader starts from, so a reader with javascript
+downloads nothing extra and sees it sooner.
+
+Nothing could have caught it. `verify-render` reads the html as text and cannot
+see that an element is present and invisible, and every other test ran a
+browser with scripting on. Both gaps are now closed: the build looks for the
+painting in the markup, and a suite runs with javascript disabled.
+*Proven by:* `scripts/verify-render.mjs`, which fails the build; and
+`e2e/without-javascript.test.mjs` (3 tests — the painting visible and named on
+an artwork page, its measurements still written there, and the catalogue
+showing the paintings it lists)
 
 ### R13 — Artwork pages carry structured data · met
 `VisualArtwork` and `BreadcrumbList`, plus `Person` site-wide.

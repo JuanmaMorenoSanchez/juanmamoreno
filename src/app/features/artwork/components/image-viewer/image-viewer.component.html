@@ -96,6 +96,22 @@
         [style.backgroundImage]="previewImage()"
       ></div>
 
+      <!--
+        The painting in the html, for the moment before the loader has decoded
+        anything — and for a reader with javascript off, who had no painting at
+        all: both layers below are written by the loader and the preview above
+        is a runtime binding, so every prerendered artwork page was a letterbox
+        with a caption under it. Dropped as soon as a real layer exists, which
+        is the same url, already decoded by then.
+      -->
+      @if (!hasImage() && stillImage()) {
+        <img
+          class="art-viewer layer visible"
+          [src]="stillImage()"
+          [attr.alt]="description()"
+        />
+      }
+
       @if (layerA() !== 'none') {
         <img
           class="art-viewer layer"
