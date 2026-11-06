@@ -90,7 +90,9 @@
 }
 
 .artwork-critic-state--untouched {
-  color: var(--catalog-faint);
+  // Soft, not faint: faint is the hairline colour and reads at 3.4:1 on the
+  // dark ground and 2.5:1 on the light one, which is below AA as text.
+  color: var(--catalog-soft);
 }
 
 .artwork-critic-edit,
@@ -120,7 +122,7 @@
   display: block;
   margin-bottom: tokens.$spacing-xs;
   font-size: 0.75rem;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 // Monospaced and generously sized: this is markdown being read closely, and

@@ -44,3 +44,14 @@
     }
   }
 }
+
+/* The painting's year, medium and measurements.
+
+   It was an <h3> directly under the page's <h1>, so the heading outline that a
+   screen reader navigates by skipped a level — and it is not a heading at all:
+   it is the caption to the picture above it. A paragraph says that, and these
+   two values are the h3's own, kept so that saying it changed nothing. */
+.artwork-facts {
+  font-size: 1.17em;
+  margin: 1em 0;
+}

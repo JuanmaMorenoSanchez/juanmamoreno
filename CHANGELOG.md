@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.6
+
+- **fix** The artwork page's technical line was an `<h3>` directly under the
+  `<h1>`, so the heading outline a screen reader navigates by skipped a level —
+  and it is not a heading at all, it is the caption to the picture above it. It
+  is a paragraph now, pinned to the two values the `h3` gave it so that saying
+  so changed nothing on the page.
+- **fix** Three labels in the artist's own tools took their colour from the
+  hairline token, which reads at 3.4:1 on the dark ground and 2.5:1 on the
+  light one — below AA as text either way. They use the secondary text colour,
+  which passes at 6.7 and 5.1.
+
 ## 2.62.5
 
 - **fix** An artwork page shows the painting with javascript off. Both of the
