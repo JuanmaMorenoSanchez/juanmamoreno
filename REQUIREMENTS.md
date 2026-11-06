@@ -527,6 +527,21 @@ is named — "Vendida a" with nothing after it is not a sentence, so a line with
 no name reads `Vendida (2026)`. That a painting was sold, and when, is a fact
 worth keeping on its own.
 
+**Who is asked only of the kinds whose verb governs a name**, which is the same
+three: sold to, acquired by, in the collection of. A show and a prize take their
+name from the cv entry the line cites, so a second one here would be a name that
+could disagree with the first — and the form asked who whatever had happened,
+including of a show that had already said where.
+
+**And it is one question with two answers, not two boxes.** A private collector,
+or an institution typed by name. The collector is a choice rather than something
+to type because it is a phrase and not a name: typed once it would arrive in one
+language and print English on the Spanish page. An institution is a proper noun
+and the same sentence in both, so one box fills both — stored as English alone,
+which is what the api keeps when there is no different Spanish, and printed
+unchanged on either page, as a name should be. It was two boxes, one per
+language, and the Spanish one wanted a translation of a name.
+
 **It was a year in its own column** with the sentence beside it, which read as
 two sparse columns rather than as one record, and it ran straight into the essay
 underneath. One line an entry now, with room under the list.
@@ -588,9 +603,10 @@ and no name is written down.
 *Proven by:* `record.spec.ts` (12 tests, including that a prize and the
 institution that took the painting are said in one line, that an exhibition
 addresses the cv entry it cites, and that the verb drops its preposition when
-the line names nobody); `artwork-record.component.spec.ts` (14, including that
-who is asked only for a sale, that an institution is named from one box in both
-languages at once, that a sale saves with nobody named, that a name is not
+the line names nobody); `artwork-record.component.spec.ts` (15, including that
+who is asked for every kind whose verb governs a name and no other, that an
+institution is named from one box in both languages at once and on an
+acquisition as well as a sale, that a sale saves with nobody named, that a name is not
 carried onto a line that cannot have one, that the form opens on the collector
 nobody names with nothing to type, and that no month is asked for,
 including that a reader with nothing to read gets no section at all and nothing

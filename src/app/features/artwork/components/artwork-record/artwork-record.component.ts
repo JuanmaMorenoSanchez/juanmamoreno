@@ -7,7 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Bilingual } from '@domain/cv/cv-entry.entity';
 import { cvSections } from '@domain/cv/cv';
-import { RECORD_KINDS, RecordEntryEdit, RecordKind } from '@domain/artwork/record.entity';
+import {
+  RECORD_KINDS,
+  RECORD_NAMING_KINDS,
+  RecordEntryEdit,
+  RecordKind,
+} from '@domain/artwork/record.entity';
 import { recordLines } from '@domain/artwork/record';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
@@ -94,12 +99,12 @@ export class ArtworkRecordComponent {
   /**
    * Whether this line has anybody to name.
    *
-   * Only a sale. An exhibition and a prize take their name from the cv entry
-   * they cite, so a second one here would be a name that could disagree with
-   * it — and the two boxes used to be on the form whatever had happened,
-   * asking who for a show that already said where.
+   * The three kinds whose verb governs a name. An exhibition and a prize take
+   * their name from the cv entry they cite, so a second one here would be a
+   * name that could disagree with it — and the two boxes used to be on the
+   * form whatever had happened, asking who for a show that already said where.
    */
-  protected readonly naming = computed(() => this.draft().kind === 'sold');
+  protected readonly naming = computed(() => RECORD_NAMING_KINDS.includes(this.draft().kind));
   protected readonly mine = computed(() => this.auth.isAdmin());
 
   /** The lines as the page draws them, in the language the address is in. */
@@ -214,7 +219,7 @@ export class ArtworkRecordComponent {
   }
 
   private asEntry(draft: Draft): RecordEntryEdit {
-    const who = draft.kind === 'sold' ? whoOf(draft) : undefined;
+    const who = RECORD_NAMING_KINDS.includes(draft.kind) ? whoOf(draft) : undefined;
     const noteEn = draft.noteEn.trim();
 
     return {

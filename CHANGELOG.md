@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.0
+
+- **feat** Who the painting went to is asked of every kind whose verb governs a
+  name, not of the sale alone: acquired by and in the collection of end in a
+  preposition just as sold to does, and asked only of a sale they could read
+  nothing but short — "Acquired", "In a private collection". The same one
+  question, the same two answers.
+
 ## 2.61.0
 
 - **feat** The record form asks who the painting went to only when it was sold,

@@ -44,6 +44,16 @@ export const RECORD_VERBS_ALONE: Readonly<Record<RecordKind, string>> = {
   collection: 'record.collectionAlone',
 };
 
+/**
+ * The kinds that have somebody to name.
+ *
+ * The same three whose verb ends in a preposition, and for the same reason:
+ * "sold to", "acquired by" and "in the collection of" all govern a name, while
+ * a show and a prize take theirs from the cv entry the line cites. Asking a
+ * second time there would be a name that could disagree with the first.
+ */
+export const RECORD_NAMING_KINDS: readonly RecordKind[] = ['sold', 'acquired', 'collection'];
+
 /** One line of a painting's record, as the api serves it. */
 export interface RecordEntry {
   kind: RecordKind;
