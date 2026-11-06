@@ -42,3 +42,11 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Impeccable's design hook. config.json is the shared setting and is committed;
+# everything else here is this machine's own — the consent record, the dedup
+# cache, and the event file the live browser mode writes.
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/live/
