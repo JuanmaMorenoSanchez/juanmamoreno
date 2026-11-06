@@ -50,3 +50,9 @@ Thumbs.db
 .impeccable/hook.cache.json
 .impeccable/hook.pending.json
 .impeccable/live/
+
+# Impeccable's engine ships as a 2.3 MB provider skill folder, and the hook can
+# only be wired when it sits here: the install is this machine's, not the
+# repository's. `.claude/settings.local.json` that `hooks on` writes is already
+# untracked for the same reason.
+.claude/skills/impeccable/
