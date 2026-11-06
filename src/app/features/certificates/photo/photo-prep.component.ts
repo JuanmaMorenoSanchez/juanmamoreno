@@ -791,11 +791,26 @@ export class PhotoPrepComponent {
     event.preventDefault();
   }
 
+  /**
+   * Which photograph is the one being opened.
+   *
+   * Reading one takes seconds — forty megabytes off disk, the JPEG found inside
+   * a raw, the bitmap decoded, then the corners looked for — and choosing a
+   * second one during those seconds is an ordinary thing to do. Without this,
+   * the second cleared the stage and named itself, and then the first arrived
+   * and set the pixels, the size and the corners underneath that name: one
+   * photograph's file name over another's painting, on the one page where
+   * which photograph it is becomes permanent.
+   */
+  private opening = 0;
+
   private async open(file: File): Promise<void> {
+    const mine = ++this.opening;
     this.reset();
     this.fileName.set(file.name);
 
     const bytes = new Uint8Array(await file.arrayBuffer());
+    if (mine !== this.opening) return;
     const raw = isRawPhotograph(file.name);
 
     // A browser cannot develop a raw, but every raw carries the JPEG the camera
@@ -819,11 +834,20 @@ export class PhotoPrepComponent {
         { imageOrientation: 'from-image' }
       );
     } catch {
+      if (mine !== this.opening) return;
       this.problem.set(
         raw
           ? 'The photograph inside that raw file could not be read.'
           : 'That file could not be read as an image.'
       );
+      return;
+    }
+
+    if (mine !== this.opening) {
+      // Superseded while it decoded. Closed rather than dropped: a bitmap of a
+      // six-thousand pixel frame is twenty-odd megabytes the browser holds
+      // until it is told it may stop.
+      photo.close();
       return;
     }
 

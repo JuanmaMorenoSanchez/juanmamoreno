@@ -2172,9 +2172,25 @@ camera's own menus.
 The result is written back at the top of the scale. A raw has no quality of its
 own to match — the number would belong to the JPEG embedded in it, not to the
 sensor.
+
+**And the photograph on the stage is the one last chosen.** Reading one is where
+the seconds go — twenty-one megabytes off disk, the embedded JPEG scanned for,
+six thousand pixels decoded, then the corners looked for — and choosing another
+during those seconds is an ordinary thing to do. Each open carries a number
+now, and only the current one may set anything: before, the second cleared the
+stage and wrote its own name, and then the first arrived and set the pixels,
+the size and the corners underneath it. One photograph's file name over
+another's painting, on the one page where which photograph it is becomes
+permanent. The superseded bitmap is closed rather than dropped, because a frame
+that size is twenty-odd megabytes the browser holds until it is told it may
+stop, and a message about a file that could not be read is not shown over the
+one that could.
 *Proven by:* `raw-preview.spec.ts` (5 tests, against a file built to the shape
-of a NEF), and measured end to end in Chrome on a real 21.4 MB NEF: three
-embedded JPEGs, the largest decoding to 6016 × 4000, found in 32 ms.
+of a NEF), `photo-prep.component.spec.ts` "a second photograph chosen while the
+first is loading" (2 tests: the one chosen last is the one on the stage, and
+the bitmap it does not use is let go of), and measured end to end in Chrome on
+a real 21.4 MB NEF: three embedded JPEGs, the largest decoding to 6016 × 4000,
+found in 32 ms.
 
 ### R115 — A painting can be asked about on WhatsApp, without publishing a telephone number · met
 Beside the cart on every artwork page, a link that opens WhatsApp with the

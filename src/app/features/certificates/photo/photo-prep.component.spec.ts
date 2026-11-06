@@ -40,7 +40,6 @@ type Internals = {
   stopPanning(): void;
   pan(event: PointerEvent): void;
   startBrush(event: PointerEvent): void;
-  fileName: { set(v: string): void };
   grab(index: number, event: PointerEvent): void;
   grabBow(edge: keyof EdgeBows, index: 0 | 1, event: PointerEvent): void;
   drag(event: PointerEvent): void;
@@ -63,6 +62,10 @@ type Internals = {
   brushAt(at: { x: number; y: number }, erase?: boolean): void;
   hasArea: () => boolean;
   previewSelection: () => { values: Float32Array } | null;
+  open(file: File): Promise<void>;
+  photo: () => { width: number; height: number } | null;
+  fileName: { set(v: string): void; (): string };
+  problem: () => string;
   resultBlob: { set(blob: Blob | null): void };
   adaptToSize: { set(on: boolean): void };
   handedOver: () => boolean;
@@ -752,5 +755,103 @@ describe('PhotoPrepComponent — straightening a detail, with nothing measured',
 
     expect(handoff.waiting()?.height).toBe('30,7');
     expect(handoff.waiting()?.width).toBe('23');
+  });
+});
+
+/**
+ * A second photograph chosen while the first is still being read.
+ *
+ * Reading one takes seconds: forty megabytes off disk, the JPEG found inside a
+ * raw, the bitmap decoded, the corners looked for. Choosing another during
+ * those seconds is an ordinary thing to do — and the first one then arrived
+ * last and set the pixels, the size and the corners under the second's name.
+ * On every other page that is a muddle; on this one it is which photograph a
+ * certificate is written from.
+ */
+describe('PhotoPrepComponent — a second photograph chosen while the first is loading', () => {
+  /** A bitmap that appears when the test says so, and knows if it was let go. */
+  const bitmap = (width: number) => {
+    let arrive = (value: { width: number; height: number; close: () => void }) => void value;
+    const closed = { yes: false };
+    const made = {
+      width,
+      height: 100,
+      close: () => {
+        closed.yes = true;
+      },
+    };
+    const waiting = new Promise<typeof made>((resolve) => (arrive = resolve as typeof arrive));
+    return { waiting, arrive: () => arrive(made), made, closed };
+  };
+
+  const stubBrowser = (bitmaps: Promise<unknown>[]) => {
+    let at = 0;
+    vi.stubGlobal('createImageBitmap', () => bitmaps[at++]);
+    // jsdom has no 2d context, and the corner finder reads pixels back out of
+    // one. An empty frame is enough: it finds nothing and falls back to the
+    // whole frame, which is not what is under test.
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+      drawImage: () => undefined,
+      getImageData: (_x: number, _y: number, w: number, h: number) => ({
+        data: new Uint8ClampedArray(w * h * 4),
+      }),
+    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+  };
+
+  const photograph = (name: string) => {
+    const file = new File(['pretend pixels'], name, { type: 'image/jpeg' });
+    file.arrayBuffer = () => Promise.resolve(new ArrayBuffer(8));
+    return file;
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  /**
+   * The first one already decoding when the second is chosen.
+   *
+   * The second has to arrive after the first has read its bytes and asked for
+   * a bitmap, because that is where the seconds go: a frame of six thousand
+   * pixels takes long enough to decode that choosing another meanwhile is an
+   * ordinary thing to do, and a check before the decode cannot see it.
+   */
+  const bothOpening = async () => {
+    const first = bitmap(4000);
+    const second = bitmap(2000);
+    stubBrowser([first.waiting, second.waiting]);
+    const { component } = setup();
+
+    const opening = component.open(photograph('first.jpg'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // The smaller one is chosen while the big one is still decoding, and is
+    // whole and on the stage before the big one arrives at all — which is what
+    // happens on a photograph of six thousand pixels and a cold disk.
+    const next = component.open(photograph('second.jpg'));
+    second.arrive();
+    await next;
+
+    first.arrive();
+    await opening;
+    return { component, first, second };
+  };
+
+  it('keeps the one chosen last, whichever finishes decoding first', async () => {
+    const { component } = await bothOpening();
+
+    expect(component.fileName()).toBe('second.jpg');
+    expect(component.photo()?.width).toBe(2000);
+  });
+
+  it('lets go of the bitmap it does not use', async () => {
+    // Twenty-odd megabytes for a six-thousand pixel frame, held until the
+    // browser is told it may stop.
+    const { first, second } = await bothOpening();
+
+    expect(first.closed.yes).toBe(true);
+    expect(second.closed.yes).toBe(false);
   });
 });

@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.7
+
+- **fix** A second photograph chosen while the first is still being read. On
+  the artist's own raw that is twenty-one megabytes off disk, the embedded JPEG
+  scanned for, six thousand pixels decoded and then the corners looked for —
+  seconds, during which choosing another is an ordinary thing to do. The second
+  cleared the stage and wrote its own name, and then the first arrived and set
+  the pixels, the size and the corners underneath it: one photograph's file
+  name over another's painting, on the one page where which photograph it is
+  becomes permanent. Each open carries a number now and only the current one
+  may set anything; the bitmap it does not use is closed rather than dropped,
+  and a message about a file that could not be read is no longer shown over the
+  one that could.
+
 ## 2.60.6
 
 - **fix** Straightening a detail and saving it. The corrector's own page says
