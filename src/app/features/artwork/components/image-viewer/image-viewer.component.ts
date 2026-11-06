@@ -68,12 +68,17 @@ export class ImageViewerComponent {
    * paintings in both languages — on a site whose whole point is that it is
    * readable without javascript.
    *
-   * The same url the loader starts from, so by the time it has decoded its
-   * first layer this one is already in the browser's cache and the swap is a
-   * frame. It is dropped the moment a real layer exists, which is also what
-   * keeps the server's html and the browser's first render identical.
+   * The web copy rather than the original: this is the only image a reader
+   * without javascript is ever given, and the original is the photograph at
+   * full resolution. It is dropped the moment a real layer exists, which is
+   * also what keeps the server's html and the browser's first render
+   * identical — and it means a reader with javascript sees the painting at
+   * web quality while the loader is still decoding the full one.
    */
-  readonly stillImage = computed(() => this.qualityCandidates()[0] ?? '');
+  readonly stillImage = computed(() => {
+    const nft = this.currentNft();
+    return nft ? this.artworkService.getNftWebUrl(nft.image) : '';
+  });
 
   // ── Double-buffered hi-res display ─────────────────────────────────────
   // Two stacked <img> layers. Each layer only ever receives a URL that has

@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.7
+
+- **fix** The landing page shows its painting with javascript off. It is
+  stacked — a blurred thumbnail with the full picture over it at opacity 0,
+  raised by a class added once the image reports it has decoded — and nothing
+  reports anything with no javascript listening, so the full image sat in the
+  same html, already downloaded, behind the blur of the placeholder it was
+  there to replace.
+- **fix** The painting written into a prerendered artwork page is the web copy
+  rather than the photograph at full resolution. It is the only image a reader
+  without javascript is given, and it was megabytes.
+
 ## 2.62.6
 
 - **fix** The artwork page's technical line was an `<h3>` directly under the

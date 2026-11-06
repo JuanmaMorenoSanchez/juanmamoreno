@@ -299,14 +299,30 @@ renders the painting straight into the html and drops it the instant a real
 layer exists — the same url the loader starts from, so a reader with javascript
 downloads nothing extra and sees it sooner.
 
-Nothing could have caught it. `verify-render` reads the html as text and cannot
-see that an element is present and invisible, and every other test ran a
+**And it is the web copy, not the original.** This is the only image that
+reader is ever given and the one they keep, so sending the photograph at full
+resolution would mean megabytes on a phone for a page that used to send none.
+`getNftWebUrl` takes the cached copy first and falls back to the original only
+where there is no other.
+
+**The landing page had the same fault with a kinder face.** Its painting is
+stacked — a blurred thumbnail with the full picture over it at opacity 0,
+raised by a class the component adds once the image reports it has decoded.
+Nothing reports anything with no javascript listening, so the full image sat in
+the same html, already downloaded, behind the blur of the placeholder it was
+there to replace. `@media (scripting: none)` raises it, which costs a reader
+with javascript nothing.
+
+Nothing could have caught any of it. `verify-render` reads the html as text and
+cannot see that an element is present and invisible, and every other test ran a
 browser with scripting on. Both gaps are now closed: the build looks for the
 painting in the markup, and a suite runs with javascript disabled.
-*Proven by:* `scripts/verify-render.mjs`, which fails the build; and
-`e2e/without-javascript.test.mjs` (3 tests — the painting visible and named on
-an artwork page, its measurements still written there, and the catalogue
-showing the paintings it lists)
+*Proven by:* `scripts/verify-render.mjs`, which fails the build;
+`e2e/without-javascript.test.mjs` (4 tests — the painting visible, named, and
+not the full-resolution original on an artwork page, its measurements still
+written there, the landing page's painting shown rather than the blur over it,
+and the catalogue showing the paintings it lists); `artwork.spec.ts`
+"getNftWebUrl" (2 tests)
 
 ### R13 — Artwork pages carry structured data · met
 `VisualArtwork` and `BreadcrumbList`, plus `Person` site-wide.

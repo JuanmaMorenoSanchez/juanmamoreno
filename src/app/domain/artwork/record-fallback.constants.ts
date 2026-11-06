@@ -6,6 +6,72 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "130",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "131",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "132",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "143",
     "entries": [
       {

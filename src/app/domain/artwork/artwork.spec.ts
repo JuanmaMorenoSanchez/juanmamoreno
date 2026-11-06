@@ -342,6 +342,20 @@ describe('Artwork', () => {
       ]);
     });
 
+    /**
+     * The one image a reader without javascript is given and keeps, so it is
+     * the web copy: the original is the photograph at full resolution and the
+     * thumbnail is meant to be blurred. The prerendered artwork page sent the
+     * original until this existed.
+     */
+    it('getNftWebUrl prefers the cached copy over the original', () => {
+      expect(art.getNftWebUrl(image)).toBe('https://cached');
+    });
+
+    it('getNftWebUrl falls back to the original when there is no cached copy', () => {
+      expect(art.getNftWebUrl({ originalUrl: 'ipfs://original' })).toBe('ipfs://original');
+    });
+
     it('getNftOptimalUrl prefers the thumbnail', () => {
       expect(art.getNftOptimalUrl(image)).toBe('https://thumb');
     });

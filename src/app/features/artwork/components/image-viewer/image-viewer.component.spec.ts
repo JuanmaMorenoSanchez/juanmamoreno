@@ -43,6 +43,7 @@ describe('ImageViewerComponent — the shape of the frame', () => {
             // The hi-res cascade, which this test is not about: offered nothing,
             // so the frame is left showing the preview.
             getNftQualityUrls: () => [],
+            getNftWebUrl: () => '',
           },
         },
       ],
@@ -224,6 +225,7 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
             getAspectRatio: () => 2,
             getProgressiveImageUrls: () => of('https://example.test/preview.jpg'),
             getNftQualityUrls: () => [],
+            getNftWebUrl: () => '',
           },
         },
       ],

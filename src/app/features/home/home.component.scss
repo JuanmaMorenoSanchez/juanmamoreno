@@ -97,6 +97,15 @@
   &.loaded {
     opacity: 1;
   }
+
+  // And shown outright where there is nothing to raise it. The class above
+  // arrives when the image reports that it has decoded, and with javascript
+  // off nothing is listening — so the painting stayed at nothing while the
+  // full file sat in the same html, already downloaded, behind the blur of
+  // the placeholder it was there to replace.
+  @media (scripting: none) {
+    opacity: 1;
+  }
 }
 
 // Nothing to point with: the painting wanders by itself. Bounded by its own

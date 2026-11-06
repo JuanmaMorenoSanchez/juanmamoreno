@@ -59,6 +59,12 @@ describe('an artwork page with javascript off', () => {
     // A painting a screen reader can name, since without javascript there is
     // nothing else on the page that will ever describe it.
     assert.ok(painting.alt.length > 0, 'the painting has no alt text');
+    // The web copy, not the original: this is the only image this reader is
+    // ever given, and the original is the photograph at full resolution.
+    assert.ok(
+      !/juanmamoreno-originals/.test(painting.src),
+      `sent the full-resolution original: ${painting.src}`
+    );
 
     await context.close();
   });
@@ -70,6 +76,30 @@ describe('an artwork page with javascript off', () => {
     const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
 
     assert.match(text, /\d+\s*x\s*\d+\s*cm/i, `no measurements without javascript: ${text.slice(0, 160)}`);
+
+    await context.close();
+  });
+});
+
+describe('the landing page with javascript off', () => {
+  /**
+   * The painting is stacked: a blurred thumbnail with the full picture over it
+   * at opacity 0, raised by a class the component adds once the image reports
+   * that it has decoded. With no javascript to listen, the class never came —
+   * so the full image sat in the same html, already downloaded, hidden behind
+   * the blur of the placeholder it was there to replace.
+   */
+  it('shows the painting rather than the blur over it', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const { context, page } = await openWithoutJavascript('/');
+    await page.waitForSelector('.home-featured-image--full', READY);
+
+    const opacity = await page.$eval('.home-featured-image--full', (img) =>
+      Number(getComputedStyle(img).opacity)
+    );
+
+    assert.ok(opacity > 0.9, `the full painting is at opacity ${opacity}`);
 
     await context.close();
   });

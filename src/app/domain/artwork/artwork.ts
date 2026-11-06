@@ -237,6 +237,19 @@ export class Artwork {
     return this.getNftQualityUrls(image)[0] || '';
   }
 
+  /**
+   * The web copy: big enough to look at, small enough to send.
+   *
+   * Between the two that already exist — the original is the photograph at
+   * full resolution and runs to megabytes, the thumbnail is a few kilobytes
+   * and is meant to be blurred. This is for the one case that gets exactly one
+   * image and no second chance: the painting written into the prerendered
+   * html, which is what a reader with javascript off is given and keeps.
+   */
+  getNftWebUrl(image: NftImage): string {
+    return this.collectUrls(image, ['cachedUrl', 'originalUrl', 'thumbnailUrl'])[0] || '';
+  }
+
   getNftOptimalUrl(image: NftImage): string {
     return this.collectUrls(image, ['thumbnailUrl', 'cachedUrl', 'originalUrl'])[0] || '';
   }
