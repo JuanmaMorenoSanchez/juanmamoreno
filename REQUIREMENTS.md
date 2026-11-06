@@ -59,6 +59,59 @@ A tile that has shown a painting never returns to blank.
 `/about` and `/es/about`, each prerendered in its own language.
 *Proven by:* `scripts/verify-render.mjs`, 194 pages each
 
+### R221 — A page says which language it is written in · met
+`<html lang="es">` on the Spanish half, `lang="en"` on the English, in the
+prerendered html rather than after hydration — the site is readable without
+javascript, so the attribute has to be right in what is served.
+
+`index.html` carries `lang="en"` and nothing ever said otherwise, so all 402
+pages declared English. Nothing on the page looked wrong: the words were
+Spanish, the canonical was right and the hreflang pair was right. What took the
+site's word for it were a screen reader, which pronounces Spanish with English
+phonemes when told the page is English; a search engine deciding what to serve
+a Spanish reader; and `hyphens`, which breaks words by the rules of the
+language it is told.
+
+It is set in the language guards, which are already where the language is
+settled before anything renders, and through the `DOCUMENT` token rather than
+the global, because a build has no `document` and the prerender is the moment
+that matters. The tag is the bare subtag — `es`, not the `es-ES` the dictionary
+is keyed by, which names no region anybody has registered.
+
+**The build now refuses a page that declares the wrong one**, which is the only
+thing that would ever notice: `verify-render` reads every page's `<html>` and
+compares it against the tree the page was written to.
+*Proven by:* `language.guard.spec.ts` "the language the page declares" (4
+tests — es on a Spanish page, en on an English one, the reader's own choice on
+a page whose address says nothing, and the bare subtag rather than the
+dictionary key); `scripts/verify-render.mjs` check 4, over all 402 pages;
+`e2e/small-phone.test.mjs` "says it is Spanish"
+
+### R222 — Nothing on a 320px phone is cut off or out of reach · met
+The narrowest screen the site is built for, where two things were lost without
+a word.
+
+**The viewer toolbar.** Eight forty-pixel controls are 320 pixels exactly, so
+the row was wider than the phone and the button that opens the next painting
+sat past the right edge — on the page whose whole purpose is moving through the
+catalogue, and with no sideways scroll to reach it. The centre group is allowed
+to be narrower than its buttons now and wraps instead; the targets keep their
+size, because fixing the arithmetic by shrinking them would have made them too
+small to press.
+
+**A long Spanish heading.** The section headings are uppercase and tracked out
+at 0.14em, and a Spanish compound is one unbreakable word:
+DESCONTEXTUALIZADAS is wider than a 320px screen, so the heading was cut off
+mid-word. In Spanish only, which is why nobody reading the English half ever
+saw it. The same for this repository's own name in the product page's title.
+
+`hyphens: auto` is asked for first and is the right break where a browser can
+make it; Chrome on Windows ships no Spanish dictionary, so it does nothing
+there and the word breaks without a hyphen rather than disappearing.
+*Proven by:* `e2e/small-phone.test.mjs` (4 tests — every toolbar control inside
+the viewport, no sideways scroll, no heading with an unreachable end, and the
+page declaring Spanish)
+
 ### R8 — Links keep the reader's language · met
 Menu, breadcrumb, catalogue and artwork links carry the `/es` prefix when in
 Spanish — and so do the two that did not: the featured painting on the landing

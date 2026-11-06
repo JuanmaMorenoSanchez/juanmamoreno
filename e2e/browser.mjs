@@ -90,6 +90,12 @@ export async function launchBrowser() {
   }
 }
 
+/** The window a test means unless it says otherwise. */
+const DESKTOP = { width: 1440, height: 900 };
+
+/** The narrowest screen the site is built for: an iPhone SE and its kin. */
+export const SMALL_PHONE = { width: 320, height: 568 };
+
 /**
  * Opens a page and waits for it to hydrate.
  *
@@ -98,8 +104,8 @@ export async function launchBrowser() {
  * real anchors — yet it makes a test measure a different thing on a fast
  * machine than on a slow one, which is where flakiness comes from.
  */
-export async function openPage(browser, path, locale = 'en-US') {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, locale });
+export async function openPage(browser, path, locale = 'en-US', viewport = DESKTOP) {
+  const page = await browser.newPage({ viewport, locale });
   await page.goto(BASE_URL + path, { waitUntil: 'domcontentloaded' });
   await page.waitForLoadState('load').catch(() => {});
   return page;

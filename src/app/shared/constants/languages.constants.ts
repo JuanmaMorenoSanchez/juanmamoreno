@@ -4,6 +4,18 @@ export enum ALLOWED_LANGUAGES {
 }
 
 /**
+ * The tag the `<html>` element carries, which is not the enum's own value.
+ *
+ * `en-EN` names no region anybody has registered — it is this app's internal
+ * key for the English dictionary, and a browser, a screen reader and a search
+ * engine all read `lang` as a real BCP-47 tag. The bare subtag is the honest
+ * answer and the same one the hreflang pair already uses.
+ */
+export function languageTag(language: ALLOWED_LANGUAGES): string {
+  return language === ALLOWED_LANGUAGES.SPANISH ? 'es' : 'en';
+}
+
+/**
  * Pages that live outside the two language trees, so their address says nothing
  * about which language the reader is in.
  *

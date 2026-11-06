@@ -231,6 +231,15 @@ p {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--catalog-soft);
+  /* Spanish compounds this heading has to carry — DESCONTEXTUALIZADAS,
+     CONTEMPORÁNEA — are one unbreakable word, and at this tracking one of them
+     is wider than a 320px phone. The page did not scroll to it: the heading
+     was simply cut off mid-word, in Spanish only, which is why nobody reading
+     the English half ever saw it. Hyphenation is the right break and the page
+     now says which language to hyphenate by; breaking anywhere is the last
+     resort, and still better than losing the end of the word. */
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 /* The sections of a long page, and the headings that name them.
@@ -248,6 +257,9 @@ p {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--catalog-soft);
+  /* The same rule as the heading above, for the same words at a smaller size. */
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 /* A line and the room around it, so the eye is told where one section ends.

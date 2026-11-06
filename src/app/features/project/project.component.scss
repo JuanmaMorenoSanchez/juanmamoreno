@@ -8,6 +8,10 @@
 
 .project-title {
   margin: 0 0 1rem;
+  /* "juanmamoreno.com," is one word to a browser, and at h1 size it is wider
+     than a 320px phone — so the title of this page was the one thing on it
+     with its end cut off. Breaking a domain name is better than hiding it. */
+  overflow-wrap: break-word;
 }
 
 .project-lead {

@@ -1,9 +1,10 @@
-import { inject } from '@angular/core';
+import { DOCUMENT, inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
   ALLOWED_LANGUAGES,
   getPreferredLanguage,
+  languageTag,
   storedLanguageChoice,
 } from '@shared/constants/languages.constants';
 
@@ -13,7 +14,7 @@ import {
  * anything renders — which is what lets each page prerender in its own.
  */
 export const spanishRoute: CanActivateFn = () => {
-  inject(TranslateService).use(ALLOWED_LANGUAGES.SPANISH);
+  speak(ALLOWED_LANGUAGES.SPANISH);
   return true;
 };
 
@@ -22,9 +23,30 @@ export const englishRoute: CanActivateFn = (_route, state) => {
     return inject(Router).parseUrl(`/es${spanishAddressFor(state.url)}`);
   }
 
-  inject(TranslateService).use(ALLOWED_LANGUAGES.ENGLISH);
+  speak(ALLOWED_LANGUAGES.ENGLISH);
   return true;
 };
+
+/**
+ * Says the language twice: once to the dictionary, once to the page itself.
+ *
+ * `index.html` says `lang="en"` and nothing ever said otherwise, so all 402
+ * prerendered pages declared English — the Spanish half of the site included.
+ * A screen reader took its pronunciation from that and read Juanma's Spanish
+ * aloud with English phonemes; a search engine took the site's own word for
+ * what language half its pages were in; and `hyphens: auto` would break
+ * Spanish words by English rules. The site is readable without javascript, so
+ * the attribute has to be right in the html that is served, not corrected
+ * after hydration — which is exactly what makes a guard the place for it, the
+ * same reason the dictionary is chosen here.
+ *
+ * Through `DOCUMENT` rather than the global, because a build has no `document`
+ * and the prerender is where this has to land.
+ */
+function speak(language: ALLOWED_LANGUAGES): void {
+  inject(TranslateService).use(language);
+  inject(DOCUMENT).documentElement.lang = languageTag(language);
+}
 
 /**
  * What to hang off `/es`, given the address the reader asked for.
@@ -54,7 +76,7 @@ function spanishAddressFor(url: string): string {
  * language trees.
  */
 export const readerLanguage: CanActivateFn = () => {
-  inject(TranslateService).use(preferredLanguage());
+  speak(preferredLanguage());
   return true;
 };
 

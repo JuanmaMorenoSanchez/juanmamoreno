@@ -184,9 +184,17 @@
   // column is genuinely centered regardless of how wide start/end are — a
   // plain flex row with `margin-left: auto` can only push things to an edge,
   // it can't center a group between two others of unequal width.
+  //
+  // The centre column is `minmax(0, auto)` rather than `auto` so that it is
+  // allowed to be narrower than its buttons, and the buttons wrap instead.
+  // Eight 40px targets are 320px exactly: on a 320px phone the row was wider
+  // than the screen, nothing scrolled sideways to reach it, and the button
+  // that opens the next painting was simply off the edge — on the page whose
+  // whole job is moving through the catalogue. Shrinking the targets would
+  // have fixed the arithmetic by making them too small to press.
   .viewer-toolbar {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr minmax(0, auto) 1fr;
     align-items: center;
     max-width: 100%;
     margin-bottom: 0.5em;
@@ -198,6 +206,8 @@
     .toolbar-center {
       justify-self: center;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       align-items: center;
     }
 

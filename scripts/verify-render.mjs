@@ -108,16 +108,30 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   const en = alternates.find(([, lang]) => lang === 'en')?.[2];
   if (en && en !== expectedEn) fail(route, `hreflang en points at ${en}, expected ${expectedEn}`);
 
-  // 4. Objects rendered where a string belonged.
+  // 4. The page declares the language it is actually written in.
+  //
+  //    index.html says lang="en" and for a long time nothing ever said
+  //    otherwise, so every Spanish page served under /es declared English.
+  //    Nothing notices that from the inside: the words are right, the hreflang
+  //    pair is right, and only a screen reader, a search engine and the
+  //    hyphenation rules are told the wrong thing.
+  const declared = html.match(/<html[^>]*\slang="([^"]*)"/)?.[1];
+  const expectedLang = spanish ? 'es' : 'en';
+  if (!declared) fail(route, 'the <html> element declares no language');
+  else if (declared !== expectedLang) {
+    fail(route, `declares lang="${declared}", but this page is ${expectedLang}`);
+  }
+
+  // 5. Objects rendered where a string belonged.
   if (html.includes('[object Object]')) fail(route, 'renders "[object Object]"');
 
-  // 5. Translation keys that never resolved.
+  // 6. Translation keys that never resolved.
   for (const prefix of KEY_PREFIXES) {
     const leaked = text.match(new RegExp(`\\b${prefix.replace('.', '\\.')}[a-zA-Z]+`));
     if (leaked) fail(route, `unresolved translation key in the text: "${leaked[0]}"`);
   }
 
-  // 6. Something actually rendered. A page of chrome and no content is the
+  // 7. Something actually rendered. A page of chrome and no content is the
   //    shape /artworks had when its data never arrived at build time.
   if (text.length < 120) fail(route, `only ${text.length} characters of text`);
 
@@ -231,7 +245,7 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
     }
   }
 
-  // 7. Nothing in the page shows the build asked the reverse image search.
+  // 8. Nothing in the page shows the build asked the reverse image search.
   //
   //    Angular carries the answers a build fetched into the markup, so a page
   //    that asked says so. This looks for that, because the cost of asking is
@@ -255,7 +269,7 @@ for (const { file, route } of await pages(OUTPUT_DIR)) {
   if (/vision\/search/.test(carried))
     fail(route, 'the build asked the reverse image search; that belongs in the browser');
 
-  // 8. The navigation is in the page's own language.
+  // 9. The navigation is in the page's own language.
   if (spanish && / Paintings | Contact | About /.test(` ${text} `))
     fail(route, 'English navigation on a Spanish page');
   if (!spanish && / Pinturas | Contacto | Acerca de /.test(` ${text} `))

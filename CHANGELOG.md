@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.1
+
+- **fix** Every page declared `lang="en"`, the Spanish half included: the
+  attribute was typed once in `index.html` and nothing ever changed it. A
+  screen reader took its pronunciation from that and read his Spanish with
+  English phonemes. The guards that already settle the language now say it to
+  the page as well, and the build refuses a page that declares the wrong one.
+- **fix** On a 320px phone the button that opens the next painting sat past the
+  right edge of the screen, with nothing to scroll sideways to reach it: eight
+  forty-pixel controls are 320 pixels exactly. The row wraps now, at full size.
+- **fix** A Spanish section heading too long for a 320px screen was cut off
+  mid-word — DESCONTEXTUALIZADAS is one unbreakable word — as was this
+  repository's own name in the product page's title. Both break now rather
+  than disappear.
+
 ## 2.62.0
 
 - **feat** Who the painting went to is asked of every kind whose verb governs a
