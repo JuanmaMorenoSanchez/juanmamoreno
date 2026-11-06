@@ -437,10 +437,15 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
       .pipe(
         tap((res) => {
           if (res.success && res.data) {
-            const currentCache = this.sessionQuery.getValue().imageCache;
-            this.sessionStore.update({
-              imageCache: [...currentCache, res.data],
-            });
+            const kept = res.data;
+            // One entry per painting. This appended unconditionally, so a
+            // thumbnail fetched again — a miss on an entry that is there but
+            // carries no image — was added a second time and found first
+            // thereafter.
+            const others = this.sessionQuery
+              .getValue()
+              .imageCache.filter((one) => one?.tokenId !== kept.tokenId);
+            this.sessionStore.update({ imageCache: [...others, kept] });
           }
         }),
         map((res) => (res.data ? CommonUtils.composeImgSrc(res.data?.thumbnail) : null))

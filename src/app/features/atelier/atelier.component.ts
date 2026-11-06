@@ -85,6 +85,14 @@ const NODE_WIDTH = 210;
  */
 export const SETTLES = 700;
 
+/**
+ * How many unanswered questions about a run end the watching.
+ *
+ * Three, a second apart. One dropped request over an eighteen-minute edit is a
+ * blip; three in a row is the engine having gone, which is worth saying.
+ */
+export const UNANSWERED_BEFORE_GIVING_UP = 3;
+
 export const START_BY_HAND = [
   String.raw`cd C:\Users\User\Projects\juanmamoreno\atelier-engine`,
   String.raw`.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860`,
@@ -606,8 +614,18 @@ export class AtelierComponent implements OnDestroy {
     this.settling = null;
   }
 
+  /**
+   * Set when the page goes, so a run being followed stops being asked about.
+   *
+   * `watch` polls once a second and ends only when the engine says the run has
+   * ended. Leaving the atelier mid-run left that loop going for the life of the
+   * tab: a request a second, for ever, about a job nobody was looking at.
+   */
+  private gone = false;
+
   ngOnDestroy(): void {
     this.stopSettling();
+    this.gone = true;
   }
 
   protected async byId(wanted: Wanted = 'web'): Promise<void> {
@@ -995,9 +1013,27 @@ export class AtelierComponent implements OnDestroy {
    * The run ends when the engine says it has.
    */
   private async watch(id: string): Promise<void> {
+    let unanswered = 0;
+
     for (;;) {
       await new Promise((again) => setTimeout(again, 1000));
-      const state = await this.engine.job(id);
+      // The page has gone. The run carries on at the engine, which is where it
+      // lives; nothing here needs to hear about it any more.
+      if (this.gone) return;
+
+      let state: JobState;
+      try {
+        state = await this.engine.job(id);
+        unanswered = 0;
+      } catch (error) {
+        // One unanswered question is not a failed run. An edit is eighteen
+        // minutes and the run is at the engine rather than in this page, so a
+        // single dropped request used to end the watch and report "the engine
+        // did not answer" over a run that was still going perfectly well.
+        if (++unanswered >= UNANSWERED_BEFORE_GIVING_UP) throw error;
+        continue;
+      }
+
       this.job.set(state);
 
       if (state.state === 'done') {

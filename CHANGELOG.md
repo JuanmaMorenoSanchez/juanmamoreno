@@ -5,6 +5,28 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.5
+
+- **fix** Leaving the atelier while a run is going stops the asking. The page
+  polled once a second and ended only when the engine said the run had, so
+  walking away left it going for the life of the tab — a request a second, for
+  ever, about a job nobody was looking at.
+- **fix** A single dropped answer no longer calls a run failed. One unanswered
+  request ended the watching and reported "the engine did not answer" over a run
+  that was going perfectly well, which over an eighteen-minute edit is a thing
+  that happens. Three in a row is the engine having gone, and still says so.
+- **fix** The thumbnails the page keeps are no longer written to localStorage.
+  One base64 jpeg per painting looked at — measured at 14 KB each — appended and
+  never pruned, so browsing the catalogue put 2.3 MB or more into a store with
+  about five. Worse than the size: the whole state is serialised on every
+  update, so each new thumbnail rewrote every thumbnail before it, synchronously
+  on the main thread. They stay in memory for the session, and the api now
+  serves them with a day's cache-control so a second visit is answered by the
+  browser's own cache.
+- **fix** One entry per painting in that cache. It appended unconditionally, so
+  a thumbnail fetched again — a miss on an entry that is there but carries no
+  image — was added a second time and found first thereafter.
+
 ## 2.60.4
 
 - **chore** Deleted what nothing uses, found by scanning rather than by

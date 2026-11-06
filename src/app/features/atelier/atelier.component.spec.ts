@@ -143,6 +143,8 @@ describe('AtelierComponent', () => {
       stillHere?: { file: string; bytes: number; when: number; media: string }[];
       layerType?: string;
       onDisk?: () => Promise<never>;
+      /** Which asks about the run refuse, counting from one. */
+      refusals?: number;
       stored?: string;
     } = {}
   ) => {
@@ -315,7 +317,14 @@ describe('AtelierComponent', () => {
               return options.run ? options.run().then(() => queued[0]) : Promise.resolve(queued[0]);
             },
             // Each ask walks one along the states given, holding on the last.
-            job: () => Promise.resolve(queued[Math.min(++asked + 1, queued.length - 1)]),
+            job: () => {
+              asked += 1;
+              // The first `refusals` asks are dropped requests, not a failed run.
+              if (options.refusals && asked <= options.refusals) {
+                return Promise.reject(new Error('the engine did not answer'));
+              }
+              return Promise.resolve(queued[Math.min(asked + 1, queued.length - 1)]);
+            },
             cancelJob: () => {
               did.push('cancel');
               return Promise.resolve();
@@ -349,6 +358,8 @@ describe('AtelierComponent', () => {
       framed,
       fetched,
       switched,
+      /** How many times the engine has been asked about the run. */
+      asks: () => asked,
     };
   };
 
@@ -708,6 +719,52 @@ describe('AtelierComponent', () => {
     await new Promise((settle) => setTimeout(settle, 0));
 
     expect(did).toContain('cancel');
+  });
+
+  /**
+   * An edit is eighteen minutes and the run is at the engine, not in this page.
+   * A single dropped request used to end the watching and report "the engine
+   * did not answer" over a run that was going perfectly well.
+   */
+  it('rides out a dropped answer rather than calling the run failed', async () => {
+    const { fixture, host } = build({
+      refusals: 1,
+      states: [going(), going(), done({ batch: 'a', seconds: 1, produced: {}, saved: [] })],
+    });
+    const { running } = await start(fixture);
+    // One refused ask, then two that answer.
+    await new Promise((settle) => setTimeout(settle, 2200));
+    await running;
+    fixture.detectChanges();
+
+    expect(at(host, 'failure')).toBeNull();
+  });
+
+  /** Three in a row is the engine having gone, which is worth saying. */
+  it('gives up once the engine has stopped answering altogether', async () => {
+    const { fixture, host } = build({ refusals: 99, states: [going(), going()] });
+    const { running } = await start(fixture);
+    await new Promise((settle) => setTimeout(settle, 3300));
+    await running;
+    fixture.detectChanges();
+
+    expect(at(host, 'failure')?.textContent).toContain('did not answer');
+  });
+
+  /**
+   * Leaving the atelier mid-run left the polling going for the life of the tab:
+   * a request a second, for ever, about a job nobody was looking at.
+   */
+  it('stops asking about a run once the page has gone', async () => {
+    const { fixture, asks } = build({ states: [going(), going(), going(), going(), going()] });
+    await start(fixture);
+    const whenLeft = asks();
+
+    fixture.destroy();
+    await new Promise((settle) => setTimeout(settle, 3300));
+
+    // At most the one ask already in flight when the page went.
+    expect(asks() - whenLeft).toBeLessThanOrEqual(1);
   });
 
   it('tells stopped apart from broken', async () => {

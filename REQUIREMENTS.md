@@ -2988,10 +2988,22 @@ queue being only a list of things that cannot start.
 **Progress is asked for, not pushed.** `EventSource` cannot carry
 `targetAddressSpace` any more than a WebSocket can, and at about a hundred
 seconds a step there is nothing a stream would show that a poll does not.
+
+**The asking stops when the page does, and rides out a dropped answer.** Two
+faults in the same loop, both found on 6 November 2026. It polled once a second
+and ended only when the engine said the run had, so leaving the atelier mid-run
+left it asking for the life of the tab — a request a second, for ever, about a
+job nobody was looking at. And a single unanswered request ended the watching
+and reported "the engine did not answer" over a run that was still going
+perfectly well, which over eighteen minutes is a thing that happens. Three in a
+row is the engine having gone and is still worth saying.
 *Proven by:* `atelier.component.spec.ts` "says which box it is on and how far
 through, while it works", "says what it is doing when there is nothing to
 count", "offers a way to stop, and asks the engine when pressed", "tells stopped
-apart from broken" and "shows how long the run took, which only the run knows";
+apart from broken", "shows how long the run took, which only the run knows",
+"rides out a dropped answer rather than calling the run failed", "gives up once
+the engine has stopped answering altogether" and "stops asking about a run once
+the page has gone";
 and `engine.service.spec.ts` "reports a run already in progress, so a reloaded
 page can pick it up".
 *Also proven by:* the engine's own `test_jobs.py`, which `npm test` does not run.
@@ -5277,6 +5289,17 @@ from memory, which is why it went unnoticed.
 `persistState` is given a storage of the site's own that swallows the throw. A
 reader who cannot be written to simply fetches the catalogue again next visit,
 which is what a cache that cannot be written should do.
+
+**And what was filling the quota is no longer written there at all.** The
+session held one base64 thumbnail per painting looked at — measured at 14 KB
+each — appended and never pruned or matched, so browsing the catalogue put 2.3
+MB or more into a store with about five. The size was the lesser problem: the
+whole state is serialised and written on *every* update, so each new thumbnail
+rewrote every thumbnail before it, synchronously, on the main thread. They are
+kept in memory for the session and left out of storage, and the api now serves
+`GET /nft-thumbnails/:tokenId` with a day's cache-control (its B2) so a second
+visit is answered by the browser's own cache. The catalogue, which is the thing
+worth keeping on disk, gets the space back.
 
 The site's own seven writes each have a test that a refused write is not an
 error; this eighth one does not, because it is three try/catch blocks in
