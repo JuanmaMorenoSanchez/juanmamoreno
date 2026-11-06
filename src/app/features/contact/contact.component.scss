@@ -8,8 +8,8 @@
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem 1rem;
-  margin-top: 1.5rem;
+  gap: tokens.$spacing-lg tokens.$spacing-md;
+  margin-top: tokens.$spacing-lg;
 
   @include bp.respond-above(tokens.$breakpoint-md) {
     grid-template-columns: 1fr 1fr;

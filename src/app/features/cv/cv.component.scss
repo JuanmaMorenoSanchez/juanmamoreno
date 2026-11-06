@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 .breathe-space {
   margin-top: 2em;
   margin-bottom: 2em;
@@ -11,7 +13,7 @@ h2.catalog-heading {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
 }
 
 /*
@@ -21,7 +23,7 @@ h2.catalog-heading {
 */
 .cv-admin-button {
   flex: 0 0 auto;
-  margin-left: 0.25rem;
+  margin-left: tokens.$spacing-xs;
   width: 1.75rem !important;
   height: 1.75rem !important;
   padding: 0 !important;

@@ -1,10 +1,12 @@
+@use '../../../styles/tokens';
+
 .home {
   min-height: calc(100dvh - var(--mat-toolbar-standard-height, 4rem));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2.5rem;
+  gap: tokens.$spacing-2xl;
   padding: 8vh 5vw;
   box-sizing: border-box;
   text-align: center;
@@ -13,7 +15,7 @@
 .home-intro {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
 }
 
 .home-name {
@@ -47,7 +49,7 @@
 .home-featured-frame {
   position: relative;
   display: block; // a span is inline by default — which ignores width/aspect-ratio
-  margin: 0 auto 0.75rem;
+  margin: 0 auto tokens.$spacing-sm-md;
   max-width: 100%;
   overflow: hidden; // clips the slightly-scaled blurred preview
 }
@@ -142,7 +144,7 @@
 }
 
 .build-versions {
-  margin: 3rem 0 1.25rem;
+  margin: tokens.$spacing-3xl 0 tokens.$spacing-md-lg;
   text-align: center;
   font-size: 0.7rem;
   letter-spacing: 0.08em;

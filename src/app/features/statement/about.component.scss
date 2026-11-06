@@ -1,5 +1,7 @@
+@use '../../../styles/tokens';
+
 .subtitle {
-  margin-right: 1rem;
+  margin-right: tokens.$spacing-md;
   // Matches the PDF's item subtitle style (italic, not bold).
   font-style: italic;
   font-weight: 400;

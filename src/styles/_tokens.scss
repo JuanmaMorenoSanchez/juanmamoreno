@@ -1,11 +1,25 @@
 
 $font-family-base: Helvetica Neue, Helvetica, Arial, sans-serif;
 
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 1rem;
-$spacing-lg: 1.5rem;
-$spacing-xl: 2rem;
+// The spacing scale: every step a multiple of 4px, which is what gives the
+// useful middle values an 8-only scale has to round away from.
+//
+// It had five steps and the stylesheets had fourteen values — 0.3, 0.35, 0.4,
+// 0.45, 0.6, 0.65, 0.7, 0.8, 0.9, 1.1, 1.2, 1.4rem among them — because the
+// three sizes most of this site actually needed were not on it: three
+// quarters of a rem, a rem and a quarter, and anything above two. Reach for a
+// step rather than a number, and when none of them fits, the answer is almost
+// always the nearest one.
+$spacing-xs: 0.25rem; // 4px
+$spacing-sm: 0.5rem; // 8px
+$spacing-sm-md: 0.75rem; // 12px
+$spacing-md: 1rem; // 16px
+$spacing-md-lg: 1.25rem; // 20px
+$spacing-lg: 1.5rem; // 24px
+$spacing-xl: 2rem; // 32px
+$spacing-2xl: 2.5rem; // 40px
+$spacing-3xl: 3rem; // 48px
+$spacing-4xl: 4rem; // 64px
 
 $breakpoint-sm: 36em; // ~576px
 $breakpoint-md: 48em; // ~768px

@@ -125,6 +125,12 @@ document is a claim about the present, and only fails if something checks it.
 
 - **Signals** for component state; **`ng-content` projection** and lazy-loaded routes are used throughout (`loadComponent`).
 - **Strict TypeScript**, including `noPropertyAccessFromIndexSignature` and `useDefineForClassFields: false`.
+- **Spacing comes from the scale** in `src/styles/_tokens.scss` — ten steps, every
+  one a multiple of 4px — reached as `tokens.$spacing-sm`, not typed as a number.
+  It had five steps and the stylesheets had fourteen values, so no interval on
+  the page read as deliberate. When no step fits, the answer is the nearest one.
+  The reader-facing stylesheets are converted; the studio's own pages are being
+  done a few at a time.
 - **Tests use Vitest globals** (`describe`/`it`/`expect` are ambient — no imports needed). `src/test-providers.ts` applies `provideZonelessChangeDetection()` to every `TestBed`. Config lives in `vitest-base.config.ts` and `tsconfig.spec.json`.
 - `domain/generative/*` is live, tested, dependency-free motion logic — `Parallax` (depth → shift), `BeatClock`, `FrameTimeline`, particles — drawn by the Canvas 2D sketches in `features/generative/sketches`. There is no p5.js. A sketch's layers are either hand-cut pngs in `assets/images/canvases/` or a piece saved from the atelier. **A saved piece is not a page until it is registered**: add a line to `sketches/registry.ts` using `pieceSketch('<piece id>')`, which is deliberate on purpose — it used to resolve for any unknown id, so every save published something nobody had decided to publish.
 

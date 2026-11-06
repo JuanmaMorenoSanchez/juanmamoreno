@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.3
+
+- **chore** The spacing scale gained the three sizes the stylesheets actually
+  needed — three quarters of a rem, a rem and a quarter, and the steps above
+  two — and the eight stylesheets a reader sees now take their margins and
+  padding from it rather than from fourteen hand-typed values. Eleven values
+  moved to the nearest step; ten of them by two pixels or less, and the
+  eleventh is eight pixels under the essay. The studio's own pages follow.
+
 ## 2.62.2
 
 - **fix** The catalogue's two filters wrap as a pair on a phone, in a row of

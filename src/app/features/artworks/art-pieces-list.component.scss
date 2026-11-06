@@ -1,3 +1,5 @@
+@use '../../../styles/tokens';
+
 mat-grid-tile {
   cursor: pointer;
 }
@@ -112,8 +114,8 @@ mat-card {
 .sold-legend {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  margin: 0.2rem 0 0;
+  gap: tokens.$spacing-sm;
+  margin: tokens.$spacing-xs 0 0;
   font-size: 0.75rem;
   line-height: 1.4;
   color: var(--catalog-soft);
@@ -151,14 +153,14 @@ mat-card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  gap: tokens.$spacing-sm;
+  margin-top: tokens.$spacing-lg;
+  margin-bottom: tokens.$spacing-sm-md;
   font-size: 0.75rem;
 }
 
 .edited-filter-choice {
-  padding: 0.15rem 0.6rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
   border: 1px solid var(--catalog-faint);
   border-radius: 999px;
   background: transparent;
@@ -173,14 +175,14 @@ mat-card {
 }
 
 .edited-filter-count {
-  margin-left: 0.2rem;
+  margin-left: tokens.$spacing-xs;
   color: var(--catalog-faint);
 }
 
 // Where the paintings would have been, so the eye finds it in the same place
 // it was already looking.
 .nothing-matched {
-  margin: 3rem 0;
+  margin: tokens.$spacing-3xl 0;
   text-align: center;
   color: var(--catalog-soft);
   font-size: 0.9375rem;

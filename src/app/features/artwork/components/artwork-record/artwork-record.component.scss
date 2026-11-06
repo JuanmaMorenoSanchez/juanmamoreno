@@ -1,6 +1,8 @@
+@use '../../../../../styles/tokens';
+
 /* The essay below wants room: the two were running together. */
 .artwork-record {
-  margin: 2.5rem 0 3.5rem;
+  margin: tokens.$spacing-2xl 0 tokens.$spacing-3xl;
 }
 
 /*
@@ -25,8 +27,8 @@ h2.catalog-subheading {
   li {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
+    gap: tokens.$spacing-sm;
+    padding: tokens.$spacing-xs 0;
   }
 }
 
@@ -56,14 +58,14 @@ h2.catalog-subheading {
 }
 
 .record-add {
-  margin-top: 0.5rem;
+  margin-top: tokens.$spacing-sm;
 }
 
 .record-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: tokens.$spacing-sm-md;
+  margin-top: tokens.$spacing-md;
 
   mat-form-field {
     flex: 1 1 11rem;
@@ -92,7 +94,7 @@ h2.catalog-subheading {
 .record-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
   flex: 1 1 100%;
 }
 
