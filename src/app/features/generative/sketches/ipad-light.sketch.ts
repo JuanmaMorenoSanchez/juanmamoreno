@@ -150,14 +150,6 @@ const EYES = [
 ] as const;
 
 /**
- * How far out of focus a layer goes, and how far in depth that takes.
- *
- * The blur is made once at load at half the size, because a soft thing does
- * not need the resolution, and faded in over the sharp copy rather than
- * computed per frame: `filter` on a canvas this size, four times a frame, is
- * not something a laptop should be asked to do sixty times a second.
- */
-/**
  * How far the distance is blurred, in pixels at half size.
  *
  * It was a blur per layer: four cuts, four amounts of softness, which is a
@@ -251,7 +243,6 @@ export class IpadLightSketch implements Sketch {
   /** The landscape, whole: his paint runs on under where the figures were. */
   private ground?: HTMLImageElement;
   private groundParallax?: Parallax;
-  /** The distance, blurred, with the near paint cut out of it. */
   /**
    * The distance, blurred, one per state the ground can be in and in the
    * same order — so whichever is up has its own soft distance rather than

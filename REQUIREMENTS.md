@@ -4163,10 +4163,22 @@ It belongs to the page every sketch is shown on rather than to any sketch, so
 a sketch added later gets it without knowing. Nothing covers a piece that was
 not found: that page has something of its own to say, and a spinner over it
 would be a page still trying.
+
+**And the canvas goes to the latest address asked for.** Two of those loads
+can be in flight at once, and which finishes first is a matter of how big its
+pictures are. Whether the canvas was still free was the test, which is the
+same test the other way round: going from one piece to a second and on to a
+third on a cold cache, the second arrived into a free canvas and took it while
+the third arrived into a taken one and was dropped — so the page drew the
+second under the third's address, and the third's pictures were fetched and
+its sprites cut and then abandoned without being let go of. A load now carries
+a number and only the current one may take the canvas; the superseded sketch
+is disposed, which is the same thing `teardown` does on the way out.
 *Proven by:* `generative-piece.component.spec.ts` "covers the page and says
 what it is doing", "fades rather than cutting, so it is still there while it
-goes", "is gone once it has settled" and "does not cover a piece that does
-not exist"
+goes", "is gone once it has settled", "does not cover a piece that does not
+exist", "draws the one the address asks for, not the one that loaded first"
+and "lets go of the one it does not use"
 
 ### R202 — A clip is found by the file, and a finished run can be recovered · met
 **Four and a half hours of card time, and the page showed nothing.** A Scenes
@@ -4285,12 +4297,26 @@ more places, which is three ways to ask for one file; both are gone, along
 with the rule that styled them. The measurements now say what they are for
 where they are typed, because the connection between an empty size box and a
 studio that would not render was the part nobody could see.
+
+**And the handover wanted them too, which undid the whole of this at the last
+step.** The render stopped asking and `useBelow` did not: with the squaring
+off and nothing typed it returned without a word, and the form below is
+waiting on a promise only the handover resolves — so pressing **Edit and
+download** warped the photograph, encoded the JPEG, and then sat on its
+spinner for ever with nothing saved and nothing said. The measurements are
+carried when there are some and left empty when there are none, and the form
+takes them only when it is given them: with the squaring off, the boxes in the
+form are the only ones there are, and overwriting them with nothing emptied
+the form the moment the photograph reached it.
 *Proven by:* `mint-form.component.spec.ts` "MintFormComponent, downloading
-without minting" (7 tests: offered without a title which the other two
+without minting" (9 tests: offered without a title which the other two
 require, handing over the corrector's own file, named after the title when
 there is one, a name a file system will accept, filing nothing and not
-clearing the studio, letting go of the url it made, and downloading nothing
-when the corrector cannot render)
+clearing the studio, letting go of the url it made, downloading nothing when
+the corrector cannot render, taking the corrector's measurements, and keeping
+its own when the corrector was given none) and `photo-prep.component.spec.ts`
+"straightening a detail, with nothing measured" (2 tests: handed over with no
+measurements, and still carrying them when there are some)
 
 ### R199 — A model is not built while something else has the card · met
 A clip was started while a game was running. The card was at **7,865 of 8,188
@@ -4658,7 +4684,13 @@ Both are sliders now, drawn with their band and with the value said beside
 them, reporting while they are dragged rather than when they are let go.
 **A slider is still checked by the engine**: the range check looked for the
 word *number*, so a setting arrived unchecked the day it stopped being drawn
-as a field.
+as a field. **And by the page**, which had the same fault for longer: the
+engine's `NUMERIC` was corrected to `("number", "slider")` and the page's two
+protections — the clamp that makes a value moving visible, and the line of red
+from R158 — both still looked for `number` alone. Nothing was wrong on a run,
+because the only advised settings are boxes and the engine coerces the string
+a range reads back; a slider sent `"7.5"` where the box beside it sent 7.5,
+and the first advised slider would have shown nothing at all.
 
 **How far** is the dial other tools call denoise strength, done at the other
 end. This editor has no such setting — it is instruction-led and regenerates
@@ -4671,8 +4703,10 @@ itself, half way is half way, a tenth is a suggestion of it, and neither end
 can be asked for more than it has), `test_settle.py`
 "test_a_slider_is_checked_like_a_number", `test_advice.py`
 "test_only_numbers_are_advised", and `node-canvas.component.spec.ts` "is drawn
-as a range, with its band", "says the value as well as showing it" and
-"reports while it is dragged rather than when it is let go"
+as a range, with its band", "says the value as well as showing it", "reports
+while it is dragged rather than when it is let go", "sends the number, not the
+string the range read back" and "warns about a value outside its band, as a
+box does"
 
 ### R179 — The painting is chosen in the Painting box · met
 It was chosen in a strip above the canvas: a file field, a token id, and —

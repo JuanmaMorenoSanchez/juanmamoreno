@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { ImageMatchService } from '@shared/services/image-match.service';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
-import { HandoffService } from '../handoff.service';
+import { HandoffService, type PreparedForMint } from '../handoff.service';
 import {
   ReplaceFrontalDialogComponent,
   type ReplaceFrontalQuestion,
@@ -206,9 +206,9 @@ export class MintFormComponent {
     })[which]();
   }
 
-  /** A measurement is tidied as it is typed, so "140.5" becomes "140,5". */
   /**
-   * What was typed, tidied only as far as typing allows.
+   * What was typed, tidied only as far as typing allows — "140.5" becomes
+   * "140,5", because the collection writes a comma.
    *
    * It used to drop a trailing comma on every keystroke, which meant the comma
    * of "140,5" was removed by the keypress that made it and the 5 landed on the
@@ -224,27 +224,6 @@ export class MintFormComponent {
     else this.width.set(tidied);
   }
 
-  /**
-   * Prepares the certificate, and either leaves it waiting or writes it now.
-   *
-   * Preparing is the same either way — the images are made and stored and the
-   * metadata written down — so the only difference is whether the chain is asked
-   * afterwards. Saving is the ordinary case: gas is the whole of what a
-   * certificate costs, and nothing about a finished painting is urgent.
-   */
-  /**
-   * Prepares the certificate, and optionally goes on to sign it.
-   *
-   * Signing happens on the waiting list, where the wallet is, because the only
-   * key that can write a certificate is on the artist's phone. This used to ask
-   * the server to mint instead, which could not work — no minting key is
-   * configured there, by choice — and asked it to write *everything* waiting
-   * rather than the one just prepared.
-   *
-   * Nothing after the preparing is inside the same try any more. A failure there
-   * reported "nothing was stored" over a certificate that had been stored
-   * perfectly well, which sent the artist back to prepare it a second time.
-   */
   /**
    * Whether this photograph is meant to replace the one the painting has.
    *
@@ -317,10 +296,7 @@ export class MintFormComponent {
         return;
       }
 
-      // The measurements come back from the corrector whether or not they were
-      // needed to render, and they are the ones the form would have filed.
-      this.height.set(prepared.height);
-      this.width.set(prepared.width);
+      this.takeMeasurements(prepared);
 
       const named = this.name().trim();
       const link = document.createElement('a');
@@ -334,6 +310,33 @@ export class MintFormComponent {
     } finally {
       this.busy.set(false);
     }
+  }
+
+  /**
+  * Prepares the certificate, and optionally goes on to sign it.
+  *
+  * Signing happens on the waiting list, where the wallet is, because the only
+  * key that can write a certificate is on the artist's phone. This used to ask
+  * the server to mint instead, which could not work — no minting key is
+  * configured there, by choice — and asked it to write *everything* waiting
+  * rather than the one just prepared.
+  *
+  * Nothing after the preparing is inside the same try any more. A failure there
+  * reported "nothing was stored" over a certificate that had been stored
+  * perfectly well, which sent the artist back to prepare it a second time.
+  */
+  /**
+   * The measurements the corrector was given, where it was given any.
+   *
+   * They are the ones the picture was squared up to, so they are the ones to
+   * file — typing them twice is how a certificate ends up describing a shape
+   * the photograph is not. With the squaring off nothing was given, and these
+   * boxes are then the only ones: overwriting them with nothing emptied the
+   * form the moment the photograph arrived in it.
+   */
+  private takeMeasurements(prepared: PreparedForMint): void {
+    if (prepared.height) this.height.set(prepared.height);
+    if (prepared.width) this.width.set(prepared.width);
   }
 
   protected async prepare(signNow = false): Promise<void> {
@@ -355,8 +358,7 @@ export class MintFormComponent {
       this.busy.set(false);
       return;
     }
-    this.height.set(prepared.height);
-    this.width.set(prepared.width);
+    this.takeMeasurements(prepared);
     const file = prepared.file;
     const body = new FormData();
     body.append('photo', file);

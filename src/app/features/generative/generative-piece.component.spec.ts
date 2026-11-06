@@ -4,6 +4,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { GenerativePieceComponent } from './generative-piece.component';
+import { SKETCHES } from './sketches/registry';
 
 /**
  * The control that puts a sketch full screen, and takes itself away once it
@@ -156,5 +157,99 @@ describe('GenerativePieceComponent — going full screen', () => {
     fixture.detectChanges();
 
     expect(button(fixture)).toBeNull();
+  });
+});
+
+/**
+ * Two routes waiting on the same canvas.
+ *
+ * A sketch's setup fetches its pictures, so on a cold cache two of them can be
+ * in flight at once — and which one finishes first is a matter of how big its
+ * pictures are, not of which address the reader is at. The canvas has to go to
+ * the latest one asked for.
+ */
+describe('GenerativePieceComponent — two sketches asked for at once', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    delete SKETCHES['first'];
+    delete SKETCHES['second'];
+    TestBed.resetTestingModule();
+  });
+
+  /** A sketch whose setup finishes when the test says so. */
+  const held = () => {
+    let release = (): void => {};
+    const settled = new Promise<void>((resolve) => (release = resolve));
+    const sketch = {
+      setup: () => settled,
+      draw: vi.fn(),
+      dispose: vi.fn(),
+    };
+    return { sketch, release: () => release() };
+  };
+
+  const waiting = () => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      }
+    );
+    // A context, because without one the component gives up before setup. The
+    // loop is stubbed out: nothing here is about drawing.
+    vi.stubGlobal('requestAnimationFrame', () => 1);
+    HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+      setTransform: vi.fn(),
+    } as unknown as CanvasRenderingContext2D);
+
+    TestBed.configureTestingModule({
+      imports: [GenerativePieceComponent],
+      providers: [
+        provideTranslateService(),
+        { provide: ActivatedRoute, useValue: { paramMap: of(new Map()) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(GenerativePieceComponent);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  it('draws the one the address asks for, not the one that loaded first', async () => {
+    const first = held();
+    const second = held();
+    SKETCHES['first'] = { label: 'First', factory: () => first.sketch };
+    SKETCHES['second'] = { label: 'Second', factory: () => second.sketch };
+
+    const page = waiting();
+    const going = [page['loadSketch']('first'), page['loadSketch']('second')];
+
+    // The smaller pictures arrive first, which is the whole of the trouble.
+    first.release();
+    second.release();
+    await Promise.all(going);
+
+    expect(page['sketch']).toBe(second.sketch);
+  });
+
+  it('lets go of the one it does not use', async () => {
+    // Its pictures were fetched and its sprites cut; dropping it without a
+    // word leaves all of that held.
+    const first = held();
+    const second = held();
+    SKETCHES['first'] = { label: 'First', factory: () => first.sketch };
+    SKETCHES['second'] = { label: 'Second', factory: () => second.sketch };
+
+    const page = waiting();
+    const going = [page['loadSketch']('first'), page['loadSketch']('second')];
+
+    second.release();
+    first.release();
+    await Promise.all(going);
+
+    expect(page['sketch']).toBe(second.sketch);
+    expect(first.sketch.dispose).toHaveBeenCalled();
   });
 });

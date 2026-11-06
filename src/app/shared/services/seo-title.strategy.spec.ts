@@ -240,11 +240,6 @@ describe('SeoTitleStrategy', () => {
     });
 
     /**
-     * Deliberate, and the reason the offer is there at all is to carry the
-     * address to ask at. What a painting costs is answered by the artist to
-     * whoever asks him, and nothing here is allowed to answer it first.
-     */
-    /**
      * A claim that a painting is his, made on his own website, is worth what
      * any such claim is worth. The same claim written into Ethereum, with the
      * address to go and read it, is one that can be followed and checked
@@ -266,6 +261,11 @@ describe('SeoTitleStrategy', () => {
       );
     });
 
+    /**
+    * Deliberate, and the reason the offer is there at all is to carry the
+    * address to ask at. What a painting costs is answered by the artist to
+    * whoever asks him, and nothing here is allowed to answer it first.
+    */
     it('never says what anything costs', async () => {
       await navigateTo('/about');
       strategy.setArtworkStructuredData(artwork);

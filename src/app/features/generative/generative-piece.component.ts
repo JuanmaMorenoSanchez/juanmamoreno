@@ -137,7 +137,22 @@ export class GenerativePieceComponent implements AfterViewInit {
   /** The handle for the fade, so leaving the page does not leave it running. */
   private fading: ReturnType<typeof setTimeout> | null = null;
 
+  /**
+   * Which load is the current one.
+   *
+   * A sketch's setup fetches its pictures — Screenlight loads sixteen — so two
+   * routes can be waiting on it at once, and the one that finishes first is
+   * not the one the address asks for. It used to be decided by whether the
+   * canvas was still free, which is the same test the other way round: going
+   * A → B → C on a cold cache, B arrived into a free canvas and took it, and C
+   * arrived into a taken one and was dropped — so the page drew B under C's
+   * address, and C's pictures were loaded and then abandoned without being
+   * let go of.
+   */
+  private latest = 0;
+
   private async loadSketch(id: string | null): Promise<void> {
+    const mine = ++this.latest;
     this.stopLoop();
     if (this.fading !== null) clearTimeout(this.fading);
     this.fading = null;
@@ -178,7 +193,10 @@ export class GenerativePieceComponent implements AfterViewInit {
       return;
     }
     // A newer route may have superseded this one while setup awaited.
-    if (this.sketch !== null) return;
+    if (mine !== this.latest) {
+      sketch.dispose?.();
+      return;
+    }
     this.sketch = sketch;
 
     // The first frame is drawn before the cover starts to go, so what it

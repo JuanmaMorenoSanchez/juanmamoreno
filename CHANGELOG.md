@@ -5,6 +5,42 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.60.6
+
+- **fix** Straightening a detail and saving it. The corrector's own page says
+  the measurements may be left out — turn the squaring off and the picture keeps
+  the shape its corners describe — but the handover to the form below wanted
+  them anyway and stopped without a word when they were missing. The form waits
+  on a promise only the handover resolves, so **Edit and download** warped the
+  photograph, encoded the JPEG, and then sat on its spinner for ever with
+  nothing saved and nothing said. The measurements are carried when there are
+  some, and the form takes them only when it is given them.
+- **fix** A slider in the atelier counts as a number, the way the engine's own
+  `NUMERIC` has counted it since the engine was corrected. The page clamps a
+  typed number into range so the value moving is visible, and draws the
+  engine's advice under one outside its sensible band; both still looked for
+  the word `number`, so a slider got neither. Nothing ran wrong — the only
+  advised settings are boxes, and the engine coerces the string a range reads
+  back — but a slider sent `"7.5"` where the box beside it sent 7.5, and the
+  first advised slider would have shown nothing.
+- **fix** Two generative pieces asked for in quick succession: the canvas goes
+  to the one the address asks for. A sketch's setup fetches its pictures, so two
+  can be loading at once, and the test was whether the canvas was still free —
+  the same test the other way round. Going from one piece to a second and on to
+  a third on a cold cache, the second took the free canvas and the third was
+  dropped, so the page drew the second under the third's address and the third's
+  pictures were fetched and then abandoned without being let go of.
+- **chore** Twenty-nine doc comments put back on what they describe. Each was
+  left behind when the thing under it was replaced, or when something new was
+  inserted above it, so it sat over an unrelated declaration and was read as
+  that declaration's own: `correctedSize`'s explanation over `cornerShape`, the
+  atelier component's whole architecture note over a 700 ms constant, the help
+  for a certificate's photograph zoom over a storage key. Five described code
+  that no longer exists and were dropped. One of them was `MAX_ZOOM`'s, left
+  behind this morning when the constant moved into `photo-viewport.ts` — so the
+  same mistake, made while fixing something else, is what found the rest.
+- **chore** One formula for where a node's port sits, not three.
+
 ## 2.60.5
 
 - **fix** Leaving the atelier while a run is going stops the asking. The page

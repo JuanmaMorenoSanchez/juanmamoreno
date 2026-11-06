@@ -49,6 +49,13 @@ const CAUTION = 26;
 const PAINTING = 'painting';
 
 /**
+ * Both kinds that are a number. A box and a range differ in how they are
+ * drawn and in nothing else: a range reads back a string like a box does, and
+ * both carry the engine's limits and its advice about them.
+ */
+const numeric = (param: ParamDef): boolean => param.kind === 'number' || param.kind === 'slider';
+
+/**
  * How much room choosing a painting takes inside its own box: a file button
  * and a number, one under the other.
  */
@@ -180,11 +187,8 @@ export class NodeCanvasComponent {
     return node.y + HEADER + ports * ROW + above;
   }
 
-  protected inY(node: GraphNode, at: number): number {
-    return node.y + HEADER + at * ROW + ROW / 2;
-  }
-
-  protected outY(node: GraphNode, at: number): number {
+  /** The middle of one port's row. The two sides are laid out alike. */
+  protected portY(node: GraphNode, at: number): number {
     return node.y + HEADER + at * ROW + ROW / 2;
   }
 
@@ -206,7 +210,7 @@ export class NodeCanvasComponent {
     if (at < 0) return null;
     return {
       x: side === 'in' ? node.x : node.x + this.wide(node),
-      y: node.y + HEADER + at * ROW + ROW / 2,
+      y: this.portY(node, at),
     };
   }
 
@@ -282,7 +286,7 @@ export class NodeCanvasComponent {
    */
   protected caution(node: GraphNode, param: ParamDef): string {
     const advice = param.advice;
-    if (!advice || param.kind !== 'number') return '';
+    if (!advice || !numeric(param)) return '';
 
     const value = Number(node.params[param.name]);
     if (!Number.isFinite(value)) return '';
@@ -311,10 +315,9 @@ export class NodeCanvasComponent {
    * the only thing that can send a graph.
    */
   protected setParam(node: GraphNode, param: ParamDef, raw: string | boolean): void {
-    const value =
-      param.kind === 'number'
-        ? this.inRange(param, String(raw).trim() === '' ? Number.NaN : Number(raw))
-        : raw;
+    const value = numeric(param)
+      ? this.inRange(param, String(raw).trim() === '' ? Number.NaN : Number(raw))
+      : raw;
     this.changed.emit({
       nodes: this.nodes().map((n) =>
         n.id === node.id ? { ...n, params: { ...n.params, [param.name]: value } } : n

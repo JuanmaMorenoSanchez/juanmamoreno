@@ -20,7 +20,15 @@ import type { Raster } from '@domain/image/raster';
 export interface PreparedForMint {
   /** The corrected JPEG, rights already written into it. */
   file: File;
-  /** As given to the corrector, in the notation the collection uses. */
+  /**
+   * As given to the corrector, in the notation the collection uses — or empty
+   * when it was not given any.
+   *
+   * It need not be: with **square the picture up to these** switched off the
+   * picture keeps the shape its corners describe and the measurements are read
+   * by nobody, which is what straightening a detail is. Empty here means the
+   * form's own boxes are the only ones, and they are left as they are.
+   */
   height: string;
   width: string;
 }

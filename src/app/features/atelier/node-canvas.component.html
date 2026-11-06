@@ -104,7 +104,7 @@
                 [class.port-joined]="joined(node, port.name)"
                 [class.port-wanting]="wanting(node, port)"
                 [attr.cx]="node.x"
-                [attr.cy]="inY(node, i)"
+                [attr.cy]="portY(node, i)"
                 r="5"
                 (pointerup)="finishWire($event, node, port.name, port.kind)"
               >
@@ -116,7 +116,7 @@
                 class="port-name"
                 [class.port-name-wanting]="wanting(node, port)"
                 [attr.x]="node.x + 12"
-                [attr.y]="inY(node, i) + 4"
+                [attr.y]="portY(node, i) + 4"
               >
                 {{ port.name }}
               </text>
@@ -127,7 +127,7 @@
               <circle
                 class="port port-out"
                 [attr.cx]="node.x + width"
-                [attr.cy]="outY(node, i)"
+                [attr.cy]="portY(node, i)"
                 r="5"
                 (pointerdown)="startWire($event, node, port.name, port.kind)"
               >
@@ -136,7 +136,7 @@
               <text
                 class="port-name port-name-out"
                 [attr.x]="node.x + width - 12"
-                [attr.y]="outY(node, i) + 4"
+                [attr.y]="portY(node, i) + 4"
               >
                 {{ port.name }}
               </text>

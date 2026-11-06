@@ -125,15 +125,6 @@ export class AdminAuthService {
   }
 
   /**
-   * Asks Google for a fresh token without asking him for anything.
-   *
-   * `auto_select` is what makes it silent: with one Google account signed in
-   * and this site already allowed, the credential arrives with no prompt shown
-   * at all. With several accounts, or none, Google shows its own chooser, and
-   * that is the point at which he has to do something — which is why the way
-   * back in also lives in the menu.
-   */
-  /**
    * Asks Google for a fresh token now, rather than when the clock says to.
    *
    * Public because a request can be refused before the renewal timer was due
@@ -146,6 +137,15 @@ export class AdminAuthService {
     return this.renew();
   }
 
+  /**
+  * Asks Google for a fresh token without asking him for anything.
+  *
+  * `auto_select` is what makes it silent: with one Google account signed in
+  * and this site already allowed, the credential arrives with no prompt shown
+  * at all. With several accounts, or none, Google shows its own chooser, and
+  * that is the point at which he has to do something — which is why the way
+  * back in also lives in the menu.
+  */
   private renew(): Promise<boolean> {
     if (this.renewing) return this.renewing;
     if (!environment.googleClientId) return Promise.resolve(false);

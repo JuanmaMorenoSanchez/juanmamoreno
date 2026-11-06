@@ -1,6 +1,15 @@
 import { signal } from '@angular/core';
 
-/** One is the whole photograph; beyond that there is somewhere to pan to. */
+/**
+ * How far into the photograph one can go.
+ *
+ * The stage shows the whole photograph at once, which is right for judging it
+ * and wrong for placing a corner: a corner dropped a pixel out on a stage a
+ * thousand pixels wide is six pixels out on the photograph. Zooming the whole
+ * browser was the way round that, and it takes the controls with it. Four is
+ * as far as it is worth going — beyond that the preview itself, capped at two
+ * thousand pixels, has no more detail to show.
+ */
 export const MAX_ZOOM = 4;
 
 /**

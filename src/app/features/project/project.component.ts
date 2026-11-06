@@ -44,24 +44,24 @@ export class ProjectComponent {
   protected readonly files = PROJECT_FILES;
   protected readonly endpoints = PROJECT_ENDPOINTS;
 
-  /**
-   * The four photographs, and where each one belongs.
-   *
-   * Spread through the page rather than gathered at the foot of it: a block of
-   * four is a gallery of screenshots, and the reader has already read past the
-   * thing each one illustrates by the time they reach it. The home page under
-   * the opening, the certificate under the certificates, the catalogue under
-   * the catalogue, and a painting's own page beside the section about the data
-   * that page carries.
-   *
-   * Each opens the live site rather than a copy of it: the article is about
-   * something that exists, and a reader deciding whether that is true should be
-   * one press away from finding out. In a new tab, because they are an aside
-   * and this page is the thing being read.
-   */
   /** What a shot is drawn at when it does not say otherwise. */
   protected readonly shotHeight = 820;
 
+  /**
+  * The four photographs, and where each one belongs.
+  *
+  * Spread through the page rather than gathered at the foot of it: a block of
+  * four is a gallery of screenshots, and the reader has already read past the
+  * thing each one illustrates by the time they reach it. The home page under
+  * the opening, the certificate under the certificates, the catalogue under
+  * the catalogue, and a painting's own page beside the section about the data
+  * that page carries.
+  *
+  * Each opens the live site rather than a copy of it: the article is about
+  * something that exists, and a reader deciding whether that is true should be
+  * one press away from finding out. In a new tab, because they are an aside
+  * and this page is the thing being read.
+  */
   private readonly photographs = [
     { at: 'home', name: 'home', label: 'project.shots.home', href: 'https://juanmamoreno.com/' },
     {

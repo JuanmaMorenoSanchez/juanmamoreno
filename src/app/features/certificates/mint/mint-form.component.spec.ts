@@ -295,6 +295,8 @@ describe('MintFormComponent, downloading without minting', () => {
       canDownload: () => boolean;
       ready: () => boolean;
       name: ReturnType<typeof signal<string>>;
+      height: ReturnType<typeof signal<string>>;
+      width: ReturnType<typeof signal<string>>;
       download: () => Promise<void>;
     };
   };
@@ -314,6 +316,32 @@ describe('MintFormComponent, downloading without minting', () => {
 
     expect(clicked).toHaveLength(1);
     expect(clicked[0].download).toBe('a-flat.jpg');
+  });
+
+  it("takes the corrector's measurements, which are what the picture was squared to", async () => {
+    const form = await setup();
+    form.height.set('1');
+    form.width.set('1');
+
+    await form.download();
+
+    expect(form.height()).toBe('130');
+    expect(form.width()).toBe('130');
+  });
+
+  it('keeps its own when the corrector was given none', async () => {
+    // With the squaring off the corrector reads no measurements, so these
+    // boxes are the only ones there are. Overwriting them with nothing emptied
+    // the form the moment the photograph arrived in it.
+    const form = await setup();
+    prepared = { file: new File(['x'], 'a-detail.jpg'), height: '', width: '' };
+    form.height.set('30,7');
+    form.width.set('23');
+
+    await form.download();
+
+    expect(form.height()).toBe('30,7');
+    expect(form.width()).toBe('23');
   });
 
   it('names it after the title when there is one', async () => {

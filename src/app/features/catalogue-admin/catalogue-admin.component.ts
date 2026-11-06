@@ -23,7 +23,6 @@ import { CertificatePanelComponent } from './certificate-panel.component';
 import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
 
-/** How the list is arranged. */
 /**
  * How the list is arranged.
  *
@@ -204,12 +203,6 @@ export class CatalogueAdminComponent {
   protected readonly nothingPosted = computed(() => this.posted()?.length === 0);
 
   /**
-   * One row per **token**, not per painting.
-   *
-   * A painting photographed three times has three certificates, and the one
-   * with the wrong measurements need not be the one the catalogue shows.
-   */
-  /**
    * What each painting has done on Instagram, as the nightly work last read it.
    *
    * Undefined until it answers, so "no numbers yet" and "could not ask" stay
@@ -251,6 +244,12 @@ export class CatalogueAdminComponent {
     return parts.length ? parts.reduce((all, one) => all + one, 0) : undefined;
   }
 
+  /**
+  * One row per **token**, not per painting.
+  *
+  * A painting photographed three times has three certificates, and the one
+  * with the wrong measurements need not be the one the catalogue shows.
+  */
   protected readonly rows = computed<Nft[]>(() => {
     const term = this.term().trim().toLowerCase();
 

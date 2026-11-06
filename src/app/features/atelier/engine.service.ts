@@ -45,13 +45,12 @@ export interface PortDef {
 export interface ParamDef {
   name: string;
   /**
-   * `points` is not a field: it is edited by marking the painting itself, and
-   * the canvas draws a button for it rather than an input.
-   */
-  /**
-   * `slider` is a number with a band worth seeing, drawn as a range. Every
-   * rule about numbers applies to it unchanged — the engine range-checks it
-   * the same way before a run.
+   * What draws it, which is not always a field.
+   *
+   * `points` is edited by marking the painting itself, and the canvas draws a
+   * button for it rather than an input. `slider` is a number with a band worth
+   * seeing, drawn as a range — every rule about numbers applies to it
+   * unchanged, and the engine range-checks it the same way before a run.
    */
   kind: 'text' | 'number' | 'slider' | 'toggle' | 'choice' | 'points';
   default: string | number | boolean;
@@ -494,14 +493,6 @@ export class AtelierEngineService {
   }
 
   /**
-   * The bytes of a layer, for keeping it.
-   *
-   * Here rather than in the page because every request to the engine carries
-   * `targetAddressSpace: 'loopback'`, and the one in the page that fetched
-   * these bytes did not: a url is enough for an `img`, which the browser
-   * annotates for itself, and not enough for a `fetch`, which it refuses.
-   */
-  /**
    * What the engine still has in its run folder, newest first.
    *
    * The way back to a finished run's output. `out/` is scratch and is never
@@ -542,6 +533,14 @@ export class AtelierEngineService {
     return response.blob();
   }
 
+  /**
+  * The bytes of a layer, for keeping it.
+  *
+  * Here rather than in the page because every request to the engine carries
+  * `targetAddressSpace: 'loopback'`, and the one in the page that fetched
+  * these bytes did not: a url is enough for an `img`, which the browser
+  * annotates for itself, and not enough for a `fetch`, which it refuses.
+  */
   async layerBytes(file: string): Promise<Blob> {
     const response = await fetch(this.layerUrl(file), toLocal({ cache: 'no-store' }));
     if (!response.ok) throw new Error('that is no longer on this machine');

@@ -56,14 +56,6 @@ describe('NodeCanvasComponent', () => {
   const aNode = (type = 'edit') => [{ id: 'n1', type, x: 10, y: 20, params: {} }];
 
   /**
-   * The one node whose value does not come from a parameter.
-   *
-   * Everything else on the canvas is drawn from the catalogue. The painting
-   * comes from a file on his disk or a number in his catalogue, and it used
-   * to be chosen in a strip above the canvas — the diagram saying "the
-   * painting goes here" while the painting went somewhere else.
-   */
-  /**
    * A number with a band worth seeing.
    *
    * A box asks you to know that four is ordinary and seven and a half is a
@@ -118,8 +110,48 @@ describe('NodeCanvasComponent', () => {
 
       expect(changes).toHaveLength(1);
     });
+
+    it('sends the number, not the string the range read back', () => {
+      // A range answers with a string exactly as a box does. The box's value
+      // went through the same clamp that turns it into a number and this one
+      // did not, so a graph carried `"7.5"` where the one beside it carried 7.5.
+      type Change = { nodes: { params: Record<string, unknown> }[] };
+      const { fixture, host } = build([DIAL], placed);
+      const changes: Change[] = [];
+      fixture.componentInstance.changed.subscribe((change: unknown) =>
+        changes.push(change as Change)
+      );
+
+      const slide = host.querySelector('.param-slide') as HTMLInputElement;
+      slide.value = '7.5';
+      slide.dispatchEvent(new Event('input'));
+
+      expect(changes[0].nodes[0].params['guidance']).toBe(7.5);
+    });
+
+    it('warns about a value outside its band, as a box does', () => {
+      // The advice is the engine's and it is attached to the value, not to the
+      // control that sets it. A slider showed none of it.
+      const ADVISED: NodeTypeDef = {
+        ...DIAL,
+        params: [{ ...DIAL.params[0], advice: { below: 2, above: 8, low: 'barely asks', high: 'burns the colour out' } }],
+      };
+      const { host } = build([ADVISED], [{ id: 'n1', type: 'dial', x: 10, y: 10, params: { guidance: 9 } }]);
+
+      expect(host.querySelector('[data-testid="caution-n1-guidance"]')?.textContent).toContain(
+        'burns the colour out'
+      );
+    });
   });
 
+  /**
+  * The one node whose value does not come from a parameter.
+  *
+  * Everything else on the canvas is drawn from the catalogue. The painting
+  * comes from a file on his disk or a number in his catalogue, and it used
+  * to be chosen in a strip above the canvas — the diagram saying "the
+  * painting goes here" while the painting went somewhere else.
+  */
   describe('the Painting box', () => {
     const PAINTING: NodeTypeDef = {
       key: 'painting',

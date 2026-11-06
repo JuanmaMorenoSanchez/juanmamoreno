@@ -470,12 +470,6 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
   });
 
   /**
-   * The "more from this year" strip on an artwork page is a suggestion rather
-   * than the catalogue, and the section around it decides whether to appear by
-   * counting every painting of that year. Filtering its contents would leave a
-   * heading standing over an empty row.
-   */
-  /**
    * Narrowed to nothing, the page used to end after the controls — which reads
    * as a catalogue that has broken rather than one the reader has narrowed.
    */
@@ -525,6 +519,12 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
     expect(fixture.nativeElement.querySelector('.nothing-matched')).toBeNull();
   });
 
+  /**
+  * The "more from this year" strip on an artwork page is a suggestion rather
+  * than the catalogue, and the section around it decides whether to appear by
+  * counting every painting of that year. Filtering its contents would leave a
+  * heading standing over an empty row.
+  */
   it('leaves the more-from-this-year grid showing everything', () => {
     const { fixture, artworkService } = setup();
     TestBed.inject(AvailabilityFilterService).set('sold');

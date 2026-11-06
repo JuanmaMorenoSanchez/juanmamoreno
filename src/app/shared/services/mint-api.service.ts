@@ -106,17 +106,6 @@ export class MintApiService {
   private readonly base = `${environment.backendUrl}/mint`;
 
   /**
-   * The artist's token, on every request.
-   *
-   * There is no interceptor in this application — each service that asks
-   * something only he may ask attaches this itself — and these did not, so every
-   * one of them was refused with "Forbidden resource": preparing a certificate
-   * stored nothing, and minting stopped before a wallet was ever opened.
-   *
-   * An expired token is never sent: `bearerToken` gives null once the hour is
-   * up, and the call is refused exactly as it would have been anyway.
-   */
-  /**
    * What the api actually sent, out of the envelope it sends everything in.
    *
    * A single interceptor on the backend wraps every controller's return value
@@ -133,6 +122,17 @@ export class MintApiService {
       : (response as T);
   }
 
+  /**
+  * The artist's token, on every request.
+  *
+  * There is no interceptor in this application — each service that asks
+  * something only he may ask attaches this itself — and these did not, so every
+  * one of them was refused with "Forbidden resource": preparing a certificate
+  * stored nothing, and minting stopped before a wallet was ever opened.
+  *
+  * An expired token is never sent: `bearerToken` gives null once the hour is
+  * up, and the call is refused exactly as it would have been anyway.
+  */
   private authorised(): { headers: Record<string, string> } {
     const token = this.auth.bearerToken();
     return { headers: token ? { Authorization: `Bearer ${token}` } : {} };
@@ -148,7 +148,6 @@ export class MintApiService {
     return [...(list ?? [])].sort((a, b) => a.tokenId - b.tokenId);
   }
 
-  /** Prepares one from the studio form: images, metadata, a token id. */
   /**
    * Whether this painting already has a frontal view, and what a replacement
    * would have to be written as.
@@ -176,6 +175,7 @@ export class MintApiService {
     );
   }
 
+    /** Prepares one from the studio form: images, metadata, a token id. */
   public prepare(form: FormData): Promise<PendingMint> {
     return firstValueFrom(
       this.http

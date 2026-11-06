@@ -87,10 +87,10 @@ function mapThrough(h: Float64Array, point: { x: number; y: number }): { x: numb
  * out on a six thousand pixel photograph, and nine on a nine hundred one.
  */
 const PREVIEW_LONG_SIDE = 2000;
-/** Corner finding works on a copy this size, which is all the detail an outline needs. */
 /** Large enough to fingerprint from, small enough to warp instantly. */
 const SAMPLE_LONG_SIDE = 96;
 
+/** Corner finding works on a copy this size, which is all the detail an outline needs. */
 const DETECTION_LONG_SIDE = 720;
 /**
  * How the corrected photograph is written back out.
@@ -134,17 +134,6 @@ const CORNER_NAMES = ['top left', 'top right', 'bottom right', 'bottom left'];
  * screen as the picture grows under it. One number, not a setting.
  */
 const HANDLE_SIZE = 46;
-
-/**
- * How far into the photograph one can go.
- *
- * The stage shows the whole photograph at once, which is right for judging it
- * and wrong for placing a corner: a corner dropped a pixel out on a stage a
- * thousand pixels wide is six pixels out on the photograph. Zooming the whole
- * browser was the way round that, and it takes the controls with it. Four is
- * as far as it is worth going — beyond that the preview itself, capped at two
- * thousand pixels, has no more detail to show.
- */
 
 /**
  * Where the sliders were last left.
@@ -366,13 +355,13 @@ export class PhotoPrepComponent {
   /** How the chosen photograph was written, which decides how it is written back. */
   protected readonly source = signal<JpegSource | null>(null);
 
-  /** Said plainly under the file, because a bigger file than the original is a surprise. */
   /** The number handed to the encoder, taken from what arrived. */
   protected readonly encodeQuality = computed(() => {
     const source = this.source();
     return source ? qualityFor(source) : 1;
   });
 
+    /** Said plainly under the file, because a bigger file than the original is a surprise. */
   protected readonly sourceNote = computed(() => {
     const source = this.source();
     if (!source) return '';
@@ -396,7 +385,6 @@ export class PhotoPrepComponent {
   protected readonly bows = signal<EdgeBows | null>(null);
   protected readonly edgeNames = Object.keys(EDGE_CORNERS) as EdgeName[];
   protected readonly foundEdges = signal(true);
-  /** In centimetres, though only the ratio between them is ever read. */
   /**
    * Whether the picture is squared up to the measurements typed below it.
    *
@@ -445,6 +433,7 @@ export class PhotoPrepComponent {
   protected readonly widthText = signal('');
   protected readonly heightText = signal('');
 
+    /** In centimetres, though only the ratio between them is ever read. */
   protected readonly realWidth = computed(() => measurementValue(this.widthText()));
   protected readonly realHeight = computed(() => measurementValue(this.heightText()));
   /**
@@ -1001,14 +990,6 @@ export class PhotoPrepComponent {
   private pristine: ImageData | null = null;
 
   /**
-   * The selection, mapped back into the photograph's own coordinates.
-   *
-   * The mask is kept in the straightened rectangle's space, because that is
-   * where the adjustment is finally applied. The preview shows the photograph
-   * before it is straightened, so to tint the right pixels the mask has to come
-   * back the other way — through the inverse of the same homography.
-   */
-  /**
    * A selection painted on the straightened rectangle, drawn where it belongs on
    * the photograph.
    *
@@ -1370,17 +1351,19 @@ export class PhotoPrepComponent {
    */
   protected useBelow(): void {
     const blob = this.resultBlob();
+    if (!blob) return;
     const height = this.realHeight();
     const width = this.realWidth();
-    if (!blob || !height || !width) return;
 
     this.handoff.handOver({
       file: new File([blob], this.downloadName(), { type: 'image/jpeg' }),
       // Written the way the collection writes a measurement, comma and all,
       // so the form receives it in the notation it expects rather than one it
-      // has to correct.
-      height: String(height).replace('.', ','),
-      width: String(width).replace('.', ','),
+      // has to correct. Empty when none was typed, which the page says is
+      // allowed with the squaring off — and which used to stop here, so
+      // straightening a detail hung the form below rather than saving it.
+      height: height ? String(height).replace('.', ',') : '',
+      width: width ? String(width).replace('.', ',') : '',
     });
     this.handedOver.set(true);
   }

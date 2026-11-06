@@ -102,9 +102,8 @@ export class KeptService {
   private readonly listFailed = signal<string | null>(null);
   readonly listTrouble = this.listFailed.asReadonly();
 
-  /** Everything kept, newest first. Quiet on failure: an empty shelf is honest. */
   /**
-   * Fetches the list, and holds it only if it is one.
+   * Fetches the list, newest first, and holds it only if it is one.
    *
    * **Anything but a list used to be stored as the list.** An empty body, an
    * error page that answered 200, a shape changed at the other end: all of

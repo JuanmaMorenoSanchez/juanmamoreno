@@ -209,15 +209,6 @@ export function fullFrame({ width, height }: Size): Quad {
 }
 
 /**
- * How large the corrected image can be without inventing a single pixel.
- *
- * The photographed edges give the most detail the source actually holds along
- * each axis. The real painting gives the only ratio the result is allowed to
- * have. So take the largest rectangle of that ratio that fits inside what was
- * photographed: one axis lands exactly on its measured length and the other
- * comes in under, which loses the least while enlarging nothing.
- */
-/**
  * The shape the four corners describe, as width over height.
  *
  * The longest of each pair of opposite sides, because a photograph taken at an
@@ -287,6 +278,15 @@ export function squaringMismatch(
   };
 }
 
+/**
+ * How large the corrected image can be without inventing a single pixel.
+ *
+ * The photographed edges give the most detail the source actually holds along
+ * each axis. The real painting gives the only ratio the result is allowed to
+ * have. So take the largest rectangle of that ratio that fits inside what was
+ * photographed: one axis lands exactly on its measured length and the other
+ * comes in under, which loses the least while enlarging nothing.
+ */
 export function correctedSize(
   quad: Quad,
   realWidth: number,

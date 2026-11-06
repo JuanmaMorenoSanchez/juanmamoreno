@@ -63,6 +63,10 @@ type Internals = {
   brushAt(at: { x: number; y: number }, erase?: boolean): void;
   hasArea: () => boolean;
   previewSelection: () => { values: Float32Array } | null;
+  resultBlob: { set(blob: Blob | null): void };
+  adaptToSize: { set(on: boolean): void };
+  handedOver: () => boolean;
+  useBelow(): void;
 };
 
 const QUAD: Quad = [
@@ -706,5 +710,47 @@ describe('PhotoPrepComponent — measurements that do not match the corners', ()
     component.heightText.set('');
 
     expect(component.squaring()).toBe(null);
+  });
+});
+
+/**
+ * Handing the picture to the form below.
+ *
+ * The page says in as many words that the measurements may be left out: turn
+ * the squaring off and the picture keeps the shape its corners describe, and
+ * they are “needed only for a certificate”. The handover wanted them anyway
+ * and stopped without a word when they were missing — and the form below is
+ * waiting on a promise that only the handover resolves, so it sat on its
+ * spinner for ever with nothing said and nothing saved.
+ */
+describe('PhotoPrepComponent — straightening a detail, with nothing measured', () => {
+  it('hands the picture over with no measurements rather than not at all', () => {
+    const { component } = setup();
+    const handoff = TestBed.inject(HandoffService);
+    component.adaptToSize.set(false);
+    component.resultBlob.set(new Blob(['a picture'], { type: 'image/jpeg' }));
+
+    component.useBelow();
+
+    const prepared = handoff.waiting();
+    expect(prepared?.file.type).toBe('image/jpeg');
+    expect(prepared?.height).toBe('');
+    expect(prepared?.width).toBe('');
+    expect(component.handedOver()).toBe(true);
+  });
+
+  it('still carries the measurements when there are some', () => {
+    // They are what the picture was squared up to, so they are what the form
+    // should file — and in the collection's own notation, comma and all.
+    const { component } = setup();
+    const handoff = TestBed.inject(HandoffService);
+    component.heightText.set('30,7');
+    component.widthText.set('23');
+    component.resultBlob.set(new Blob(['a picture'], { type: 'image/jpeg' }));
+
+    component.useBelow();
+
+    expect(handoff.waiting()?.height).toBe('30,7');
+    expect(handoff.waiting()?.width).toBe('23');
   });
 });

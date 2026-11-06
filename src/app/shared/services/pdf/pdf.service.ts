@@ -211,7 +211,7 @@ export class PdfService {
       color: PDF_COLORS.ink,
       align: 'center',
     });
-    writer.space(3);
+    writer.space(FACT_GAP);
   }
 
   /**

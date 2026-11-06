@@ -182,11 +182,6 @@ describe('ArtPieceComponent — moving to the next painting', () => {
   });
 
   /**
-   * The descriptions come over the network and can answer out of order. An
-   * answer for the painting the reader has already left must not land on the
-   * one they are looking at.
-   */
-  /**
    * The link to the post about this painting is the same kind of thing as the
    * description: it belongs to one painting, and left standing it points the
    * reader at a post about a different one.
@@ -211,6 +206,11 @@ describe('ArtPieceComponent — moving to the next painting', () => {
     expect(fixture.componentInstance.instagramPost()).toBeNull();
   });
 
+  /**
+  * The descriptions come over the network and can answer out of order. An
+  * answer for the painting the reader has already left must not land on the
+  * one they are looking at.
+  */
   it('ignores a description that arrives after the reader has moved on', () => {
     const { fixture, paramMap, answerAbout } = setup();
 

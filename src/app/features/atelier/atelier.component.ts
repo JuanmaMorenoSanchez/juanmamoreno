@@ -47,35 +47,6 @@ const SAVED = 'juanmamoreno.atelier.graph';
 const NODE_WIDTH = 210;
 
 /**
- * Cutting and changing a painting, with the models running on this machine.
- *
- * **This page does nothing without the local engine**, a Python service started
- * by hand in `atelier-engine/`. It is not a web page that happens to be slow
- * when a backend is down — it is a front end for a process on this computer,
- * and opened from anywhere else it can only say so. That is why the first thing
- * it draws is whether the engine answered.
- *
- * **It knows the name of no node.** The palette and every control on every box
- * come from `GET /nodes`, so a capability added to the engine appears here
- * without this file changing or the site being released.
- *
- * Nothing it makes is saved anywhere but the engine's own folder until he does
- * something else with it.
- */
-/**
- * What to paste into a console to start the engine by hand.
- *
- * The `cd` is in it because the command is useless without one: the
- * virtualenv and the module are both relative to the engine's folder, and a
- * console opens wherever it opens. It is an absolute path on his machine,
- * which is the only machine this page is of any use on — the route is behind
- * the admin guard, the engine listens on loopback, and a path to a folder
- * that does not exist anywhere else is not a thing worth hiding.
- *
- * Shown in two places and written once, because the two used to be two
- * strings and only one of them ever got corrected.
- */
-/**
  * How long typing has to stop before a token id is fetched, in milliseconds.
  *
  * Long enough that nobody fetches painting 1 and then 19 on the way to 195,
@@ -93,11 +64,40 @@ export const SETTLES = 700;
  */
 export const UNANSWERED_BEFORE_GIVING_UP = 3;
 
+/**
+ * What to paste into a console to start the engine by hand.
+ *
+ * The `cd` is in it because the command is useless without one: the
+ * virtualenv and the module are both relative to the engine's folder, and a
+ * console opens wherever it opens. It is an absolute path on his machine,
+ * which is the only machine this page is of any use on — the route is behind
+ * the admin guard, the engine listens on loopback, and a path to a folder
+ * that does not exist anywhere else is not a thing worth hiding.
+ *
+ * Shown in two places and written once, because the two used to be two
+ * strings and only one of them ever got corrected.
+ */
 export const START_BY_HAND = [
   String.raw`cd C:\Users\User\Projects\juanmamoreno\atelier-engine`,
   String.raw`.venv\Scripts\python -m uvicorn engine.service:app --host 127.0.0.1 --port 7860`,
 ].join('\n');
 
+/**
+ * Cutting and changing a painting, with the models running on this machine.
+ *
+ * **This page does nothing without the local engine**, a Python service started
+ * by hand in `atelier-engine/`. It is not a web page that happens to be slow
+ * when a backend is down — it is a front end for a process on this computer,
+ * and opened from anywhere else it can only say so. That is why the first thing
+ * it draws is whether the engine answered.
+ *
+ * **It knows the name of no node.** The palette and every control on every box
+ * come from `GET /nodes`, so a capability added to the engine appears here
+ * without this file changing or the site being released.
+ *
+ * Nothing it makes is saved anywhere but the engine's own folder until he does
+ * something else with it.
+ */
 @Component({
   selector: 'app-atelier',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -212,18 +212,18 @@ export class AtelierComponent implements OnDestroy {
   /** What has been kept out of this run, so the button can say so. */
   protected readonly alreadyKept = signal<Set<string>>(new Set());
 
-  /**
-   * The painters the work leans towards, as the engine has them.
-   *
-   * Read from the engine rather than held here, and written back when it is
-   * changed, because the names are his and this repository does not have
-   * them: they live in a file the engine keeps and git ignores. An engine
-   * that has never been told answers with nothing and the field is empty,
-   * which is what a fresh clone does.
-   */
   /** The two lines to paste when the engine has to be started by hand. */
   protected readonly startByHand = START_BY_HAND;
 
+  /**
+  * The painters the work leans towards, as the engine has them.
+  *
+  * Read from the engine rather than held here, and written back when it is
+  * changed, because the names are his and this repository does not have
+  * them: they live in a file the engine keeps and git ignores. An engine
+  * that has never been told answers with nothing and the field is empty,
+  * which is what a fresh clone does.
+  */
   protected readonly hand = signal('');
   /**
    * What the model makes of each name, by name.
@@ -568,12 +568,6 @@ export class AtelierComponent implements OnDestroy {
     this.at.set(null);
   }
 
-  /**
-   * The same painting, by its token id instead of by finding the file.
-   *
-   * Takes the best copy the catalogue has rather than the one a tile would
-   * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
-   */
   /** The pending fetch, if typing has not settled yet. */
   private settling: ReturnType<typeof setTimeout> | null = null;
 
@@ -628,6 +622,12 @@ export class AtelierComponent implements OnDestroy {
     this.gone = true;
   }
 
+  /**
+  * The same painting, by its token id instead of by finding the file.
+  *
+  * Takes the best copy the catalogue has rather than the one a tile would
+  * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
+  */
   protected async byId(wanted: Wanted = 'web'): Promise<void> {
     const token = this.tokenId().trim();
     if (!token || this.fetching()) return;
