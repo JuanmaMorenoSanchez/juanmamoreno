@@ -48,6 +48,16 @@ import { TraitPipe } from './pipes/traits.pipe';
 // Sentinel returned when an artwork has no generated description yet.
 const NO_DESCRIPTION = 'No description available';
 
+/**
+ * The fewest thumbnails the strip under a painting offers, before the rule
+ * about whole rows and the rule about two years have their say.
+ *
+ * A count rather than a number of rows: two rows is twelve on a desktop and
+ * six on a phone, and a phone is where a reader is most likely to be walking
+ * the catalogue rather than scanning it.
+ */
+const LEAST_THUMBNAILS = 12;
+
 @Component({
   selector: 'app-art-piece',
   templateUrl: './art-piece.component.html',
@@ -148,12 +158,13 @@ export class ArtPieceComponent {
    * It was the painting's own year and nothing else: a dead end wherever the
    * year held one painting, and no way out of a year in either direction.
    *
-   * Three rules decide how many. **Two rows at least**, which is six
-   * thumbnails on a phone and twelve on a desktop. **Two years at least**,
-   * however many the middle of a busy year has to offer: a grid drawn entirely
-   * from one year does not show a reader where they are. **And no half-empty
-   * row** — the window grows to the end of the row rather than leaving a gap.
-   * Short only at the very ends, where the catalogue itself runs out.
+   * Three rules decide how many. **Twelve at least, and two full rows at
+   * least** — on a desktop twelve is the two rows, on a phone, at three
+   * columns, it is four of them. **Two years at least**, however many the
+   * middle of a busy year has to offer: a grid drawn entirely from one year
+   * does not show a reader where they are. **And no half-empty row** — the
+   * window grows to the end of the row rather than leaving a gap. Short only
+   * at the very ends, where the catalogue itself runs out.
    */
   readonly nearbyPieces: Signal<Nft[]> = computed(() => {
     // Newest first, one entry per painting. The same sequence the "next
@@ -177,7 +188,7 @@ export class ArtPieceComponent {
     };
 
     const columns = this.numberOfViewMoreColumns();
-    let take = 2 * columns;
+    let take = Math.max(LEAST_THUMBNAILS, 2 * columns);
     while (take < others.length && new Set(windowOf(take).map(yearOf)).size < 2) take += 1;
     const short = Math.min(take, others.length) % columns;
     if (short) take = Math.min(others.length, take + columns - short);

@@ -439,24 +439,28 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
    * The point of the strip: the catalogue either side of this painting, so a
    * reader can walk from the newest work to the oldest, or back, on the
    * thumbnails alone and never return to the catalogue to do it.
+   *
+   * Twelve of them, at the three columns this suite pins — the floor is a
+   * count, not a number of rows, so a phone gets four rows rather than the
+   * two a desktop gets.
    */
   it('shows the catalogue either side of the painting', () => {
     const reading = inYear('500', '2020');
-    const showing = page(reading, [...many('2022', 5), reading, ...many('2018', 5)]);
+    const showing = page(reading, [...many('2022', 10), reading, ...many('2018', 10)]);
 
-    expect(showing.nearbyPieces().length).toBe(6);
-    expect(countOf(showing, '2022')).toBe(3);
-    expect(countOf(showing, '2018')).toBe(3);
+    expect(showing.nearbyPieces().length).toBe(12);
+    expect(countOf(showing, '2022')).toBe(6);
+    expect(countOf(showing, '2018')).toBe(6);
   });
 
   /** At the ends there is only one side, and it gets the whole window. */
   it('gives the window to one side at the end of the catalogue', () => {
     const reading = inYear('500', '2022');
-    const showing = page(reading, [reading, ...many('2020', 4), ...many('2018', 4)]);
+    const showing = page(reading, [reading, ...many('2020', 8), ...many('2018', 8)]);
 
-    expect(showing.nearbyPieces().length).toBe(6);
-    expect(countOf(showing, '2020')).toBe(4);
-    expect(countOf(showing, '2018')).toBe(2);
+    expect(showing.nearbyPieces().length).toBe(12);
+    expect(countOf(showing, '2020')).toBe(8);
+    expect(countOf(showing, '2018')).toBe(4);
   });
 
   /**
@@ -483,11 +487,12 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
    */
   it('never leaves a row half empty', () => {
     const reading = inYear('500', '2020');
-    const showing = page(reading, [reading, ...many('2020', 7), ...many('2019', 3)]);
+    const showing = page(reading, [reading, ...many('2020', 13), ...many('2019', 3)]);
 
-    // Six is two rows but all of 2020; eight brings 2019 in and leaves a row
-    // of two; nine is the answer. Three columns here, so nine is three rows.
-    expect(showing.nearbyPieces().length).toBe(9);
+    // Twelve is the floor but all of 2020; fourteen brings 2019 in and leaves
+    // a row of two; fifteen is the answer, which at three columns is five
+    // whole rows.
+    expect(showing.nearbyPieces().length).toBe(15);
     expect(showing.nearbyPieces().length % 3).toBe(0);
     expect(countOf(showing, '2019')).toBe(2);
   });

@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.63.1
+
+- **fix** The strip under a painting offers twelve thumbnails at least, and
+  whole rows, on a phone as well: two rows there was six, which is not enough
+  of the catalogue to walk by.
+
 ## 2.63.0
 
 - **feat** The catalogue can be walked from the paintings themselves. The strip

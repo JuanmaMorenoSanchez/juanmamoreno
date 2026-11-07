@@ -1580,9 +1580,11 @@ offered one tile, the years holding one offered a heading over an empty row —
 the one painting of that year being the one on screen — and no year offered a
 way out of itself in either direction.
 
-**Two rows at least**, which is six thumbnails on a phone and twelve on a
-desktop. **Two years at least**, however many the middle of a busy year has to
-offer: a grid drawn entirely from one year does not show a reader where they
+**Twelve thumbnails at least, and two full rows at least.** A count rather
+than a number of rows, because two rows is twelve on a desktop and six on a
+phone — and a phone is where a reader is walking the catalogue rather than
+scanning it, so a phone gets four rows of three. **Two years at least**,
+however many the middle of a busy year has to offer: a grid drawn entirely from one year does not show a reader where they
 are, and the window widens until a second year is on it however many
 thumbnails that takes. **And no half-empty row** — the window grows to the end
 of the row rather than leaving a gap, and is short only at the ends, where the
