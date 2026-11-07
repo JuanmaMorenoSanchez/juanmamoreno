@@ -98,6 +98,16 @@ Nothing changes above 700px, where it already had the room.
 Measured rather than assumed: the detector reported "9px body text", which is
 the value in the stylesheet. What a reader sees is that number times the
 scale the viewBox is drawn at, and that is the number that was wrong.
+
+**And the type inside it was raised** once it could no longer shrink: the box
+names to 12, the map rows and addresses to 11, the notes and the zone labels
+to 10. The zone labels were also drawn at 0.55 of the ink, which is #848484 on
+white and 3.7:1; at 0.7 they are 6.1:1 and still the quietest thing in the
+drawing. Every label was then measured against the box it sits in: the line
+under a box's name stays at 9, alone, because "búsqueda inversa y textos"
+already fills its box edge to edge and at 10 it crossed the border by a pixel.
+Growing it means redrawing the box, which is a change to the diagram rather
+than to its type.
 *Proven by:* `e2e/small-phone.test.mjs` "no page scrolls sideways on a 320px
 phone" (the diagram scrolls inside its own box, so the page does not)
 

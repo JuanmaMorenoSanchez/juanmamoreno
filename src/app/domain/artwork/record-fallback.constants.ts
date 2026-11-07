@@ -6,6 +6,28 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "69",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "70",
     "entries": [
       {
@@ -40,11 +62,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2012,
+        "year": 2013,
         "cv": {
           "id": "8f6f6f3da32a1586",
           "kind": "solo",
-          "year": 2012,
+          "year": 2013,
           "title": {
             "en": "Juanma Moreno"
           },
@@ -81,12 +103,20 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "74",
     "entries": [
       {
-        "kind": "exhibited",
+        "kind": "sold",
         "year": 2012,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2013,
         "cv": {
           "id": "8f6f6f3da32a1586",
           "kind": "solo",
-          "year": 2012,
+          "year": 2013,
           "title": {
             "en": "Juanma Moreno"
           },
@@ -95,14 +125,6 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
-        }
-      },
-      {
-        "kind": "sold",
-        "year": 2012,
-        "who": {
-          "en": "a private collector",
-          "es": "un coleccionista privado"
         }
       }
     ]
@@ -111,12 +133,20 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "75",
     "entries": [
       {
-        "kind": "exhibited",
+        "kind": "sold",
         "year": 2012,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2013,
         "cv": {
           "id": "8f6f6f3da32a1586",
           "kind": "solo",
-          "year": 2012,
+          "year": 2013,
           "title": {
             "en": "Juanma Moreno"
           },
@@ -125,14 +155,6 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
-        }
-      },
-      {
-        "kind": "sold",
-        "year": 2012,
-        "who": {
-          "en": "a private collector",
-          "es": "un coleccionista privado"
         }
       }
     ]
@@ -264,6 +286,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
             "en": "Aula Magna de Capuchinos"
           },
           "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "98",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "84302a3a85a36dbf",
+          "kind": "collective",
+          "year": 2013,
+          "title": {
+            "en": "Lo mejorcito de cada casa"
+          },
+          "venue": {
+            "en": "No-Lugar"
+          },
+          "city": "Sevilla",
           "country": "spain"
         }
       }
@@ -498,11 +542,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2012,
+        "year": 2013,
         "cv": {
           "id": "8f6f6f3da32a1586",
           "kind": "solo",
-          "year": 2012,
+          "year": 2013,
           "title": {
             "en": "Juanma Moreno"
           },
@@ -535,6 +579,50 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "144",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2014,
+        "cv": {
+          "id": "5dfbf4e1d333f63b",
+          "kind": "solo",
+          "year": 2014,
+          "title": {
+            "en": "Pintura Aumentada"
+          },
+          "venue": {
+            "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "145",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2014,
+        "cv": {
+          "id": "5dfbf4e1d333f63b",
+          "kind": "solo",
+          "year": 2014,
+          "title": {
+            "en": "Pintura Aumentada"
+          },
+          "venue": {
+            "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
         }
       }
     ]

@@ -117,7 +117,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
   {
     "id": "8f6f6f3da32a1586",
     "kind": "solo",
-    "year": 2012,
+    "year": 2013,
     "title": {
       "en": "Juanma Moreno"
     },

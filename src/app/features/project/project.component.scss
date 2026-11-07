@@ -126,16 +126,21 @@
 .dg-edge-label {
   fill: currentColor;
   text-anchor: middle;
-  font-size: 11px;
+  font-size: 12px;
 }
 
+// The line under a box's name. Alone in the drawing it stays at nine: the
+// boxes are drawn at fixed widths and "búsqueda inversa y textos" already
+// fills one of them edge to edge, so at ten it spilled over the border by a
+// pixel. The box would have to be redrawn, which is a change to the diagram
+// rather than to its type.
 .dg-sub {
   font-size: 9px;
   opacity: 0.65;
 }
 
 .dg-edge-label {
-  font-size: 9px;
+  font-size: 10px;
   opacity: 0.7;
 }
 
@@ -156,10 +161,13 @@
 // small and spaced, like the headings on the page, so it reads as a label on
 // the box rather than as another thing inside it.
 .dg-group-label {
-  font-size: 9px;
+  // Nine pixels at 0.55 of the ink is #848484 on white, which is 3.7:1 and
+  // under AA; quiet is the intent, illegible was not. Still the quietest
+  // thing in the drawing, at 5.8:1.
+  font-size: 10px;
   letter-spacing: 0.12em;
   fill: currentColor;
-  opacity: 0.55;
+  opacity: 0.7;
 }
 
 // One photograph of the site, under the paragraph it illustrates. Quiet until
@@ -201,13 +209,13 @@
 // set in the typewriter face because it is a thing to be typed.
 .dg-at {
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
-  font-size: 10px;
+  font-size: 11px;
   fill: currentColor;
   text-anchor: start;
 }
 
 .dg-row {
-  font-size: 10px;
+  font-size: 11px;
   fill: currentColor;
   opacity: 0.7;
   text-anchor: start;
@@ -217,7 +225,7 @@
 // shared rule above centres text, and a centred label given the left edge of
 // its box as its position runs half of itself off the picture.
 .dg-note {
-  font-size: 9px;
+  font-size: 10px;
   fill: currentColor;
   opacity: 0.65;
   text-anchor: start;

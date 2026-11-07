@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.9
+
+- **fix** The architecture diagram's type was raised now that it no longer
+  shrinks: box names to 12px, rows and addresses to 11, notes and zone labels
+  to 10. The zone labels were drawn at 3.7:1 against white and are now 6.1:1.
+  Every label was measured against the box it sits in afterwards; the line
+  under a box's name stays at 9, because one of them already fills its box.
+
 ## 2.62.8
 
 - **fix** The product page's architecture diagram keeps its own width and
