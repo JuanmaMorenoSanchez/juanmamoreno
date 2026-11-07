@@ -53,13 +53,30 @@ async function resolveFile(urlPath) {
 
 const server = createServer(async (request, response) => {
   const file = await resolveFile(request.url ?? '/');
-  if (!file) {
-    response.writeHead(404, { 'content-type': 'text/plain' });
-    response.end('not found');
+  if (file) {
+    response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
+    createReadStream(file).pipe(response);
     return;
   }
-  response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
-  createReadStream(file).pipe(response);
+
+  // What Pages does with a path it has no file for: answer `404.html`, and
+  // still answer 404. Because that file is the application, the four routes
+  // rendered in the browser rather than written out — `/pieces`, `/atelier`
+  // and `/generative/:id` — arrive at the right page, which is how they work
+  // in production. `scripts/write-404.mjs` puts the file there.
+  //
+  // Still a 404, so this is not the single-page fallback this file refused to
+  // have: a prerendered page missing from the build is a 404 here as it would
+  // be on Pages, and `verify-render.mjs` has already failed the build by then.
+  const shell = await resolveFile('/404.html');
+  if (shell) {
+    response.writeHead(404, { 'content-type': TYPES['.html'] });
+    createReadStream(shell).pipe(response);
+    return;
+  }
+
+  response.writeHead(404, { 'content-type': 'text/plain' });
+  response.end('not found');
 });
 
 server.listen(PORT, '127.0.0.1', () => {

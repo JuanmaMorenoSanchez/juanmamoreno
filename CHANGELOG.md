@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.12
+
+- **fix** The build writes `404.html` itself. The four routes drawn in the
+  browser — `/pieces`, `/atelier` and `/generative/:id` in both languages —
+  are reachable by a direct link only because GitHub Pages answers an unknown
+  path with that file and the router takes it from there. It was written by
+  the deploy tool as a default of that tool: not by the build, not named
+  anywhere, and not checked, so the day the default changed every one of
+  those pages would have broken with nothing here failing.
+- **fix** `serve-dist.mjs` answers `404.html` on a miss, as Pages does, and
+  still answers 404. Serving files and nothing else meant the e2e suite could
+  not open a page the site serves — which is what the first test to try one
+  found.
+- **chore** `subjectsOf` in the night's ledger is deleted; nothing called it.
+
 ## 2.62.11
 
 - **feat** Screenlight shows the whole painting on a window wider than its

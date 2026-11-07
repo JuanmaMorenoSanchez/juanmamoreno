@@ -70,11 +70,6 @@ export function described(ledger, token) {
   return (ledger.paintings?.[token]?.subjects?.length ?? 0) > 0;
 }
 
-/** What was named in it, in the order it was named. */
-export function subjectsOf(ledger, token) {
-  return [...(ledger.paintings?.[token]?.subjects ?? [])];
-}
-
 /** The things named in it that have no verdict yet. */
 export function leftToCut(ledger, token) {
   const held = ledger.paintings?.[token];

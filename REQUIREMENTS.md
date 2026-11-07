@@ -1527,6 +1527,34 @@ it to the new one", "no longer draws a page at the old address", and "declares
 them before the parent that would swallow them" — which is the fault that made
 every Spanish admin address a 404
 
+### R225 — A page drawn in the browser can be opened directly · met
+Four routes are not written out as files — `/pieces`, `/atelier` and
+`/generative/:id` in both languages — because a canvas needs a browser to
+exist at all. A static host has no `generative/ipad-light/index.html` to
+answer with, so a link to one, a refresh on one, or a bookmark of one has
+nothing behind it. GitHub Pages answers a path it has no file for with
+`404.html`, and because that file is the application, the router reads the
+address and draws the right page. The status stays 404; the page is correct.
+
+**This worked and nothing in this repository knew it.** `404.html` was written
+by `angular-cli-ghpages` at publish time as a default of that tool — not by
+the build, not named anywhere, and not checked. The day the default changed,
+every one of those routes would have started showing GitHub's own 404 page
+with nothing here failing. The build writes the file itself now, so what is
+published is what was built and verified.
+
+It is also why none of these pages could be tested. The e2e suite runs against
+`dist`, which did not have the file, and `serve-dist.mjs` served files and
+nothing else — so the first test to open a generative page failed on a page
+that works in production. The server answers `404.html` on a miss now, as
+Pages does, and still answers 404: a prerendered page missing from the build
+is still a miss here, and `verify-render` has already failed the build by
+then.
+*Proven by:* `published-sketches.test.mjs`, every test in which opens
+`/generative/:id` against the built site and would fail on the bare 404 — and
+`write-404.mjs`, which exits 1 rather than writing nothing if `index.html` is
+not there.
+
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less
 than the camera already did in making the file it came from.

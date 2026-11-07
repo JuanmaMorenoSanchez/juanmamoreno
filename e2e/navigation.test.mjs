@@ -214,13 +214,19 @@ describe('the Spanish landing page', () => {
 
 /*
  * The 404 page's own links are proven by not-found.component.spec.ts instead
- * of here. In production GitHub Pages answers an unknown path with the
- * 404.html that angular-cli-ghpages writes from index.html, and the router
- * shows the page once the app boots. serve-dist.mjs deliberately does not do
- * that — it serves files and nothing else, so that a page missing from the
- * build fails these tests rather than being quietly replaced by the
- * application. Teaching it a fallback to reach this one page would blind every
- * other test in this file.
+ * of here. GitHub Pages answers an unknown path with `404.html`, and because
+ * that file is the application, the router shows the right page once it
+ * boots — which is also how the four routes rendered in the browser rather
+ * than written out are reachable at all.
+ *
+ * `serve-dist.mjs` refused to do that for a long time, so that a page missing
+ * from the build failed these tests rather than being quietly replaced by the
+ * application. It does it now, because refusing was not emulating Pages but
+ * differing from it, and a test suite that cannot open a page the site serves
+ * cannot check it — which is exactly what happened the first time one tried.
+ * The concern that kept it out is met by the status: a miss is still answered
+ * 404, and `verify-render.mjs` has already failed the build over a prerendered
+ * page that is not on disk.
  */
 
 describe('reading the site the way you like it', () => {
