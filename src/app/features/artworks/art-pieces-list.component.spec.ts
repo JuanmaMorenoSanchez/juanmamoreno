@@ -506,6 +506,24 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
     expect(fixture.nativeElement.querySelector('mat-progress-spinner')).not.toBeNull();
   });
 
+  /**
+   * The artwork page names the paintings it wants rather than a year: it has
+   * already counted how many fill whole rows, which a year cannot express.
+   * Everything else the grid narrows by is the catalogue's business and is
+   * passed over, including availability, as it is for the year form below.
+   */
+  it('shows exactly the artworks a caller names, and no others', () => {
+    const { fixture, artworkService } = setup();
+    TestBed.inject(AvailabilityFilterService).set('sold');
+    fixture.componentRef.setInput('viewAsWidget', true);
+    fixture.componentRef.setInput('nftFilters', { idsToInclude: ['999998', '999999'] });
+    artworkService.artPieces$.next(mixed());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(2);
+    expect(shown(fixture).join(' ')).not.toContain('/artwork/23');
+  });
+
   // The strip on an artwork page carries no controls, so it has nothing to say
   // about them.
   it('says nothing in the more-from-this-year grid', () => {
@@ -520,11 +538,11 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
   });
 
   /**
-  * The "more from this year" strip on an artwork page is a suggestion rather
-  * than the catalogue, and the section around it decides whether to appear by
-  * counting every painting of that year. Filtering its contents would leave a
-  * heading standing over an empty row.
-  */
+   * The "more from this year" strip on an artwork page is a suggestion rather
+   * than the catalogue, and the section around it decides whether to appear by
+   * counting every painting of that year. Filtering its contents would leave a
+   * heading standing over an empty row.
+   */
   it('leaves the more-from-this-year grid showing everything', () => {
     const { fixture, artworkService } = setup();
     TestBed.inject(AvailabilityFilterService).set('sold');

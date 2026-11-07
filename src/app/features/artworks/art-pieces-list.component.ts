@@ -151,6 +151,14 @@ export class ArtPiecesListComponent {
     const edited = this.editedByToken();
     const availability = this.viewAsWidget() ? 'both' : this.availability();
 
+    // A caller that has named the artworks it wants has already done the
+    // choosing; the year and the ids to leave out are the other way of asking.
+    const only = this.nftFilters()?.idsToInclude;
+    if (only?.length) {
+      const wanted = new Set(only);
+      return (artPieces ?? []).filter((nft) => wanted.has(nft.tokenId));
+    }
+
     return (artPieces ?? []).filter(
       (nft) =>
         !this.artworkService.isExcludedByYear(nft, years) &&
@@ -197,6 +205,11 @@ export class ArtPiecesListComponent {
   public sortedArtPieces = computed(() => {
     const sortOrder = this.sortOrder();
     const artPieces = this.filteredArtPieces();
+    // The strip on an artwork page is read as a sequence — it is how the
+    // catalogue is walked from one painting to the next — so it is always in
+    // year order, whatever the reader last arranged the catalogue itself by.
+    // Their direction is kept: oldest first there means oldest first here.
+    if (this.viewAsWidget()) return this.artworkService.sortByYear(artPieces, sortOrder);
     switch (this.activeSortMethod()) {
       case SortMethod.SIZE:
         return this.artworkService.sortBySize(artPieces!, sortOrder);

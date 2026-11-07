@@ -134,62 +134,68 @@ export class ArtPieceComponent {
   });
 
   /**
-   * The years shown under the painting: its own, then outwards a year at a
-   * time until there are two rows of thumbnails.
+   * The paintings shown under this one: the catalogue either side of it.
    *
-   * It was this year alone, so a thin year left a heading over three tiles,
-   * and a year whose only painting is the one being read left a heading over
-   * nothing. Widening outwards keeps the suggestion next to where the reader
-   * already is: the paintings either side of this one in time, rather than the
-   * next twelve in the catalogue.
+   * **It is how the catalogue is walked.** A reader who has opened one
+   * painting should be able to reach the one before it and the one after it
+   * from the thumbnails at the foot of the page, and keep going, from the
+   * oldest work to the newest or the other way, without returning to the
+   * catalogue once. So this is a window on the whole catalogue in year order,
+   * centred on the painting being read — half of it newer, half older — rather
+   * than a selection from its year. Both directions are always on the page,
+   * and only the two ends of the catalogue have one side to offer.
    *
-   * Years with no painting of their own drop out again at the end, so the
-   * range named in the heading is a range that has something in it.
+   * It was the painting's own year and nothing else: a dead end wherever the
+   * year held one painting, and no way out of a year in either direction.
+   *
+   * Three rules decide how many. **Two rows at least**, which is six
+   * thumbnails on a phone and twelve on a desktop. **Two years at least**,
+   * however many the middle of a busy year has to offer: a grid drawn entirely
+   * from one year does not show a reader where they are. **And no half-empty
+   * row** — the window grows to the end of the row rather than leaving a gap.
+   * Short only at the very ends, where the catalogue itself runs out.
    */
-  private readonly nearbyYears: Signal<string[]> = computed(() => {
-    const year = Number(this.getTraitValue(this.nft(), VALIDTRAITS.YEAR));
-    if (!year) return [];
+  readonly nearbyPieces: Signal<Nft[]> = computed(() => {
+    // Newest first, one entry per painting. The same sequence the "next
+    // artwork" button walks, so the two cannot disagree about what is next.
+    const all = this.orderedFrontalPieces();
+    const name = this.nft()?.name;
+    const at = name ? all.findIndex((piece) => piece.name === name) : -1;
+    if (at === -1 || all.length < 2) return [];
 
-    // Counted over the frontal views, which is what the grid below draws: a
-    // painting photographed seven times is one tile, not seven.
-    const mine = new Set(this.nfts().map((piece) => piece.tokenId));
-    const counts = new Map<string, number>();
-    for (const piece of this.orderedFrontalPieces()) {
-      if (mine.has(piece.tokenId)) continue;
-      const its = this.getTraitValue(piece, VALIDTRAITS.YEAR);
-      if (its) counts.set(its, (counts.get(its) ?? 0) + 1);
-    }
-    if (!counts.size) return [];
+    const others = [...all.slice(0, at), ...all.slice(at + 1)];
+    const yearOf = (piece: Nft) => this.getTraitValue(piece, VALIDTRAITS.YEAR);
 
-    const all = [...counts.keys()].map(Number);
-    const oldest = Math.min(...all);
-    const newest = Math.max(...all);
-    const wanted = 2 * this.numberOfViewMoreColumns();
+    // `at` is where this painting was: everything before it in `others` is
+    // newer, everything from it on is older. A side that runs out gives its
+    // share to the other, so the count holds at the ends of the catalogue.
+    const windowOf = (wanted: number): Nft[] => {
+      const size = Math.min(wanted, others.length);
+      const older = Math.min(others.length - at, size - Math.min(at, Math.floor(size / 2)));
+      const newer = Math.min(at, size - older);
+      return others.slice(at - newer, at - newer + size);
+    };
 
-    let low = year;
-    let high = year;
-    let found = counts.get(String(year)) ?? 0;
-    // Later first, then earlier, so an evenly filled catalogue reads forwards.
-    while (found < wanted && (high < newest || low > oldest)) {
-      if (high < newest) found += counts.get(String((high += 1))) ?? 0;
-      if (found < wanted && low > oldest) found += counts.get(String((low -= 1))) ?? 0;
-    }
+    const columns = this.numberOfViewMoreColumns();
+    let take = 2 * columns;
+    while (take < others.length && new Set(windowOf(take).map(yearOf)).size < 2) take += 1;
+    const short = Math.min(take, others.length) % columns;
+    if (short) take = Math.min(others.length, take + columns - short);
 
-    const years: string[] = [];
-    for (let each = low; each <= high; each += 1) {
-      if (counts.has(String(each))) years.push(String(each));
-    }
-    return years;
+    return windowOf(take);
   });
 
-  readonly hasMoreArtworks: Signal<boolean> = computed(() => this.nearbyYears().length > 0);
+  readonly hasMoreArtworks: Signal<boolean> = computed(() => this.nearbyPieces().length > 0);
   readonly nearbyFilter: Signal<NftFilters> = computed(() => ({
-    years: this.nearbyYears(),
-    idsToExclude: this.nfts().map((n) => n.tokenId),
+    idsToInclude: this.nearbyPieces().map((piece) => piece.tokenId),
   }));
-  /** The heading's own words: "2019", or "2017–2020" where the window widened. */
+  /** The heading's own words: the years the thumbnails under it come from. */
   readonly nearbySpan: Signal<string> = computed(() => {
-    const years = this.nearbyYears();
+    const years = [
+      ...new Set(this.nearbyPieces().map((piece) => this.getTraitValue(piece, VALIDTRAITS.YEAR))),
+    ]
+      .filter(Boolean)
+      .sort();
     if (!years.length) return '';
     const first = years[0];
     const last = years[years.length - 1];
@@ -408,12 +414,29 @@ export class ArtPieceComponent {
   // year it continues into the first piece of the previous (older) year, and
   // wraps from the very last artwork back to the first (newest).
   goToNextArtPiece(): void {
+    this.step(1);
+  }
+
+  /**
+   * The same walk, backwards.
+   *
+   * There was only the one button, so the catalogue could be walked in one
+   * direction and the way back was the browser's own. Both ways now, from the
+   * same sequence the thumbnails at the foot of the page are a window on.
+   */
+  goToPreviousArtPiece(): void {
+    this.step(-1);
+  }
+
+  private step(by: 1 | -1): void {
     const ordered = this.orderedFrontalPieces();
     if (ordered.length <= 1) return;
     const currentName = this.nft()?.name;
     const index = ordered.findIndex((piece) => piece.name === currentName);
     if (index === -1) return;
-    const next = ordered[(index + 1) % ordered.length];
-    this.router.navigate(['/artwork', next.tokenId]);
+    const next = ordered[(index + by + ordered.length) % ordered.length];
+    // In the language being read: `/artwork/5` is an English address, and
+    // pressing next on a Spanish page used to answer in English.
+    this.router.navigateByUrl(this.language.link(`artwork/${next.tokenId}`));
   }
 }

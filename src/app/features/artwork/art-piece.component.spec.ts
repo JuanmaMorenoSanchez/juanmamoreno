@@ -361,10 +361,10 @@ describe('ArtPieceComponent — what belongs to the painting, not the photograph
  *
  * It was the painting's own year and nothing else, so a year holding two
  * paintings offered one tile, and a year holding only this one offered a
- * heading over an empty row. It now widens outwards a year at a time until
- * there are two rows of them.
+ * heading over an empty row. Three rules decide the set now: two rows at
+ * least, two years at least, and no half-empty row.
  */
-describe('ArtPieceComponent — the years offered under the painting', () => {
+describe('ArtPieceComponent — the paintings offered under the painting', () => {
   afterEach(() => TestBed.resetTestingModule());
 
   const inYear = (tokenId: string, year: string): Nft => ({
@@ -381,8 +381,16 @@ describe('ArtPieceComponent — the years offered under the painting', () => {
     },
   });
 
-  const many = (year: string, count: number): Nft[] =>
-    Array.from({ length: count }, (_unused, at) => inYear(`${year}-${at}`, year));
+  const many = (year: string, count: number, tag = ''): Nft[] =>
+    Array.from({ length: count }, (_unused, at) => inYear(`${tag}${year}-${at}`, year));
+
+  /** How many of the thumbnails on offer come from one year. */
+  const countOf = (showing: ArtPieceComponent, year: string): number =>
+    showing.nearbyPieces().filter((piece) => piece.tokenId.includes(`${year}-`)).length;
+
+  /** How many different years the thumbnails on offer come from. */
+  const yearsOn = (showing: ArtPieceComponent): number =>
+    new Set(showing.nearbyPieces().map((piece) => piece.tokenId.split('-')[0])).size;
 
   /** Three columns, so two rows is six thumbnails, whatever jsdom's width is. */
   const page = (reading: Nft, catalogue: Nft[]) => {
@@ -427,31 +435,70 @@ describe('ArtPieceComponent — the years offered under the painting', () => {
     return fixture.componentInstance;
   };
 
-  /** A year that fills the rows by itself is still shown by itself. */
-  it('stays on the painting’s own year when that year has enough', () => {
+  /**
+   * The point of the strip: the catalogue either side of this painting, so a
+   * reader can walk from the newest work to the oldest, or back, on the
+   * thumbnails alone and never return to the catalogue to do it.
+   */
+  it('shows the catalogue either side of the painting', () => {
     const reading = inYear('500', '2020');
-    const showing = page(reading, [reading, ...many('2020', 8), ...many('2016', 5)]);
+    const showing = page(reading, [...many('2022', 5), reading, ...many('2018', 5)]);
 
-    expect(showing.nearbySpan()).toBe('2020');
-    expect(showing.hasMoreArtworks()).toBe(true);
+    expect(showing.nearbyPieces().length).toBe(6);
+    expect(countOf(showing, '2022')).toBe(3);
+    expect(countOf(showing, '2018')).toBe(3);
+  });
+
+  /** At the ends there is only one side, and it gets the whole window. */
+  it('gives the window to one side at the end of the catalogue', () => {
+    const reading = inYear('500', '2022');
+    const showing = page(reading, [reading, ...many('2020', 4), ...many('2018', 4)]);
+
+    expect(showing.nearbyPieces().length).toBe(6);
+    expect(countOf(showing, '2020')).toBe(4);
+    expect(countOf(showing, '2018')).toBe(2);
   });
 
   /**
-   * The painting is the only one of 2020, so its own year contributes nothing
-   * and drops back out of the range: the heading names a range with paintings
-   * in it, not the years the search walked through.
+   * In the middle of a busy year the window would land inside that year
+   * entirely, which tells a reader nothing about where they are. It widens
+   * until a second year is on the page, however many thumbnails that takes.
    */
-  it('widens outwards, later first, until two rows are filled', () => {
+  it('never draws the whole grid from one year', () => {
     const reading = inYear('500', '2020');
     const showing = page(reading, [
+      ...many('2016', 3),
+      ...many('2020', 6, 'a'),
       reading,
-      ...many('2021', 2),
-      ...many('2019', 2),
-      ...many('2018', 3),
-      ...many('2016', 5),
+      ...many('2020', 6, 'b'),
     ]);
 
-    expect(showing.nearbySpan()).toBe('2018–2021');
+    expect(yearsOn(showing)).toBeGreaterThan(1);
+    expect(countOf(showing, '2016')).toBeGreaterThan(0);
+  });
+
+  /**
+   * The rule he asked for in those words: rather than a row with two tiles in
+   * it and a gap, take the rest from the year along.
+   */
+  it('never leaves a row half empty', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [reading, ...many('2020', 7), ...many('2019', 3)]);
+
+    // Six is two rows but all of 2020; eight brings 2019 in and leaves a row
+    // of two; nine is the answer. Three columns here, so nine is three rows.
+    expect(showing.nearbyPieces().length).toBe(9);
+    expect(showing.nearbyPieces().length % 3).toBe(0);
+    expect(countOf(showing, '2019')).toBe(2);
+  });
+
+  /** Only where the catalogue itself runs out is the last row short. */
+  it('shows what there is when the catalogue cannot fill the rows', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [reading, ...many('2019', 2)]);
+
+    expect(showing.nearbyPieces().length).toBe(2);
+    expect(showing.nearbySpan()).toBe('2019');
   });
 
   /** Nothing else in the catalogue at all: no heading over an empty row. */

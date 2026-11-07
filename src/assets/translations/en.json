@@ -25,6 +25,8 @@
   "cancel": "Cancel",
   "back": "Back",
   "next": "Next",
+  "nextArtwork": "Next artwork",
+  "previousArtwork": "Previous artwork",
   "footer": {
     "label": "Elsewhere and small print",
     "terms": "Terms"

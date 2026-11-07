@@ -55,3 +55,17 @@
   font-size: 1.17em;
   margin: 1em 0;
 }
+
+/* The two directions read as one control, not as two buttons that happened
+   to land beside each other. */
+.walk {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The last line on the page that was not on its centre: with the record
+   centred above it, it was the only thing left against the left edge. */
+.more-on {
+  text-align: center;
+  color: var(--catalog-soft);
+}

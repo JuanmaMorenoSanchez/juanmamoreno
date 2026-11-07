@@ -7,12 +7,17 @@ Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
 ## 2.63.0
 
-- **feat** The record under a painting is centred and a size smaller, and the
-  strip of thumbnails below it reaches into the neighbouring years until it has
-  two full rows.
+- **feat** The catalogue can be walked from the paintings themselves. The strip
+  at the foot of an artwork page is a window on the catalogue either side of
+  it — whole rows, never one year, both directions — and the toolbar has a
+  button each way rather than only forward.
+- **feat** The record under a painting is centred and a size smaller, as is the
+  line over the thumbnails.
 - **fix** The record stays on screen while a detail or a work in progress is
   being looked at. It is the painting's, and was being asked for by the
   photograph's token, which has none.
+- **fix** "Next artwork" kept the reader's language: from a Spanish page it
+  stepped to the English one.
 - **fix** "See the post" is no longer written into the built pages. Whether a
   post is still there is only true when it is asked, and the build was baking
   the answer into 71 of them — at the cost of 384 requests per build.

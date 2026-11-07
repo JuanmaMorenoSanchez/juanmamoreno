@@ -619,6 +619,59 @@ describe('passing a painting on', () => {
 });
 
 /**
+ * Walking the catalogue from the paintings themselves (R226).
+ *
+ * The whole point of the strip at the foot of an artwork page: a reader can
+ * reach the painting before this one and the one after it, and keep going,
+ * without returning to the catalogue. Checked here rather than only in a unit
+ * test because it is three things agreeing — the window the page computes,
+ * the grid that draws it, and the links in it — and a unit test with the
+ * template stripped out sees only the first.
+ */
+describe('walking the catalogue from a painting', () => {
+  it('offers whole rows of other paintings, both sides of this one', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/66');
+    await page.waitForSelector('app-art-pieces-list a.tile-link', READY);
+    await page.waitForFunction(
+      () => document.querySelectorAll('app-art-pieces-list a.tile-link').length >= 6,
+      undefined,
+      READY
+    );
+
+    const columns = Number(
+      await page.locator('app-art-pieces-list mat-grid-list').getAttribute('cols')
+    );
+    const tiles = await page.locator('app-art-pieces-list a.tile-link').count();
+
+    assert.ok(columns >= 1, `no column count on the grid: ${columns}`);
+    assert.ok(tiles >= 2 * columns, `only ${tiles} thumbnails in ${columns} columns`);
+    assert.equal(tiles % columns, 0, `${tiles} thumbnails leaves a row half empty`);
+
+    await page.close();
+  });
+
+  it('steps to the next painting and back again, in the language being read', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es/artwork/66');
+    await page.waitForSelector('[aria-label="Obra siguiente"]', READY);
+
+    await page.locator('[aria-label="Obra siguiente"]').click();
+    await page.waitForFunction(() => !location.pathname.endsWith('/artwork/66'), undefined, READY);
+    const next = new URL(page.url()).pathname;
+    assert.ok(next.startsWith('/es/artwork/'), `next left Spanish: ${next}`);
+
+    await page.locator('[aria-label="Obra anterior"]').click();
+    await page.waitForFunction(() => location.pathname.includes('/artwork/66'), undefined, READY);
+    assert.match(new URL(page.url()).pathname, /^\/es\/artwork\/66\/?$/);
+
+    await page.close();
+  });
+});
+
+/**
  * Where the link in the Instagram profile lands.
  *
  * The list itself is filled from the backend, which refuses this origin, so

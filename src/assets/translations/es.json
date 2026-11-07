@@ -25,6 +25,8 @@
   "cancel": "Cancelar",
   "back": "Volver",
   "next": "Siguiente",
+  "nextArtwork": "Obra siguiente",
+  "previousArtwork": "Obra anterior",
   "footer": {
     "label": "En otros sitios y letra pequeña",
     "terms": "Términos"

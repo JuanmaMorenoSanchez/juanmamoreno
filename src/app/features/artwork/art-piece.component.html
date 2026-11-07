@@ -39,17 +39,38 @@
         <app-links-button [tokenId]="tokenId()"></app-links-button>
       </ng-container>
     }
+    <!--
+      Both ways through the catalogue. There was only the forward one, so the
+      way back was the browser's own button — and the thumbnails at the foot of
+      the page are a window on this same sequence.
+
+      Not the double arrows it used to wear: the back button on the other end
+      of this bar is a double arrow left, so a double arrow left here was the
+      same picture for "to the catalogue" and "to the painting before this
+      one". These read as a track either side of the one playing, which is
+      what they are.
+    -->
     @if (hasNextArtPiece()) {
-      <button
-        viewer-trail
-        mat-icon-button
-        aria-label="Next artwork"
-        [matTooltip]="'next' | translate"
-        matTooltipPosition="below"
-        (click)="goToNextArtPiece()"
-      >
-        <mat-icon>keyboard_double_arrow_right</mat-icon>
-      </button>
+      <span viewer-trail class="walk">
+        <button
+          mat-icon-button
+          [attr.aria-label]="'previousArtwork' | translate"
+          [matTooltip]="'previousArtwork' | translate"
+          matTooltipPosition="below"
+          (click)="goToPreviousArtPiece()"
+        >
+          <mat-icon>skip_previous</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          [attr.aria-label]="'nextArtwork' | translate"
+          [matTooltip]="'nextArtwork' | translate"
+          matTooltipPosition="below"
+          (click)="goToNextArtPiece()"
+        >
+          <mat-icon>skip_next</mat-icon>
+        </button>
+      </span>
     }
   </app-image-viewer>
   @if (nft()) {
@@ -116,7 +137,7 @@
   }
   @if (hasMoreArtworks()) {
     <mat-divider class="separator"></mat-divider>
-    <p>{{ 'moreOn' | translate }} {{ nearbySpan() }}</p>
+    <p class="more-on">{{ 'moreOn' | translate }} {{ nearbySpan() }}</p>
     <app-art-pieces-list
       [viewAsWidget]="true"
       [numberOfCols]="numberOfViewMoreColumns()"

@@ -33,6 +33,12 @@ export interface NftImage {
 export interface NftFilters {
   years?: Array<string>;
   idsToExclude?: Array<string>;
+  /**
+   * Exactly these artworks and no others, when the caller has already chosen
+   * them. The artwork page does: it counts how many thumbnails fill whole rows
+   * before it asks for any, which a filter by year cannot express.
+   */
+  idsToInclude?: Array<string>;
 }
 
 export interface Trait {

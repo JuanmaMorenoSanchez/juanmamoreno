@@ -1562,35 +1562,53 @@ then.
 `write-404.mjs`, which exits 1 rather than writing nothing if `index.html` is
 not there.
 
-### R226 — The strip under a painting is always worth looking at · met
-Under the painting, a grid of other paintings near it in time: its own year
-first, then outwards a year at a time — later, then earlier — until there are
-at least two rows of thumbnails, which is six on a phone and twelve on a
-desktop.
+### R226 — The catalogue can be walked from the paintings themselves · met
+A reader who has opened one painting can reach the one before it and the one
+after it without going back to the catalogue, and keep going — from the newest
+work to the oldest, or the other way — on the thumbnails at the foot of the
+page alone. That is what the strip under a painting is for, and everything
+about how it is built follows from it.
+
+**So it is a window on the catalogue in year order, centred on the painting
+being read**: half of it newer, half older, both directions always on the
+page. Only the two ends of the catalogue have one side to offer, and there the
+whole window goes to the side that exists.
 
 It was the painting's own year and nothing else. That is right for 2024, which
-has thirty, and wrong for everything thin: a year holding two paintings offered
-one tile, and the years holding one offered a heading over an empty row,
-because the one painting of that year is the one being read. A reader who has
-just looked at something and wants more of it is not asking for that calendar
-year, they are asking for what is near it.
+has thirty, and a dead end for everything thin: a year holding two paintings
+offered one tile, the years holding one offered a heading over an empty row —
+the one painting of that year being the one on screen — and no year offered a
+way out of itself in either direction.
 
-**Outwards rather than down the catalogue**, because the year is the only
-ordering a painter's work has that a reader can feel — what came just before
-and just after this is a sequence, the next twelve tiles in store order are
-not. **Later before earlier** on each step, so an evenly filled catalogue
-reads forwards.
+**Two rows at least**, which is six thumbnails on a phone and twelve on a
+desktop. **Two years at least**, however many the middle of a busy year has to
+offer: a grid drawn entirely from one year does not show a reader where they
+are, and the window widens until a second year is on it however many
+thumbnails that takes. **And no half-empty row** — the window grows to the end
+of the row rather than leaving a gap, and is short only at the ends, where the
+catalogue itself runs out.
 
-**And the heading names a range that has paintings in it.** The search walks
-through every year between its ends, including the empty ones and including the
-painting's own year when the painting being read is all of it; those drop back
-out before the range is named, so "More on 2018–2021" never credits a year with
-nothing to show. One year left over says just the year, as it always did.
-*Proven by:* `art-piece.component.spec.ts` "the years offered under the
-painting" (3 tests: that a year which fills the rows by itself stays alone,
-that a year holding only the painting being read widens outwards and drops
-itself from the range, and that a painting with nothing else in the catalogue
-gets no heading at all)
+**The strip is always in year order**, whatever the reader last arranged the
+catalogue itself by. It is read as a sequence rather than as a set, and sorted
+by size it is not one. Their direction is kept: oldest first in the catalogue
+is oldest first here.
+
+**And the two buttons in the toolbar walk the same sequence.** There was only
+the forward one, so the catalogue could be walked in one direction and the way
+back was the browser's own button. It also stepped to `/artwork/5`, an English
+address, from the Spanish page.
+*Proven by:* `art-piece.component.spec.ts` "the paintings offered under the
+painting" (6 tests: that the window is centred, that it goes to one side at
+the end of the catalogue, that it never draws the whole grid from one year,
+that it never leaves a row half empty, that it shows what there is when the
+catalogue cannot fill the rows, and that a painting with nothing else in the
+catalogue gets no heading at all); `art-pieces-list.component.spec.ts` "shows
+exactly the artworks a caller names, and no others"; and in the browser,
+`e2e/navigation.test.mjs` "walking the catalogue from a painting" (2 tests:
+that the grid is whole rows of at least two, counted against the grid's own
+column count, and that the two buttons step to the next painting and back
+again without leaving Spanish) — the page, the grid and the links agreeing,
+which a unit test with the template stripped out cannot see
 
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less
