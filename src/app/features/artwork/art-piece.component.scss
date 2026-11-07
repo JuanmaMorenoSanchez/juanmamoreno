@@ -69,3 +69,15 @@
   text-align: center;
   color: var(--catalog-soft);
 }
+
+/* The two steps sit on the line they move, close enough to belong to it. */
+.more-on {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.$spacing-xs;
+}
+
+.more-step {
+  flex: 0 0 auto;
+}

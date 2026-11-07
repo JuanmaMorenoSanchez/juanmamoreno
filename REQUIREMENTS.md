@@ -664,20 +664,44 @@ exhibited and that it has been sold is what a catalogue entry carries in any
 serious collection, and until now it was in his head.
 
 **Oldest first**, because a record reads as a life rather than as a log: shown,
-shown again, sold. Two things in the same year keep the order they were entered
-in: a month was asked for and taken out again as more precision than anybody
-has, and a stable sort gives the rest for nothing.
+shown again, sold. Sorted where it is drawn rather than trusted from the api:
+the order a record reads in is a property of the record, not of the request
+that fetched it, and a line added today about a show in 2016 arrived at the end
+of the list and stayed there.
+
+**And within a year, the sale is last**, with the collection it went to — a
+painting is shown, shown again, and then it goes, whichever order the lines
+were typed in. Two of the same kind in one year keep the order they were
+entered in: a month was asked for and taken out again as more precision than
+anybody has, and a stable sort gives the rest for nothing.
+
+Whoever sorts for display sorts before writing back as well. A line is removed
+by its position, so a list drawn in one order and stored in another takes away
+the wrong line.
 
 **Naming anybody is optional**, and the verb drops its preposition when nobody
 is named — "Vendida a" with nothing after it is not a sentence, so a line with
 no name reads `Vendida (2026)`. That a painting was sold, and when, is a fact
 worth keeping on its own.
 
-**Who is asked only of the kinds whose verb governs a name**, which is the same
-three: sold to, acquired by, in the collection of. A show and a prize take their
-name from the cv entry the line cites, so a second one here would be a name that
-could disagree with the first — and the form asked who whatever had happened,
-including of a show that had already said where.
+**The form asks what the kind needs and nothing else**, which is two shapes
+rather than five. A show and a prize are on the cv already, so they cite the
+entry and take its year and its name from it, and there is nothing further to
+ask: no year, no note, nobody to name. A sale and a collection are about
+somebody, so they ask who, when, and leave room for a note, and offer no cv
+entry because they cite none. The form used to ask every question of every
+kind — who, of a show that had already said where; a cv entry, of a sale that
+cites none; a note, of a prize already written up on the cv.
+
+It opens on the show, which is what forty-eight of the sixty-five lines
+written so far are; it opened on the sale, which is the fullest form and a
+quarter of them. And what is sent is built from the kind rather than from
+whichever boxes still hold a value, so a note typed against a sale cannot ride
+along on the prize the kind was changed to.
+
+**"Acquired by" is gone.** It said what "in the collection of" says and asked
+the same two questions, so the only thing it added was a decision about which
+of two identical lines to write. Nothing had ever been stored under it.
 
 **And it is one question with two answers, not two boxes.** A private collector,
 or an institution typed by name. The collector is a choice rather than something
@@ -753,10 +777,15 @@ which is the line that reads `Vendida (2026)`. Nothing is carried onto a kind
 that cannot have it: choose an institution and then change the line to a show,
 and no name is written down.
 
-*Proven by:* `record.spec.ts` (12 tests, including that a prize and the
+*Proven by:* `record.spec.ts` (14 tests, including that the oldest comes first
+however the api ordered them, that a year ends with its sale and with the
+collection it went to, that two shows in one year keep the order they were
+entered in, and that a prize and the
 institution that took the painting are said in one line, that an exhibition
 addresses the cv entry it cites, and that the verb drops its preposition when
-the line names nobody); `artwork-record.component.spec.ts` (15, including that
+the line names nobody); `artwork-record.component.spec.ts` (18, including that the form opens on a
+show with nothing to fill in but which one, that each kind asks only for what
+it needs, that nothing the kind did not ask for is sent, that
 who is asked for every kind whose verb governs a name and no other, that an
 institution is named from one box in both languages at once and on an
 acquisition as well as a sale, that a sale saves with nobody named, that a name is not
@@ -1611,6 +1640,20 @@ thumbnails that takes. **And no half-empty row** — the window grows to the end
 of the row rather than leaving a gap, and is short only at the ends, where the
 catalogue itself runs out.
 
+**And it steps a whole window at a time, without leaving the painting.**
+Clicking a thumbnail carries the reader half a window — the next window being
+centred on where they landed — so half of every strip is what they just saw,
+and it reads as stuck even while it is moving. Measured: the catalogue is
+crossable by clicking alone, but a click advances six of twelve. Two steps
+beside the heading move the window a whole page, left for newer and right for
+older, each one off at the end of the catalogue. Paged to one end and then to
+the other, the strip has shown every painting but the one being read, which is
+the requirement in his words: from the miniatures alone, the first to the last.
+
+The page is dropped whenever the painting changes. The window belongs to the
+painting, and a page number carried onto the next one would open it somewhere
+else in the catalogue for no reason a reader could see.
+
 **The strip is always in year order**, whatever the reader last arranged the
 catalogue itself by. It is read as a sequence rather than as a set, and sorted
 by size it is not one. Their direction is kept: oldest first in the catalogue
@@ -1632,7 +1675,9 @@ a shortcut and the second as part of the name; the tooltip carries it for
 everybody else. Never while anything is being typed into: he edits the record
 on this page, and shift and an arrow in a text box selects a character.
 *Proven by:* `art-piece.component.spec.ts` "the paintings offered under the
-painting" (6 tests: that the window is centred, that it goes to one side at
+painting" (8 tests: that the two steps move the window a whole page without
+changing the painting and come back to where they started, that each says when
+there is nothing left that way, that the window is centred, that it goes to one side at
 the end of the catalogue, that it never draws the whole grid from one year,
 that it never leaves a row half empty, that it shows what there is when the
 catalogue cannot fill the rows, and that a painting with nothing else in the
@@ -1641,8 +1686,10 @@ exactly the artworks a caller names, and no others"; and in the browser,
 `e2e/navigation.test.mjs` "walking the catalogue from a painting" (2 tests:
 that the grid is whole rows of at least two, counted against the grid's own
 column count, and that the two buttons step to the next painting and back
-again without leaving Spanish, and that shift and an arrow walks the catalogue
-while a bare arrow does not) — the page, the grid and the links agreeing,
+again without leaving Spanish, that shift and an arrow walks the catalogue
+while a bare arrow does not, and that paging the strip to one end and then the
+other shows every painting in the catalogue but the one being read — counted
+against the catalogue page's own tally) — the page, the grid and the links agreeing,
 which a unit test with the template stripped out cannot see; and
 `art-piece.component.spec.ts` "walks the catalogue on shift and an arrow",
 "leaves the bare arrows to the viewer, and a text box to whoever is typing"
@@ -2420,9 +2467,16 @@ in artist, turning the red dot on and off. What it writes is in the api, so the
 answer changes for everybody the moment he sets it — no edit, no commit, no
 deploy.
 
-**Where it is, and where it deliberately is not.** It sits next to the dot it
-turns on, under the painting it is about, beside the line that gives the year,
-the medium and the size. Not in the row of icons above it, which is what any
+**And the dot it turns on is drawn once.** Where the record below names the
+sale — the year, and whoever it went to — the dot sits on that line and not
+beside the measurements as well: one fact, said once, in the place that says
+most about it. A painting marked sold with no line about it keeps the dot
+where it was, which is most of them, because the mark is his switch and the
+record is a sentence he writes separately.
+
+**Where the switch is, and where it deliberately is not.** It sits next to the
+dot it turns on, under the painting it is about, beside the line that gives the
+year, the medium and the size. Not in the row of icons above it, which is what any
 reader may press and where a state-changing control would be the one button that
 does something. Not on the catalogue grid either, where marking a sale would be
 quicker and where a mistaken tap on a tile would tell the world a painting is

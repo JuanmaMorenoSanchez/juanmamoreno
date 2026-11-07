@@ -32,6 +32,7 @@ import { ShareButtonComponent } from '@shared/components/share-button/share-butt
 import { SORT } from '@shared/constants/order.constants';
 import { ResponsiveService } from '@shared/services/responsive.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
+import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import { map, switchMap } from 'rxjs';
@@ -171,13 +172,14 @@ export class ArtPieceComponent {
    * window grows to the end of the row rather than leaving a gap. Short only
    * at the very ends, where the catalogue itself runs out.
    */
-  readonly nearbyPieces: Signal<Nft[]> = computed(() => {
+  private readonly nearbyWindow = computed(() => {
+    const nothing = { pieces: [] as Nft[], older: false, newer: false };
     // Newest first, one entry per painting. The same sequence the "next
     // artwork" button walks, so the two cannot disagree about what is next.
     const all = this.orderedFrontalPieces();
     const name = this.nft()?.name;
     const at = name ? all.findIndex((piece) => piece.name === name) : -1;
-    if (at === -1 || all.length < 2) return [];
+    if (at === -1 || all.length < 2) return nothing;
 
     const others = [...all.slice(0, at), ...all.slice(at + 1)];
     const yearOf = (piece: Nft) => this.getTraitValue(piece, VALIDTRAITS.YEAR);
@@ -185,11 +187,15 @@ export class ArtPieceComponent {
     // `at` is where this painting was: everything before it in `others` is
     // newer, everything from it on is older. A side that runs out gives its
     // share to the other, so the count holds at the ends of the catalogue.
-    const windowOf = (wanted: number): Nft[] => {
-      const size = Math.min(wanted, others.length);
+    const startOf = (size: number) => {
       const older = Math.min(others.length - at, size - Math.min(at, Math.floor(size / 2)));
       const newer = Math.min(at, size - older);
-      return others.slice(at - newer, at - newer + size);
+      return at - newer;
+    };
+    const windowOf = (wanted: number): Nft[] => {
+      const size = Math.min(wanted, others.length);
+      const from = startOf(size);
+      return others.slice(from, from + size);
     };
 
     const columns = this.numberOfViewMoreColumns();
@@ -198,8 +204,47 @@ export class ArtPieceComponent {
     const short = Math.min(take, others.length) % columns;
     if (short) take = Math.min(others.length, take + columns - short);
 
-    return windowOf(take);
+    // Where the reader has paged to, in whole windows, from the one centred
+    // on this painting. Later in `others` is older, so a positive page is
+    // further back.
+    const size = Math.min(take, others.length);
+    const room = others.length - size;
+    const from = Math.min(Math.max(startOf(size) + this.stripPage() * size, 0), Math.max(room, 0));
+
+    return {
+      pieces: others.slice(from, from + size),
+      older: from + size < others.length,
+      newer: from > 0,
+    };
   });
+
+  readonly nearbyPieces: Signal<Nft[]> = computed(() => this.nearbyWindow().pieces);
+  readonly hasOlderNearby: Signal<boolean> = computed(() => this.nearbyWindow().older);
+  readonly hasNewerNearby: Signal<boolean> = computed(() => this.nearbyWindow().newer);
+
+  /**
+   * How far the thumbnails have been paged from the painting they belong to.
+   *
+   * Clicking a thumbnail moves the reader half a window, because the next
+   * window is centred on where they landed — so half of what they see is
+   * what they just saw, and the strip reads as stuck even while it is
+   * moving. These two take the window a whole step at a time without leaving
+   * the painting, which is the difference between browsing the catalogue and
+   * opening twelve pages to cross it.
+   *
+   * Back to zero whenever the painting changes: the window belongs to the
+   * painting, and a page number carried onto the next one would open it
+   * somewhere else in the catalogue for no reason the reader could see.
+   */
+  private readonly stripPage = signal(0);
+
+  protected showOlderNearby(): void {
+    this.stripPage.update((page) => page + 1);
+  }
+
+  protected showNewerNearby(): void {
+    this.stripPage.update((page) => page - 1);
+  }
 
   readonly hasMoreArtworks: Signal<boolean> = computed(() => this.nearbyPieces().length > 0);
   readonly nearbyFilter: Signal<NftFilters> = computed(() => ({
@@ -276,6 +321,21 @@ export class ArtPieceComponent {
   });
   readonly sold: Signal<boolean> = computed(() => this.availability.isSold(this.tokenId()));
 
+  /**
+   * Whether the dot belongs here, beside the measurements.
+   *
+   * It does not when the record below says the same thing with more: a line
+   * naming the year and the buyer carries the dot itself, and the two of them
+   * said a painting had sold twice on one page. Still here for a painting
+   * marked sold with no record of it, which is most of them — the mark is his
+   * switch, and the record is a sentence he writes separately.
+   */
+  private readonly records = inject(ArtworkRecordService);
+  readonly soldInTheRecord: Signal<boolean> = computed(() =>
+    this.records.of(this.paintingNft()?.tokenId ?? '').some((entry) => entry.kind === 'sold')
+  );
+  readonly showSoldDot: Signal<boolean> = computed(() => this.sold() && !this.soldInTheRecord());
+
   // The essay is set to the width the viewer gives the artwork itself, so the
   // text block sits exactly under the image rather than under the container.
   // Read from the viewer instead of recomputed here: it narrows the frame to
@@ -328,6 +388,14 @@ export class ArtPieceComponent {
   constructor() {
     effect(() => {
       this.displayingIndex.set(this.defaultDisplayIndex() || 0);
+    });
+
+    // The thumbnails belong to the painting on screen, so the page they are
+    // showing is dropped with it.
+    effect(() => {
+      const painting = this.nft()?.name;
+      if (painting === undefined) return;
+      untracked(() => this.stripPage.set(0));
     });
 
     effect(() => {

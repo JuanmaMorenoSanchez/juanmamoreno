@@ -22,6 +22,14 @@
                 }
               }
               <span class="record-year"> ({{ line.year }})</span>
+              <!--
+                The dot that used to sit beside the measurements, on the line
+                that says when and to whom. One fact, said once.
+              -->
+              @if ($index === soldLine()) {
+                <span class="dot" aria-hidden="true"></span>
+                <span class="visually-hidden">{{ 'sold' | translate }}</span>
+              }
               @if (line.note) {
                 <small class="record-note">{{ line.note }}</small>
               }
@@ -69,23 +77,27 @@
           </mat-form-field>
 
           <!--
-            The cv and nothing else. The point of a link is that it is a link,
-            and free text here would be a second list of shows that disagreed
-            with the first within a year.
+            The cv and nothing else, and only for the kinds that take their
+            words from it. The point of a link is that it is a link, and free
+            text here would be a second list of shows that disagreed with the
+            first within a year — but a sale cites no show, and the box asked
+            anyway.
           -->
-          <mat-form-field appearance="outline" class="record-cv">
-            <mat-label>{{ 'record.onTheCv' | translate }}</mat-label>
-            <mat-select
-              [value]="draft().cv"
-              (valueChange)="set('cv', $event)"
-              [disabled]="saving()"
-            >
-              <mat-option [value]="''">—</mat-option>
-              @for (one of career(); track one.id) {
-                <mat-option [value]="one.id">{{ one.label }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+          @if (fromTheCv()) {
+            <mat-form-field appearance="outline" class="record-cv">
+              <mat-label>{{ 'record.onTheCv' | translate }}</mat-label>
+              <mat-select
+                [value]="draft().cv"
+                (valueChange)="set('cv', $event)"
+                [disabled]="saving()"
+              >
+                <mat-option [value]="''">—</mat-option>
+                @for (one of career(); track one.id) {
+                  <mat-option [value]="one.id">{{ one.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
 
           <!--
             Only the kinds whose verb governs a name. A show and a prize take
@@ -124,10 +136,11 @@
           }
 
           <!--
-            An exhibition has no year of its own: it takes the year of the show
-            it points at, because two years that can disagree eventually do.
+            A show and a prize have no year of their own: they take the year of
+            the cv entry they point at, because two years that can disagree
+            eventually do.
           -->
-          @if (draft().kind !== 'exhibited' && !draft().cv) {
+          @if (!fromTheCv()) {
             <mat-form-field appearance="outline" class="record-year-field">
               <mat-label>{{ 'record.year' | translate }}</mat-label>
               <input
@@ -140,15 +153,22 @@
             </mat-form-field>
           }
 
-          <mat-form-field appearance="outline" class="record-note-field">
-            <mat-label>{{ 'record.note' | translate }}</mat-label>
-            <input
-              matInput
-              [value]="draft().noteEn"
-              (input)="set('noteEn', $any($event.target).value)"
-              [disabled]="saving()"
-            />
-          </mat-form-field>
+          <!--
+            A show and a prize are already written down on the cv, which is
+            where anything more about them belongs. The note is for the half
+            of a sale that nothing else holds.
+          -->
+          @if (!fromTheCv()) {
+            <mat-form-field appearance="outline" class="record-note-field">
+              <mat-label>{{ 'record.note' | translate }}</mat-label>
+              <input
+                matInput
+                [value]="draft().noteEn"
+                (input)="set('noteEn', $any($event.target).value)"
+                [disabled]="saving()"
+              />
+            </mat-form-field>
+          }
 
           <div class="record-actions">
             <button mat-flat-button type="button" [disabled]="!ready() || saving()" (click)="add()">

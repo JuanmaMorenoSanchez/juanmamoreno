@@ -118,3 +118,18 @@ h2.catalog-subheading {
     flex-wrap: wrap;
   }
 }
+
+/*
+  The sold dot, on the line that dates the sale. The same accent as the one
+  that used to sit beside the measurements, smaller because this text is: at
+  a full 1rem it was the largest thing in the record and read as a bullet.
+*/
+.dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: tokens.$spacing-xs;
+  border-radius: 50%;
+  background-color: var(--catalog-accent);
+  vertical-align: middle;
+}

@@ -9,11 +9,12 @@ import { Bilingual } from '@domain/cv/cv-entry.entity';
 import { cvSections } from '@domain/cv/cv';
 import {
   RECORD_KINDS,
+  RECORD_KINDS_FROM_THE_CV,
   RECORD_NAMING_KINDS,
   RecordEntryEdit,
   RecordKind,
 } from '@domain/artwork/record.entity';
-import { recordLines } from '@domain/artwork/record';
+import { inOrder, recordLines } from '@domain/artwork/record';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { ArtworkRecordService } from '@shared/services/artwork-record.service';
@@ -105,12 +106,36 @@ export class ArtworkRecordComponent {
    * form whatever had happened, asking who for a show that already said where.
    */
   protected readonly naming = computed(() => RECORD_NAMING_KINDS.includes(this.draft().kind));
+
+  /**
+   * The form asks what the kind needs and nothing else.
+   *
+   * Two shapes, not five. A show and a prize are on the cv already, so they
+   * cite the entry and take its year and its name from it — there is nothing
+   * left to ask. A sale and a collection are about somebody, so they ask who,
+   * when, and leave room for a note. The form used to ask every question of
+   * every kind: a note on a show nobody annotates, a cv entry on a sale that
+   * cites none, a year beside a prize that already has one on the cv.
+   */
+  protected readonly fromTheCv = computed(() =>
+    RECORD_KINDS_FROM_THE_CV.includes(this.draft().kind)
+  );
   protected readonly mine = computed(() => this.auth.isAdmin());
 
   /** The lines as the page draws them, in the language the address is in. */
   protected readonly lines = computed(() =>
     recordLines(this.records.of(this.tokenId()), this.language.contentLanguage())
   );
+
+  /**
+   * Which line wears the sold dot, or -1.
+   *
+   * The dot said the painting had sold beside the measurements, and the
+   * record said it again underneath with the year and the buyer — the same
+   * fact in two places, one of which had less to say. It belongs on the line
+   * that dates it. The page drops its own dot when this finds one (R113).
+   */
+  protected readonly soldLine = computed(() => this.lines().findIndex((line) => line.kind === 'sold'));
 
   /** Drawn at all? For a reader, only when there is something to read. */
   protected readonly shown = computed(() => this.mine() || this.lines().length > 0);
@@ -159,8 +184,7 @@ export class ArtworkRecordComponent {
    */
   protected readonly ready = computed(() => {
     const draft = this.draft();
-    if (draft.kind === 'exhibited') return Boolean(draft.cv);
-    return Boolean(draft.year) || Boolean(draft.cv);
+    return this.fromTheCv() ? Boolean(draft.cv) : Boolean(draft.year);
   });
 
   protected async add(): Promise<void> {
@@ -207,7 +231,9 @@ export class ArtworkRecordComponent {
    * shape is a projection and not what is stored.
    */
   private stored(): RecordEntryEdit[] {
-    return this.records.of(this.tokenId()).map((entry) => ({
+    // In the order the page drew them, because `remove` takes a line away by
+    // its position in that list.
+    return inOrder(this.records.of(this.tokenId())).map((entry) => ({
       kind: entry.kind,
       ...(entry.cv ? { cv: entry.cv.id } : {}),
       ...(entry.who ? { who: entry.who } : {}),
@@ -218,15 +244,25 @@ export class ArtworkRecordComponent {
     }));
   }
 
+  /**
+   * What the kind asks for, and nothing the form happened to be holding.
+   *
+   * Built from the kind rather than from whichever boxes have a value in
+   * them: switching the kind leaves the old answers in the draft, and sending
+   * them would store a note on a prize and a cv entry on a sale, which is
+   * what the boxes were taken off the form to prevent.
+   */
   private asEntry(draft: Draft): RecordEntryEdit {
-    const who = RECORD_NAMING_KINDS.includes(draft.kind) ? whoOf(draft) : undefined;
-    const noteEn = draft.noteEn.trim();
+    if (RECORD_KINDS_FROM_THE_CV.includes(draft.kind)) {
+      return { kind: draft.kind, cv: draft.cv };
+    }
 
+    const who = whoOf(draft);
+    const noteEn = draft.noteEn.trim();
     return {
       kind: draft.kind,
-      ...(draft.cv ? { cv: draft.cv } : {}),
       ...(who ? { who } : {}),
-      ...(draft.cv ? {} : { year: Number(draft.year) }),
+      year: Number(draft.year),
       ...(noteEn ? { note: { en: noteEn } } : {}),
     };
   }
@@ -248,14 +284,15 @@ function whoOf(draft: Draft): Bilingual | undefined {
 }
 
 /**
- * A new line, with the sale already filled in.
+ * A new line, opening on the show.
  *
- * Most of what he will ever add here is a sale to somebody who does not want
- * naming, so that is what the form opens as.
+ * Forty-eight of the sixty-five lines written so far are a show, and a show
+ * needs one answer: which one. It opened on a sale, which is the kind with
+ * the most to fill in and a quarter of the lines.
  */
 function empty(): Draft {
   return {
-    kind: 'sold',
+    kind: 'exhibited',
     cv: '',
     buyer: 'private',
     whoName: '',

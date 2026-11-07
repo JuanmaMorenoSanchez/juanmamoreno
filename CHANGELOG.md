@@ -5,6 +5,19 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.65.0
+
+- **feat** The thumbnails under a painting step a whole window at a time, so
+  the whole catalogue is reachable from one page of them rather than half a
+  window per click.
+- **feat** The record form asks what the kind needs and nothing else: a show
+  and a prize cite the cv and ask nothing more, a sale and a collection ask
+  who, when and a note. It opens on the show, and "Acquired by" is gone.
+- **fix** The record reads oldest first whatever order the api answers in, and
+  within a year the sale comes last.
+- **fix** The sold dot is drawn once — on the record's own line where there
+  is one, rather than there and beside the measurements both.
+
 ## 2.64.1
 
 - **fix** The three settings in the menu drawer line up with the words above

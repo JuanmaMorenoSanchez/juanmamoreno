@@ -82,17 +82,57 @@ describe('a painting’s record as the page draws it', () => {
     expect(line.what).toBe('The Pollock-Krasner Foundation award');
   });
 
-  /** The api answers oldest first; this groups and assembles, and must not re-sort. */
-  it('keeps the order it was given', () => {
+  /**
+   * Oldest first, whatever order it arrives in.
+   *
+   * It used to take the api's order on trust, so a line added today about a
+   * show in 2016 was drawn last, under a sale from 2019.
+   */
+  it('puts the oldest first however it was given them', () => {
     const lines = recordLines(
       [
-        entry({ kind: 'exhibited', cv: SHOW, year: 2024 }),
         entry({ kind: 'sold', who: { en: 'a private collector' }, year: 2025 }),
+        entry({ kind: 'exhibited', cv: SHOW, year: 2016 }),
+        entry({ kind: 'exhibited', cv: SHOW, year: 2024 }),
       ],
       'en'
     );
 
-    expect(lines.map((line) => line.year)).toEqual([2024, 2025]);
+    expect(lines.map((line) => line.year)).toEqual([2016, 2024, 2025]);
+  });
+
+  /**
+   * A painting is shown, shown again, and then it goes. Within one year the
+   * sale is where the year stops, whichever order the lines were typed in.
+   */
+  it('ends a year with the sale, and with the collection it went to', () => {
+    const lines = recordLines(
+      [
+        entry({ kind: 'sold', who: { en: 'a private collector' }, year: 2019 }),
+        entry({ kind: 'exhibited', cv: SHOW, year: 2019 }),
+        entry({ kind: 'collection', who: { en: 'the Foundation' }, year: 2018 }),
+        entry({ kind: 'awarded', cv: PRIZE, year: 2018 }),
+      ],
+      'en'
+    );
+
+    expect(lines.map((line) => line.kind)).toEqual(['awarded', 'collection', 'exhibited', 'sold']);
+  });
+
+  /** Two of a kind in one year keep the order they were entered in. */
+  it('leaves two shows in one year as they were entered', () => {
+    const lines = recordLines(
+      [
+        entry({ kind: 'exhibited', cv: PRIZE, year: 2019 }),
+        entry({ kind: 'exhibited', cv: SHOW, year: 2019 }),
+      ],
+      'en'
+    );
+
+    expect(lines.map((line) => line.anchor)).toEqual([
+      recordLines([entry({ kind: 'exhibited', cv: PRIZE, year: 2019 })], 'en')[0].anchor,
+      recordLines([entry({ kind: 'exhibited', cv: SHOW, year: 2019 })], 'en')[0].anchor,
+    ]);
   });
 
   /**
@@ -101,12 +141,10 @@ describe('a painting’s record as the page draws it', () => {
    */
   it('drops the preposition when the line names nobody', () => {
     const [sold] = recordLines([entry({ kind: 'sold', year: 2025 })], 'en');
-    const [acquired] = recordLines([entry({ kind: 'acquired', year: 2025 })], 'en');
     const [collection] = recordLines([entry({ kind: 'collection', year: 2025 })], 'en');
 
     expect(sold.verb).toBe('record.soldAlone');
     expect(sold.what).toBe('');
-    expect(acquired.verb).toBe('record.acquiredAlone');
     expect(collection.verb).toBe('record.collectionAlone');
   });
 

@@ -652,6 +652,66 @@ describe('walking the catalogue from a painting', () => {
     await page.close();
   });
 
+  /**
+   * The requirement in his words: using only the thumbnails at the foot of an
+   * artwork page, every painting in the catalogue can be reached, from the
+   * first to the last.
+   *
+   * Clicking one of them moves the reader half a window, so the catalogue is
+   * crossable that way but slowly, and half of every strip is what they just
+   * saw. The two steps beside the heading move it a whole window without
+   * leaving the painting; paged to one end and then to the other, the strip
+   * has shown every painting but the one being read.
+   */
+  it('reaches every painting in the catalogue from one page of thumbnails', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const catalogue = await openPage(browser, '/artworks');
+    await catalogue.waitForSelector('a.tile-link', READY);
+    await catalogue.waitForFunction(
+      () => document.querySelectorAll('a.tile-link').length > 20,
+      undefined,
+      READY
+    );
+    const paintings = await catalogue.$$eval('a.tile-link', (tiles) => tiles.length);
+    await catalogue.close();
+
+    const page = await openPage(browser, '/artwork/66');
+    await page.waitForSelector('app-art-pieces-list a.tile-link', READY);
+
+    const onShow = () =>
+      page.$$eval('app-art-pieces-list a.tile-link', (tiles) =>
+        tiles.map((tile) => tile.getAttribute('href'))
+      );
+    const seen = new Set(await onShow());
+
+    // Each press is one window; the catalogue cannot need more than it holds.
+    for (const [label, step] of [
+      ['older', '[aria-label="Older paintings"]'],
+      ['newer', '[aria-label="Newer paintings"]'],
+    ]) {
+      for (let press = 0; press <= paintings; press += 1) {
+        if (await page.locator(step).isDisabled()) break;
+        await page.locator(step).click();
+        await page.waitForTimeout(60);
+        for (const href of await onShow()) seen.add(href);
+      }
+      assert.ok(
+        await page.locator(step).isDisabled(),
+        `the ${label} step never ran out after ${paintings} presses`
+      );
+    }
+
+    // Every painting but the one being read, which is not among its own
+    // suggestions.
+    assert.equal(
+      seen.size,
+      paintings - 1,
+      `the thumbnails reached ${seen.size} paintings of ${paintings}`
+    );
+    await page.close();
+  });
+
   it('steps to the next painting and back again, in the language being read', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 

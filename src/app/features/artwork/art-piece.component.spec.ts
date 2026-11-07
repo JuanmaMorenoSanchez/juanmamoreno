@@ -551,6 +551,47 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
     expect(went).toHaveLength(0);
   });
 
+  /**
+   * The strip moves without leaving the painting.
+   *
+   * Clicking a thumbnail carries the reader half a window — the next window
+   * being centred on where they landed — so half of what they see is what
+   * they just saw, and it reads as stuck even while it is moving. These take
+   * it a whole step at a time, and between them they reach both ends of the
+   * catalogue from any painting in it.
+   */
+  it('pages the thumbnails older and newer without changing the painting', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [...many('2022', 30), reading, ...many('2018', 30)]);
+
+    const first = showing.nearbyPieces().map((piece) => piece.tokenId);
+    expect(showing.hasOlderNearby()).toBe(true);
+    expect(showing.hasNewerNearby()).toBe(true);
+
+    showing['showOlderNearby']();
+    const older = showing.nearbyPieces().map((piece) => piece.tokenId);
+    expect(older).not.toEqual(first);
+    // A whole window on, not an overlap: nothing in common with the last one.
+    expect(older.filter((token) => first.includes(token))).toEqual([]);
+
+    showing['showNewerNearby']();
+    expect(showing.nearbyPieces().map((piece) => piece.tokenId)).toEqual(first);
+  });
+
+  /** Paged to the end of the catalogue, the step that would pass it is off. */
+  it('says when there is nothing older or newer left', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [...many('2022', 10), reading, ...many('2018', 10)]);
+
+    for (let step = 0; step < 10; step += 1) showing['showOlderNearby']();
+    expect(showing.hasOlderNearby()).toBe(false);
+    expect(showing.hasNewerNearby()).toBe(true);
+
+    for (let step = 0; step < 20; step += 1) showing['showNewerNearby']();
+    expect(showing.hasNewerNearby()).toBe(false);
+    expect(showing.hasOlderNearby()).toBe(true);
+  });
+
   /** Nothing else in the catalogue at all: no heading over an empty row. */
   it('offers nothing when the painting is the only one there is', () => {
     const reading = inYear('500', '2020');

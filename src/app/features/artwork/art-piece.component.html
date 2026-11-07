@@ -104,8 +104,11 @@
             same thing to whoever cannot, and to anything that reads this page
             as text rather than as a picture of a page: a coloured circle is a
             border radius and survives neither.
+
+            Absent when the record underneath carries it instead, on the line
+            that says when the painting went and to whom.
           -->
-          @if (sold()) {
+          @if (showSoldDot()) {
             <span [matTooltip]="'sold' | translate" class="dot" aria-hidden="true"></span>
             <span class="visually-hidden">{{ 'sold' | translate }}</span>
           }
@@ -145,7 +148,38 @@
   }
   @if (hasMoreArtworks()) {
     <mat-divider class="separator"></mat-divider>
-    <p class="more-on">{{ 'moreOn' | translate }} {{ nearbySpan() }}</p>
+    <!--
+      The strip moves without leaving the painting. Clicking a thumbnail
+      carries the reader half a window, the next one being centred on where
+      they landed, so half of what they see is what they just saw — these take
+      it a whole step at a time. Left is newer because the grid reads newest
+      first, the same direction as the catalogue itself.
+    -->
+    <p class="more-on">
+      <button
+        mat-icon-button
+        type="button"
+        class="more-step"
+        [disabled]="!hasNewerNearby()"
+        [attr.aria-label]="'newerArtworks' | translate"
+        [matTooltip]="'newerArtworks' | translate"
+        (click)="showNewerNearby()"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span>{{ 'moreOn' | translate }} {{ nearbySpan() }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="more-step"
+        [disabled]="!hasOlderNearby()"
+        [attr.aria-label]="'olderArtworks' | translate"
+        [matTooltip]="'olderArtworks' | translate"
+        (click)="showOlderNearby()"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </p>
     <app-art-pieces-list
       [viewAsWidget]="true"
       [numberOfCols]="numberOfViewMoreColumns()"

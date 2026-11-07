@@ -154,8 +154,11 @@ describe('the record on an artwork page', () => {
     fixture.detectChanges();
 
     const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
       add: () => Promise<void>;
     };
+    // The form opens on a show now, which is what most lines are.
+    component.set('kind', 'sold');
     await component.add();
 
     expect(saved).toHaveLength(1);
@@ -168,6 +171,87 @@ describe('the record on an artwork page', () => {
         year: new Date().getFullYear(),
       },
     ]);
+  });
+
+  /**
+   * The show, because almost every line is one: forty-eight of the sixty-five
+   * written so far. It opened on a sale, which is the kind with the most to
+   * fill in and a quarter of the lines.
+   */
+  it('opens on a show, with nothing to fill in but which one', () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      draft: () => { kind: string };
+      fromTheCv: () => boolean;
+    };
+    expect(component.draft().kind).toBe('exhibited');
+    expect(component.fromTheCv()).toBe(true);
+    // What happened, and which show. No year, no note, nobody to name.
+    expect(fixture.nativeElement.querySelectorAll('mat-form-field')).toHaveLength(2);
+  });
+
+  /**
+   * Each kind asks for what it needs and nothing else. A show and a prize are
+   * on the cv already and borrow its year and its name; a sale and a
+   * collection are about somebody, so they ask who, when, and leave room for
+   * a note. The form used to ask every question of every kind.
+   */
+  it('asks only what the kind needs', () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+    };
+    const fields = () =>
+      [...fixture.nativeElement.querySelectorAll('mat-form-field')].map((field: HTMLElement) =>
+        (field.querySelector('mat-label')?.textContent ?? '').trim()
+      );
+
+    for (const kind of ['exhibited', 'awarded']) {
+      component.set('kind', kind);
+      fixture.detectChanges();
+      expect(fields()).toEqual(['record.kind', 'record.onTheCv']);
+    }
+
+    for (const kind of ['sold', 'collection']) {
+      component.set('kind', kind);
+      fixture.detectChanges();
+      expect(fields()).toEqual(['record.kind', 'record.who', 'record.year', 'record.note']);
+    }
+  });
+
+  /**
+   * The draft keeps what was typed when the kind changes, and the kind decides
+   * what is sent — so a note typed against a sale cannot ride along on a
+   * prize, which is what taking the box off the form is for.
+   */
+  it('sends nothing the kind did not ask for', async () => {
+    admin = true;
+    build();
+
+    fixture.nativeElement.querySelector('.record-add').click();
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance as unknown as {
+      set: (field: string, value: unknown) => void;
+      add: () => Promise<void>;
+    };
+    component.set('kind', 'sold');
+    component.set('noteEn', 'bought at the fair');
+    component.set('kind', 'awarded');
+    component.set('cv', SHOW.id);
+    await component.add();
+
+    expect(saved[0].entries).toEqual([{ kind: 'awarded', cv: SHOW.id }]);
   });
 
   it('takes a line back by sending what is left', async () => {
@@ -203,6 +287,7 @@ describe('the record on an artwork page', () => {
       set: (field: string, value: unknown) => void;
       add: () => Promise<void>;
     };
+    component.set('kind', 'sold');
     component.set('buyer', 'named');
     await component.add();
 
@@ -226,6 +311,7 @@ describe('the record on an artwork page', () => {
       set: (field: string, value: unknown) => void;
       add: () => Promise<void>;
     };
+    component.set('kind', 'sold');
     component.set('buyer', 'named');
     component.set('whoName', '  Museo Nacional Centro de Arte Reina Sofía  ');
     await component.add();
@@ -254,14 +340,17 @@ describe('the record on an artwork page', () => {
 
     fixture.nativeElement.querySelector('.record-add').click();
     fixture.detectChanges();
-    const whenSelling = fixture.nativeElement.querySelectorAll('mat-form-field').length;
 
     const component = fixture.componentInstance as unknown as {
       set: (field: string, value: unknown) => void;
       naming: () => boolean;
     };
 
-    for (const kind of ['sold', 'acquired', 'collection']) {
+    component.set('kind', 'sold');
+    fixture.detectChanges();
+    const whenSelling = fixture.nativeElement.querySelectorAll('mat-form-field').length;
+
+    for (const kind of ['sold', 'collection']) {
       component.set('kind', kind);
       expect(component.naming()).toBe(true);
     }
@@ -271,7 +360,7 @@ describe('the record on an artwork page', () => {
       fixture.detectChanges();
       expect(component.naming()).toBe(false);
       expect(fixture.nativeElement.querySelectorAll('mat-form-field').length).toBeLessThan(
-        whenSelling,
+        whenSelling
       );
     }
   });

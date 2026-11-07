@@ -6,6 +6,176 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "34",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2018,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "35",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "37",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2017,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "43",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "44",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "45",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "46",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "47",
     "entries": [
       {
@@ -20,6 +190,50 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "venue": {
             "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "48",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "49",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
           },
           "city": "Sevilla",
           "country": "spain"
@@ -117,6 +331,50 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   },
   {
     "tokenId": "54",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "56",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "57",
     "entries": [
       {
         "kind": "exhibited",
@@ -772,6 +1030,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "venue": {
             "en": "No-Lugar"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "107",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
           },
           "city": "Sevilla",
           "country": "spain"
