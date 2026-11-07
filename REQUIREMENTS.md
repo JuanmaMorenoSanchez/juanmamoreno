@@ -5335,7 +5335,22 @@ same thing in nearly the same words.
 It was one entry of two hundred and fifty lines. That entry cited five spec
 files, silently left out two more holding sixteen tests, and miscounted a third
 — which is what one `Proven by:` over a dozen behaviours does.
+**And it does not hold the page while it loads.** It builds fourteen sprites
+out of seven cuts at load, and that work used to run as hand-written pixel
+loops: twenty-eight reads back out of the gpu and eighteen million iterations,
+measured in Chrome as **a single 2,350 ms task** with the page frozen for all
+of it — on a desktop, so several times that on a phone. The cuts are now
+applied as a composite ([R209](#r209)) and the worst task is **386 ms**, with
+43 MB less canvas allocated.
+
+**Nothing ran the published pieces until now.** They are the only part of the
+site rendered on the client, so `verify-render` never opens one; jsdom has no
+canvas, so no unit test executes a line of one; and a `setup` that throws is
+caught, written to the console and left as a blank canvas — a piece could stop
+existing without failing anything or telling the reader.
 *Proven by:* `registry.spec.ts` "holds exactly the three that are published"
+and `published-sketches.test.mjs` (3 tests, one per published piece: each
+draws a picture rather than a blank canvas, and sets up without complaint)
 *Checked by:* Chrome, driven by the e2e harness, at 1280×720 and 520×900 — no
 console errors, the scene measurably answers the pointer in both, and the draw
 loop holds 120 frames a second with every effect below running.
@@ -5356,9 +5371,23 @@ average of paint he put down.
 
 Holes inside the cuts are closed on the way out, and whatever none of the three
 figures claims is given to the ground, so the four together leave no gap.
-*Proven by:* nothing automated. The cuts, the fill and the depth map are assets
-made once in the atelier; what catches a regression is the Chrome check in
-[R171](#r171).
+
+**A cut is put on the paint by the gpu, not by hand.** The cut files are 8-bit
+greyscale and opaque everywhere, so one pass per cut moves the grey into the
+alpha and then every state wearing that cut is two draws and a
+`destination-in`. It used to read both pictures back and copy the mask's red
+channel into the painting's alpha, once per state rather than once per cut,
+which cost the page over two seconds of its load ([R171](#r171)). The sprite
+is the same one: measured against the old loop on all eight real pairs, the
+alpha is identical — one part in 255 on the two where the cut and the paint
+are different sizes — and the paint differs by **one part in 255 where the
+sprite is opaque**, because a composite works premultiplied and the loop did
+not.
+*Proven by:* the cuts, the fill and the depth map are assets made once in the
+atelier, and nothing automated can check a cut is in the right place. That the
+cuts are applied at all, rather than leaving a blank page, is
+`published-sketches.test.mjs` "ipad-light draws a picture" — which fails on a
+single wrong key in that wiring.
 
 ### R210 — Screenlight drifts on its own, never stops, and cannot be thrown · met
 A painting that moves only when touched is a still painting most of the time,

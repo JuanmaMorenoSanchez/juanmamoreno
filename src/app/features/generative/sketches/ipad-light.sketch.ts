@@ -11,8 +11,9 @@ import { Frame, loadImages, Sketch } from './sketch';
 const IMAGES_ROUTE = 'assets/images/canvases/';
 
 /**
- * The four cuts the painting comes apart into, farthest first, and how near
- * each one is.
+ * The three cuts the painting comes apart into, farthest first, and how near
+ * each one is. With the ground behind them, which is not a cut but the whole
+ * landscape, that is the four layers the scene is built from.
  *
  * These are his cuts, made in the atelier: each one is the painting with
  * everything outside it made transparent, and no model has invented a pixel
@@ -55,6 +56,21 @@ const MOST_LIGHT = 0.9;
 
 /** The colour of the light itself, which is the cold white of a screen. */
 const SCREEN_LIGHT: Cast = { red: 0xc4, green: 0xd4, blue: 0xec };
+
+/**
+ * Where dimming turns into brightening, and how far each side reaches.
+ *
+ * The glow runs 0.45 to 1.15, and the span is the longer half of that, so
+ * brightening is at full strength only at the very top of its range: a shorter
+ * span holds there instead, and a forehead that stays white has stopped being
+ * a screen and become a lamp.
+ *
+ * Here rather than beside the light, because the snow is lit from the same
+ * reading and was working it out again from its own copy of these two numbers.
+ * Two copies of where the light turns over is a tuning that half takes.
+ */
+const MIDDLE = 0.78;
+const SPAN = 0.37;
 
 /**
  * How far a cast is carried into the paint, at its strongest.
@@ -309,15 +325,24 @@ export class IpadLightSketch implements Sketch {
     this.canvases = CANVASES.map((canvas) => images[canvas]);
     this.groundParallax = new Parallax(GROUND, SHIFT, EASE);
 
+    // Each cut turned into alpha once, rather than once per state that wears
+    // it: there are seven cuts and fourteen sprites, and the conversion is
+    // the one thing here that has to read pixels back out of the gpu.
+    const shapes: Record<string, HTMLCanvasElement> = {};
+    for (const each of CUTS) shapes[each.name] = shapeOf(images[each.name]);
+    for (const also of new Set(Object.values(ALSO).flat())) {
+      shapes[`${also}-cut`] = shapeOf(images[`${also}-cut`]);
+    }
+
     this.layers = CUTS.map((each) => {
       // The painting's own, then the daylight canvas through the same cut —
       // one extra picture serves all three figures, because the two states
       // were painted on the same canvas and the cuts fit both to within a
       // pixel — then whatever else this one has, each with its own.
       const states = [
-        cut(images['painting'], images[each.name]),
-        ...CANVASES.map((canvas) => cut(images[canvas], images[each.name])),
-        ...(ALSO[each.name] ?? []).map((also) => cut(images[also], images[`${also}-cut`])),
+        cut(images['painting'], shapes[each.name]),
+        ...CANVASES.map((canvas) => cut(images[canvas], shapes[each.name])),
+        ...(ALSO[each.name] ?? []).map((also) => cut(images[also], shapes[`${also}-cut`])),
       ];
       return {
         states,
@@ -554,16 +579,8 @@ export class IpadLightSketch implements Sketch {
     const x = this.frame.x + (rides?.x ?? 0) * scale;
     const y = this.frame.y + (rides?.y ?? 0) * scale;
 
-    // Where the two cross, and how far each side reaches. The glow runs 0.45
-    // to 1.15, and the span is the longer half of that, so brightening is at
-    // full strength only at the very top of its range: a shorter span holds
-    // there instead, and a forehead that stays white has stopped being a
-    // screen and become a lamp.
-    const middle = 0.78;
-    const span = 0.37;
-
     if (this.unlit) {
-      const dim = clamp((middle - level) / span, 0, 1) * 0.75;
+      const dim = clamp((MIDDLE - level) / SPAN, 0, 1) * 0.75;
       if (dim > 0) {
         ctx.save();
         ctx.globalAlpha = dim;
@@ -572,7 +589,7 @@ export class IpadLightSketch implements Sketch {
       }
     }
 
-    const bright = clamp((level - middle) / span, 0, 1) * MOST_LIGHT;
+    const bright = clamp((level - MIDDLE) / SPAN, 0, 1) * MOST_LIGHT;
     if (bright <= 0) return;
     const how = this.glow.colouring(t) * bright * SO_MUCH;
     const tint = this.glow.tint(t);
@@ -744,7 +761,7 @@ export class IpadLightSketch implements Sketch {
     const scale = Math.max(this.width, this.height) / 1000;
 
     const level = this.glow.at(t);
-    const bright = clamp((level - 0.78) / 0.37, 0, 1) * MOST_LIGHT;
+    const bright = clamp((level - MIDDLE) / SPAN, 0, 1) * MOST_LIGHT;
     const tint = this.glow.tint(t);
     const how = this.glow.colouring(t);
     const lit = rounded(mix(SCREEN_LIGHT, tint, Math.min(0.45, how)));
@@ -829,35 +846,60 @@ export class IpadLightSketch implements Sketch {
 /**
  * One cut: the painting, with everything outside the mask made transparent.
  *
- * The mask is a grey image and carries the cut alone, because the colour is
- * already in the painting and keeping four copies of it would be four copies
- * of the same paint. Done once at load: a pass over a megapixel per cut.
+ * The cut is kept apart from the paint, because the colour is already in the
+ * painting and keeping a copy of it per state would be six copies of the same
+ * paint. It arrives from `shapeOf` already carrying its shape in alpha, so
+ * this is two draws and no pixel work at all: `destination-in` keeps the paint
+ * exactly where the cut is.
+ *
+ * It used to read both pictures back out of the gpu and copy the mask's red
+ * channel into the painting's alpha by hand, for every one of the fourteen
+ * sprites — twenty-eight readbacks and eighteen million iterations, which was
+ * most of the two and a third seconds this page spent frozen at load. The
+ * sprite that comes out is the same one: the alpha is identical, and the paint
+ * differs by one part in 255 where the sprite is opaque, because a composite
+ * works premultiplied and the hand-written loop did not.
  */
-function cut(painting: HTMLImageElement, mask: HTMLImageElement): HTMLCanvasElement {
-  const wide = painting.naturalWidth;
-  const high = painting.naturalHeight;
-
+function cut(painting: HTMLImageElement, shape: HTMLCanvasElement): HTMLCanvasElement {
   const sprite = document.createElement('canvas');
-  sprite.width = wide;
-  sprite.height = high;
-
-  const read = document.createElement('canvas');
-  read.width = wide;
-  read.height = high;
-  const reading = read.getContext('2d', { willReadFrequently: true });
+  sprite.width = painting.naturalWidth;
+  sprite.height = painting.naturalHeight;
   const onto = sprite.getContext('2d');
-  if (!reading || !onto) return sprite;
+  if (!onto) return sprite;
 
-  reading.drawImage(painting, 0, 0);
-  const paint = reading.getImageData(0, 0, wide, high);
-
-  reading.clearRect(0, 0, wide, high);
-  reading.drawImage(mask, 0, 0, wide, high);
-  const shape = reading.getImageData(0, 0, wide, high);
-
-  for (let at = 0; at < paint.data.length; at += 4) paint.data[at + 3] = shape.data[at];
-  onto.putImageData(paint, 0, 0);
+  onto.drawImage(painting, 0, 0);
+  onto.globalCompositeOperation = 'destination-in';
+  // Scaled onto the paint: the states were painted at two sizes and each cut
+  // exists at one, in the same proportion, so a cut fits either of them.
+  onto.drawImage(shape, 0, 0, sprite.width, sprite.height);
   return sprite;
+}
+
+/**
+ * A cut with its shape in alpha, which is the form a composite can use.
+ *
+ * The cut files are 8-bit greyscale and so opaque everywhere — white is keep,
+ * black is drop — and `destination-in` reads alpha and nothing else. One pass
+ * per cut moves the grey into the alpha; after that every state wearing that
+ * cut is two draws.
+ */
+function shapeOf(mask: HTMLImageElement): HTMLCanvasElement {
+  const wide = mask.naturalWidth;
+  const high = mask.naturalHeight;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = wide;
+  canvas.height = high;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return canvas;
+
+  ctx.drawImage(mask, 0, 0);
+  const read = ctx.getImageData(0, 0, wide, high);
+  // The colour left behind is the grey itself, and never read: a composite
+  // taking alpha does not care what sits under it.
+  for (let at = 0; at < read.data.length; at += 4) read.data[at + 3] = read.data[at];
+  ctx.putImageData(read, 0, 0);
+  return canvas;
 }
 
 /**

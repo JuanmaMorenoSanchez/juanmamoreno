@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.10
+
+- **fix** Screenlight no longer freezes the page while it loads. It builds
+  fourteen sprites out of seven cuts, and each one was done as a hand-written
+  pixel loop over two gpu readbacks — one 2,350 ms frozen task on a desktop,
+  several times that on a phone. Each cut is now turned into alpha once and
+  applied as a composite: the worst task is 386 ms and 43 MB less canvas is
+  allocated. The sprite that comes out is the same one, measured on all eight
+  real pairs.
+- **fix** Where the screen's light turns from dimming to brightening was
+  written down twice — once beside the light and once again in the snow that
+  the same light falls on — so retuning it would have half taken.
+- **chore** The three published generative pieces are run in Chrome by the
+  e2e suite. Nothing exercised them: they are rendered on the client, so the
+  build's own check never opens one, and a piece whose setup throws is logged
+  to the console and left as a blank page.
+
 ## 2.62.9
 
 - **fix** The architecture diagram's type was raised now that it no longer
