@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.64.0
+
+- **feat** Shift and an arrow walks the catalogue from the keyboard, announced
+  on the two buttons with `aria-keyshortcuts`. The bare arrows still belong to
+  the viewer, and nothing fires while a text box has the keys.
+
 ## 2.63.1
 
 - **fix** The strip under a painting offers twelve thumbnails at least, and

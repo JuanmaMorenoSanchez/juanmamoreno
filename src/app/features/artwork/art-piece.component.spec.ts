@@ -506,6 +506,51 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
     expect(showing.nearbySpan()).toBe('2019');
   });
 
+  /**
+   * Shift and an arrow walks the catalogue from the keyboard. The buttons were
+   * reachable by tab already; this is the one control a reader walking the
+   * catalogue presses over and over, and it was eleven tab stops away.
+   */
+  it('walks the catalogue on shift and an arrow', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [...many('2022', 10), reading, ...many('2018', 10)]);
+    const went: string[] = [];
+    showing['router'].navigateByUrl = (url: string) => {
+      went.push(url);
+      return Promise.resolve(true);
+    };
+
+    showing['walkByKey'](new KeyboardEvent('keydown', { key: 'ArrowRight', shiftKey: true }));
+    showing['walkByKey'](new KeyboardEvent('keydown', { key: 'ArrowLeft', shiftKey: true }));
+
+    expect(went).toHaveLength(2);
+    expect(went[0]).not.toBe(went[1]);
+  });
+
+  it('leaves the bare arrows to the viewer, and a text box to whoever is typing', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [...many('2022', 10), reading, ...many('2018', 10)]);
+    const went: string[] = [];
+    showing['router'].navigateByUrl = (url: string) => {
+      went.push(url);
+      return Promise.resolve(true);
+    };
+
+    // No shift: the viewer's own arrows, which move between photographs.
+    showing['walkByKey'](new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+
+    // Shift and an arrow in a text box selects a character; he edits the
+    // record on this page.
+    const box = document.createElement('input');
+    document.body.appendChild(box);
+    const typing = new KeyboardEvent('keydown', { key: 'ArrowRight', shiftKey: true });
+    Object.defineProperty(typing, 'target', { value: box });
+    showing['walkByKey'](typing);
+    box.remove();
+
+    expect(went).toHaveLength(0);
+  });
+
   /** Nothing else in the catalogue at all: no heading over an empty row. */
   it('offers nothing when the painting is the only one there is', () => {
     const reading = inYear('500', '2020');

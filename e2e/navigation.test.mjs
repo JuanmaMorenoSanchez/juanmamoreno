@@ -669,6 +669,37 @@ describe('walking the catalogue from a painting', () => {
 
     await page.close();
   });
+
+  /**
+   * Shift and an arrow, which is the gesture the buttons announce with
+   * `aria-keyshortcuts`. The bare arrows belong to the viewer and move
+   * between the photographs of one painting, so this checks both: that the
+   * shifted pair walks the catalogue and that the unshifted one does not.
+   */
+  it('walks the catalogue on shift and an arrow, and leaves the bare arrows alone', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/66');
+    await page.waitForSelector('[aria-keyshortcuts="Shift+ArrowRight"]', READY);
+
+    await page.keyboard.press('Shift+ArrowRight');
+    await page.waitForFunction(() => !location.pathname.includes('/artwork/66'), undefined, READY);
+    const forward = new URL(page.url()).pathname;
+
+    await page.keyboard.press('Shift+ArrowLeft');
+    await page.waitForFunction(() => location.pathname.includes('/artwork/66'), undefined, READY);
+
+    assert.notEqual(forward, '/artwork/66', 'shift and an arrow went nowhere');
+
+    // The viewer's own arrows move between the photographs of this painting,
+    // and must not take the reader off it.
+    await page.locator('.image-container').focus();
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(500);
+    assert.match(new URL(page.url()).pathname, /\/artwork\/66\/?$/, 'a bare arrow left the page');
+
+    await page.close();
+  });
 });
 
 /**

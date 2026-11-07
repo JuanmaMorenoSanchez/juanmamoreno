@@ -52,11 +52,18 @@
     -->
     @if (hasNextArtPiece()) {
       <span viewer-trail class="walk">
+        <!--
+          The shortcut is announced rather than spelled into the name: a
+          screen reader reads `aria-keyshortcuts` as a shortcut, and reads a
+          name with "(⇧ ←)" in it as part of the name. The tooltip carries it
+          for everybody else, which is where a sighted reader finds it.
+        -->
         <button
           mat-icon-button
           [attr.aria-label]="'previousArtwork' | translate"
-          [matTooltip]="'previousArtwork' | translate"
+          [matTooltip]="('previousArtwork' | translate) + ' (⇧ ←)'"
           matTooltipPosition="below"
+          aria-keyshortcuts="Shift+ArrowLeft"
           (click)="goToPreviousArtPiece()"
         >
           <mat-icon>skip_previous</mat-icon>
@@ -64,8 +71,9 @@
         <button
           mat-icon-button
           [attr.aria-label]="'nextArtwork' | translate"
-          [matTooltip]="'nextArtwork' | translate"
+          [matTooltip]="('nextArtwork' | translate) + ' (⇧ →)'"
           matTooltipPosition="below"
+          aria-keyshortcuts="Shift+ArrowRight"
           (click)="goToNextArtPiece()"
         >
           <mat-icon>skip_next</mat-icon>

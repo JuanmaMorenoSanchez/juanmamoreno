@@ -1599,6 +1599,17 @@ is oldest first here.
 the forward one, so the catalogue could be walked in one direction and the way
 back was the browser's own button. It also stepped to `/artwork/5`, an English
 address, from the Spanish page.
+
+**From the keyboard, shift and an arrow.** The buttons are buttons and were
+reachable by tab already, but that is eleven tab stops from the top of the
+page to reach the one control a reader walking the catalogue presses over and
+over. Shift because the bare arrows are taken — inside the viewer they move
+between the photographs of this painting — and the shifted pair reads as the
+same gesture one level up. Announced on the buttons with `aria-keyshortcuts`
+rather than spelled into their names, since a screen reader reads the first as
+a shortcut and the second as part of the name; the tooltip carries it for
+everybody else. Never while anything is being typed into: he edits the record
+on this page, and shift and an arrow in a text box selects a character.
 *Proven by:* `art-piece.component.spec.ts` "the paintings offered under the
 painting" (6 tests: that the window is centred, that it goes to one side at
 the end of the catalogue, that it never draws the whole grid from one year,
@@ -1609,8 +1620,11 @@ exactly the artworks a caller names, and no others"; and in the browser,
 `e2e/navigation.test.mjs` "walking the catalogue from a painting" (2 tests:
 that the grid is whole rows of at least two, counted against the grid's own
 column count, and that the two buttons step to the next painting and back
-again without leaving Spanish) — the page, the grid and the links agreeing,
-which a unit test with the template stripped out cannot see
+again without leaving Spanish, and that shift and an arrow walks the catalogue
+while a bare arrow does not) — the page, the grid and the links agreeing,
+which a unit test with the template stripped out cannot see; and
+`art-piece.component.spec.ts` "walks the catalogue on shift and an arrow",
+"leaves the bare arrows to the viewer, and a text box to whoever is typing"
 
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less

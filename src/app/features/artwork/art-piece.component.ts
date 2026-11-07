@@ -85,6 +85,11 @@ const LEAST_THUMBNAILS = 12;
     CertificateButtonComponent,
     SoldToggleComponent,
   ],
+  // On the document rather than on this element: the page is read by
+  // scrolling, so by the time a reader wants the next painting the focus is
+  // usually on nothing in particular, and a listener on the component would
+  // answer only while something inside it happened to be focused.
+  host: { '(document:keydown)': 'walkByKey($event)' },
 })
 export class ArtPieceComponent {
   private router = inject(Router);
@@ -437,6 +442,32 @@ export class ArtPieceComponent {
    */
   goToPreviousArtPiece(): void {
     this.step(-1);
+  }
+
+  /**
+   * Shift and an arrow walks the catalogue from the keyboard.
+   *
+   * The buttons were reachable by tab already — they are buttons — but that is
+   * eleven tab stops from the top of the page to reach the one control a
+   * reader walking the catalogue presses over and over.
+   *
+   * Shift because the bare arrows are taken: inside the viewer they move
+   * between the photographs of *this* painting, and the shifted pair reads as
+   * the same gesture one level up. Angular's `keydown.arrowRight` requires an
+   * exact modifier match, so the two cannot both fire.
+   *
+   * Never while anything is being typed into. He edits the record on this
+   * page, and Shift and an arrow in a text box selects a character.
+   */
+  protected walkByKey(event: KeyboardEvent): void {
+    if (!event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+
+    const from = event.target as HTMLElement | null;
+    if (from?.closest('input, textarea, select, [contenteditable="true"]')) return;
+
+    event.preventDefault();
+    this.step(event.key === 'ArrowRight' ? 1 : -1);
   }
 
   private step(by: 1 | -1): void {
