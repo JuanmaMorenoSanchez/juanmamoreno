@@ -5550,12 +5550,32 @@ fit, with all five spent below the window** — a plain cover fit laid the paint
 edge of the canvas along the bottom of the screen, where an edge seen end-on
 reads as a crop.
 
+**That holds only up to the canvas's own shape.** Past it the rule was being
+applied where it does harm: a portrait canvas made to cover a landscape window
+is enlarged until almost all of it is outside, so at 1600×900 the page was a
+detail of her shoulder with no sky, no horizon and nothing of the composition.
+A window **wider than the canvas** now shows the whole painting and leaves the
+room over as black at the sides, measured at 408 px either side at 1600×900,
+with the drawn shape within 0.2% of the canvas's own. A window taller than the
+canvas is untouched: a phone is still filled edge to edge.
+
+Short of the full height by **the ground's own travel**, which is under one per
+cent. The landscape is drawn whole there and the window edge is no longer past
+it, so the 4 px the ground moves would otherwise open and close a band of page
+along the top; the inset is exactly that distance, so the band never closes and
+never grows. **And the drawing is clipped to the canvas**, which costs nothing
+on a tall window where the frame is already bigger than the screen: on a wide
+one it keeps snow from falling down the black beside the painting and a torn
+strip from being shoved out onto it.
+
 **1.5 MB of assets** for a 3000×3180 original: the painting, the filled ground
 and the other state at 1500 px as progressive JPEGs, and the three figures as
 grey cuts of the same size, because a cut has an edge and half resolution would
 show it. The ground's own cut is not shipped — it is an input to the fill.
-*Proven by:* nothing automated; the fit is a line of arithmetic in the sketch
-and the weight is what is in `assets/images/canvases/`
+*Proven by:* `published-sketches.test.mjs` "shows the whole painting, with
+black at the sides" and "still fills a phone edge to edge" — the first fails
+against the old fit with no black at either side. The weight is not checked by
+anything: it is what is in `assets/images/canvases/`.
 
 ### R220 — A browser that refuses storage still shows the catalogue · met
 Every write to the reader's own storage is wrapped so that a refusal costs the

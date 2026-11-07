@@ -395,6 +395,16 @@ export class IpadLightSketch implements Sketch {
     ctx.fillStyle = '#07080b';
     ctx.fillRect(0, 0, this.width, this.height);
 
+    // Nothing leaves the canvas. On a window taller than it is wide the frame
+    // is bigger than the window and this does nothing at all; on a wide one
+    // the painting has visible edges, and snow falling down the black beside
+    // it — or a torn strip shoved out onto it — turns the room the painting
+    // is hung in into part of the picture.
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+
     const scale = Math.max(width, height) / 1000;
     // The focus stays on her; what travels is how much of the distance is
     // soft with her.
@@ -430,6 +440,7 @@ export class IpadLightSketch implements Sketch {
     this.drawFar(ctx, softness, frame.t);
     this.drawScreen(ctx, frame.t, scale);
     this.drawSnow(ctx, frame.dt, frame.t);
+    ctx.restore();
   }
 
   /**
@@ -809,14 +820,20 @@ export class IpadLightSketch implements Sketch {
   }
 
   /**
-   * Cover-fit, grown by `GROWS`, anchored so the growth leaves at the bottom.
+   * How the canvas sits in the window, which depends on their two shapes.
    *
    * The painting's shape is the painting's and is not negotiable, so a window
-   * of another shape loses some of the canvas rather than stretching it. What
-   * it loses is the top: the sky and the skyline are the part that repeats,
-   * and the face and the screen at the bottom are the part this is about. The
-   * extra five per cent is spent entirely below the window, which is where the
-   * painted edge of the canvas was showing.
+   * of another shape either loses some of the canvas or leaves room over. Up
+   * to a point, losing some is right: a canvas taller than the window loses
+   * the top, where the sky and the skyline are the part that repeats, and
+   * keeps the face and the screen at the bottom, which is what this is about.
+   *
+   * **Past the canvas's own shape it stops being right.** A window wider than
+   * the canvas filled the same way was a detail of her shoulder — at 1600×900,
+   * no sky, no horizon and no composition, because a portrait canvas made to
+   * cover a landscape window is enlarged until almost all of it is outside.
+   * So beyond that point the whole painting is shown and the room left over
+   * is black at the sides, which is what a cinema does with the same problem.
    */
   private measure(): void {
     if (!this.tinted) this.tinted = document.createElement('canvas');
@@ -824,6 +841,27 @@ export class IpadLightSketch implements Sketch {
     this.tinted.height = this.height;
 
     if (!this.painting) return;
+    const shape = this.painting.naturalWidth / this.painting.naturalHeight;
+
+    if (this.width / this.height > shape) {
+      // Short of the full height by the ground's own travel. The landscape is
+      // drawn whole here and the window edge is no longer past it, so a shift
+      // that used to go harmlessly out of sight would open and close a band
+      // of page along the top. Under one per cent, and it never closes.
+      const height = this.height / (1 + (2 * GROUND * SHIFT) / 1000);
+      const width = height * shape;
+      this.frame = {
+        x: (this.width - width) / 2,
+        y: (this.height - height) / 2,
+        width,
+        height,
+      };
+      return;
+    }
+
+    // Cover-fit, grown by `GROWS`, anchored so the growth leaves at the
+    // bottom: the extra five per cent is spent entirely below the window,
+    // which is where the painted edge of the canvas was showing.
     const cover = Math.max(
       this.width / this.painting.naturalWidth,
       this.height / this.painting.naturalHeight

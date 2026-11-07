@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.11
+
+- **feat** Screenlight shows the whole painting on a window wider than its
+  canvas, with black at the sides. Filling a landscape window with a portrait
+  canvas enlarges it until almost all of it is outside: at 1600×900 the page
+  was a detail of her shoulder, with no sky and no composition. A window
+  taller than the canvas is untouched — a phone is still filled edge to edge.
+  The drawing is now clipped to the canvas too, so snow does not fall down
+  the black beside the painting.
+
 ## 2.62.10
 
 - **fix** Screenlight no longer freezes the page while it loads. It builds
