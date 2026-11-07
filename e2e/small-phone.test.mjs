@@ -50,7 +50,10 @@ describe('an artwork page on a 320px phone', () => {
 
     const offscreen = await page.$$eval('.viewer-toolbar button', (buttons) =>
       buttons
-        .map((button) => ({ right: button.getBoundingClientRect().right, label: button.textContent }))
+        .map((button) => ({
+          right: button.getBoundingClientRect().right,
+          label: button.textContent,
+        }))
         .filter((button) => button.right > document.documentElement.clientWidth + 1)
     );
 
@@ -58,6 +61,115 @@ describe('an artwork page on a 320px phone', () => {
     await page.close();
   });
 
+  /**
+   * Three rows of controls above the painting, not four.
+   *
+   * At this width the bar has to wrap whatever it does; what it should not do
+   * is wrap into more rows than the controls need. The three-zone grid put
+   * each zone in its own row and took three; as one row of buttons it takes
+   * two.
+   */
+  it('wraps the viewer toolbar into as few rows as it needs', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/5', 'en-US', SMALL_PHONE);
+    await page.waitForSelector('.viewer-toolbar button', READY);
+
+    const rows = await page.$$eval(
+      '.viewer-toolbar button, .viewer-toolbar a',
+      (controls) => new Set(controls.map((c) => Math.round(c.getBoundingClientRect().top))).size
+    );
+
+    assert.ok(rows <= 2, `the toolbar took ${rows} rows`);
+    await page.close();
+  });
+});
+
+/**
+ * The width of an ordinary phone, where the viewer toolbar fits on one row
+ * and so has a rhythm to get wrong.
+ *
+ * A `1fr` grid column cannot be narrower than what is in it, so once the back
+ * button and the walk pair wanted more than the room left over they stopped
+ * sharing it evenly, and the middle group slid eleven pixels off centre with
+ * a wide gap beside it — three clusters rather than one row.
+ *
+ * Measured on the bar rather than asserted about the css. Artwork 66 because
+ * it has one photograph: nine controls fit a 393px row, where the steps ran
+ * from 40px to 57px against a 40px button and now run 40 to 46. A painting
+ * with several photographs carries four more controls, wraps whatever the
+ * layout, and has no single rhythm to measure — so the test says plainly if
+ * this one stops being the first kind rather than quietly measuring nothing.
+ */
+describe('an artwork page on a 393px phone', () => {
+  const PHONE = { width: 393, height: 851 };
+
+  it('spaces the viewer toolbar evenly', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/artwork/66', 'en-US', PHONE);
+    await page.waitForSelector('.viewer-toolbar button', READY);
+
+    const bar = await page.evaluate(() => {
+      const boxes = [...document.querySelectorAll('.viewer-toolbar button, .viewer-toolbar a')].map(
+        (control) => control.getBoundingClientRect()
+      );
+      return {
+        rows: new Set(boxes.map((box) => Math.round(box.top))).size,
+        steps: boxes.slice(1).map((box, at) => box.left - boxes[at].left),
+      };
+    });
+
+    assert.equal(bar.rows, 1, `artwork 66 no longer fills one row: ${bar.rows} rows`);
+    const widest = Math.max(...bar.steps);
+    const tightest = Math.min(...bar.steps);
+    assert.ok(
+      widest - tightest <= 10,
+      `the toolbar is in clusters: steps from ${tightest}px to ${widest}px`
+    );
+    await page.close();
+  });
+});
+
+/**
+ * The three settings at the foot of the drawer sit on the left edge of the
+ * six words above them.
+ *
+ * The rule that indents them named the theme toggle, which was the only icon
+ * there when it was written. Two more arrived and neither was indented, so
+ * the column ended in one icon on the text's edge and two sixteen pixels to
+ * its left.
+ */
+describe('the menu drawer on a 320px phone', () => {
+  it('lines the settings up with the words above them', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const page = await openPage(browser, '/es', 'es-ES', SMALL_PHONE);
+    await page.waitForSelector('[aria-label="Toggle menu"]', READY);
+    await page.locator('[aria-label="Toggle menu"]').click();
+    await page.waitForSelector('.drawer-content .bar-setting', READY);
+
+    const edges = await page.evaluate(() => {
+      const left = (element) => Math.round(element.getBoundingClientRect().left);
+      const words = [...document.querySelectorAll('.drawer-content button[mat-button]')]
+        .filter((button) => !button.classList.contains('bar-setting'))
+        .map((button) => left(button) + parseFloat(getComputedStyle(button).paddingLeft));
+      const glyphs = [...document.querySelectorAll('.drawer-content .bar-setting mat-icon')].map(
+        left
+      );
+      return { words, glyphs };
+    });
+
+    assert.ok(edges.glyphs.length >= 3, `only ${edges.glyphs.length} settings in the drawer`);
+    const wanted = Math.round(edges.words[0]);
+    for (const glyph of edges.glyphs) {
+      assert.ok(
+        Math.abs(glyph - wanted) <= 2,
+        `a setting sits at ${glyph}px, the words at ${wanted}px`
+      );
+    }
+    await page.close();
+  });
 });
 
 /**
@@ -153,7 +265,11 @@ describe('the catalogue filters on a 320px phone', () => {
     );
 
     assert.equal(boxes.length, 2, 'the catalogue should offer two filters');
-    assert.equal(boxes[0].top, boxes[1].top, `they sit on different rows: ${JSON.stringify(boxes)}`);
+    assert.equal(
+      boxes[0].top,
+      boxes[1].top,
+      `they sit on different rows: ${JSON.stringify(boxes)}`
+    );
     assert.ok(
       Math.abs(boxes[0].width - boxes[1].width) <= 1,
       `they are not equal halves: ${JSON.stringify(boxes)}`

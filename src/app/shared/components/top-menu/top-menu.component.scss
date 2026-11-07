@@ -58,9 +58,16 @@ mat-toolbar-row {
     padding-right: tokens.$spacing-lg;
   }
 
-  // Everything else in the drawer is a full-width row; the lone icon button
-  // would otherwise sit centred in a column of left-aligned words.
-  .theme-toggle {
+  // The three settings share the left edge of the words above them.
+  //
+  // This named `.theme-toggle` and was written when the toggle was the only
+  // icon here — "the lone icon button", the comment said. Two more arrived
+  // beside it and neither got the indent, so the column of left-aligned words
+  // ended in the moon at the right edge of the text and the globe and the
+  // spanner sixteen pixels to its left. The glyph of an icon button sits
+  // `$spacing-md` plus its own six pixels in, which is where a `mat-button`
+  // puts its label, so the three now line up with the six words exactly.
+  .bar-setting {
     align-self: flex-start;
     margin-left: tokens.$spacing-md;
   }

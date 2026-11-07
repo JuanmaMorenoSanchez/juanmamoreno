@@ -1,4 +1,5 @@
 @use '../../../../../styles/tokens';
+@use '../../../../../styles/breakpoints' as bp;
 
 .image-viewer {
   position: relative;
@@ -182,8 +183,10 @@
   // flow (not overlaid on the image).
   //
   // Three-zone grid (start / center / end) instead of a plain flex row: the
-  // outer 1fr columns are always equal width, so whatever sits in the center
-  // column is genuinely centered regardless of how wide start/end are — a
+  // outer 1fr columns take an equal share of what is left over, so the center
+  // column is centered however wide start and end are — until one of them
+  // wants more than its share, which is what the phone rule at the foot of
+  // this block is about. A
   // plain flex row with `margin-left: auto` can only push things to an edge,
   // it can't center a group between two others of unequal width.
   //
@@ -229,6 +232,30 @@
       font-size: 0.85rem;
       font-variant-numeric: tabular-nums;
       user-select: none;
+    }
+
+    // On a phone the three zones stop being three zones.
+    //
+    // A `1fr` column cannot be narrower than what is in it, so once the two
+    // sides want more than the leftover room they stop sharing it evenly and
+    // the middle group slides off centre — measured at eleven pixels on a
+    // 393px screen, and into a third row at 320px. It only began when the
+    // walk gained its second button and the end became wider than the start.
+    //
+    // So below the small breakpoint the bar is one row rather than three
+    // groups: `display: contents` hands the nine buttons to the bar itself,
+    // which spaces and wraps them as one. Gaps measured 40–46px at both 393
+    // and 320, against 40–57 and 40–91 before, and 320 lost a row.
+    @include bp.respond-below(tokens.$breakpoint-sm) {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      .toolbar-start,
+      .toolbar-center,
+      .toolbar-end {
+        display: contents;
+      }
     }
 
     // While the real Fullscreen API is active, only the fullscreened element

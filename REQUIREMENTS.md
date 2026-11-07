@@ -126,9 +126,9 @@ begin with.
 *Proven by:* the colours themselves, and `styles.scss`, which says so where
 `--catalog-faint` is declared
 
-### R222 — Nothing on a 320px phone is cut off or out of reach · met
+### R222 — Nothing on a phone is cut off, out of reach, or out of line · met
 The narrowest screen the site is built for, where two things were lost without
-a word.
+a word — and the ordinary one, where two more were merely crooked.
 
 **The viewer toolbar.** Eight forty-pixel controls are 320 pixels exactly, so
 the row was wider than the phone and the button that opens the next painting
@@ -147,9 +147,30 @@ saw it. The same for this repository's own name in the product page's title.
 `hyphens: auto` is asked for first and is the right break where a browser can
 make it; Chrome on Windows ships no Spanish dictionary, so it does nothing
 there and the word breaks without a hyphen rather than disappearing.
-*Proven by:* `e2e/small-phone.test.mjs` (4 tests — every toolbar control inside
-the viewport, no sideways scroll, no heading with an unreachable end, and the
-page declaring Spanish)
+
+**And the toolbar is one row, evenly spaced, rather than three groups.** A
+`1fr` grid column cannot be narrower than what is in it, so once the back
+button and the walk pair wanted more than the room left over they stopped
+sharing it evenly: the middle group slid eleven pixels off centre on a 393px
+screen with a wide gap beside it, and took a third row at 320. It began when
+the walk gained its second button and the end became wider than the start, and
+it is the three-cluster look rather than anything being unreachable. Below the
+small breakpoint the three zones give their buttons to the bar itself, which
+spaces and wraps them as one row: steps of 40 to 46 pixels against a 40-pixel
+button, where they ran 40 to 57, and two rows at 320 rather than three. Above
+that breakpoint the three zones stand, because back on the left and the walk
+on the right is worth having wherever there is room for it.
+
+**And the three settings in the menu drawer sit on the left edge of the words
+above them.** The rule that indents them named the theme toggle, which was the
+only icon there when it was written — "the lone icon button", it said. Two
+more arrived beside it and neither was indented, so a column of left-aligned
+words ended in the moon on the text's edge and the globe and the spanner
+sixteen pixels to its left.
+*Proven by:* `e2e/small-phone.test.mjs` (7 tests — every toolbar control inside
+the viewport, the toolbar in as few rows as it needs and evenly spaced on an
+ordinary phone, the drawer's settings on the words' own left edge, no sideways
+scroll, no heading with an unreachable end, and the page declaring Spanish)
 
 ### R8 — Links keep the reader's language · met
 Menu, breadcrumb, catalogue and artwork links carry the `/es` prefix when in

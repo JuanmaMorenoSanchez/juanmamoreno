@@ -6,6 +6,138 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "47",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "50",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "51",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "52",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "53",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "54",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "58",
     "entries": [
       {
@@ -61,6 +193,154 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
         "who": {
           "en": "a private collector",
           "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "60",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "61",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2020,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "62",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "63",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "64",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2018,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "65",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
         }
       }
     ]
@@ -376,6 +656,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
             "en": "Aula Magna de Capuchinos"
           },
           "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "83",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
           "country": "spain"
         }
       }
@@ -904,6 +1206,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
             "en": "Aula Magna de Capuchinos"
           },
           "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "198",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
           "country": "spain"
         }
       }

@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.64.1
+
+- **fix** The three settings in the menu drawer line up with the words above
+  them; two of them had never been given the indent the theme toggle has.
+- **fix** The viewer toolbar is one evenly spaced row on a phone rather than
+  three groups, the middle of which had drifted off centre when the walk
+  gained its second button.
+
 ## 2.64.0
 
 - **feat** Shift and an arrow walks the catalogue from the keyboard, announced
