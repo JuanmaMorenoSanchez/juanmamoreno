@@ -1,4 +1,5 @@
 @use '../../../../../styles/tokens';
+@use '../../../../../styles/breakpoints' as bp;
 
 /* The essay below wants room: the two were running together. */
 .artwork-record {
@@ -15,10 +16,18 @@ h2.catalog-subheading {
   text-align: center;
 }
 
+/*
+  Centred under its centred heading, and a step below the essay's size, like
+  the caption over it: the record is what happened to the painting, not the
+  page's argument, and at body size in a left-aligned block it was the loudest
+  text on the page.
+*/
 .record-lines {
   margin: 0;
   padding: 0;
   list-style: none;
+  text-align: center;
+  font-size: bp.fluid-size(0.8125rem, 0.875rem);
 
   /*
     One line an entry. The year had a column of its own and the sentence sat
@@ -27,6 +36,7 @@ h2.catalog-subheading {
   li {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: tokens.$spacing-sm;
     padding: tokens.$spacing-xs 0;
   }

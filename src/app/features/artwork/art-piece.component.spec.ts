@@ -8,6 +8,7 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { provideTranslateService } from '@ngx-translate/core';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
+import { ResponsiveService } from '@shared/services/responsive.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { ArtPieceComponent } from './art-piece.component';
@@ -88,7 +89,6 @@ function setup() {
       nft?.raw?.metadata?.attributes?.find(
         (attribute: { trait_type: string }) => attribute.trait_type === trait
       )?.value ?? '',
-    countCatalogueArtworksInYear: () => 0,
     isFrontalView: () => true,
     sortByYear: (nfts: Nft[]) => nfts,
   };
@@ -207,10 +207,10 @@ describe('ArtPieceComponent — moving to the next painting', () => {
   });
 
   /**
-  * The descriptions come over the network and can answer out of order. An
-  * answer for the painting the reader has already left must not land on the
-  * one they are looking at.
-  */
+   * The descriptions come over the network and can answer out of order. An
+   * answer for the painting the reader has already left must not land on the
+   * one they are looking at.
+   */
   it('ignores a description that arrives after the reader has moved on', () => {
     const { fixture, paramMap, answerAbout } = setup();
 
@@ -223,13 +223,14 @@ describe('ArtPieceComponent — moving to the next painting', () => {
 });
 
 /**
- * Every photograph of a painting is its own token with its own certificate,
- * and the seal used to open whichever one was on screen — so pressing it while
- * looking at a detail produced a certificate of that detail, with the detail's
- * own photograph in it. What it should always open is the certificate of the
- * painting.
+ * Every photograph of a painting is its own token, and two things on the page
+ * belong to the painting rather than to the photograph being looked at: the
+ * certificate — the seal used the token on screen, so pressing it while looking
+ * at a detail produced a certificate of that detail — and the record, which is
+ * kept against the painting's own token, so switching to a detail emptied the
+ * section. Both ask by `paintingNft`.
  */
-describe('ArtPieceComponent — which certificate the seal opens', () => {
+describe('ArtPieceComponent — what belongs to the painting, not the photograph', () => {
   afterEach(() => TestBed.resetTestingModule());
 
   const photograph = (tokenId: string, imageType: string, version?: string): Nft => ({
@@ -268,9 +269,7 @@ describe('ArtPieceComponent — which certificate the seal opens', () => {
             getNftFetchableUrls: () => [],
             getLatestVersion: (nfts: Nft[]) => artworkLogic.getLatestVersion(nfts),
             filterFrontalArtworks: (nfts: Nft[]) => artworkLogic.filterFrontalArtworks(nfts),
-            getTraitValue: (nft: Nft, trait: VALIDTRAITS) =>
-              artworkLogic.getTraitValue(nft, trait),
-            countCatalogueArtworksInYear: () => 0,
+            getTraitValue: (nft: Nft, trait: VALIDTRAITS) => artworkLogic.getTraitValue(nft, trait),
             isFrontalView: () => true,
             sortByYear: (nfts: Nft[]) => nfts,
           },
@@ -308,7 +307,7 @@ describe('ArtPieceComponent — which certificate the seal opens', () => {
     );
 
     expect(page.nft().tokenId).toBe('153');
-    expect(page.certificateNft().tokenId).toBe('152');
+    expect(page.paintingNft().tokenId).toBe('152');
   });
 
   /** A painting photographed again: the certificate is the photograph it is now. */
@@ -322,10 +321,10 @@ describe('ArtPieceComponent — which certificate the seal opens', () => {
       2
     );
 
-    expect(page.certificateNft().tokenId).toBe('200');
+    expect(page.paintingNft().tokenId).toBe('200');
   });
 
-  it("says the painting’s measurements, whichever photograph is on screen", () => {
+  it('says the painting’s measurements, whichever photograph is on screen', () => {
     const page = showing(
       [photograph('152', VIEW_TYPES.FRONTAL), photograph('153', VIEW_TYPES.DETAIL)],
       1
@@ -338,6 +337,128 @@ describe('ArtPieceComponent — which certificate the seal opens', () => {
   it('falls back to what is on screen when there is no frontal view', () => {
     const page = showing([photograph('153', VIEW_TYPES.DETAIL)], 0);
 
-    expect(page.certificateNft().tokenId).toBe('153');
+    expect(page.paintingNft().tokenId).toBe('153');
+  });
+
+  /**
+   * The record the page asks for while a detail is on screen. A detail has no
+   * record of its own and never will: what was exhibited and sold is the
+   * painting, so asking by the token on screen emptied the section.
+   */
+  it('keeps the record on the painting while a detail is being looked at', () => {
+    const page = showing(
+      [photograph('156', VIEW_TYPES.FRONTAL), photograph('157', VIEW_TYPES.DETAIL)],
+      1
+    );
+
+    expect(page.nft().tokenId).toBe('157');
+    expect(page.paintingNft().tokenId).toBe('156');
+  });
+});
+
+/**
+ * The strip of thumbnails under the painting.
+ *
+ * It was the painting's own year and nothing else, so a year holding two
+ * paintings offered one tile, and a year holding only this one offered a
+ * heading over an empty row. It now widens outwards a year at a time until
+ * there are two rows of them.
+ */
+describe('ArtPieceComponent — the years offered under the painting', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  const inYear = (tokenId: string, year: string): Nft => ({
+    tokenId,
+    name: `Painting ${tokenId}`,
+    image: { thumbnailUrl: `https://cdn.test/${tokenId}` },
+    raw: {
+      metadata: {
+        attributes: [
+          { trait_type: VALIDTRAITS.IMAGETYPE, value: VIEW_TYPES.FRONTAL },
+          { trait_type: VALIDTRAITS.YEAR, value: year },
+        ],
+      },
+    },
+  });
+
+  const many = (year: string, count: number): Nft[] =>
+    Array.from({ length: count }, (_unused, at) => inYear(`${year}-${at}`, year));
+
+  /** Three columns, so two rows is six thumbnails, whatever jsdom's width is. */
+  const page = (reading: Nft, catalogue: Nft[]) => {
+    TestBed.configureTestingModule({
+      imports: [ArtPieceComponent],
+      providers: [
+        provideTranslateService(),
+        provideRouter([]),
+        {
+          provide: ResponsiveService,
+          useValue: { displayMobileLayout: new BehaviorSubject(false) },
+        },
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtworkViewsObservable: () => of([reading]),
+            getArtPiecesObservable: () => of(catalogue),
+            getArtPieceDescriptions: () => of(null),
+            getNftFetchableUrls: () => [],
+            getLatestVersion: (nfts: Nft[]) => nfts[0] ?? null,
+            filterFrontalArtworks: (nfts: Nft[]) => nfts,
+            getTraitValue: (nft: Nft, trait: VALIDTRAITS) =>
+              new Artwork().getTraitValue(nft, trait),
+            isFrontalView: () => true,
+            sortByYear: (nfts: Nft[]) => nfts,
+          },
+        },
+        { provide: PostedArtworksService, useValue: { getInstagramPermalink: () => of(null) } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(new Map([['id', reading.tokenId]])),
+            snapshot: { paramMap: new Map() },
+          },
+        },
+      ],
+    });
+    TestBed.overrideComponent(ArtPieceComponent, { set: { template: '', imports: [] } });
+
+    const fixture = TestBed.createComponent(ArtPieceComponent);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  };
+
+  /** A year that fills the rows by itself is still shown by itself. */
+  it('stays on the painting’s own year when that year has enough', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [reading, ...many('2020', 8), ...many('2016', 5)]);
+
+    expect(showing.nearbySpan()).toBe('2020');
+    expect(showing.hasMoreArtworks()).toBe(true);
+  });
+
+  /**
+   * The painting is the only one of 2020, so its own year contributes nothing
+   * and drops back out of the range: the heading names a range with paintings
+   * in it, not the years the search walked through.
+   */
+  it('widens outwards, later first, until two rows are filled', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [
+      reading,
+      ...many('2021', 2),
+      ...many('2019', 2),
+      ...many('2018', 3),
+      ...many('2016', 5),
+    ]);
+
+    expect(showing.nearbySpan()).toBe('2018–2021');
+  });
+
+  /** Nothing else in the catalogue at all: no heading over an empty row. */
+  it('offers nothing when the painting is the only one there is', () => {
+    const reading = inYear('500', '2020');
+    const showing = page(reading, [reading]);
+
+    expect(showing.hasMoreArtworks()).toBe(false);
   });
 });

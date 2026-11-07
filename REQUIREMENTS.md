@@ -677,6 +677,13 @@ certificates pages, where the same heading names a panel rather than a section
 of a painting's page — so the one heading on that page that was not centred was
 this one.
 
+**And so are the lines, a size below the essay.** The record is what has become
+of the painting, not the page's argument about it: at body size in a block
+against the left edge it was the loudest text under the picture, and the only
+block there that did not sit on the page's centre line. It wears the caption's
+size — the same fluid step the essay uses, one notch down — so the column reads
+heading, sheet, record, essay without a change of voice.
+
 **Absent for a reader when there is nothing to say.** Most of the catalogue has
 no record and a heading over an empty list is worse than no heading. He sees it
 either way, because an empty record is the one he needs in order to add a first
@@ -1555,6 +1562,36 @@ then.
 `write-404.mjs`, which exits 1 rather than writing nothing if `index.html` is
 not there.
 
+### R226 — The strip under a painting is always worth looking at · met
+Under the painting, a grid of other paintings near it in time: its own year
+first, then outwards a year at a time — later, then earlier — until there are
+at least two rows of thumbnails, which is six on a phone and twelve on a
+desktop.
+
+It was the painting's own year and nothing else. That is right for 2024, which
+has thirty, and wrong for everything thin: a year holding two paintings offered
+one tile, and the years holding one offered a heading over an empty row,
+because the one painting of that year is the one being read. A reader who has
+just looked at something and wants more of it is not asking for that calendar
+year, they are asking for what is near it.
+
+**Outwards rather than down the catalogue**, because the year is the only
+ordering a painter's work has that a reader can feel — what came just before
+and just after this is a sequence, the next twelve tiles in store order are
+not. **Later before earlier** on each step, so an evenly filled catalogue
+reads forwards.
+
+**And the heading names a range that has paintings in it.** The search walks
+through every year between its ends, including the empty ones and including the
+painting's own year when the painting being read is all of it; those drop back
+out before the range is named, so "More on 2018–2021" never credits a year with
+nothing to show. One year left over says just the year, as it always did.
+*Proven by:* `art-piece.component.spec.ts` "the years offered under the
+painting" (3 tests: that a year which fills the rows by itself stays alone,
+that a year holding only the painting being read widens outwards and drops
+itself from the range, and that a painting with nothing else in the catalogue
+gets no heading at all)
+
 ### R30 — The result downloads as a JPEG · met
 The corrected painting is offered as JPEG at quality 95, which discards far less
 than the camera already did in making the file it came from.
@@ -1578,10 +1615,11 @@ give the catalogue several addresses for the same paintings.
 The choice lives in a service because the two halves are nowhere near each
 other — the picker is in the breadcrumb at the top of every page, the grid that
 answers to it is the catalogue's own component, which is also rendered as the
-"more from this year" widget on each artwork page. That widget is left showing
-everything: the section around it decides whether to appear by counting every
-painting of the year, so narrowing its contents would leave a heading standing
-over an empty row.
+strip of nearby paintings on each artwork page (R226). That widget is left
+showing everything: the section around it decides whether to appear, and how
+many years to reach for, by counting paintings without regard to this — so
+narrowing its contents afterwards would leave a heading standing over a row
+with holes in it, or over no row at all.
 The two pickers read as one pair: both name themselves above the box, and the
 value underneath sits on the same line as the words in the chips beside them.
 The year keeps its label up although it is always empty — it clears itself
@@ -1615,7 +1653,7 @@ not collapse — it keeps the height it had when it was full, some seventeen
 thousand pixels — which put the message far below the fold on a page that
 looked simply blank.
 
-The "more from this year" strip on an artwork page says nothing, having no
+The strip of nearby paintings on an artwork page says nothing, having no
 controls of its own to blame.
 *Proven by:* `art-pieces-list.component.spec.ts` (4 tests),
 `e2e/navigation.test.mjs` "a catalogue narrowed to nothing" (4 tests, one of
@@ -1624,7 +1662,7 @@ which checks where on the page the message lands)
 ### R45 — The catalogue is remembered as the reader left it · met
 How it was sorted and in which direction, kept on the reader's own device and
 never sent anywhere. A stored value the site has no case for is ignored rather
-than obeyed, and the "more from this year" grid on an artwork page — which
+than obeyed, and the strip of nearby paintings on an artwork page — which
 carries no controls of its own — never writes to it.
 
 Filtering by material was tried and taken out again: it put rows of controls
@@ -1832,7 +1870,24 @@ Held to the same rule as everything else on that page: it belongs to the
 painting on screen. Moving to the next one drops it, and an answer arriving
 after the reader has moved on is ignored rather than pointing them at a post
 about a different painting.
-*Proven by:* `art-piece.component.spec.ts` (2 tests)
+
+**And it is never written into a built page.** A post is somebody else's to
+delete, so whether one is there is only true at the moment it is asked — and
+the build was baking the answer into the html of 71 artwork pages, where it
+stood until the browser got round to checking. A link that says "see the post"
+has to be a post that is there now, which a file written weeks ago cannot
+promise; the deleted ones showed on the page until the api had answered, and on
+a slow connection that is the whole visit. It was also one request per
+prerendered page — 384 calls to the api in a build — for an answer no built
+page may keep. So the link is the one thing on an artwork page that is drawn in
+the browser and nowhere else, which costs a reader without javascript a link
+and costs a reader with it one frame. The record and the cv are under the same
+no-requests rule and solve it the other way, by having the build write the
+answer down (R208): that works for them because what a painting has won is
+ours and does not disappear.
+*Proven by:* `art-piece.component.spec.ts` (2 tests);
+`posted-artworks.service.spec.ts` "asks nobody, and promises nothing, while the
+pages are being built", which fails with a request pending if the guard goes
 
 ### R67 — The essay has no heading · met
 It is read under the painting's name, which the page gives directly above it,

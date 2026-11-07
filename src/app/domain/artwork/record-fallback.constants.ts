@@ -6,6 +6,140 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "58",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2020,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "59",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2018,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "66",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2016,
+        "cv": {
+          "id": "62266b50fc6ab279",
+          "kind": "solo",
+          "year": 2016,
+          "title": {
+            "en": "Never Gone Forever"
+          },
+          "venue": {
+            "en": "Gallo Rojo"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2016,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "67",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "68",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "69",
     "entries": [
       {
@@ -287,6 +421,36 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Alcalá la Real",
           "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "97",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2014,
+        "cv": {
+          "id": "5dfbf4e1d333f63b",
+          "kind": "solo",
+          "year": 2014,
+          "title": {
+            "en": "Pintura Aumentada"
+          },
+          "venue": {
+            "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2014,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
         }
       }
     ]
@@ -620,6 +784,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "venue": {
             "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "156",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2017,
+        "cv": {
+          "id": "b37386b8cd2eedd1",
+          "kind": "solo",
+          "year": 2017,
+          "title": {
+            "en": "I was there"
+          },
+          "venue": {
+            "en": "La silla eléctrica"
           },
           "city": "Sevilla",
           "country": "spain"

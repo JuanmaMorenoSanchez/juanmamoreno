@@ -31,10 +31,10 @@
           one for a detail is opening a certificate of a photograph of a corner.
         -->
         <app-certificate-button
-          [tokenId]="certificateNft().tokenId"
-          [artworkName]="certificateNft().name"
+          [tokenId]="paintingNft().tokenId"
+          [artworkName]="paintingNft().name"
           [details]="certificateLine()"
-          [nft]="certificateNft()"
+          [nft]="paintingNft()"
         ></app-certificate-button>
         <app-links-button [tokenId]="tokenId()"></app-links-button>
       </ng-container>
@@ -104,16 +104,23 @@
       about: where it was shown, what it won, when it sold. Absent for a reader
       when there is nothing to say, which is most of the catalogue.
     -->
-    <app-artwork-record [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-record>
+    <!--
+      Asked by the painting's token, not by the photograph on screen: the
+      record belongs to the painting, and a detail has none of its own.
+    -->
+    <app-artwork-record
+      [tokenId]="paintingNft().tokenId"
+      [style.width]="frameWidth()"
+    ></app-artwork-record>
     <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
   }
-  @if (hasMoreFromSameYear()) {
+  @if (hasMoreArtworks()) {
     <mat-divider class="separator"></mat-divider>
-    <p>{{ 'moreOn' | translate }} {{ nft() | trait: validTraits.YEAR }}</p>
+    <p>{{ 'moreOn' | translate }} {{ nearbySpan() }}</p>
     <app-art-pieces-list
       [viewAsWidget]="true"
       [numberOfCols]="numberOfViewMoreColumns()"
-      [nftFilters]="sameYearFilter()"
+      [nftFilters]="nearbyFilter()"
     >
     </app-art-pieces-list>
   }

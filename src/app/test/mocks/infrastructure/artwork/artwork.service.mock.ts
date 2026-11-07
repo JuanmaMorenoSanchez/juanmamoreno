@@ -26,10 +26,6 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     return of(nft?.image?.thumbnailUrl || '');
   }
 
-  countCatalogueArtworksInYear(): number {
-    return 0;
-  }
-
   getAvailableYears(): Set<number> {
     return new Set<number>();
   }

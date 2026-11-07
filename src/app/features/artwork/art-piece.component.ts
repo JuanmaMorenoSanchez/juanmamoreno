@@ -133,14 +133,68 @@ export class ArtPieceComponent {
     return this.shortDescription(descriptions, this.language.contentLanguage());
   });
 
-  readonly hasMoreFromSameYear: Signal<boolean> = computed(() => {
-    const year = this.artworkService.getTraitValue(this.nft(), VALIDTRAITS.YEAR);
-    return this.artworkService.countCatalogueArtworksInYear(year) > 1;
+  /**
+   * The years shown under the painting: its own, then outwards a year at a
+   * time until there are two rows of thumbnails.
+   *
+   * It was this year alone, so a thin year left a heading over three tiles,
+   * and a year whose only painting is the one being read left a heading over
+   * nothing. Widening outwards keeps the suggestion next to where the reader
+   * already is: the paintings either side of this one in time, rather than the
+   * next twelve in the catalogue.
+   *
+   * Years with no painting of their own drop out again at the end, so the
+   * range named in the heading is a range that has something in it.
+   */
+  private readonly nearbyYears: Signal<string[]> = computed(() => {
+    const year = Number(this.getTraitValue(this.nft(), VALIDTRAITS.YEAR));
+    if (!year) return [];
+
+    // Counted over the frontal views, which is what the grid below draws: a
+    // painting photographed seven times is one tile, not seven.
+    const mine = new Set(this.nfts().map((piece) => piece.tokenId));
+    const counts = new Map<string, number>();
+    for (const piece of this.orderedFrontalPieces()) {
+      if (mine.has(piece.tokenId)) continue;
+      const its = this.getTraitValue(piece, VALIDTRAITS.YEAR);
+      if (its) counts.set(its, (counts.get(its) ?? 0) + 1);
+    }
+    if (!counts.size) return [];
+
+    const all = [...counts.keys()].map(Number);
+    const oldest = Math.min(...all);
+    const newest = Math.max(...all);
+    const wanted = 2 * this.numberOfViewMoreColumns();
+
+    let low = year;
+    let high = year;
+    let found = counts.get(String(year)) ?? 0;
+    // Later first, then earlier, so an evenly filled catalogue reads forwards.
+    while (found < wanted && (high < newest || low > oldest)) {
+      if (high < newest) found += counts.get(String((high += 1))) ?? 0;
+      if (found < wanted && low > oldest) found += counts.get(String((low -= 1))) ?? 0;
+    }
+
+    const years: string[] = [];
+    for (let each = low; each <= high; each += 1) {
+      if (counts.has(String(each))) years.push(String(each));
+    }
+    return years;
   });
-  readonly sameYearFilter: Signal<NftFilters> = computed(() => ({
-    years: [this.getTraitValue(this.nft(), VALIDTRAITS.YEAR)],
+
+  readonly hasMoreArtworks: Signal<boolean> = computed(() => this.nearbyYears().length > 0);
+  readonly nearbyFilter: Signal<NftFilters> = computed(() => ({
+    years: this.nearbyYears(),
     idsToExclude: this.nfts().map((n) => n.tokenId),
   }));
+  /** The heading's own words: "2019", or "2017–2020" where the window widened. */
+  readonly nearbySpan: Signal<string> = computed(() => {
+    const years = this.nearbyYears();
+    if (!years.length) return '';
+    const first = years[0];
+    const last = years[years.length - 1];
+    return first === last ? first : `${first}–${last}`;
+  });
   readonly viewLabel: Signal<string> = computed(() => {
     const currentNft = this.nft();
     if (!currentNft) return '';
@@ -159,20 +213,27 @@ export class ArtPieceComponent {
   readonly technicalLine: Signal<string> = computed(() => this.lineFor(this.nft()));
 
   /**
-   * The certificate is the painting's, not the photograph's.
+   * The painting, not the photograph of it being looked at.
    *
-   * Every photograph of an artwork is its own token with its own certificate,
-   * and the seal used to open whichever one was on screen — so pressing it
-   * while looking at a detail or a canvas caught half-finished produced a
-   * certificate of that photograph, with that photograph in it. What anybody
-   * pressing it wants is the certificate *of the painting*: the frontal view,
-   * and the current one where a painting has been photographed again.
+   * Every photograph of an artwork is its own token — frontal view, detail, the
+   * canvas caught half-finished — and anything that belongs to the *painting*
+   * has to ask by the painting's token rather than by whichever photograph the
+   * viewer happens to be showing. Two things do:
+   *
+   * **The certificate.** The seal used the token on screen, so pressing it
+   * while looking at a detail produced a certificate of that detail, with the
+   * detail's own photograph in it.
+   *
+   * **The record.** It is kept against the painting's own token — all 37 of
+   * them are — so switching to a detail inside the viewer emptied the section:
+   * the detail has no record of its own and never will, because what was
+   * exhibited and sold is the painting.
    *
    * Falls back to what is on screen, which is what it always did, for the case
    * that has no frontal view at all.
    */
-  readonly certificateNft: Signal<Nft> = computed(() => this.frontalViewNft() ?? this.nft());
-  readonly certificateLine: Signal<string> = computed(() => this.lineFor(this.certificateNft()));
+  readonly paintingNft: Signal<Nft> = computed(() => this.frontalViewNft() ?? this.nft());
+  readonly certificateLine: Signal<string> = computed(() => this.lineFor(this.paintingNft()));
 
   private lineFor(nft: Nft | undefined): string {
     if (!nft) return '';

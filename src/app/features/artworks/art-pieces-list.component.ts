@@ -132,10 +132,10 @@ export class ArtPiecesListComponent {
   /**
    * Sold, available or both, chosen from the picker in the breadcrumb.
    *
-   * Not applied to the "more from this year" grid on an artwork page. That
-   * strip is a suggestion rather than the catalogue, and the section around it
-   * decides whether to appear by counting every painting of the year, so
-   * filtering its contents would leave a heading over an empty row.
+   * Not applied to the strip of nearby paintings on an artwork page. That
+   * strip is a suggestion rather than the catalogue, and the page chooses how
+   * many years to reach for by counting paintings without regard to this, so
+   * filtering its contents afterwards would leave a heading over a short row.
    */
   private readonly availability = inject(AvailabilityFilterService).availability;
   private readonly whatIsSold = inject(AvailabilityService);

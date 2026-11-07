@@ -272,10 +272,6 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     );
   }
 
-  countCatalogueArtworksInYear(year: string): number {
-    return this.countArtworksInYear(year, this.sessionQuery.selectArtPieces);
-  }
-
   getAvailableOptimalUrl(nft: Nft): Observable<string> {
     return this.getLocalCachedThumbnail(nft.tokenId).pipe(
       switchMap((cachedUrl) => {

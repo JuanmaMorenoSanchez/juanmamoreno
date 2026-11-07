@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { AdminAuthService } from './admin-auth.service';
 import { environment } from '@environments/environment';
 import { ApiResponse } from '@shared/types/api-response.type';
@@ -33,6 +34,7 @@ export interface PostedArtwork {
 export class PostedArtworksService {
   private http = inject(HttpClient);
   private auth = inject(AdminAuthService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** An expired token is never sent: `bearerToken` gives null once it is stale. */
   private authorised(): { headers: Record<string, string> } {
@@ -91,7 +93,20 @@ export class PostedArtworksService {
       .pipe(map((response) => response?.data ?? { forgotten: 0 }));
   }
 
+  /**
+   * Where one painting can be seen on Instagram, or null.
+   *
+   * **Never asked while the pages are being built.** A post is somebody else's
+   * to delete, so whether it is still there is only true at the moment it is
+   * asked — and the build was baking the answer into the html of 71 artwork
+   * pages, where it stood until the browser got round to checking. A link
+   * saying "see the post" has to be a post that is there now, which a file
+   * written weeks ago cannot promise. It was also one request per prerendered
+   * page: 384 calls to the api in a build, for an answer no built page may
+   * keep. The same rule the record and the cv are already under.
+   */
   getInstagramPermalink(tokenId: string): Observable<string | null> {
+    if (!this.isBrowser) return of(null);
     return this.http
       .get<ApiResponse<{ permalink: string | null }>>(
         `${environment.backendUrl}posts/instagram/${tokenId}`
