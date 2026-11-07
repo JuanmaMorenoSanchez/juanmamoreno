@@ -77,9 +77,18 @@
 // either ground without a second copy of it existing.
 .project-diagram {
   margin: tokens.$spacing-xl 0 tokens.$spacing-2xl;
+  // The drawing is 700 units wide and was scaled to whatever the page gave it,
+  // so on a 390px phone it rendered at 0.53 and its labels came out between
+  // 4.8 and 5.9 pixels: the whole diagram visible and not one word of it
+  // readable. It keeps its own size now and the reader moves across it, which
+  // is the only thing that works for a landscape drawing on a narrow screen.
+  // Nothing changes on a desktop, where it already had its 700 and more.
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 
   svg {
     width: 100%;
+    min-width: 700px;
     height: auto;
   }
 

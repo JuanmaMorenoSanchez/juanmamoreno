@@ -58,19 +58,44 @@ describe('an artwork page on a 320px phone', () => {
     await page.close();
   });
 
-  it('does not make the whole page scroll sideways', async (t) => {
-    if (cannotRun) return t.skip(cannotRun);
+});
 
-    const page = await openPage(browser, '/artwork/5', 'en-US', SMALL_PHONE);
-    await page.waitForSelector('.viewer-toolbar', READY);
+/**
+ * No page scrolls sideways on a phone.
+ *
+ * This was one page, the artwork one, and that is exactly how a regression got
+ * through: giving the catalogue's two filters a row of their own left the row
+ * 436px wide inside a 320px phone, because a flex item will not shrink below
+ * its content unless it is told it may. The artwork page was fine and the
+ * check said so. A reader meets all of these, so all of them are asked.
+ */
+describe('no page scrolls sideways on a 320px phone', () => {
+  const READER_PAGES = [
+    '/',
+    '/artworks',
+    '/artwork/5',
+    '/cv',
+    '/about',
+    '/texts',
+    '/contact',
+    '/about-certificates-project',
+  ];
 
-    const over = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
-    );
+  for (const path of READER_PAGES) {
+    it(`${path} fits`, async (t) => {
+      if (cannotRun) return t.skip(cannotRun);
 
-    assert.equal(over, 0, `the page is ${over}px wider than the phone`);
-    await page.close();
-  });
+      const page = await openPage(browser, path, 'en-US', SMALL_PHONE);
+      await page.waitForSelector('main', READY);
+
+      const over = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+
+      assert.equal(over, 0, `${path} is ${over}px wider than the phone`);
+      await page.close();
+    });
+  }
 });
 
 /**

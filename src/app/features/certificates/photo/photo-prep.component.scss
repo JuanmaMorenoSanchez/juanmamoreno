@@ -65,7 +65,7 @@
 .prep-busy,
 .prep-file {
   font-size: 0.76rem;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 .prep-hint {
@@ -242,7 +242,7 @@
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--catalog-faint);
+    color: var(--catalog-soft);
   }
 
   label {
@@ -288,7 +288,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 .prep-report {
@@ -316,7 +316,7 @@
 .prep-sharp {
   margin-bottom: tokens.$spacing-lg;
   font-size: 0.78rem;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 // A slider and the word for where it currently sits. A word rather than a
@@ -351,7 +351,7 @@
   width: 9rem;
   margin-bottom: 0;
   font-size: 0.76rem;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 // While the brush is on, the stage is for painting rather than for moving

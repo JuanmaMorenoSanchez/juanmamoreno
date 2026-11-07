@@ -5,6 +5,21 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.62.8
+
+- **fix** The product page's architecture diagram keeps its own width and
+  scrolls on a phone instead of scaling down to fit. At 390px it rendered at
+  0.53 and its labels came out between 4.8 and 5.9 pixels — the whole diagram
+  in view and not one word of it readable.
+- **fix** Nine places set text in `--catalog-faint`, which is the colour of a
+  1px rule: 2.5:1 on the light ground, 3.4:1 on the dark one, against the
+  4.5:1 text needs. They use `--catalog-soft`, and the token now says what it
+  is for where it is declared.
+- **fix** The catalogue page scrolled sideways on a phone — 114px at 320 —
+  because the filters row introduced in 2.62.2 would not shrink below its two
+  boxes. The check that should have caught it asked one page; it asks the
+  eight a reader meets.
+
 ## 2.62.7
 
 - **fix** The landing page shows its painting with javascript off. It is

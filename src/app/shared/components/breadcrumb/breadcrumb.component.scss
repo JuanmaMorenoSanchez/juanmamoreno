@@ -14,6 +14,11 @@
   // thirty-six pixels of its first screen to solve a problem it did not have.
   @include bp.respond-below(tokens.$breakpoint-sm) {
     flex: 1 1 100%;
+    // A flex item will not shrink below its content unless told it may, and
+    // the content here is two boxes that are 212px each whatever the screen.
+    // Without this the row stayed 436px wide inside a 320px phone and the
+    // whole catalogue page scrolled sideways.
+    min-width: 0;
 
     .small-input {
       flex: 1 1 0;

@@ -31,7 +31,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--catalog-faint);
+  color: var(--catalog-soft);
 }
 
 .text-year {
@@ -67,7 +67,7 @@
 
   .text-author::after {
     content: ' · ';
-    color: var(--catalog-faint);
+    color: var(--catalog-soft);
   }
 }
 

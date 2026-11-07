@@ -87,6 +87,35 @@ a page whose address says nothing, and the bare subtag rather than the
 dictionary key); `scripts/verify-render.mjs` check 4, over all 402 pages;
 `e2e/small-phone.test.mjs` "says it is Spanish"
 
+### R223 — The architecture diagram is readable on a phone · met
+The drawing on the product page is 700 units wide and was scaled to whatever
+the page gave it, so on a 390px phone it rendered at 0.53 and its labels came
+out between 4.8 and 5.9 pixels: the whole diagram in view and not one word of
+it readable. It keeps its own width now and the reader moves across it, which
+is the only thing that works for a landscape drawing on a narrow screen.
+Nothing changes above 700px, where it already had the room.
+
+Measured rather than assumed: the detector reported "9px body text", which is
+the value in the stylesheet. What a reader sees is that number times the
+scale the viewBox is drawn at, and that is the number that was wrong.
+*Proven by:* `e2e/small-phone.test.mjs` "no page scrolls sideways on a 320px
+phone" (the diagram scrolls inside its own box, so the page does not)
+
+### R224 — Text is never set in the hairline colour · met
+`--catalog-faint` is the colour of a 1px rule: #a3a3a3 on the light ground is
+2.5:1 and #6b6b68 on the dark one is 3.4:1. Both are right for a rule and far
+under the 4.5:1 that text needs, and nine places had taken it for a third,
+fainter level of writing — the texts page's dates and kinds, the home page's
+footnote, the download button, five labels in the photograph tool. They use
+`--catalog-soft`, which is 5.1:1 and 6.7:1.
+
+The site has two levels of text, the ink and the soft, and that is now written
+where the colour is defined. A third level that is fainter than the second and
+still legible does not exist on a white ground: the second is only 5.1:1 to
+begin with.
+*Proven by:* the colours themselves, and `styles.scss`, which says so where
+`--catalog-faint` is declared
+
 ### R222 — Nothing on a 320px phone is cut off or out of reach · met
 The narrowest screen the site is built for, where two things were lost without
 a word.

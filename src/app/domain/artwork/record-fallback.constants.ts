@@ -6,6 +6,370 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "70",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2000,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2014,
+        "cv": {
+          "id": "5dfbf4e1d333f63b",
+          "kind": "solo",
+          "year": 2014,
+          "title": {
+            "en": "Pintura Aumentada"
+          },
+          "venue": {
+            "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "71",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2012,
+        "cv": {
+          "id": "8f6f6f3da32a1586",
+          "kind": "solo",
+          "year": 2012,
+          "title": {
+            "en": "Juanma Moreno"
+          },
+          "venue": {
+            "en": "No-Lugar"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2020,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "72",
+    "entries": [
+      {
+        "kind": "collection",
+        "year": 2012,
+        "who": {
+          "en": "Fundación Antonio Gala"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "74",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2012,
+        "cv": {
+          "id": "8f6f6f3da32a1586",
+          "kind": "solo",
+          "year": 2012,
+          "title": {
+            "en": "Juanma Moreno"
+          },
+          "venue": {
+            "en": "No-Lugar"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2012,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "75",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2012,
+        "cv": {
+          "id": "8f6f6f3da32a1586",
+          "kind": "solo",
+          "year": 2012,
+          "title": {
+            "en": "Juanma Moreno"
+          },
+          "venue": {
+            "en": "No-Lugar"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2012,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "78",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "79",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "80",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "81",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "87",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "93",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "108",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "112",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "114",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "115",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "117",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "118",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "126",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2011,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "130",
     "entries": [
       {
@@ -72,6 +436,86 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "133",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2011,
+        "cv": {
+          "id": "b3c985d47cd09ae1",
+          "kind": "collective",
+          "year": 2011,
+          "title": {
+            "en": "Weisser TV"
+          },
+          "venue": {
+            "en": "129 Gallery"
+          },
+          "city": "Berlin",
+          "country": "germany",
+          "venueUrl": "https://www.129gallery.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2011,
+        "cv": {
+          "id": "c711555116950f0e",
+          "kind": "collective",
+          "year": 2011,
+          "title": {
+            "en": "Mehr Licht, tributo a Chema Alvargonzalez"
+          },
+          "venue": {
+            "en": "GlogauAIR Project Space"
+          },
+          "city": "Berlin",
+          "country": "germany",
+          "venueUrl": "https://glogauair.net/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "136",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2012,
+        "cv": {
+          "id": "8f6f6f3da32a1586",
+          "kind": "solo",
+          "year": 2012,
+          "title": {
+            "en": "Juanma Moreno"
+          },
+          "venue": {
+            "en": "No-Lugar"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "143",
     "entries": [
       {
@@ -96,6 +540,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "159",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2008,
+        "cv": {
+          "id": "22449c295542bd10",
+          "kind": "solo",
+          "year": 2008,
+          "title": {
+            "en": "Transeúntes"
+          },
+          "venue": {
+            "en": "Harz Mensa"
+          },
+          "city": "Halle Saale",
+          "country": "germany"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "167",
     "entries": [
       {
@@ -113,6 +579,58 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Halle Saale",
           "country": "germany"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "168",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2008,
+        "cv": {
+          "id": "22449c295542bd10",
+          "kind": "solo",
+          "year": 2008,
+          "title": {
+            "en": "Transeúntes"
+          },
+          "venue": {
+            "en": "Harz Mensa"
+          },
+          "city": "Halle Saale",
+          "country": "germany"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2010,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "170",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2013,
+        "cv": {
+          "id": "38dc378c84cc92dd",
+          "kind": "solo",
+          "year": 2013,
+          "title": {
+            "en": "Historias aparentemente inconexas"
+          },
+          "venue": {
+            "en": "Aula Magna de Capuchinos"
+          },
+          "city": "Alcalá la Real",
+          "country": "spain"
         }
       }
     ]

@@ -50,6 +50,11 @@ main {
   --catalog-bg: #ffffff;
   --catalog-ink: #1f1f1f;
   --catalog-soft: #6e6e6e;
+  // A hairline, and never text. #a3a3a3 reads at 2.5:1 on this ground and the
+  // dark one's #6b6b68 at 3.4:1, both well under the 4.5:1 text needs — which
+  // is right for a 1px rule and was wrong in the nine places that had taken it
+  // for a third, fainter level of writing. Text has two levels: the ink and
+  // --catalog-soft.
   --catalog-faint: #a3a3a3;
   --catalog-accent: #cf2525;
   --catalog-frame-bg: #ebebe9;
