@@ -52,7 +52,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
   {
     "id": "e2d006becf81f950",
     "kind": "solo",
-    "year": 2017,
+    "year": 2018,
     "title": {
       "en": "#blessed"
     },

@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.65.1
+
+- **fix** The studio's own pages are held to the site's text levels: ten
+  places that dimmed text with `opacity` now use `--catalog-soft`, nothing is
+  under 0.8rem, placeholders are drawn rather than left to the browser, and
+  the last hard-coded reds are tokens.
+- **chore** `PRODUCT.md` records who the site is for and what must not be
+  invented, so design work has something to answer to.
+
 ## 2.65.0
 
 - **feat** The thumbnails under a painting step a whole window at a time, so

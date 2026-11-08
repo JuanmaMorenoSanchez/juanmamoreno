@@ -7,7 +7,7 @@
         type="text"
         [value]="name()"
         (input)="set('name', $event)"
-        placeholder="Rockets win III"
+        placeholder="The painting’s title"
         autocomplete="off"
       />
     </label>
@@ -48,7 +48,7 @@
         type="text"
         [value]="description()"
         (input)="set('description', $event)"
-        [placeholder]="describedAs() || 'Oil on canvas, 140,5 × 116 cm, 2026.'"
+        [placeholder]="describedAs() || 'Medium, measurements, year'"
         autocomplete="off"
       />
     </label>

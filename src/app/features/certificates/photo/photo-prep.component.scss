@@ -337,7 +337,7 @@
 
   em {
     font-style: normal;
-    opacity: 0.65;
+    color: var(--catalog-soft);
   }
 
   input {
@@ -382,11 +382,12 @@
 
 .prep-tool {
   @include controls.plain-button(0.25rem 0.7rem, 0.8rem);
-  opacity: 0.55;
+  color: var(--catalog-soft);
 }
 
+/* The tool in hand: the ink, against the soft ink of the ones that are not. */
 .prep-tool-on {
-  opacity: 1;
+  color: var(--catalog-ink);
   font-weight: 600;
 }
 
@@ -416,15 +417,15 @@
 .prep-kept {
   display: block;
   font-style: normal;
-  font-size: 0.78rem;
-  opacity: 0.65;
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
 }
 
 /* Closed by default: filled in already, and in the way of everything else. */
 .prep-rights > summary {
   cursor: pointer;
   font-size: 0.85rem;
-  opacity: 0.8;
+  color: var(--catalog-soft);
 }
 
 .prep-rights[open] > summary {

@@ -123,8 +123,34 @@ The site has two levels of text, the ink and the soft, and that is now written
 where the colour is defined. A third level that is fainter than the second and
 still legible does not exist on a white ground: the second is only 5.1:1 to
 begin with.
+
+**And a third level is not made with `opacity` either.** The studio's own
+pages were dimming text by fading the element — ten declarations between
+0.55 and 0.8 across the certificates, the atelier, the sketches, the
+catalogue admin and the photograph tool — which produces a grey no token
+knows about and no theme can tune. Measured in the browser it fell to 3.7:1
+on the sketches and 3.8:1 on the certificate form, and it compounded: the
+hint beside a field label sat inside the label's own fade and came out at
+0.56 of the ink. They all say `color: var(--catalog-soft)` now. `opacity`
+fades a whole element; it is not a colour.
+
+**The studio's pages are held to the same floor as the reader's.** Nothing
+below 0.8rem — the certificate form's labels were 11.5px, uppercase,
+letter-spaced and faded, on the form that mints a certificate — and prose is
+measured in `ch` rather than `rem`, because a measure set against the root
+font is not a measure of the text it holds: 44rem of 0.8rem prose runs to 110
+characters a line. The atelier's longest line went from 139 characters to 89.
+
+**What a field says before anything is typed is text too.** Placeholders were
+left to the browser, which draws them at about 3.8:1, and two of them on the
+mint form were specimens rather than prompts — a title and a full description
+that read as a half-filled certificate. `::placeholder` takes the soft ink,
+and they name their shape instead.
 *Proven by:* the colours themselves, and `styles.scss`, which says so where
-`--catalog-faint` is declared
+`--catalog-faint` and `::placeholder` are declared; and the design detector
+run against every guarded page as rendered, which reported low contrast on
+the certificates and the sketches, text below 12px on four pages, and lines
+of 111 to 139 characters on the atelier, and now reports none of them
 
 ### R222 — Nothing on a phone is cut off, out of reach, or out of line · met
 The narrowest screen the site is built for, where two things were lost without

@@ -18,11 +18,11 @@
 
 /* Read once and then never again, so it takes as little room as it can. */
 .atelier-lead {
-  max-width: 44rem;
+  max-width: 70ch;
   margin: tokens.$spacing-xs 0 0;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   line-height: 1.45;
-  opacity: 0.65;
+  color: var(--catalog-soft);
 }
 
 /* The engine is not answering: the only thing worth reading when it happens. */
@@ -39,13 +39,15 @@
   }
 
   p {
-    max-width: 44rem;
+    max-width: 70ch;
     font-size: 0.82rem;
-    opacity: 0.8;
+    color: var(--catalog-soft);
   }
 
   ul {
+    max-width: 70ch;
     padding-left: tokens.$spacing-md;
+    color: var(--catalog-soft);
   }
 
   li {
@@ -101,10 +103,10 @@
 }
 
 .atelier-hint {
-  max-width: 48rem;
+  max-width: 70ch;
   margin: tokens.$spacing-sm-md 0 0;
   font-size: 0.8rem;
-  opacity: 0.7;
+  color: var(--catalog-soft);
 }
 
 /* Every button on the page is the same outlined button, written once. It was
@@ -157,9 +159,9 @@
 
 .atelier-caveat,
 .atelier-missed {
-  max-width: 44rem;
+  max-width: 70ch;
   font-size: 0.85rem;
-  opacity: 0.8;
+  color: var(--catalog-soft);
 }
 
 .atelier-layers {
@@ -221,10 +223,10 @@
 /* The switch that starts and stops the engine. */
 /* What is stopping the graph running, said before it is run rather than after. */
 .atelier-wanting {
-  max-width: 48rem;
+  max-width: 70ch;
   margin: tokens.$spacing-sm-md 0 0;
   font-size: 0.85rem;
-  color: #b3261e;
+  color: var(--jm-error);
 }
 
 /* What a run is doing, while it does it. An edit is eighteen minutes and the

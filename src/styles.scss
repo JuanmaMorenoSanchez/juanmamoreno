@@ -379,3 +379,17 @@ a img {
   --mdc-snackbar-supporting-text-color: var(--jm-on-error);
   --mat-snack-bar-button-color: var(--jm-on-error);
 }
+
+/*
+  What a field says before anything is typed into it.
+
+  Left to the browser it is about #828282 on white, which is 3.8:1 and under
+  the 4.5:1 that placeholder text needs as much as any other. It is also the
+  one piece of text on the page that no stylesheet had an opinion about, which
+  is the tell that a page was assembled rather than built. The soft ink is the
+  site's second level of writing and reads at 5.3:1 on either ground.
+*/
+::placeholder {
+  color: var(--catalog-soft);
+  opacity: 1; /* Firefox dims placeholders again on top of the colour. */
+}

@@ -30,13 +30,13 @@
 .activity-wrong {
   margin: 0 0 tokens.$spacing-lg;
   padding: tokens.$spacing-sm-md tokens.$spacing-md;
-  border-left: 3px solid #b00020;
-  background: rgb(176 0 32 / 7%);
+  border-left: 1px solid var(--jm-error);
+  background: color-mix(in srgb, var(--jm-error) 7%, transparent);
 
   h2 {
     margin: 0 0 tokens.$spacing-sm;
     font-size: 0.9rem;
-    color: #b00020;
+    color: var(--jm-error);
   }
 
   ul {
@@ -109,8 +109,7 @@
   .activity-when,
   .activity-run-when,
   .activity-run-what {
-    color: #b00020;
-    opacity: 1;
+    color: var(--jm-error);
   }
 }
 
@@ -129,8 +128,8 @@
 .activity-problem {
   padding: tokens.$spacing-sm tokens.$spacing-sm-md;
   border-radius: 0.35rem;
-  background: rgb(176 0 32 / 10%);
-  color: #b00020;
+  background: color-mix(in srgb, var(--jm-error) 10%, transparent);
+  color: var(--jm-error);
   font-size: 0.9rem;
 }
 

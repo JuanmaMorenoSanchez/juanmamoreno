@@ -16,7 +16,7 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    opacity: 0.6;
+    color: var(--catalog-soft);
   }
 
   ul {
@@ -27,11 +27,11 @@
 }
 
 .pieces-lead {
-  max-width: 42rem;
+  max-width: 70ch;
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   line-height: 1.5;
-  opacity: 0.7;
+  color: var(--catalog-soft);
 }
 
 .pieces-published li,
@@ -45,8 +45,8 @@
 }
 
 .pieces-published code {
-  font-size: 0.72rem;
-  opacity: 0.55;
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
 }
 
 .pieces-what {
@@ -55,8 +55,8 @@
   flex-direction: column;
 
   small {
-    font-size: 0.68rem;
-    opacity: 0.6;
+    font-size: 0.8rem;
+    color: var(--catalog-soft);
   }
 }
 
@@ -73,7 +73,7 @@
 }
 
 .pieces-forget {
-  opacity: 0.55;
+  color: var(--catalog-soft);
 }
 
 .pieces-note,

@@ -6,15 +6,329 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "7",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "8",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "13",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "15",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "17",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "22",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "23",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2019,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "24",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2019,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "25",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2019,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "26",
+    "entries": [
+      {
+        "kind": "sold",
+        "year": 2019,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "27",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "28",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "29",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "30",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2020,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "31",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "34",
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -40,11 +354,33 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "36",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -61,12 +397,20 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "37",
     "entries": [
       {
-        "kind": "exhibited",
+        "kind": "sold",
         "year": 2017,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -76,13 +420,93 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain"
         }
-      },
+      }
+    ]
+  },
+  {
+    "tokenId": "38",
+    "entries": [
       {
-        "kind": "sold",
-        "year": 2017,
-        "who": {
-          "en": "a private collector",
-          "es": "un coleccionista privado"
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "39",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "40",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "42",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
+          },
+          "city": "Sevilla",
+          "country": "spain"
         }
       }
     ]
@@ -92,11 +516,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -114,11 +538,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -136,11 +560,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -224,11 +648,11 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2017,
+        "year": 2018,
         "cv": {
           "id": "e2d006becf81f950",
           "kind": "solo",
-          "year": 2017,
+          "year": 2018,
           "title": {
             "en": "#blessed"
           },
@@ -920,6 +1344,30 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "82",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "83",
     "entries": [
       {
@@ -958,6 +1406,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
             "en": "Aula Magna de Capuchinos"
           },
           "city": "Alcalá la Real",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "89",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
           "country": "spain"
         }
       }
@@ -1366,6 +1836,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "venue": {
             "en": "Red House"
+          },
+          "city": "Sevilla",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "153",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2018,
+        "cv": {
+          "id": "e2d006becf81f950",
+          "kind": "solo",
+          "year": 2018,
+          "title": {
+            "en": "#blessed"
+          },
+          "venue": {
+            "en": "Un gato en bicicleta"
           },
           "city": "Sevilla",
           "country": "spain"
