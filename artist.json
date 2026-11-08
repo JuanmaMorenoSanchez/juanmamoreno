@@ -59,7 +59,7 @@
             "country": "Spain"
           },
           {
-            "year": 2017,
+            "year": 2018,
             "title": "#blessed",
             "venue": "Un gato en bicicleta",
             "city": "Sevilla",
@@ -421,7 +421,7 @@
             "country": "España"
           },
           {
-            "year": 2017,
+            "year": 2018,
             "title": "#blessed",
             "venue": "Un gato en bicicleta",
             "city": "Sevilla",
@@ -768,6 +768,6 @@
     "catalogue": "https://juanmamoreno.com/catalogue.json",
     "contact": "https://juanmamoreno.com/contact/"
   },
-  "generated": "2026-11-07",
+  "generated": "2026-11-08",
   "pricing": "Not published. Every price is quoted by the artist for the particular work: https://juanmamoreno.com/contact"
 }
