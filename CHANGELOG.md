@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.66.0
+
+- **feat** A line of reading text has a length: one `--measure` of 70ch,
+  applied to the statement, the texts, the terms, the privacy note, the
+  contact page and the two pieces of prose on an artwork page, which were
+  running to between 110 and 162 characters a line.
+- **fix** The public pages are held to the same 0.8rem floor as the studio's:
+  twelve places under it, including an architecture diagram drawn at 1:1 whose
+  labels were 9 and 10 real pixels.
+- **fix** The side gutter is a spacing step rather than `5vh`, so it no longer
+  changes when a phone is rotated.
+
 ## 2.65.1
 
 - **fix** The studio's own pages are held to the site's text levels: ten

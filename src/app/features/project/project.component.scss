@@ -135,12 +135,12 @@
 // pixel. The box would have to be redrawn, which is a change to the diagram
 // rather than to its type.
 .dg-sub {
-  font-size: 9px;
+  font-size: 11px;
   opacity: 0.65;
 }
 
 .dg-edge-label {
-  font-size: 10px;
+  font-size: 11px;
   opacity: 0.7;
 }
 
@@ -164,7 +164,7 @@
   // Nine pixels at 0.55 of the ink is #848484 on white, which is 3.7:1 and
   // under AA; quiet is the intent, illegible was not. Still the quietest
   // thing in the drawing, at 5.8:1.
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.12em;
   fill: currentColor;
   opacity: 0.7;
@@ -199,7 +199,7 @@
 
   figcaption {
     margin: tokens.$spacing-sm 0 0;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     line-height: 1.35;
     opacity: 0.75;
   }
@@ -225,7 +225,7 @@
 // shared rule above centres text, and a centred label given the left edge of
 // its box as its position runs half of itself off the picture.
 .dg-note {
-  font-size: 10px;
+  font-size: 11px;
   fill: currentColor;
   opacity: 0.65;
   text-anchor: start;

@@ -66,6 +66,8 @@
 /* The last line on the page that was not on its centre: with the record
    centred above it, it was the only thing left against the left edge. */
 .more-on {
+  max-width: var(--measure);
+  margin-inline: auto;
   text-align: center;
   color: var(--catalog-soft);
 }

@@ -152,6 +152,42 @@ run against every guarded page as rendered, which reported low contrast on
 the certificates and the sketches, text below 12px on four pages, and lines
 of 111 to 139 characters on the atelier, and now reports none of them
 
+**And the floor is the whole site's, not the studio's.** The public half —
+the half strangers read — had opted out of it in twelve places: the version
+line under the home page at 11.2px, the dot's legend on the catalogue, the
+viewer's hints, the dates and kinds on the texts page, the essay's own
+apparatus, the links modal, the certificate project's captions, Material's
+form-field hint under the one form a stranger uses to write to the artist,
+and the architecture diagram's own small print at 9 and 10 pixels — which is
+drawn at 1:1, so those were 9 and 10 real pixels, the smallest type anywhere
+on the site.
+*Also proven by:* the same detector run against the public pages at 393 and
+1280, which reported text under 0.8rem on six of them and now reports none
+
+### R226 — A line of reading text has a length · met
+A paragraph set across the whole container runs to 121 characters on a
+desktop, and the texts page's source lines to 162 — roughly twice the 45 to 75
+a reader's eye tracks without losing its place at the end of a line. The
+statement, the texts, the terms, the privacy note and the contact page were
+each a single column edge to edge, which is what a document looks like before
+anybody has designed it.
+
+What made it invisible is that the site already knew the answer and had
+written it down nine times: nine stylesheets set a measure of their own, in
+nine different values — 34em, 40em, 32rem, 42rem, 44rem, 48rem, 60rem, 62rem,
+62ch, 70ch — while the five pages that are nothing but reading set none at
+all. There is one now, `--measure`, and it is in `ch` rather than `rem`,
+because a measure set against the root font is not a measure of the text it
+holds.
+
+The artwork page is not all reading — the viewer and the thumbnail strip share
+its container — so the two pieces of prose on it, the record of where the
+painting has been and the line above the strip, carry the measure themselves
+and keep their centring.
+*Proven by:* `--measure` and the `.prose` rule in `styles.scss`, and the five
+templates that ask for it; measured in the browser at 1280, where every one of
+those paragraphs was 110 to 162 characters and none now exceeds 70
+
 ### R222 — Nothing on a phone is cut off, out of reach, or out of line · met
 The narrowest screen the site is built for, where two things were lost without
 a word — and the ordinary one, where two more were merely crooked.

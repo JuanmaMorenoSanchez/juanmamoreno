@@ -23,7 +23,8 @@ h2.catalog-subheading {
   text on the page.
 */
 .record-lines {
-  margin: 0;
+  max-width: var(--measure);
+  margin: 0 auto;
   padding: 0;
   list-style: none;
   text-align: center;

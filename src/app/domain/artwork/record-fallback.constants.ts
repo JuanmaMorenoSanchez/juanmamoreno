@@ -6,6 +6,102 @@ import { ArtworkRecord } from './record.entity';
 
 export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
+    "tokenId": "2",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "4",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "5",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "6",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "7",
     "entries": [
       {
@@ -54,7 +150,127 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "9",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "10",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "11",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "12",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "13",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "14",
     "entries": [
       {
         "kind": "exhibited",
@@ -121,6 +337,76 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "18",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "19",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "069fd81d0cccbbc8",
+          "kind": "solo",
+          "year": 2021,
+          "title": {
+            "en": "El sueño de los robots"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "20",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2019,
+        "cv": {
+          "id": "ab3d09a718504872",
+          "kind": "solo",
+          "year": 2019,
+          "title": {
+            "en": "33. El desengaño"
+          },
+          "venue": {
+            "en": "La 13 dada trouch Gallery"
+          },
+          "city": "Huelva",
+          "country": "spain"
         }
       }
     ]
@@ -1390,6 +1676,30 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "84",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "87",
     "entries": [
       {
@@ -1428,6 +1738,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
             "en": "La 13 dada trouch Gallery"
           },
           "city": "Huelva",
+          "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "92",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2023,
+        "cv": {
+          "id": "a5f32ad8a66500b3",
+          "kind": "collective",
+          "year": 2023,
+          "title": {
+            "en": "Nocturnos"
+          },
+          "venue": {
+            "en": "Sala Pescadería Vieja / CAC Vélez-Málaga"
+          },
+          "city": "Jerez de la Frontera / Vélez-Málaga",
           "country": "spain"
         }
       }
@@ -1503,6 +1835,102 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "100",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "101",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "102",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "4790ab4546bf78fb",
+          "kind": "solo",
+          "year": 2024,
+          "title": {
+            "en": "El valle inquietante"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "106",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "1c6b1a0396dd55e5",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Outsiders. Vol. 1"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
         }
       }
     ]

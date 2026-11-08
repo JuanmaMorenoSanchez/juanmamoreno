@@ -310,8 +310,33 @@ p {
 }
 
 .padding-sides {
-  padding-left: 5vh;
-  padding-right: 5vh;
+  padding-left: tokens.$spacing-xl;
+  padding-right: tokens.$spacing-xl;
+}
+
+/*
+  The measure: how long a line of reading text is allowed to get.
+
+  The container is 970px wide on a desktop, and a paragraph set across all of
+  it runs to 121 characters — nearly twice the 45 to 75 that a reader's eye
+  tracks without losing the line. Nine stylesheets had already each decided
+  this for themselves, in nine different values (34em, 42rem, 44rem, 48rem,
+  62rem, 62ch, 70ch), and the pages that are nothing but reading — the
+  statement, the texts, the terms, the privacy note, the contact page — had
+  decided nothing at all.
+
+  In `ch` rather than `rem`, because a measure set against the root font is not
+  a measure of the text it holds: 44rem of 0.8rem prose is still 110 characters.
+*/
+:root {
+  --measure: 70ch;
+}
+
+.prose p,
+.prose li,
+.prose blockquote,
+.prose dd {
+  max-width: var(--measure);
 }
 
 .container {
@@ -392,4 +417,13 @@ a img {
 ::placeholder {
   color: var(--catalog-soft);
   opacity: 1; /* Firefox dims placeholders again on top of the colour. */
+}
+
+/*
+  Material sets a form field's hint and error at 12px, which is below the floor
+  the rest of the site keeps. The hint under the message box is the character
+  count on the one form a stranger uses to reach the artist.
+*/
+.mat-mdc-form-field-subscript-wrapper {
+  font-size: 0.8rem;
 }
