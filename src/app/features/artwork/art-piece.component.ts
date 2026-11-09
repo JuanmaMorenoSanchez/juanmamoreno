@@ -30,7 +30,6 @@ import { BackButtonComponent } from '@shared/components/back-button/back-button.
 import { PdfButtonComponent } from '@shared/components/pdf-button/pdf-button.component';
 import { ShareButtonComponent } from '@shared/components/share-button/share-button.component';
 import { SORT } from '@shared/constants/order.constants';
-import { ResponsiveService } from '@shared/services/responsive.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
@@ -58,6 +57,21 @@ const NO_DESCRIPTION = 'No description available';
  * the catalogue rather than scanning it.
  */
 const LEAST_THUMBNAILS = 12;
+
+/**
+ * The row the count has to come out even against.
+ *
+ * The strip is six across above 600px and three below it, and css decides
+ * which — this page cannot know, and when it tried to know, it asked
+ * BreakpointObserver, which has no window to measure during the prerender. So
+ * every artwork page was written out for six columns and re-laid out to three
+ * on arrival on a phone.
+ *
+ * Six is a multiple of three, so a count that fills whole rows of six fills
+ * whole rows of three as well, and the rule holds at both widths without
+ * anybody measuring anything.
+ */
+const THUMBNAILS_PER_ROW = 6;
 
 @Component({
   selector: 'app-art-piece',
@@ -96,16 +110,11 @@ export class ArtPieceComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private artworkService = inject(ARTWORK_PORT);
-  private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
   private seo = inject(SeoTitleStrategy);
   private language = inject(LanguageUrlService);
 
   readonly validTraits = VALIDTRAITS;
-  readonly numberOfViewMoreColumns: Signal<number> = toSignal(
-    this.responsiveService.displayMobileLayout.pipe(map((display) => (display ? 6 : 3))),
-    { initialValue: 3 }
-  );
   readonly nfts: Signal<Nft[]> = toSignal(
     this.route.paramMap.pipe(
       map((paramMap) => paramMap.get('id')!),
@@ -198,7 +207,7 @@ export class ArtPieceComponent {
       return others.slice(from, from + size);
     };
 
-    const columns = this.numberOfViewMoreColumns();
+    const columns = THUMBNAILS_PER_ROW;
     let take = Math.max(LEAST_THUMBNAILS, 2 * columns);
     while (take < others.length && new Set(windowOf(take).map(yearOf)).size < 2) take += 1;
     const short = Math.min(take, others.length) % columns;

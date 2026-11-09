@@ -116,7 +116,7 @@ describe('ArtPiecesListComponent', () => {
     artworkService.artPieces$.next(fallback);
     fixture.detectChanges();
 
-    const before = fixture.nativeElement.querySelectorAll('mat-grid-tile');
+    const before = fixture.nativeElement.querySelectorAll('.tile');
     const imagesBefore = fixture.nativeElement.querySelectorAll('img.front-image');
     expect(before).toHaveLength(2);
     // Guards the assertion below: if the thumbnails never rendered, comparing
@@ -126,7 +126,7 @@ describe('ArtPiecesListComponent', () => {
     artworkService.artPieces$.next(reparse(fallback));
     fixture.detectChanges();
 
-    const after = fixture.nativeElement.querySelectorAll('mat-grid-tile');
+    const after = fixture.nativeElement.querySelectorAll('.tile');
     const imagesAfter = fixture.nativeElement.querySelectorAll('img.front-image');
     expect(after).toHaveLength(2);
     expect(after[0]).toBe(before[0]);
@@ -174,7 +174,7 @@ describe('ArtPiecesListComponent', () => {
     artworkService.artPieces$.next([makeNft('23', 'Sold piece'), makeNft('999999', 'For sale')]);
     fixture.detectChanges();
 
-    const tiles = fixture.nativeElement.querySelectorAll('mat-grid-tile');
+    const tiles = fixture.nativeElement.querySelectorAll('.tile');
     const dotsPerTile = Array.from(
       tiles,
       (tile) => (tile as HTMLElement).querySelectorAll('.sold-dot').length

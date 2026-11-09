@@ -108,8 +108,8 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artworks');
-    await page.waitForSelector('mat-grid-tile a.tile-link', READY);
-    const link = page.locator('mat-grid-tile a.tile-link').first();
+    await page.waitForSelector('.tile a.tile-link', READY);
+    const link = page.locator('.tile a.tile-link').first();
     const href = await link.getAttribute('href');
 
     assert.match(href, /^\/artwork\/\d+$/);
@@ -122,11 +122,11 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artworks');
-    await page.waitForSelector('mat-grid-tile a.tile-link', READY);
+    await page.waitForSelector('.tile a.tile-link', READY);
 
     const { href, landedOn, dragStarts } = await clickWithDriftingMouse(
       page,
-      'mat-grid-tile a.tile-link'
+      '.tile a.tile-link'
     );
 
     assert.equal(dragStarts, 0, 'the tile was dragged instead of clicked, which eats the click');

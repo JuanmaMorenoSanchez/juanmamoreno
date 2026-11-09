@@ -29,7 +29,7 @@
     font-size: 1.05rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    opacity: 0.7;
+    color: var(--catalog-soft);
     margin: 0 0 tokens.$spacing-md;
   }
 
@@ -95,7 +95,7 @@
   figcaption {
     margin-top: tokens.$spacing-sm-md;
     font-size: 0.85rem;
-    opacity: 0.7;
+    color: var(--catalog-soft);
   }
 }
 
@@ -136,12 +136,12 @@
 // rather than to its type.
 .dg-sub {
   font-size: 11px;
-  opacity: 0.65;
+  fill: var(--catalog-soft);
 }
 
 .dg-edge-label {
   font-size: 11px;
-  opacity: 0.7;
+  fill: var(--catalog-soft);
 }
 
 .dg-edge {
@@ -161,13 +161,12 @@
 // small and spaced, like the headings on the page, so it reads as a label on
 // the box rather than as another thing inside it.
 .dg-group-label {
-  // Nine pixels at 0.55 of the ink is #848484 on white, which is 3.7:1 and
-  // under AA; quiet is the intent, illegible was not. Still the quietest
-  // thing in the drawing, at 5.8:1.
+  // It was nine pixels at 0.55 of the ink: #848484 on white, 3.7:1, under AA.
+  // Quiet was the intent and illegible was not, so it is the site's own second
+  // level of writing now rather than a fraction of the first.
   font-size: 11px;
   letter-spacing: 0.12em;
-  fill: currentColor;
-  opacity: 0.7;
+  fill: var(--catalog-soft);
 }
 
 // One photograph of the site, under the paragraph it illustrates. Quiet until
@@ -201,7 +200,7 @@
     margin: tokens.$spacing-sm 0 0;
     font-size: 0.8rem;
     line-height: 1.35;
-    opacity: 0.75;
+    color: var(--catalog-soft);
   }
 }
 
@@ -216,8 +215,7 @@
 
 .dg-row {
   font-size: 11px;
-  fill: currentColor;
-  opacity: 0.7;
+  fill: var(--catalog-soft);
   text-anchor: start;
 }
 
@@ -226,7 +224,6 @@
 // its box as its position runs half of itself off the picture.
 .dg-note {
   font-size: 11px;
-  fill: currentColor;
-  opacity: 0.65;
+  fill: var(--catalog-soft);
   text-anchor: start;
 }

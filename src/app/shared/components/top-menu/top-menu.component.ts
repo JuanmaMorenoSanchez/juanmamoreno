@@ -1,6 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
@@ -15,7 +14,6 @@ import { ALLOWED_LANGUAGES, storeLanguageChoice } from '@shared/constants/langua
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { HeroTitleService } from '@shared/services/hero-title.service';
-import { ResponsiveService } from '@shared/services/responsive.service';
 import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
@@ -42,7 +40,6 @@ import { ThemeService } from '@shared/services/theme.service';
 })
 export class TopMenuComponent {
   private artworkService = inject(ARTWORK_PORT);
-  private responsiveService = inject(ResponsiveService);
   private translateService = inject(TranslateService);
   private router = inject(Router);
   // Public: the template builds every link through it, so a Spanish reader
@@ -73,8 +70,6 @@ export class TopMenuComponent {
 
   // Public: the toolbar reads and toggles it directly.
   protected theme = inject(ThemeService);
-
-  public mobileMenu = toSignal(this.responsiveService.displayMobileLayout);
 
   // True while a page shows its own hero title (the landing) — the top bar hides
   // its duplicate brand copy meanwhile.

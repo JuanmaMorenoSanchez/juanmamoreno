@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { makeStateKey, TransferState } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -10,9 +11,10 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AvailabilityService } from '@shared/services/availability.service';
 import { CanonicalService } from '@shared/services/canonical.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
-import translationsEN from '@translations/en.json';
-import translationsES from '@translations/es.json';
 import { filter } from 'rxjs';
+
+/** The build's answer to "does this page hide the trail", handed to the browser. */
+const HIDE_BREADCRUMB = makeStateKey<boolean>('hideBreadcrumb');
 
 @Component({
   selector: 'app-root',
@@ -30,8 +32,28 @@ export class AppComponent {
   // which is what decides the footer.
   protected lang = inject(LanguageUrlService);
 
+  /**
+   * Whether this page is one of the ones that hides the trail, decided by the
+   * build and carried in the page.
+   *
+   * It used to be read from the router's snapshot here, and in the browser this
+   * component is built before the first navigation has resolved — so the
+   * snapshot was empty, every page answered "no", and the browser's first frame
+   * drew a breadcrumb over prerendered html that has none. Angular then took it
+   * away again 30ms later. On an artwork page that was a 56px jump, measured,
+   * on every visit.
+   *
+   * The build has the same empty snapshot at this point — so it writes the
+   * answer down when its own navigation ends, which is before the html is
+   * serialized, and the browser reads it here. The same way the catalogue
+   * itself crosses from one to the other.
+   */
+  private readonly carried = inject(TransferState);
   readonly hideBreadcrumb = signal(
-    this.deepestHideBreadcrumb(this.router.routerState.snapshot.root)
+    this.carried.get(
+      HIDE_BREADCRUMB,
+      this.deepestHideBreadcrumb(this.router.routerState.snapshot.root)
+    )
   );
 
   constructor() {
@@ -48,12 +70,14 @@ export class AppComponent {
     // in here, and loads nothing either.
     this.auth.keepAlive();
 
-    this.translateService.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
-    this.translateService.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
-    // A starting point only: the route's language guard settles which language
-    // this page is actually in, before anything renders. Picking the browser's
-    // language here instead would show one language for a frame and then swap.
-    this.translateService.use(ALLOWED_LANGUAGES.ENGLISH);
+    // A starting point only, and only if nothing has chosen yet: the route's
+    // language guard settles which language this page is actually in, before
+    // anything renders. Guarded rather than unconditional because the ordering
+    // between this and the guard is Angular's to decide, not ours — set
+    // unconditionally, it undoes a guard that happened to run first.
+    if (!this.translateService.currentLang()) {
+      this.translateService.use(ALLOWED_LANGUAGES.ENGLISH);
+    }
 
     this.router.events
       .pipe(
@@ -62,6 +86,9 @@ export class AppComponent {
       )
       .subscribe(() => {
         this.hideBreadcrumb.set(this.deepestHideBreadcrumb(this.router.routerState.snapshot.root));
+        // Written on every navigation, which during a build means the last one
+        // written is the one this page ends up serialized with.
+        this.carried.set(HIDE_BREADCRUMB, this.hideBreadcrumb());
       });
   }
 

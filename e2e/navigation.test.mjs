@@ -640,14 +640,29 @@ describe('walking the catalogue from a painting', () => {
       READY
     );
 
-    const columns = Number(
-      await page.locator('app-art-pieces-list mat-grid-list').getAttribute('cols')
-    );
+    // Read off the grid as it is actually drawn, rather than from an attribute:
+    // how many columns there are is a media query now, and nothing in the
+    // markup says. Tiles sharing a top edge are one row.
+    //
+    // `offsetTop`, not the painted rectangle: the first twenty tiles come in on
+    // a staggered animation that moves them vertically, so measuring where they
+    // are drawn counted one row as five.
+    const rows = await page.$$eval('app-art-pieces-list .tile', (tiles) => {
+      const perTop = new Map();
+      for (const tile of tiles) {
+        perTop.set(tile.offsetTop, (perTop.get(tile.offsetTop) ?? 0) + 1);
+      }
+      return [...perTop.values()];
+    });
     const tiles = await page.locator('app-art-pieces-list a.tile-link').count();
+    const columns = Math.max(...rows, 0);
 
-    assert.ok(columns >= 1, `no column count on the grid: ${columns}`);
+    assert.ok(columns >= 1, `no thumbnails drawn: ${JSON.stringify(rows)}`);
     assert.ok(tiles >= 2 * columns, `only ${tiles} thumbnails in ${columns} columns`);
-    assert.equal(tiles % columns, 0, `${tiles} thumbnails leaves a row half empty`);
+    assert.ok(
+      rows.every((row) => row === columns),
+      `rows of ${rows.join(', ')} in a grid ${columns} across: one is half empty`
+    );
 
     await page.close();
   });

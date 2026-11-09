@@ -110,9 +110,9 @@ describe('the catalogue with javascript off', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const { context, page } = await openWithoutJavascript('/artworks');
-    await page.waitForSelector('mat-grid-tile img', READY);
+    await page.waitForSelector('.tile img', READY);
 
-    const shown = await page.$$eval('mat-grid-tile img', (images) =>
+    const shown = await page.$$eval('.tile img', (images) =>
       images.filter((img) => {
         const box = img.getBoundingClientRect();
         return box.width > 40 && box.height > 40 && Number(getComputedStyle(img).opacity) > 0.9;

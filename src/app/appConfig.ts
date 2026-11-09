@@ -1,6 +1,10 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import {
-  PreloadAllModules,
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideZonelessChangeDetection,
+} from '@angular/core';
+import {
   provideRouter,
   TitleStrategy,
   withPreloading,
@@ -12,22 +16,37 @@ import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/p
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
-import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { PublicPreloading } from '@shared/services/public-preloading.strategy';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
+import translationsEN from '@translations/en.json';
+import translationsES from '@translations/es.json';
 import { routes } from './app-routing.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // ngx-translate v18 dropped TranslateModule.forRoot in favour of this
+    // provider. English is the fallback; which language a page is in is settled
+    // by its route's guard.
+    provideTranslateService({ fallbackLang: ALLOWED_LANGUAGES.ENGLISH }),
+    // Both dictionaries, before anything can ask for a word.
+    //
+    // They were registered in the root component's constructor, which happens
+    // to run before the first route is resolved — so the language guards found
+    // them there by luck of ordering rather than by arrangement. Here they are
+    // in place before the router starts, whatever that ordering is. Listed
+    // before it on purpose: app initializers run in the order they are given.
+    provideAppInitializer(() => {
+      const translate = inject(TranslateService);
+      translate.setTranslation(ALLOWED_LANGUAGES.ENGLISH, translationsEN);
+      translate.setTranslation(ALLOWED_LANGUAGES.SPANISH, translationsES);
+    }),
     provideRouter(
       routes,
-      withPreloading(PreloadAllModules),
+      withPreloading(PublicPreloading),
       withViewTransitions({ skipInitialTransition: true })
     ),
-    // ngx-translate v18 dropped TranslateModule.forRoot in favour of this
-    // provider. English is the fallback; the active language is selected in
-    // AppComponent once the JSON dictionaries have been registered.
-    provideTranslateService({ fallbackLang: ALLOWED_LANGUAGES.ENGLISH }),
     {
       provide: ARTWORK_PORT,
       useClass: ArtworkInfraService, // ArtworkInfraService is the implementation for the ArtworkPort. Decopupled. We call the abstraction, not the implementation.

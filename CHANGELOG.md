@@ -5,6 +5,31 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.67.0
+
+- **fix** A prerendered page settles where it was drawn. Which menu to draw and
+  how many columns the catalogue has were decided in typescript from a window
+  the prerender does not have, so every one of the 402 pages was written for a
+  desktop and re-laid out on arrival: on a phone the whole page jumped 80px
+  upwards 140ms after it appeared. Both are media queries now, and with
+  javascript off a phone still gets a menu that works. Measured at 393px: the
+  landing and prose pages went from 0.088 of layout shift to 0, the catalogue
+  from 0.295 to 0, an artwork page from 0.347 to 0.298.
+- **fix** Every page has its breadcrumb at all. It threw in its own
+  constructor, on every page, so no page had one — and nor did the year picker
+  or the sold filter that live in it. The build had been printing the same error
+  402 times per run and exiting 0.
+- **feat** What a page costs a reader is now a gate: layout shift and transfer
+  weight per route, measured in a real Chrome at phone width, failing the deploy
+  rather than reaching juanmamoreno.com (`e2e/page-cost.test.mjs`).
+- **fix** A reader no longer downloads the pages they cannot open. The router
+  was fetching every route's code after every page, the atelier and the
+  certificate tools included: 2053kB of javascript on a page of prose.
+- **chore** The bundle budget is a ratchet rather than a warning that fired on
+  every build and failed nothing.
+- **fix** Twelve more places where text was dimmed with opacity instead of
+  saying which of the site's two ink levels it is.
+
 ## 2.66.0
 
 - **feat** A line of reading text has a length: one `--measure` of 70ch,

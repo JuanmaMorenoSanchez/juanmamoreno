@@ -1,6 +1,42 @@
 @use '../../../styles/tokens';
 
-mat-grid-tile {
+// The catalogue as a css grid: two columns on a phone, three above it, which is
+// exactly the count it had before.
+//
+// It was a mat-grid-list, which lays itself out in javascript from a column
+// count this component read off BreakpointObserver — and while the 402 pages
+// are being prerendered there is no window to observe, so every static page was
+// written with the desktop count. A phone was handed three columns and re-laid
+// out to two the moment the page hydrated, which is most of the layout shift on
+// the catalogue. A question about the width of the window belongs in a media
+// query, where it is answered before any of our code runs.
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+// The strip at the foot of an artwork page, which is a sequence to walk rather
+// than a catalogue to browse: smaller pictures, more of them to a row.
+.tile-grid.as-strip {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (min-width: 600px) {
+  .tile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tile-grid.as-strip {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+// Square, as the grid list drew them. Whether a painting is better shown in its
+// own proportions is a separate question, and it is the artist's.
+.tile {
+  position: relative;
+  aspect-ratio: 1;
   cursor: pointer;
 }
 

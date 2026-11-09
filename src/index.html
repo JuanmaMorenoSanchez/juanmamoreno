@@ -25,6 +25,24 @@
         }
       })();
     </script>
+    <!--
+      A hamburger needs javascript to open. With none, a phone would be shown
+      the one control on the page that cannot work, so it is given the row of
+      links instead — which wraps onto three rows and is how this site read on
+      a phone for its whole life, before css started choosing between the two.
+      `!important` because the choice is made in the top bar's own stylesheet.
+    -->
+    <noscript>
+      <style>
+        .menu-toggle {
+          display: none !important;
+        }
+        .menu-links {
+          display: contents !important;
+        }
+      </style>
+    </noscript>
+
     <title>Juanma Moreno Sánchez, artist.</title>
     <meta
       name="description"

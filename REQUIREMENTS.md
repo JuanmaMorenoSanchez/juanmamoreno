@@ -164,7 +164,7 @@ on the site.
 *Also proven by:* the same detector run against the public pages at 393 and
 1280, which reported text under 0.8rem on six of them and now reports none
 
-### R226 — A line of reading text has a length · met
+### R227 — A line of reading text has a length · met
 A paragraph set across the whole container runs to 121 characters on a
 desktop, and the texts page's source lines to 162 — roughly twice the 45 to 75
 a reader's eye tracks without losing its place at the end of a line. The
@@ -5867,3 +5867,91 @@ specs here would hide this entry from the report of requirements nothing would
 notice the loss of, which is the report it belongs in.
 *Checked by:* nothing automatic — read `main.ts` and see that all three of
 `getItem`, `setItem` and `clear` are wrapped.
+
+### R228 — A prerendered page settles where it was drawn · met
+The site writes 402 pages out as html so they are readable before any script
+runs. A page that is then rearranged by the script gives away most of what that
+buys, and it was being rearranged on every visit on every phone.
+
+**The menu was decided in typescript.** Which of the two menus to draw — the
+row of ten links or the hamburger — came from `BreakpointObserver`, and a build
+has no window to observe: every one of the 402 files was written with the
+desktop row, which wraps onto three rows at 393px. Hydration then swapped in
+the hamburger and **the whole page jumped 80px upwards about 140ms after it
+appeared**: toolbar 144px to 64px, `main` from y=168 to y=88. Both menus are in
+the markup now and a media query at Material's own 600px picks one, so nothing
+is decided after the page is on screen. With javascript off a phone is given
+the link row instead of a hamburger it cannot open, through a `<noscript>`
+block in `index.html`.
+
+**The catalogue's columns were decided the same way**, by the same observer
+through the same service: `mat-grid-list` lays itself out in javascript from a
+column count, so the prerendered grid had three columns and a phone re-laid it
+to two. It is a css grid of two columns, three above 600px, with the tiles
+square as the grid list drew them. The strip under a painting is three across
+and six above 600px, and the count of thumbnails is reckoned against six, which
+comes out even at both widths. `ResponsiveService` had no other reader and is
+gone.
+
+Measured in Chrome at 393px, before and after: the landing page and the prose
+pages went from 0.088 to **0**, the catalogue from 0.295 to 0, an artwork page
+from 0.347 to 0.298. Google calls 0.1 good and 0.25 poor.
+
+**What is left, and it is named rather than hidden:** an artwork page still
+discards its own body and builds it again about 30ms in, because a signal that
+depends on the catalogue reads empty for one frame and the `@if` blocks holding
+the record, the essay and the strip all close and reopen. 0.298 of shift, all
+of it below the fold. The two ways to close it are for the data to travel in
+the page as it already does on `/artworks`, or for those blocks to keep their
+prerendered html through `@defer (hydrate …)`; both are their own change.
+*Proven by:* `e2e/page-cost.test.mjs`, which drives a real Chrome at 393px and
+holds `/` and `/about` to 0.1 — and the catalogue and an artwork page to 0.23
+and 0.33 as a ratchet, with the reason written beside the numbers
+
+### R229 — Nothing is allowed to get quietly heavier · met
+Three ceilings, all of them things no other check could see.
+
+**What a page sends.** Measured per route at phone width in the same suite, so
+an image that starts arriving at full size, or a font that stops being subset,
+fails the deploy instead of being noticed by a reader on a train. The artwork
+page's four megabytes are deliberate — it shows the original photograph,
+unchanged, which is what the artist decided an artwork page is — and the
+ceiling is there so a second full-size image cannot creep in beside it.
+
+**What the bundle weighs.** The budget said 1mb warning and 3mb error against a
+real 1.62mb, so it warned on every build and failed nothing, which is the same
+as having no budget except noisier. It is 1.65mb and 1.7mb now: a ratchet, to
+be raised deliberately when something is worth the weight.
+
+**What a reader is made to download of pages they cannot open.** The router was
+on `PreloadAllModules`, which after every page settles fetches the code for
+every other route — including the atelier, the certificate tools, the
+photograph editor and the pdf writer, eight guarded pages belonging to one
+person. `/about`, a page of prose with no picture on it, pulled 2053kB of
+javascript. `PublicPreloading` skips any route whose data says `noindex`, which
+those eight already said, so there is no second list to keep.
+*Proven by:* `e2e/page-cost.test.mjs` (the per-route ceilings), the `initial`
+budget in `angular.json`, and
+`src/app/shared/services/public-preloading.strategy.spec.ts`
+
+### R230 — Every page has its breadcrumb at all · met
+`buildBreadCrumb` read `route.snapshot.queryParamMap` on the deepest route in
+the tree, where the snapshot can be undefined — the same possibility the branch
+above it already guarded against. It threw in the component's constructor, so
+the component never built: **no page had a breadcrumb, in any of the 402
+prerendered files or in the browser.** With it went the year picker and the
+sold/available filter, which live in the trail.
+
+It had been failing in plain sight. Every build printed the same error 402
+times, once per page, and exited 0 — which is the whole argument for reading
+what a build says rather than only what it returns.
+
+The trail is also no longer drawn for a frame on pages that hide it. The root
+component read the router's snapshot to decide, and in the browser it is built
+before the first navigation resolves, so the snapshot was empty and every page
+answered "no" — a breadcrumb over prerendered html that has none, taken away
+again 30ms later. The build writes its own answer into the page's transfer
+state when its navigation ends, and the browser starts from that.
+*Proven by:* `scripts/verify-render.mjs` runs over output built with no errors,
+and the build log is checked for `ERROR`; the frame it no longer draws is held
+by `/` and `/about` at 0.1 in `e2e/page-cost.test.mjs`

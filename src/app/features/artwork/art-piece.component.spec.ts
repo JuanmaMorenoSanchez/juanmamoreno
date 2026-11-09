@@ -8,7 +8,6 @@ import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { Descriptions } from '@domain/artwork/descriptions.entity';
 import { provideTranslateService } from '@ngx-translate/core';
 import { PostedArtworksService } from '@shared/services/posted-artworks.service';
-import { ResponsiveService } from '@shared/services/responsive.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { ArtPieceComponent } from './art-piece.component';
@@ -392,17 +391,17 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
   const yearsOn = (showing: ArtPieceComponent): number =>
     new Set(showing.nearbyPieces().map((piece) => piece.tokenId.split('-')[0])).size;
 
-  /** Three columns, so two rows is six thumbnails, whatever jsdom's width is. */
+  /**
+   * No width to pin any more. The strip is six across on a wide window and
+   * three on a phone, and css chooses — so the count is reckoned against six,
+   * which comes out even at both.
+   */
   const page = (reading: Nft, catalogue: Nft[]) => {
     TestBed.configureTestingModule({
       imports: [ArtPieceComponent],
       providers: [
         provideTranslateService(),
         provideRouter([]),
-        {
-          provide: ResponsiveService,
-          useValue: { displayMobileLayout: new BehaviorSubject(false) },
-        },
         {
           provide: ARTWORK_PORT,
           useValue: {
@@ -440,9 +439,8 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
    * reader can walk from the newest work to the oldest, or back, on the
    * thumbnails alone and never return to the catalogue to do it.
    *
-   * Twelve of them, at the three columns this suite pins — the floor is a
-   * count, not a number of rows, so a phone gets four rows rather than the
-   * two a desktop gets.
+   * Twelve of them: the floor is a count, not a number of rows, so a phone
+   * gets four rows of three rather than the two rows of six a desktop gets.
    */
   it('shows the catalogue either side of the painting', () => {
     const reading = inYear('500', '2020');
@@ -487,14 +485,15 @@ describe('ArtPieceComponent — the paintings offered under the painting', () =>
    */
   it('never leaves a row half empty', () => {
     const reading = inYear('500', '2020');
-    const showing = page(reading, [reading, ...many('2020', 13), ...many('2019', 3)]);
+    const showing = page(reading, [reading, ...many('2020', 13), ...many('2019', 9)]);
 
-    // Twelve is the floor but all of 2020; fourteen brings 2019 in and leaves
-    // a row of two; fifteen is the answer, which at three columns is five
-    // whole rows.
-    expect(showing.nearbyPieces().length).toBe(15);
+    // Twelve is the floor but all of 2020; fourteen brings 2019 in and leaves a
+    // row four short; eighteen is the answer — three whole rows of six, and six
+    // whole rows of three, which is the same strip on a phone.
+    expect(showing.nearbyPieces().length).toBe(18);
+    expect(showing.nearbyPieces().length % 6).toBe(0);
     expect(showing.nearbyPieces().length % 3).toBe(0);
-    expect(countOf(showing, '2019')).toBe(2);
+    expect(countOf(showing, '2019')).toBe(5);
   });
 
   /** Only where the catalogue itself runs out is the last row short. */

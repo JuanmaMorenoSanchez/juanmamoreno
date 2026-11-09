@@ -180,7 +180,15 @@ export class BreadcrumbComponent implements OnInit {
     if (route.firstChild) {
       return this.buildBreadCrumb(route.firstChild, nextUrl, newBreadcrumbs);
     } else {
-      const queryParams = route.snapshot.queryParamMap.get('years');
+      // The deepest route in the tree can have no snapshot yet — the same
+      // possibility the dynamic branch above already guards against. Without
+      // the question mark this threw, in the constructor, on every page: the
+      // whole component failed to build, so **no page had a breadcrumb at
+      // all**, in any of the 402 prerendered files or in the browser. It
+      // showed up as 402 identical errors in the build log, which nothing
+      // read, and on an artwork page as a visible jump — Angular rolling the
+      // half-built shell back out of the DOM.
+      const queryParams = route.snapshot?.queryParamMap.get('years');
       if (queryParams) {
         const years = queryParams.split(',');
         years.forEach((year) => {

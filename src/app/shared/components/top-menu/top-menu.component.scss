@@ -13,6 +13,27 @@ mat-toolbar-row {
   flex: 1 1 auto;
 }
 
+// 600px is Material's XSmall boundary, which is the breakpoint this used to ask
+// BreakpointObserver about — so no reader sees a different menu than before,
+// they just see it in the prerendered html instead of 140ms later.
+//
+// `display: contents` rather than a block: the links are the toolbar row's own
+// flex children, and a wrapper that took part in the layout itself would gather
+// all ten of them into one item and stop the row wrapping.
+.menu-links {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .menu-links {
+    display: contents;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+}
+
 .brand {
   color: inherit;
   font-size: 1.1rem;

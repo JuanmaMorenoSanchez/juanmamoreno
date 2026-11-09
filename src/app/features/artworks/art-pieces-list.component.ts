@@ -13,7 +13,6 @@ import {
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardImage } from '@angular/material/card';
 import { MatChip, MatChipSet } from '@angular/material/chips';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -33,7 +32,6 @@ import {
 } from '@shared/constants/preferences.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
 import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
-import { ResponsiveService } from '@shared/services/responsive.service';
 import { SortOrder } from '@shared/types/sort.type';
 import { Observable, map, of, switchMap } from 'rxjs';
 
@@ -47,8 +45,6 @@ import { Observable, map, of, switchMap } from 'rxjs';
     MatChip,
     MatIcon,
     MatTooltip,
-    MatGridList,
-    MatGridTile,
     MatCard,
     MatProgressSpinner,
     MatCardImage,
@@ -62,7 +58,6 @@ export class ArtPiecesListComponent {
   private artworkService = inject(ARTWORK_PORT);
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
-  private responsiveService = inject(ResponsiveService);
   private destroyRef = inject(DestroyRef);
 
   public sortMethods = Object.values(SortMethod);
@@ -75,7 +70,6 @@ export class ArtPiecesListComponent {
   // upgrading imgThumbUrls as better sources arrive (see loadImgThumbUrl).
   private loadStarted = new Set<string>();
 
-  numberOfCols = input<number>(!this.responsiveService.displayMobileLayout.value ? 2 : 3);
   viewAsWidget = input<boolean>(false);
   nftFilters = input<NftFilters>({});
   selectedTokenId = output<string>();
