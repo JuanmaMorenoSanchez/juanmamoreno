@@ -5990,3 +5990,25 @@ still behind a submenu is the three generative pieces.
 *Proven by:* `e2e/without-javascript.test.mjs` ("the way out, with javascript
 off"), which drives a real Chrome with scripting off at 320px and at 1440px and
 reads the hrefs the bar actually offers, both widths over the same four pages
+
+### R232 — The essays are held to the same measure as the rest of the writing · met
+R227 gave the site one measure and reached every page of prose on it except the
+longest: the essay under a painting, on 192 artwork pages in two languages. It
+had none at all. The block is given the painting’s own width so the text sits
+exactly under the picture, and that width is `100vh` times the painting’s ratio
+— a horizontal measure derived from the window’s **height**, so a taller window
+made for a longer line.
+
+Measured in Chrome before: **107 characters at 1440×900 and 116 at 1440×1300**,
+with `max-width: none`. After: 70 at both. Justified text with automatic
+hyphens, which is what this is, suffers most from a long line — it is where the
+rivers open, and the stylesheet’s own comment already said “at this measure”
+about a measure that nothing set.
+
+Capped with `min()` rather than flatly, so the painting still governs whenever
+the painting is narrower: on a phone the frame is the full width and nothing
+changed, measured at 48 characters. Centred, so the column keeps the picture’s
+middle.
+*Proven by:* `max-width: min(var(--measure), 100%)` in
+`artwork-critic.component.scss`, and the browser measurement above — 70
+characters at two window heights where it was 107 and 116

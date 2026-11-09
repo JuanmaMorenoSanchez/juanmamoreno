@@ -24,6 +24,21 @@
 }
 
 .artwork-critic-body {
+  // The measure, which the longest reading on the site did not have.
+  //
+  // The block is given the painting's own width so the text sits exactly under
+  // it — and that width comes from the window's *height*, `100vh` times the
+  // painting's ratio, so a taller window made for a longer line. Measured in
+  // Chrome: 107 characters at 1440×900 and 116 at 1440×1300, against the 70
+  // the rest of the site's prose is held to (R227). Justified text with
+  // hyphens, which is what this is, is what suffers most from a long line: it
+  // is where the rivers open.
+  //
+  // `min()` rather than a flat cap, so the painting still governs whenever the
+  // painting is narrower — on a phone the frame is the full width and this
+  // changes nothing. Centred, so the column keeps the picture's middle.
+  max-width: min(var(--measure), 100%);
+  margin-inline: auto;
   line-height: 1.9;
   letter-spacing: 0.01em;
 

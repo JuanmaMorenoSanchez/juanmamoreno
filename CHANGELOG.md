@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.68.0
+
+- **fix** The essays have a reading measure. The block is given the painting’s
+  own width so the text sits under it, and that width comes from the window’s
+  *height* — so a taller window made for a longer line: measured at 107
+  characters at 1440×900 and 116 at 1440×1300, against the 70 the rest of the
+  site’s prose is held to. It is capped at the measure and centred, and the
+  painting still governs whenever the painting is narrower.
 ## 2.67.2
 
 - **fix** The catalogue can be reached without javascript. In the bar it hangs
