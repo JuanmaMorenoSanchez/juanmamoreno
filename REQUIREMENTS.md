@@ -6012,3 +6012,22 @@ middle.
 *Proven by:* `max-width: min(var(--measure), 100%)` in
 `artwork-critic.component.scss`, and the browser measurement above — 70
 characters at two window heights where it was 107 and 116
+
+### R233 — A message carries the language it was written in · met
+The contact form and the enquiry about a painting both exist twice, prerendered,
+in both languages — and the reply came back in English from either, because
+nothing in the request said which half of the site it came from.
+
+`MailService` adds it, not the forms: both go through that one method, so a
+third form cannot be written that forgets. It reads `LanguageUrlService`, which
+takes the language off the address, which is where the language lives on this
+site.
+
+It also sends an empty greeting for the enquiry about a painting. That form asks
+for an email and a message and never a name, and composes `name` out of the
+question so the artist's subject line is useful — and the reply had been reading
+the first three words of it as the sender's name, thanking strangers by the
+words "Price request Las".
+*Proven by:* `mail.service.spec.ts` (5 tests: the language from an English and
+a Spanish address, what the visitor typed arriving unchanged, and the enquiry
+sending an empty greeting from both halves of the catalogue)

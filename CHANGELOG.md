@@ -5,14 +5,26 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.69.0
+
+- **feat** Every message to the api says which language it was written in, so
+  the courtesy reply comes back in that language. Sent from the one service
+  both forms go through rather than from each form, so a third cannot forget
+  it.
+- **fix** The enquiry about a painting says it has no name to be greeted by.
+  It composes a subject line out of the question — "Price request: Las Meninas
+  (#5)" — and the reply had been taking the first three words of that for the
+  sender’s name.
+
 ## 2.68.0
 
 - **fix** The essays have a reading measure. The block is given the painting’s
   own width so the text sits under it, and that width comes from the window’s
-  *height* — so a taller window made for a longer line: measured at 107
+  _height_ — so a taller window made for a longer line: measured at 107
   characters at 1440×900 and 116 at 1440×1300, against the 70 the rest of the
   site’s prose is held to. It is capped at the measure and centred, and the
   painting still governs whenever the painting is narrower.
+
 ## 2.67.2
 
 - **fix** The catalogue can be reached without javascript. In the bar it hangs
@@ -702,15 +714,15 @@ back.
 
   A kept layer carries its subject in its kind, where it used to be thrown away
   at the moment of saving — five things cut out of one painting all arrived
-  called *layer* — and an asset is filed under the painting's name rather than
+  called _layer_ — and an asset is filed under the painting's name rather than
   the line under the preview, which carried its pixel dimensions with it.
 
 ## 2.51.0
 
 - **feat** The style can be switched on and off beside the painters' names, and
   a clip asked for a manner stops being told not to be a painting. The names
-  alone never worked: the clip's negative said *style, artwork, painting,
-  picture* in every clip, so the two cancelled and the output was photographic.
+  alone never worked: the clip's negative said _style, artwork, painting,
+  picture_ in every clip, so the two cancelled and the output was photographic.
   Off is the default and makes byte-for-byte the clip it made before.
 
 ## 2.50.0
@@ -742,7 +754,7 @@ back.
 - **fix** — a four-and-a-half-hour clip that the page would not show. It looked
   for boxes of type `video` and two kinds of box film: **Scenes** is the other,
   and it is the one you use for length. A clip is found by its file now, every
-  clip a run filmed is shown rather than the first, and *Nothing was kept* no
+  clip a run filmed is shown rather than the first, and _Nothing was kept_ no
   longer appears above a clip waiting to be kept.
 - **feat** — **Still on this machine**: everything the engine has made and not
   thrown away, with **Keep** on any of it. The file was always on the disk and
@@ -754,15 +766,15 @@ back.
 - **feat** — a kept clip can be carried on, and clips can be joined. **Work
   from this** on a clip hands back its last frame, which is what a
   continuation has to start from — it used to send the engine the mp4 and be
-  answered *that file is not an image*. Clips are then picked on the shelf, in
+  answered _that file is not an image_. Clips are then picked on the shelf, in
   the order they are to play, and joined into one longer clip through ffmpeg on
   the engine; the result is kept like anything else, so a long film is built in
   several joins.
 
 ## 2.46.1
 
-- **chore** — one download, not three. The corrector's *Just download the JPEG*
-  and the *Download JPEG* beside the finished preview did what **Edit and
+- **chore** — one download, not three. The corrector's _Just download the JPEG_
+  and the _Download JPEG_ beside the finished preview did what **Edit and
   download** does; both are gone, with the rule that styled them.
 - **feat** — the measurements say what they are for where they are typed: with
   the squaring on they are the shape the picture is squared up to and nothing
@@ -775,7 +787,7 @@ back.
   somebody on their way to a certificate. It files nothing and asks for no
   title, and it is the same render the other two ask for.
 - **fix** — straightening a photograph no longer requires the painting's real
-  measurements. They are what the picture is squared up *to*, and with
+  measurements. They are what the picture is squared up _to_, and with
   **Square the picture up to these** off they were never read — but they were
   demanded anyway, which made editing an image conditional on answering a
   question only a certificate asks.
@@ -847,8 +859,7 @@ back.
   shut (`transformers` reads GGUF for `qwen2` and `qwen3`, not for
   `qwen2_5_vl`, and bitsandbytes would be a dependency to ask about), but
   layerwise fp8 casting is already in `diffusers` and needs nothing: **the
-  spill goes from 16.58 GiB to 8.8 and a cold first step from 147 seconds to
-  106.** It is lossy, and measured rather than assumed — a mean difference of
+  spill goes from 16.58 GiB to 8.8 and a cold first step from 147 seconds to 106.** It is lossy, and measured rather than assumed — a mean difference of
   1.07 in 255 against the bf16 render, largest 7, nothing over 8.
 - **fix** — the hand-rolled pinning from 2.40.0 is removed. It measured no
   faster than letting `diffusers` pin each group as it fetches it, and it broke

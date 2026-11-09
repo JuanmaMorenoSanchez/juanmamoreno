@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
+import { LanguageUrlService } from '@shared/services/language-url.service';
 import { ApiResponse } from '@shared/types/api-response.type';
 import { Observable } from 'rxjs';
 
@@ -25,6 +26,7 @@ export interface QuoteRequest {
 @Injectable({ providedIn: 'root' })
 export class MailService {
   private http = inject(HttpClient);
+  private lang = inject(LanguageUrlService);
 
   /**
    * The honeypot goes with it.
@@ -39,8 +41,17 @@ export class MailService {
     email: string;
     message: string;
     honeypot?: string;
+    /** Empty when the form asked for no name — see `sendQuoteRequest`. */
+    greeting?: string;
   }): Observable<ApiResponse<string>> {
-    return this.http.post<ApiResponse<string>>(`${environment.backendUrl}contact`, formData);
+    // The language goes with every message, from here rather than from each
+    // caller: both forms exist twice, in both languages, and the courtesy
+    // reply was in English whichever one a reader wrote from, because nothing
+    // ever told the api which it had been.
+    return this.http.post<ApiResponse<string>>(`${environment.backendUrl}contact`, {
+      ...formData,
+      lang: this.lang.contentLanguage(),
+    });
   }
 
   /**
@@ -62,6 +73,10 @@ export class MailService {
     const name = `${label}: ${artworkName} (#${tokenId})`;
     const extra = message.trim() ? message.trim() : '(no additional message)';
     const composed = `${label} for "${artworkName}" (id ${tokenId}).\n\n${extra}`;
-    return this.sendContactMessage({ name, email, message: composed, honeypot });
+    // `name` is the question, which is what the artist wants in his subject
+    // line and is nobody's name — this form never asks for one. Sent empty on
+    // purpose: without it the reply greeted people "Thank you Price request
+    // Las", having taken the first three words of the subject for a name.
+    return this.sendContactMessage({ name, email, message: composed, honeypot, greeting: '' });
   }
 }
