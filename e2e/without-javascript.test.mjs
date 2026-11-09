@@ -14,7 +14,7 @@
  */
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
-import { BASE_URL, READY, launchBrowser } from './browser.mjs';
+import { BASE_URL, READY, SMALL_PHONE, launchBrowser } from './browser.mjs';
 
 let browser;
 let cannotRun = null;
@@ -75,7 +75,11 @@ describe('an artwork page with javascript off', () => {
     const { context, page } = await openWithoutJavascript('/artwork/5');
     const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
 
-    assert.match(text, /\d+\s*x\s*\d+\s*cm/i, `no measurements without javascript: ${text.slice(0, 160)}`);
+    assert.match(
+      text,
+      /\d+\s*x\s*\d+\s*cm/i,
+      `no measurements without javascript: ${text.slice(0, 160)}`
+    );
 
     await context.close();
   });
@@ -112,15 +116,66 @@ describe('the catalogue with javascript off', () => {
     const { context, page } = await openWithoutJavascript('/artworks');
     await page.waitForSelector('.tile img', READY);
 
-    const shown = await page.$$eval('.tile img', (images) =>
-      images.filter((img) => {
-        const box = img.getBoundingClientRect();
-        return box.width > 40 && box.height > 40 && Number(getComputedStyle(img).opacity) > 0.9;
-      }).length
+    const shown = await page.$$eval(
+      '.tile img',
+      (images) =>
+        images.filter((img) => {
+          const box = img.getBoundingClientRect();
+          return box.width > 40 && box.height > 40 && Number(getComputedStyle(img).opacity) > 0.9;
+        }).length
     );
 
     assert.ok(shown > 10, `only ${shown} paintings are visible without javascript`);
 
     await context.close();
   });
+});
+
+/**
+ * The way out of the page, for a reader whose browser runs none of it.
+ *
+ * The top bar holds both menus and css chooses between them. A hamburger needs
+ * a script to open, so the choice has to come out the other way when there is
+ * no script — and when it did not, a phone with scripting off was given a
+ * hamburger that could not open and a row of links set to `display: none`.
+ * There was no way to anywhere from any page, in either language, and nothing
+ * here noticed: every other suite runs a browser with scripting on, and this
+ * one had never looked at the menu.
+ */
+describe('the way out, with javascript off', () => {
+  for (const [what, viewport] of [
+    ['on a phone', SMALL_PHONE],
+    ['on a desktop', { width: 1440, height: 900 }],
+  ]) {
+    it(`offers the pages of the site ${what}`, async (t) => {
+      if (cannotRun) return t.skip(cannotRun);
+
+      const context = await browser.newContext({ javaScriptEnabled: false, viewport });
+      const page = await context.newPage();
+      await page.goto(BASE_URL + '/about', { waitUntil: 'domcontentloaded' });
+
+      const reachable = await page.$$eval('header a[href], header button', (controls) =>
+        controls
+          .filter((el) => {
+            const style = getComputedStyle(el);
+            const box = el.getBoundingClientRect();
+            return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0;
+          })
+          .map((el) => (el.getAttribute('href') ?? '').trim())
+          .filter(Boolean)
+      );
+
+      // The four pages the bar links to directly. Not the catalogue: it hangs
+      // off a submenu, which is an overlay and needs a script to open — a gap
+      // this records rather than pretends about.
+      for (const page of ['/about', '/cv', '/texts', '/contact']) {
+        assert.ok(
+          reachable.some((href) => href.endsWith(page)),
+          `no way to ${page} without javascript ${what}: ${JSON.stringify(reachable)}`
+        );
+      }
+
+      await context.close();
+    });
+  }
 });

@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.67.1
+
+- **fix** The top bar can be used without javascript, which it never could.
+  Its six items were buttons carrying no href, so a reader with scripting off
+  could read all 402 prerendered pages and leave none of them. The four that go
+  straight to a page are anchors now.
+- **fix** And after 2.67.0 a phone with scripting off had no menu at all: the
+  rule that hands a scriptless reader the row of links rather than a hamburger
+  it cannot open was written in a `<noscript><style>` block, which the
+  prerenderer escapes into plain text. It is a class on `<html>` set before the
+  first paint, with the no-javascript half of the rule in the global stylesheet
+  and the rest inlined with the component, because only the component's styles
+  reach the first paint when javascript is on.
+
 ## 2.67.0
 
 - **fix** A prerendered page settles where it was drawn. Which menu to draw and

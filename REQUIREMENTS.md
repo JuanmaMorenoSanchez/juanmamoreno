@@ -5955,3 +5955,33 @@ state when its navigation ends, and the browser starts from that.
 *Proven by:* `scripts/verify-render.mjs` runs over output built with no errors,
 and the build log is checked for `ERROR`; the frame it no longer draws is held
 by `/` and `/about` at 0.1 in `e2e/page-cost.test.mjs`
+
+### R231 — The site can be walked without javascript · met
+402 pages are written out as html so they can be read with no script running,
+and until now **none of them could be left**. The top bar's six items were
+`<button mat-button [routerLink]>`, which renders a `<button>` carrying no
+href: nothing to follow, nothing to middle-click, nothing to copy, and nothing
+at all for a reader with scripting off — the same fault the catalogue's tiles
+were fixed for, in the bar above them. The four that go straight to a page are
+anchors now, in both the toolbar and the drawer.
+
+R228 put both menus in the markup and let css choose, which made this worse
+before it made it better: the rule giving a scriptless reader the row of links
+instead of a hamburger it cannot open was written as a `<noscript><style>`
+block, and **the prerenderer escapes it into plain text** — `&lt;style&gt;` in
+all 402 files — so a phone with javascript off got a dead hamburger and no
+navigation whatsoever. Shipped, measured the same afternoon, fixed.
+
+The choice is split between two stylesheets on purpose, and each half has to be
+where it is. A component's styles are inlined into every prerendered page, so
+they decide the javascript case at the first paint. The global stylesheet is
+served through a `<noscript><link>` and loaded from script otherwise, so with
+javascript on it arrives *after* the first paint — a rule there brings the 80px
+jump straight back, which is what the measurement showed — and with javascript
+off it is a plain blocking link, which is exactly the case it owns.
+
+What is still out of reach without a script: the catalogue and the generative
+pieces, which hang off submenus, and a submenu is an overlay that needs one.
+*Proven by:* `e2e/without-javascript.test.mjs` ("the way out, with javascript
+off"), which drives a real Chrome with scripting off at 320px and at 1440px and
+reads the hrefs the bar actually offers, both widths over the same four pages

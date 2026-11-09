@@ -58,20 +58,24 @@
       {{ 'menu.generative' | translate }}
     </button>
   }
-  <button [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="lang.link('about')">
+  <!--
+    Anchors, not buttons. These four were `<button mat-button [routerLink]>`,
+    which renders a `<button>` with no href: nothing to follow, nothing to
+    middle-click, nothing to copy, and nothing at all for a reader whose browser
+    runs no javascript — the same fault the catalogue's tiles were fixed for.
+    The site prerenders 402 pages so they can be read without a script, and
+    until now there was no way to walk between any of them without one.
+  -->
+  <a [attr.aria-label]="'menu.about' | translate" mat-button [routerLink]="lang.link('about')">
     {{ 'menu.about' | translate }}
-  </button>
-  <button aria-label="CV" mat-button [routerLink]="lang.link('cv')">CV</button>
-  <button [attr.aria-label]="'menu.texts' | translate" mat-button [routerLink]="lang.link('texts')">
+  </a>
+  <a aria-label="CV" mat-button [routerLink]="lang.link('cv')">CV</a>
+  <a [attr.aria-label]="'menu.texts' | translate" mat-button [routerLink]="lang.link('texts')">
     {{ 'menu.texts' | translate }}
-  </button>
-  <button
-    [attr.aria-label]="'menu.contact' | translate"
-    mat-button
-    [routerLink]="lang.link('contact')"
-  >
+  </a>
+  <a [attr.aria-label]="'menu.contact' | translate" mat-button [routerLink]="lang.link('contact')">
     {{ 'menu.contact' | translate }}
-  </button>
+  </a>
   <!--
     Everything that is not a place to go, as icons at the end of the bar.
 

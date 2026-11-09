@@ -4,6 +4,19 @@
     <meta charset="utf-8" />
     <script>
       window.global = window;
+      /*
+        Says that scripts run here, before the first pixel is painted.
+
+        The top bar holds both menus and css picks one. Only one of those picks
+        needs a script to be any use: a hamburger that cannot be opened is worse
+        than no control at all, so without this class a reader gets the row of
+        links at every width — which is what every prerendered page showed for
+        the site's whole life. Set here rather than in a `<noscript>` block,
+        because the prerenderer escapes a `<style>` inside one into plain text
+        and the rule never arrives: measured, on a phone with scripting off,
+        as a page with no way out of it.
+      */
+      document.documentElement.classList.add('js');
     </script>
     <!--
       The reader's theme, applied before the first pixel is painted. Inline and
@@ -25,24 +38,6 @@
         }
       })();
     </script>
-    <!--
-      A hamburger needs javascript to open. With none, a phone would be shown
-      the one control on the page that cannot work, so it is given the row of
-      links instead — which wraps onto three rows and is how this site read on
-      a phone for its whole life, before css started choosing between the two.
-      `!important` because the choice is made in the top bar's own stylesheet.
-    -->
-    <noscript>
-      <style>
-        .menu-toggle {
-          display: none !important;
-        }
-        .menu-links {
-          display: contents !important;
-        }
-      </style>
-    </noscript>
-
     <title>Juanma Moreno Sánchez, artist.</title>
     <meta
       name="description"

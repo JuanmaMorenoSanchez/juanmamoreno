@@ -13,9 +13,21 @@ mat-toolbar-row {
   flex: 1 1 auto;
 }
 
+// Which menu a reader gets, in css rather than in a signal.
+//
 // 600px is Material's XSmall boundary, which is the breakpoint this used to ask
 // BreakpointObserver about — so no reader sees a different menu than before,
 // they just see it in the prerendered html instead of 140ms later.
+//
+// `display: contents` rather than a block: the links are the toolbar row's own
+// flex children, and a wrapper that took part in the layout itself would gather
+// all ten of them into one item and stop the row wrapping.
+//
+// These rules are inlined into every prerendered page, so they apply to the
+// first paint — which is the whole point, and is why the decision is here
+// rather than in styles.scss, where it belongs by subject. That file arrives
+// after the first paint when javascript is on. The one case it does own is a
+// reader with no javascript at all; see the note beside it there.
 //
 // `display: contents` rather than a block: the links are the toolbar row's own
 // flex children, and a wrapper that took part in the layout itself would gather
@@ -72,7 +84,10 @@ mat-toolbar-row {
   padding: tokens.$spacing-md 0;
   gap: tokens.$spacing-xs;
 
-  button[mat-button] {
+  // Both, because the four that go somewhere are anchors now and the two that
+  // open a menu are still buttons.
+  button[mat-button],
+  a[mat-button] {
     justify-content: flex-start;
     width: 100%;
     padding-left: tokens.$spacing-lg;

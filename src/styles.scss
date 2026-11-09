@@ -309,6 +309,35 @@ p {
   margin-top: 5vh;
 }
 
+/*
+  The top bar for a reader whose browser runs no javascript: the row of links,
+  never the hamburger, because a hamburger needs a script to open and a control
+  that cannot work is worse than no control at all.
+
+  **Only this half of the choice lives here.** Which menu a reader with
+  javascript gets is decided in the top bar's own stylesheet, and has to be:
+  Angular serves the global stylesheet through a `<noscript><link>` and loads it
+  from script otherwise, so with javascript on *this file arrives after the first
+  paint*. A rule here would show the link row first and swap it — which is the
+  80px jump this whole arrangement exists to remove, measured coming straight
+  back when the decision was moved here. A component's styles are inlined into
+  every prerendered page, so they apply to the first paint.
+
+  With no javascript the same stylesheet is a plain blocking `<link>`, so this
+  does apply before anything is drawn. `js` is put on `<html>` by an inline
+  script in index.html.
+
+  `!important` because it is overruling a component's own scoped rules, which
+  carry an attribute selector's specificity on top of the class.
+*/
+html:not(.js) .menu-links {
+  display: contents !important;
+}
+
+html:not(.js) .menu-toggle {
+  display: none !important;
+}
+
 .padding-sides {
   padding-left: tokens.$spacing-xl;
   padding-right: tokens.$spacing-xl;
