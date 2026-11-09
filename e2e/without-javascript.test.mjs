@@ -154,7 +154,10 @@ describe('the way out, with javascript off', () => {
       const page = await context.newPage();
       await page.goto(BASE_URL + '/about', { waitUntil: 'domcontentloaded' });
 
-      const reachable = await page.$$eval('header a[href], header button', (controls) =>
+      // The bar and the foot together: both are on every page a reader sees,
+      // and between them they are the whole of the site's navigation without a
+      // script.
+      const reachable = await page.$$eval('header a[href], footer a[href]', (controls) =>
         controls
           .filter((el) => {
             const style = getComputedStyle(el);
@@ -165,10 +168,10 @@ describe('the way out, with javascript off', () => {
           .filter(Boolean)
       );
 
-      // The four pages the bar links to directly. Not the catalogue: it hangs
-      // off a submenu, which is an overlay and needs a script to open — a gap
-      // this records rather than pretends about.
-      for (const page of ['/about', '/cv', '/texts', '/contact']) {
+      // The catalogue included, which is the one that matters most and the one
+      // that was missing: it hangs off a submenu in the bar, and a submenu is an
+      // overlay that needs a script, so it is linked from the foot as well.
+      for (const page of ['/artworks', '/about', '/cv', '/texts', '/contact']) {
         assert.ok(
           reachable.some((href) => href.endsWith(page)),
           `no way to ${page} without javascript ${what}: ${JSON.stringify(reachable)}`
@@ -178,4 +181,38 @@ describe('the way out, with javascript off', () => {
       await context.close();
     });
   }
+
+  /**
+   * And it keeps a Spanish reader in Spanish.
+   *
+   * Every page exists at two addresses and these links are built through
+   * `LanguageUrlService`, so a plain `/artworks` in the markup would take a
+   * reader of the Spanish half back into English — with no script running there
+   * is nothing afterwards to put them back.
+   */
+  it('keeps a Spanish reader on the Spanish half', async (t) => {
+    if (cannotRun) return t.skip(cannotRun);
+
+    const context = await browser.newContext({ javaScriptEnabled: false, viewport: SMALL_PHONE });
+    const page = await context.newPage();
+    await page.goto(BASE_URL + '/es/about', { waitUntil: 'domcontentloaded' });
+
+    const hrefs = await page.$$eval('header a[href], footer a[href]', (links) =>
+      links.map((el) => el.getAttribute('href') ?? '').filter((href) => href.startsWith('/'))
+    );
+
+    assert.ok(
+      hrefs.includes('/es/artworks'),
+      `no Spanish way to the paintings: ${JSON.stringify(hrefs)}`
+    );
+    // `/` is the brand, which leads to whichever landing the guard decides, and
+    // `/door` is one of the two addresses that carry no language on purpose —
+    // it exists once, in one language, for one person.
+    const leaves = hrefs.filter(
+      (href) => href !== '/' && href !== '/door' && !href.startsWith('/es')
+    );
+    assert.deepEqual(leaves, [], `these links leave Spanish: ${JSON.stringify(leaves)}`);
+
+    await context.close();
+  });
 });

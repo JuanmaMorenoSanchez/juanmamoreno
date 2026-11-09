@@ -538,7 +538,9 @@ describe('the foot of the page', () => {
     });
   }
 
-  // Four prerendered pages that were linked from nowhere at all.
+  // Four prerendered pages that were linked from nowhere at all — and the
+  // catalogue, which was linked from nowhere a reader without javascript could
+  // use, the bar's own route to it being a submenu.
   it('gives Privacy and Terms a way in, in the language being read', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
@@ -548,7 +550,7 @@ describe('the foot of the page', () => {
     const internal = await page
       .locator('app-footer a[href^="/"]')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    assert.deepEqual(internal, ['/es/contact', '/es/privacy', '/es/terms']);
+    assert.deepEqual(internal, ['/es/artworks', '/es/contact', '/es/privacy', '/es/terms']);
 
     await page.close();
   });

@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.67.2
+
+- **fix** The catalogue can be reached without javascript. In the bar it hangs
+  off a submenu, and a submenu is an overlay that needs a script to open, so a
+  reader without one could read any of the 402 prerendered pages and never
+  arrive at the page they all lead to. It is linked from the foot of every page
+  now, in the language that page is written in.
+
 ## 2.67.1
 
 - **fix** The top bar can be used without javascript, which it never could.

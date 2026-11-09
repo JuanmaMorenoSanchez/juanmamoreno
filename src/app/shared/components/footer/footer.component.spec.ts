@@ -78,7 +78,7 @@ describe('FooterComponent', () => {
       .map((link) => link.href!)
       .filter((href) => href.startsWith('/'));
 
-    expect(internal).toEqual(['/es/contact', '/es/privacy', '/es/terms']);
+    expect(internal).toEqual(['/es/artworks', '/es/contact', '/es/privacy', '/es/terms']);
   });
 
   /**

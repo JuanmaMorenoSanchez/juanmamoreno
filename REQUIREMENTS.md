@@ -5980,8 +5980,13 @@ javascript on it arrives *after* the first paint — a rule there brings the 80p
 jump straight back, which is what the measurement showed — and with javascript
 off it is a plain blocking link, which is exactly the case it owns.
 
-What is still out of reach without a script: the catalogue and the generative
-pieces, which hang off submenus, and a submenu is an overlay that needs one.
+**And the catalogue is reachable too**, which it was not: in the bar it hangs
+off a submenu, and a submenu is an overlay that needs a script to open, so a
+reader without one could read any of the 402 pages and never arrive at the page
+they all lead to. It is linked from the foot of every page, built through
+`LanguageUrlService` so a Spanish reader is not dropped back into English —
+with no script running there is nothing afterwards to put them back. What is
+still behind a submenu is the three generative pieces.
 *Proven by:* `e2e/without-javascript.test.mjs` ("the way out, with javascript
 off"), which drives a real Chrome with scripting off at 320px and at 1440px and
 reads the hrefs the bar actually offers, both widths over the same four pages

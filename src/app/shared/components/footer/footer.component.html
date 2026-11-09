@@ -1,6 +1,15 @@
 <footer class="site-footer" role="contentinfo">
   <nav class="footer-links" [attr.aria-label]="'footer.label' | translate">
     <!--
+      The paintings, first, and the only link to them on the page that does not
+      need a script. In the bar above, the catalogue hangs off a submenu, and a
+      submenu is an overlay: with javascript off it never opens. So a reader
+      without it could read any of the 402 prerendered pages and never reach the
+      catalogue from one — which, on a painter's site, is the page the others
+      exist to lead to. Same reason Privacy and Terms are down here.
+    -->
+    <a class="footer-link" [routerLink]="lang.link('artworks')">{{ 'paintings' | translate }}</a>
+    <!--
       rel="me" as well as the usual noopener: it is how the rest of the web is
       told that this account and this site are the same person, which is the
       whole point of the link being here.
