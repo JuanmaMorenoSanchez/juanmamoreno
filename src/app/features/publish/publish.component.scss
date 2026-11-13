@@ -52,6 +52,23 @@
   font-weight: 400;
 }
 
+// The two things that stand where the clip would be. Neither had a rule of its
+// own, so both were set at whatever the page's body is; a line that replaces a
+// video wants to be read, and the one that says something is wrong wants to be
+// read first.
+.publish-fetching {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+}
+
+.publish-trouble {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--jm-error);
+}
+
 .publish-made {
   margin: tokens.$spacing-xs 0 tokens.$spacing-md;
   font-size: 0.75rem;

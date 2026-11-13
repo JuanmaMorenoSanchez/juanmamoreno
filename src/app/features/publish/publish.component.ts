@@ -44,6 +44,17 @@ export class PublishComponent {
   private readonly kept = inject(KeptService);
   protected readonly clips = this.kept.urls;
 
+  /**
+   * Why a clip did not arrive, when one did not.
+   *
+   * The page had no way to say. A fetch that failed and a fetch still running
+   * both left `clips()` without an entry, so both drew "Fetching the clip…" —
+   * and it stayed there, which reads as a render that never finished rather
+   * than as a request that was refused. The usual cause is an hour-old
+   * sign-in, which is a thing he can do something about the moment he is told.
+   */
+  protected readonly clipTrouble = this.kept.trouble;
+
   private readonly auth = inject(AdminAuthService);
   private readonly reels = inject(PendingReelsService);
 

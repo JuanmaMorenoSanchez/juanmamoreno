@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.69.1
+
+- **fix** The catalogue is actually cached, and every page stops throwing.
+  Akita's `persistState` serialises only for the real `localStorage`; a custom
+  storage is handed the state object itself and has to serialise it. Ours
+  passed it straight on, so every visitor’s cache was the fifteen characters
+  `[object Object]` — and the next visit read it back and parsed it:
+  `Uncaught SyntaxError: "[object Object]" is not valid JSON`, on every page of
+  the site, with the whole catalogue re-fetched every time. A value that cannot
+  be a state is now treated as no state, which recovers the browsers already
+  holding the broken one.
+- **fix** The reels page says why a clip did not load. A refused request and
+  one still in flight both left it drawing “Fetching the clip…”, for ever,
+  which reads as a render that never finished rather than as a request that was
+  refused — and the reason is almost always a sign-in an hour old. The reason
+  was being recorded all along and nothing showed it.
+
 ## 2.69.0
 
 - **feat** Every message to the api says which language it was written in, so

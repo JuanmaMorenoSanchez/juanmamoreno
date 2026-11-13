@@ -28,7 +28,16 @@ const REEL: PendingReel = {
   renderedAt: '2026-09-06T10:00:00.000Z',
 };
 
-function setup(options: { waiting?: PendingReel[] | undefined; signedIn?: boolean } = {}) {
+function setup(
+  options: {
+    waiting?: PendingReel[] | undefined;
+    signedIn?: boolean;
+    /** No entry means the bytes have not arrived: either in flight, or refused. */
+    clips?: Record<string, string>;
+    /** Why a clip was refused, which is what tells the two apart. */
+    clipTrouble?: Record<string, string>;
+  } = {}
+) {
   const reels = {
     pending: vi.fn().mockReturnValue(of('waiting' in options ? options.waiting : [REEL])),
     publish: vi.fn().mockReturnValue(of(true)),
@@ -54,7 +63,8 @@ function setup(options: { waiting?: PendingReel[] | undefined; signedIn?: boolea
         // an Authorization header a `video` tag cannot send.
         provide: KeptService,
         useValue: {
-          urls: signal({ [REEL.video]: `blob:fake/${REEL.video}` }),
+          urls: signal(options.clips ?? { [REEL.video]: `blob:fake/${REEL.video}` }),
+          trouble: signal(options.clipTrouble ?? {}),
           show: () => Promise.resolve(),
         },
       },
@@ -80,6 +90,31 @@ describe('PublishComponent', () => {
 
     expect(find(fixture, '.publish-video')?.getAttribute('src')).toBe(`blob:fake/${REEL.video}`);
     expect(text(fixture)).toContain('Siesta');
+  });
+
+  /**
+   * A refused request and one still running both leave `clips()` empty, and the
+   * page drew the same line for both — for ever, which reads as a render that
+   * never finished rather than as a clip that will not come. The reason is
+   * almost always a sign-in an hour old, which he can act on the moment he
+   * reads it.
+   */
+  it('says why a clip did not load, rather than fetching for ever', () => {
+    const { fixture } = setup({
+      clips: {},
+      clipTrouble: { [REEL.video]: 'Http failure response: 403 Forbidden' },
+    });
+
+    expect(find(fixture, '[data-testid="clip-trouble"]')?.textContent).toContain('403 Forbidden');
+    expect(find(fixture, '[data-testid="fetching"]')).toBeNull();
+    expect(find(fixture, '.publish-video')).toBeNull();
+  });
+
+  it('still says it is fetching while it is really fetching', () => {
+    const { fixture } = setup({ clips: {} });
+
+    expect(find(fixture, '[data-testid="fetching"]')).not.toBeNull();
+    expect(find(fixture, '[data-testid="clip-trouble"]')).toBeNull();
   });
 
   it('never points at a public url', () => {

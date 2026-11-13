@@ -33,6 +33,16 @@
           playsinline
           preload="metadata"
         ></video>
+      } @else if (clipTrouble()[reel.video]; as why) {
+        <!--
+          A refused request, said out loud. It used to draw the line below for
+          ever, which reads as a render that never finished rather than as a
+          clip that will not come — and the reason is almost always a sign-in
+          an hour old.
+        -->
+        <p class="publish-trouble" role="status" data-testid="clip-trouble">
+          The clip did not load: {{ why }}
+        </p>
       } @else {
         <p class="publish-fetching" data-testid="fetching">Fetching the clip…</p>
       }

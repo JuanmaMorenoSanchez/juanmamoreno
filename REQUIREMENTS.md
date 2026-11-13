@@ -5849,6 +5849,24 @@ from memory, which is why it went unnoticed.
 reader who cannot be written to simply fetches the catalogue again next visit,
 which is what a cache that cannot be written should do.
 
+**And for a year that storage wrote nothing but the words `[object Object]`.**
+Inside `persistState` the write is
+`storage.setItem(key, isLocalStorage(storage) ? serialize(state) : state)`: a
+custom storage is handed the state object itself and is expected to serialise
+it. This one passed it straight to `window.localStorage`, which stringifies
+whatever it is given. So the cache every visitor held was fifteen characters
+long, and the next visit read it back, decided it was not an object and parsed
+it — `Uncaught SyntaxError: "[object Object]" is not valid JSON`, on every page
+of the site, with the catalogue re-fetched every visit. The wrapper was written
+so that a browser refusing storage would not fill the console with errors, and
+it filled everyone's console with a different one.
+
+The wrapper serialises now, and a stored value that cannot be a state — one
+that does not begin with `{` — is treated as no state at all, which is what
+recovers the browsers that already hold the broken value without waiting for
+anybody to clear their site data. Checked by its first character rather than by
+parsing it twice: that string is the size of the catalogue.
+
 **And what was filling the quota is no longer written there at all.** The
 session held one base64 thumbnail per painting looked at — measured at 14 KB
 each — appended and never pruned or matched, so browsing the catalogue put 2.3
@@ -6031,3 +6049,18 @@ words "Price request Las".
 *Proven by:* `mail.service.spec.ts` (5 tests: the language from an English and
 a Spanish address, what the visitor typed arriving unchanged, and the enquiry
 sending an empty greeting from both halves of the catalogue)
+
+### R234 — A clip that will not load says so · met
+The reels page fetches each waiting clip's bytes itself, because the route is
+behind the guard and a `video` tag cannot send an `Authorization` header. A
+refused request and one still in flight both leave the page without a url for
+that clip, and it drew the same line for both: **"Fetching the clip…", for
+ever**, which reads as a render that never finished rather than as a request
+that was refused. The usual cause is a sign-in an hour old, which is a thing he
+can act on the moment he is told.
+
+`KeptService` had been recording the reason for every failure all along — the
+atelier's shelf shows it, and this page never asked.
+*Proven by:* `publish.component.spec.ts` "says why a clip did not load, rather
+than fetching for ever" and "still says it is fetching while it is really
+fetching"

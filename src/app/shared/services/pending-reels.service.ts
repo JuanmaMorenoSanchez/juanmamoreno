@@ -15,7 +15,16 @@ export interface PendingReel {
   tokenId: string;
   tokenIds: string[];
   name: string;
-  /** Public url of the mp4 in the bucket: what plays on the page. */
+  /**
+   * The id of the clip the atelier kept, which is what plays on the page.
+   *
+   * It said "public url of the mp4" here and had not been one for a while: the
+   * bucket is closed, and a reel he has not approved should not be readable by
+   * anybody holding the link. The bytes come through the guarded route with the
+   * credential — see `PublishComponent`, which still has to fetch them itself
+   * because a `video` tag cannot send a header. The public copy is made at the
+   * moment of publishing and not before.
+   */
   video: string;
   /** The caption it would go out with, as it read when the video was made. */
   caption: string;
