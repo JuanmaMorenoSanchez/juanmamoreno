@@ -124,7 +124,10 @@ describe('opening an artwork with a mouse', () => {
     const page = await openPage(browser, '/artworks');
     await page.waitForSelector('.tile a.tile-link', READY);
 
-    const { href, landedOn, dragStarts } = await clickWithDriftingMouse(page, '.tile a.tile-link');
+    const { href, landedOn, dragStarts } = await clickWithDriftingMouse(
+      page,
+      '.tile a.tile-link'
+    );
 
     assert.equal(dragStarts, 0, 'the tile was dragged instead of clicked, which eats the click');
     assert.equal(landedOn, href, 'the catalogue did not open the artwork');
@@ -153,10 +156,10 @@ describe('opening an artwork with a mouse', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/');
-    await page.waitForSelector('a.home-plate', READY);
+    await page.waitForSelector('a.home-featured', READY);
 
     const parts = await page.evaluate(() => {
-      const link = document.querySelector('a.home-plate');
+      const link = document.querySelector('a.home-featured');
       return [link, ...link.querySelectorAll('img')].map((el) => ({
         tag: el.tagName,
         draggable: el.draggable,

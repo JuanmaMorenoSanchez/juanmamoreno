@@ -1,4 +1,10 @@
-import { Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, untracked, WritableSignal } from '@angular/core';
+import { form, FormField } from '@angular/forms/signals';
+import { MatChip, MatChipRemove, MatChipSet } from '@angular/material/chips';
+import { MatOption } from '@angular/material/core';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatSelect } from '@angular/material/select';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -17,11 +23,28 @@ import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
 import { BreadCrumb } from './breadcrumbs.entity';
 
+interface YearPickerModel {
+  newYear: number | null;
+}
+
 @Component({
   selector: 'app-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
-  imports: [RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [
+    MatChipSet,
+    MatChip,
+    MatChipRemove,
+    RouterLink,
+    RouterLinkActive,
+    MatIcon,
+    MatFormField,
+    MatSelect,
+    FormField,
+    MatOption,
+    TranslatePipe,
+    MatLabel,
+  ],
 })
 export class BreadcrumbComponent implements OnInit {
   private artworkService = inject(ARTWORK_PORT);
@@ -42,6 +65,9 @@ export class BreadcrumbComponent implements OnInit {
   // on how many years are selected.
   public readonly routeBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !b.isYear));
   public readonly yearBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !!b.isYear));
+
+  private readonly yearPickerModel = signal<YearPickerModel>({ newYear: null });
+  public readonly yearPickerForm = form(this.yearPickerModel);
 
   /**
    * Sold, available, or both — beside the year, and shown as a chip like one.
@@ -66,27 +92,13 @@ export class BreadcrumbComponent implements OnInit {
 
   constructor() {
     this.breadcrumbs = signal(this.buildBreadCrumb(this.activatedRoute.root));
-  }
 
-  /**
-   * A year chosen from the picker, which then empties itself.
-   *
-   * The year that was taken has become a chip and is no longer on offer, so
-   * the control goes back to showing nothing. This was a signal form with an
-   * effect watching it and a `setTimeout` to clear it a tick later, because
-   * resetting a `mat-select` in the same tick as it was set never registered
-   * as a change and the removed year looked stuck. A native select has no such
-   * opinion: it is simply set back to the empty option.
-   */
-  public pickYear(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const year = Number(select.value);
-    select.value = '';
-    if (year) this.handleYearChange(year);
-  }
-
-  public pickAvailability(event: Event): void {
-    this.setAvailability((event.target as HTMLSelectElement).value as Availability);
+    effect(() => {
+      const year = this.yearPickerForm.newYear().value();
+      if (year !== null) {
+        untracked(() => this.handleYearChange(year));
+      }
+    });
   }
 
   ngOnInit() {
@@ -106,6 +118,10 @@ export class BreadcrumbComponent implements OnInit {
       this.selectedYears.push(year);
       this.updateQueryParams();
     }
+    // Deferred to the next tick: resetting in the same tick as the value was
+    // set never registers as a change, so mat-select's internal selection
+    // never clears and a removed year can look "stuck" selected.
+    setTimeout(() => this.yearPickerModel.set({ newYear: null }));
   }
 
   public removeYearFilter(label: string) {

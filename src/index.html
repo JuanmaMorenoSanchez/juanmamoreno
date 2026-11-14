@@ -51,6 +51,27 @@
 
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
+    <!--
+      The typeface, fetched as early as the parser can be told about it.
+
+      Without this it is discovered only when the stylesheet is parsed, which
+      on a page with javascript is after the first paint — so the toolbar was
+      drawn in Arial, Archivo arrived, every word in it changed width, the row
+      wrapped differently and the whole page jumped 36 pixels. Measured at
+      0.35 of layout shift against a ceiling of 0.1, which fails the build.
+
+      `crossorigin` is required even though the file is our own: a font is
+      always fetched in CORS mode, and a preload without it fetches the file a
+      second time rather than matching the one the stylesheet asks for.
+    -->
+    <link
+      rel="preload"
+      href="assets/fonts/archivo-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Juanma Moreno Sánchez" />
     <meta property="og:title" content="Juanma Moreno Sánchez, artist." />

@@ -213,48 +213,6 @@ describe('Artwork', () => {
     });
   });
 
-  // ── cartela ──────────────────────────────────────────────────────────────
-  describe('cartela', () => {
-    const measured = () =>
-      nft('1', [
-        trait(VALIDTRAITS.MEDIUM, 'Oil on canvas'),
-        year('2019'),
-        trait(VALIDTRAITS.HEIGHT, '81'),
-        trait(VALIDTRAITS.WIDTH, '65'),
-        trait(VALIDTRAITS.UNIT, 'cm'),
-      ]);
-
-    it('gives the three facts a label carries, in the order a label writes them', () => {
-      expect(art.cartela(measured())).toEqual({
-        medium: 'Oil on canvas',
-        year: '2019',
-        size: '81 × 65 cm',
-      });
-    });
-
-    it('leaves the medium untranslated, because this layer has no translator', () => {
-      // It is a translation key, and the caller is the half of the app that
-      // can resolve one.
-      expect(art.cartela(measured()).medium).toBe('Oil on canvas');
-    });
-
-    // Both sides are needed for a measurement to say anything. Half of one is
-    // worse than none: "81 cm" of what?
-    it('says nothing about size when only one side is known', () => {
-      const half = nft('1', [trait(VALIDTRAITS.HEIGHT, '81'), trait(VALIDTRAITS.UNIT, 'cm')]);
-      expect(art.cartela(half).size).toBe('');
-    });
-
-    it('measures without a unit rather than guessing one', () => {
-      const unitless = nft('1', [trait(VALIDTRAITS.HEIGHT, '81'), trait(VALIDTRAITS.WIDTH, '65')]);
-      expect(art.cartela(unitless).size).toBe('81 × 65');
-    });
-
-    it('answers for no painting at all, since the catalogue arrives late', () => {
-      expect(art.cartela(undefined)).toEqual({ medium: '', year: '', size: '' });
-    });
-  });
-
   // ── getNftById / getArtByTitle / countArtworksInYear ──────────────────────
   describe('lookup helpers', () => {
     const nfts = [nft('1', [year('2020')], { name: 'A' }), nft('2', [year('2021')], { name: 'B' })];

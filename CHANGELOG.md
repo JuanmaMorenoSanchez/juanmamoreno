@@ -5,6 +5,29 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.71.0
+
+- **chore** The wall-and-label layout of 2.70.0 is reverted. The artist
+  looked at it on the deployed site and did not want it, which is the only
+  test that counts for a redesign. Everything it moved is back where it was:
+  the centred landing page, the square catalogue grid, the Material bar, the
+  chip row and the two outlined filters.
+- **feat** Four things from it were kept, at his word. The site is set in
+  **Archivo**, self-hosted as one variable file carrying both weight and
+  width — it was `Helvetica Neue, Helvetica, Arial`, which is a list of
+  guesses about the reader’s machine rather than a typeface.
+- **feat** Four mediums that are in the catalogue and were in neither
+  dictionary — oil on aluminium, on board, on cardboard, and on canvas on
+  cardboard — are translated, so a Spanish page stops saying
+  `OIL ON CANVAS ON CARDBOARD`.
+- **feat** The ground is `#f6f6f4`, halfway between the paper white it was
+  and the plaster the redesign tried. A painting photographed to its own
+  canvas edge needs a ground a shade darker than itself to hang on rather
+  than float in.
+- **fix** The site’s second level of writing — every caption, label, hint
+  and placeholder — is `#63635e`, 5.6:1 on that ground. It was `#6e6e6e`,
+  which is 4.5:1 on white and 4.7:1 here: over the floor, and only just.
+
 ## 2.70.0
 
 - **feat** The reader’s half of the site is a wall and a label.

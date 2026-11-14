@@ -1,142 +1,131 @@
-<!--
-  The trail, the two filters, and whatever is currently narrowing the wall.
-
-  It was a `mat-chip-set`: every crumb a pill, the filters two outlined
-  `mat-form-field`s with floating labels, and each applied filter another pill
-  with a cancel glyph in it — eleven rounded boxes above a page whose subject is
-  paintings. All of it is label type on the wall now, and the two selects are
-  the browser's own, which is also what makes them work with javascript off.
--->
 @if (breadcrumbs().length) {
-  <nav class="crumbs" aria-label="Breadcrumb">
-    <ol class="trail">
-      <li>
-        <a routerLink="/" routerLinkActive="router-link-active" class="crumb" aria-label="Home">
-          <svg class="crumb-icon" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M3.2 8.6 10 3.2l6.8 5.4V16a.8.8 0 0 1-.8.8H4a.8.8 0 0 1-.8-.8Z" />
-          </svg>
+  <nav class="container" aria-label="Breadcrumb">
+    <mat-chip-set>
+      <mat-chip color="primary">
+        <a
+          routerLink="/"
+          routerLinkActive="router-link-active"
+          class="link-as-text"
+          aria-label="Home"
+          matLine
+        >
+          <mat-icon>home</mat-icon>
         </a>
-      </li>
+      </mat-chip>
       @for (breadcrumb of routeBreadcrumbs(); track breadcrumb.label) {
-        <li>
+        <mat-chip color="primary">
           <a
-            class="crumb"
             [routerLink]="breadcrumb.url"
             [queryParams]="breadcrumb.queryParams"
             [attr.aria-label]="breadcrumb.label"
             routerLinkActive="router-link-active"
+            class="link-as-text"
+            matLine
           >
             {{ breadcrumb.label }}
           </a>
-        </li>
+        </mat-chip>
       }
-    </ol>
-
-    <!--
-      The two filters, read as a pair and so kept as one. Loose in the row they
-      wrapped wherever they landed: on a phone the year followed the trail onto
-      the first line and availability dropped alone onto the second, so two
-      controls that mean one thing sat on different rows against different left
-      edges.
-    -->
-    <div class="filters">
       <!--
-        The year empties itself after every pick, because the year it took has
-        become a chip and is no longer on offer. "All" is what the empty option
-        says until one has been chosen.
-      -->
-      <label class="filter small-input">
-        <span class="filter-name">{{ 'year.label' | translate }}</span>
-        <span class="filter-control">
-          <select
-            class="filter-select"
-            aria-label="Select year"
-            [value]="''"
-            (change)="pickYear($event)"
-          >
-            <option value="">
-              {{ yearBreadcrumbs().length ? '—' : ('year.all' | translate) }}
-            </option>
-            @for (year of validYears; track year) {
-              <option [value]="year">{{ year }}</option>
-            }
-          </select>
-          <svg class="filter-mark" viewBox="0 0 10 10" aria-hidden="true">
-            <path d="M2 4l3 3 3-3" />
-          </svg>
-        </span>
-      </label>
+        The two filters, in a box of their own.
 
+        Loose in the chip row they wrapped wherever they happened to land: on a
+        phone the year followed the chips onto the first line and availability
+        dropped alone onto the second, so two controls that are read as a pair
+        sat on different rows against different left edges. Boxed, they wrap
+        together and share the row equally, and on a wide screen they sit
+        inline exactly as before.
+      -->
+      <div class="filters">
       <!--
-        Beside the year and read the same way. A select rather than a pair of
-        buttons because the three answers are exclusive — everything, only what
-        has sold, only what has not — and a select can hold only one of them.
+        The label stays up whatever happens, like the one beside it. This
+        select empties itself after every pick — the year it took has become a
+        chip — so left to itself the label would sit in the middle as a
+        placeholder and the two controls would read as different kinds of
+        thing. What shows underneath is "All" until a year has been chosen, and
+        nothing after that, because from then on the chips say which years.
       -->
-      <label class="filter small-input">
-        <span class="filter-name">{{ 'availability.label' | translate }}</span>
-        <span class="filter-control">
-          <select
-            class="filter-select"
-            aria-label="Select availability"
-            [value]="availability()"
-            (change)="pickAvailability($event)"
+      <mat-form-field
+        class="small-input"
+        appearance="outline"
+        subscriptSizing="dynamic"
+        floatLabel="always"
+      >
+        <mat-label>{{ 'year.label' | translate }}</mat-label>
+        <mat-select
+          [formField]="yearPickerForm.newYear"
+          [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
+          aria-label="Select year"
+        >
+          @for (year of validYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <!--
+        Beside the year, and read the same way: pick one and it becomes a chip
+        in the row. A select rather than a pair of buttons because the three
+        answers are exclusive — everything, only what has sold, only what has
+        not — and a select can only ever hold one of them.
+      -->
+      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'availability.label' | translate }}</mat-label>
+        <mat-select
+          [value]="availability()"
+          (selectionChange)="setAvailability($event.value)"
+          aria-label="Select availability"
+        >
+          @for (choice of availabilityChoices; track choice) {
+            <mat-option [value]="choice">
+              {{ 'availability.' + choice | translate }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      </div>
+      @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
+        <mat-chip
+          color="primary"
+          [removable]="true"
+          (removed)="removeYearFilter(breadcrumb.label)"
+          animate.enter="year-chip-enter"
+          animate.leave="year-chip-leave"
+        >
+          <a
+            [routerLink]="breadcrumb.url"
+            [queryParams]="breadcrumb.queryParams"
+            [attr.aria-label]="breadcrumb.label"
+            routerLinkActive="router-link-active"
+            class="link-as-text"
+            matLine
           >
-            @for (choice of availabilityChoices; track choice) {
-              <option [value]="choice">{{ 'availability.' + choice | translate }}</option>
-            }
-          </select>
-          <svg class="filter-mark" viewBox="0 0 10 10" aria-hidden="true">
-            <path d="M2 4l3 3 3-3" />
-          </svg>
-        </span>
-      </label>
-    </div>
-
-    <!-- What is narrowing the wall at the moment, and the way to stop it. -->
-    @if (yearBreadcrumbs().length || availability() !== 'both') {
-      <ul class="applied">
-        @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
-          <li class="applied-one" animate.enter="year-chip-enter" animate.leave="year-chip-leave">
-            <a
-              [routerLink]="breadcrumb.url"
-              [queryParams]="breadcrumb.queryParams"
-              [attr.aria-label]="breadcrumb.label"
-              routerLinkActive="router-link-active"
-              >{{ breadcrumb.label }}</a
-            >
-            <button
-              type="button"
-              class="applied-off"
-              [attr.aria-label]="'Remove year ' + breadcrumb.label"
-              (click)="removeYearFilter(breadcrumb.label)"
-            >
-              <svg class="applied-mark" viewBox="0 0 10 10" aria-hidden="true">
-                <path d="M2.5 2.5l5 5M7.5 2.5l-5 5" />
-              </svg>
-            </button>
-          </li>
-        }
-
-        <!--
-          Only when it is narrowing something. "Both" is the absence of a
-          filter, and a chip saying so would be a chip that means nothing.
-        -->
-        @if (availability() !== 'both') {
-          <li class="applied-one" animate.enter="year-chip-enter" animate.leave="year-chip-leave">
-            <span>{{ 'availability.' + availability() | translate }}</span>
-            <button
-              type="button"
-              class="applied-off"
-              [attr.aria-label]="'availability.remove' | translate"
-              (click)="clearAvailability()"
-            >
-              <svg class="applied-mark" viewBox="0 0 10 10" aria-hidden="true">
-                <path d="M2.5 2.5l5 5M7.5 2.5l-5 5" />
-              </svg>
-            </button>
-          </li>
-        }
-      </ul>
-    }
+            {{ breadcrumb.label }}
+          </a>
+          <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+      <!--
+        Only when it is narrowing something. "Both" is the absence of a filter,
+        and a chip saying so would be a chip that means nothing.
+      -->
+      @if (availability() !== 'both') {
+        <mat-chip
+          color="primary"
+          [removable]="true"
+          (removed)="clearAvailability()"
+          animate.enter="year-chip-enter"
+          animate.leave="year-chip-leave"
+        >
+          <span class="link-as-text">{{ 'availability.' + availability() | translate }}</span>
+          <button matChipRemove [attr.aria-label]="'availability.remove' | translate">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+    </mat-chip-set>
   </nav>
 }

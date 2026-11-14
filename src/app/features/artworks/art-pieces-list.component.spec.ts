@@ -330,7 +330,7 @@ describe('ArtPiecesListComponent — remembering how the reader likes it', () =>
   });
 
   const sortChips = (fixture: { nativeElement: HTMLElement }) =>
-    Array.from(fixture.nativeElement.querySelectorAll<HTMLElement>('.sort-group .sort-choice'));
+    Array.from(fixture.nativeElement.querySelectorAll<HTMLElement>('.sort-group mat-chip'));
 
   it('starts newest-first for a reader who has never changed it', () => {
     const { fixture } = setup();
@@ -493,17 +493,17 @@ describe('ArtPiecesListComponent — narrowing by availability', () => {
   });
 
   /**
-   * The waiting line and the message answer different questions — "still
-   * loading" and "nothing matched" — and showing the second while the first is
-   * true would tell the reader their filters were at fault for a catalogue that
-   * had simply not arrived.
+   * The spinner and the message answer different questions — "still loading"
+   * and "nothing matched" — and showing the second while the first is true
+   * would tell the reader their filters were at fault for a catalogue that had
+   * simply not arrived.
    */
   it('waits for the catalogue rather than blaming the filters for it', () => {
     const { fixture } = setup();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.nothing-matched')).toBeNull();
-    expect(fixture.nativeElement.querySelector('.catalogue-waiting')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-progress-spinner')).not.toBeNull();
   });
 
   /**

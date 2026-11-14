@@ -42,53 +42,52 @@ async function setup(at = '/artworks') {
 }
 
 /**
- * What each applied filter in the row says.
- *
- * The first child rather than the whole item, so the word comes back without
- * the label of the button that takes it off again.
+ * What each chip in the row says. The label element rather than the chip, so
+ * the "cancel" of the remove button does not come with it.
  */
 const chipText = (fixture: { nativeElement: HTMLElement }) =>
-  Array.from(fixture.nativeElement.querySelectorAll('.applied-one'), (item) =>
-    (item.firstElementChild?.textContent ?? '').replace(/\s+/g, ' ').trim()
+  Array.from(fixture.nativeElement.querySelectorAll('mat-chip .link-as-text'), (label) =>
+    (label.textContent ?? '').replace(/\s+/g, ' ').trim()
   );
 
 /**
  * The two pickers read as one pair of controls, or they read as a mistake.
- * Both are named above the control, and both are the browser's own select —
- * which is what makes the catalogue narrowable with javascript off, where the
- * `mat-select` they replaced was a button that opened nothing.
+ * Both carry their name above the box; the value underneath sits on the same
+ * line as the words in the chips beside them.
  */
 describe('BreadcrumbComponent — the year and availability pickers together', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => TestBed.resetTestingModule());
 
   const fields = (fixture: { nativeElement: HTMLElement }) =>
-    Array.from(fixture.nativeElement.querySelectorAll('.filter'));
+    Array.from(fixture.nativeElement.querySelectorAll('mat-form-field'));
 
-  it('names both of them above the control', async () => {
+  it('names both of them above the box', async () => {
     const { fixture } = await setup();
 
     const labels = fields(fixture).map((field) =>
-      (field.querySelector('.filter-name')?.textContent ?? '').trim()
+      (field.querySelector('mat-label')?.textContent ?? '').trim()
     );
     expect(labels).toEqual(['year.label', 'availability.label']);
   });
 
-  // A real select, so it opens, is reachable by keyboard and works unscripted.
-  it('uses a real select for both, rather than a button that opens an overlay', async () => {
+  /**
+   * The year picker empties itself after every pick — the year it took has
+   * become a chip — so without this its label would drop into the middle of
+   * the box as a placeholder and the two controls would look like different
+   * kinds of thing.
+   */
+  it('keeps the year label up even though the picker is always empty', async () => {
     const { fixture } = await setup();
 
-    const selects = fixture.nativeElement.querySelectorAll('select.filter-select');
-    expect(selects.length).toBe(2);
-    expect(selects[0].getAttribute('aria-label')).toBe('Select year');
-    expect(selects[1].getAttribute('aria-label')).toBe('Select availability');
+    expect(fields(fixture)[0].getAttribute('floatlabel')).toBe('always');
   });
 
   it('says "all" under the year until a year has been chosen', async () => {
     const { fixture } = await setup();
 
     expect(
-      fixture.nativeElement.querySelector('select[aria-label="Select year"] option')?.textContent
+      fixture.nativeElement.querySelector('mat-select[aria-label="Select year"]')?.textContent
     ).toContain('year.all');
   });
 
@@ -97,7 +96,7 @@ describe('BreadcrumbComponent — the year and availability pickers together', (
     const { fixture } = await setup('/artworks?years=2024');
 
     expect(
-      fixture.nativeElement.querySelector('select[aria-label="Select year"] option')?.textContent
+      fixture.nativeElement.querySelector('mat-select[aria-label="Select year"]')?.textContent
     ).not.toContain('year.all');
   });
 });

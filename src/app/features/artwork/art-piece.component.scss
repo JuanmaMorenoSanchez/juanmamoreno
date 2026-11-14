@@ -12,19 +12,16 @@
   vertical-align: middle;
 }
 
-// Lined up with the painting above it rather than centred under it: the card
-// hangs at the work's own left edge, which is where it hangs on the landing
-// page and under every tile in the catalogue.
 .art-piece-labels {
-  max-width: 100%;
-  margin-inline: auto;
-  padding: tokens.$spacing-lg 0 tokens.$spacing-xl;
-  text-align: left;
+  padding: 8%;
+  text-align: center;
 
   h1 {
-    // The page's heading is the painting's name, set as the card's title and
-    // no larger: the painting is the headline and this is its label.
-    margin: 0;
+    // Unchanged from when this was an h2: the artwork's name is the page's
+    // heading, but it should not shout.
+    font-size: 1.5em;
+    font-weight: 400;
+    margin: 0.83em 0;
   }
 }
 
@@ -54,20 +51,9 @@
    screen reader navigates by skipped a level — and it is not a heading at all:
    it is the caption to the picture above it. A paragraph says that, and these
    two values are the h3's own, kept so that saying it changed nothing. */
-// Which photograph of the painting is on screen — a frontal view, a detail,
-// the canvas caught half-finished. Part of the card, and the one line of it
-// that is about the picture rather than about the work.
-.artwork-view {
-  color: var(--catalog-soft);
-}
-
-// The measurement, the dot that says sold, and the artist's own switch for it,
-// which belong on one line rather than stacked under each other.
-.artwork-measure {
-  display: flex;
-  align-items: center;
-  gap: tokens.$spacing-sm;
-  flex-wrap: wrap;
+.artwork-facts {
+  font-size: 1.17em;
+  margin: 1em 0;
 }
 
 /* The two directions read as one control, not as two buttons that happened

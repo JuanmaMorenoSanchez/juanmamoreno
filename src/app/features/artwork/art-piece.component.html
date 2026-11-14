@@ -82,28 +82,23 @@
     }
   </app-image-viewer>
   @if (nft()) {
-    <!--
-      The same card as the catalogue's and the landing page's: the same facts,
-      in the same order, at the same offset from the painting's left edge. It
-      was centred and italic here, with a full stop after the title and the
-      letter x between the measurements — the one page devoted to a single
-      painting naming it differently from every tile that links to it.
-    -->
-    <div class="art-piece-labels" [style.width]="frameWidth()">
-      <div class="cartela artwork-cartela">
-        <!-- The page's one h1: the artwork itself, not the site's name. -->
-        <h1 class="cartela-title">{{ nft().name }}</h1>
-        @if (viewLabel()) {
-          <span class="artwork-view">{{ viewLabel() }}</span>
-        }
-        <span>
-          {{ mediumBeforeYear() }}
-          <a [routerLink]="['/artworks']" [queryParams]="{ years: label().year }">{{
-            label().year
-          }}</a>
-        </span>
-        <span class="artwork-measure">
-          {{ label().size }}
+    <div class="art-piece-labels">
+      <!-- The page's one h1: the artwork itself, not the site's name. -->
+      <h1>
+        <i
+          >{{ nft().name }}. <small>{{ viewLabel() }}</small></i
+        >
+      </h1>
+      <p class="catalog-caption artwork-facts">
+        <small>
+          <a
+            [routerLink]="['/artworks']"
+            [queryParams]="{ years: nft() | trait: validTraits.YEAR }"
+            >{{ nft() | trait: validTraits.YEAR }}</a
+          >, {{ nft() | trait: validTraits.MEDIUM | translate }},
+          {{ nft() | trait: validTraits.HEIGHT }} x
+          {{ nft() | trait: validTraits.WIDTH }}
+          {{ nft() | trait: validTraits.UNIT }}.
           <!--
             The dot says sold to whoever can see it. The word beside it says the
             same thing to whoever cannot, and to anything that reads this page
@@ -122,8 +117,8 @@
             is shown it, and the api refuses anybody else who asks.
           -->
           <app-sold-toggle [tokenId]="tokenId()"></app-sold-toggle>
-        </span>
-      </div>
+        </small>
+      </p>
       <!--
         Back to the post this painting came from, for a reader who arrived from
         it. Absent for most of the catalogue, which has never been posted.
@@ -185,6 +180,7 @@
         <mat-icon>chevron_right</mat-icon>
       </button>
     </p>
-    <app-art-pieces-list [viewAsWidget]="true" [nftFilters]="nearbyFilter()"> </app-art-pieces-list>
+    <app-art-pieces-list [viewAsWidget]="true" [nftFilters]="nearbyFilter()">
+    </app-art-pieces-list>
   }
 </div>

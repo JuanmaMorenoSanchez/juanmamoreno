@@ -11,29 +11,23 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
 import { VersionService } from '@shared/services/version.service';
 import { APP_VERSION } from '../../../version';
 import { Nft } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { environment } from '@environments/environment';
 import { Subscription, takeLast } from 'rxjs';
 
 /**
- * One painting on a wall, with the card that belongs to it.
- *
- * The name and the one-line statement are signage — small, high, left — and
- * the painting is the headline. It deliberately loads only one artwork image,
- * not the whole catalogue, so the first paint is cheap; the hang lives at
+ * Editorial landing page: the artist's name, a one-line statement, a single
+ * featured painting and the primary entries (Paintings / About / Contact, plus
+ * CV and Generative). It deliberately loads only one artwork image, not the
+ * whole catalogue, so the first paint is cheap — the full grid lives at
  * /artworks.
- *
- * **The painting no longer moves.** It used to drift on a 22-second loop, or
- * lean towards the pointer where there was one, and both began by scaling it
- * past the edges of its own frame — so the landing page cropped about five per
- * cent off a painting in order to have somewhere to wander. A hung work is
- * still. What is left is the one arrival, on the site's clock.
  *
  * While its hero name is on screen the top bar's duplicate brand is hidden (via
  * HeroTitleService), so the title never appears twice at once.
@@ -42,7 +36,7 @@ import { Subscription, takeLast } from 'rxjs';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe, ParallaxTiltDirective],
 })
 export class HomeComponent implements AfterViewInit {
   // Printed small at the foot of the page: this build, and the build of the
@@ -53,7 +47,6 @@ export class HomeComponent implements AfterViewInit {
   private artworkService = inject(ARTWORK_PORT);
   private heroTitle = inject(HeroTitleService);
   private lang = inject(LanguageUrlService);
-  private translate = inject(TranslateService);
 
   /**
    * The featured painting, at the address for the language being read.
@@ -66,9 +59,6 @@ export class HomeComponent implements AfterViewInit {
   protected artworkLink(tokenId: string): string {
     return this.lang.link(`artwork/${tokenId}`);
   }
-
-  /** The way out of the room, in the language being read. */
-  protected readonly allPaintingsLink = this.lang.link('artworks');
 
   @ViewChild('heroTitle') private heroTitleRef!: ElementRef<HTMLElement>;
   private observer?: IntersectionObserver;
@@ -109,39 +99,7 @@ export class HomeComponent implements AfterViewInit {
   readonly featuredAspect = computed(
     () => this.decodedAspect() ?? this.artworkService.getAspectRatio(this.featured())
   );
-
-  /**
-   * The three facts on the card beside the work.
-   *
-   * Built in the domain so the catalogue and the painting's own page say the
-   * same things in the same order; the medium arrives as its translation key
-   * and the template resolves it.
-   */
-  readonly label = computed(() => this.artworkService.cartela(this.featured()));
-
-  /**
-   * The card's middle line: what it is made of, and when.
-   *
-   * Joined here rather than in the template. Written there it was a pipe, an
-   * `@if` for the comma and an interpolation, and the formatter — rightly,
-   * for html — put each on its own line; the whitespace between them collapses
-   * to a space in the rendered page, so the label read "ÓLEO SOBRE TELA ,
-   * 2026". A separator is a string, not a layout.
-   */
-  readonly labelLine = computed(() => {
-    const { medium, year } = this.label();
-    return [medium ? this.translate.instant(medium) : '', year].filter(Boolean).join(', ');
-  });
-  /**
-   * The painting's shape, handed to the stylesheet rather than measured by it.
-   *
-   * The plate used to be sized by a width this component computed, capped at
-   * 34rem — 544px, on any screen, which is why the landing painting was a
-   * postcard on a desktop. The stylesheet now drives it by height, because
-   * that is what "hung" means: as tall as the room allows, and as wide as its
-   * own proportions make it.
-   */
-  readonly aspectVar = computed(() => String(this.featuredAspect()));
+  readonly frameWidth = computed(() => `min(90vw, 34rem, calc(60vh * ${this.featuredAspect()}))`);
 
   constructor() {
     // Optimistic: on this page the hero name is on screen from the start, so
