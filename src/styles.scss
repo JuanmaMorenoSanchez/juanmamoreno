@@ -87,15 +87,14 @@ main {
 :root {
   view-transition-name: none;
   color-scheme: light;
-  // Halfway between the white this was and the plaster the redesign tried:
-  // #ffffff and #edece8 averaged. A painting photographed to its own canvas
-  // edge needs a ground a shade darker than itself to hang on rather than
-  // float in, and this is as far that goes.
-  --catalog-bg: #f6f6f4;
+  // A painting photographed to its own canvas edge needs a ground a shade
+  // darker than itself to hang on rather than float in. This was #ffffff, then
+  // briefly the halfway house #f6f6f4; the artist asked for the whole step.
+  --catalog-bg: #edece8;
   --catalog-ink: #1f1f1f;
-  // 5.6:1 on that ground. It was #6e6e6e, which is 4.5:1 on white and 4.7:1
-  // here — over the floor, but only just, and it is the colour every caption,
-  // label, hint and placeholder on the site is set in.
+  // 5.1:1 on that ground. It was #6e6e6e, which is 4.5:1 on white and 4.4:1
+  // here — under the floor, and it is the colour every caption, label, hint
+  // and placeholder on the site is set in.
   --catalog-soft: #63635e;
   // A hairline, and never text. #a3a3a3 reads at 2.5:1 on this ground and the
   // dark one's #6b6b68 at 3.4:1, both well under the 4.5:1 text needs — which
@@ -104,7 +103,10 @@ main {
   // --catalog-soft.
   --catalog-faint: #a3a3a3;
   --catalog-accent: #cf2525;
-  --catalog-frame-bg: #ebebe9;
+  // Behind a tile whose picture has not arrived. It was #ebebe9, which against
+  // the new ground is a two-value difference — a loading tile would simply not
+  // be there.
+  --catalog-frame-bg: #e3e2dd;
   // A panel standing on the page: a node on the atelier's canvas, the box the
   // brush is used in, a preview. Six stylesheets already asked for this and
   // nothing ever defined it, so every one of them fell back to white — which
@@ -167,6 +169,35 @@ body {
 :focus-visible {
   outline: 2px solid var(--catalog-accent);
   outline-offset: 2px;
+}
+
+/*
+  The surfaces nobody draws.
+
+  Selection, the caret, the scrollbar, the distance of an underline from its
+  word: every one ships with a default that belongs to the browser rather than
+  to this site, and leaving them is the cheapest tell that a page was
+  assembled instead of built. A gallery that painted its walls and left the
+  radiators beige.
+
+  Selection is the ink itself, which is the one inversion a page like this
+  allows.
+*/
+::selection {
+  background: var(--catalog-ink);
+  color: var(--catalog-bg);
+}
+
+:root {
+  caret-color: var(--catalog-accent);
+  accent-color: var(--catalog-ink);
+  scrollbar-color: var(--catalog-faint) transparent;
+  scrollbar-width: thin;
+}
+
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
 }
 
 // Everything on the site that moves does so for pleasure rather than meaning:
@@ -279,10 +310,14 @@ p {
 }
 
 .catalog-heading {
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--catalog-soft);
+  // Ink, not the soft grey it was. A heading set fainter than the paragraph
+  // under it inverts the hierarchy — the eye is told the section's name
+  // matters less than its first sentence — and what makes a heading quiet
+  // here is the size and the tracking, which it already has.
+  color: var(--catalog-ink);
   /* Spanish compounds this heading has to carry — DESCONTEXTUALIZADAS,
      CONTEMPORÁNEA — are one unbreakable word, and at this tracking one of them
      is wider than a 320px phone. The page did not scroll to it: the heading
@@ -305,10 +340,11 @@ p {
 .catalog-subheading {
   margin: 0 0 0.5rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--catalog-soft);
+  // Ink, for the same reason as the heading above it.
+  color: var(--catalog-ink);
   /* The same rule as the heading above, for the same words at a smaller size. */
   hyphens: auto;
   overflow-wrap: break-word;
@@ -405,7 +441,13 @@ html:not(.js) .menu-toggle {
   a measure of the text it holds: 44rem of 0.8rem prose is still 110 characters.
 */
 :root {
-  --measure: 70ch;
+  // 70ch of Archivo measured 90 characters to the line on the statement page
+  // — well past the 75 a reader's eye tracks without losing its place, and
+  // longer than the Helvetica stack it replaced. `ch` is the width of a zero,
+  // and Archivo's is wide against its lowercase, so the same number of them
+  // buys more characters than it used to. 55 measures 66, counted in a
+  // browser.
+  --measure: 55ch;
 }
 
 .prose p,

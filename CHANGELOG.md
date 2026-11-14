@@ -5,6 +5,30 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.72.0
+
+- **feat** The bar is the same colour as the page under it. `color="primary"`
+  painted the toolbar in the Material theme’s own lavender-white, which
+  belonged to that palette and to nothing else here, so the first forty
+  pixels of every page announced which component library built it. The phone
+  drawer follows.
+- **feat** The ground is `#edece8`. It was paper white, then briefly halfway;
+  this is the whole step. The placeholder behind a tile whose picture has not
+  arrived moved with it — at `#ebebe9` it was two values off the new ground
+  and a loading tile would simply not have been there.
+- **feat** The text styles from 2.70.0 are back, without the layout that came
+  with them: section headings in ink at weight 600 rather than a grey fainter
+  than the paragraph beneath them, a measure of 55ch — 66 characters to the
+  line, counted, where 70ch was giving 90 — and the browser surfaces
+  (selection, caret, scrollbar, underline offset) themed from the palette
+  instead of left at the browser’s defaults.
+- **feat** The picker that attaches a show to a painting’s history is grouped
+  by the cv’s own sections. It flattened them away, so every show, prize,
+  residency and fair arrived as one unbroken column of sixty-odd lines.
+- **chore** The red dot’s key is gone from the catalogue. The word beside the
+  dot stays, out of sight on the tile’s own label, because that is what a
+  screen reader is told and what survives the page as plain text.
+
 ## 2.71.0
 
 - **chore** The wall-and-label layout of 2.70.0 is reverted. The artist

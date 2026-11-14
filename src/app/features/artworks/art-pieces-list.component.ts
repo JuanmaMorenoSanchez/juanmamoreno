@@ -164,11 +164,6 @@ export class ArtPiecesListComponent {
     );
   });
 
-  /** Whether the dot has anything to mark here, and so whether to explain it. */
-  protected readonly hasSoldOnDisplay = computed(() =>
-    this.filteredArtPieces().some((nft) => this.isSold(nft))
-  );
-
   // Classifies each piece against the list it belongs to (not the store),
   // recomputed whenever the list changes (fallback -> API data).
   private frontalViewByToken = computed(() => {

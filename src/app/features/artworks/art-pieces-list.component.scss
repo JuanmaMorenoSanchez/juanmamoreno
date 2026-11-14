@@ -146,26 +146,6 @@ mat-card {
   margin-bottom: 2em;
 }
 
-// The key to the dot on a sold tile, shown only when there is one on screen.
-.sold-legend {
-  display: flex;
-  align-items: center;
-  gap: tokens.$spacing-sm;
-  margin: tokens.$spacing-xs 0 0;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  color: var(--catalog-soft);
-}
-
-.legend-dot {
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 50%;
-  background-color: var(--catalog-accent);
-  opacity: 0.65;
-  flex: none;
-}
-
 .sold-dot {
   position: absolute;
   right: 0.6rem;

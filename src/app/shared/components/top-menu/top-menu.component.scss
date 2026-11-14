@@ -1,5 +1,22 @@
 @use '../../../../styles/tokens';
 
+// The bar is part of the page, not a surface laid on it.
+//
+// `color="primary"` paints the toolbar in the theme's own colour — a
+// lavender-white that belonged to Material's palette and to nothing else on
+// the site, so the first forty pixels of every page announced which component
+// library built it. The same ground as the page, divided by one hairline, in
+// both rooms: the custom properties follow the theme on their own.
+mat-toolbar,
+mat-toolbar-row {
+  background-color: var(--catalog-bg);
+  color: var(--catalog-ink);
+}
+
+mat-toolbar {
+  border-bottom: 1px solid var(--catalog-rule);
+}
+
 mat-toolbar-row {
   flex-wrap: wrap;
   height: auto;
@@ -62,6 +79,9 @@ mat-toolbar-row {
 // baseline (z-index: 1000) so menus/tooltips opened from inside the drawer
 // still stack above it.
 .drawer {
+  // The same ground as the bar it belongs to; left alone it is Material's own
+  // surface colour, which is now the only lavender-white left on the site.
+  background-color: var(--catalog-bg);
   position: fixed !important;
   top: 0;
   right: 0;

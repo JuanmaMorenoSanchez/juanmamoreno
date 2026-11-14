@@ -47,11 +47,18 @@ const PHONE = { width: 393, height: 852 };
  * decided an artwork page is; the archival copies are extra rungs and never a
  * replacement. The ceiling is here so a *second* full-size image cannot creep
  * in beside it unnoticed.
+ *
+ * **The catalogue's figure went up by the weight of the typeface**, which is
+ * 90kB of variable font the site did not use to carry and now does, by
+ * decision rather than by accident. A gate is for catching what nobody chose;
+ * raising it for something somebody did is the honest move, and raising it by
+ * what that thing actually weighs — not to a round number with room in it —
+ * is what keeps it a gate.
  */
 const CEILING = {
   '/': { cls: 0.1, kb: 2_600 },
   '/about': { cls: 0.1, kb: 2_400 },
-  '/artworks': { cls: 0.23, kb: 3_600 },
+  '/artworks': { cls: 0.23, kb: 3_700 },
   '/artwork/66': { cls: 0.33, kb: 5_000 },
 };
 

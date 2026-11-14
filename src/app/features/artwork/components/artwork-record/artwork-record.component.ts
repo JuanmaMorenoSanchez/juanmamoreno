@@ -135,19 +135,31 @@ export class ArtworkRecordComponent {
    * fact in two places, one of which had less to say. It belongs on the line
    * that dates it. The page drops its own dot when this finds one (R113).
    */
-  protected readonly soldLine = computed(() => this.lines().findIndex((line) => line.kind === 'sold'));
+  protected readonly soldLine = computed(() =>
+    this.lines().findIndex((line) => line.kind === 'sold')
+  );
 
   /** Drawn at all? For a reader, only when there is something to read. */
   protected readonly shown = computed(() => this.mine() || this.lines().length > 0);
 
-  /** Every cv entry, newest first, for the picker. */
+  /**
+   * Every cv entry for the picker, still in the sections the cv keeps them in.
+   *
+   * It used to `flatMap` those away, so the list arrived as one unbroken run
+   * of every show, prize, residency and fair — sixty-odd lines in a single
+   * column with nothing to tell one kind from the next, on a control whose
+   * whole job is finding one of them. The sections exist already; keeping
+   * them costs nothing and gives the list its headings back.
+   */
   protected readonly career = computed(() =>
-    cvSections(this.cv.entries(), this.language.contentLanguage()).flatMap((section) =>
-      section.items.map((item) => ({
+    cvSections(this.cv.entries(), this.language.contentLanguage()).map((section) => ({
+      kind: section.kind,
+      title: section.title,
+      items: section.items.map((item) => ({
         id: item.id,
         label: `${item.year} · ${item.title}${item.venue ? `, ${item.venue}` : ''}`,
-      }))
-    )
+      })),
+    }))
   );
 
   protected readonly adding = signal(false);

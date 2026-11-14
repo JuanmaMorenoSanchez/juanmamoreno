@@ -219,15 +219,12 @@ describe('ArtPiecesListComponent — seeing which essays have been gone over', (
 
     const page = fixture.nativeElement as HTMLElement;
     const sort = page.querySelector('.sort-group')!;
-    const legend = page.querySelector('.sold-legend')!;
     const artistControls = page.querySelector('.edited-filter')!;
 
-    // Node.DOCUMENT_POSITION_FOLLOWING: the artist controls come after both.
+    // Node.DOCUMENT_POSITION_FOLLOWING: the artist's controls come after the
+    // row of sort choices, which is the last thing a reader is offered.
     expect(
       sort.compareDocumentPosition(artistControls) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy();
-    expect(
-      legend.compareDocumentPosition(artistControls) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
   });
 
@@ -293,31 +290,6 @@ describe('ArtPiecesListComponent — seeing which essays have been gone over', (
     fixture.detectChanges();
 
     expect(shown(fixture)).toEqual(['/artwork/1', '/artwork/2']);
-  });
-});
-
-/**
- * The key to the red dot, which was drawn on sold tiles and never explained: a
- * screen reader was told "sold" by the tile's own label while anybody looking
- * at it had no way to find out.
- */
-describe('ArtPiecesListComponent — explaining the dot', () => {
-  beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
-  afterAll(() => vi.unstubAllGlobals());
-  afterEach(() => {
-    TestBed.resetTestingModule();
-    localStorage.clear();
-  });
-
-  it('explains the dot when there is a sold piece on screen, and not otherwise', () => {
-    const { fixture, artworkService } = setup();
-    artworkService.artPieces$.next([makeNft('999999', 'For sale')]);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.sold-legend')).toBeNull();
-
-    artworkService.artPieces$.next([makeNft('23', 'Sold piece')]);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.sold-legend')).not.toBeNull();
   });
 });
 

@@ -31,18 +31,6 @@
     </div>
 
     <!--
-      What the dot on a tile means. It was drawn and never explained: a screen
-      reader was told "sold" by the link's own label while anyone looking at it
-      had no way to find out at all. Shown only when there is one on screen.
-    -->
-    @if (hasSoldOnDisplay()) {
-      <p class="sold-legend">
-        <span class="legend-dot" aria-hidden="true"></span>
-        {{ 'soldLegend' | translate }}
-      </p>
-    }
-
-    <!--
       The artist's own view of his progress through two hundred essays, and his
       alone: the backend refuses the flag to anyone else, so a reader gets an
       empty answer and never sees this at all.

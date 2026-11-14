@@ -154,8 +154,8 @@ of 111 to 139 characters on the atelier, and now reports none of them
 
 **And the floor is the whole site's, not the studio's.** The public half —
 the half strangers read — had opted out of it in twelve places: the version
-line under the home page at 11.2px, the dot's legend on the catalogue, the
-viewer's hints, the dates and kinds on the texts page, the essay's own
+line under the home page at 11.2px, the viewer's hints, the dates and kinds
+on the texts page, the essay's own
 apparatus, the links modal, the certificate project's captions, Material's
 form-field hint under the one form a stranger uses to write to the artist,
 and the architecture diagram's own small print at 9 and 10 pixels — which is
@@ -1885,12 +1885,21 @@ is there again the moment the sketch stops being full screen.
 the sketch is full screen" and "brings it back when the sketch stops being full
 screen", and a browser driven in and out of the state twice
 
-### R50 — The dot on a sold painting is explained · met
-A key appears beneath the catalogue's controls whenever there is a sold piece
-on screen, and not otherwise. The dot was drawn and never explained: a screen
-reader was told "sold" by the tile's own label while anybody looking at it had
-no way to find out.
-*Proven by:* `art-pieces-list.component.spec.ts` "explaining the dot"
+### R50 — A red dot needs no key · withdrawn
+A sold painting carries a red dot and the catalogue says nothing else about it.
+
+There was a key beneath the controls — "A red dot marks a piece that has been
+sold" — drawn whenever a sold piece was on screen. It was added because the dot
+was drawn and never explained; the artist has taken it away again, on the
+grounds that a red dot on a catalogue of paintings is not a thing a reader has
+to be taught.
+
+**The word beside the dot stays**, out of sight on the tile's own label. That
+is what a screen reader is told and what survives the page being turned into
+plain text — a dot is a colour and a border radius, and neither of those is
+read aloud. See `R103`, which is the half of this that had to survive.
+*Proven by:* nothing of its own any more; `R103` proves the word that remains,
+and `art-pieces-list.component.spec.ts` (28 tests) covers the page it was on.
 
 ### R51 — A first message is not cut off mid-thought · met
 The contact form accepts 2000 characters rather than 256, which was about three
