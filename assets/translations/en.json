@@ -1,9 +1,14 @@
 {
   "Oil on wood": "Oil on wood",
   "Oil on canvas": "Oil on canvas",
+  "Oil on aluminium": "Oil on aluminium",
+  "Oil on board": "Oil on board",
+  "Oil on cardboard": "Oil on cardboard",
+  "Oil on canvas on cardboard": "Oil on canvas on cardboard",
   "Watercolor on paper": "Watercolor on paper",
   "sold": "Art piece sold",
   "soldLegend": "A red dot marks a piece that has been sold.",
+  "loading": "Loading the paintings…",
   "nothingMatched": "No paintings match the filters above.",
   "moreOn": "More on",
   "year": {

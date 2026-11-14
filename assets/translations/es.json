@@ -1,9 +1,14 @@
 {
   "Oil on wood": "Óleo sobre madera",
   "Oil on canvas": "Óleo sobre tela",
+  "Oil on aluminium": "Óleo sobre aluminio",
+  "Oil on board": "Óleo sobre tablero",
+  "Oil on cardboard": "Óleo sobre cartón",
+  "Oil on canvas on cardboard": "Óleo sobre tela sobre cartón",
   "Watercolor on paper": "Acuarela sobre papel",
   "sold": "Pieza vendida",
   "soldLegend": "El punto rojo señala una pieza vendida.",
+  "loading": "Cargando las pinturas…",
   "nothingMatched": "Ninguna pieza coincide con los filtros de arriba.",
   "moreOn": "Más de",
   "year": {
