@@ -1,16 +1,213 @@
 @use '../../../../styles/tokens';
 
-mat-toolbar-row {
+// The bar is the top of the wall, not a surface laid over it: the same ground,
+// divided by one hairline. It was a `mat-toolbar color="primary"`, which is a
+// panel of its own colour with its own elevation — the first thing on every
+// page announcing which component library built it.
+.bar {
+  position: relative;
+  z-index: 60;
+  display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  height: auto;
-  min-height: var(--mat-toolbar-standard-height, 4rem);
-  row-gap: tokens.$spacing-xs;
-  padding-top: tokens.$spacing-sm;
-  padding-bottom: tokens.$spacing-sm;
+  gap: tokens.$spacing-md;
+  min-height: var(--bar-height);
+  box-sizing: border-box;
+  padding: tokens.$spacing-sm var(--gutter);
+  background: var(--catalog-bg);
+  border-bottom: 1px solid var(--catalog-rule);
 }
 
-.spacer {
+.bar-brand {
+  font-size: 0.8125rem;
+  color: var(--catalog-ink);
+  text-decoration: none;
+}
+
+.bar-spacer {
   flex: 1 1 auto;
+}
+
+// Every word in the bar, at label size. Material set these at 14px Roboto with
+// its own tracking in a 48px slab with a ripple in it; they are words on a wall
+// now, and the only thing that happens under a pointer is the rule beneath
+// them arriving.
+.bar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  padding: tokens.$spacing-xs 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--catalog-ink);
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--clock-quick) var(--ease);
+
+  &:hover {
+    border-bottom-color: var(--catalog-ink);
+  }
+}
+
+// The disclosure triangle a browser draws on a `<summary>`, removed in both
+// dialects, and replaced by one that matches the other five icons on the bar.
+summary {
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.drop {
+  position: relative;
+}
+
+.drop-mark {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--clock-quick) var(--ease);
+}
+
+.drop[open] > summary .drop-mark {
+  transform: rotate(180deg);
+}
+
+// A sheet of paper held against the wall: a ground of its own and a hairline
+// round it. No radius and no shadow — a wall has neither, and the shadow that
+// was here separated nothing in the dark, where the sheet and the page were
+// the same colour and the shadow was black on near-black. The lift comes from
+// `--surface`, which is a shade off the ground in both rooms.
+.sheet {
+  position: absolute;
+  top: calc(100% + #{tokens.$spacing-sm});
+  left: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  min-width: 11rem;
+  padding: tokens.$spacing-sm 0;
+  background: var(--surface);
+  border: 1px solid var(--catalog-faint);
+}
+
+// The three at the end of the bar open against its right edge, or they hang
+// off the side of the window.
+.sheet--right {
+  left: auto;
+  right: 0;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$spacing-sm;
+  width: 100%;
+  box-sizing: border-box;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--catalog-ink);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--clock-quick) var(--ease);
+
+  &:hover {
+    background: var(--catalog-frame-bg);
+  }
+
+  &:disabled {
+    color: var(--catalog-soft);
+    cursor: default;
+    background: none;
+  }
+}
+
+// Nineteen years, one more every year, and as a plain list exactly the height
+// of the window at every size tried — 800px on a desktop, 844 on a phone — so
+// opening it replaced the page rather than covering part of it. About seven at
+// a time, and fewer on a short window, so it always reads as a list with more
+// below it.
+.sheet--years {
+  position: static;
+  min-width: 0;
+  max-height: min(16rem, 46vh);
+  overflow-y: auto;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.drop--nested {
+  border-top: 1px solid var(--catalog-rule);
+  margin-top: tokens.$spacing-sm;
+  padding-top: tokens.$spacing-sm;
+}
+
+.bar-settings {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+}
+
+// Quieter than the words beside them. An icon at full weight in a row of text
+// reads as the most important thing in the bar, which is the opposite of what
+// these are: they are settings, and the paintings are the point.
+.bar-setting {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--catalog-soft);
+  cursor: pointer;
+  transition: color var(--clock-quick) var(--ease);
+
+  &:hover {
+    color: var(--catalog-ink);
+  }
+}
+
+.bar-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--catalog-ink);
+  cursor: pointer;
 }
 
 // Which menu a reader gets, in css rather than in a signal.
@@ -19,111 +216,70 @@ mat-toolbar-row {
 // BreakpointObserver about — so no reader sees a different menu than before,
 // they just see it in the prerendered html instead of 140ms later.
 //
-// `display: contents` rather than a block: the links are the toolbar row's own
-// flex children, and a wrapper that took part in the layout itself would gather
-// all ten of them into one item and stop the row wrapping.
-//
 // These rules are inlined into every prerendered page, so they apply to the
-// first paint — which is the whole point, and is why the decision is here
-// rather than in styles.scss, where it belongs by subject. That file arrives
-// after the first paint when javascript is on. The one case it does own is a
-// reader with no javascript at all; see the note beside it there.
-//
-// `display: contents` rather than a block: the links are the toolbar row's own
-// flex children, and a wrapper that took part in the layout itself would gather
-// all ten of them into one item and stop the row wrapping.
+// first paint, which is the whole point and is why the decision is here rather
+// than in styles.scss: that file arrives after the first paint when javascript
+// is on. The one case it does own is a reader with no javascript at all; see
+// the note beside it there.
 .menu-links {
   display: none;
 }
 
+// The phone's menu: a sheet down the whole width under the bar, rather than the
+// side drawer Material was drawing — which needed a container, a backdrop and
+// two `position: fixed !important` overrides to stop it being squeezed into the
+// toolbar's own four rems.
+.menu-links.is-open {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: tokens.$spacing-sm;
+  padding: tokens.$spacing-md var(--gutter) tokens.$spacing-lg;
+  background: var(--surface);
+  border-bottom: 1px solid var(--catalog-faint);
+
+  // In a column the sheets belong under the word that opened them rather than
+  // floating over the words below it.
+  .sheet {
+    position: static;
+    border: 0;
+    box-shadow: none;
+    padding: tokens.$spacing-xs 0 tokens.$spacing-xs tokens.$spacing-md;
+    background: none;
+    min-width: 0;
+  }
+
+  .sheet-item {
+    padding-left: 0;
+  }
+
+  // The settings keep the left edge of the words above them, so the column ends
+  // where it began instead of drifting to the right.
+  .bar-settings {
+    justify-content: flex-start;
+    gap: tokens.$spacing-md;
+    margin-top: tokens.$spacing-sm;
+  }
+
+  .bar-setting {
+    width: 1.75rem;
+    justify-content: flex-start;
+  }
+}
+
 @media (min-width: 600px) {
   .menu-links {
-    display: contents;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: tokens.$spacing-lg;
   }
 
   .menu-toggle {
     display: none;
-  }
-}
-
-.brand {
-  color: inherit;
-  font-size: 1.1rem;
-  font-weight: 400;
-  margin: 0;
-}
-
-// mat-drawer-container only wraps the toolbar here (the routed page content
-// lives outside this component entirely), so Material's default
-// `position: absolute` on the drawer/backdrop — relative to that container —
-// squeezes both into the toolbar's own ~4rem height instead of covering the
-// viewport. `fixed` escapes that without touching the container's own size,
-// so the rest of the page layout is unaffected. Kept below the CDK overlay
-// baseline (z-index: 1000) so menus/tooltips opened from inside the drawer
-// still stack above it.
-.drawer {
-  position: fixed !important;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  height: 100vh;
-  width: min(40vw, 200px);
-  z-index: 500;
-}
-
-::ng-deep .mat-drawer-backdrop {
-  position: fixed !important;
-  inset: 0;
-  z-index: 499;
-}
-
-// Sidebar list: one item per row instead of the toolbar's inline wrapping.
-.drawer-content {
-  display: flex;
-  flex-direction: column;
-  padding: tokens.$spacing-md 0;
-  gap: tokens.$spacing-xs;
-
-  // Both, because the four that go somewhere are anchors now and the two that
-  // open a menu are still buttons.
-  button[mat-button],
-  a[mat-button] {
-    justify-content: flex-start;
-    width: 100%;
-    padding-left: tokens.$spacing-lg;
-    padding-right: tokens.$spacing-lg;
-  }
-
-  // The three settings share the left edge of the words above them.
-  //
-  // This named `.theme-toggle` and was written when the toggle was the only
-  // icon here — "the lone icon button", the comment said. Two more arrived
-  // beside it and neither got the indent, so the column of left-aligned words
-  // ended in the moon at the right edge of the text and the globe and the
-  // spanner sixteen pixels to its left. The glyph of an icon button sits
-  // `$spacing-md` plus its own six pixels in, which is where a `mat-button`
-  // puts its label, so the three now line up with the six words exactly.
-  .bar-setting {
-    align-self: flex-start;
-    margin-left: tokens.$spacing-md;
-  }
-}
-
-// Quieter than the words beside them. An icon at full weight in a row of text
-// reads as the most important thing in the bar, which is the opposite of what
-// these three are: they are settings, and the paintings are the point.
-//
-// Smaller rather than fainter, so they stay legible in both grounds and keep a
-// touch target worth aiming at.
-.bar-setting {
-  width: 36px;
-  height: 36px;
-  padding: 6px;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
   }
 }

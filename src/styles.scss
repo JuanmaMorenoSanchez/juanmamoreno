@@ -1,6 +1,41 @@
 @use 'styles/tokens';
 @use 'styles/breakpoints' as bp;
 
+/*
+  Archivo, in one file per subset, carrying both of its axes: weight 100–900 and
+  width 62–125%. Two declarations rather than one because the ranges are what
+  keep the second file off the wire — Spanish lives entirely in the first, so
+  `latin-ext` is downloaded only by a page that actually sets a character
+  outside it.
+
+  `swap` rather than `block`: the site is readable before it is beautiful, and a
+  painting's label is worth more unstyled than invisible.
+*/
+@font-face {
+  font-family: Archivo;
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('assets/fonts/archivo-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Archivo;
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('assets/fonts/archivo-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
 // Self-hosted via @fontsource/material-icons (see angular.json's styles array
 // for the @font-face + woff2 files) instead of fonts.googleapis.com, so no
 // visitor IP is sent to Google just to render an icon. Angular Material's
@@ -47,30 +82,64 @@ main {
 :root {
   view-transition-name: none;
   color-scheme: light;
-  --catalog-bg: #ffffff;
-  --catalog-ink: #1f1f1f;
-  --catalog-soft: #6e6e6e;
+  // The wall. A gallery's is never the #ffffff this site had: paper white under
+  // gallery light is a shade off, and a painting photographed to its own canvas
+  // edge needs a ground a little darker than itself or it floats in nothing
+  // instead of hanging on something.
+  --catalog-bg: #edece8;
+  --catalog-ink: #1a1a18;
+  // 5.1:1 on the wall. It was #6e6e6e, which is 4.5:1 on white and 4.4:1 on
+  // this ground — the whole of the site's second level of writing would have
+  // gone under the floor by changing the ground alone.
+  --catalog-soft: #63635e;
   // A hairline, and never text. #a3a3a3 reads at 2.5:1 on this ground and the
   // dark one's #6b6b68 at 3.4:1, both well under the 4.5:1 text needs — which
   // is right for a 1px rule and was wrong in the nine places that had taken it
   // for a third, fainter level of writing. Text has two levels: the ink and
   // --catalog-soft.
-  --catalog-faint: #a3a3a3;
-  --catalog-accent: #cf2525;
-  --catalog-frame-bg: #ebebe9;
+  --catalog-faint: #b4b3ae;
+  --catalog-accent: #c0241c;
+  --catalog-frame-bg: #e3e2dd;
   // A panel standing on the page: a node on the atelier's canvas, the box the
   // brush is used in, a preview. Six stylesheets already asked for this and
   // nothing ever defined it, so every one of them fell back to white — which
   // is only readable in one of the two themes, and the atelier's boxes were
   // white with pale text on them all through dark mode.
-  --surface: #ffffff;
+  --surface: #f7f6f3;
   // The opposite of the ink, which is both what a panel is made of and what
   // reads on top of a block of ink. Three stylesheets asked for it and
   // nothing defined it, so the admin pages were white panels in dark mode
   // and near-white text on near-white ink.
-  --catalog-paper: #ffffff;
-  --catalog-rule: rgb(0 0 0 / 12%);
-  --catalog-sold: #b3261e;
+  --catalog-paper: #f7f6f3;
+  --catalog-rule: rgb(26 26 24 / 14%);
+  --catalog-sold: #c0241c;
+}
+
+/*
+  One clock.
+
+  Everything on this site that moves obeys these two values: the painting
+  arriving, the route crossing, a tile answering a pointer. They were seven
+  durations and four easings scattered across the stylesheets, which is how a
+  page comes to feel assembled — each part moving to its own idea of time.
+
+  The easing is a hard exponential settle: fast away, long arrival. The quick
+  one is for anything the pointer caused, where anything slower reads as lag
+  rather than as grace.
+*/
+:root {
+  --clock: 520ms;
+  --clock-quick: 180ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  // The bar's own height, which three pages subtract from the window to fill
+  // it. It was `--mat-toolbar-standard-height`, a token emitted by a component
+  // that is no longer on any public page.
+  --bar-height: 4rem;
+  // The page's own edge: where the bar's first word, the landing page's name,
+  // the trail and the hang all begin. Four different values were in use — 2vw,
+  // 5vw, 16px and whatever a Material toolbar pads by — so nothing on the site
+  // shared a left edge with anything above or below it.
+  --gutter: max(1rem, 5vw);
 }
 
 // Not an inversion. Paintings are photographed against white and carry their
@@ -79,20 +148,20 @@ main {
 // #cf2525 on near-black is too dark to read as a colour at the size of a dot.
 @mixin dark-palette {
   color-scheme: dark;
-  --catalog-bg: #141414;
-  --catalog-ink: #e8e8e6;
-  --catalog-soft: #9c9c98;
-  --catalog-faint: #6b6b68;
-  --catalog-accent: #ef6a5e;
-  --catalog-frame-bg: #262624;
+  --catalog-bg: #151513;
+  --catalog-ink: #e9e8e4;
+  --catalog-soft: #9a9a94;
+  --catalog-faint: #6e6e68;
+  --catalog-accent: #e8695c;
+  --catalog-frame-bg: #252522;
   // Lifted off the ground rather than equal to it, so a panel has an edge
   // without needing a border to say so.
-  --surface: #232322;
-  --catalog-paper: #141414;
-  --catalog-rule: rgb(255 255 255 / 14%);
-  // Lifted for the same reason the accent is: #b3261e on near-black is too
+  --surface: #232321;
+  --catalog-paper: #151513;
+  --catalog-rule: rgb(233 232 228 / 14%);
+  // Lifted for the same reason the accent is: #c0241c on near-black is too
   // dark to read as a colour.
-  --catalog-sold: #ef6a5e;
+  --catalog-sold: #e8695c;
 }
 
 :root[data-theme='dark'] {
@@ -120,6 +189,34 @@ body {
 :focus-visible {
   outline: 2px solid var(--catalog-accent);
   outline-offset: 2px;
+}
+
+/*
+  The surfaces nobody draws.
+
+  Selection, the caret, the scrollbar, the underline's distance from its word,
+  the figures in a measurement: every one of them ships with a default that
+  belongs to the browser rather than to this site, and leaving them is the
+  cheapest tell that a page was assembled instead of built. A gallery that
+  painted its walls and left the radiators beige.
+
+  Selection is the ink itself, which is the one inversion a wall allows.
+*/
+::selection {
+  background: var(--catalog-ink);
+  color: var(--catalog-bg);
+}
+
+:root {
+  caret-color: var(--catalog-accent);
+  accent-color: var(--catalog-ink);
+  scrollbar-color: var(--catalog-faint) transparent;
+  scrollbar-width: thin;
+}
+
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
 }
 
 // Everything on the site that moves does so for pleasure rather than meaning:
@@ -232,10 +329,14 @@ p {
 }
 
 .catalog-heading {
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--catalog-soft);
+  // Ink, not the soft grey it was. A heading set fainter than the paragraph
+  // under it inverts the hierarchy — the eye is told the section name matters
+  // less than the sentence — and what makes it quiet is the size and the
+  // tracking, which it already has.
+  color: var(--catalog-ink);
   /* Spanish compounds this heading has to carry — DESCONTEXTUALIZADAS,
      CONTEMPORÁNEA — are one unbreakable word, and at this tracking one of them
      is wider than a 320px phone. The page did not scroll to it: the heading
@@ -258,10 +359,11 @@ p {
 .catalog-subheading {
   margin: 0 0 0.5rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--catalog-soft);
+  // Ink, for the same reason as the heading above it.
+  color: var(--catalog-ink);
   /* The same rule as the heading above, for the same words at a smaller size. */
   hyphens: auto;
   overflow-wrap: break-word;
@@ -280,6 +382,58 @@ p {
 .catalog-caption {
   color: var(--catalog-soft);
   letter-spacing: 0.02em;
+}
+
+/*
+  The cartela: the card on the wall beside the work.
+
+  One shape, everywhere, in the same order a gallery writes it — what it is
+  called, what it is made of and when, how big it is — so that across 192
+  paintings the eye learns one place to look and one order to read. It is never
+  revealed on hover: a catalogue whose facts appear only under a pointer has no
+  facts at all on a phone, and none on paper.
+
+  Set in figures that line up (`tabular-nums`): a column of years and
+  centimetres whose digits are different widths is a column that wobbles.
+*/
+.cartela {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  justify-items: start;
+  text-align: left;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--catalog-soft);
+}
+
+.cartela-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  // The width axis, which is the whole reason this family was chosen over the
+  // platform stack it replaced. A title is the one thing on a label that is
+  // the work's own name, and set at the same width as the sentence under it
+  // the axis may as well not exist.
+  font-stretch: 110%;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  text-transform: none;
+  color: var(--catalog-ink);
+}
+
+/*
+  The name on the wall: the width axis opened, which is what a museum does to a
+  name across a lintel and what no static Helvetica could ever have done here.
+  Never large — signage, not a banner. The work is the headline.
+*/
+.wall-name {
+  font-stretch: 118%;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .front-image {
@@ -331,7 +485,10 @@ p {
   carry an attribute selector's specificity on top of the class.
 */
 html:not(.js) .menu-links {
-  display: contents !important;
+  display: flex !important;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: tokens.$spacing-lg;
 }
 
 html:not(.js) .menu-toggle {
@@ -358,7 +515,12 @@ html:not(.js) .menu-toggle {
   a measure of the text it holds: 44rem of 0.8rem prose is still 110 characters.
 */
 :root {
-  --measure: 70ch;
+  // 70ch of Archivo measured 90 characters to the line on the statement page
+  // — well past the 75 a reader's eye tracks, and longer than the Helvetica
+  // it replaced. `ch` is the width of a zero, and Archivo's is wide against
+  // its lowercase, so the same number of `ch` buys more characters than it
+  // did. 55 measures 70, counted in a browser rather than reasoned about.
+  --measure: 55ch;
 }
 
 .prose p,
@@ -366,6 +528,25 @@ html:not(.js) .menu-toggle {
 .prose blockquote,
 .prose dd {
   max-width: var(--measure);
+}
+
+/*
+  A page of reading begins at the page's own left edge.
+
+  `.container` centres a 970px column, so a measure left-aligned inside it
+  started 235px from the edge on a desktop and left 560px of margin on the
+  right that nothing was doing anything with — neither the gutter every other
+  thing on the site begins at, nor a centred column. Scoped to the pages that
+  are reading and to none of the ones that are not — the painting's page and
+  the studio's are centred on purpose. Both selectors are needed: the pages
+  carry `prose` on the container itself, and `:has` is for any that come to
+  put it inside.
+*/
+.container.prose,
+.container:has(.prose) {
+  width: auto;
+  max-width: var(--measure);
+  margin-inline: var(--gutter);
 }
 
 .container {

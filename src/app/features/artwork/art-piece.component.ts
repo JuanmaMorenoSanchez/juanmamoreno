@@ -324,6 +324,35 @@ export class ArtPieceComponent {
     return [year, medium, size].filter(Boolean).join(', ');
   }
 
+  /**
+   * The card beside the work, from the same place the catalogue and the
+   * landing page get theirs.
+   *
+   * This page used to compose it for itself — centred, italic, with a full
+   * stop after the title and the letter x between the measurements — so the
+   * one page that is entirely about a single painting named it differently
+   * from the hundred and ninety-two tiles that link to it.
+   */
+  readonly label = computed(() => this.artworkService.cartela(this.nft()));
+
+  /**
+   * The medium, with the comma that precedes the year already on it.
+   *
+   * The year stays an anchor — it is the one link in any cartela on the site,
+   * going to the rest of that year's work — so this line cannot be a single
+   * string the way the landing page's and the catalogue's are. The comma goes
+   * on the end of the word instead of between two template expressions, where
+   * it would be whitespace: html collapses that to a space, and the label read
+   * "ACUARELA SOBRE PAPEL , 2014".
+   */
+  readonly mediumBeforeYear = computed(() => {
+    const { medium, year } = this.label();
+    if (!medium) return '';
+    return year
+      ? `${this.translateService.instant(medium)},`
+      : this.translateService.instant(medium);
+  });
+
   readonly qualityUrls: Signal<string[]> = computed(() => {
     const nft = this.nft();
     return nft ? this.artworkService.getNftFetchableUrls(nft.image) : [];

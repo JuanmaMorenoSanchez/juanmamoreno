@@ -5,7 +5,7 @@
   // dvh (not vh) so mobile browser chrome showing/hiding on scroll doesn't
   // leave a gap or an overflow strip. The toolbar's own height token (not a
   // hardcoded 64px) keeps this correct if the toolbar's density ever changes.
-  height: calc(100dvh - var(--mat-toolbar-standard-height, 4rem));
+  height: calc(100dvh - var(--bar-height, 4rem));
   overflow: hidden;
   background: #000;
 

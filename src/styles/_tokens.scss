@@ -1,5 +1,19 @@
-
-$font-family-base: Helvetica Neue, Helvetica, Arial, sans-serif;
+// Archivo, self-hosted as one variable file carrying both axes — weight
+// 100–900 and width 62–125%. One family for the whole site, used at two
+// extremes the way a museum uses one: the width axis opened up for a name on a
+// wall, closed to normal for a label nobody is meant to notice reading. It was
+// the platform's Helvetica stack, which is no typeface at all: whatever the
+// visitor's machine happened to have.
+//
+// The files are in `assets/fonts` and declared in `styles.scss`. Not a package
+// and not a link to Google: a hosted stylesheet sends every visitor's address
+// to a third party to render a letter.
+$font-family-base:
+  Archivo,
+  Helvetica Neue,
+  Helvetica,
+  Arial,
+  sans-serif;
 
 // The spacing scale: every step a multiple of 4px, which is what gives the
 // useful middle values an 8-only scale has to round away from.

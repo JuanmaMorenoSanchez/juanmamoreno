@@ -1,52 +1,75 @@
 <section class="home">
-  <div class="home-intro">
-    <h1 #heroTitle class="home-name">Juanma Moreno Sánchez</h1>
+  <!--
+    Signage, not a banner. A gallery writes the artist's name small and high on
+    the wall and lets the painting be the headline; this page used to set the
+    name at 36px across the middle of the screen with the work below it, which
+    is a poster for a website rather than a room with a painting in it.
+  -->
+  <header class="home-signage">
+    <h1 #heroTitle class="home-name wall-name">Juanma Moreno Sánchez</h1>
     <p class="home-tagline">{{ 'home.tagline' | translate }}</p>
-  </div>
+  </header>
 
   @if (featured(); as nft) {
-    <a
-      class="home-featured"
-      draggable="false"
-      [routerLink]="artworkLink(nft.tokenId)"
-      [attr.aria-label]="nft.name"
-    >
-      <!--
-        The painting leans towards the pointer, the same way the catalogue tiles
-        do — the directive finds its tile from the event, and here the frame is
-        the only tile there is.
-      -->
-      <span
-        appParallaxTilt
-        tiltSelector=".home-featured-frame"
-        [maxShiftPercent]="4"
-        class="home-featured-frame"
-        [style.aspect-ratio]="featuredAspect()"
-        [style.width]="frameWidth()"
+    <div class="home-hang">
+      <a
+        class="home-plate"
+        draggable="false"
+        [routerLink]="artworkLink(nft.tokenId)"
+        [attr.aria-label]="nft.name"
       >
-        @if (featuredThumb(); as thumb) {
-          <img
-            class="home-featured-image home-featured-image--preview"
-            [src]="thumb"
-            alt=""
-            decoding="async"
-            draggable="false"
-          />
-        }
-        @if (featuredFull(); as full) {
-          <img
-            class="home-featured-image home-featured-image--full"
-            [class.loaded]="fullLoaded()"
-            [src]="full"
-            [alt]="nft.name"
-            decoding="async"
-            draggable="false"
-            (load)="onFullLoad($event)"
-          />
-        }
-      </span>
-      <span class="home-featured-caption catalog-caption">{{ nft.name }}</span>
-    </a>
+        <span class="home-plate-frame" [style.--aspect]="aspectVar()">
+          @if (featuredThumb(); as thumb) {
+            <img
+              class="home-plate-image home-plate-image--preview"
+              [src]="thumb"
+              alt=""
+              decoding="async"
+              draggable="false"
+            />
+          }
+          @if (featuredFull(); as full) {
+            <img
+              class="home-plate-image home-plate-image--full"
+              [class.loaded]="fullLoaded()"
+              [src]="full"
+              [alt]="nft.name"
+              decoding="async"
+              draggable="false"
+              (load)="onFullLoad($event)"
+            />
+          }
+        </span>
+      </a>
+
+      <!--
+        The cartela, at a fixed offset below the plate's left edge — the same
+        block, in the same order, as the one on the catalogue and on the
+        painting's own page. The plate and the label share a column sized to
+        the plate, which is what keeps the label's left edge on the painting's
+        left edge at every aspect ratio.
+      -->
+      <div class="home-label">
+        <p class="cartela">
+          <span class="cartela-title">{{ nft.name }}</span>
+          @if (labelLine()) {
+            <span>{{ labelLine() }}</span>
+          }
+          @if (label().size) {
+            <span>{{ label().size }}</span>
+          }
+        </p>
+
+        <!--
+          One line out of the room. A visitor who has been shown a single
+          painting has no way of knowing there are a hundred and ninety-one
+          more unless the page says so.
+        -->
+        <a class="home-way-in" [routerLink]="allPaintingsLink">{{
+          'menu.allPaintings' | translate
+        }}</a>
+      </div>
+    </div>
   }
 </section>
 
@@ -56,5 +79,8 @@
   paintings. The api half stays blank when the backend cannot be reached.
 -->
 <p class="build-versions">
-  v{{ appVersion }}@if (apiVersion()) {<span> · api v{{ apiVersion() }}</span>}
+  v{{ appVersion }}
+  @if (apiVersion()) {
+    <span> · api v{{ apiVersion() }}</span>
+  }
 </p>

@@ -2065,47 +2065,66 @@ standing empty above the essay.
 change it", "never says whether an essay has been edited", and
 `critics.service.spec.ts` in the backend
 
-### R68 — The catalogue answers the pointer, one tile at a time · met
-The tile under the pointer leans towards the corner the pointer is in; every
-other tile stays where it is, and the one being left is put back before the
-next one leans. It used to measure from the centre of the viewport and write
-the answer once on the grid, so all two hundred tiles leaned together — which
-reads as the page sliding rather than as an answer to the pointer.
+### R68 — The catalogue answers the pointer, one tile at a time · met, differently
+The tile under the pointer answers it and no other tile moves. **What answers
+is the card, not the painting**: the rule under the label darkens, and the work
+hangs still.
 
-Still one listener however long the grid is: the tile is found from the event
-rather than by giving each tile a listener of its own.
+**The lean is gone, and with it the crop it needed.** The tile used to lean the
+picture towards the corner the pointer was in, which only works if the image is
+larger than its frame — `scale(1.1)`, five per cent of overhang on each side
+against a four and a half per cent lean. That is ten per cent of every painting
+in the catalogue cropped away so that one of them could move when a mouse went
+near it, on top of the `object-fit: cover` that was already cropping all
+hundred and ninety-two into squares. Asked what would make a polished result
+feel wrong, the artist named anything cropped over a painting first. A hung work
+is still.
 
-The lean and the image's oversize are one number. At `scale(1.1)` there is 5%
-of overhang on each side against a 4.5% lean, and moving either alone pulls the
-edge of the picture into the frame. The scale is kept as low as the lean allows:
-every extra bit of it is another bit of the painting cropped away, on two
-hundred of them.
-*Proven by:* `parallax-tilt.directive.spec.ts` (7 tests, four of which fail
-against the whole-grid version)
+`ParallaxTiltDirective` and its seven tests are still in the repository and are
+no longer used by any template. They are left rather than deleted because the
+decision to retire the behaviour is the artist's, not a side effect of a
+restyle.
+*Proven by:* `art-pieces-list.component.spec.ts` (29 tests) for the hang itself;
+the pointer's answer is a css state with no test of its own.
 
-### R69 — The landing page moves, and how depends on what is pointing at it · met
-Where there is a pointer the painting answers it, leaning towards it as the
-catalogue tiles do. Where there is not, it drifts by itself. Never both: a
-picture already wandering cannot be seen to lean towards anything.
+### R240 — A painting is never cropped to fit a layout · met
+Every painting on the site is shown whole, at its own proportions. The cells of
+the catalogue are identical squares — that is what makes the wall a wall, and
+what lets nineteen years of different shapes be read against something steady —
+and the painting inside each one is contained, not covered.
 
-With a pointer it is drawn at its own size until somebody approaches, so the
-page shows the whole work uncropped and only grows enough to have somewhere to
-lean once it is being looked at. Measured in a browser, that is 17 to 21 pixels
-of movement against the five the drift alone managed — which is the difference
-between an effect and one nobody notices.
+The landing page is the same: the plate is the painting's own shape, and the
+image is `object-fit: contain` inside it.
 
-Either way it is a transform on the image the page was already loading: no
-video, no second request, no bytes beyond the painting itself, on the one page
-every visitor sees first. A canvas would have cost the prerendered `<img>`,
-which is what makes this page readable with javascript off and what a link
-preview shows.
+**Three things were cropping before this.** The catalogue's `object-fit: cover`
+on a square tile; the `scale(1.1)` the pointer's lean needed on top of it; and
+on the landing page a drift animation that began at `scale(1.05)`, so the one
+painting a first-time visitor sees was missing two and a half per cent of each
+edge before anything had been touched.
+*Proven by:* `art-pieces-list.component.spec.ts` (29 tests) and the rendered
+pages at 1440 and 390; the rule itself is one declaration in each of two
+stylesheets.
 
-Both movements are bounded by their own scale, so the frame is always full of
-painting, and the drift returns exactly where it began so the loop has no seam.
-Under reduced motion nothing moves and the painting sits whole.
-*Proven by:* the lean, the drift, the frame staying covered through both, and
-the stillness under reduced motion, all measured in a browser against the built
-page
+### R69 — The landing page is one painting, hung · met, replaced
+One painting at the height the room allows, whole, on the wall’s own ground,
+with its card at a fixed offset below the plate’s left edge and one line out to
+the catalogue. The name and the one-line statement are signage — small, high,
+left — because the painting is the headline.
+
+**It used to move, and that is what has gone.** Where there was a pointer the
+painting leaned towards it; where there was not, it drifted on a twenty-two
+second loop. Both began by scaling the image past the edges of its own frame,
+so the one painting every first-time visitor sees was cropped in order to have
+somewhere to wander. What is left is the one arrival: the full file resolving
+over the blurred placeholder, once, on the site’s clock.
+
+**The plate is no longer a postcard.** Its width was computed in the component
+and capped at `34rem` — 544 pixels on any screen, so a 27-inch desktop and a
+tablet showed the same small picture in the middle of an empty page. The
+stylesheet drives it by height now, which is what hanging means: as tall as the
+room allows and as wide as the painting’s own proportions make it.
+*Proven by:* `home.component.spec.ts` (4 tests) for which painting is put up,
+and the rendered page at 1440 and 390 for how
 
 ### R70 — A build never asks the reverse image search · met
 Nothing the prerender does may reach `/vision/search`, in any circumstance. A
@@ -6064,3 +6083,78 @@ atelier's shelf shows it, and this page never asked.
 *Proven by:* `publish.component.spec.ts` "says why a clip did not load, rather
 than fetching for ever" and "still says it is fetching while it is really
 fetching"
+
+### R235 — The site is set in a typeface, not in whatever the machine had · met
+Archivo, served from `assets/fonts` as one variable file per subset, carrying
+both of its axes: weight 100–900 and width 62–125%. One family for the whole
+site, used at two extremes the way a museum uses one — the width axis opened
+for a name on a wall, closed to normal for an eleven-pixel label.
+
+It was `Helvetica Neue, Helvetica, Arial, sans-serif`, which is not a typeface
+but a list of guesses about the reader’s machine: Helvetica on a Mac, Arial on
+Windows, something else on a phone. Three different sites depending on who was
+looking.
+
+**Self-hosted, and not a package.** A `fonts.googleapis.com` stylesheet sends
+every visitor’s address to a third party in order to draw a letter, and the
+site already refuses that for its icons. The two files are 90 kB and 86 kB, and
+the second is downloaded only by a page that sets a character outside the first
+— which Spanish never does.
+*Checked by:* `page-cost.test.mjs`, which weighs every route on a phone against
+a ceiling, and passed unchanged with the font added.
+
+### R236 — The reader’s pages carry no Angular Material · met
+The bar, the landing page, the catalogue and the trail are built from ordinary
+elements. Material stays in the studio, where its density and its known
+behaviour are worth having and where only the artist goes.
+
+What went: `mat-toolbar` and the `mat-drawer-container` around it, five
+`mat-menu` overlays, eleven `mat-button`s, `mat-chip-set` for the trail and for
+the sort control, two `mat-form-field`/`mat-select` filters, `mat-card` and
+`mat-grid-list` in the catalogue, `mat-progress-spinner`, and every `mat-icon`
+on a public page — six symbols drawn here instead, at one stroke weight.
+
+**Two things got better rather than only different.** The bar’s menus are
+`<details>`, so the years — nineteen of them — can be opened with no javascript
+at all, which a `mat-menu` never could; and the two catalogue filters are real
+`<select>`s, so the catalogue can be narrowed unscripted. Both were dead
+controls on a site whose whole point is that it is readable without a script.
+*Proven by:* `top-menu.component.spec.ts` (15 tests),
+`breadcrumb.component.spec.ts` (12), `art-pieces-list.component.spec.ts` (29),
+`years-menu.test.mjs` (5 in a real browser) and `small-phone.test.mjs`
+
+### R237 — One card, one order, everywhere a painting is named · met
+Title, then medium and year, then the measurement in centimetres — the order a
+gallery writes a label in, in the same shape on the landing page, under every
+tile in the catalogue, and on the painting’s own page. The facts come from
+`Artwork.cartela` in the domain layer, so the three cannot drift apart.
+
+**It is never revealed on hover.** A catalogue whose facts appear only under a
+pointer has no facts at all on a phone, and none on paper.
+
+The measurement has one rule worth stating: both sides are needed for it to say
+anything, and the unit is not — its absence beats a wrong guess at one.
+*Proven by:* `artwork.spec.ts` "cartela" (5 tests, including "says nothing
+about size when only one side is known")
+
+### R238 — Everything on the page begins at the same left edge · met
+One `--gutter`, used by the bar, the landing page, the trail and the hang. Four
+different values were in use — 2vw, 5vw, 16px, and whatever a Material toolbar
+padded by — so nothing on the site shared a left edge with anything above or
+below it, which is the sort of thing nobody can name and everybody can see.
+
+The trail was the worst of them: it sat inside the 970-pixel reading column
+while the catalogue under it spanned the window, so the first crumb began two
+hundred pixels to the right of the paintings it was above.
+*Checked by:* nothing automatic. It is a token four stylesheets read, and the
+rendered pages at 1440 and 390 are what shows it.
+
+### R239 — Everything that moves obeys one clock · met
+`--clock`, `--clock-quick` and one easing, declared once and read by every
+transition on the public pages. There were seven durations and four easings
+scattered across the stylesheets — 180ms, 200ms, 320ms, 350ms, 500ms, 0.5s,
+22s, in `ease`, `ease-in`, `ease-out` and `ease-in-out` — which is how a page
+comes to feel assembled rather than built: each part moving to its own idea of
+time.
+*Checked by:* the tokens in `styles.scss` and what reads them; a reader who has
+asked for less movement still stops all of it, which `R47` covers.

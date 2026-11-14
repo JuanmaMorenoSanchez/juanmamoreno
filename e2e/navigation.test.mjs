@@ -36,7 +36,11 @@ describe('an artwork page', () => {
 
     const text = await visibleText(page);
     assert.match(text, /\b(19|20)\d{2}\b/, `no year on the page: ${text.slice(0, 200)}`);
-    assert.match(text, /\d+\s*x\s*\d+\s*cm/i, `no dimensions on the page: ${text.slice(0, 200)}`);
+    assert.match(
+      text,
+      /\d+\s*[x\u00d7]\s*\d+\s*cm/i,
+      `no dimensions on the page: ${text.slice(0, 200)}`
+    );
 
     await page.close();
   });
@@ -197,12 +201,12 @@ describe('the Spanish landing page', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/es', 'es-ES');
-    await page.waitForSelector('a.home-featured', READY);
+    await page.waitForSelector('a.home-plate', READY);
 
-    const href = await page.locator('a.home-featured').first().getAttribute('href');
+    const href = await page.locator('a.home-plate').first().getAttribute('href');
     assert.match(href, /^\/es\/artwork\//, `the hero leaves the Spanish tree: ${href}`);
 
-    await page.locator('a.home-featured').first().click();
+    await page.locator('a.home-plate').first().click();
     await page.waitForURL((url) => url.pathname.includes('/artwork/'), ARRIVAL).catch(() => {});
 
     const landed = new URL(page.url()).pathname;
@@ -263,33 +267,36 @@ describe('reading the site the way you like it', () => {
 
   /**
    * Sorting is remembered the same way. Checked through what the reader
-   * actually sees — the arrow on the chip in force — rather than through
-   * storage, so it proves the stored value is read back and applied, not
-   * merely written.
+   * actually sees — the arrow beside the choice in force — rather than
+   * through storage, so it proves the stored value is read back and applied,
+   * not merely written.
    */
   it('comes back to the catalogue arranged the way it was left', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artworks');
-    await page.waitForSelector('.sort-group mat-chip', READY);
+    await page.waitForSelector('.sort-group .sort-choice', READY);
 
     // The row reads: year, size, medium. Year is in force on arrival, so
-    // pressing size moves the arrow onto a different chip.
-    await page.locator('.sort-group mat-chip').nth(1).click();
+    // pressing size moves the arrow onto a different word.
+    await page.locator('.sort-group .sort-choice').nth(1).click();
     await page.waitForFunction(
       () =>
-        document.querySelectorAll('.sort-group mat-chip')[1]?.querySelectorAll('mat-icon')
-          .length === 2,
+        !!document.querySelectorAll('.sort-group .sort-choice')[1]?.querySelector('.sort-arrow'),
       undefined,
       READY
     );
 
     await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('.sort-group mat-chip', READY);
+    await page.waitForSelector('.sort-group .sort-choice', READY);
 
-    // Two icons — the method and the direction — mark the one in force.
-    const marked = await page.locator('.sort-group mat-chip').nth(1).locator('mat-icon').count();
-    assert.equal(marked, 2, 'the catalogue forgot how it was arranged');
+    // The arrow marks the one in force, and only that one.
+    const marked = await page
+      .locator('.sort-group .sort-choice')
+      .nth(1)
+      .locator('.sort-arrow')
+      .count();
+    assert.equal(marked, 1, 'the catalogue forgot how it was arranged');
 
     await page.close();
   });
@@ -304,18 +311,17 @@ describe('reading the site the way you like it', () => {
  * still in force on the next visit.
  */
 describe('the availability picker', () => {
-  const AVAILABILITY = 'mat-select[aria-label="Select availability"]';
+  const AVAILABILITY = 'select[aria-label="Select availability"]';
 
-  /** Opens the picker and takes one of its three answers. */
+  /**
+   * Takes one of its three answers.
+   *
+   * A real `<select>` now rather than a button opening a CDK overlay, so the
+   * choice is made on the control itself and there is no backdrop left over
+   * the page to wait for.
+   */
   async function choose(page, label) {
-    await page.locator(AVAILABILITY).click();
-    await page.getByRole('option', { name: label, exact: true }).click();
-    // The overlay closes on its own; waiting for its backdrop to go keeps the
-    // next click from landing on something still covering the page.
-    await page
-      .locator('.cdk-overlay-backdrop')
-      .waitFor({ state: 'detached', timeout: 10_000 })
-      .catch(() => {});
+    await page.locator(AVAILABILITY).selectOption({ label });
   }
 
   const tileCount = (page) => page.locator('a.tile-link').count();
@@ -340,9 +346,11 @@ describe('the availability picker', () => {
     assert.ok(sold < everything, `sold (${sold}) is not fewer than everything (${everything})`);
 
     // The chip that says so, alongside the year chips.
-    const chips = await page.locator('mat-chip').allInnerTexts();
+    const chips = (await page.locator('.applied-one').allInnerTexts()).map((chip) =>
+      chip.toLowerCase()
+    );
     assert.ok(
-      chips.some((chip) => chip.includes('Sold')),
+      chips.some((chip) => chip.includes('sold')),
       `no chip naming the filter: ${JSON.stringify(chips)}`
     );
 
@@ -385,9 +393,11 @@ describe('the availability picker', () => {
       READY
     );
 
-    const chips = await page.locator('mat-chip').allInnerTexts();
+    const chips = (await page.locator('.applied-one').allInnerTexts()).map((chip) =>
+      chip.toLowerCase()
+    );
     assert.ok(
-      chips.some((chip) => chip.includes('Sold')),
+      chips.some((chip) => chip.includes('sold')),
       `the chip did not come back: ${JSON.stringify(chips)}`
     );
 
@@ -406,7 +416,7 @@ describe('the availability picker', () => {
 
     await choose(page, 'Sold');
     await page.waitForFunction(
-      () => document.querySelectorAll('mat-chip').length > 0,
+      () => document.querySelectorAll('.applied-one').length > 0,
       undefined,
       READY
     );
@@ -479,7 +489,7 @@ describe('a catalogue narrowed to nothing', () => {
     await page.waitForSelector('.nothing-matched', READY);
 
     // The chip's own remove button, which is how a reader undoes it.
-    await page.locator('mat-chip button[matchipremove]').first().click();
+    await page.locator('.applied-one .applied-off').first().click();
     await page.waitForSelector('a.tile-link', READY);
 
     assert.equal(

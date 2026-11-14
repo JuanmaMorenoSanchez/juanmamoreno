@@ -50,6 +50,9 @@ Thumbs.db
 .impeccable/hook.cache.json
 .impeccable/hook.pending.json
 .impeccable/live/
+# Screenshots taken to review a build against itself. Evidence for one pass,
+# not source: the brief and DESIGN.md are what outlive it.
+.impeccable/review/
 
 # Impeccable's engine ships as a 2.3 MB provider skill folder, and the hook can
 # only be wired when it sits here: the install is this machine's, not the

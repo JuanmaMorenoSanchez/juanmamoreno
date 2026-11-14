@@ -1,11 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
-import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { SKETCH_LIST } from '@features/generative/sketches/registry';
@@ -16,27 +9,24 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
 import { HeroTitleService } from '@shared/services/hero-title.service';
 import { ThemeService } from '@shared/services/theme.service';
 
+/** `paintings/years` closes back to `paintings`, not to nothing. */
+function parentOf(path: string): string | null {
+  const cut = path.lastIndexOf('/');
+  return cut === -1 ? null : path.slice(0, cut);
+}
+
 @Component({
   selector: 'app-top-menu',
   templateUrl: './top-menu.component.html',
   styleUrls: ['./top-menu.component.scss'],
-  imports: [
-    MatToolbar,
-    MatToolbarRow,
-    MatButton,
-    RouterLink,
-    MatIconButton,
-    MatIcon,
-    NgTemplateOutlet,
-    MatDrawerContainer,
-    MatDrawerContent,
-    MatDrawer,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuItem,
-    MatTooltip,
-    TranslatePipe,
-  ],
+  imports: [RouterLink, TranslatePipe],
+  // Anywhere else on the page, and anything that moves the reader on, closes
+  // whatever is open. A bar menu that survives a navigation is a bar menu
+  // hanging over the page the reader asked for.
+  host: {
+    '(document:click)': 'closeEverything()',
+    '(document:keydown.escape)': 'closeEverything()',
+  },
 })
 export class TopMenuComponent {
   private artworkService = inject(ARTWORK_PORT);
@@ -70,6 +60,49 @@ export class TopMenuComponent {
 
   // Public: the toolbar reads and toggles it directly.
   protected theme = inject(ThemeService);
+
+  /**
+   * Which sheet is down, as a path, and whether the phone's menu is open.
+   *
+   * A path rather than a name so a nested sheet can be open inside its parent:
+   * `paintings/years` means both. One at a time, because two sheets down at
+   * once in a bar this size cover the page they are supposed to be a way out
+   * of.
+   *
+   * With javascript off none of this runs. The `<details>` elements fall back
+   * to the browser's own disclosure, which is the whole reason they are
+   * `<details>`: the years were unreachable without a script before.
+   */
+  private readonly drop = signal<string | null>(null);
+  protected readonly menuOpen = signal(false);
+
+  protected dropOpen(path: string): boolean {
+    return (this.drop() ?? '').startsWith(path);
+  }
+
+  /**
+   * `preventDefault` because the component owns `open`, not the browser: left
+   * to itself the element would toggle as well and the two would disagree.
+   * `stopPropagation` because the document listener that closes everything
+   * would otherwise run on this very click and shut the sheet as it opened.
+   */
+  protected toggleDrop(path: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.drop.update((open) => (open === path ? parentOf(path) : path));
+  }
+
+  protected toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.menuOpen.update((open) => !open);
+    this.drop.set(null);
+  }
+
+  /** Anywhere else on the page, Escape, or anything that navigates. */
+  protected closeEverything(): void {
+    this.drop.set(null);
+    this.menuOpen.set(false);
+  }
 
   // True while a page shows its own hero title (the landing) — the top bar hides
   // its duplicate brand copy meanwhile.

@@ -77,7 +77,7 @@ describe('an artwork page with javascript off', () => {
 
     assert.match(
       text,
-      /\d+\s*x\s*\d+\s*cm/i,
+      /\d+\s*[x\u00d7]\s*\d+\s*cm/i,
       `no measurements without javascript: ${text.slice(0, 160)}`
     );
 
@@ -97,9 +97,9 @@ describe('the landing page with javascript off', () => {
     if (cannotRun) return t.skip(cannotRun);
 
     const { context, page } = await openWithoutJavascript('/');
-    await page.waitForSelector('.home-featured-image--full', READY);
+    await page.waitForSelector('.home-plate-image--full', READY);
 
-    const opacity = await page.$eval('.home-featured-image--full', (img) =>
+    const opacity = await page.$eval('.home-plate-image--full', (img) =>
       Number(getComputedStyle(img).opacity)
     );
 

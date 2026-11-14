@@ -1,50 +1,66 @@
 @use '../../../styles/tokens';
+@use '../../../styles/breakpoints' as bp;
 
-// The catalogue as a css grid: two columns on a phone, three above it, which is
-// exactly the count it had before.
+// The wall, rather than the page.
 //
-// It was a mat-grid-list, which lays itself out in javascript from a column
-// count this component read off BreakpointObserver — and while the 402 pages
-// are being prerendered there is no window to observe, so every static page was
-// written with the desktop count. A phone was handed three columns and re-laid
-// out to two the moment the page hydrated, which is most of the layout shift on
-// the catalogue. A question about the width of the window belongs in a media
-// query, where it is answered before any of our code runs.
+// The shared `.container` holds reading text to 970px, which is right for a
+// paragraph and wrong for a hang: it left a third of a desktop empty on each
+// side of nineteen years of work. Only here, and only above the breakpoint
+// where there is room for it.
+.container {
+  margin-top: 0;
+  width: auto;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+// The hang: cells of one size, works of their own.
+//
+// It was a `mat-grid-list`, which lays itself out in javascript from a column
+// count read off BreakpointObserver — and while the 402 pages are prerendered
+// there is no window to observe, so every static page was written with the
+// desktop count and re-laid out on a phone the moment it hydrated. A question
+// about the width of the window belongs in a media query, where it is answered
+// before any of our code runs.
 .tile-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: tokens.$spacing-xl tokens.$spacing-lg;
 }
 
 // The strip at the foot of an artwork page, which is a sequence to walk rather
-// than a catalogue to browse: smaller pictures, more of them to a row.
+// than a catalogue to read: smaller pictures, more of them to a row, no cards.
 .tile-grid.as-strip {
   grid-template-columns: repeat(3, 1fr);
+  gap: tokens.$spacing-sm-md;
 }
 
 @media (min-width: 600px) {
   .tile-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: tokens.$spacing-2xl tokens.$spacing-xl;
   }
 
   .tile-grid.as-strip {
     grid-template-columns: repeat(6, 1fr);
+    gap: tokens.$spacing-sm-md;
   }
 }
 
-// Square, as the grid list drew them. Whether a painting is better shown in its
-// own proportions is a separate question, and it is the artist's.
-.tile {
-  position: relative;
-  aspect-ratio: 1;
-  cursor: pointer;
+@media (min-width: 1100px) {
+  .tile-grid:not(.as-strip) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-// The whole tile is the link, so it has to fill the square the grid gives it.
+.tile {
+  position: relative;
+}
+
 .tile-link {
-  display: block;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  gap: tokens.$spacing-sm-md;
   color: inherit;
   text-decoration: none;
   // Paired with draggable="false" in the template: a link is draggable by
@@ -54,78 +70,46 @@
   -webkit-user-drag: none;
   user-drag: none;
 
-  // The tiles sit flush against one another, so an outset ring is drawn
-  // underneath the neighbouring tile and half of it is never seen.
   &:focus-visible {
-    outline-offset: -3px;
+    outline-offset: 4px;
   }
 }
 
-// Screen-reader-only text: removed from view but kept in the accessibility tree
-// so an icon-only control still exposes a name.
-@keyframes tile-enter-anim {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.tile-enter {
-  animation: tile-enter-anim 320ms ease-out both;
-}
-
-mat-card {
+// One size for every cell, which is what makes the wall a wall: variation is
+// read against sameness, and nineteen years of different shapes need something
+// steady to be different from. The painting inside is not square.
+.tile-frame {
   position: relative;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  // Clips the slightly-oversized, parallax-shifted image below so it pans
-  // within the frame without ever revealing an edge.
-  overflow: hidden;
-  // Light grey placeholder shown while the thumbnail is still loading
-  --mdc-elevated-card-container-color: var(--catalog-frame-bg);
-  background-color: var(--catalog-frame-bg);
+  display: block;
+  aspect-ratio: 1;
 }
 
-// Deliberately no fade-in. The grid reorders when the API list replaces the
-// bundled one, which relocates these <img> nodes, and a moved element restarts
-// its transitions — so an opacity fade replays on every reflow and blinks a
-// square that was already showing a painting. The url only reaches [src] once
-// it has been downloaded off-screen (see getProgressiveImageUrls), so there is
-// nothing to hide anyway: the image paints as soon as it is bound.
+// Centred inside the cell by `inset: 0` and `margin: auto`, which is the one
+// arrangement that both centres an image at its own size and gives
+// `max-height: 100%` something definite to resolve against. Laid out as a
+// centred grid item instead, the cell has no definite height — the row sizes
+// to the content, the percentage resolves against nothing, and every painting
+// is drawn at its natural size straight over the one below it.
 .front-image {
-  // Oversized by more than appParallaxTilt is allowed to shift, so it always
-  // has slack to lean within its frame and never shows a gap at the edge.
-  // 1.1 leaves 5% of overhang on each side against a 4.5% lean; the two are
-  // one number and moving either alone pulls the edge of the picture into
-  // view. See DEFAULT_MAX_SHIFT_PERCENT in parallax-tilt.directive.ts.
-  //
-  // Kept at 1.1 rather than raised: every extra bit of scale is another bit of
-  // the painting cropped away, on two hundred of them.
-  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(1.1);
-  transition:
-    transform 0.2s ease-out,
-    // The same half-second and the same easing as the hero on the home page
-    // and the viewer on an artwork page, so a painting coming into focus looks
-    // the same wherever it happens. ease-in starts slowly and settles, which
-    // is a lens finding focus; `ease` moves fastest in the middle, which is a
-    // crossfade between two different things.
-    filter 0.5s ease-in;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  // Whole. It was `object-fit: cover` on a square frame, scaled to 1.1 so the
+  // picture had slack to lean towards the pointer — so every painting in the
+  // catalogue was cropped twice over to fit a layout, and the two hundred of
+  // them that are not square lost their edges.
+  object-fit: contain;
+  transition: filter var(--clock) var(--ease);
 }
 
 // While the tile is still showing the image carried inside the certificate —
 // about 112px, and free, which is why it paints first — it is softened rather
-// than shown sharp and pixelated. The existing scale(1.1) and the card's
-// overflow already hide the edges a blur pulls in, so no extra scale is needed.
-//
-// The transition is on .front-image above rather than here, so removing the
-// class fades the blur away instead of snapping it off.
+// than shown sharp and pixelated.
 .front-image.awaiting-sharper {
   filter: blur(6px);
 }
@@ -138,12 +122,97 @@ mat-card {
   }
 }
 
-.container {
-  margin-top: 0;
+.tile-cartela {
+  // The label hangs under the work's cell, not under the picture: a portrait
+  // and a landscape in the same row keep their labels on one line.
+  padding-top: tokens.$spacing-xs;
+  border-top: 1px solid var(--catalog-rule);
+  transition: border-color var(--clock-quick) var(--ease);
 }
 
+// The tile still answers the pointer, one at a time — but the answer is the
+// card, not the painting.
+//
+// It used to lean the picture towards the corner the pointer was in, which
+// needed the image scaled to 1.1 to have slack to lean within: ten per cent of
+// every painting in the catalogue cropped away so that one of them could move
+// when a mouse went near it. A hung work is still; the rule under its label
+// darkening is an answer the wall can give.
+.tile-link:hover .tile-cartela,
+.tile-link:focus-visible .tile-cartela {
+  border-top-color: var(--catalog-ink);
+}
+
+@keyframes tile-enter-anim {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tile-enter {
+  animation: tile-enter-anim var(--clock) var(--ease) both;
+}
+
+// How the wall is ordered, in words rather than in glyphs.
 .sort-group {
-  margin-bottom: 2em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-xl;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sort-label {
+  color: var(--catalog-soft);
+}
+
+.sort-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  padding: 0 0 tokens.$spacing-xs;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  font: inherit;
+  color: var(--catalog-soft);
+  cursor: pointer;
+  transition:
+    color var(--clock-quick) var(--ease),
+    border-color var(--clock-quick) var(--ease);
+
+  &:hover {
+    color: var(--catalog-ink);
+  }
+
+  &.is-on {
+    color: var(--catalog-ink);
+    border-bottom-color: var(--catalog-ink);
+  }
+}
+
+.sort-arrow {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--clock-quick) var(--ease);
+
+  &.is-descending {
+    transform: rotate(180deg);
+  }
 }
 
 // The key to the dot on a sold tile, shown only when there is one on screen.
@@ -151,75 +220,76 @@ mat-card {
   display: flex;
   align-items: center;
   gap: tokens.$spacing-sm;
-  margin: tokens.$spacing-xs 0 0;
-  font-size: 0.8rem;
+  margin: 0 0 tokens.$spacing-lg;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   line-height: 1.4;
   color: var(--catalog-soft);
 }
 
 .legend-dot {
-  height: 0.5rem;
-  width: 0.5rem;
+  height: 0.4rem;
+  width: 0.4rem;
   border-radius: 50%;
-  background-color: var(--catalog-accent);
-  opacity: 0.65;
+  background-color: var(--catalog-sold);
   flex: none;
 }
 
+// On the work itself, at the corner of its cell. The one piece of colour on
+// the site that is not a painting.
 .sold-dot {
   position: absolute;
-  right: 0.6rem;
-  bottom: 0.6rem;
-  height: 0.5rem;
-  width: 0.5rem;
+  right: 0;
+  bottom: 0;
+  height: 0.4rem;
+  width: 0.4rem;
   border-radius: 50%;
-  background-color: var(--catalog-accent);
-  opacity: 0.65;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+  background-color: var(--catalog-sold);
   z-index: 2;
   pointer-events: none;
 }
 
 // The artist's own progress control. Quiet on purpose: it is scaffolding for
-// one person, and it sits above a page whose subject is the paintings.
-// Last, and set apart. It is scaffolding for one person, sitting under a page
-// whose subject is the paintings, and pressed up against the controls above it
-// it read as one of them.
+// one person, sitting above a page whose subject is the paintings.
 .edited-filter {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: tokens.$spacing-sm;
-  margin-top: tokens.$spacing-lg;
-  margin-bottom: tokens.$spacing-sm-md;
-  font-size: 0.8rem;
+  gap: tokens.$spacing-md;
+  margin: tokens.$spacing-lg 0 tokens.$spacing-md-lg;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .edited-filter-choice {
-  padding: tokens.$spacing-xs tokens.$spacing-sm;
-  border: 1px solid var(--catalog-faint);
-  border-radius: 999px;
+  padding: 0 0 tokens.$spacing-xs;
+  border: 0;
+  border-bottom: 1px solid transparent;
   background: transparent;
   font: inherit;
   color: var(--catalog-soft);
   cursor: pointer;
 
   &.is-on {
-    border-color: var(--catalog-accent);
-    color: var(--catalog-accent);
+    color: var(--catalog-ink);
+    border-bottom-color: var(--catalog-ink);
   }
 }
 
 .edited-filter-count {
-  margin-left: tokens.$spacing-xs;
   color: var(--catalog-soft);
 }
 
 // Where the paintings would have been, so the eye finds it in the same place
 // it was already looking.
-.nothing-matched {
-  margin: tokens.$spacing-3xl 0;
+.nothing-matched,
+.catalogue-waiting {
+  margin: tokens.$spacing-4xl 0;
   text-align: center;
   color: var(--catalog-soft);
-  font-size: 0.9375rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

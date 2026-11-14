@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -107,6 +107,10 @@ describe('TopMenuComponent language switcher', () => {
  * and one place a reader can be certain does not appear for them.
  */
 describe('TopMenuComponent workshop menu', () => {
+  /** The sheet belonging to a summary, which is where its items live now. */
+  const studioSheet = (trigger: HTMLElement | null): Element =>
+    trigger?.closest('details')?.querySelector('.sheet') ?? document.createElement('div');
+
   /** Opens the menu if it is there, and returns what it offers. */
   async function setup(session: { signedIn: boolean; knownHere: boolean }) {
     localStorage.clear();
@@ -158,21 +162,24 @@ describe('TopMenuComponent workshop menu', () => {
     const sessionButton = (): HTMLElement | null =>
       host.querySelector<HTMLElement>('.studio-session');
 
-    return { fixture, host, sessionButton, signOut };
+    const itemsOf = (trigger: HTMLElement | null) => sheetOf(trigger, fixture);
+
+    return { fixture, host, sessionButton, signOut, itemsOf };
   }
 
   /**
-   * What the menu this trigger opens offers, by visible text.
+   * What the sheet this summary opens offers, by visible text.
    *
-   * Scoped to the last panel rather than the whole document: the settings sit
-   * one level down now, so opening the admin menu leaves "More" open behind it
-   * and a document-wide query returns both.
+   * Scoped to the summary's own `<details>` rather than to the document: the
+   * sheets are ordinary elements in the bar now, not panels drawn in an overlay
+   * somewhere else, so a document-wide query would return every sheet in the
+   * menu rather than the one that was opened.
    */
-  const itemsOf = (trigger: HTMLElement | null) => {
+  const sheetOf = (trigger: HTMLElement | null, fixture: ComponentFixture<TopMenuComponent>) => {
     trigger?.click();
-    const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
-    const opened = panels[panels.length - 1];
-    return [...(opened?.querySelectorAll('.mat-mdc-menu-item') ?? [])].map((item) =>
+    fixture.detectChanges();
+    const sheet = trigger?.closest('details')?.querySelector('.sheet');
+    return [...(sheet?.querySelectorAll('.sheet-item') ?? [])].map((item) =>
       (item.textContent ?? '').trim()
     );
   };
@@ -197,7 +204,7 @@ describe('TopMenuComponent workshop menu', () => {
 
   // Signed in: one icon, holding everything that is his.
   it('gathers the private pages and the way out', async () => {
-    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const { sessionButton, itemsOf } = await setup({ signedIn: true, knownHere: true });
     const trigger = sessionButton();
 
     // Named by its label rather than its text: the bar carries icons now.
@@ -219,11 +226,12 @@ describe('TopMenuComponent workshop menu', () => {
   });
 
   it('links each of them to its own address', async () => {
-    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const { sessionButton, fixture } = await setup({ signedIn: true, knownHere: true });
     const trigger = sessionButton();
     trigger?.click();
+    fixture.detectChanges();
 
-    const links = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((a) =>
+    const links = [...studioSheet(trigger).querySelectorAll('a.sheet-item')].map((a) =>
       a.getAttribute('href')
     );
     expect(links).toEqual([
@@ -250,11 +258,12 @@ describe('TopMenuComponent workshop menu', () => {
     const guarded = routes
       .filter((route) => (route.canActivate ?? []).includes(adminOnly))
       .map((route) => `/${route.path}`);
-    const { sessionButton } = await setup({ signedIn: true, knownHere: true });
+    const { sessionButton, fixture } = await setup({ signedIn: true, knownHere: true });
     const trigger = sessionButton();
     trigger?.click();
+    fixture.detectChanges();
 
-    const offered = [...document.querySelectorAll('a.mat-mdc-menu-item')].map((item) =>
+    const offered = [...studioSheet(trigger).querySelectorAll('a.sheet-item')].map((item) =>
       item.getAttribute('href')
     );
 
@@ -263,11 +272,12 @@ describe('TopMenuComponent workshop menu', () => {
   });
 
   it('signs out from inside it', async () => {
-    const { sessionButton, signOut } = await setup({ signedIn: true, knownHere: true });
+    const { sessionButton, signOut, fixture } = await setup({ signedIn: true, knownHere: true });
     const trigger = sessionButton();
     trigger?.click();
+    fixture.detectChanges();
 
-    const out = [...document.querySelectorAll('.mat-mdc-menu-item')].find((item) =>
+    const out = [...studioSheet(trigger).querySelectorAll('.sheet-item')].find((item) =>
       (item.textContent ?? '').includes('Sign out')
     );
     (out as HTMLElement)?.click();
@@ -342,12 +352,12 @@ describe('TopMenuComponent more menu', () => {
     for (const setting of ['.theme-toggle', '.language-menu', '.studio-session']) {
       const found = host.querySelector(setting);
       expect(found).toBeTruthy();
-      // An icon and a label, and no word taking a place in a row of words: all
-      // the text the button has is the icon's own ligature.
-      const icon = found?.querySelector('mat-icon')?.textContent?.trim();
-      expect(icon).toBeTruthy();
+      // An icon and a label, and no word taking a place in a row of words.
+      // The icons are drawn here now rather than set as a ligature from
+      // Material's icon font, which is why they are asked for by name.
+      expect(found?.querySelector('svg.bar-icon')?.getAttribute('data-icon')).toBeTruthy();
       expect(found?.getAttribute('aria-label')).toBeTruthy();
-      expect(found?.textContent?.trim()).toBe(icon);
+      expect(found?.textContent?.trim()).toBe('');
     }
   });
 
@@ -359,7 +369,7 @@ describe('TopMenuComponent more menu', () => {
     const item = host.querySelector('.theme-toggle');
 
     // Light ground by default, so it offers the dark one.
-    expect(item?.querySelector('mat-icon')?.textContent?.trim()).toBe('dark_mode');
+    expect(item?.querySelector('svg.bar-icon')?.getAttribute('data-icon')).toBe('moon');
     expect(item?.getAttribute('aria-label')).toBe('theme.toDark');
   });
 
@@ -367,14 +377,17 @@ describe('TopMenuComponent more menu', () => {
     const { host, fixture } = await setup();
 
     const language = host.querySelector<HTMLElement>('.language-menu');
-    expect(language?.getAttribute('aria-haspopup')).toBe('menu');
+    // A `<summary>`, which carries its own expanded state: the languages are
+    // behind it rather than beside it in the bar.
+    expect(language?.tagName.toLowerCase()).toBe('summary');
+    expect(language?.closest('details')?.hasAttribute('open')).toBe(false);
 
     language?.click();
     fixture.detectChanges();
 
-    const panels = [...document.querySelectorAll('.mat-mdc-menu-panel')];
-    const opened = panels[panels.length - 1];
-    const offered = [...opened.querySelectorAll('.mat-mdc-menu-item')].map((i) =>
+    const opened = language?.closest('details');
+    expect(opened?.hasAttribute('open')).toBe(true);
+    const offered = [...(opened?.querySelectorAll('.sheet-item') ?? [])].map((i) =>
       (i.textContent ?? '').trim()
     );
     // Compared against what the component actually offers rather than a list

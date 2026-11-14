@@ -11,11 +11,6 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MatCard, MatCardImage } from '@angular/material/card';
-import { MatChip, MatChipSet } from '@angular/material/chips';
-import { MatIcon } from '@angular/material/icon';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SortMethod } from '@domain/artwork/artwork.constants';
 import { AvailabilityService } from '@shared/services/availability.service';
@@ -23,7 +18,7 @@ import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SORT } from '@shared/constants/order.constants';
 import {
   PREFERENCE_KEYS,
@@ -31,7 +26,6 @@ import {
   writePreference,
 } from '@shared/constants/preferences.constants';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
-import { ParallaxTiltDirective } from '@shared/directives/parallax-tilt.directive';
 import { SortOrder } from '@shared/types/sort.type';
 import { Observable, map, of, switchMap } from 'rxjs';
 
@@ -39,26 +33,14 @@ import { Observable, map, of, switchMap } from 'rxjs';
   selector: 'app-art-pieces-list',
   templateUrl: './art-pieces-list.component.html',
   styleUrls: ['./art-pieces-list.component.scss'],
-  imports: [
-    NgClass,
-    MatChipSet,
-    MatChip,
-    MatIcon,
-    MatTooltip,
-    MatCard,
-    MatProgressSpinner,
-    MatCardImage,
-    LazyLoadDirective,
-    ParallaxTiltDirective,
-    TranslatePipe,
-    RouterLink,
-  ],
+  imports: [NgClass, LazyLoadDirective, TranslatePipe, RouterLink],
 })
 export class ArtPiecesListComponent {
   private artworkService = inject(ARTWORK_PORT);
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   public sortMethods = Object.values(SortMethod);
   // Read once: this component is rebuilt when the route changes, and a grid
@@ -213,6 +195,34 @@ export class ArtPiecesListComponent {
         return this.artworkService.sortByYear(artPieces!, sortOrder);
     }
   });
+
+  /**
+   * The card for each painting on the wall, keyed by token.
+   *
+   * Built once per arrangement rather than per tile per render: the template
+   * reads three fields out of it for each of the hundred and ninety-two, and a
+   * method called from the template would rebuild all of them on every change
+   * detection pass.
+   */
+  public readonly labels = computed(
+    () =>
+      new Map(
+        this.sortedArtPieces().map((piece) => {
+          const { medium, year, size } = this.artworkService.cartela(piece);
+          return [
+            piece.tokenId,
+            {
+              // What it is made of and when, as one string. Joined here
+              // because a separator written between two template expressions
+              // is whitespace, and whitespace in html collapses to a space —
+              // which read as "ÓLEO SOBRE TELA , 2026".
+              line: [medium ? this.translate.instant(medium) : '', year].filter(Boolean).join(', '),
+              size,
+            },
+          ];
+        })
+      )
+  );
 
   public onImageVisible(tokenId: string): void {
     const nft = this.artPieces()?.find((p) => p.tokenId === tokenId);

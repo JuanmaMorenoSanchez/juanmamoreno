@@ -5,6 +5,34 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.70.0
+
+- **feat** The reader’s half of the site is a wall and a label.
+  A painter’s catalogue that looked like Angular Material, because it was:
+  the lavender-white toolbar, the letter-spaced Roboto caps, the outlined
+  selects, the row of unlabelled icon buttons. The public pages are now one
+  committed world — a gallery wall, a work hung on it, and a card beside the
+  work that says the same four things in the same order on every page.
+- **feat** The site is set in Archivo, self-hosted, one variable file carrying
+  both weight and width. It was `Helvetica Neue, Helvetica, Arial` — a list of
+  guesses about the reader’s machine rather than a typeface.
+- **feat** No painting is cropped anywhere. The catalogue covered every work
+  into a square and then scaled it to 1.1 so it had room to lean under the
+  pointer; the landing page scaled its own painting to 1.05 so it could drift.
+  Every work is shown whole, at its own proportions, on a common centre line.
+- **feat** The landing painting is as tall as the room allows. Its width was
+  computed in the component and capped at 544 pixels on any screen.
+- **feat** The bar’s menus are `<details>` and the catalogue’s filters are real
+  `<select>`s, so the years and the narrowing work with javascript off. Both
+  were dead controls without a script, on a site whose point is being readable
+  without one.
+- **fix** The site’s second level of writing stayed above the contrast floor
+  when the ground changed. `#6e6e6e` is 4.5:1 on white and 4.4:1 on the wall,
+  so every caption, label and hint on the site would have gone under it.
+- **chore** One gutter, one clock, one label block, and the browser surfaces
+  — selection, caret, scrollbar, underline offset — themed from the palette
+  instead of left at the browser’s defaults.
+
 ## 2.69.1
 
 - **fix** The catalogue is actually cached, and every page stops throwing.

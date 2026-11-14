@@ -5,5 +5,17 @@
       "maxFindings": 10,
       "maxChars": 8000
     }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": ["src/app/**/*.component.html"],
+        "createdAt": "2026-11-14T17:17:17.617Z"
+      }
+    ]
   }
 }

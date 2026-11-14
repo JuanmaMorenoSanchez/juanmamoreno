@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T00:00:00.000Z",
+  "title": "Design System: Juanma Moreno Sánchez",
+  "extensions": {
+    "scope": {
+      "governs": "The public pages: home, the catalogue, a painting's page, about, cv, texts, contact, the top bar and the foot.",
+      "excluded": "The studio half (/publish, /atelier, /activity, /mint, /catalogue, /certificates, /pieces, /parts, /door) keeps Angular Material; src/theme.scss still emits its theme. The palette tokens are shared; the form language is not.",
+      "firstPaint": "Angular serves src/styles.scss through a <noscript><link> and loads it from script otherwise, so with JavaScript on the global sheet arrives after first paint. Anything that must be right at first paint lives in a component stylesheet, which Angular inlines into every prerendered page.",
+      "noScript": "Every public page must work with JavaScript off. The bar's menus are <details>/<summary> and the filters are real <select>s for that reason."
+    },
+    "colorMeta": {
+      "catalog-bg": {
+        "role": "primary",
+        "displayName": "Gallery Plaster",
+        "canonical": "#edece8",
+        "dark": "#151513",
+        "note": "Deliberately not #ffffff: a painting photographed to its own canvas edge needs a ground a little darker than itself. The dark room is a soft near-black, not pure black, which would make every canvas a glowing rectangle.",
+        "tonalRamp": [
+          "#151513",
+          "#252522",
+          "#3a3a36",
+          "#56564f",
+          "#7b7a73",
+          "#a3a29b",
+          "#cdccc6",
+          "#edece8"
+        ]
+      },
+      "catalog-ink": {
+        "role": "primary",
+        "displayName": "Catalogue Ink",
+        "canonical": "#1a1a18",
+        "dark": "#e9e8e4",
+        "note": "All primary text, every bar word, a card's title, and the hairline a control darkens to. Also the background of a text selection.",
+        "tonalRamp": [
+          "#0d0d0c",
+          "#1a1a18",
+          "#2e2e2a",
+          "#474742",
+          "#6b6b64",
+          "#96958d",
+          "#c4c3bc",
+          "#eceae6"
+        ]
+      },
+      "catalog-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#63635e",
+        "dark": "#9a9a94",
+        "note": "The site's second and last level of writing. 5.1:1 on the plaster ground, chosen by measurement: #6e6e6e was 4.4:1 here and the whole second level would have gone under the floor by changing the ground alone.",
+        "tonalRamp": [
+          "#1f1f1d",
+          "#33332f",
+          "#4a4a45",
+          "#63635e",
+          "#848379",
+          "#a7a69d",
+          "#cbcac2",
+          "#eceae6"
+        ]
+      },
+      "catalog-faint": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#b4b3ae",
+        "dark": "#6e6e68",
+        "note": "A 1px rule, a sheet's border, a trail's slash. 2.5:1 on the light ground and 3.4:1 on the dark one — never used for text, which has exactly two levels.",
+        "tonalRamp": [
+          "#262624",
+          "#3b3b37",
+          "#55554f",
+          "#6e6e68",
+          "#8d8c86",
+          "#b4b3ae",
+          "#d4d3ce",
+          "#efeeea"
+        ]
+      },
+      "catalog-rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "rgb(26 26 24 / 14%)",
+        "dark": "rgb(233 232 228 / 14%)",
+        "note": "A tint of the ink rather than a grey, so it belongs to the ground it is drawn on in either room. The bar's division, a label's top border, a select's underline."
+      },
+      "catalog-frame-bg": {
+        "role": "neutral",
+        "displayName": "Frame Tint",
+        "canonical": "#e3e2dd",
+        "dark": "#252522",
+        "note": "The one shade a sheet item takes under a pointer.",
+        "tonalRamp": [
+          "#171715",
+          "#252522",
+          "#3b3b37",
+          "#575751",
+          "#7c7b74",
+          "#a5a49d",
+          "#c8c7c1",
+          "#e3e2dd"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Sheet",
+        "canonical": "#f7f6f3",
+        "dark": "#232321",
+        "note": "A panel standing on the page: a dropdown sheet, the phone's menu, a studio overlay. Lifted off the ground rather than equal to it, so a panel has an edge without needing a border to say so. Six stylesheets asked for this before anything defined it, and all six fell back to white."
+      },
+      "catalog-paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f7f6f3",
+        "dark": "#151513",
+        "note": "The opposite of the ink: what reads on top of a block of ink, and what a native <select>'s option list is painted with so it is not black on white inside a dark room."
+      },
+      "catalog-accent": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#c0241c",
+        "dark": "#e8695c",
+        "note": "The focus ring, the caret, and a link drawn as a button. Lifts in the dark room because #c0241c on near-black is too dark to read as a colour at the size of a dot.",
+        "tonalRamp": [
+          "#2d0705",
+          "#4d0d09",
+          "#751610",
+          "#a01e17",
+          "#c0241c",
+          "#e8695c",
+          "#f0a097",
+          "#f9d7d2"
+        ]
+      },
+      "catalog-sold": {
+        "role": "secondary",
+        "displayName": "Sold Red",
+        "canonical": "#c0241c",
+        "dark": "#e8695c",
+        "note": "The dot on a sold work and its legend — the one piece of colour on the site that is not a painting. The same value as Signal Red in both rooms, kept as a separate name because it means a fact about a painting rather than a state of a control.",
+        "tonalRamp": [
+          "#2d0705",
+          "#4d0d09",
+          "#751610",
+          "#a01e17",
+          "#c0241c",
+          "#e8695c",
+          "#f0a097",
+          "#f9d7d2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "wall-name": {
+        "displayName": "Wall Name",
+        "purpose": "The artist's name as signage, never a banner — the width axis opened to 118%, which is what a museum does to a name across a lintel. 0.875rem on the landing page, 0.8125rem in the bar."
+      },
+      "cartela-title": {
+        "displayName": "Cartela Title",
+        "purpose": "The work's own name, at width 110%. Also the h1 of a painting's page, set no larger there than on a tile: the painting is the headline and this is its label."
+      },
+      "cartela": {
+        "displayName": "Cartela",
+        "purpose": "The label's facts, in soft ink with tabular lining figures. Never revealed on hover."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "The whole interface voice: every bar word, the sort control, the trail, the filters, the way-in link, an empty state. One size for everything that is not reading and not a title."
+      },
+      "sheet-item": {
+        "displayName": "Sheet Item",
+        "purpose": "A line inside a dropdown sheet — sentence case, barely larger and much less tracked than a bar word, because it is a list to read rather than signage to scan."
+      },
+      "subheading": {
+        "displayName": "Subheading",
+        "purpose": "The sections of a long page, in ink rather than soft grey: a heading fainter than the paragraph under it inverts the hierarchy. Carries hyphens:auto for Spanish compounds, which at 0.14em tracking are wider than a 320px phone."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text at 1.8, held to --measure (55ch ≈ 70 characters in Archivo, counted in a browser)."
+      }
+    },
+    "fonts": [
+      {
+        "family": "Archivo",
+        "source": "self-hosted variable woff2 in src/assets/fonts, declared in src/styles.scss",
+        "weight": "100 900",
+        "stretch": "62% 125%",
+        "display": "swap",
+        "note": "Two @font-face declarations split by unicode-range so archivo-latin-ext.woff2 stays off the wire for a page that sets no character outside the first; Spanish lives entirely in the first. Not a package and not a Google link: a hosted stylesheet sends every visitor's address to a third party to render a letter."
+      }
+    ],
+    "shadows": [],
+    "elevation": {
+      "strategy": "none",
+      "note": "There are no shadows on a public page; a wall has none. Depth is a 1px hairline (--catalog-rule or --catalog-faint) or a tonal shift (--surface, --catalog-frame-bg). Stacking is declared: bar 60, its sheets 70, sold dot 2, studio overlay scrim 40.",
+      "rule": "The No-Lift Rule"
+    },
+    "motion": [
+      {
+        "name": "clock",
+        "value": "520ms",
+        "purpose": "Everything that arrives: the painting, the route crossing, a tile's entrance."
+      },
+      {
+        "name": "clock-quick",
+        "value": "180ms",
+        "purpose": "Anything the pointer caused, where anything slower reads as lag rather than as grace."
+      },
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing. A hard exponential settle: fast away, long arrival."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration / transition-duration: 0.01ms !important",
+        "purpose": "prefers-reduced-motion collapses everything and cancels view transitions. Near-zero rather than none so transitionend/animationend listeners still fire and nothing waits forever on a callback that never comes."
+      }
+    ],
+    "layout": [
+      {
+        "name": "bar-height",
+        "value": "4rem",
+        "purpose": "The bar's own height, which three pages subtract from the window to fill it."
+      },
+      {
+        "name": "gutter",
+        "value": "max(1rem, 5vw)",
+        "purpose": "The page's own left edge: the bar's first word, the landing page's name, the trail and the hang all begin here."
+      },
+      {
+        "name": "measure",
+        "value": "55ch",
+        "purpose": "How long a line of reading text may get. In ch, not rem: a measure set against the root font is not a measure of the text it holds."
+      },
+      {
+        "name": "container",
+        "value": "60.625rem (970px) above 62em, 2vw margins below",
+        "purpose": "The reading column. The catalogue overrides it to 100rem with gutter padding, because 970px is right for a paragraph and wrong for a hang."
+      },
+      {
+        "name": "plate-height",
+        "value": "min(72vh, calc(100dvh - 21rem), calc(86vw / var(--aspect)))",
+        "purpose": "The landing page's painting: the height it wants, the room actually left, and the cap that stops a landscape work running off a narrow screen. Smallest wins."
+      }
+    ],
+    "spacingMeta": {
+      "steps": 11,
+      "note": "Every step a multiple of 4px, defined in src/styles/_tokens.scss and reached as tokens.$spacing-lg rather than typed as a number. It had five steps while the stylesheets had fourteen values, so no interval on the page read as deliberate. When no step fits, the answer is the nearest one."
+    },
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "36em",
+        "purpose": "tokens.$breakpoint-sm — the breadcrumb's filters take a row of their own below it."
+      },
+      { "name": "md", "value": "48em", "purpose": "tokens.$breakpoint-md." },
+      {
+        "name": "lg",
+        "value": "62em",
+        "purpose": "tokens.$breakpoint-lg — .container becomes the fixed 970px column."
+      },
+      { "name": "xl", "value": "75em", "purpose": "tokens.$breakpoint-xl." },
+      {
+        "name": "menu-and-hang",
+        "value": "600px",
+        "purpose": "Raw px, not a token: the bar swaps hamburger for link row and the hang goes from two columns to three. 600px is Material's XSmall boundary, which is the breakpoint the removed BreakpointObserver asked about — so no reader sees a different menu than before, they just see it in the prerendered html instead of 140ms later."
+      },
+      {
+        "name": "hang-wide",
+        "value": "1100px",
+        "purpose": "Raw px, not a token: the hang goes to four columns."
+      }
+    ],
+    "icons": {
+      "strategy": "authored inline SVG",
+      "set": [
+        "menu",
+        "sun",
+        "moon",
+        "globe",
+        "studio",
+        "person",
+        "chevron (disclosure)",
+        "sort arrow",
+        "select mark",
+        "dismiss cross",
+        "home crumb"
+      ],
+      "stroke": "fill: none; stroke: currentcolor; stroke-width 1.5 at 20px and 14px, 1.4 at 10px; round caps and joins",
+      "note": "The whole icon vocabulary of the public site, and the reason Material's icon font no longer loads on a public page."
+    },
+    "accessibility": {
+      "standard": "WCAG 2.2 AA",
+      "contrast": "--catalog-soft is 5.1:1 on the light ground and 5.3:1 on the dark; --catalog-faint is a hairline colour (2.5:1 light, 3.4:1 dark) and is never used for text. ::placeholder is set to soft ink because the browser's own is about 3.8:1.",
+      "focus": "One ring for the whole site: 2px solid var(--catalog-accent) at 2px offset, :focus-visible only. The catalogue tile takes 4px offset so the ring clears the picture.",
+      "nonColour": "The sold dot is aria-hidden and always accompanied by the word, in the text and in the accessibility tree: a coloured circle is a border radius and survives neither a screen reader nor a page read as text.",
+      "motion": "Offered, never required."
+    }
+  },
+  "components": [
+    {
+      "name": "Bar Item",
+      "kind": "nav",
+      "refersTo": "bar-item",
+      "description": "Every word in the top bar, at label size. The only thing that happens under a pointer is the hairline beneath it arriving.",
+      "html": "<nav class=\"ds-bar\"><a class=\"ds-bar-item\" href=\"#\">Paintings</a><a class=\"ds-bar-item\" href=\"#\">About</a><a class=\"ds-bar-item\" href=\"#\">CV</a></nav>",
+      "css": ".ds-bar { display: flex; align-items: center; gap: 1.5rem; min-height: var(--bar-height, 4rem); padding: 0.5rem var(--gutter, max(1rem, 5vw)); background: var(--catalog-bg, #edece8); border-bottom: 1px solid var(--catalog-rule, rgb(26 26 24 / 14%)); } .ds-bar-item { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0; border: 0; border-bottom: 1px solid transparent; background: none; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--catalog-ink, #1a1a18); text-decoration: none; cursor: pointer; transition: border-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-bar-item:hover { border-bottom-color: var(--catalog-ink, #1a1a18); } .ds-bar-item:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Disclosure Sheet",
+      "kind": "nav",
+      "refersTo": "sheet",
+      "description": "A sheet of paper held against the wall, opened by a native <details> so it works with JavaScript off. No radius and no shadow; the lift is --surface, a shade off the ground in both rooms.",
+      "html": "<details class=\"ds-drop\" open><summary class=\"ds-bar-item\"><span>Paintings</span><svg class=\"ds-drop-mark\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2 4l3 3 3-3\"/></svg></summary><div class=\"ds-sheet\"><a class=\"ds-sheet-item\" href=\"#\">All paintings</a><a class=\"ds-sheet-item\" href=\"#\">By year</a><button class=\"ds-sheet-item\" type=\"button\" disabled>English</button></div></details>",
+      "css": ".ds-drop { position: relative; } .ds-drop > summary { list-style: none; } .ds-drop > summary::-webkit-details-marker { display: none; } .ds-bar-item { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0; border-bottom: 1px solid transparent; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--catalog-ink, #1a1a18); cursor: pointer; } .ds-drop-mark { width: 10px; height: 10px; fill: none; stroke: currentcolor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-drop[open] > summary .ds-drop-mark { transform: rotate(180deg); } .ds-sheet { position: absolute; top: calc(100% + 0.5rem); left: 0; z-index: 70; display: flex; flex-direction: column; min-width: 11rem; padding: 0.5rem 0; background: var(--surface, #f7f6f3); border: 1px solid var(--catalog-faint, #b4b3ae); } .ds-sheet-item { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; box-sizing: border-box; padding: 0.5rem 1rem; border: 0; background: none; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; color: var(--catalog-ink, #1a1a18); text-decoration: none; text-align: left; cursor: pointer; transition: background-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-sheet-item:hover { background: var(--catalog-frame-bg, #e3e2dd); } .ds-sheet-item:disabled { color: var(--catalog-soft, #63635e); background: none; cursor: default; } .ds-sheet-item:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Cartela",
+      "kind": "custom",
+      "refersTo": "tile-cartela",
+      "description": "The signature component: the card on the wall beside the work. Title, then medium and year, then the size with a multiplication sign — one shape in the same order across 192 paintings, never revealed on hover.",
+      "html": "<p class=\"ds-cartela\"><span class=\"ds-cartela-title\">Tarde en el olivar</span><span>Oil on canvas, 2019</span><span>130 × 97 cm</span></p>",
+      "css": ".ds-cartela { display: grid; gap: 0.2rem; margin: 0; justify-items: start; text-align: left; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; line-height: 1.45; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums lining-nums; color: var(--catalog-soft, #63635e); } .ds-cartela-title { font-size: 0.875rem; font-weight: 600; font-stretch: 110%; letter-spacing: 0.01em; line-height: 1.3; text-transform: none; color: var(--catalog-ink, #1a1a18); }"
+    },
+    {
+      "name": "Catalogue Tile",
+      "kind": "card",
+      "refersTo": "tile-cartela",
+      "description": "A cell of one size with the painting whole and centred inside it, and the label hanging under the cell rather than under the picture. No card is drawn around either. The pointer darkens the rule above the label; the painting does not move.",
+      "html": "<div class=\"ds-tile\"><a class=\"ds-tile-link\" href=\"#\" draggable=\"false\"><span class=\"ds-tile-frame\"><img class=\"ds-tile-image\" alt=\"\" draggable=\"false\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='160'%3E%3Crect width='120' height='160' fill='%238a8f7a'/%3E%3C/svg%3E\"/></span><p class=\"ds-cartela ds-tile-cartela\"><span class=\"ds-cartela-title\">Tarde en el olivar</span><span>Oil on canvas, 2019</span><span>130 × 97 cm</span></p></a><span class=\"ds-sold-dot\" aria-hidden=\"true\"></span></div>",
+      "css": ".ds-tile { position: relative; max-width: 16rem; } .ds-tile-link { display: grid; gap: 0.75rem; color: inherit; text-decoration: none; -webkit-user-drag: none; } .ds-tile-link:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 4px; } .ds-tile-frame { position: relative; display: block; aspect-ratio: 1; } .ds-tile-image { position: absolute; inset: 0; margin: auto; display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; } .ds-tile-cartela { padding-top: 0.25rem; border-top: 1px solid var(--catalog-rule, rgb(26 26 24 / 14%)); transition: border-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-tile-link:hover .ds-tile-cartela, .ds-tile-link:focus-visible .ds-tile-cartela { border-top-color: var(--catalog-ink, #1a1a18); } .ds-cartela { display: grid; gap: 0.2rem; margin: 0; justify-items: start; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; line-height: 1.45; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums lining-nums; color: var(--catalog-soft, #63635e); } .ds-cartela-title { font-size: 0.875rem; font-weight: 600; font-stretch: 110%; letter-spacing: 0.01em; line-height: 1.3; text-transform: none; color: var(--catalog-ink, #1a1a18); } .ds-sold-dot { position: absolute; right: 0; bottom: 0; height: 0.4rem; width: 0.4rem; border-radius: 50%; background-color: var(--catalog-sold, #c0241c); pointer-events: none; }"
+    },
+    {
+      "name": "Filter Select",
+      "kind": "input",
+      "refersTo": "filter-select",
+      "description": "The browser's own select, which is why the filters work with JavaScript off. Stripped to the words, underlined by a hairline that goes to ink on hover, with the house mark at the right and the option list painted in the page's own ground.",
+      "html": "<div class=\"ds-filter\"><span class=\"ds-filter-name\">Year</span><span class=\"ds-filter-control\"><select class=\"ds-filter-select\" aria-label=\"Year\"><option>All years</option><option>2019</option><option>2018</option></select><svg class=\"ds-filter-mark\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2 4l3 3 3-3\"/></svg></span></div>",
+      "css": ".ds-filter { display: grid; gap: 0.15rem; min-width: 0; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; } .ds-filter-name { color: var(--catalog-soft, #63635e); } .ds-filter-control { position: relative; display: inline-flex; align-items: center; } .ds-filter-select { appearance: none; width: 100%; min-width: 0; padding: 0 1.1rem 0.15rem 0; border: 0; border-bottom: 1px solid var(--catalog-rule, rgb(26 26 24 / 14%)); border-radius: 0; background: none; font: inherit; color: var(--catalog-ink, #1a1a18); cursor: pointer; transition: border-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-filter-select:hover { border-bottom-color: var(--catalog-ink, #1a1a18); } .ds-filter-select:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; } .ds-filter-select option { background: var(--catalog-paper, #f7f6f3); color: var(--catalog-ink, #1a1a18); text-transform: none; letter-spacing: normal; } .ds-filter-mark { position: absolute; right: 0; width: 10px; height: 10px; fill: none; stroke: var(--catalog-soft, #63635e); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }"
+    },
+    {
+      "name": "Sort Choice",
+      "kind": "chip",
+      "refersTo": "sort-choice",
+      "description": "How the wall is ordered, in words rather than glyphs. A word with a hairline under it: soft ink at rest, ink with an ink underline when it is the one in force.",
+      "html": "<div class=\"ds-sort-group\"><span class=\"ds-sort-label\">Order</span><button class=\"ds-sort-choice is-on\" type=\"button\">Year<svg class=\"ds-sort-arrow\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2 4l3 3 3-3\"/></svg></button><button class=\"ds-sort-choice\" type=\"button\">Title</button><button class=\"ds-sort-choice\" type=\"button\">Size</button></div>",
+      "css": ".ds-sort-group { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; } .ds-sort-label { color: var(--catalog-soft, #63635e); } .ds-sort-choice { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0 0 0.25rem; border: 0; border-bottom: 1px solid transparent; background: none; font: inherit; color: var(--catalog-soft, #63635e); cursor: pointer; transition: color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)), border-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-sort-choice:hover { color: var(--catalog-ink, #1a1a18); } .ds-sort-choice.is-on { color: var(--catalog-ink, #1a1a18); border-bottom-color: var(--catalog-ink, #1a1a18); } .ds-sort-choice:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; } .ds-sort-arrow { width: 10px; height: 10px; fill: none; stroke: currentcolor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Applied Filter",
+      "kind": "chip",
+      "refersTo": "applied-one",
+      "description": "What is narrowing the wall at the moment. No pill and no fill — a word on an ink hairline, each one carrying the way to stop it, which is the only reason it is a control and not a word.",
+      "html": "<ul class=\"ds-applied\"><li class=\"ds-applied-one\"><a href=\"#\">2019</a><button class=\"ds-applied-off\" type=\"button\" aria-label=\"Remove 2019\"><svg class=\"ds-applied-mark\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2.5 2.5l5 5M7.5 2.5l-5 5\"/></svg></button></li></ul>",
+      "css": ".ds-applied { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 0; padding: 0; list-style: none; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; } .ds-applied-one { display: inline-flex; align-items: center; gap: 0.25rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--catalog-ink, #1a1a18); color: var(--catalog-ink, #1a1a18); } .ds-applied-one a { color: inherit; text-decoration: none; } .ds-applied-off { display: inline-flex; padding: 0; border: 0; background: none; color: var(--catalog-soft, #63635e); cursor: pointer; transition: color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-applied-off:hover { color: var(--catalog-ink, #1a1a18); } .ds-applied-off:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; } .ds-applied-mark { width: 10px; height: 10px; fill: none; stroke: currentcolor; stroke-width: 1.5; stroke-linecap: round; }"
+    },
+    {
+      "name": "Trail",
+      "kind": "nav",
+      "refersTo": "bar-item",
+      "description": "The breadcrumb: a slash drawn by the list rather than typed into it, crumbs in soft ink that take an ink hairline under the pointer, beginning at the page's own left edge rather than the reading column's.",
+      "html": "<ol class=\"ds-trail\"><li><a class=\"ds-crumb\" href=\"#\"><svg class=\"ds-crumb-icon\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M3 9.5 10 3.5l7 6M5 8.8V16h10V8.8\"/></svg></a></li><li><a class=\"ds-crumb\" href=\"#\">Paintings</a></li><li><a class=\"ds-crumb\" href=\"#\">2019</a></li></ol>",
+      "css": ".ds-trail { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0; padding: 0; list-style: none; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums; } .ds-trail li + li::before { content: '/'; margin-right: 0.5rem; color: var(--catalog-faint, #b4b3ae); } .ds-crumb { display: inline-flex; align-items: center; color: var(--catalog-soft, #63635e); text-decoration: none; border-bottom: 1px solid transparent; transition: color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)), border-color var(--clock-quick, 180ms) var(--ease, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-crumb:hover { color: var(--catalog-ink, #1a1a18); border-bottom-color: var(--catalog-ink, #1a1a18); } .ds-crumb:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; } .ds-crumb-icon { width: 14px; height: 14px; fill: none; stroke: currentcolor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }"
+    },
+    {
+      "name": "Link Button",
+      "kind": "button",
+      "refersTo": "link-button",
+      "description": "A button drawn as a link, because what it does is go somewhere or undo something rather than submit anything. The nearest thing the public pages have to a filled button, and it is not filled.",
+      "html": "<button class=\"ds-link-button\" type=\"button\">Sign out</button>",
+      "css": ".ds-link-button { padding: 0; border: 0; background: none; font: inherit; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; color: var(--catalog-accent, #c0241c); cursor: pointer; text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: from-font; } .ds-link-button:hover { text-decoration-thickness: 2px; } .ds-link-button:focus-visible { outline: 2px solid var(--catalog-accent, #c0241c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Wall Name",
+      "kind": "custom",
+      "refersTo": "bar",
+      "description": "The artist's name on the wall: the width axis opened to 118%, uppercase, and never large. Signage, not a banner — the work is the headline.",
+      "html": "<h1 class=\"ds-wall-name\">Juanma Moreno Sánchez</h1><p class=\"ds-tagline\">Painter · Madrid</p>",
+      "css": ".ds-wall-name { margin: 0; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.875rem; font-stretch: 118%; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--catalog-ink, #1a1a18); } .ds-tagline { margin: 0.25rem 0 0; font-family: Archivo, Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--catalog-soft, #63635e); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La cartela — the museum wall and its label",
+    "overview": "The site is a wall and a label. A painting is hung whole on a plaster ground, and a small block of facts sits at a fixed offset below its left edge — what the work is called, what it is made of and when, how big it is — in the same order and the same shape across every one of the 192 paintings. The facts are never revealed on hover: a catalogue whose facts appear under a pointer has no facts at all on a phone, and none on paper.\n\nThe world is one ground, one ink and no second colour. Everything coloured on a page belongs to a painting, with a single exception: the red dot that means sold. There are no cards, no rounded corners, no shadows and no gradients, because a wall has none of them. Depth is a hairline and a shade, never a lift. Variation is read against sameness: the hang is cells of one identical size, so nineteen years of different shapes have something steady to be different from, and one work filling a screenful on the landing page breaks that scale deliberately.\n\nThis world governs the public pages. The studio half keeps Angular Material, and src/theme.scss still emits its theme for them — it is the artist's instrument, held to the same palette tokens but not to this form language.",
+    "keyCharacteristics": [
+      "One plaster ground, one ink, and the sold dot as the only non-painting colour.",
+      "One typeface, Archivo variable, used at two extremes of its width axis.",
+      "One clock: a single duration and easing for everything that moves.",
+      "One hard module: plate, label, rule and margin land on the same spacing scale.",
+      "No cards, no radius, no shadows, no gradients; hairlines and tonal shifts only.",
+      "The label is always legible — never on hover, never behind a script.",
+      "Every public page works with JavaScript off, which chooses the components."
+    ],
+    "rules": [
+      {
+        "name": "The One Colour Rule",
+        "body": "All colour on a public page belongs to the paintings. The only pigment the site itself is allowed is the sold dot. No second accent, no status palette, no coloured chip.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Levels Rule",
+        "body": "Text has exactly two levels: --catalog-ink and --catalog-soft. --catalog-faint is a hairline colour and is never used for text — nine places had taken it for a third, fainter level of writing, and all nine were under the contrast floor.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bare Root Rule",
+        "body": "Every colour is defined on bare :root first and only redefined inside the dark blocks. A token whose only definition lives inside a @media block has no value at all in the other case.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measure Rule",
+        "body": "Reading text is held to --measure (55ch) through .prose, and a page that is nothing but reading begins at --gutter rather than inside the centred 970px column. Never set a measure in rem: 44rem of 0.8rem prose is still 110 characters.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Label Size Rule",
+        "body": "Interface text is 0.6875rem uppercase at 0.08em tracking, everywhere. A new control does not get a size of its own.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Any figure a reader compares down a column — a year, a measurement, a version pair — is set tabular-nums. A column of digits of different widths is a column that wobbles.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Lift Rule",
+        "body": "Nothing on a public page casts a shadow or raises on hover. A hung work is still. What answers a pointer is a hairline arriving or darkening, or a shade appearing behind a list item — never movement of the subject.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put anything that must be correct at first paint in a component stylesheet. Angular serves the global sheet through a <noscript><link> and loads it from script otherwise, so with JavaScript on src/styles.scss arrives after the first paint; a component's styles are inlined into every prerendered page. This is why the bar's phone/desktop menu choice lives in the bar's own stylesheet, and why putting it in the global sheet measured as an 80px jump.",
+      "Do build every public control out of elements that work with no JavaScript: <details> for a disclosure, a real <select> for a filter, an <a href> for anything that goes somewhere. A <button mat-button [routerLink]> renders a <button> with no href — nothing to follow, middle-click, copy, or use without a script.",
+      "Do answer a question about the width of the window in a media query, not in script. The pages are prerendered; there is no window to observe at build time.",
+      "Do reach for a spacing step (tokens.$spacing-lg) and the clock (var(--clock-quick), var(--ease)) rather than typing a number.",
+      "Do keep text to the two levels, and measure a new colour against both grounds before using it for text (4.5:1 minimum; the light ground is #edece8, not white, so a value that passes on white may not pass here).",
+      "Do show a painting whole. object-fit: contain, at its own proportion, with the frame reserved at its own aspect ratio before the image lands.",
+      "Do give every control a name in label type. The actions on a painting's page need words, not unlabelled glyphs."
+    ],
+    "donts": [
+      "Don't add a radius, a shadow, a gradient, or a card to a public page. The only curve in the system is the sold dot's full circle.",
+      "Don't introduce a second colour. All colour belongs to the paintings; the sold dot is the single exception, and it is already named.",
+      "Don't use --catalog-faint for text, and don't invent a third level of writing.",
+      "Don't hide a fact behind a hover. A label that appears under a pointer does not exist on a phone or on paper.",
+      "Don't move, scale, lean or parallax a painting. A hung work is still, and every attempt at it so far has worked by cropping the picture to make slack.",
+      "Don't set a glyph from an icon font. Icons are authored SVG at stroke-width 1.4–1.5 with stroke: currentcolor. The Material icon font must not return to a public page.",
+      "Don't add a per-component duration or easing. There is one clock.",
+      "Don't extend Angular Material onto a public page. It belongs to the studio half, and the residue still on the public pages is debt, not precedent: the artwork page's walk control is still mat-icon-button with ligature glyphs (skip_previous, chevron_left) and a mat-divider, /cv is still a mat-grid-list, /contact still uses Material form fields, and several shared buttons still import it. Each of those is a surface still to be converted — not a pattern to copy."
+    ]
+  },
+  "gaps": [
+    {
+      "name": "No type size ramp above the label",
+      "detail": ".catalog-heading sets weight, case, tracking and colour but no font-size, so a section heading's size is whatever its element or its page gives it. There is no display or headline step in the system: the largest declared size on a public page is 1rem (.catalog-subheading). Recorded as a gap rather than filled with an invented ramp."
+    },
+    {
+      "name": "Two breakpoint systems",
+      "detail": "tokens.$breakpoint-sm/md/lg/xl (36/48/62/75em) coexist with raw 600px and 1100px media queries in the hang and the bar. The raw values are deliberate — 600px is the Material XSmall boundary the removed BreakpointObserver asked about, so no reader's menu changed — but they are not reconciled with the token scale."
+    },
+    {
+      "name": "--catalog-accent and --catalog-sold are one value under two names",
+      "detail": "Identical in both themes. The catalogue's dot uses --catalog-sold; the artwork page's .dot uses --catalog-accent for the same meaning. The names are worth keeping apart, but which one means 'sold' is not yet settled in the code."
+    },
+    {
+      "name": "The only radius in the repository is global",
+      "detail": ".overlay-panel in src/styles.scss carries border-radius: 5px for the studio's three overlays (brush, parallax preview, sketch frame). It is the only non-circular radius anywhere and it lives in the global sheet rather than behind the studio boundary."
+    },
+    {
+      "name": "Material residue in the global stylesheet",
+      "detail": "src/styles.scss still carries .material-icons, .mat-grid-tile, .mat-mdc-chip-action-label, .years-menu.mat-mdc-menu-panel and the snackbar rules. The years-menu cap is now dead for the bar (its sheet owns its own cap) though the class name is still on the markup. Reported, not repaired."
+    },
+    {
+      "name": "Unresolved in the direction contract",
+      "detail": "Whether the hang's identical-height alignment survives at 320px, where a portrait and a landscape at the same height leave very different widths, is still open; and the artwork page's action row still needs names in label type rather than unlabelled icons."
+    }
+  ]
+}

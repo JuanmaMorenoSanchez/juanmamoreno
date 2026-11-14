@@ -96,6 +96,35 @@ export class Artwork {
   }
 
   /**
+   * The card on the wall beside the work, as its separate facts.
+   *
+   * One order, written once: what it is called, what it is made of, when, and
+   * how big. The home page, the catalogue and the painting's own page each used
+   * to assemble this for themselves, which is how a site ends up telling a
+   * reader the same four things in three different orders.
+   *
+   * `medium` comes back as it is stored, untranslated, because this layer has
+   * no Angular in it and the word is a translation key ("Oil on canvas"). The
+   * caller translates it. The measurement is built here because its rule is not
+   * obvious: both sides are needed for it to say anything, and the unit is not —
+   * its absence beats a wrong guess at one.
+   */
+  cartela(nft: Nft | undefined): { medium: string; year: string; size: string } {
+    if (!nft) return { medium: '', year: '', size: '' };
+
+    const height = this.getTraitValue(nft, VALIDTRAITS.HEIGHT);
+    const width = this.getTraitValue(nft, VALIDTRAITS.WIDTH);
+    const unit = this.getTraitValue(nft, VALIDTRAITS.UNIT);
+
+    return {
+      medium: this.getTraitValue(nft, VALIDTRAITS.MEDIUM),
+      year: this.getTraitValue(nft, VALIDTRAITS.YEAR),
+      // The multiplication sign, not the letter x: this is a measurement.
+      size: height && width ? `${height} × ${width}${unit ? ` ${unit}` : ''}` : '',
+    };
+  }
+
+  /**
    * Width over height, to reserve a frame at before any image has loaded.
    *
    * **The photograph first, and the canvas only if there is no photograph.**

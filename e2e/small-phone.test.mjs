@@ -132,42 +132,49 @@ describe('an artwork page on a 393px phone', () => {
 });
 
 /**
- * The three settings at the foot of the drawer sit on the left edge of the
- * six words above them.
+ * The three settings at the foot of the phone's menu sit on the left edge of
+ * the words above them.
  *
  * The rule that indents them named the theme toggle, which was the only icon
  * there when it was written. Two more arrived and neither was indented, so
  * the column ended in one icon on the text's edge and two sixteen pixels to
- * its left.
+ * its left. The side drawer this measured is gone — the menu is a sheet under
+ * the bar now — and the column it makes has exactly the same way of going
+ * wrong.
  */
-describe('the menu drawer on a 320px phone', () => {
+describe('the phone menu on a 320px screen', () => {
   it('lines the settings up with the words above them', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/es', 'es-ES', SMALL_PHONE);
     await page.waitForSelector('[aria-label="Toggle menu"]', READY);
     await page.locator('[aria-label="Toggle menu"]').click();
-    await page.waitForSelector('.drawer-content .bar-setting', READY);
+    await page.waitForSelector('.menu-links.is-open .bar-setting', READY);
 
     const edges = await page.evaluate(() => {
       const left = (element) => Math.round(element.getBoundingClientRect().left);
-      const words = [...document.querySelectorAll('.drawer-content button[mat-button]')]
-        .filter((button) => !button.classList.contains('bar-setting'))
-        .map((button) => left(button) + parseFloat(getComputedStyle(button).paddingLeft));
-      const glyphs = [...document.querySelectorAll('.drawer-content .bar-setting mat-icon')].map(
-        left
-      );
-      return { words, glyphs };
+      const words = [...document.querySelectorAll('.menu-links.is-open > .bar-item')].map(left);
+      const settings = [...document.querySelectorAll('.menu-links.is-open .bar-setting svg')];
+      const glyphs = settings.map(left);
+      const tops = settings.map((element) => Math.round(element.getBoundingClientRect().top));
+      return { words, glyphs, tops };
     });
 
-    assert.ok(edges.glyphs.length >= 3, `only ${edges.glyphs.length} settings in the drawer`);
+    assert.ok(edges.glyphs.length >= 3, `only ${edges.glyphs.length} settings in the menu`);
+    assert.ok(edges.words.length > 0, 'no words in the menu to line the settings up with');
+
+    // The three sit in a row at the foot of the menu rather than stacked one
+    // per line as they were in the drawer, so what has to line up is where the
+    // row begins — and that is still exactly the thing that went wrong before,
+    // when an indent meant for one icon left the others sixteen pixels off the
+    // edge the words keep.
     const wanted = Math.round(edges.words[0]);
-    for (const glyph of edges.glyphs) {
-      assert.ok(
-        Math.abs(glyph - wanted) <= 2,
-        `a setting sits at ${glyph}px, the words at ${wanted}px`
-      );
-    }
+    assert.ok(
+      Math.abs(edges.glyphs[0] - wanted) <= 2,
+      `the settings begin at ${edges.glyphs[0]}px, the words at ${wanted}px`
+    );
+    const tops = [...new Set(edges.tops)];
+    assert.equal(tops.length, 1, `the settings are on ${tops.length} rows, not one`);
     await page.close();
   });
 });

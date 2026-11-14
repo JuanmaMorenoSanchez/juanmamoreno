@@ -5,29 +5,39 @@
          should have instead of borrowing the site's name. -->
     <h1 class="visually-hidden">{{ 'seo.paintings.title' | translate }}</h1>
 
-    <div class="sort-group">
-      <mat-chip-set>
-        @for (method of sortMethods; track methodTracking(method)) {
-          <mat-chip
-            color="primary"
-            role="button"
-            (click)="changeSortMethod(method)"
-            [matTooltip]="`${('sortBy' | translate)} ${method}`"
-          >
-            <span class="visually-hidden">{{ 'sortBy' | translate }} {{ method }}</span>
-            <mat-icon>
-              {{
-                method === 'year' ? 'calendar_today' : method === 'medium' ? 'palette' : 'crop_free'
-              }}
-            </mat-icon>
-            @if (activeSortMethod() === method) {
-              <mat-icon>
-                {{ sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
-              </mat-icon>
-            }
-          </mat-chip>
-        }
-      </mat-chip-set>
+    <!--
+      How the wall is ordered, in words.
+
+      It was three `mat-chip`s carrying a calendar, a palette and a crop-marks
+      glyph, with the chosen one growing a second arrow glyph — so the control
+      said "sort by" in symbols, and the only text was hidden from everyone but
+      a screen reader, which was read the untranslated word "year". The labels
+      were sitting in both dictionaries already under `sortMethod`, wired to
+      nothing.
+    -->
+    <div class="sort-group" role="group" [attr.aria-label]="'sortBy' | translate">
+      <span class="sort-label">{{ 'sortBy' | translate }}</span>
+      @for (method of sortMethods; track methodTracking(method)) {
+        <button
+          type="button"
+          class="sort-choice"
+          [class.is-on]="activeSortMethod() === method"
+          [attr.aria-pressed]="activeSortMethod() === method"
+          (click)="changeSortMethod(method)"
+        >
+          {{ 'sortMethod.' + method | translate }}
+          @if (activeSortMethod() === method) {
+            <svg
+              class="sort-arrow"
+              [class.is-descending]="sortOrder() !== 'asc'"
+              viewBox="0 0 10 10"
+              aria-hidden="true"
+            >
+              <path d="M5 8.5V1.5M2.2 4.3L5 1.5l2.8 2.8" />
+            </svg>
+          }
+        </button>
+      }
     </div>
 
     <!--
@@ -83,6 +93,7 @@
         aria-label="Art Pieces"
       >
         @for (artPiece of sortedArtPieces(); track artPiece.tokenId; let i = $index) {
+          @let label = labels().get(artPiece.tokenId);
           <div
             class="tile"
             role="listitem"
@@ -105,7 +116,15 @@
               "
               (click)="handleArtPieceClick(artPiece.tokenId)"
             >
-              <mat-card appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
+              <!--
+                The cell is square and the painting inside it is not: it is
+                shown whole, at its own proportions, centred on the line every
+                other work on the wall is centred on. It used to be
+                `object-fit: cover` over a square, scaled to 1.1 so it had room
+                to lean under the pointer — which is to say every one of the
+                hundred and ninety-two was cropped, twice, to fit a layout.
+              -->
+              <span class="tile-frame" appLazyLoad (visible)="onImageVisible(artPiece.tokenId)">
                 <!--
               The artwork's own thumbnail url is the starting point rather than
               nothing: it needs no race to work out, so the tile carries a
@@ -128,7 +147,6 @@
                 -->
                   <img
                     class="front-image"
-                    mat-card-image
                     decoding="async"
                     draggable="false"
                     [class.awaiting-sharper]="thumbUrl === artPiece.image.thumbnailUrl"
@@ -139,7 +157,25 @@
                 @if (isSold(artPiece)) {
                   <span class="sold-dot" aria-hidden="true"></span>
                 }
-              </mat-card>
+              </span>
+
+              <!--
+                The card on the wall beside the work, in the same shape and the
+                same order as the one on the painting's own page. Never on the
+                strip at the foot of an artwork page, which is a sequence to
+                walk rather than a catalogue to read.
+              -->
+              @if (!viewAsWidget() && label) {
+                <span class="cartela tile-cartela">
+                  <span class="cartela-title">{{ artPiece.name }}</span>
+                  @if (label.line) {
+                    <span>{{ label.line }}</span>
+                  }
+                  @if (label.size) {
+                    <span>{{ label.size }}</span>
+                  }
+                </span>
+              }
             </a>
           </div>
         }
@@ -157,10 +193,11 @@
       </p>
     }
   } @else {
-    <mat-progress-spinner
-      diameter="48"
-      mode="indeterminate"
-      aria-label="Loading art pieces"
-    ></mat-progress-spinner>
+    <!--
+      A line rather than a spinning ring. The catalogue arrives in well under a
+      second from a prerendered page, and a spinner is a piece of Material
+      furniture announcing a wait that is mostly not happening.
+    -->
+    <p class="catalogue-waiting" role="status">{{ 'loading' | translate }}</p>
   }
 </div>

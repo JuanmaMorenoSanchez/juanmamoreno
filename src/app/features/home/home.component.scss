@@ -1,162 +1,187 @@
 @use '../../../styles/tokens';
 
+// The room. A wall, a work hung on it, and the card beside the work.
+//
+// `space-between` rather than `center`: the signage belongs at the top of the
+// wall and the painting in the middle of what is left, which is not the same
+// as three things stacked down the centre of the screen. The bottom padding is
+// deeper than the top, which is what puts the work slightly above the middle —
+// where a gallery hangs it, and where the eye expects it.
 .home {
-  min-height: calc(100dvh - var(--mat-toolbar-standard-height, 4rem));
+  min-height: calc(100dvh - var(--bar-height, 4rem));
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: tokens.$spacing-2xl;
-  padding: 8vh 5vw;
   box-sizing: border-box;
-  text-align: center;
+  padding: tokens.$spacing-xl var(--gutter) tokens.$spacing-4xl;
+  gap: tokens.$spacing-xl;
 }
 
-.home-intro {
+.home-signage {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-sm;
+  gap: tokens.$spacing-xs;
 }
 
+// Small. The painting is the headline and this is the plaque by the door: the
+// name was set at up to 36px across the middle of the page, which made the
+// website the subject.
 .home-name {
   margin: 0;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: clamp(1.25rem, 4vw, 2.25rem);
+  font-size: 0.875rem;
   color: var(--catalog-ink);
 }
 
 .home-tagline {
   margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--catalog-soft);
-  letter-spacing: 0.04em;
 }
 
-.home-featured {
+// The hang: the plate and its card share one column, sized to the plate, so
+// the card's left edge is the painting's left edge whatever shape the painting
+// is. `max-content` on the column and `start` on the items is what holds that
+// at every aspect ratio without measuring anything in script.
+.home-hang {
+  flex: 1;
+  display: grid;
+  grid-template-columns: max-content;
+  align-content: center;
+  justify-content: center;
+  gap: tokens.$spacing-md-lg;
+}
+
+.home-plate {
   display: block;
   text-decoration: none;
   color: inherit;
-  // Paired with draggable="false" in the template, for the same reason the
-  // catalogue tiles carry it: a dragged link fires no click. See styles.scss.
+  // Paired with draggable="false" in the template: a dragged link fires no
+  // click, which left the one link on this page failing on a mouse that
+  // drifted four pixels. See the note on `a img` in styles.scss.
   -webkit-user-drag: none;
   user-drag: none;
 }
 
-// Hero box, sized to the artwork's aspect ratio at full size (inline width +
-// aspect-ratio from the component) so it never shrinks to the thumbnail's tiny
-// natural size. Both image layers fill it.
-.home-featured-frame {
+// Reserved at the painting's own proportions before any image arrives, so
+// nothing moves when one does. `--aspect` is width over height, written into
+// the prerendered html by the component, so the frame is the right shape on
+// the first frame rather than after an image has loaded.
+//
+// Three terms, and the smallest wins.
+//
+// `72vh` is the height the work wants, and gets on any window tall enough.
+// `100dvh - 21rem` is the room actually left once the bar, this page's own
+// padding, the signage above and the card below have taken theirs — without
+// it, 72vh of a 900px laptop overflows the window and pushes the card off the
+// bottom. `86vw / aspect` is the cap for a landscape work on a narrow screen,
+// so nothing ever runs off the side.
+//
+// A definite height on purpose: the column is `max-content`, which is what
+// keeps the card's left edge on the painting's left edge at every aspect
+// ratio, and a width derived from a percentage height cannot be measured that
+// way — the frame collapses to a sliver.
+.home-plate-frame {
   position: relative;
-  display: block; // a span is inline by default — which ignores width/aspect-ratio
-  margin: 0 auto tokens.$spacing-sm-md;
+  display: block; // a span is inline by default, and ignores height and aspect-ratio
+  aspect-ratio: var(--aspect, 0.8);
+  height: min(72vh, calc(100dvh - 21rem), calc(86vw / var(--aspect, 0.8)));
   max-width: 100%;
-  overflow: hidden; // clips the slightly-scaled blurred preview
+  // The blurred placeholder underneath is blurred by fourteen pixels, which
+  // spreads that far past the edge of the frame — a coloured halo around every
+  // painting, which is the one thing a wall must not do.
+  overflow: hidden;
 }
 
-.home-featured-image {
+.home-plate-image {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-}
-
-// Low-res thumbnail shown blurred at full hero size until the sharp image
-// loads — the blur hides its pixelation. Same blur-up idea as the artwork
-// viewer's preview layer.
-.home-featured-image--preview {
-  object-fit: cover;
-  filter: blur(12px);
-  transform: scale(1.04);
-}
-
-// Full-resolution image, stacked over the preview and faded in once decoded.
-//
-// It moves, and how depends on what is pointing at it. Where there is a
-// pointer the painting answers it; where there is not, it drifts on its own.
-// Never both: a picture that is already wandering cannot also be seen to lean
-// towards anything.
-//
-// Either way the movement is a transform on the image the page was already
-// loading — no video, no second request, nothing beyond the painting itself,
-// on the one page every visitor sees first. A canvas would have cost the
-// prerendered <img>, which is what makes this page readable with javascript
-// off and what a link preview shows.
-.home-featured-image--full {
+  // `contain`, and the frame is the painting's own shape, so the work is whole:
+  // nothing on this page crops a painting to fit a layout.
   object-fit: contain;
+}
+
+// The low-resolution thumbnail, blurred, holding the place until the full file
+// lands. `cover` rather than `contain`, and scaled very slightly, so it fills
+// the frame while it is the only thing in it and the blur has no soft edge to
+// show.
+.home-plate-image--preview {
+  object-fit: cover;
+  filter: blur(14px);
+  transform: scale(1.02);
+  // And gone once the painting is really there.
+  //
+  // It used to be left underneath for ever, on the reasoning that two
+  // opacities crossing read as the picture washing out rather than coming
+  // into focus. That holds only while the two images are the same shape. The
+  // thumbnail and the full file are not always — a different crop, a
+  // different source — and a `contain`ed painting inside a frame shaped for
+  // the other one leaves bands down two of its sides with a blurred,
+  // enlarged copy of itself showing in them. A coloured halo around a
+  // painting is the one thing this wall must not do, and the artist ruled out
+  // anything filtered over a painting before any of this was built.
+  //
+  // The delay is the whole of the clock, so the painting has finished
+  // arriving before this starts to go: a fade out underneath a fade in is the
+  // crossing the old comment was right about.
+  transition: opacity var(--clock) var(--ease) var(--clock);
+}
+
+.home-plate-frame:has(.home-plate-image--full.loaded) .home-plate-image--preview {
   opacity: 0;
-  transform: translate(var(--parallax-x, 0%), var(--parallax-y, 0%)) scale(var(--hero-scale, 1));
-  transition:
-    opacity 0.5s ease-in,
-    transform 0.35s ease-out;
-  // The drift is the default, so a phone gets it without asking. A pointer
-  // turns it off below.
-  animation: home-featured-drift 22s ease-in-out infinite;
+}
+
+// The one thing that moves on this page: the painting arriving, once, on the
+// site's clock. Not a drift and not a lean — a hung work is still, and both of
+// those began by scaling the picture past its own edges.
+.home-plate-image--full {
+  opacity: 0;
+  transition: opacity var(--clock) var(--ease);
 
   &.loaded {
     opacity: 1;
   }
 
-  // And shown outright where there is nothing to raise it. The class above
-  // arrives when the image reports that it has decoded, and with javascript
-  // off nothing is listening — so the painting stayed at nothing while the
-  // full file sat in the same html, already downloaded, behind the blur of
-  // the placeholder it was there to replace.
+  // Nothing is listening with javascript off, so the class never arrives and
+  // the painting stayed invisible behind the blur of the thing it was there to
+  // replace — with the full file already downloaded in the same html.
   @media (scripting: none) {
     opacity: 1;
   }
 }
 
-// Nothing to point with: the painting wanders by itself. Bounded by its own
-// scale, so the frame stays full, and it returns exactly where it began so the
-// loop has no seam. The smallest scale here is 1.05, which is 2.5% of overhang
-// on each side against a 2.2% wander.
-@keyframes home-featured-drift {
-  0% {
-    transform: translate(0%, 0%) scale(1.05);
-  }
-  25% {
-    transform: translate(2.2%, -1.6%) scale(1.09);
-  }
-  50% {
-    transform: translate(0.6%, 2.1%) scale(1.06);
-  }
-  75% {
-    transform: translate(-2.1%, -0.7%) scale(1.09);
-  }
-  100% {
-    transform: translate(0%, 0%) scale(1.05);
-  }
+.home-label {
+  display: grid;
+  gap: tokens.$spacing-md;
+  justify-items: start;
+  // The card never grows past the plate it belongs to; a long title wraps
+  // inside the painting's width rather than widening the column under it.
+  max-width: 100%;
 }
 
-// A pointer, so the painting can answer it instead — which reads far more
-// strongly than any drift, because the reader caused it.
-//
-// At rest it is drawn at its own size: the landing page shows the whole work,
-// uncropped, until somebody approaches it. Only then does it grow enough to
-// have somewhere to lean — 1.09 is 4.5% of overhang on each side against the
-// 4% the directive is allowed.
-@media (hover: hover) and (pointer: fine) {
-  .home-featured-image--full {
-    animation: none;
-  }
+// Out of the room. Quiet, because it is the only thing on the page competing
+// with a painting, and underlined because it is a link and a link says so.
+.home-way-in {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--catalog-ink);
+  text-decoration-color: var(--catalog-faint);
+  transition: text-decoration-color var(--clock-quick) var(--ease);
 
-  .home-featured-frame:hover {
-    --hero-scale: 1.09;
+  &:hover {
+    text-decoration-color: currentcolor;
   }
-}
-
-.home-featured-caption {
-  display: block;
-  font-style: italic;
 }
 
 .build-versions {
-  margin: tokens.$spacing-3xl 0 tokens.$spacing-md-lg;
-  text-align: center;
-  font-size: 0.8rem;
+  margin: tokens.$spacing-xl 0 0;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   color: var(--catalog-soft);
   font-variant-numeric: tabular-nums;
+  text-align: center;
 }
