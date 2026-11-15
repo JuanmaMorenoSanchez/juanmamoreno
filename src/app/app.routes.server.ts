@@ -39,6 +39,9 @@ export const serverRoutes: ServerRoute[] = [
   // directory and a static host resolves that first.
   { path: 'parts', renderMode: RenderMode.Client },
   { path: 'es/parts', renderMode: RenderMode.Client },
+  // The messages, for the same reason: the sign-in and a list from the api.
+  { path: 'enquiries', renderMode: RenderMode.Client },
+  { path: 'es/enquiries', renderMode: RenderMode.Client },
   { path: 'es/door', renderMode: RenderMode.Client },
   { path: 'es/mint', renderMode: RenderMode.Client },
   { path: 'es/publish', renderMode: RenderMode.Client },

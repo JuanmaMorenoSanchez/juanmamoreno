@@ -1,5 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import { disabled, email, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
+import {
+  disabled,
+  email,
+  form,
+  FormField,
+  FormRoot,
+  maxLength,
+  required,
+} from '@angular/forms/signals';
 import { MatButton } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -81,6 +89,16 @@ export class QuoteDialogComponent {
     disabled(path, { when: () => this.isLoading() });
   });
 
+  /**
+   * When this form appeared, so the api can be told how long it was open.
+   *
+   * The second trap beside the honeypot: nothing legitimate is written and
+   * sent in under three seconds, and a script that posts the moment the page
+   * parses takes under a tenth of one. Measured here rather than from two
+   * clocks, so a visitor whose own clock is wrong is not refused for it.
+   */
+  private readonly drawnAt = Date.now();
+
   onSubmit(): void {
     if (!this.checkFormValidity()) return;
     const { email, message, honeypot } = this.model();
@@ -93,6 +111,7 @@ export class QuoteDialogComponent {
         tokenId: this.data.tokenId,
         mode: this.data.mode,
         honeypot,
+        took: Date.now() - this.drawnAt,
       })
       .subscribe({
         next: (res) => this.handleResponse(res),
@@ -139,7 +158,12 @@ export class QuoteDialogComponent {
     this.snackBar.open(message, 'Ok!', snackBarConfig);
   }
 
-  private hasError(field: () => { errors: () => readonly { kind: string }[] }, kind: string): boolean {
-    return field().errors().some((error) => error.kind === kind);
+  private hasError(
+    field: () => { errors: () => readonly { kind: string }[] },
+    kind: string
+  ): boolean {
+    return field()
+      .errors()
+      .some((error) => error.kind === kind);
   }
 }

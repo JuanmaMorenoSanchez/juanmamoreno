@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.76.0
+
+- **feat** `/enquiries`: every message the form has taken, where they can be
+  read and thrown away. They were always stored — saved before either mail
+  goes out, so one the mailer dropped is there even though it never reached
+  the inbox — and the only copy anybody could read was the one in his inbox.
+  The delete asks first, because there is no undo and no bin. Guarded,
+  noindex and disallowed in robots like the rest of his pages.
+- **feat** Both forms now report how long they were open, so the api can drop
+  a message sent faster than anybody can write it. One field and one
+  subtraction here; the deciding is the api's.
+
 ## 2.75.0
 
 - **feat** The composer is a box in the atelier rather than a page of its own.

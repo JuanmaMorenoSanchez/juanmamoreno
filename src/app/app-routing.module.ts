@@ -222,6 +222,18 @@ export const routes: Routes = [
     data: { title: 'Assets', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/parts', redirectTo: '/parts' },
+  // Every message the form has taken. They were always stored — saved before
+  // either mail goes out — and until now the only way to read one was the
+  // inbox copy, which is where "did I ever answer the gallery in Bilbao" goes
+  // to die. Guarded like the rest: nobody else can read a stranger's message.
+  {
+    path: 'enquiries',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/enquiries/enquiries.component').then((m) => m.EnquiriesComponent),
+    data: { title: 'Enquiries', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/enquiries', redirectTo: '/enquiries' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

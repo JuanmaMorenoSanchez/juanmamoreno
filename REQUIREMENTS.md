@@ -6258,3 +6258,42 @@ machine to the runner's worker count, so which files share a jsdom is the same
 here as there.
 *Proven by:* `spec-hygiene.spec.ts` "leaves no global stubbed for the file that
 runs next" and "reaches for a prototype with vi.spyOn, which can be put back"
+
+### R242 — The messages the form has taken can be read and thrown away · met
+`/enquiries`, behind the same door as the rest of his pages: every message the
+form has taken, newest first, with the sender, the address, a way to answer
+and a delete. The delete asks first and there is no undo — Firestore deletes,
+and the copy in his inbox is the only other one there has ever been.
+
+**Nothing new is kept.** `saveContact` has written every message to Firestore
+since the form existed, before either mail goes out — so a message the mailer
+dropped is there even though it never reached an inbox. What was missing was
+any way to look, and any way to remove one: the inbox is not a record, and six
+months on "did I ever answer the gallery in Bilbao" is not a question
+scrolling can answer.
+
+**An empty list and a refused request are different answers.** A page whose
+job is to show what arrived must not show the second as the first.
+
+**Everything on it was typed by a stranger**, so all of it is text in a text
+node. Urls were already stripped on the way in by the redaction every write to
+Firestore goes through, which is why a link in a message is not there to
+click.
+*Proven by:* `enquiries.component.spec.ts` "tells an api that did not answer
+apart from an empty list", "asks before it goes, because there is no undo",
+"deletes it on the second press and takes it off the page" and "calls somebody
+by their name and not by their subject line"; the guard itself is the backend's
+B96
+
+### R243 — The form says how long it was open · met
+Both forms — the contact page and the quote dialog — record when they were
+drawn and send the elapsed milliseconds with the message, so the api can drop
+anything sent faster than a person can write. Measured in the browser rather
+than worked out from a client timestamp against a server clock: a visitor
+whose own clock is a day out would otherwise be refused for it.
+
+The deciding is the api's, in B94. This half is one field and one subtraction,
+and it is here rather than in the service because the service is a singleton
+and "when the form appeared" is a different moment for each of them.
+*Proven by:* the backend's B94, and `mail.service` carrying `took` through
+`sendQuoteRequest` to `sendContactMessage` with the honeypot

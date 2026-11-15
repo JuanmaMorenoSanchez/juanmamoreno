@@ -26,6 +26,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
+        }
       }
     ]
   },
@@ -49,6 +66,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
         }
       }
     ]
@@ -187,6 +221,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
+        }
       }
     ]
   },
@@ -211,6 +262,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
+        }
       }
     ]
   },
@@ -234,6 +302,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
         }
       }
     ]
@@ -355,6 +440,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
+        }
       }
     ]
   },
@@ -378,6 +480,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
         }
       }
     ]
@@ -448,6 +567,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
         }
       }
     ]
@@ -1666,6 +1802,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Sevilla",
           "country": "spain",
           "venueUrl": "https://galeriazunino.com/"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "569775435cb39ae2",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Anna Jonsson & Juanma Moreno"
+          },
+          "venue": {
+            "en": "El Estudio de Ignacio del Río"
+          },
+          "city": "Villanueva del Rosario",
+          "country": "spain"
         }
       }
     ]

@@ -11,6 +11,8 @@ export interface QuoteRequest {
   email: string;
   /** The field nobody can see, carried through to the api like the rest. */
   honeypot?: string;
+  /** How long the form was open, carried through for the same reason. */
+  took?: number;
   /** The visitor's optional free text. */
   message: string;
   artworkName: string;
@@ -41,6 +43,15 @@ export class MailService {
     email: string;
     message: string;
     honeypot?: string;
+    /**
+     * How long the form was open before it was sent, in milliseconds.
+     *
+     * The second trap beside the honeypot, and measured in the browser rather
+     * than worked out from two clocks on the api's side: a visitor whose own
+     * clock is a day out would otherwise be refused for it. Nothing legitimate
+     * is written and sent in under three seconds.
+     */
+    took?: number;
     /** Empty when the form asked for no name — see `sendQuoteRequest`. */
     greeting?: string;
   }): Observable<ApiResponse<string>> {
@@ -68,6 +79,7 @@ export class MailService {
     tokenId,
     mode,
     honeypot,
+    took,
   }: QuoteRequest): Observable<ApiResponse<string>> {
     const label = mode === 'info' ? 'Availability enquiry' : 'Price request';
     const name = `${label}: ${artworkName} (#${tokenId})`;
@@ -77,6 +89,13 @@ export class MailService {
     // line and is nobody's name — this form never asks for one. Sent empty on
     // purpose: without it the reply greeted people "Thank you Price request
     // Las", having taken the first three words of the subject for a name.
-    return this.sendContactMessage({ name, email, message: composed, honeypot, greeting: '' });
+    return this.sendContactMessage({
+      name,
+      email,
+      message: composed,
+      honeypot,
+      took,
+      greeting: '',
+    });
   }
 }

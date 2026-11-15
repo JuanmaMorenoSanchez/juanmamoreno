@@ -1,0 +1,122 @@
+@use '../../../styles/tokens';
+@use '../../../styles/controls';
+
+/*
+  A record to read, not a board to scan: one message to a block, in the order
+  they arrived, with the words given the measure the rest of the site gives
+  words.
+*/
+.enquiries {
+  max-width: 48rem;
+}
+
+.enquiries-lead {
+  margin: 0 0 tokens.$spacing-lg;
+  max-width: var(--measure);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.enquiries-note {
+  margin: tokens.$spacing-md 0;
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+}
+
+.enquiries-problem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
+  font-size: 0.8rem;
+}
+
+.enquiries-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.enquiries-one {
+  border-top: 1px solid var(--catalog-rule);
+  padding: tokens.$spacing-md 0;
+
+  &:last-child {
+    border-bottom: 1px solid var(--catalog-rule);
+  }
+}
+
+.enquiries-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.enquiries-spacer {
+  flex: 1 1 auto;
+}
+
+.enquiries-address,
+.enquiries-when,
+.enquiries-subject {
+  color: var(--catalog-soft);
+}
+
+/* Which half of the site it came from. A label, so it reads as one. */
+.enquiries-tag {
+  border: 1px solid var(--catalog-rule);
+  border-radius: 999px;
+  padding: 0 tokens.$spacing-xs;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.enquiries-subject {
+  margin: tokens.$spacing-xs 0 0;
+  font-size: 0.8rem;
+}
+
+/* What a stranger wrote, kept as they wrote it: their line breaks are part
+   of the message, and a paragraph that collapses them is a different one. */
+.enquiries-body {
+  margin: tokens.$spacing-sm 0 0;
+  max-width: var(--measure);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.enquiries-doing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  margin-top: tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.enquiries-sure {
+  color: var(--catalog-soft);
+}
+
+.enquiries-plain,
+.enquiries-danger {
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+  border-color: var(--catalog-rule);
+  text-decoration: none;
+}
+
+/* The one press that cannot be taken back, drawn as the one press that cannot
+   be taken back. */
+.enquiries-danger {
+  border-color: var(--jm-error);
+  color: var(--jm-error);
+}

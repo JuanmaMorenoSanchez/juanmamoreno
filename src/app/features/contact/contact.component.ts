@@ -1,6 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { disabled, email, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
+import {
+  disabled,
+  email,
+  form,
+  FormField,
+  FormRoot,
+  maxLength,
+  required,
+} from '@angular/forms/signals';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -39,7 +47,17 @@ const EMPTY_CONTACT_FORM: ContactFormModel = {
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
-  imports: [FormField, FormRoot, MatFormField, MatLabel, MatInput, MatError, MatHint, MatButton, TranslatePipe],
+  imports: [
+    FormField,
+    FormRoot,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    MatHint,
+    MatButton,
+    TranslatePipe,
+  ],
 })
 export class ContactComponent {
   private translateService = inject(TranslateService);
@@ -51,6 +69,16 @@ export class ContactComponent {
   public submitted = false;
   public isLoading = signal(false);
   public readonly messageMaxLength = MESSAGE_MAX_LENGTH;
+
+  /**
+   * When this form appeared, so the api can be told how long it was open.
+   *
+   * The second trap beside the honeypot: nothing legitimate is written and
+   * sent in under three seconds, and a script that posts the moment the page
+   * parses takes under a tenth of one. Measured here rather than from two
+   * clocks, so a visitor whose own clock is wrong is not refused for it.
+   */
+  private readonly drawnAt = Date.now();
 
   private readonly model = signal<ContactFormModel>({ ...EMPTY_CONTACT_FORM });
 
@@ -67,10 +95,18 @@ export class ContactComponent {
     if (this.checkFormValidity()) {
       const { name, email, message, honeypot } = this.model();
       this.prepareSubmission();
-      this.contactService.sendContactMessage({ name, email, message, honeypot }).subscribe({
-        next: (res) => this.handleResponse(res),
-        error: () => this.handleSubmissionError(),
-      });
+      this.contactService
+        .sendContactMessage({
+          name,
+          email,
+          message,
+          honeypot,
+          took: Date.now() - this.drawnAt,
+        })
+        .subscribe({
+          next: (res) => this.handleResponse(res),
+          error: () => this.handleSubmissionError(),
+        });
     }
   }
 
@@ -116,13 +152,17 @@ export class ContactComponent {
   }
 
   getNameError() {
-    return this.hasError(this.contactForm.name, 'required') && this.translateService.instant('error.noValue');
+    return (
+      this.hasError(this.contactForm.name, 'required') &&
+      this.translateService.instant('error.noValue')
+    );
   }
 
   getEmailError() {
     return this.hasError(this.contactForm.email, 'required')
       ? this.translateService.instant('error.noValue')
-      : this.hasError(this.contactForm.email, 'email') && this.translateService.instant('error.invalidEmail');
+      : this.hasError(this.contactForm.email, 'email') &&
+          this.translateService.instant('error.invalidEmail');
   }
 
   // Both of the message's rules, not just the first. With only 'required'
@@ -141,7 +181,12 @@ export class ContactComponent {
     return this.contactForm.message().value().length;
   }
 
-  private hasError(field: () => { errors: () => readonly { kind: string }[] }, kind: string): boolean {
-    return field().errors().some((error) => error.kind === kind);
+  private hasError(
+    field: () => { errors: () => readonly { kind: string }[] },
+    kind: string
+  ): boolean {
+    return field()
+      .errors()
+      .some((error) => error.kind === kind);
   }
 }

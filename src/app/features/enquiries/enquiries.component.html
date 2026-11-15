@@ -1,0 +1,94 @@
+<div class="container margin-top enquiries">
+  <h1 class="catalog-heading">Enquiries</h1>
+  <p class="enquiries-lead">
+    Every message the form has taken. They have been stored since the form existed — saved before
+    either mail goes out, so one the mailer dropped is here even though it never reached the inbox.
+    Nobody else can read this page.
+  </p>
+
+  @if (asking()) {
+    <p class="enquiries-note" role="status">Asking…</p>
+  }
+
+  <!-- An empty list and a refused request are different answers. -->
+  @if (problem()) {
+    <p class="enquiries-problem" role="alert">
+      {{ problem() }}
+      <button type="button" class="enquiries-plain" (click)="load()">Ask again</button>
+    </p>
+  }
+
+  @if (messages(); as all) {
+    @if (!all.length) {
+      <p class="enquiries-note">Nothing has come through the form yet.</p>
+    } @else {
+      <p class="enquiries-note">{{ count() }} {{ count() === 1 ? 'message' : 'messages' }}</p>
+
+      <ul class="enquiries-list">
+        @for (message of all; track message.id) {
+          <li class="enquiries-one">
+            <header class="enquiries-who">
+              <strong>{{ who(message) }}</strong>
+              <!--
+                The address as text with a way to answer beside it, rather than
+                the whole name being a link: this is a record to read, and the
+                reply is one thing it can do.
+              -->
+              <span class="enquiries-address">{{ message.email }}</span>
+              @if (message.lang) {
+                <span class="enquiries-tag">{{ message.lang }}</span>
+              }
+              <span class="enquiries-spacer"></span>
+              <time class="enquiries-when" [attr.datetime]="message.createdAt">
+                {{ ago(message.createdAt) }}
+              </time>
+            </header>
+
+            @if (message.name !== who(message)) {
+              <p class="enquiries-subject">{{ message.name }}</p>
+            }
+
+            <!--
+              A stranger typed this, so it is text in a text node and nothing
+              else. Urls were already stripped on the way in, by the redaction
+              every write to Firestore goes through.
+            -->
+            <p class="enquiries-body">{{ message.message }}</p>
+
+            <div class="enquiries-doing">
+              <a class="enquiries-plain" [href]="replyTo(message)">Reply</a>
+              @if (confirming() === message.id) {
+                <!--
+                  Asked before it goes: there is no undo and no bin. Firestore
+                  deletes, and the copy in his inbox is the only other one.
+                -->
+                <span class="enquiries-sure">Delete for good?</span>
+                <button
+                  type="button"
+                  class="enquiries-danger"
+                  [disabled]="removing() === message.id"
+                  (click)="remove(message.id)"
+                >
+                  {{ removing() === message.id ? 'Deleting…' : 'Yes, delete' }}
+                </button>
+                <button type="button" class="enquiries-plain" (click)="ask(message.id)">
+                  Keep it
+                </button>
+              } @else {
+                <button type="button" class="enquiries-plain" (click)="ask(message.id)">
+                  Delete
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (count() === 200) {
+        <p class="enquiries-note">
+          The newest two hundred. Anything older is a question for the inbox.
+        </p>
+      }
+    }
+  }
+</div>
