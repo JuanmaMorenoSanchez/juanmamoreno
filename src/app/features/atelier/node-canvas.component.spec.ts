@@ -56,6 +56,75 @@ describe('NodeCanvasComponent', () => {
   const aNode = (type = 'edit') => [{ id: 'n1', type, x: 10, y: 20, params: {} }];
 
   /**
+   * The Compose box, whose setting is a picture rather than a number.
+   *
+   * Laid out on a canvas with the shelf beside it, like the brush's marks are
+   * drawn on the painting — so what this canvas draws is a way in, and the
+   * count on it, and nothing else.
+   */
+  describe('an arrangement', () => {
+    const COMPOSE: NodeTypeDef = {
+      key: 'compose',
+      label: 'Compose',
+      category: 'in',
+      summary: 'pieces from several paintings on one ground',
+      help: 'Pieces from several paintings, arranged by hand on one ground.',
+      inputs: [],
+      outputs: [{ name: 'image', kind: 'image', optional: false }],
+      params: [
+        {
+          name: 'arrangement',
+          kind: 'arrangement',
+          default: '{"ground":"landscape","paper":"none","pieces":[]}',
+          label: 'Arrangement',
+          choices: [],
+          minimum: null,
+          maximum: null,
+          step: null,
+          help: 'Press Arrange to lay it out.',
+        },
+      ],
+    };
+
+    it('offers a way in rather than a box to type json into', () => {
+      const { host } = build([COMPOSE], aNode('compose'));
+
+      const button = host.querySelector('[data-testid="arrange-n1"]');
+      expect(button?.textContent?.trim()).toBe('Arrange…');
+      expect(host.querySelector('input')).toBeNull();
+    });
+
+    it('says how many pieces are on it once there are some', () => {
+      const { host } = build(
+        [COMPOSE],
+        [
+          {
+            id: 'n1',
+            type: 'compose',
+            x: 10,
+            y: 20,
+            params: { arrangement: '{"pieces":[{"id":"a"},{"id":"b"}]}' },
+          },
+        ]
+      );
+
+      expect(host.querySelector('[data-testid="arrange-n1"]')?.textContent?.trim()).toBe(
+        '2 pieces — edit'
+      );
+    });
+
+    it('asks the page to open it, because the page owns the shelf', () => {
+      const { fixture, host } = build([COMPOSE], aNode('compose'));
+      const asked: unknown[] = [];
+      fixture.componentInstance.arranging.subscribe((node) => asked.push(node));
+
+      (host.querySelector('[data-testid="arrange-n1"]') as HTMLButtonElement).click();
+
+      expect(asked).toHaveLength(1);
+    });
+  });
+
+  /**
    * A number with a band worth seeing.
    *
    * A box asks you to know that four is ordinary and seven and a half is a
@@ -134,9 +203,17 @@ describe('NodeCanvasComponent', () => {
       // control that sets it. A slider showed none of it.
       const ADVISED: NodeTypeDef = {
         ...DIAL,
-        params: [{ ...DIAL.params[0], advice: { below: 2, above: 8, low: 'barely asks', high: 'burns the colour out' } }],
+        params: [
+          {
+            ...DIAL.params[0],
+            advice: { below: 2, above: 8, low: 'barely asks', high: 'burns the colour out' },
+          },
+        ],
       };
-      const { host } = build([ADVISED], [{ id: 'n1', type: 'dial', x: 10, y: 10, params: { guidance: 9 } }]);
+      const { host } = build(
+        [ADVISED],
+        [{ id: 'n1', type: 'dial', x: 10, y: 10, params: { guidance: 9 } }]
+      );
 
       expect(host.querySelector('[data-testid="caution-n1-guidance"]')?.textContent).toContain(
         'burns the colour out'
@@ -145,13 +222,13 @@ describe('NodeCanvasComponent', () => {
   });
 
   /**
-  * The one node whose value does not come from a parameter.
-  *
-  * Everything else on the canvas is drawn from the catalogue. The painting
-  * comes from a file on his disk or a number in his catalogue, and it used
-  * to be chosen in a strip above the canvas — the diagram saying "the
-  * painting goes here" while the painting went somewhere else.
-  */
+   * The one node whose value does not come from a parameter.
+   *
+   * Everything else on the canvas is drawn from the catalogue. The painting
+   * comes from a file on his disk or a number in his catalogue, and it used
+   * to be chosen in a strip above the canvas — the diagram saying "the
+   * painting goes here" while the painting went somewhere else.
+   */
   describe('the Painting box', () => {
     const PAINTING: NodeTypeDef = {
       key: 'painting',

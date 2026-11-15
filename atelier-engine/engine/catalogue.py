@@ -195,6 +195,33 @@ def _marks(inputs, params, context) -> dict[str, Any]:
     return {"points": {"keep": keep, "drop": drop}}
 
 
+def _composition(inputs, params, context) -> dict[str, Any]:
+    """Pieces from several paintings, arranged by hand, as one picture.
+
+    **The arranging happens on the page and the pixels arrive with the graph**,
+    exactly as the painting's do. The page already holds every kept cut and
+    already draws them on a canvas to be dragged, so compositing them a second
+    time here would be a second implementation of the same thing — and a worse
+    one, because the engine cannot see the shelf. What this node is for is the
+    other half: making that arrangement something the rest of the graph can
+    work on, so a composition can be edited, filled behind or set moving like
+    any other picture.
+
+    The arrangement itself rides on the node as json, like the brush's marks,
+    so a graph is still one object that can be saved and reloaded.
+
+    shortcut: one composition per graph, because the context holds one picture
+    under one name. Upgrade to a mapping keyed by node id the day a graph wants
+    two of these.
+    """
+    made = context.get("composition")
+    if made is None:
+        raise ValueError(
+            "nothing has been arranged yet — open the box and place some pieces"
+        )
+    return {"image": made}
+
+
 def _isolate(inputs, params, context) -> dict[str, Any]:
     box = inputs.get("box")
     marks = inputs.get("points") or {}
@@ -552,6 +579,23 @@ CATALOGUE: dict[str, NodeType] = {
                 )
             ],
             run=_marks,
+        ),
+        NodeType(
+            key="compose",
+            label="Compose",
+            category="in",
+            summary="Pieces from several paintings, arranged by hand on one ground.",
+            inputs=[],
+            outputs=[Port("image", "image")],
+            params=[
+                Param(
+                    "arrangement",
+                    "arrangement",
+                    '{"ground":"3:2","paper":"none","pieces":[]}',
+                    label="Arrangement",
+                )
+            ],
+            run=_composition,
         ),
         NodeType(
             key="find",

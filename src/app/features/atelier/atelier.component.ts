@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { BrushOverlayComponent, readMarks, type Marks } from './brush-overlay.component';
+import { ComposeOverlayComponent } from './compose-overlay.component';
 import { elapsed } from '@domain/generative/elapsed';
 import { CataloguePaintingService, type Wanted } from './catalogue-painting.service';
 import { FlowRowComponent } from './flow-row.component';
@@ -103,6 +104,7 @@ export const START_BY_HAND = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BrushOverlayComponent,
+    ComposeOverlayComponent,
     FlowRowComponent,
     LazyLoadDirective,
     MatIconModule,
@@ -154,6 +156,18 @@ export class AtelierComponent implements OnDestroy {
   protected readonly fetching = signal(false);
   /** The Brush node whose marks are being drawn, if any. */
   protected readonly marking = signal<GraphNode | null>(null);
+  /** The Compose node whose pieces are being laid out, if any. */
+  protected readonly arranging = signal<GraphNode | null>(null);
+  /**
+   * The picture the last arrangement made, waiting for a Run.
+   *
+   * Held here rather than on the node because a node is json that gets saved
+   * and reloaded, and this is three megabytes of png. It is remade whenever
+   * the box is opened and closed, and a graph reloaded from storage asks for
+   * it again — which is the honest behaviour: the shelf may have changed
+   * under it since.
+   */
+  protected readonly composition = signal<Blob | null>(null);
   /** The depth map being looked at, as a url, while the painting moves. */
   protected readonly moving = signal<string | null>(null);
 
@@ -216,14 +230,14 @@ export class AtelierComponent implements OnDestroy {
   protected readonly startByHand = START_BY_HAND;
 
   /**
-  * The painters the work leans towards, as the engine has them.
-  *
-  * Read from the engine rather than held here, and written back when it is
-  * changed, because the names are his and this repository does not have
-  * them: they live in a file the engine keeps and git ignores. An engine
-  * that has never been told answers with nothing and the field is empty,
-  * which is what a fresh clone does.
-  */
+   * The painters the work leans towards, as the engine has them.
+   *
+   * Read from the engine rather than held here, and written back when it is
+   * changed, because the names are his and this repository does not have
+   * them: they live in a file the engine keeps and git ignores. An engine
+   * that has never been told answers with nothing and the field is empty,
+   * which is what a fresh clone does.
+   */
   protected readonly hand = signal('');
   /**
    * What the model makes of each name, by name.
@@ -623,11 +637,11 @@ export class AtelierComponent implements OnDestroy {
   }
 
   /**
-  * The same painting, by its token id instead of by finding the file.
-  *
-  * Takes the best copy the catalogue has rather than the one a tile would
-  * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
-  */
+   * The same painting, by its token id instead of by finding the file.
+   *
+   * Takes the best copy the catalogue has rather than the one a tile would
+   * use: cutting a layer from a 95 KB thumbnail gives a 95 KB layer.
+   */
   protected async byId(wanted: Wanted = 'web'): Promise<void> {
     const token = this.tokenId().trim();
     if (!token || this.fetching()) return;
@@ -913,6 +927,42 @@ export class AtelierComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Opens the shelf for arranging. Needs no painting: this box stands on the
+   * cut pieces, which is why it is the one box in the catalogue with nothing
+   * joined to its left.
+   */
+  protected arrange(node: GraphNode): void {
+    this.failure.set(null);
+    this.arranging.set(node);
+  }
+
+  protected arrangementOf(node: GraphNode): string {
+    const held = node.params['arrangement'];
+    return typeof held === 'string' ? held : '';
+  }
+
+  /**
+   * The arrangement goes on the node; the picture is held for the next Run.
+   *
+   * Both halves matter. The json is what survives a reload, and the png is
+   * what the engine is actually given — it cannot see the shelf, so the page
+   * sends the picture the way it sends the painting.
+   */
+  protected arranged(made: { arrangement: string; picture: Blob }): void {
+    const node = this.arranging();
+    this.arranging.set(null);
+    if (!node) return;
+
+    this.composition.set(made.picture);
+    this.redraw({
+      nodes: this.nodes().map((n) =>
+        n.id === node.id ? { ...n, params: { ...n.params, arrangement: made.arrangement } } : n
+      ),
+      edges: this.edges(),
+    });
+  }
+
   /** Opens the painting for marking. Needs a painting, which is the catch. */
   protected draw(node: GraphNode): void {
     if (!this.preview()) {
@@ -991,7 +1041,9 @@ export class AtelierComponent implements OnDestroy {
       for (const node of this.nodes()) nodes[node.id] = { type: node.type, params: node.params };
       const edges = this.edges().map((e) => [e.from[0], e.from[1], e.to[0], e.to[1]]);
 
-      const started = await this.engine.startGraph(painting, { nodes, edges });
+      // The arranged picture goes up beside the painting, because the engine
+      // cannot see the shelf the pieces came off.
+      const started = await this.engine.startGraph(painting, { nodes, edges }, this.composition());
       this.job.set(started);
       await this.watch(started.job);
     } catch (error) {

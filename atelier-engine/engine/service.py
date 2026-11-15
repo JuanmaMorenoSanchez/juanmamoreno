@@ -27,7 +27,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import numpy as np
-from fastapi import Body, FastAPI, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from PIL import Image
@@ -124,6 +124,19 @@ def choose_device() -> None:
 def _read(upload: UploadFile) -> Image.Image:
     try:
         return Image.open(io.BytesIO(upload.file.read())).convert("RGB")
+    except Exception as exc:  # noqa: BLE001 - any unreadable upload is the same answer
+        raise HTTPException(status_code=400, detail="that file is not an image") from exc
+
+
+def _read_layer(upload: UploadFile) -> Image.Image:
+    """Like `_read`, but keeping what is see-through.
+
+    A composition may stand on nothing at all — transparent is one of its three
+    grounds — and `_read` converts to RGB, which fills every clear pixel with
+    black without saying so.
+    """
+    try:
+        return Image.open(io.BytesIO(upload.file.read())).convert("RGBA")
     except Exception as exc:  # noqa: BLE001 - any unreadable upload is the same answer
         raise HTTPException(status_code=400, detail="that file is not an image") from exc
 
@@ -539,7 +552,11 @@ def flows() -> JSONResponse:
 
 
 @app.post("/graph")
-def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
+def graph(
+    image: UploadFile,
+    graph: str = Form(...),
+    composition: UploadFile | None = File(None),
+) -> JSONResponse:
     """Start a drawn graph running, and answer at once with its name.
 
     It used to run inside the request, which was right while a graph took
@@ -555,11 +572,16 @@ def graph(image: UploadFile, graph: str = Form(...)) -> JSONResponse:
         raise HTTPException(status_code=400, detail="that is not a graph") from exc
 
     painting = _read(image)
+    # Read here rather than in the job: the request's files are closed by the
+    # time the background work starts, and the painting is read here for the
+    # same reason. Absent whenever the graph has no Compose box in it.
+    made = _read_layer(composition) if composition is not None else None
     batch = uuid.uuid4().hex[:8]
 
     def work(job: Job) -> dict[str, object]:
         context: dict[str, object] = {
             "painting": painting,
+            "composition": made,
             "registry": registry,
             "batch": batch,
             "saved": [],

@@ -222,17 +222,6 @@ export const routes: Routes = [
     data: { title: 'Assets', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/parts', redirectTo: '/parts' },
-  // The other thing a shelf of cut-outs is for: several of them, from
-  // several paintings, on one ground. What it makes is kept on the same
-  // shelf and published nowhere, like everything else behind the door.
-  {
-    path: 'compose',
-    canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/compose/compose.component').then((m) => m.ComposeComponent),
-    data: { title: 'Compose', hideBreadcrumb: true, noindex: true },
-  },
-  { path: 'es/compose', redirectTo: '/compose' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

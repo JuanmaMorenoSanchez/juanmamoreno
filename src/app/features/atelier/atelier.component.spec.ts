@@ -155,6 +155,7 @@ describe('AtelierComponent', () => {
         : { device: 'cuda', resident: null, vramFreeMib: 7096, vramTotalMib: 8187 }
     );
     const sent: unknown[] = [];
+    const composed: (Blob | null)[] = [];
     /** Every value the switch was written with, in order. */
     const switched: boolean[] = [];
     const switching = signal(options.switching ?? 'idle');
@@ -311,8 +312,9 @@ describe('AtelierComponent', () => {
                 using: using ?? switched[switched.length - 1] ?? options.using ?? false,
               });
             },
-            startGraph: (_p: Blob, graph: unknown) => {
+            startGraph: (_p: Blob, graph: unknown, composition?: Blob | null) => {
               sent.push(graph);
+              composed.push(composition ?? null);
               // A rejecting `run` now stands for the engine refusing the graph.
               return options.run ? options.run().then(() => queued[0]) : Promise.resolve(queued[0]);
             },
@@ -349,6 +351,7 @@ describe('AtelierComponent', () => {
       fixture,
       host: fixture.nativeElement as HTMLElement,
       sent,
+      composed,
       did,
       unreachable,
       keptCalls,
@@ -380,6 +383,9 @@ describe('AtelierComponent', () => {
       tokenId: { set(v: string): void };
       byId(wanted?: 'web' | 'high'): Promise<void>;
       at: { (): 'web' | 'high' | null };
+      arranging: { set(v: unknown): void; (): unknown };
+      arranged(made: { arrangement: string; picture: Blob }): void;
+      arrangementOf(node: unknown): string;
     };
 
   /**
@@ -481,6 +487,56 @@ describe('AtelierComponent', () => {
       },
       edges: [['src', 'image', 'f', 'image']],
     });
+  });
+
+  /**
+   * The Compose box, which is the one box whose setting is a picture.
+   *
+   * The arrangement goes on the node as json so a saved graph still holds it;
+   * the png cannot, at three megabytes, so it is held beside the graph and
+   * sent with the run. Both halves, because either one alone is a box that
+   * looks arranged and composes nothing, or one that composes and forgets.
+   */
+  it('puts the arrangement on the node and sends the picture with the run', async () => {
+    const { fixture, sent, composed } = build();
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    const node = { id: 'c', type: 'compose', x: 0, y: 0, params: {} };
+    parts.redraw({ nodes: [node], edges: [] });
+
+    parts.arranging.set(node);
+    const picture = new Blob(['png'], { type: 'image/png' });
+    parts.arranged({
+      arrangement: '{"ground":"square","paper":"none","pieces":[{"id":"a","x":1,"y":2,"scale":1}]}',
+      picture,
+    });
+    await parts.run();
+
+    expect(sent[0]).toEqual({
+      nodes: {
+        c: {
+          type: 'compose',
+          params: {
+            arrangement:
+              '{"ground":"square","paper":"none","pieces":[{"id":"a","x":1,"y":2,"scale":1}]}',
+          },
+        },
+      },
+      edges: [],
+    });
+    expect(composed[0]).toBe(picture);
+  });
+
+  // Every other graph, which is all of them so far: the field is optional on
+  // the engine for exactly this reason.
+  it('sends no picture for a graph with no Compose box in it', async () => {
+    const { fixture, composed } = build();
+    const parts = guts(fixture);
+    parts.painting.set(aPainting());
+    parts.redraw({ nodes: [{ id: 'src', type: 'painting', x: 0, y: 0, params: {} }], edges: [] });
+    await parts.run();
+
+    expect(composed[0]).toBeNull();
   });
 
   it("repeats the engine's complaint, which names the node at fault", async () => {

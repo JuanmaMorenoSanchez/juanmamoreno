@@ -2,9 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnInit,
   computed,
   effect,
   inject,
+  input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -35,35 +38,89 @@ const PAPERS = [
   { id: 'ink', label: 'Ink', paint: '#141414' },
 ];
 
+/** What the node carries: which ground, what behind, and every piece placed. */
+export interface Arrangement {
+  ground: string;
+  paper: string;
+  pieces: Placed[];
+}
+
+export const NOTHING_ARRANGED: Arrangement = { ground: 'landscape', paper: 'none', pieces: [] };
+
+/**
+ * The arrangement off a node, defensively.
+ *
+ * It arrives as json on a saved graph, and a graph outlives the engine that
+ * drew it — so anything unreadable is an empty ground rather than a page that
+ * will not open.
+ */
+export function readArrangement(raw: unknown): Arrangement {
+  if (!raw) return NOTHING_ARRANGED;
+  try {
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const pieces = Array.isArray(parsed?.pieces) ? parsed.pieces : [];
+    return {
+      ground: typeof parsed?.ground === 'string' ? parsed.ground : NOTHING_ARRANGED.ground,
+      paper: typeof parsed?.paper === 'string' ? parsed.paper : NOTHING_ARRANGED.paper,
+      pieces: pieces
+        .filter((one: Placed) => one && typeof one.id === 'string')
+        .map((one: Placed) => ({
+          id: one.id,
+          x: Number(one.x) || 0,
+          y: Number(one.y) || 0,
+          scale: Number(one.scale) || 1,
+        })),
+    };
+  } catch {
+    return NOTHING_ARRANGED;
+  }
+}
+
+/** How many pieces a node has on it, for the label on its button. */
+export function countArranged(raw: unknown): number {
+  return readArrangement(raw).pieces.length;
+}
+
 /**
  * Putting cut pieces from different paintings on one ground.
  *
  * The nights cut all 192 paintings into the separate things in them, and the
  * shelf holds hundreds of transparent layers — a figure, a tree, a van. The
- * only thing that could be done with one until now was look at it, or hand it
- * to the atelier as the start of a single piece of work. This is the other
- * thing a shelf of cut-outs is for: three of them, from three paintings,
- * arranged on one canvas.
+ * only thing that could be done with one was look at it, or hand it to the
+ * atelier as the start of a single piece of work. This is the other thing a
+ * shelf of cut-outs is for: three of them, from three paintings, on one
+ * canvas.
  *
- * **It publishes nothing.** What it makes is saved back onto the same shelf as
- * another kept piece, with no painting against it — the same door every other
- * saved piece goes through, and a saved piece is still not a page until
- * somebody adds a line to the sketch registry. Private, guarded and noindex
- * like the rest of the studio.
+ * **It is a box on the canvas rather than a page of its own.** The arranging
+ * is done here, with a pointer, because the shelf is here and because placing
+ * a figure by typing its coordinates is not placing it; what the engine gets
+ * is the picture this made, in the same way and by the same route as the
+ * painting itself. The arrangement rides back on the node as json, like the
+ * brush's marks, so a graph is still one thing that can be saved and reloaded.
  *
- * The arrangement itself — where a piece lands, which one the pointer is on,
- * what order they are drawn in — is in `@domain/composition`, and tested
- * there without a canvas. What is here is the pixels and the pointer.
+ * **What it makes belongs to no painting.** A composition came out of three
+ * of them, and the assets page files a piece under the painting it was cut
+ * from — so one filed under any of the three would be a lie about two.
+ *
+ * Where a piece lands, which one the pointer is on and what order they are
+ * drawn in are in `@domain/composition`, tested there without a canvas. What
+ * is here is the pixels and the pointer.
  */
 @Component({
-  selector: 'app-compose',
+  selector: 'app-compose-overlay',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LazyLoadDirective],
-  templateUrl: './compose.component.html',
-  styleUrls: ['./compose.component.scss'],
+  templateUrl: './compose-overlay.component.html',
+  styleUrls: ['./compose-overlay.component.scss'],
 })
-export class ComposeComponent {
+export class ComposeOverlayComponent implements OnInit {
   protected readonly kept = inject(KeptService);
+
+  /** What the node already has on it, as json. */
+  readonly arrangement = input<string>('');
+  /** The arrangement to store, and the picture the run will be given. */
+  readonly saved = output<{ arrangement: string; picture: Blob }>();
+  readonly dismissed = output<void>();
 
   protected readonly grounds = GROUNDS;
   protected readonly papers = PAPERS;
@@ -111,28 +168,67 @@ export class ComposeComponent {
     effect(() => this.draw(this.order(), this.decoded(), this.ground().size, this.paper().paint));
   }
 
+  /**
+   * Put back what the node was holding.
+   *
+   * In `ngOnInit` rather than the constructor because an input is not set
+   * until after one. Without it the box would forget its arrangement every
+   * time it was closed, which is the one thing storing it on the node is for.
+   */
+  ngOnInit(): void {
+    void this.restore(readArrangement(this.arrangement()));
+  }
+
+  private async restore(held: Arrangement): Promise<void> {
+    this.ground.set(GROUNDS.find((one) => one.id === held.ground) ?? GROUNDS[0]);
+    this.paper.set(PAPERS.find((one) => one.id === held.paper) ?? PAPERS[0]);
+    if (!held.pieces.length) return;
+
+    await this.kept.ensure();
+    const back: Placed[] = [];
+    for (const placed of held.pieces) {
+      const image = await this.pixels(placed.id);
+      // A piece taken off the shelf since is simply not in the picture any
+      // more. Losing one is better than refusing to open the box.
+      if (image) back.push(placed);
+    }
+    this.order.set(back);
+    if (back.length < held.pieces.length) {
+      this.saying.set('Some pieces are no longer on the shelf and have been left out.');
+    }
+  }
+
+  /** The full-size bytes of a shelf piece, decoded and remembered. */
+  private async pixels(id: string): Promise<HTMLImageElement | null> {
+    const already = this.decoded()[id];
+    if (already) return already;
+    try {
+      await this.kept.show(id);
+      const url = this.kept.urls()[id];
+      if (!url) return null;
+      const image = await decode(url);
+      this.decoded.update((all) => ({ ...all, [id]: image }));
+      return image;
+    } catch {
+      return null;
+    }
+  }
+
   private sizeOf = (id: string): Sized | undefined => this.decoded()[id];
 
   /** Adds a shelf piece to the canvas, fetching its full-size bytes first. */
   protected async add(piece: KeptPiece): Promise<void> {
     this.saying.set(null);
-    try {
-      await this.kept.show(piece.id);
-      const url = this.kept.urls()[piece.id];
-      if (!url) {
-        this.saying.set(this.kept.trouble()[piece.id] ?? 'that piece could not be read back');
-        return;
-      }
-      const image = await decode(url);
-      this.decoded.update((all) => ({ ...all, [piece.id]: image }));
-      this.order.update((order) => [
-        ...order,
-        { id: piece.id, ...placeOn(this.ground().size, image, order.length) },
-      ]);
-      this.selected.set(piece.id);
-    } catch {
-      this.saying.set('that piece could not be decoded');
+    const image = await this.pixels(piece.id);
+    if (!image) {
+      this.saying.set(this.kept.trouble()[piece.id] ?? 'that piece could not be read back');
+      return;
     }
+    this.order.update((order) => [
+      ...order,
+      { id: piece.id, ...placeOn(this.ground().size, image, order.length) },
+    ]);
+    this.selected.set(piece.id);
   }
 
   protected remove(id: string): void {
@@ -157,6 +253,10 @@ export class ComposeComponent {
   protected setGround(ground: (typeof GROUNDS)[number]): void {
     this.ground.set(ground);
     this.order.update((order) => order.map((placed) => withinReach(ground.size, placed)));
+  }
+
+  protected setPaper(paper: (typeof PAPERS)[number]): void {
+    this.paper.set(paper);
   }
 
   protected clear(): void {
@@ -261,7 +361,10 @@ export class ComposeComponent {
     element.width = size.width;
     element.height = size.height;
     const brush = element.getContext('2d');
-    if (!brush) return;
+    // A fake context from a neighbouring spec has reached this before: with
+    // `isolate: false` a stubbed prototype outlives the file that stubbed it,
+    // and guarding only against `null` sailed into it and died on clearRect.
+    if (!brush || typeof brush.clearRect !== 'function') return;
 
     brush.clearRect(0, 0, size.width, size.height);
     if (paper) {
@@ -276,27 +379,56 @@ export class ComposeComponent {
     }
   }
 
+  /** The canvas as a png, which is what both of the ways out need. */
+  private async picture(): Promise<Blob | null> {
+    const element = this.canvas()?.nativeElement;
+    if (!element || !this.order().length) return null;
+    if (typeof element.toBlob !== 'function') return null;
+    return new Promise<Blob | null>((done) => element.toBlob(done, 'image/png'));
+  }
+
   /**
-   * Keeps the picture, on the same shelf everything else is kept on.
+   * Hands the arrangement and the picture back to the node, and closes.
    *
-   * No painting against it. A composition came out of three of them and
-   * belongs to none, and the assets page files a piece under the painting it
-   * was cut from — so one filed under any of the three would be a lie about
-   * two of them.
+   * The picture goes up with the next Run exactly as the painting does. It is
+   * made here because the shelf is here: the engine cannot see the bucket and
+   * has no business signing in to it.
+   */
+  protected async use(): Promise<void> {
+    this.saying.set(null);
+    const picture = await this.picture();
+    if (!picture) {
+      this.saying.set('there is nothing on the ground yet');
+      return;
+    }
+    this.saved.emit({
+      arrangement: JSON.stringify({
+        ground: this.ground().id,
+        paper: this.paper().id,
+        pieces: this.order(),
+      } satisfies Arrangement),
+      picture,
+    });
+  }
+
+  /**
+   * Keeps the picture on the same shelf everything else is kept on.
+   *
+   * Beside handing it to the node rather than instead of it: a composition
+   * worth running is usually one worth having, and the alternative is making
+   * it twice. No painting against it, for the reason in the class comment.
    */
   protected async save(): Promise<void> {
-    const element = this.canvas()?.nativeElement;
-    if (!element || !this.order().length) return;
     this.saying.set(null);
-
-    const blob = await new Promise<Blob | null>((done) => element.toBlob(done, 'image/png'));
-    if (!blob) {
-      this.saying.set('the canvas could not be read back');
+    const picture = await this.picture();
+    if (!picture) {
+      this.saying.set('there is nothing on the ground yet');
       return;
     }
 
+    const element = this.canvas()!.nativeElement;
     try {
-      await this.kept.keep(blob, {
+      await this.kept.keep(picture, {
         name: this.name().trim() || 'Composition',
         kind: 'composition',
         width: element.width,

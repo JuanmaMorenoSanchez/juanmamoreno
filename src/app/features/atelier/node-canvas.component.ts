@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { readMarks } from './brush-overlay.component';
+import { countArranged } from './compose-overlay.component';
 import type { NodeTypeDef, ParamDef } from './engine.service';
 
 /** A node as it sits on the canvas. */
@@ -89,6 +90,8 @@ export class NodeCanvasComponent {
   readonly changed = output<Drawn>();
   /** A Brush node wanting its marks drawn. The page owns the painting. */
   readonly drawing = output<GraphNode>();
+  /** A Compose node wanting its pieces laid out. The page owns the shelf. */
+  readonly arranging = output<GraphNode>();
 
   /** Where the canvas is looking. */
   protected readonly panX = signal(0);
@@ -274,6 +277,11 @@ export class NodeCanvasComponent {
   protected markCount(node: GraphNode): number {
     const marks = readMarks(node.params['points']);
     return marks.keep.length + marks.drop.length;
+  }
+
+  /** And how many pieces a Compose is carrying, for the same reason. */
+  protected pieceCount(node: GraphNode): number {
+    return countArranged(node.params['arrangement']);
   }
 
   /**

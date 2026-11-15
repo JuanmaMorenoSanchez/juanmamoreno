@@ -173,6 +173,24 @@
                     >
                       {{ markCount(node) ? markCount(node) + ' marks — edit' : 'Draw…' }}
                     </button>
+                  } @else if (param.kind === 'arrangement') {
+                    <!-- Laid out on a canvas with the shelf beside it, not in
+                         a box this size. The same reason the marks are. -->
+                    <button
+                      type="button"
+                      class="param-draw"
+                      (click)="arranging.emit(node)"
+                      (pointerdown)="$event.stopPropagation()"
+                      [attr.data-testid]="'arrange-' + node.id"
+                    >
+                      {{
+                        pieceCount(node)
+                          ? pieceCount(node) +
+                            (pieceCount(node) === 1 ? ' piece' : ' pieces') +
+                            ' — edit'
+                          : 'Arrange…'
+                      }}
+                    </button>
                   } @else if (param.kind === 'number') {
                     <input
                       type="number"

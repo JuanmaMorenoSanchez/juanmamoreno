@@ -1,0 +1,208 @@
+@use '../../../styles/tokens';
+@use '../../../styles/controls';
+@use '../../../styles/breakpoints' as bp;
+
+/* The panel is the window, less a margin: a shelf of hundreds beside a canvas
+   wants every pixel there is, and the brush panel's 60rem would put the
+   canvas in a column narrower than one of its own pieces. */
+.compose-panel {
+  max-width: min(84rem, 100%);
+  height: 100%;
+  overflow: hidden;
+}
+
+.compose-head {
+  flex: 0 0 auto;
+
+  p {
+    margin: 0;
+    max-width: 42rem;
+    font-size: 0.82rem;
+    opacity: 0.75;
+  }
+}
+
+.compose-room {
+  display: grid;
+  gap: tokens.$spacing-md;
+  grid-template-columns: 1fr;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  @include bp.respond-above(tokens.$breakpoint-md) {
+    grid-template-columns: 13rem 1fr;
+    align-items: start;
+  }
+}
+
+.compose-shelf {
+  /* Its own scroll, so the canvas does not walk down the panel as the shelf
+     grows. 192 paintings cut into their parts is a long list and getting
+     longer every night. */
+  max-height: 100%;
+  overflow-y: auto;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+    gap: tokens.$spacing-sm;
+  }
+}
+
+.compose-work {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compose-add {
+  @include controls.plain-button(tokens.$spacing-xs, 0.8rem);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border-color: var(--catalog-rule);
+
+  img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    /* A cut is transparent, and on this ground a dark figure on nothing reads
+       as a hole. The frame colour is what every other thumbnail waits behind. */
+    background: var(--catalog-frame-bg);
+  }
+
+  &:hover {
+    border-color: currentcolor;
+  }
+}
+
+.compose-waiting {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--catalog-frame-bg);
+}
+
+.compose-kind {
+  font-size: 0.8rem;
+}
+
+.compose-from {
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+  /* One line: a shelf where every tile is as tall as the longest painting's
+     name is a shelf that cannot be scanned. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compose-controls,
+.compose-chosen,
+.compose-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.compose-controls,
+.compose-chosen {
+  margin-bottom: tokens.$spacing-sm;
+}
+
+.compose-foot {
+  flex: 0 0 auto;
+  margin-top: tokens.$spacing-sm;
+}
+
+.compose-spacer {
+  flex: 1 1 auto;
+}
+
+.compose-said,
+.compose-count {
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+}
+
+.compose-trouble {
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.compose-group {
+  display: inline-flex;
+
+  button {
+    @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+    border-color: var(--catalog-rule);
+    border-radius: 0;
+
+    &:first-child {
+      border-radius: 3px 0 0 3px;
+    }
+
+    &:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+
+    /* The one in force, said by filling it rather than by a colour: these sit
+       over a canvas that may be any colour at all. */
+    &.is-on {
+      background: var(--catalog-ink);
+      color: var(--catalog-bg);
+      border-color: var(--catalog-ink);
+    }
+  }
+}
+
+.compose-plain,
+.compose-go {
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+  border-color: var(--catalog-rule);
+}
+
+/* The way out that does something, told apart by being filled. */
+.compose-go {
+  background: var(--catalog-ink);
+  color: var(--catalog-bg);
+  border-color: var(--catalog-ink);
+}
+
+.compose-named input[type='text'] {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
+  border: 1px solid var(--catalog-rule);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+}
+
+/* The ground the arrangement stands on. A chequer, not a flat colour: the
+   pieces are transparent cut-outs and the composition may be handed on with
+   nothing behind them, so the canvas has to show the difference between a
+   white ground and no ground at all. */
+.compose-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: 58vh;
+  object-fit: contain;
+  border: 1px solid var(--catalog-rule);
+  touch-action: none;
+  /* One conic gradient rather than the four overlaid linear ones the recipe
+     is usually written with: the same chequer in a fifth of the bytes. */
+  background: repeating-conic-gradient(var(--catalog-frame-bg) 0% 25%, var(--catalog-bg) 0% 50%) 0
+    0 / 16px 16px;
+}

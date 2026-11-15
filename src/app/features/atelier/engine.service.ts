@@ -52,7 +52,7 @@ export interface ParamDef {
    * seeing, drawn as a range — every rule about numbers applies to it
    * unchanged, and the engine range-checks it the same way before a run.
    */
-  kind: 'text' | 'number' | 'slider' | 'toggle' | 'choice' | 'points';
+  kind: 'text' | 'number' | 'slider' | 'toggle' | 'choice' | 'points' | 'arrangement';
   default: string | number | boolean;
   label: string;
   /** Every value a `choice` may take, in the order to offer them. Empty otherwise. */
@@ -450,10 +450,14 @@ export class AtelierEngineService {
    * It used to wait for the whole thing, which was fine at twenty seconds and
    * stopped being fine when an edit took eighteen minutes.
    */
-  async startGraph(painting: Blob, graph: unknown): Promise<JobState> {
+  async startGraph(painting: Blob, graph: unknown, composition?: Blob | null): Promise<JobState> {
     const form = new FormData();
     form.append('image', painting, 'painting');
     form.append('graph', JSON.stringify(graph));
+    // What a Compose box arranged, made on this page because the shelf is
+    // here. Absent from every graph that has no such box, and the engine's
+    // field is optional for exactly that reason.
+    if (composition) form.append('composition', composition, 'composition.png');
 
     const response = await fetch(`${ENGINE}/graph`, toLocal({ method: 'POST', body: form }));
     if (!response.ok) throw new Error(await complaint(response));
@@ -534,13 +538,13 @@ export class AtelierEngineService {
   }
 
   /**
-  * The bytes of a layer, for keeping it.
-  *
-  * Here rather than in the page because every request to the engine carries
-  * `targetAddressSpace: 'loopback'`, and the one in the page that fetched
-  * these bytes did not: a url is enough for an `img`, which the browser
-  * annotates for itself, and not enough for a `fetch`, which it refuses.
-  */
+   * The bytes of a layer, for keeping it.
+   *
+   * Here rather than in the page because every request to the engine carries
+   * `targetAddressSpace: 'loopback'`, and the one in the page that fetched
+   * these bytes did not: a url is enough for an `img`, which the browser
+   * annotates for itself, and not enough for a `fetch`, which it refuses.
+   */
   async layerBytes(file: string): Promise<Blob> {
     const response = await fetch(this.layerUrl(file), toLocal({ cache: 'no-store' }));
     if (!response.ok) throw new Error('that is no longer on this machine');

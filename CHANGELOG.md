@@ -5,6 +5,22 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.75.0
+
+- **feat** The composer is a box in the atelier rather than a page of its own.
+  `/compose` is gone; **Compose** sits in the node palette beside every other
+  box, takes nothing in and gives out a picture — so a composition can now be
+  edited, filled behind or set moving, which is the whole of what a page could
+  not do. Press Arrange and the shelf opens beside the canvas exactly as
+  before: press a cut to put it down, drag to place, arrow keys to nudge, a
+  slider for size.
+- **feat** The engine learned the box: a `compose` node, and `POST /graph`
+  takes an optional second file beside the painting. The arranging happens on
+  the page and the picture travels with the graph, because the engine cannot
+  see the shelf and placing a figure by typing its coordinates is not placing
+  it. The arrangement itself rides back on the node as json, like the brush's
+  marks, so a graph is still one saveable thing.
+
 ## 2.74.2
 
 - **fix** R55's proof quoted the e2e test that the third filter renamed, so

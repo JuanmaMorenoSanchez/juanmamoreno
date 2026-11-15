@@ -24,6 +24,22 @@ HELP: dict[str, str] = {
         "output can feed several boxes at once.\n\n"
         "Nothing to adjust."
     ),
+    "compose": (
+        "Pieces from several paintings, arranged by hand on one ground.\n\n"
+        "The nights cut all 192 paintings into the separate things in them, and "
+        "until this box the only thing that could be done with one was look at "
+        "it. Press Arrange to open the shelf: a cut goes down with a press, "
+        "moves with a drag, nudges with the arrow keys, and the slider sizes "
+        "whichever is chosen.\n\n"
+        "The arranging happens on the page, not here, because the page is "
+        "where the shelf is. What arrives with Run is the picture it made — so "
+        "this box is how a composition becomes something the rest of the graph "
+        "can work on: edited, filled behind, or set moving.\n\n"
+        "It takes nothing in, and it belongs to no painting: a composition "
+        "that came out of three of them would be filed under a lie about the "
+        "other two. The page still wants a painting chosen before Run, as it "
+        "does for every graph — this box simply ignores it."
+    ),
     "brush": (
         "Marks drawn on the painting by hand: a dot for this, a dot for not "
         "that.\n\n"
@@ -275,6 +291,12 @@ PARAM_HELP: dict[tuple[str, str], str] = {
     ("edit", "shape"): _SHAPE,
     ("video", "shape"): _SHAPE,
     ("scenes", "shape"): _SHAPE,
+    ("compose", "arrangement"): (
+        "The arrangement itself: which cuts, where, how big, and what they "
+        "stand on. Press Arrange to lay it out. It is stored on the node, so "
+        "it survives a reload along with the rest of the graph — but the "
+        "picture is made fresh from it every Run."
+    ),
     ("brush", "points"): (
         "The marks themselves. Press Draw to put them on the painting: a click "
         "keeps, a shift-click excludes. They are stored on the node, so they "

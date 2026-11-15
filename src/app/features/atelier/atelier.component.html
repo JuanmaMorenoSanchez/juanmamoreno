@@ -224,6 +224,7 @@
     [fetching]="fetching()"
     (changed)="redraw($event)"
     (drawing)="draw($event)"
+    (arranging)="arrange($event)"
     (choseFile)="chose($event)"
     (typedToken)="tokenTyped($event)"
     (enteredToken)="tokenEntered()"
@@ -259,6 +260,16 @@
         (dismissed)="marking.set(null)"
       />
     }
+  }
+
+  <!-- No painting needed: this box stands on the shelf, not on the picture
+       above the canvas. -->
+  @if (arranging(); as node) {
+    <app-compose-overlay
+      [arrangement]="arrangementOf(node)"
+      (saved)="arranged($event)"
+      (dismissed)="arranging.set(null)"
+    />
   }
 
   @if (progress(); as going) {
@@ -513,9 +524,9 @@
       mood, never its subject — and the four words that forbid paint come out of the clip's
       negative, which is what lets a manner through at all. Clips only: a still edit takes its
       manner from In my style, which shows the model his own paintings rather than naming anybody.
-      Kept on this machine only. Every picture is also told not to be cartoonish, an illustration
-      or a comic. A name the model has never read about is no style at all — it has to have read
-      the painter.
+      Kept on this machine only. Every picture is also told not to be cartoonish, an illustration or
+      a comic. A name the model has never read about is no style at all — it has to have read the
+      painter.
     </p>
   </section>
 

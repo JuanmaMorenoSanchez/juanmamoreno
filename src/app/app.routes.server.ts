@@ -39,10 +39,6 @@ export const serverRoutes: ServerRoute[] = [
   // directory and a static host resolves that first.
   { path: 'parts', renderMode: RenderMode.Client },
   { path: 'es/parts', renderMode: RenderMode.Client },
-  // The composer, for the same reason: it is the shelf and a canvas, and both
-  // need the sign-in and a browser.
-  { path: 'compose', renderMode: RenderMode.Client },
-  { path: 'es/compose', renderMode: RenderMode.Client },
   { path: 'es/door', renderMode: RenderMode.Client },
   { path: 'es/mint', renderMode: RenderMode.Client },
   { path: 'es/publish', renderMode: RenderMode.Client },

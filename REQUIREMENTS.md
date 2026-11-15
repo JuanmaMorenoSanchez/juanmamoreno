@@ -6161,21 +6161,36 @@ of every painting.
 painting, the title, the facts line and the address and no navigation
 
 ### R239 — Pieces from several paintings can be put on one ground · met
-`/compose`, behind the same door as the rest of the studio. The shelf on one
-side, a canvas on the other: press a cut to put it down, drag it to place it,
-the arrow keys to nudge whichever is selected, a slider for its size, and
-`Keep` saves the picture back onto the same shelf as another kept piece.
+A **Compose** box in the atelier, beside every other box. It takes nothing in
+and gives out a picture: press Arrange and the shelf opens beside a canvas —
+press a cut to put it down, drag it to place it, the arrow keys to nudge
+whichever is chosen, a slider for its size. `Done` hands the picture to the
+box; `Keep on the shelf` also saves it as another kept piece.
 
-The nights cut all 192 paintings into the separate things in them and the shelf
-holds hundreds of transparent layers. Until now the only thing that could be
-done with one was look at it, or hand it to the atelier as the start of a
-single piece of work.
+The nights cut all 192 paintings into the separate things in them and the
+shelf holds hundreds of transparent layers. Until this box the only thing that
+could be done with one was look at it, or hand it to the atelier as the start
+of a single piece of work.
 
-**It publishes nothing and it belongs to no painting.** A composition came out
-of three of them, so filing it under any one would be a lie about the other
-two — and a saved piece is still not a page until a line is added to the sketch
-registry, which is the rule that exists because this used to resolve for any
-unknown id.
+**A box rather than a page, which is what it was.** `/compose` was its own
+address for one release. As a box its output is an input: a composition can be
+edited, filled behind or set moving, which was the whole of what a page could
+not do. What it cannot be is a node that *composites* — the engine cannot see
+the shelf and has no business signing in to the bucket, and placing a figure
+by typing its coordinates is not placing it.
+
+**So the arranging happens on the page and the picture travels with the
+graph,** by the same route and in the same way as the painting itself: a
+second file on the `POST /graph` form, optional, absent from every graph with
+no such box in it. The arrangement rides back on the node as json, like the
+brush's marks, so a graph is still one thing that can be saved and reloaded —
+the png is not on the node, because a node is storage and this is three
+megabytes.
+
+**It belongs to no painting.** A composition came out of three of them, so
+filing it under any one would be a lie about the other two — and a kept piece
+is still not a page until a line is added to the sketch registry, which is the
+rule that exists because this used to resolve for any unknown id.
 
 **The arrangement is in the domain layer and the pixels are not.** Where a
 piece lands, which one the pointer is on, and what order they are drawn in are
@@ -6183,8 +6198,13 @@ answerable without a canvas, and jsdom has none — so they are tested where the
 can be.
 *Proven by:* `composition.spec.ts` "picks the piece on top where two overlap",
 "never draws a piece larger than its own pixels" and "lets a piece hang over
-the edge but not leave"; and `compose.component.spec.ts` "offers the cut pieces
-and not the clips" and "sizes the canvas in the pixels it will be saved at"
+the edge but not leave"; `compose-overlay.component.spec.ts` "offers the cut
+pieces and not the clips" and "opens on the ground it was closed on";
+`node-canvas.component.spec.ts` "asks the page to open it, because the page
+owns the shelf"; `atelier.component.spec.ts` "puts the arrangement on the node
+and sends the picture with the run"; and the engine's
+`test_composing.py` "test_the_arranged_picture_reaches_the_box" and
+"test_a_compose_box_with_nothing_sent_fails_in_words"
 
 ### R240 — The catalogue can be narrowed to what has been shown or awarded · met
 A third picker beside the year and availability: all, exhibited, awarded. It
