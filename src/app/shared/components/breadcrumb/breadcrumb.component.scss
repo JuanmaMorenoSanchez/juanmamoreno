@@ -1,52 +1,42 @@
 @use '../../../../styles/tokens';
 @use '../../../../styles/breakpoints' as bp;
 
-// The two filters are read as a pair, so they wrap as a pair. Inline on a wide
-// screen, exactly as they were; on a phone they share whatever the chips leave
-// of the first line instead of taking a line of their own.
+// The three filters are read as a set, so they wrap as a set rather than one
+// at a time. Inline on a wide screen; on a phone they have the row to
+// themselves, now that the trail that used to take it is gone.
 .filters {
   display: flex;
   align-items: flex-start;
 
-  // Phones only. At the medium breakpoint the whole bar already fits on one
-  // line, and giving the filters a row of their own there cost a tablet
-  // thirty-six pixels of its first screen to solve a problem it did not have.
+  // Phones only. At the medium breakpoint the whole bar fits on one line, and
+  // giving the filters a row of their own there cost a tablet thirty-six
+  // pixels of its first screen to solve a problem it did not have.
   @include bp.respond-below(tokens.$breakpoint-sm) {
-    // Basis zero, not 100%, and that one number is the whole change. A flex
-    // row wraps on an item's basis before it ever shrinks it, so two 187px
-    // boxes asked for a line of their own and got it — thirty-six pixels of
-    // the first screen spent on a pair of controls that the chips beside them
-    // leave room for. At zero they never wrap, and `flex-grow` then hands
-    // them exactly what is left of the chips' line: about half the width they
-    // were, which is what the artist asked for and also where they belong.
-    flex: 1 1 0;
+    flex: 1 1 100%;
     // A flex item will not shrink below its content unless told it may, and
     // the content here is three boxes that are 212px each whatever the screen.
     min-width: 0;
-    // Two to a line, the third underneath. Three of them abreast in what the
-    // chips leave of a 393px screen is 74px each, and a 74px box has 50px for
-    // its label once MDC's outline is paid for — "Disponibilidad" needs 70 and
-    // was cut to "Disponib" the last time this was asked of it.
     flex-wrap: wrap;
     row-gap: tokens.$spacing-xs;
 
     .small-input {
-      // Half the box less the margin each one carries, and no growing: the
-      // odd one out then sits under the first at the same width instead of
-      // stretching across the line on its own.
-      flex: 0 1 calc(50% - #{tokens.$spacing-sm-md});
+      // A third of the row each, less the margin they carry. At 393px that is
+      // 112px a box and 88px of label once MDC's outline is paid for, which
+      // fits "Disponibilidad" at 80 — the word that has been cut twice now,
+      // first at 51px and then at 52.
+      flex: 0 1 calc(33.333% - #{tokens.$spacing-sm-md});
       width: auto;
       min-width: 0;
     }
   }
 
-  // Narrower than 360px there is nothing left to share: the chips leave 152px,
-  // which is 76px a box, which is 52px of label once the outline is paid for —
-  // and "Disponibilidad" needs 80, so it was cut again, the same fault as R237
-  // one filter later. On the smallest phones the three take a line of their
-  // own, where they get 136px each and can be read. Measured, both ways.
+  // Narrower than 360px a third of the row is 88px, which leaves 64 for a
+  // label needing 80. Two to a line there, and the third underneath at the
+  // same width. Measured at 320 and 393, in both languages.
   @include bp.respond-below(22.5em) {
-    flex: 1 1 100%;
+    .small-input {
+      flex: 0 1 calc(50% - #{tokens.$spacing-sm-md});
+    }
   }
 }
 

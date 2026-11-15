@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
 import { CvEntry } from '@domain/cv/cv-entry.entity';
 import { RecordEntry } from '@domain/artwork/record.entity';
@@ -9,6 +10,7 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { CvService } from '@shared/services/cv.service';
 import { ArtworkRecordComponent } from './artwork-record.component';
+import { RecordLineDialogComponent } from './record-line-dialog.component';
 
 const SHOW: CvEntry = {
   id: 'aaaa000000000001',
@@ -32,9 +34,11 @@ describe('the record on an artwork page', () => {
   let admin: boolean;
   let entries: RecordEntry[];
   let saved: Array<{ tokenId: string; entries: unknown[] }>;
+  let opened: Array<{ component: unknown; data: unknown }>;
 
   function build(): void {
     saved = [];
+    opened = [];
     TestBed.configureTestingModule({
       imports: [ArtworkRecordComponent],
       providers: [
@@ -55,6 +59,17 @@ describe('the record on an artwork page', () => {
           },
         },
         { provide: CvService, useValue: { entries: () => [SHOW], refresh: async () => undefined } },
+        // The form is a window of its own now, with its own spec. What this
+        // page does is draw the lines and open it.
+        {
+          provide: MatDialog,
+          useValue: {
+            open: (component: unknown, config: { data: unknown }) => {
+              opened.push({ component, data: config.data });
+              return { close: () => undefined };
+            },
+          },
+        },
       ],
     });
 
@@ -117,143 +132,6 @@ describe('the record on an artwork page', () => {
     expect(fixture.nativeElement.querySelector('.record-add')).not.toBeNull();
   });
 
-  /**
-   * The phrase is a choice and not something to type. Typed, it would arrive
-   * in one language and print English on the Spanish page — and it was two
-   * boxes, one per language, both filled in before anything had happened.
-   */
-  it('opens on the collector nobody names, with nothing to type', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      draft: () => { buyer: string };
-    };
-    expect(component.draft().buyer).toBe('private');
-
-    const inputs: HTMLInputElement[] = Array.from(
-      fixture.nativeElement.querySelectorAll('.record-form input')
-    );
-    expect(inputs.some((input) => input.value.includes('collector'))).toBe(false);
-    expect(inputs.some((input) => input.value.includes('coleccionista'))).toBe(false);
-  });
-
-  /**
-   * The line as sent keeps the show by id and sends no year with it: the year
-   * belongs to the show, and a second one could disagree with it.
-   */
-  it('sends a new line on top of the ones already there', async () => {
-    admin = true;
-    entries = [{ kind: 'exhibited', year: 2024, cv: SHOW }];
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    // The form opens on a show now, which is what most lines are.
-    component.set('kind', 'sold');
-    await component.add();
-
-    expect(saved).toHaveLength(1);
-    expect(saved[0].tokenId).toBe('165');
-    expect(saved[0].entries).toEqual([
-      { kind: 'exhibited', cv: SHOW.id },
-      {
-        kind: 'sold',
-        who: { en: 'a private collector', es: 'un coleccionista privado' },
-        year: new Date().getFullYear(),
-      },
-    ]);
-  });
-
-  /**
-   * The show, because almost every line is one: forty-eight of the sixty-five
-   * written so far. It opened on a sale, which is the kind with the most to
-   * fill in and a quarter of the lines.
-   */
-  it('opens on a show, with nothing to fill in but which one', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      draft: () => { kind: string };
-      fromTheCv: () => boolean;
-    };
-    expect(component.draft().kind).toBe('exhibited');
-    expect(component.fromTheCv()).toBe(true);
-    // What happened, and which show. No year, no note, nobody to name.
-    expect(fixture.nativeElement.querySelectorAll('mat-form-field')).toHaveLength(2);
-  });
-
-  /**
-   * Each kind asks for what it needs and nothing else. A show and a prize are
-   * on the cv already and borrow its year and its name; a sale and a
-   * collection are about somebody, so they ask who, when, and leave room for
-   * a note. The form used to ask every question of every kind.
-   */
-  it('asks only what the kind needs', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-    };
-    const fields = () =>
-      [...fixture.nativeElement.querySelectorAll('mat-form-field')].map((field: HTMLElement) =>
-        (field.querySelector('mat-label')?.textContent ?? '').trim()
-      );
-
-    for (const kind of ['exhibited', 'awarded']) {
-      component.set('kind', kind);
-      fixture.detectChanges();
-      expect(fields()).toEqual(['record.kind', 'record.onTheCv']);
-    }
-
-    for (const kind of ['sold', 'collection']) {
-      component.set('kind', kind);
-      fixture.detectChanges();
-      expect(fields()).toEqual(['record.kind', 'record.who', 'record.year', 'record.note']);
-    }
-  });
-
-  /**
-   * The draft keeps what was typed when the kind changes, and the kind decides
-   * what is sent — so a note typed against a sale cannot ride along on a
-   * prize, which is what taking the box off the form is for.
-   */
-  it('sends nothing the kind did not ask for', async () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    component.set('kind', 'sold');
-    component.set('noteEn', 'bought at the fair');
-    component.set('kind', 'awarded');
-    component.set('cv', SHOW.id);
-    await component.add();
-
-    expect(saved[0].entries).toEqual([{ kind: 'awarded', cv: SHOW.id }]);
-  });
-
   it('takes a line back by sending what is left', async () => {
     admin = true;
     entries = [
@@ -273,167 +151,19 @@ describe('the record on an artwork page', () => {
   });
 
   /**
-   * Naming anybody is optional: that a painting sold, and when, is a fact on
-   * its own, and the line then reads "Sold" with nothing after it.
+   * The form is a window over the page now, not six fields opening inline
+   * under the record — which pushed the painting, its essay and the strip of
+   * nearby paintings down the screen every time a line was added.
    */
-  it('saves a sale with nobody named', async () => {
+  it('opens the form in a window, on this painting', () => {
     admin = true;
     build();
 
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
+    (fixture.nativeElement.querySelector('.record-add') as HTMLButtonElement).click();
 
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    component.set('kind', 'sold');
-    component.set('buyer', 'named');
-    await component.add();
-
-    expect(saved[0].entries).toEqual([{ kind: 'sold', year: new Date().getFullYear() }]);
-  });
-
-  /**
-   * An institution is a proper noun: one box, stored as English alone, which
-   * is what the api keeps when there is no different Spanish — so the name
-   * reads the same on both pages. It was two boxes, one per language, and the
-   * Spanish one wanted a translation of a name.
-   */
-  it('names an institution from one box, in both languages at once', async () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    component.set('kind', 'sold');
-    component.set('buyer', 'named');
-    component.set('whoName', '  Museo Nacional Centro de Arte Reina Sofía  ');
-    await component.add();
-
-    expect(saved[0].entries).toEqual([
-      {
-        kind: 'sold',
-        who: { en: 'Museo Nacional Centro de Arte Reina Sofía' },
-        year: new Date().getFullYear(),
-      },
-    ]);
-  });
-
-  /**
-   * The three kinds whose verb governs a name, and only those. A show and a
-   * prize take their name from the cv entry the line cites, so a second one
-   * here would be a name that could disagree with it — and the boxes were on
-   * the form whatever had happened, asking who for a show that already said
-   * where. "Acquired by" and "in the collection of" end in a preposition just
-   * as "sold to" does, and asked on the sale alone they could only ever have
-   * read short.
-   */
-  it('asks who for every kind whose verb governs a name, and no other', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      naming: () => boolean;
-    };
-
-    component.set('kind', 'sold');
-    fixture.detectChanges();
-    const whenSelling = fixture.nativeElement.querySelectorAll('mat-form-field').length;
-
-    for (const kind of ['sold', 'collection']) {
-      component.set('kind', kind);
-      expect(component.naming()).toBe(true);
-    }
-
-    for (const kind of ['exhibited', 'awarded']) {
-      component.set('kind', kind);
-      fixture.detectChanges();
-      expect(component.naming()).toBe(false);
-      expect(fixture.nativeElement.querySelectorAll('mat-form-field').length).toBeLessThan(
-        whenSelling
-      );
-    }
-  });
-
-  /** The same one box, on the kind that reads "In the collection of". */
-  it('names an institution on an acquisition too', async () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    component.set('kind', 'collection');
-    component.set('buyer', 'named');
-    component.set('whoName', 'Fundación Juan March');
-    await component.add();
-
-    expect(saved[0].entries).toEqual([
-      {
-        kind: 'collection',
-        who: { en: 'Fundación Juan March' },
-        year: new Date().getFullYear(),
-      },
-    ]);
-  });
-
-  /** Chosen on a sale and then changed to a show, it is not written down. */
-  it('does not carry a name onto a line that cannot have one', async () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    const component = fixture.componentInstance as unknown as {
-      set: (field: string, value: unknown) => void;
-      add: () => Promise<void>;
-    };
-    component.set('buyer', 'named');
-    component.set('whoName', 'The Hepworth Wakefield');
-    component.set('kind', 'exhibited');
-    component.set('cv', SHOW.id);
-    await component.add();
-
-    expect(saved[0].entries).toEqual([{ kind: 'exhibited', cv: SHOW.id }]);
-  });
-
-  /** It was asked for and taken out: more precision than anybody has. */
-  it('asks for no month', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    expect(text().toLowerCase()).not.toContain('month');
-    expect(text().toLowerCase()).not.toContain('mes');
-  });
-
-  /** There is no field for a figure, and this is the test that says so. */
-  it('has nowhere on the form to type what it sold for', () => {
-    admin = true;
-    build();
-
-    fixture.nativeElement.querySelector('.record-add').click();
-    fixture.detectChanges();
-
-    expect(text().toLowerCase()).not.toContain('price');
-    expect(text().toLowerCase()).not.toContain('precio');
-    expect(fixture.nativeElement.querySelector('input[type="number"][name="price"]')).toBeNull();
+    expect(opened).toHaveLength(1);
+    expect(opened[0].component).toBe(RecordLineDialogComponent);
+    expect(opened[0].data).toBe('165');
+    expect(fixture.nativeElement.querySelector('.record-form')).toBeNull();
   });
 });

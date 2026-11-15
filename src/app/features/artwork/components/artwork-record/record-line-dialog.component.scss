@@ -1,0 +1,51 @@
+@use '../../../../../styles/tokens';
+
+/*
+  The form, in a window over the page.
+
+  It opened inline under the record until it moved here, which pushed the
+  painting, its essay and the strip of nearby paintings down the screen every
+  time a line was added. The field widths are unchanged: the show is the
+  longest thing on the form and worth reading whole, the year is a year, and
+  a note takes the row.
+*/
+.record-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$spacing-sm-md;
+
+  mat-form-field {
+    flex: 1 1 11rem;
+    min-width: 0;
+  }
+}
+
+/* The show is the longest thing on the form, and the one worth reading whole. */
+.record-cv {
+  flex: 1 1 100% !important;
+}
+
+/* An institution's name is longer than a label: it takes the rest of the row. */
+.record-who-field {
+  flex: 2 1 16rem !important;
+}
+
+.record-year-field {
+  flex: 0 1 7rem !important;
+}
+
+.record-note-field {
+  flex: 1 1 100% !important;
+}
+
+.record-actions {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  flex: 1 1 100%;
+}
+
+.record-failed {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 0.85rem;
+}

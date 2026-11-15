@@ -65,7 +65,7 @@ const contentRoutes: Routes = [
     path: 'cv',
     loadComponent: () => import('@features/cv/cv.component').then((m) => m.CvComponent),
     title: 'seo.cv.title',
-    data: { description: 'seo.cv.description' },
+    data: { description: 'seo.cv.description', hideBreadcrumb: true },
   },
   {
     path: 'texts',
@@ -80,27 +80,27 @@ const contentRoutes: Routes = [
     loadComponent: () =>
       import('@features/statement/about.component').then((m) => m.AboutComponent),
     title: 'seo.about.title',
-    data: { description: 'seo.about.description' },
+    data: { description: 'seo.about.description', hideBreadcrumb: true },
   },
   {
     path: 'contact',
     loadComponent: () =>
       import('@features/contact/contact.component').then((m) => m.ContactComponent),
     title: 'seo.contact.title',
-    data: { description: 'seo.contact.description' },
+    data: { description: 'seo.contact.description', hideBreadcrumb: true },
   },
   {
     path: 'terms',
     loadComponent: () => import('@features/terms/terms.component').then((m) => m.TermsComponent),
     title: 'seo.terms.title',
-    data: { description: 'seo.terms.description' },
+    data: { description: 'seo.terms.description', hideBreadcrumb: true },
   },
   {
     path: 'privacy',
     loadComponent: () =>
       import('@features/privacy/privacy.component').then((m) => m.PrivacyComponent),
     title: 'seo.privacy.title',
-    data: { description: 'seo.privacy.description' },
+    data: { description: 'seo.privacy.description', hideBreadcrumb: true },
   },
 ];
 

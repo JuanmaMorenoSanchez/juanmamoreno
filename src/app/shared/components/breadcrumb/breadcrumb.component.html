@@ -1,165 +1,146 @@
-@if (breadcrumbs().length) {
-  <nav class="container" aria-label="Breadcrumb">
-    <mat-chip-set>
-      <mat-chip color="primary">
+<!--
+  The catalogue's controls, and nothing else.
+
+  It was a breadcrumb with the filters bolted on: a house, "Paintings", then
+  the three selects. The trail said what the menu and the heading already say
+  — and on a phone it took the first line, which pushed the third filter onto
+  a row of its own and left the whole block three rows tall. Gone, the three
+  share one line and the chips follow them.
+
+  It is drawn on the catalogue and nowhere else now: every other page sets
+  `hideBreadcrumb`, because a filter for paintings on the contact page was
+  always a control with nothing to narrow.
+-->
+<nav class="container" aria-label="Filter the paintings">
+  <mat-chip-set>
+    <!--
+      The three filters in a box of their own, so they wrap as a set rather
+      than one at a time: loose in the chip row they landed wherever they
+      happened to, against different left edges.
+    -->
+    <div class="filters">
+      <!--
+      The label stays up whatever happens, like the one beside it. This
+      select empties itself after every pick — the year it took has become a
+      chip — so left to itself the label would sit in the middle as a
+      placeholder and the two controls would read as different kinds of
+      thing. What shows underneath is "All" until a year has been chosen, and
+      nothing after that, because from then on the chips say which years.
+    -->
+      <mat-form-field
+        class="small-input"
+        appearance="outline"
+        subscriptSizing="dynamic"
+        floatLabel="always"
+      >
+        <mat-label>{{ 'year.label' | translate }}</mat-label>
+        <mat-select
+          [formField]="yearPickerForm.newYear"
+          [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
+          aria-label="Select year"
+        >
+          @for (year of validYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <!--
+      Beside the year, and read the same way: pick one and it becomes a chip
+      in the row. A select rather than a pair of buttons because the three
+      answers are exclusive — everything, only what has sold, only what has
+      not — and a select can only ever hold one of them.
+    -->
+      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'availability.label' | translate }}</mat-label>
+        <mat-select
+          [value]="availability()"
+          (selectionChange)="setAvailability($event.value)"
+          aria-label="Select availability"
+        >
+          @for (choice of availabilityChoices; track choice) {
+            <mat-option [value]="choice">
+              {{ 'availability.' + choice | translate }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <!--
+      What has happened to the painting, as a way of narrowing the catalogue:
+      only what has been shown, or only what has won something. The records
+      are written into the build, so this narrows a prerendered page too.
+    -->
+      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'record.title' | translate }}</mat-label>
+        <mat-select
+          [value]="record()"
+          (selectionChange)="setRecord($event.value)"
+          aria-label="Select record"
+        >
+          @for (choice of recordChoices; track choice) {
+            <mat-option [value]="choice">
+              {{ 'record.filter.' + choice | translate }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
+      <mat-chip
+        color="primary"
+        [removable]="true"
+        (removed)="removeYearFilter(breadcrumb.label)"
+        animate.enter="year-chip-enter"
+        animate.leave="year-chip-leave"
+      >
         <a
-          routerLink="/"
+          [routerLink]="breadcrumb.url"
+          [queryParams]="breadcrumb.queryParams"
+          [attr.aria-label]="breadcrumb.label"
           routerLinkActive="router-link-active"
           class="link-as-text"
-          aria-label="Home"
           matLine
         >
-          <mat-icon>home</mat-icon>
+          {{ breadcrumb.label }}
         </a>
+        <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
+          <mat-icon>cancel</mat-icon>
+        </button>
       </mat-chip>
-      @for (breadcrumb of routeBreadcrumbs(); track breadcrumb.label) {
-        <mat-chip color="primary">
-          <a
-            [routerLink]="breadcrumb.url"
-            [queryParams]="breadcrumb.queryParams"
-            [attr.aria-label]="breadcrumb.label"
-            routerLinkActive="router-link-active"
-            class="link-as-text"
-            matLine
-          >
-            {{ breadcrumb.label }}
-          </a>
-        </mat-chip>
-      }
-      <!--
-        The two filters, in a box of their own.
-
-        Loose in the chip row they wrapped wherever they happened to land: on a
-        phone the year followed the chips onto the first line and availability
-        dropped alone onto the second, so two controls that are read as a pair
-        sat on different rows against different left edges. Boxed, they wrap
-        together and share the row equally, and on a wide screen they sit
-        inline exactly as before.
-      -->
-      <div class="filters">
-        <!--
-        The label stays up whatever happens, like the one beside it. This
-        select empties itself after every pick — the year it took has become a
-        chip — so left to itself the label would sit in the middle as a
-        placeholder and the two controls would read as different kinds of
-        thing. What shows underneath is "All" until a year has been chosen, and
-        nothing after that, because from then on the chips say which years.
-      -->
-        <mat-form-field
-          class="small-input"
-          appearance="outline"
-          subscriptSizing="dynamic"
-          floatLabel="always"
-        >
-          <mat-label>{{ 'year.label' | translate }}</mat-label>
-          <mat-select
-            [formField]="yearPickerForm.newYear"
-            [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
-            aria-label="Select year"
-          >
-            @for (year of validYears; track year) {
-              <mat-option [value]="year">
-                {{ year }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <!--
-        Beside the year, and read the same way: pick one and it becomes a chip
-        in the row. A select rather than a pair of buttons because the three
-        answers are exclusive — everything, only what has sold, only what has
-        not — and a select can only ever hold one of them.
-      -->
-        <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>{{ 'availability.label' | translate }}</mat-label>
-          <mat-select
-            [value]="availability()"
-            (selectionChange)="setAvailability($event.value)"
-            aria-label="Select availability"
-          >
-            @for (choice of availabilityChoices; track choice) {
-              <mat-option [value]="choice">
-                {{ 'availability.' + choice | translate }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <!--
-        What has happened to the painting, as a way of narrowing the catalogue:
-        only what has been shown, or only what has won something. The records
-        are written into the build, so this narrows a prerendered page too.
-      -->
-        <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>{{ 'record.title' | translate }}</mat-label>
-          <mat-select
-            [value]="record()"
-            (selectionChange)="setRecord($event.value)"
-            aria-label="Select record"
-          >
-            @for (choice of recordChoices; track choice) {
-              <mat-option [value]="choice">
-                {{ 'record.filter.' + choice | translate }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-      @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
-        <mat-chip
-          color="primary"
-          [removable]="true"
-          (removed)="removeYearFilter(breadcrumb.label)"
-          animate.enter="year-chip-enter"
-          animate.leave="year-chip-leave"
-        >
-          <a
-            [routerLink]="breadcrumb.url"
-            [queryParams]="breadcrumb.queryParams"
-            [attr.aria-label]="breadcrumb.label"
-            routerLinkActive="router-link-active"
-            class="link-as-text"
-            matLine
-          >
-            {{ breadcrumb.label }}
-          </a>
-          <button matChipRemove [attr.aria-label]="'Remove year ' + breadcrumb.label">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip>
-      }
-      <!--
-        Only when it is narrowing something. "Both" is the absence of a filter,
-        and a chip saying so would be a chip that means nothing.
-      -->
-      @if (availability() !== 'both') {
-        <mat-chip
-          color="primary"
-          [removable]="true"
-          (removed)="clearAvailability()"
-          animate.enter="year-chip-enter"
-          animate.leave="year-chip-leave"
-        >
-          <span class="link-as-text">{{ 'availability.' + availability() | translate }}</span>
-          <button matChipRemove [attr.aria-label]="'availability.remove' | translate">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip>
-      }
-      <!-- Same rule: "All" is the absence of a filter and gets no chip. -->
-      @if (record() !== 'any') {
-        <mat-chip
-          color="primary"
-          [removable]="true"
-          (removed)="clearRecord()"
-          animate.enter="year-chip-enter"
-          animate.leave="year-chip-leave"
-        >
-          <span class="link-as-text">{{ 'record.filter.' + record() | translate }}</span>
-          <button matChipRemove [attr.aria-label]="'record.filter.remove' | translate">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip>
-      }
-    </mat-chip-set>
-  </nav>
-}
+    }
+    <!--
+      Only when it is narrowing something. "Both" is the absence of a filter,
+      and a chip saying so would be a chip that means nothing.
+    -->
+    @if (availability() !== 'both') {
+      <mat-chip
+        color="primary"
+        [removable]="true"
+        (removed)="clearAvailability()"
+        animate.enter="year-chip-enter"
+        animate.leave="year-chip-leave"
+      >
+        <span class="link-as-text">{{ 'availability.' + availability() | translate }}</span>
+        <button matChipRemove [attr.aria-label]="'availability.remove' | translate">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    }
+    <!-- Same rule: "All" is the absence of a filter and gets no chip. -->
+    @if (record() !== 'any') {
+      <mat-chip
+        color="primary"
+        [removable]="true"
+        (removed)="clearRecord()"
+        animate.enter="year-chip-enter"
+        animate.leave="year-chip-leave"
+      >
+        <span class="link-as-text">{{ 'record.filter.' + record() | translate }}</span>
+        <button matChipRemove [attr.aria-label]="'record.filter.remove' | translate">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    }
+  </mat-chip-set>
+</nav>

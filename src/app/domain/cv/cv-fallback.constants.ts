@@ -325,8 +325,7 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
       "en": "Galería Renace Art"
     },
     "city": "Jaen",
-    "country": "spain",
-    "venueUrl": "https://renace.art/"
+    "country": "spain"
   },
   {
     "id": "ce090999a3275899",

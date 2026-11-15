@@ -6130,7 +6130,7 @@ the item the drawer opens focused is `--mat-button-text-state-layer-color`.
 *Proven by:* `top-menu.component.scss`, which names each token and why; and the
 drawer as rendered on a 393px phone, where every word is `#1f1f1f`
 
-### R237 — The catalogue's filters sit on the breadcrumb's own line · met
+### R237 — The catalogue's filters have the row to themselves · met
 On a phone the year and availability selects share whatever the chips leave of
 the first line, about 110px each, rather than taking a line of their own.
 
@@ -6361,3 +6361,42 @@ read as translation keys on both halves of the site.
 *Proven by:* the record form rendered with its picker open, whose group labels
 read "Solo shows" and "Artistic awards and residencies" rather than
 `cv.shows.title`
+
+### R247 — The trail is gone; the row is the catalogue's controls · met
+The bar above the catalogue holds the three filters and the chips they make,
+and nothing else. The house and "Paintings" are off it: the trail said what
+the menu and the page's own heading already say, and on a phone it took the
+first line — which pushed the third filter onto a row of its own and left the
+block three rows tall, where it is now one.
+
+**It is drawn on the catalogue and nowhere else.** Every other content page
+sets `hideBreadcrumb`, because a filter for paintings on the contact page is a
+control with nothing to narrow — which it had been on five pages since the
+filters were put in the trail.
+
+Three abreast at 393px is 116px a box and 88px of label once MDC's outline is
+paid for, which fits "Disponibilidad" at 80 — the word this has now been
+measured against three times. Below 360px a third of the row is 88px and
+leaves 64, so there they go two to a line with the third under them.
+*Proven by:* the catalogue rendered at 393px with all three filters on one
+row and the longest label unclipped, and at 320px with two and one;
+`e2e/small-phone.test.mjs` "puts two of them on one row and the third
+underneath, all equal halves"
+
+### R248 — A record line is written in a window · met
+The form for adding a line — the kind, the show, who, the year, a note — opens
+over the page instead of inside it. It was six fields appearing under the
+record on the artwork page, so pressing Add pushed the painting, its essay and
+the strip of nearby paintings down the screen, and on a phone put the form
+below what was being looked at. A record is written while looking at the
+painting.
+
+It writes the whole record rather than appending, which is what the api takes,
+and builds it from what the api last answered rather than from the drawn
+lines: the resolved shape is a projection, and sending that back would rewrite
+the entries already there.
+*Proven by:* `record-line-dialog.component.spec.ts` (12 tests, including that
+it sends a new line on top of the ones already there, that it asks only what
+the kind needs, and that it has nowhere to type what a painting sold for); and
+`artwork-record.component.spec.ts` "opens the form in a window, on this
+painting"

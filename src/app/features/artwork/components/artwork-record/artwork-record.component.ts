@@ -1,50 +1,14 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { Bilingual } from '@domain/cv/cv-entry.entity';
-import { cvSections } from '@domain/cv/cv';
-import {
-  RECORD_KINDS,
-  RECORD_KINDS_FROM_THE_CV,
-  RECORD_NAMING_KINDS,
-  RecordEntryEdit,
-  RecordKind,
-} from '@domain/artwork/record.entity';
+import { RecordEntryEdit } from '@domain/artwork/record.entity';
 import { inOrder, recordLines } from '@domain/artwork/record';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { ArtworkRecordService } from '@shared/services/artwork-record.service';
-import { CvService } from '@shared/services/cv.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
-
-/** What a line is being edited to, before it is sent. */
-interface Draft {
-  kind: RecordKind;
-  cv: string;
-  /** Which of the two answers to "who": the collector nobody names, or a name. */
-  buyer: 'private' | 'named';
-  /** The institution, typed, when that is the answer. */
-  whoName: string;
-  year: number | null;
-  noteEn: string;
-}
-
-/**
- * The buyer who is not named, in his words, in both languages.
- *
- * The one answer here that is a phrase rather than a proper noun, which is why
- * it is a choice and not something to type: typed, it would arrive in one
- * language and print English on the Spanish page. An institution's name is a
- * proper noun and the same in both, so one box fills both.
- */
-const PRIVATE_COLLECTOR: Bilingual = {
-  en: 'a private collector',
-  es: 'un coleccionista privado',
-};
+import { RecordLineDialogComponent } from './record-line-dialog.component';
 
 /**
  * What has happened to this painting, between the technical sheet and the essay.
@@ -69,21 +33,13 @@ const PRIVATE_COLLECTOR: Bilingual = {
 @Component({
   selector: 'app-artwork-record',
   standalone: true,
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    TranslatePipe,
-  ],
+  imports: [MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './artwork-record.component.html',
   styleUrl: './artwork-record.component.scss',
 })
 export class ArtworkRecordComponent {
   private readonly records = inject(ArtworkRecordService);
-  private readonly cv = inject(CvService);
+  private readonly dialog = inject(MatDialog);
   private readonly auth = inject(AdminAuthService);
   private readonly language = inject(LanguageUrlService);
 
@@ -95,31 +51,6 @@ export class ArtworkRecordComponent {
     void this.records.refresh();
   }
 
-  protected readonly kinds = RECORD_KINDS;
-
-  /**
-   * Whether this line has anybody to name.
-   *
-   * The three kinds whose verb governs a name. An exhibition and a prize take
-   * their name from the cv entry they cite, so a second one here would be a
-   * name that could disagree with it — and the two boxes used to be on the
-   * form whatever had happened, asking who for a show that already said where.
-   */
-  protected readonly naming = computed(() => RECORD_NAMING_KINDS.includes(this.draft().kind));
-
-  /**
-   * The form asks what the kind needs and nothing else.
-   *
-   * Two shapes, not five. A show and a prize are on the cv already, so they
-   * cite the entry and take its year and its name from it — there is nothing
-   * left to ask. A sale and a collection are about somebody, so they ask who,
-   * when, and leave room for a note. The form used to ask every question of
-   * every kind: a note on a show nobody annotates, a cv entry on a sale that
-   * cites none, a year beside a prize that already has one on the cv.
-   */
-  protected readonly fromTheCv = computed(() =>
-    RECORD_KINDS_FROM_THE_CV.includes(this.draft().kind)
-  );
   protected readonly mine = computed(() => this.auth.isAdmin());
 
   /** The lines as the page draws them, in the language the address is in. */
@@ -142,76 +73,28 @@ export class ArtworkRecordComponent {
   /** Drawn at all? For a reader, only when there is something to read. */
   protected readonly shown = computed(() => this.mine() || this.lines().length > 0);
 
-  /**
-   * Every cv entry for the picker, still in the sections the cv keeps them in.
-   *
-   * It used to `flatMap` those away, so the list arrived as one unbroken run
-   * of every show, prize, residency and fair — sixty-odd lines in a single
-   * column with nothing to tell one kind from the next, on a control whose
-   * whole job is finding one of them. The sections exist already; keeping
-   * them costs nothing and gives the list its headings back.
-   */
-  protected readonly career = computed(() =>
-    cvSections(this.cv.entries(), this.language.contentLanguage()).map((section) => ({
-      kind: section.kind,
-      title: section.title,
-      items: section.items.map((item) => ({
-        id: item.id,
-        label: `${item.year} · ${item.title}${item.venue ? `, ${item.venue}` : ''}`,
-      })),
-    }))
-  );
-
-  protected readonly adding = signal(false);
   protected readonly saving = signal(false);
   protected readonly failed = signal('');
-  protected readonly draft = signal<Draft>(empty());
 
   /** Where the cv page says this show is, in the language being read. */
   protected cvLink(anchor: string): string {
     return `${this.language.link('cv')}#${anchor}`;
   }
 
-  protected open(): void {
-    this.draft.set(empty());
-    this.failed.set('');
-    this.adding.set(true);
-    void this.cv.refresh();
-  }
-
-  protected close(): void {
-    this.adding.set(false);
-    this.failed.set('');
-  }
-
-  protected set<K extends keyof Draft>(field: K, value: Draft[K]): void {
-    this.draft.update((draft) => ({ ...draft, [field]: value }));
-  }
-
   /**
-   * Whether the line could be saved.
+   * Adds a line, in a window over the page.
    *
-   * An exhibition needs the show; everything else needs a year, since there is
-   * no show to take one from.
+   * It was six fields opening inline under the record, which pushed the
+   * painting, its essay and the strip of nearby paintings down the screen
+   * every time. A record is written while looking at the painting.
    */
-  protected readonly ready = computed(() => {
-    const draft = this.draft();
-    return this.fromTheCv() ? Boolean(draft.cv) : Boolean(draft.year);
-  });
-
-  protected async add(): Promise<void> {
-    if (!this.ready() || this.saving()) return;
-
-    this.saving.set(true);
+  protected open(): void {
     this.failed.set('');
-    try {
-      await this.records.set(this.tokenId(), [...this.stored(), this.asEntry(this.draft())]);
-      this.adding.set(false);
-    } catch {
-      this.failed.set('record.failed');
-    } finally {
-      this.saving.set(false);
-    }
+    this.dialog.open(RecordLineDialogComponent, {
+      data: this.tokenId(),
+      width: '34rem',
+      maxWidth: '92vw',
+    });
   }
 
   /**
@@ -255,60 +138,4 @@ export class ArtworkRecordComponent {
       ...(entry.note ? { note: entry.note } : {}),
     }));
   }
-
-  /**
-   * What the kind asks for, and nothing the form happened to be holding.
-   *
-   * Built from the kind rather than from whichever boxes have a value in
-   * them: switching the kind leaves the old answers in the draft, and sending
-   * them would store a note on a prize and a cv entry on a sale, which is
-   * what the boxes were taken off the form to prevent.
-   */
-  private asEntry(draft: Draft): RecordEntryEdit {
-    if (RECORD_KINDS_FROM_THE_CV.includes(draft.kind)) {
-      return { kind: draft.kind, cv: draft.cv };
-    }
-
-    const who = whoOf(draft);
-    const noteEn = draft.noteEn.trim();
-    return {
-      kind: draft.kind,
-      ...(who ? { who } : {}),
-      year: Number(draft.year),
-      ...(noteEn ? { note: { en: noteEn } } : {}),
-    };
-  }
-}
-
-/**
- * Who the painting went to, or nobody.
- *
- * An institution is taken as a proper noun: one box, stored as English alone,
- * which is what the api keeps when there is no different Spanish — so the name
- * reads the same on both pages, as a name should. Left empty it is nobody,
- * because naming anybody is optional: that a painting sold, and when, is a
- * fact on its own, and the line then reads "Sold" with nothing after it.
- */
-function whoOf(draft: Draft): Bilingual | undefined {
-  if (draft.buyer === 'private') return PRIVATE_COLLECTOR;
-  const named = draft.whoName.trim();
-  return named ? { en: named } : undefined;
-}
-
-/**
- * A new line, opening on the show.
- *
- * Forty-eight of the sixty-five lines written so far are a show, and a show
- * needs one answer: which one. It opened on a sale, which is the kind with
- * the most to fill in and a quarter of the lines.
- */
-function empty(): Draft {
-  return {
-    kind: 'exhibited',
-    cv: '',
-    buyer: 'private',
-    whoName: '',
-    year: new Date().getFullYear(),
-    noteEn: '',
-  };
 }

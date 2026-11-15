@@ -718,6 +718,24 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Huelva",
           "country": "spain"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "b30ad80ca6893f41",
+          "kind": "collective",
+          "year": 2021,
+          "title": {
+            "en": "Figuración Fantástica Sevillana"
+          },
+          "venue": {
+            "en": "Galería Impulso"
+          },
+          "city": "Querétaro",
+          "country": "mexico",
+          "venueUrl": "https://impulsogaleria.com/en/home/"
+        }
       }
     ]
   },
@@ -739,6 +757,24 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Huelva",
           "country": "spain"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2023,
+        "cv": {
+          "id": "c45534b738716510",
+          "kind": "collective",
+          "year": 2023,
+          "title": {
+            "en": "Pintores pensando la pintura"
+          },
+          "venue": {
+            "en": "Espacio 75 Art Gallery"
+          },
+          "city": "Madrid",
+          "country": "spain",
+          "venueUrl": "https://www.espacio75.com/"
         }
       }
     ]
@@ -1675,14 +1711,6 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "74",
     "entries": [
       {
-        "kind": "sold",
-        "year": 2012,
-        "who": {
-          "en": "a private collector",
-          "es": "un coleccionista privado"
-        }
-      },
-      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -1697,6 +1725,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
         }
       }
     ]
@@ -1705,14 +1741,6 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "75",
     "entries": [
       {
-        "kind": "sold",
-        "year": 2012,
-        "who": {
-          "en": "a private collector",
-          "es": "un coleccionista privado"
-        }
-      },
-      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -1727,6 +1755,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
+        }
+      },
+      {
+        "kind": "sold",
+        "year": 2013,
+        "who": {
+          "en": "a private collector",
+          "es": "un coleccionista privado"
         }
       }
     ]

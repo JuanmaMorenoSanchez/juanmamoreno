@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.78.0
+
+- **feat** The trail is off the bar above the catalogue: no house, no
+  "Paintings". It said what the menu and the heading already say, and on a
+  phone it took the first line — which pushed the third filter onto a row of
+  its own and left the block three rows tall. The three filters share one row
+  now, and the bar is drawn on the catalogue and nowhere else, since a filter
+  for paintings on the contact page narrows nothing.
+- **feat** A record line is written in a window too. Six fields opening under
+  the record pushed the painting, its essay and the strip of nearby paintings
+  down the screen every time Add was pressed.
+
 ## 2.77.0
 
 - **fix** The cv no longer cuts its own lines off. It was built out of

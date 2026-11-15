@@ -73,11 +73,13 @@ export class BreadcrumbComponent implements OnInit {
   public breadcrumbs: WritableSignal<Array<BreadCrumb>>;
   public selectedYears: number[] = [];
 
-  // Split so the year picker can render between the two in the template,
-  // right after the static route crumbs (Home, Paintings, ...) and before any
-  // year chips — its position then only depends on those static crumbs, not
-  // on how many years are selected.
-  public readonly routeBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !b.isYear));
+  /**
+   * The year chips, which are the only crumbs drawn any more.
+   *
+   * The trail itself — a house and "Paintings" — is gone: it said what the
+   * menu and the heading already say, and on a phone it took the first line
+   * and pushed the third filter onto a row of its own.
+   */
   public readonly yearBreadcrumbs = computed(() => this.breadcrumbs().filter((b) => !!b.isYear));
 
   private readonly yearPickerModel = signal<YearPickerModel>({ newYear: null });
