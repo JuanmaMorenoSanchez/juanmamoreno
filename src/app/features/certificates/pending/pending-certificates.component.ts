@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
+import { WalletService } from '@shared/services/wallet.service';
 
 /**
  * The certificates written and not yet signed, at the top of the page.
@@ -23,17 +24,24 @@ import { MintApiService, type PendingMint } from '@shared/services/mint-api.serv
  * At the top because it is the state of the work: what is half-done comes
  * before the form for starting something new.
  *
- * **Nothing here mints, and nothing here pretends to.** The contract has
- * `amend`, `freeze` and `burn` and no mint function: a certificate goes on
- * the chain through OpenSea, by hand. A button offering otherwise is read as
- * a step in the work and is not one — which is why the old "Write them now"
- * was removed along with the page it was on.
+ * **Each one can be written from here, by his own wallet.** The server
+ * decides what the certificate says and encodes the call; the wallet signs
+ * it; no key comes near either. That path has existed in the api the whole
+ * time — `pending/:tokenId/transaction` and `pending/:tokenId/written` — and
+ * lost its only caller when the page that held the queue was deleted. What
+ * was removed with good reason was the old "Write them now", which asked the
+ * *server* to mint with a key that is set nowhere.
  *
- * **The price belongs here even so.** Signing is a transaction wherever it is
- * signed from, and the price of gas is the whole of what a certificate costs
- * — so the figure, the warning and the ceiling sit where the decision is
- * made, rather than beside the studio's Prepare button, which spends
- * nothing.
+ * **It is taken off the list by the chain, not by the wallet.** A wallet
+ * answers with a hash the moment it signs, which says the transaction was
+ * sent and nothing about whether it was mined — so `written` asks the chain,
+ * and a certificate dropped on the strength of a hash that later failed is
+ * one nothing would ever write again.
+ *
+ * **The price sits here too**, because this is where the decision about it is
+ * made: the same certificate is a few cents on a quiet morning and several
+ * pounds on a busy afternoon. It had been beside the studio's Prepare button,
+ * which spends nothing.
  */
 @Component({
   selector: 'app-pending-certificates',
@@ -45,6 +53,7 @@ import { MintApiService, type PendingMint } from '@shared/services/mint-api.serv
 })
 export class PendingCertificatesComponent {
   private api = inject(MintApiService);
+  private wallet = inject(WalletService);
 
   /**
    * Bumped by the page when the form has prepared one, so the list is right
@@ -60,6 +69,10 @@ export class PendingCertificatesComponent {
 
   protected readonly confirming = signal<number | null>(null);
   protected readonly discarding = signal<number | null>(null);
+
+  /** Which one is at the wallet, and what the wallet said about the last. */
+  protected readonly minting = signal<number | null>(null);
+  protected readonly said = signal<string>('');
 
   protected readonly count = computed(() => this.waiting()?.length ?? 0);
 
@@ -102,6 +115,46 @@ export class PendingCertificatesComponent {
       this.problem.set(message ?? `Certificate ${tokenId} could not be thrown away.`);
     } finally {
       this.discarding.set(null);
+    }
+  }
+
+  /**
+   * Writes one to the chain: his wallet, his confirmation, his gas.
+   *
+   * The same three steps as every other call this site makes to the
+   * contract — connect, sign, then ask the chain whether it landed. Nothing
+   * here builds or reads the call; the bytes arrive from the api, which is
+   * the only place that decides what a certificate says.
+   */
+  protected async mint(tokenId: number): Promise<void> {
+    if (this.minting()) return;
+    this.minting.set(tokenId);
+    this.problem.set('');
+    this.said.set('');
+    try {
+      const to = await this.wallet.connect();
+      const transaction = await this.api.mintTransaction(tokenId, to);
+      await this.wallet.send(transaction);
+      this.said.set(`Certificate ${tokenId} is signed. Asking the chain whether it landed…`);
+
+      const { written } = await this.api.written(tokenId);
+      if (written) {
+        this.waiting.update((all) => (all ?? []).filter((one) => one.tokenId !== tokenId));
+        this.said.set(`Certificate ${tokenId} is on the chain.`);
+      } else {
+        // Sent and not yet mined. It stays on the list, which is the honest
+        // place for it: the next visit asks the chain again.
+        this.said.set(
+          `Certificate ${tokenId} was sent but has not been mined yet. It stays on the list.`
+        );
+      }
+    } catch (failure: unknown) {
+      const message =
+        (failure as { error?: { message?: string } })?.error?.message ??
+        (failure as Error)?.message;
+      this.problem.set(message ?? `Certificate ${tokenId} could not be written.`);
+    } finally {
+      this.minting.set(null);
     }
   }
 

@@ -5,23 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
-## 2.79.0
+## 2.80.0
 
 - **feat** A painting can say what paid for it: **created with the support
   of** an institution, which names the giver, takes the painting's own year
   rather than asking for one, and reads first in the record — support is true
   of a painting before it is finished, not something that happened to it
   afterwards.
-- **feat** The gas price, the warning and the ceiling moved to the list of
-  certificates waiting to be signed, where the decision about them is made.
-  They had been on the studio's Prepare button, which spends nothing.
+- **feat** Each certificate on the queue can be written to the chain from
+  there: connect the wallet, confirm it yourself, and the chain is asked
+  whether it landed before it comes off the list. The api has had that path
+  all along — it lost its only caller when the page holding the queue was
+  deleted. The gas price, the warning and the ceiling moved there with it,
+  from the studio's Prepare button, which spends nothing.
 - **feat** The ceiling can be overruled: when the price is what is stopping a
   press, "Mint anyway" lets it through and says the limit is being paid over.
   A second press rather than a raised ceiling, which would stay raised.
-- **fix** The queue's "Its page" link is gone. An unminted token has no page,
-  so it opened an empty artwork page — which is also why there is no mint
-  button there: the contract has `amend`, `freeze` and `burn` and no mint
-  function at all.
+- **fix** The queue's "Its page" link is gone: an unminted token has no page,
+  so it opened an empty artwork page.
 
 ## 2.78.0
 

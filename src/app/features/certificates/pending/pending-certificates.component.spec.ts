@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
+import { WalletService } from '@shared/services/wallet.service';
 import { PendingCertificatesComponent } from './pending-certificates.component';
 
 /**
@@ -26,8 +27,13 @@ function setup(options: {
   list?: PendingMint[];
   fails?: boolean;
   onDiscard?: () => Promise<void>;
+  onSend?: () => Promise<string>;
+  written?: boolean;
 }) {
   const discarded: number[] = [];
+  const asked: Array<{ tokenId: number; to: string }> = [];
+  const sent: unknown[] = [];
+  const confirmed: number[] = [];
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [PendingCertificatesComponent],
@@ -42,13 +48,38 @@ function setup(options: {
             discarded.push(tokenId);
             return options.onDiscard ? options.onDiscard() : Promise.resolve();
           },
+          mintTransaction: (tokenId: number, to: string) => {
+            asked.push({ tokenId, to });
+            return Promise.resolve({ to: '0xcontract', data: '0xdata', chainId: 1, tokenId });
+          },
+          written: (tokenId: number) => {
+            confirmed.push(tokenId);
+            return Promise.resolve({ written: options.written ?? true });
+          },
+        },
+      },
+      {
+        provide: WalletService,
+        useValue: {
+          connect: () => Promise.resolve('0xhis-wallet'),
+          send: (transaction: unknown) => {
+            sent.push(transaction);
+            return options.onSend ? options.onSend() : Promise.resolve('0xhash');
+          },
         },
       },
     ],
   });
   const fixture = TestBed.createComponent(PendingCertificatesComponent);
   fixture.detectChanges();
-  return { fixture, discarded, host: fixture.nativeElement as HTMLElement };
+  return {
+    fixture,
+    discarded,
+    asked,
+    sent,
+    confirmed,
+    host: fixture.nativeElement as HTMLElement,
+  };
 }
 
 /** The list is fetched in an effect, so give the promise a turn to land. */
@@ -89,7 +120,7 @@ describe('the certificates waiting to be signed', () => {
     const { fixture, host, discarded } = setup({ list: [waiting(5)] });
     await settled(fixture);
 
-    (host.querySelectorAll('.pending-doing button')[0] as HTMLButtonElement).click();
+    (host.querySelector('[data-testid="discard-5"]') as HTMLButtonElement).click();
     fixture.detectChanges();
 
     expect(discarded).toEqual([]);
@@ -139,6 +170,71 @@ describe('the certificates waiting to be signed', () => {
     fixture.detectChanges();
     await settled(fixture);
 
+    expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
+  });
+});
+
+/**
+ * Writing one to the chain, from the list.
+ *
+ * His wallet, his confirmation, his gas. The api encodes the call — it is the
+ * only thing that decides what a certificate says — and the chain is asked
+ * whether it landed before anything comes off the list.
+ */
+describe('minting one from the list', () => {
+  const mint = (fixture: { componentInstance: unknown }) =>
+    (fixture.componentInstance as { mint(id: number): Promise<void> }).mint(5);
+
+  it('asks the api for the call with the wallet that will hold it', async () => {
+    const { fixture, asked, sent } = setup({ list: [waiting(5)] });
+    await settled(fixture);
+
+    await mint(fixture);
+
+    expect(asked).toEqual([{ tokenId: 5, to: '0xhis-wallet' }]);
+    expect(sent).toEqual([{ to: '0xcontract', data: '0xdata', chainId: 1, tokenId: 5 }]);
+  });
+
+  it('asks the chain whether it landed, and then takes it off the list', async () => {
+    const { fixture, host, confirmed } = setup({ list: [waiting(5), waiting(6)] });
+    await settled(fixture);
+
+    await mint(fixture);
+    fixture.detectChanges();
+
+    expect(confirmed).toEqual([5]);
+    expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
+    expect(host.textContent).toContain('on the chain');
+  });
+
+  /**
+   * A wallet answers with a hash the moment it signs, which says the
+   * transaction was sent and nothing about whether it was mined. One dropped
+   * on the strength of a hash that later failed is one nothing would write
+   * again.
+   */
+  it('keeps one that was sent but not yet mined', async () => {
+    const { fixture, host } = setup({ list: [waiting(5)], written: false });
+    await settled(fixture);
+
+    await mint(fixture);
+    fixture.detectChanges();
+
+    expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
+    expect(host.textContent).toContain('not been mined yet');
+  });
+
+  it('says what went wrong when the wallet refused, and keeps it', async () => {
+    const { fixture, host } = setup({
+      list: [waiting(5)],
+      onSend: () => Promise.reject(new Error('User rejected the request')),
+    });
+    await settled(fixture);
+
+    await mint(fixture);
+    fixture.detectChanges();
+
+    expect(host.textContent).toContain('User rejected the request');
     expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
   });
 });

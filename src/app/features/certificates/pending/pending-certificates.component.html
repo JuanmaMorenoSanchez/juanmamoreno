@@ -52,6 +52,20 @@
             </div>
 
             <div class="pending-doing">
+              <!--
+                His wallet, his confirmation, his gas — the same three steps
+                as every other call this site makes to the contract. The gate
+                will not let it through while gas is dear, and says so, and
+                can be overruled by somebody who means it.
+              -->
+              <app-mint-gate
+                label="Mint"
+                [disabled]="minting() !== null || discarding() !== null"
+                (mint)="mint(one.tokenId)"
+              />
+              @if (minting() === one.tokenId) {
+                <span class="pending-sure">at your wallet…</span>
+              }
               @if (confirming() === one.tokenId) {
                 <!-- Asked first: throwing one away is the photograph and the
                      measurements to do again. -->
@@ -66,7 +80,12 @@
                 </button>
                 <button type="button" class="pending-plain" (click)="ask(one.tokenId)">Keep</button>
               } @else {
-                <button type="button" class="pending-plain" (click)="ask(one.tokenId)">
+                <button
+                  type="button"
+                  class="pending-plain"
+                  [attr.data-testid]="'discard-' + one.tokenId"
+                  (click)="ask(one.tokenId)"
+                >
                   Discard
                 </button>
               }
@@ -74,6 +93,10 @@
           </li>
         }
       </ul>
+
+      @if (said(); as note) {
+        <p class="pending-note" role="status">{{ note }}</p>
+      }
     </section>
   }
 }

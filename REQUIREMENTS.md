@@ -6427,26 +6427,35 @@ else" and "will not save without the name of whoever gave it"; and
 `artwork-record.service.spec.ts` in the backend, which asserts the same order
 on the api's side
 
-### R250 — The price of gas is shown where the decision is made · met
-The gas price, the warning and the ceiling sit on the list of certificates
-waiting to be signed. Signing one is a transaction wherever it is signed from,
-and the price of gas is the whole of what a certificate costs — the same one
-is a few cents on a quiet morning and several pounds on a busy afternoon.
+### R250 — A waiting certificate is written from the list, by his wallet · met
+Each certificate on the queue has a Mint button. It connects his wallet, asks
+the api for the call, hands it over to be signed, and then asks the chain
+whether it landed — three steps, the same three every other call this site
+makes to the contract.
 
-They had been on the studio's **Prepare** button, which spends nothing, since
-the page that held the queue was removed.
+**No key comes near either side.** The api decides what the certificate says
+and encodes it; the wallet signs it; the server holds a minter key that the
+contract will not obey for any of this. That path — `pending/:tokenId/
+transaction` and `pending/:tokenId/written` — has been in the api the whole
+time and lost its only caller when the page that held the queue was deleted.
+What was rightly removed with that page was "Write them now", which asked the
+*server* to mint with a key set nowhere.
 
-**There is no button on the list, because there is nothing to press.** The
-contract has `amend`, `freeze` and `burn` and no mint function: a certificate
-goes on the chain through OpenSea, by hand. The gate draws its price without a
-button when it is told there is nothing to press, rather than offering one
-that can never be enabled.
+**The chain takes it off the list, not the wallet.** A wallet answers with a
+hash the moment it signs, which says the transaction was sent and nothing
+about whether it was mined; one dropped on the strength of a hash that later
+failed is a certificate nothing would ever write again. Sent-but-not-mined
+stays on the list and says so.
 
-**And the ceiling can be overruled.** When the price is what is stopping a
-press, a second press — "Mint anyway" — lets it through and says the limit is
-being paid over. A second press rather than a raised ceiling, because a
-ceiling raised to get past one expensive morning stays raised for every quiet
-one after it.
-*Proven by:* `mint-gate.component.spec.ts` "insisting" (4 tests, including
-that it does not unlock a button stopped for another reason) and "shows the
-price with no button where there is nothing to press"
+**The price, the warning and the ceiling are beside the button**, because
+this is where the decision is made: the same certificate is a few cents on a
+quiet morning and several pounds on a busy afternoon. They had been on the
+studio's Prepare button, which spends nothing. And the ceiling can be
+overruled — when the price is what is stopping a press, a second press lets
+it through and says the limit is being paid over. A press rather than a
+raised ceiling, which would stay raised for every quiet morning after.
+*Proven by:* `pending-certificates.component.spec.ts` "asks the api for the
+call with the wallet that will hold it", "asks the chain whether it landed,
+and then takes it off the list", "keeps one that was sent but not yet mined"
+and "says what went wrong when the wallet refused, and keeps it";
+`mint-gate.component.spec.ts` "insisting" (4 tests)

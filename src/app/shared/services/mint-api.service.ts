@@ -123,16 +123,16 @@ export class MintApiService {
   }
 
   /**
-  * The artist's token, on every request.
-  *
-  * There is no interceptor in this application — each service that asks
-  * something only he may ask attaches this itself — and these did not, so every
-  * one of them was refused with "Forbidden resource": preparing a certificate
-  * stored nothing, and minting stopped before a wallet was ever opened.
-  *
-  * An expired token is never sent: `bearerToken` gives null once the hour is
-  * up, and the call is refused exactly as it would have been anyway.
-  */
+   * The artist's token, on every request.
+   *
+   * There is no interceptor in this application — each service that asks
+   * something only he may ask attaches this itself — and these did not, so every
+   * one of them was refused with "Forbidden resource": preparing a certificate
+   * stored nothing, and minting stopped before a wallet was ever opened.
+   *
+   * An expired token is never sent: `bearerToken` gives null once the hour is
+   * up, and the call is refused exactly as it would have been anyway.
+   */
   private authorised(): { headers: Record<string, string> } {
     const token = this.auth.bearerToken();
     return { headers: token ? { Authorization: `Bearer ${token}` } : {} };
@@ -166,7 +166,10 @@ export class MintApiService {
     const asked = new URLSearchParams(of).toString();
     return firstValueFrom(
       this.http
-        .get<ApiResponse<FrontalViewStanding>>(`${this.base}/frontal-view?${asked}`, this.authorised())
+        .get<ApiResponse<FrontalViewStanding>>(
+          `${this.base}/frontal-view?${asked}`,
+          this.authorised()
+        )
         // An api that answered nothing is an api that did not say the slot was
         // taken, and the studio asks before it prepares: the worst a false
         // "free" can do is skip a question the artist can still answer by
@@ -175,7 +178,7 @@ export class MintApiService {
     );
   }
 
-    /** Prepares one from the studio form: images, metadata, a token id. */
+  /** Prepares one from the studio form: images, metadata, a token id. */
   public prepare(form: FormData): Promise<PendingMint> {
     return firstValueFrom(
       this.http
@@ -211,10 +214,7 @@ export class MintApiService {
   public standing(tokenId: number): Promise<CertificateStanding> {
     return firstValueFrom(
       this.http
-        .get<ApiResponse<CertificateStanding>>(
-          `${this.base}/minted/${tokenId}`,
-          this.authorised()
-        )
+        .get<ApiResponse<CertificateStanding>>(`${this.base}/minted/${tokenId}`, this.authorised())
         .pipe(map(MintApiService.unwrap<CertificateStanding>))
     );
   }
@@ -271,6 +271,49 @@ export class MintApiService {
           this.authorised()
         )
         .pipe(map(MintApiService.unwrap<{ shown: boolean }>))
+    );
+  }
+
+  /**
+   * The call that writes a waiting certificate to the chain, for his wallet
+   * to sign.
+   *
+   * The whole of the sign-it-yourself path: the server decides what the
+   * certificate says and encodes the call, the wallet signs it, and no key
+   * ever comes near either of them. `to` is the address that will hold it,
+   * which is the wallet about to sign — the contract refuses any other.
+   *
+   * It was on the page that held the queue, and went with it. The endpoint
+   * never moved.
+   */
+  public mintTransaction(tokenId: number, to: string): Promise<SignableTransaction> {
+    return firstValueFrom(
+      this.http
+        .get<ApiResponse<SignableTransaction>>(
+          `${this.base}/pending/${tokenId}/transaction?to=${encodeURIComponent(to)}`,
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<SignableTransaction>))
+    );
+  }
+
+  /**
+   * Asks the chain whether it landed, and only then takes it off the list.
+   *
+   * Asked rather than assumed: a wallet answers with a hash the moment it
+   * signs, which says the transaction was sent and nothing about whether it
+   * was mined. A certificate taken off the list on the strength of a hash
+   * that later failed is one nothing would ever write again.
+   */
+  public written(tokenId: number): Promise<{ written: boolean }> {
+    return firstValueFrom(
+      this.http
+        .post<ApiResponse<{ written: boolean }>>(
+          `${this.base}/pending/${tokenId}/written`,
+          {},
+          this.authorised()
+        )
+        .pipe(map(MintApiService.unwrap<{ written: boolean }>))
     );
   }
 
