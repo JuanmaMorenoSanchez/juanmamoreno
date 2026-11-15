@@ -35,7 +35,7 @@ import { GasPriceService } from '@shared/services/gas-price.service';
         </button>
       }
 
-      @if (gas.price(); as price) {
+      @if (withPrice() && gas.price(); as price) {
         <span class="gate-price" [class.gate-dear]="tooDear()">
           @if (tooDear()) {
             Too expensive! {{ price | number: '1.2-3' }} gwei
@@ -46,7 +46,7 @@ import { GasPriceService } from '@shared/services/gas-price.service';
             <em>(last known)</em>
           }
         </span>
-      } @else {
+      } @else if (withPrice()) {
         <span class="gate-price">reading the gas price…</span>
       }
 
@@ -63,18 +63,20 @@ import { GasPriceService } from '@shared/services/gas-price.service';
         <span class="gate-price gate-dear">paying over the limit</span>
       }
 
-      <label class="gate-limit">
-        limit
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          [value]="gas.limit()"
-          (input)="retune($event)"
-          aria-label="The most to pay for a unit of gas, in gwei"
-        />
-        gwei
-      </label>
+      @if (withPrice()) {
+        <label class="gate-limit">
+          limit
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [value]="gas.limit()"
+            (input)="retune($event)"
+            aria-label="The most to pay for a unit of gas, in gwei"
+          />
+          gwei
+        </label>
+      }
     </div>
   `,
   styleUrl: './mint-gate.component.scss',
@@ -93,6 +95,15 @@ export class MintGateComponent {
    * never be enabled is the thing this component exists to avoid.
    */
   readonly withButton = input(true);
+  /**
+   * Whether to state the price here.
+   *
+   * It is the price of gas and not of a certificate, so it is the same
+   * figure on every row of a list — stated once above them rather than
+   * repeated beside each, which on a queue of four read as the page
+   * shouting one fact four times.
+   */
+  readonly withPrice = input(true);
   /**
    * Whether the ceiling has been overruled for this press.
    *

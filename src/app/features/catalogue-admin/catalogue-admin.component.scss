@@ -7,10 +7,11 @@
   color: var(--catalog-ink);
 }
 
+/* The heading every other page on this site wears. It was 1.4rem at weight
+   500 here, which is the one page he opens most reading as a different
+   site. */
 .cat-head h1 {
   margin: 0;
-  font-size: 1.4rem;
-  font-weight: 500;
 }
 
 .cat-lead {
@@ -28,10 +29,14 @@
   flex-wrap: wrap;
   gap: tokens.$spacing-sm;
   margin: tokens.$spacing-md 0;
-  padding: tokens.$spacing-sm tokens.$spacing-sm;
-  border: 1px solid var(--catalog-faint);
-  border-radius: 4px;
-  background: var(--catalog-paper, #fff);
+  padding: tokens.$spacing-sm 0;
+  /* A rule and the page's own ground, not a white card with a rounded
+     border. Nothing on the reader's side of this site is a card, and the
+     white one sat on the paper looking like a dialog that had lost its
+     window. It still needs a ground of its own: it is sticky, and what
+     scrolls under it has to go behind something. */
+  border-bottom: 1px solid var(--catalog-rule);
+  background: var(--catalog-bg);
 }
 
 .cat-search {

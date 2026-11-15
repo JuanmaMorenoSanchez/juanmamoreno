@@ -238,4 +238,21 @@ describe('MintGateComponent', () => {
     expect(host.textContent).toContain('gwei');
     expect(host.querySelector('.gate-limit')).not.toBeNull();
   });
+
+  /**
+   * The price of gas is the same figure on every row of a list, so it is
+   * stated once above them. Four copies of "Too expensive! 0.195 gwei" on
+   * one page was it shouting a single fact.
+   */
+  it('can keep the button and leave the price to be said once elsewhere', () => {
+    const { fixture, host } = build(2);
+    fixture.componentRef.setInput('withPrice', false);
+    fixture.detectChanges();
+
+    expect(host.querySelector('.gate-go')).not.toBeNull();
+    expect(host.querySelector('.gate-limit')).toBeNull();
+    expect(host.textContent).not.toContain('gwei');
+    // The way past the ceiling stays with the button it unlocks.
+    expect(host.querySelector('.gate-insist')).not.toBeNull();
+  });
 });

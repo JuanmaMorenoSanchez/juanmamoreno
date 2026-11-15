@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.81.0
+
+- **feat** The pages behind the door are the same site as the ones in front.
+  The catalogue — the page he opens most — had a sentence-case heading and a
+  white rounded card holding its search and sort; it has the site's heading
+  and a hairline rule now. Activity said what was wrong in a pink panel and
+  ticked every healthy row in green: the panel is a rule down the side, the
+  tick is ink, and the red is kept for the thing to notice.
+- **fix** The certificates page stated the price of gas four times — in the
+  queue's header, on each waiting row, and beside Prepare. It is the price of
+  gas and not of a certificate, so it is the same figure everywhere: said
+  once above the rows, which keep the button and the way past it. Prepare is
+  not gated on it at all, because preparing spends nothing.
+- **fix** "Save for later" and "Prepare and sign" are one button. They did
+  the same thing once the second stopped navigating to `/pendingmint`, which
+  redirects to the page it was already on.
+
 ## 2.80.0
 
 - **feat** A painting can say what paid for it: **created with the support

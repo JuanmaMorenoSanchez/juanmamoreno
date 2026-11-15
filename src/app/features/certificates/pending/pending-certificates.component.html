@@ -12,22 +12,20 @@
 @if (waiting(); as all) {
   @if (all.length) {
     <section class="pending" aria-labelledby="pending-heading">
-      <h2 id="pending-heading" class="pending-heading">
+      <h2 id="pending-heading" class="catalog-heading pending-heading">
         {{ count() }} {{ count() === 1 ? 'certificate' : 'certificates' }} written and not signed
       </h2>
       <p class="pending-note">
-        Written and stored, waiting to be signed.
-        <strong>Signing happens in OpenSea, by hand</strong> — this contract has <code>amend</code>,
-        <code>freeze</code> and <code>burn</code> and no mint function at all, so nothing on this
-        page can put one on the chain. The price below is what signing one will cost when you do.
+        Written and stored, waiting to be signed. Minting one opens your wallet: the api encodes the
+        call, you confirm it yourself, and the chain is asked whether it landed before it comes off
+        this list.
       </p>
 
       <!--
-        The gas price, where the decision about it is actually made.
-        Minting is a transaction wherever it is signed from, so the price is
-        the whole of what a certificate costs — the same one is a few cents
-        on a quiet morning and several pounds on a busy afternoon. It sat on
-        the studio's Prepare button, which spends nothing.
+        The price once for the page, not once a row. It is the same figure on
+        every line — it is the price of gas, not of a certificate — and four
+        copies of "Too expensive! 0.195 gwei" was the page shouting one fact.
+        The rows keep the button and the way past it.
       -->
       <app-mint-gate [withButton]="false" />
 
@@ -60,6 +58,7 @@
               -->
               <app-mint-gate
                 label="Mint"
+                [withPrice]="false"
                 [disabled]="minting() !== null || discarding() !== null"
                 (mint)="mint(one.tokenId)"
               />

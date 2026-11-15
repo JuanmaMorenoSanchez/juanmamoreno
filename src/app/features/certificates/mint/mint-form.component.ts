@@ -6,8 +6,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
+import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import type { Nft } from '@domain/artwork/artwork.entity';
@@ -49,7 +48,7 @@ import {
  */
 @Component({
   selector: 'app-mint-form',
-  imports: [RouterLink, MintGateComponent, MatIcon],
+  imports: [RouterLink, MatIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mint-form.component.html',
   styleUrl: './mint-form.component.scss',
@@ -59,7 +58,6 @@ export class MintFormComponent {
   private readonly artworks = inject(ARTWORK_PORT);
   private readonly images = inject(ImageMatchService);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly router = inject(Router);
   private readonly handoff = inject(HandoffService);
   private readonly dialog = inject(MatDialog);
 
@@ -347,7 +345,7 @@ export class MintFormComponent {
     if (prepared.width) this.width.set(prepared.width);
   }
 
-  protected async prepare(signNow = false): Promise<void> {
+  protected async prepare(): Promise<void> {
     if (!this.ready()) return;
 
     const version = await this.versionToWrite();
@@ -406,8 +404,6 @@ export class MintFormComponent {
     } finally {
       this.busy.set(false);
     }
-
-    if (signNow) await this.router.navigate(['/pendingmint']);
   }
 
   private reset(): void {

@@ -126,3 +126,10 @@
   gap: tokens.$spacing-sm-md;
   margin-top: tokens.$spacing-sm;
 }
+
+/* Prepare: the one press on this form that stores something, drawn like the
+   two beside it. The gas gate it used to wear belongs to the queue above,
+   where the press that costs money is. */
+.mint-go {
+  @include controls.plain-button;
+}

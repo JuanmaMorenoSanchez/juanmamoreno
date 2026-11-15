@@ -19,24 +19,39 @@
 .activity-step {
   margin: tokens.$spacing-lg 0;
 
+  /* The site's own small heading: uppercase and tracked, like every section
+     title a reader sees. It was 0.95rem sentence case, which is a different
+     site's idea of a heading. */
   h2 {
     margin: 0 0 tokens.$spacing-sm;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
   }
 }
 
-/* What is wrong, said once at the top in the only loud thing on the page. */
+/*
+  What is wrong, said once at the top.
+
+  A rule down its side and nothing behind it. It was a pink panel, which is
+  the one thing on this site that looked like somebody else's framework: the
+  reader's pages are ink on paper and hairline rules, and nothing anywhere
+  else is a tinted box. What makes this loud enough is that it is first, that
+  it has a rule, and that its heading is the site's own.
+*/
 .activity-wrong {
   margin: 0 0 tokens.$spacing-lg;
-  padding: tokens.$spacing-sm-md tokens.$spacing-md;
-  border-left: 1px solid var(--jm-error);
-  background: color-mix(in srgb, var(--jm-error) 7%, transparent);
+  padding: tokens.$spacing-sm-md 0 tokens.$spacing-sm-md tokens.$spacing-md;
+  border-left: 2px solid var(--jm-error);
 
   h2 {
     margin: 0 0 tokens.$spacing-sm;
-    font-size: 0.9rem;
-    color: var(--jm-error);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--catalog-ink);
   }
 
   ul {
@@ -57,12 +72,14 @@
   }
 }
 
+/* And the other answer, in the same shape, because "everything is fine" and
+   "these three are not" are the same sentence with a different subject. */
 .activity-fine {
   margin: 0 0 tokens.$spacing-lg;
-  padding: tokens.$spacing-sm tokens.$spacing-md;
-  border-left: 3px solid rgb(0 0 0 / 25%);
-  background: rgb(0 0 0 / 4%);
-  font-size: 0.9rem;
+  padding: tokens.$spacing-sm 0 tokens.$spacing-sm tokens.$spacing-md;
+  border-left: 2px solid var(--catalog-rule);
+  font-size: 0.85rem;
+  color: var(--catalog-soft);
 }
 
 .activity-beats,
@@ -125,12 +142,14 @@
   font-size: 0.88rem;
 }
 
+/* The api not answering, which is a fact about this page and not about the
+   machine — stated in the same hand as everything else, with the colour kept
+   for the words that have to be noticed. */
 .activity-problem {
-  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
-  border-radius: 0.35rem;
-  background: color-mix(in srgb, var(--jm-error) 10%, transparent);
-  color: var(--jm-error);
-  font-size: 0.9rem;
+  padding: tokens.$spacing-sm 0 tokens.$spacing-sm tokens.$spacing-md;
+  border-left: 2px solid var(--jm-error);
+  color: var(--catalog-ink);
+  font-size: 0.85rem;
 }
 
 .activity-retry {
@@ -175,8 +194,16 @@
     line-height: 1.15rem;
   }
 
+  /*
+    Quiet is quiet, and only what is wrong is coloured.
+
+    A green tick beside every row that is behaving spends the page's one
+    loud colour on its least interesting fact — and sets the two states as
+    equals, when the whole page exists to surface one of them. Ink for the
+    tick; the red stays, because that is the thing to be noticed.
+  */
   &.is-good mat-icon {
-    color: #3d8b5f;
+    color: var(--catalog-soft);
   }
 
   &.is-bad mat-icon {

@@ -164,14 +164,25 @@
       Edit and download
     </button>
 
-    <button type="button" class="mint-button" [disabled]="!ready()" (click)="prepare(false)">
+    <!--
+      One button where there were two.
+
+      "Save for later" and "Prepare and sign" did the same thing once the
+      second stopped carrying on into signing: both wrote the certificate and
+      put it on the queue, and the only difference was that one of them then
+      navigated to a page that redirects back here. The queue is at the top of
+      this page, and preparing is how something gets onto it.
+
+      Not gated on the price of gas either: preparing spends nothing. The
+      price and the ceiling live on the queue, beside the press that costs
+      money.
+    -->
+    <button type="button" class="mint-go" [disabled]="!ready() || busy()" (click)="prepare()">
       @if (busy()) {
-        Saving…
+        Preparing…
       } @else {
-        Save for later
+        Prepare, and put it on the queue
       }
     </button>
-
-    <app-mint-gate label="Prepare and sign" [disabled]="!ready()" (mint)="prepare(true)" />
   </div>
 </section>

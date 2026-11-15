@@ -6459,3 +6459,39 @@ call with the wallet that will hold it", "asks the chain whether it landed,
 and then takes it off the list", "keeps one that was sent but not yet mined"
 and "says what went wrong when the wallet refused, and keeps it";
 `mint-gate.component.spec.ts` "insisting" (4 tests)
+
+### R251 — The pages behind the door are the same site as the ones in front · met
+The guarded pages wear the reader's vocabulary: the site's uppercase tracked
+heading, ink on the page's own ground, hairline rules, and the plain button —
+no cards, no tinted panels, no second idea of what a heading is.
+
+What was found and changed, page by page:
+
+- **The catalogue**, the page he opens most, had a 1.4rem sentence-case `h1`
+  and a sticky white card with a rounded border holding its search and sort.
+  Nothing on the reader's side of this site is a card, and the white one sat
+  on the paper looking like a dialog that had lost its window. It is the
+  page's own ground with a rule under it now, and the heading is
+  `catalog-heading`.
+- **Activity** said what was wrong in a pink panel and ticked every healthy
+  row in green. The panel is a rule down the side and nothing behind it; the
+  tick is ink. A page that exists to surface what is wrong should not spend
+  its one loud colour on its least interesting fact — the red stays, because
+  that is the thing to notice.
+- **The certificates page** stated the price of gas four times: once in the
+  queue's header, once on each waiting row, and once beside Prepare. It is
+  the price of gas and not of a certificate, so it is the same figure
+  everywhere: stated once above the rows, which keep the button and the way
+  past it.
+- **Prepare is not gated on the price**, because preparing spends nothing. It
+  had been, from when that button carried on into signing.
+
+**And "Save for later" and "Prepare and sign" became one button.** They did
+the same thing once the second stopped navigating to `/pendingmint` — a page
+that redirects to the one it was on. Preparing is how a certificate gets onto
+the queue, and the queue is at the top of the same page.
+*Proven by:* the guarded pages rendered at 1280px and 393px — a dummy token
+gets the shells past the guard, which decodes rather than verifies, and the
+api is answered from the harness — showing one price per page, no tinted
+panel and the site's own heading on each; and `mint-gate.component.spec.ts`
+"can keep the button and leave the price to be said once elsewhere"
