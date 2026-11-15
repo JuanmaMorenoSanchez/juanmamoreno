@@ -1790,20 +1790,21 @@ The year keeps its label up although it is always empty — it clears itself
 after each pick, the year having become a chip — and says "all" underneath
 until one has been chosen, after which the chips say which years.
 
-**And on a phone they wrap as a pair**, in a row of their own, split in half.
-Loose among the chips they wrapped wherever they happened to land: the year
-rode up beside the breadcrumb and availability dropped alone onto the next
-line, against a different left edge, so two controls meant to be read together
-looked like two different kinds of thing. Phones only — from the small
-breakpoint up the whole bar is one line already, and giving the filters a row
-of their own there cost a tablet thirty-six pixels of its first screen to solve
-a problem it did not have.
+**And on a phone they wrap as a box rather than one at a time.** Loose among
+the chips they wrapped wherever they happened to land: the year rode up beside
+the breadcrumb and availability dropped alone onto the next line, against a
+different left edge, so two controls meant to be read together looked like two
+different kinds of thing. Phones only — from the small breakpoint up the whole
+bar is one line already, and giving the filters a row of their own there cost a
+tablet thirty-six pixels of its first screen to solve a problem it did not
+have. Where that box sits is R237, and R240 is the third picker that joined
+them.
 *Proven by:* `availability-filter.service.spec.ts` (5 tests),
 `breadcrumb.component.spec.ts` (12 tests), `art-pieces-list.component.spec.ts`
 "narrowing by availability" (6 tests), `e2e/navigation.test.mjs` "the
 availability picker" (3 tests, which check the counts add back up to the whole
-catalogue), `e2e/small-phone.test.mjs` "puts the year and availability on one
-row, as equal halves"
+catalogue), `e2e/small-phone.test.mjs` "puts two of them on one row and the
+third underneath, all equal halves"
 
 ### R56 — A catalogue narrowed to nothing says so · met
 When no painting survives the year and availability the reader has chosen, the

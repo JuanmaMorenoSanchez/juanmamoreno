@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.74.2
+
+- **fix** R55's proof quoted the e2e test that the third filter renamed, so
+  `verify-requirements` failed the build — which is the job it exists for. It
+  failed here too; I missed it by piping `npm run build` into `grep`, which
+  returns grep's exit code and not the build's. Checked by exit code now, every
+  step. R55's "on a phone they wrap as a pair" also said what was true two
+  filters ago, and now points at R237 and R240 for where that box sits.
+
 ## 2.74.1
 
 - **fix** The deploy failed at the unit tests twice, and this is the fault
