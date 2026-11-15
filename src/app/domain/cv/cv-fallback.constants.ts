@@ -141,6 +141,34 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "germany"
   },
   {
+    "id": "8c14c79b08f38bce",
+    "kind": "collective",
+    "year": 2026,
+    "title": {
+      "en": "Outsiders Vol. 3"
+    },
+    "venue": {
+      "en": "Zunino Gallery",
+      "es": "Galería Zunino"
+    },
+    "city": "Sevilla",
+    "country": "spain"
+  },
+  {
+    "id": "e522aa4bc418dd99",
+    "kind": "collective",
+    "year": 2025,
+    "title": {
+      "en": "Outsiders Vol. 2"
+    },
+    "venue": {
+      "en": "Zunino Gallery",
+      "es": "Galería Zunino"
+    },
+    "city": "Sevilla",
+    "country": "spain"
+  },
+  {
     "id": "1c6b1a0396dd55e5",
     "kind": "collective",
     "year": 2024,

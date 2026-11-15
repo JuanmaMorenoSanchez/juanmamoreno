@@ -174,10 +174,4 @@
 
     <app-mint-gate label="Prepare and sign" [disabled]="!ready()" (mint)="prepare(true)" />
   </div>
-
-  @if (waiting().length) {
-    <p class="mint-intro">
-      <a routerLink="/pendingmint">{{ waiting().length }} waiting to be written</a>
-    </p>
-  }
 </section>

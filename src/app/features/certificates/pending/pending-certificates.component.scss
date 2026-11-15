@@ -1,0 +1,106 @@
+@use '../../../../styles/tokens';
+@use '../../../../styles/controls';
+
+/*
+  The state of the work, above the form for starting more of it. A short list
+  with a picture on each row, because what identifies a certificate at a
+  glance is the painting and not its number.
+*/
+.pending {
+  margin-bottom: tokens.$spacing-xl;
+}
+
+.pending-heading {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.pending-note {
+  margin: tokens.$spacing-xs 0 tokens.$spacing-md;
+  max-width: var(--measure);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--catalog-soft);
+}
+
+.pending-problem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
+  font-size: 0.8rem;
+}
+
+.pending-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pending-one {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm-md;
+  border-top: 1px solid var(--catalog-rule);
+  padding: tokens.$spacing-sm 0;
+
+  &:last-child {
+    border-bottom: 1px solid var(--catalog-rule);
+  }
+}
+
+.pending-thumb {
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  /* The on-chain picture is tiny by design and will be shown enlarged; it
+     should look like a small picture rather than a blurry one. */
+  image-rendering: auto;
+  background: var(--catalog-frame-bg);
+}
+
+.pending-what {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* So a long title wraps instead of pushing the buttons off the row. */
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.pending-name {
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.pending-facts,
+.pending-sure {
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+}
+
+.pending-doing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.pending-plain,
+.pending-danger {
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+  border-color: var(--catalog-rule);
+  text-decoration: none;
+}
+
+/* The press that cannot be taken back, drawn as one. */
+.pending-danger {
+  border-color: var(--jm-error);
+  color: var(--jm-error);
+}

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -10,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { ImageMatchService } from '@shared/services/image-match.service';
-import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
+import { MintApiService } from '@shared/services/mint-api.service';
 import { HandoffService, type PreparedForMint } from '../handoff.service';
 import {
   ReplaceFrontalDialogComponent,
@@ -81,7 +88,6 @@ export class MintFormComponent {
   protected readonly clues = signal('');
 
   protected readonly busy = signal(false);
-  protected readonly waiting = signal<PendingMint[]>([]);
 
   /** The line that will be written when no description is typed. */
   protected readonly describedAs = computed(() => {
@@ -180,8 +186,10 @@ export class MintFormComponent {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /** The page above shows the queue; this says when it has changed. */
+  readonly prepared = output<void>();
+
   constructor() {
-    this.loadWaiting();
     // Started now, while a photograph is still being chosen, so there is
     // something to compare against by the time there is anything to compare.
     void this.images.learn();
@@ -313,18 +321,18 @@ export class MintFormComponent {
   }
 
   /**
-  * Prepares the certificate, and optionally goes on to sign it.
-  *
-  * Signing happens on the waiting list, where the wallet is, because the only
-  * key that can write a certificate is on the artist's phone. This used to ask
-  * the server to mint instead, which could not work — no minting key is
-  * configured there, by choice — and asked it to write *everything* waiting
-  * rather than the one just prepared.
-  *
-  * Nothing after the preparing is inside the same try any more. A failure there
-  * reported "nothing was stored" over a certificate that had been stored
-  * perfectly well, which sent the artist back to prepare it a second time.
-  */
+   * Prepares the certificate, and optionally goes on to sign it.
+   *
+   * Signing happens on the waiting list, where the wallet is, because the only
+   * key that can write a certificate is on the artist's phone. This used to ask
+   * the server to mint instead, which could not work — no minting key is
+   * configured there, by choice — and asked it to write *everything* waiting
+   * rather than the one just prepared.
+   *
+   * Nothing after the preparing is inside the same try any more. A failure there
+   * reported "nothing was stored" over a certificate that had been stored
+   * perfectly well, which sent the artist back to prepare it a second time.
+   */
   /**
    * The measurements the corrector was given, where it was given any.
    *
@@ -385,7 +393,7 @@ export class MintFormComponent {
       // fields left the last painting straightened on the stage, which read as
       // a certificate still waiting to be saved.
       this.handoff.startAgain();
-      this.loadWaiting();
+      this.prepared.emit();
       this.say(
         `Certificate ${result.tokenId} — “${result.name}” — is prepared and waiting.`,
         'good'
@@ -402,28 +410,11 @@ export class MintFormComponent {
     if (signNow) await this.router.navigate(['/pendingmint']);
   }
 
-  protected async discard(tokenId: number): Promise<void> {
-    try {
-      await this.api.discard(tokenId);
-    } catch (failure: unknown) {
-      const message = (failure as { error?: { message?: string } })?.error?.message;
-      this.say(message ?? `Certificate ${tokenId} could not be thrown away.`, 'bad');
-    }
-    this.loadWaiting();
-  }
-
   private reset(): void {
     this.name.set('');
     this.height.set('');
     this.width.set('');
     this.description.set('');
     this.clues.set('');
-  }
-
-  private loadWaiting(): void {
-    this.api
-      .waiting()
-      .then((list) => this.waiting.set(list))
-      .catch(() => this.waiting.set([]));
   }
 }

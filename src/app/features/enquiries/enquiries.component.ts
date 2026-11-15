@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -30,7 +29,6 @@ import { Enquiry, EnquiriesService } from './enquiries.service';
 @Component({
   selector: 'app-enquiries',
   standalone: true,
-  imports: [DatePipe],
   templateUrl: './enquiries.component.html',
   styleUrl: './enquiries.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

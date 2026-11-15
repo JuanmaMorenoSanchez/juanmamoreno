@@ -97,9 +97,13 @@
                   in with the prizes and the residencies in one long column.
                   The headings come from the cv rather than from here: one list
                   of what a career is made of, in one place.
+
+                  Through the pipe, because what the cv keeps is the key and
+                  not the words: bound straight in, the picker's headings read
+                  "cv.shows.title" and "cv.awards.title".
                 -->
                 @for (section of career(); track section.kind) {
-                  <mat-optgroup [label]="section.title">
+                  <mat-optgroup [label]="section.title | translate">
                     @for (one of section.items; track one.id) {
                       <mat-option [value]="one.id">{{ one.label }}</mat-option>
                     }

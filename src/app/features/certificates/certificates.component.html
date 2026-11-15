@@ -1,7 +1,14 @@
 <div class="container margin-top certificates">
   <h1 class="catalog-heading">Certificates</h1>
 
+  <!--
+    What is half-done, before the form for starting something new. It reloads
+    when the form has prepared one, which is the only thing the two of them
+    need to know about each other.
+  -->
+  <app-pending-certificates [reload]="prepared()" />
+
   <app-photo-prep />
 
-  <app-mint-form />
+  <app-mint-form (prepared)="prepared.set(prepared() + 1)" />
 </div>

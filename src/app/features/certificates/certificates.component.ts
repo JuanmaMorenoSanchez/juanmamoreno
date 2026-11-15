@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MintFormComponent } from './mint/mint-form.component';
+import { PendingCertificatesComponent } from './pending/pending-certificates.component';
 import { PhotoPrepComponent } from './photo/photo-prep.component';
 
 /**
@@ -9,14 +10,16 @@ import { PhotoPrepComponent } from './photo/photo-prep.component';
  * still answer here: they are in his bookmarks, and a renamed page should not
  * become a 404 for the one person who uses it.
  *
- * **There is no queue of certificates waiting on it.** There was, briefly: the
- * list this service calls "pending" with a button that said Write them now.
- * It could not write anything. The contract has no mint function — a
- * certificate is minted through OpenSea, by hand — and the backend's own path
- * wants a `MINTER_KEY` and a `COLLECTION_OWNER` that are set nowhere, so the
- * button's only possible answer was "no minting key is configured". A control
- * that cannot do what it offers is worse than no control: it is read as a
- * step in the work, and it is not one.
+ * **The queue is back, without the button that could not work.** It was
+ * removed entirely once, along with a "Write them now" that had no way to
+ * write anything: the contract has no mint function — a certificate is minted
+ * through OpenSea, by hand — and the backend's own path wants a `MINTER_KEY`
+ * and a `COLLECTION_OWNER` that are set nowhere. Removing the control was
+ * right; removing the list was not, and what was left was a count linking to
+ * `/pendingmint`, which redirects here, so the only mention of the queue
+ * navigated to the page it was already on. The list offers the two things
+ * this page can honestly do with a waiting certificate: look at it, and throw
+ * it away.
  *
  * **The way out is in the menu and nowhere else.** This page carried the
  * signed-in address and a Sign out beneath the form, from when it was a page
@@ -26,8 +29,17 @@ import { PhotoPrepComponent } from './photo/photo-prep.component';
  */
 @Component({
   selector: 'app-certificates',
-  imports: [PhotoPrepComponent, MintFormComponent],
+  imports: [PhotoPrepComponent, MintFormComponent, PendingCertificatesComponent],
   templateUrl: './certificates.component.html',
   styleUrl: './certificates.component.scss',
 })
-export class CertificatesComponent {}
+export class CertificatesComponent {
+  /**
+   * Bumped when the form has prepared one, so the queue above it is right.
+   *
+   * A counter rather than the two components reaching for each other: the
+   * list asks the api again whenever this changes, and neither needs a
+   * reference to the other.
+   */
+  protected readonly prepared = signal(0);
+}

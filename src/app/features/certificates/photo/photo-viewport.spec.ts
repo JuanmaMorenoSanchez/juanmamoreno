@@ -11,7 +11,10 @@ describe('PhotoViewport', () => {
 
   const build = (hasPhotograph = true) => {
     box = { scrollLeft: 0, scrollTop: 0 };
-    view = new PhotoViewport(() => box as unknown as HTMLElement, () => hasPhotograph);
+    view = new PhotoViewport(
+      () => box as unknown as HTMLElement,
+      () => hasPhotograph
+    );
   };
 
   const space = (target: unknown = null) =>

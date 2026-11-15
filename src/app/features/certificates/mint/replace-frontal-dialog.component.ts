@@ -49,9 +49,8 @@ export interface ReplaceFrontalQuestion {
         >, and the catalogue would show this one instead.
       </p>
       <p class="replace-note">
-        Nothing is rewritten. The older certificate keeps saying exactly what it says on the
-        chain — it was true when it was written — and the site lists it as work in progress
-        from then on.
+        Nothing is rewritten. The older certificate keeps saying exactly what it says on the chain —
+        it was true when it was written — and the site lists it as work in progress from then on.
       </p>
     </mat-dialog-content>
 

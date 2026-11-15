@@ -5,6 +5,28 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.77.0
+
+- **fix** The cv no longer cuts its own lines off. It was built out of
+  `mat-grid-list`, which gives every row a fixed height and hides what does
+  not fit: on a phone any line long enough to wrap lost its end — "…Galería
+  Zunino, Sevilla," with the country gone — the biography lost "Madrid." off
+  its first line, and a two-line entry was drawn over the one beneath it. The
+  two columns were the only thing the grid list was for, and a css grid gives
+  those without buying the height.
+- **feat** The cv's form opens in a window instead of under the section. It
+  was down there because a grid tile clipped anything taller than a row,
+  which put eight fields between the line being corrected and the next
+  section and, on a phone, opened a form mostly below the fold.
+- **feat** The certificates waiting to be signed are listed at the top of
+  `/certificates`, with the picture each token will carry and a way to throw
+  one away. There was a count that linked to `/pendingmint`, which redirects
+  to the page it was already on — so the only mention of the queue did
+  nothing when pressed.
+- **fix** The exhibition picker's separators read as words rather than as
+  `cv.shows.title`: the cv keeps a key per section and the picker bound it
+  into the label without the pipe.
+
 ## 2.76.0
 
 - **feat** `/enquiries`: every message the form has taken, where they can be

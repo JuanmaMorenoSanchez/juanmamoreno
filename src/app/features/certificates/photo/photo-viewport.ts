@@ -70,7 +70,7 @@ export class PhotoViewport {
 
   constructor(
     private readonly element: () => HTMLElement | null | undefined,
-    private readonly hasPhotograph: () => boolean,
+    private readonly hasPhotograph: () => boolean
   ) {}
 
   setZoom(value: number): void {

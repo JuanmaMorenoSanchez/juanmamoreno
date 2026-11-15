@@ -1,8 +1,7 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { DOWNLOADTYPES } from '@domain/cv/cv.constants';
 import { CvKind, CvLine } from '@domain/cv/cv-entry.entity';
@@ -12,7 +11,7 @@ import { LanguageUrlService } from '@shared/services/language-url.service';
 import { CvService } from '@shared/services/cv.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PdfButtonComponent } from '../../shared/components/pdf-button/pdf-button.component';
-import { CvEntryFormComponent } from './cv-entry-form.component';
+import { CvEntryDialogComponent, type CvEntryDialogData } from './cv-entry-dialog.component';
 
 /**
  * The career.
@@ -29,26 +28,14 @@ import { CvEntryFormComponent } from './cv-entry-form.component';
   selector: 'app-cv',
   templateUrl: './cv.component.html',
   styleUrls: ['./cv.component.scss'],
-  imports: [
-    MatButtonModule,
-    MatGridList,
-    MatGridTile,
-    MatIconModule,
-    PdfButtonComponent,
-    CvEntryFormComponent,
-    MatDivider,
-    TranslatePipe,
-  ],
+  imports: [MatButtonModule, MatIconModule, PdfButtonComponent, MatDivider, TranslatePipe],
 })
 export class CvComponent {
-  private breakpointObserver = inject(BreakpointObserver);
+  private readonly dialog = inject(MatDialog);
   private readonly cv = inject(CvService);
   private readonly auth = inject(AdminAuthService);
   private readonly language = inject(LanguageUrlService);
 
-  readonly totalCols = 14;
-  readonly smallScreenYearColSpan = 2;
-  readonly bigScreenYearColSpan = 1;
   readonly downloadType: DOWNLOADTYPES = DOWNLOADTYPES.CV;
 
   /** A heading per kind, in the language the address is in. */
@@ -65,60 +52,23 @@ export class CvComponent {
    */
   readonly mine = computed(() => this.auth.isAdmin());
 
-  /** Which section an entry is being added under, if one is. */
-  private readonly adding = signal<CvKind | null>(null);
-
-  /** Which entry is being corrected, by id, if one is. */
-  private readonly editing = signal<string | null>(null);
-
-  /** That entry in full, which is more than the drawn line carries. */
-  readonly correcting = computed(
-    () => this.cv.entries().find((entry) => entry.id === this.editing()) ?? null
-  );
-
-  public yearColSpan = this.bigScreenYearColSpan;
-  public descColSpan = this.totalCols - this.yearColSpan;
-
-  private isSmallScreen = false;
-
   constructor() {
-    this.listenToScreenSize();
     void this.cv.refresh();
   }
 
-  /**
-   * Whether this section is the one holding the open form.
-   *
-   * A section at a time, so the form appears under the list it belongs to —
-   * which is where he was looking. Correcting an entry shows it under that
-   * entry's own section, whichever one that is.
-   */
-  public formOpenIn(kind: CvKind): boolean {
-    return this.adding() === kind || this.correcting()?.kind === kind;
-  }
-
-  /** The kind an open form opens on: the entry's, or the section's. */
-  public formKind(kind: CvKind): CvKind {
-    return this.correcting()?.kind ?? kind;
-  }
-
+  /** Adds an entry to a section, in a window over the page. */
   public add(kind: CvKind): void {
-    this.editing.set(null);
-    this.adding.set(kind);
+    this.open({ kind, entry: null });
   }
 
+  /** Corrects one, in the same window. */
   public correct(id: string): void {
-    this.adding.set(null);
-    this.editing.set(id);
+    const entry = this.cv.entries().find((one) => one.id === id);
+    if (entry) this.open({ kind: entry.kind, entry });
   }
 
-  public closeForm(): void {
-    this.adding.set(null);
-    this.editing.set(null);
-  }
-
-  public numberOfItemsInYear(section: CvLine[], item: CvLine): number {
-    return section.filter((one) => one.year === item.year).length;
+  private open(data: CvEntryDialogData): void {
+    this.dialog.open(CvEntryDialogComponent, { data, width: '34rem', maxWidth: '92vw' });
   }
 
   /**
@@ -130,21 +80,5 @@ export class CvComponent {
    */
   public displayYearLabel(section: CvLine[], item: CvLine): boolean {
     return section.find((one) => one.year === item.year)?.id === item.id;
-  }
-
-  private listenToScreenSize(): void {
-    this.breakpointObserver
-      .observe([Breakpoints.HandsetLandscape, Breakpoints.HandsetPortrait])
-      .subscribe((result) => {
-        if (result.breakpoints['(max-width: 599.98px) and (orientation: portrait)']) {
-          this.isSmallScreen = true;
-        } else {
-          this.isSmallScreen = false;
-        }
-        this.yearColSpan = this.isSmallScreen
-          ? this.smallScreenYearColSpan
-          : this.bigScreenYearColSpan;
-        this.descColSpan = this.totalCols - this.yearColSpan;
-      });
   }
 }

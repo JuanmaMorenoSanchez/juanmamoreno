@@ -300,7 +300,7 @@ export class PhotoPrepComponent {
    */
   private readonly view = new PhotoViewport(
     () => this.viewport()?.nativeElement,
-    () => Boolean(this.size()),
+    () => Boolean(this.size())
   );
 
   protected readonly zoom = this.view.zoom;
@@ -361,7 +361,7 @@ export class PhotoPrepComponent {
     return source ? qualityFor(source) : 1;
   });
 
-    /** Said plainly under the file, because a bigger file than the original is a surprise. */
+  /** Said plainly under the file, because a bigger file than the original is a surprise. */
   protected readonly sourceNote = computed(() => {
     const source = this.source();
     if (!source) return '';
@@ -441,7 +441,7 @@ export class PhotoPrepComponent {
   protected readonly widthText = signal('');
   protected readonly heightText = signal('');
 
-    /** In centimetres, though only the ratio between them is ever read. */
+  /** In centimetres, though only the ratio between them is ever read. */
   protected readonly realWidth = computed(() => measurementValue(this.widthText()));
   protected readonly realHeight = computed(() => measurementValue(this.heightText()));
   /**
@@ -1462,7 +1462,6 @@ export class PhotoPrepComponent {
     this.report.set(null);
   }
 }
-
 
 function textIn(event: Event): string {
   return (event.target as HTMLInputElement).value;

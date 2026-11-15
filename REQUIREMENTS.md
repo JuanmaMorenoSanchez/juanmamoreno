@@ -920,8 +920,8 @@ one recorded above
 
 ### R219 — The cv is written from the cv page, by him and nobody else · met
 An add beside every heading and a pencil on every line, for the one person
-signed in: a form of ten fields under the section he opened it from, which
-adds an entry, corrects one, or takes one off the cv. Seeded entries and
+signed in: a form of ten fields **in a window over the page**, which adds an
+entry, corrects one, or takes one off the cv. Seeded entries and
 entries added since are equally editable, because a stored document overrides
 the seed by id.
 
@@ -932,6 +932,15 @@ which is most of the cv, the titles being Spanish proper nouns an English page
 shows unchanged. A field he left blank is left out of the request rather than
 sent empty, because an empty venue is stored as a venue and renders as a stray
 comma.
+
+**A window rather than a block under the section.** It opened there because
+the page was `mat-grid-list` and a tile clipped anything taller than its row,
+so a form inside one was drawn with its bottom cut off. That put eight fields
+between the line being corrected and the next section, pushed everything
+after it down the page, and on a phone opened a form mostly below the fold.
+The page has no tiles any more (R244) and the window says plainly that one
+thing is being done until it is finished or abandoned — and a modal cannot
+leave two forms open, which the old one needed a rule to prevent.
 
 **The kind is a select even though the section already said it.** Opening from
 under "Solo shows" opens on `solo`, which is the answer nine times in ten; but
@@ -956,8 +965,9 @@ built, so none of this is in the html. The api verifies the same credential on
 every write, which is what makes it safe; not drawing it is what keeps the page
 a cv.
 *Proven by:* `cv.component.spec.ts` (6 tests, including that a reader has
-nothing to press, that the form is handed the whole entry rather than the line
-the page drew, and that opening one form shuts the other);
+nothing to press, that the window is handed the whole entry rather than the
+line the page drew, and that nothing opens for an entry that is no longer
+there);
 `cv-entry-form.component.spec.ts` (10 tests, including that a blank field is
 left out, that a Spanish repeating its English is not stored twice, and that
 the refusal naming the paintings reaches him intact); `cv.service.spec.ts` (9
@@ -6297,3 +6307,57 @@ and it is here rather than in the service because the service is a singleton
 and "when the form appeared" is a different moment for each of them.
 *Proven by:* the backend's B94, and `mail.service` carrying `took` through
 `sendQuoteRequest` to `sendContactMessage` with the honeypot
+
+### R244 — The cv wraps instead of cutting, on any screen · met
+Every line of the career is a row of a css grid: the year in its own column,
+the entry in the other, and both as tall as their contents need.
+
+**It was built out of `mat-grid-list`**, which gives every row a fixed height
+and hides whatever does not fit. On a phone that cut the end off any line long
+enough to wrap — *El valle inquietante, Galería Zunino, Sevilla,* with the
+country simply gone — the short biography lost "Madrid." off its first line,
+and a two-line entry was drawn over the one beneath it. The two columns were
+the only thing the grid list was wanted for, and a css grid gives those
+without buying the fixed height.
+
+The year is drawn once per year and its cell kept on the rows that repeat it,
+so the second column starts in the same place on every line. Nothing is
+clipped at 320px, 393px or 1280px, and the page scrolls sideways at none of
+them.
+*Proven by:* the cv rendered at 393px and 320px with no element whose
+`scrollWidth` exceeds its `clientWidth`, and `document.scrollWidth` equal to
+the viewport at both; `cv.component.spec.ts` "shows the career to anybody"
+
+### R245 — The certificates waiting to be signed are on the page · met
+The queue is at the top of `/certificates`: each one with the picture the
+token will carry, its number, how long it has been waiting, a link to its page
+and a way to throw it away. What is half-done comes before the form for
+starting something new.
+
+**There was a count and no list.** The form said "3 waiting to be written" and
+linked to `/pendingmint` — which redirects to `/certificates`, the page it was
+already on, so the only control that mentioned the queue did nothing when
+pressed. The list had been a page of its own; when the two became one, it was
+dropped and the link to it was not. `discard` survived on the form as a method
+no template could reach.
+
+**Nothing on it offers to mint.** The contract has no mint function — a
+certificate is signed in OpenSea, by hand — and a control that cannot do what
+it offers is read as a step in the work. The two things the page can honestly
+do with a waiting certificate are look at it and throw it away.
+
+An empty queue draws nothing at all, rather than a heading saying zero on the
+page he works on most; an api that did not answer says so, because that is a
+different thing from nothing waiting.
+*Proven by:* `pending-certificates.component.spec.ts` (7 tests, including that
+an empty queue draws nothing, that an api that did not answer says so, and
+that a discard asks first)
+
+### R246 — The record's show picker reads in words · met
+The headings in the exhibition selector go through the translate pipe. The cv
+keeps a key per section — `cv.shows.title`, `cv.awards.title` — and the picker
+bound it straight into `mat-optgroup`'s label, so the separators in the list
+read as translation keys on both halves of the site.
+*Proven by:* the record form rendered with its picker open, whose group labels
+read "Solo shows" and "Artistic awards and residencies" rather than
+`cv.shows.title`

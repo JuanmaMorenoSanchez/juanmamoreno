@@ -1,0 +1,71 @@
+@if (asking() && !waiting()) {
+  <p class="pending-note" role="status">Asking what is waiting…</p>
+}
+
+@if (problem()) {
+  <p class="pending-problem" role="alert">
+    {{ problem() }}
+    <button type="button" class="pending-plain" (click)="load()">Ask again</button>
+  </p>
+}
+
+@if (waiting(); as all) {
+  @if (all.length) {
+    <section class="pending" aria-labelledby="pending-heading">
+      <h2 id="pending-heading" class="pending-heading">
+        {{ count() }} {{ count() === 1 ? 'certificate' : 'certificates' }} written and not signed
+      </h2>
+      <p class="pending-note">
+        Signing happens in OpenSea, by hand: this contract has no mint function, so nothing here can
+        write one to the chain. What is listed is prepared and stored, waiting for that.
+      </p>
+
+      <ul class="pending-list">
+        @for (one of all; track one.tokenId) {
+          <li class="pending-one">
+            <!--
+              The picture the token itself will carry, which is held as bytes
+              rather than as an address — a couple of kilobytes of jpeg, so it
+              needs no request of its own.
+            -->
+            <img class="pending-thumb" [src]="picture(one)" [alt]="one.name" />
+
+            <div class="pending-what">
+              <strong class="pending-name">{{ one.name }}</strong>
+              <span class="pending-facts">
+                #{{ one.tokenId }}
+                @if (ago(one.preparedAt); as when) {
+                  · prepared {{ when }}
+                }
+              </span>
+            </div>
+
+            <div class="pending-doing">
+              <a class="pending-plain" [href]="one.external_url" target="_blank" rel="noopener">
+                Its page
+              </a>
+              @if (confirming() === one.tokenId) {
+                <!-- Asked first: throwing one away is the photograph and the
+                     measurements to do again. -->
+                <span class="pending-sure">Throw it away?</span>
+                <button
+                  type="button"
+                  class="pending-danger"
+                  [disabled]="discarding() === one.tokenId"
+                  (click)="discard(one.tokenId)"
+                >
+                  {{ discarding() === one.tokenId ? 'Discarding…' : 'Yes, discard' }}
+                </button>
+                <button type="button" class="pending-plain" (click)="ask(one.tokenId)">Keep</button>
+              } @else {
+                <button type="button" class="pending-plain" (click)="ask(one.tokenId)">
+                  Discard
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+}

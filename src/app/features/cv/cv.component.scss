@@ -1,14 +1,11 @@
 @use '../../../styles/tokens';
+@use '../../../styles/breakpoints' as bp;
 
 .breathe-space {
   margin-top: 2em;
   margin-bottom: 2em;
 }
 
-// The "CV" heading's mat-grid-tile has a fixed rowHeight (2.8rem) and clips
-// overflow; a plain <h2>'s browser-default top/bottom margins push its box
-// taller than that, so the heading was rendering visually clipped. Scoped to
-// this component (not the shared .catalog-heading class other pages use).
 h2.catalog-heading {
   margin: 0;
   display: flex;
@@ -16,10 +13,74 @@ h2.catalog-heading {
   gap: tokens.$spacing-sm;
 }
 
+.cv-head p {
+  max-width: var(--measure);
+  margin: tokens.$spacing-sm 0 0;
+}
+
 /*
-  The two controls only he sees, small enough to live inside a 2.7rem row that
-  clips what overflows — a default icon button is 3rem and was drawn with its
-  bottom edge cut off.
+  Two columns that cannot clip.
+
+  This page was built out of `mat-grid-list`, which gives every row a fixed
+  height and hides what does not fit — so on a phone any line long enough to
+  wrap lost its end ("…Galería Zunino, Sevilla," with the country gone) and a
+  two-line entry was drawn over the one below it. The columns were the only
+  thing wanted from it, and a css grid gives those without buying the height.
+*/
+.cv-section-title {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  margin: 0 0 tokens.$spacing-md;
+
+  /* Lined up with the entries beneath it rather than with the page edge. */
+  @include bp.respond-above(tokens.$breakpoint-sm) {
+    margin-left: calc(4rem + #{tokens.$spacing-md});
+  }
+}
+
+.cv-entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cv-entry {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: tokens.$spacing-sm;
+  align-items: baseline;
+  padding: tokens.$spacing-xs 0;
+
+  @include bp.respond-above(tokens.$breakpoint-sm) {
+    grid-template-columns: 4rem 1fr;
+    gap: tokens.$spacing-md;
+  }
+}
+
+.cv-year {
+  margin: 0;
+  /* Tabular, so a column of years is a column and not a ragged edge. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* A year that is a repeat keeps its cell and says nothing, so the second
+   column starts in the same place on every row. */
+.cv-year-quiet {
+  visibility: hidden;
+}
+
+.cv-said {
+  margin: 0;
+  /* The words, not the page: a line wraps inside its own column. */
+  max-width: var(--measure);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/*
+  The two controls only he sees. They used to be shrunk to fit inside a 2.7rem
+  row that clipped them; nothing clips now, and they are the size a button is.
 */
 .cv-admin-button {
   flex: 0 0 auto;

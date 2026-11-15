@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { CvEntry } from '@domain/cv/cv-entry.entity';
@@ -9,6 +10,7 @@ import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CvService } from '@shared/services/cv.service';
 import { mockArtworkInfraService } from '../../test/mocks/infrastructure/artwork/artwork.service.mock';
 import { CvComponent } from './cv.component';
+import { CvEntryDialogComponent } from './cv-entry-dialog.component';
 
 const SHOW: CvEntry = {
   id: 'aaaa000000000001',
@@ -38,6 +40,7 @@ const PRIZE: CvEntry = {
 describe('the cv page', () => {
   let fixture: ComponentFixture<CvComponent>;
   let admin: boolean;
+  let opened: { component: unknown; data: unknown }[];
 
   function build(): void {
     TestBed.resetTestingModule();
@@ -54,6 +57,15 @@ describe('the cv page', () => {
           provide: CvService,
           useValue: { entries: () => [SHOW, PRIZE], refresh: async () => undefined },
         },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: (component: unknown, config: { data: unknown }) => {
+              opened.push({ component, data: config.data });
+              return { close: () => undefined };
+            },
+          },
+        },
       ],
     });
 
@@ -66,6 +78,7 @@ describe('the cv page', () => {
 
   beforeEach(() => {
     admin = false;
+    opened = [];
   });
 
   it('shows the career to anybody', () => {
@@ -90,42 +103,48 @@ describe('the cv page', () => {
     expect(openForm()).toBeNull();
   });
 
-  it('opens the form under the section it was opened from, and nowhere else', () => {
+  /**
+   * A window over the page, not a form pushed in under the section.
+   *
+   * It opened below the list because the page was grid tiles that clipped
+   * anything taller than a row — eight fields between the line being
+   * corrected and the next section, and on a phone a form mostly below the
+   * fold. Nothing clips now, and a window says plainly that one thing is
+   * being done until it is finished or abandoned.
+   */
+  it('opens the form in a window, on the section it was opened from', () => {
     admin = true;
     build();
 
     fixture.componentInstance.add('award');
-    fixture.detectChanges();
 
-    expect(fixture.componentInstance.formOpenIn('award')).toBe(true);
-    expect(fixture.componentInstance.formOpenIn('solo')).toBe(false);
-    expect(openForm()).not.toBeNull();
+    expect(opened).toHaveLength(1);
+    expect(opened[0].component).toBe(CvEntryDialogComponent);
+    expect(opened[0].data).toEqual({ kind: 'award', entry: null });
+    expect(openForm()).toBeNull();
   });
 
   /**
    * The drawn line carries a title and a year; the form needs the two
    * languages, the links and the kind, which only the entry has.
    */
-  it('hands the form the whole entry, not the line the page drew', () => {
+  it('hands the window the whole entry, not the line the page drew', () => {
     admin = true;
     build();
 
     fixture.componentInstance.correct(PRIZE.id);
-    fixture.detectChanges();
 
-    expect(fixture.componentInstance.correcting()).toEqual(PRIZE);
-    expect(fixture.componentInstance.formOpenIn('award')).toBe(true);
+    expect(opened[0].data).toEqual({ kind: 'award', entry: PRIZE });
   });
 
-  it('shuts one form when the other opens, so only one is ever being written', () => {
+  // A line can be drawn from a stale list; opening a window onto nothing
+  // would be a form with no kind, which the form requires.
+  it('opens nothing for an entry that is no longer there', () => {
     admin = true;
     build();
 
-    fixture.componentInstance.add('solo');
-    fixture.componentInstance.correct(PRIZE.id);
-    fixture.detectChanges();
+    fixture.componentInstance.correct('not-an-id');
 
-    expect(fixture.componentInstance.formOpenIn('solo')).toBe(false);
-    expect(fixture.componentInstance.formOpenIn('award')).toBe(true);
+    expect(opened).toEqual([]);
   });
 });

@@ -544,6 +544,25 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Huelva",
           "country": "spain"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2024,
+        "cv": {
+          "id": "1c6b1a0396dd55e5",
+          "kind": "collective",
+          "year": 2024,
+          "title": {
+            "en": "Outsiders. Vol. 1"
+          },
+          "venue": {
+            "en": "Zunino gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain",
+          "venueUrl": "https://galeriazunino.com/"
+        }
       }
     ]
   },
@@ -658,6 +677,24 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Huelva",
           "country": "spain"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2021,
+        "cv": {
+          "id": "b30ad80ca6893f41",
+          "kind": "collective",
+          "year": 2021,
+          "title": {
+            "en": "Figuración Fantástica Sevillana"
+          },
+          "venue": {
+            "en": "Galería Impulso"
+          },
+          "city": "Querétaro",
+          "country": "mexico",
+          "venueUrl": "https://impulsogaleria.com/en/home/"
         }
       }
     ]
@@ -2086,21 +2123,20 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "entries": [
       {
         "kind": "exhibited",
-        "year": 2024,
+        "year": 2026,
         "cv": {
-          "id": "1c6b1a0396dd55e5",
+          "id": "8c14c79b08f38bce",
           "kind": "collective",
-          "year": 2024,
+          "year": 2026,
           "title": {
-            "en": "Outsiders. Vol. 1"
+            "en": "Outsiders Vol. 3"
           },
           "venue": {
-            "en": "Zunino gallery",
+            "en": "Zunino Gallery",
             "es": "Galería Zunino"
           },
           "city": "Sevilla",
-          "country": "spain",
-          "venueUrl": "https://galeriazunino.com/"
+          "country": "spain"
         }
       }
     ]
@@ -2555,6 +2591,29 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
         "who": {
           "en": "a private collector",
           "es": "un coleccionista privado"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "169",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2025,
+        "cv": {
+          "id": "e522aa4bc418dd99",
+          "kind": "collective",
+          "year": 2025,
+          "title": {
+            "en": "Outsiders Vol. 2"
+          },
+          "venue": {
+            "en": "Zunino Gallery",
+            "es": "Galería Zunino"
+          },
+          "city": "Sevilla",
+          "country": "spain"
         }
       }
     ]
