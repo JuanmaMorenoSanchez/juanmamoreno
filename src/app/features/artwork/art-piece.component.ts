@@ -311,6 +311,21 @@ export class ArtPieceComponent {
   readonly paintingNft: Signal<Nft> = computed(() => this.frontalViewNft() ?? this.nft());
   readonly certificateLine: Signal<string> = computed(() => this.lineFor(this.paintingNft()));
 
+  /**
+   * This page's own address, printed under the caption and shown nowhere else.
+   *
+   * The same address the canonical names — the painting's page, in the page's
+   * language — rather than the one in the browser's bar, which may be any of
+   * the seven photographs of the same work. A printed sheet has no links left
+   * in it, so this is the only thing on the paper that says where the record
+   * it came from can be read.
+   */
+  readonly pageUrl: Signal<string> = computed(() => {
+    const nft = this.nft();
+    if (!nft) return '';
+    return `https://juanmamoreno.com${this.language.link(`artwork/${this.canonicalTokenFor(nft)}`)}`;
+  });
+
   private lineFor(nft: Nft | undefined): string {
     if (!nft) return '';
     const year = this.getTraitValue(nft, VALIDTRAITS.YEAR);

@@ -5,6 +5,31 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.73.0
+
+- **feat** Every word in the top bar and the phone's drawer is the site's ink,
+  at label size, uppercase and tracked, and the sheets its menus open are ink
+  on paper. They were Material's azure primary on Material's tinted surface —
+  with the bar's lavender ground gone, ten blue words were the loudest thing
+  left saying which library drew the page, and in the drawer they were blue
+  words on a sheet that read as white however it was painted.
+- **feat** On a phone the catalogue's year and availability filters share the
+  breadcrumb's own line instead of taking a line of their own, at about half
+  the width. Two faults underneath it: the first one sat eight pixels left of
+  every chip above it, which is the misalignment the artist spotted, and
+  "Disponibilidad" was cut to "Disponib" by MDC's cap on the gap a floating
+  label sits in.
+- **feat** A painting's page prints as a condition sheet: the painting whole,
+  its label, the address it lives at, its record and its essay, with the bar,
+  the trail, the viewer's buttons, the strip of other paintings and the footer
+  taken away. Ctrl+P used to give a page and a half of furniture around the one
+  thing anybody printing it wanted.
+- **feat** `/compose`: pieces cut from different paintings arranged on one
+  ground, and kept back onto the same shelf. The nights cut all 192 paintings
+  into the separate things in them and the only thing that could be done with
+  one was look at it. It publishes nothing, it belongs to no painting, and
+  what it saves is not a page until it is registered.
+
 ## 2.72.0
 
 - **feat** The bar is the same colour as the page under it. `color="primary"`

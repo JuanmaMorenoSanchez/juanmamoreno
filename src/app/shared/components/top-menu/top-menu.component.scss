@@ -30,6 +30,39 @@ mat-toolbar-row {
   flex: 1 1 auto;
 }
 
+// Words on a wall, not a library's buttons.
+//
+// `mat-button` sets its label in the theme's primary — azure blue — at
+// Roboto's size and tracking. With the bar's own lavender gone, ten blue
+// words were the loudest thing left saying which component library drew this
+// page, and in the phone's drawer they were blue words on a sheet that
+// therefore read as white however it was painted.
+//
+// Ink, at label size, uppercase and tracked: the same treatment
+// `.catalog-heading` gives every heading on the site, so the bar and the page
+// it sits on are set by the same hand. 0.8rem and not the 0.6875rem this was
+// first drawn at, because the site has a floor and it applies here too (R224).
+mat-toolbar,
+.drawer-content {
+  button[mat-button],
+  a[mat-button] {
+    // Through Material's own tokens rather than over the top of them. The
+    // label is a span of its own inside the button and takes the token, not
+    // what the button inherits — `color` on the button does nothing, which is
+    // how the words stayed blue the first time this was changed.
+    --mat-button-text-label-text-color: var(--catalog-ink);
+    --mat-button-text-label-text-size: 0.8rem;
+    --mat-button-text-label-text-weight: 500;
+    --mat-button-text-label-text-tracking: 0.08em;
+    --mat-button-text-label-text-transform: uppercase;
+    // The wash under a word that is hovered, focused or pressed. It is the
+    // primary too, so the item the drawer opens focused wore a lavender pill
+    // — the last blue left in the bar after the words themselves were fixed.
+    --mat-button-text-state-layer-color: var(--catalog-ink);
+    --mat-button-text-ripple-color: rgb(127 127 127 / 20%);
+  }
+}
+
 // Which menu a reader gets, in css rather than in a signal.
 //
 // 600px is Material's XSmall boundary, which is the breakpoint this used to ask
@@ -136,6 +169,10 @@ mat-toolbar-row {
 // Smaller rather than fainter, so they stay legible in both grounds and keep a
 // touch target worth aiming at.
 .bar-setting {
+  // The same correction as the words beside them: the wash under a pressed
+  // icon button is the theme's primary, which is the one lavender left.
+  --mat-icon-button-state-layer-color: var(--catalog-ink);
+  --mat-icon-button-ripple-color: rgb(127 127 127 / 20%);
   width: 36px;
   height: 36px;
   padding: 6px;

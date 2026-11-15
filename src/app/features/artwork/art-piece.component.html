@@ -123,6 +123,16 @@
         Back to the post this painting came from, for a reader who arrived from
         it. Absent for most of the catalogue, which has never been posted.
       -->
+      <!--
+        Where this sheet came from, on the printed copy only.
+
+        A page that has been printed has lost every link it had, and a
+        condition sheet handed round a gallery with nothing on it to say which
+        painting's record it is, or where the record lives, is a photocopy. One
+        line, under the facts, and it is the address the page's own canonical
+        names rather than whichever photograph was on screen.
+      -->
+      <p class="artwork-source">{{ pageUrl() }}</p>
       @if (instagramPost(); as post) {
         <p class="artwork-instagram">
           <a [href]="post" target="_blank" rel="noopener noreferrer">
@@ -180,7 +190,6 @@
         <mat-icon>chevron_right</mat-icon>
       </button>
     </p>
-    <app-art-pieces-list [viewAsWidget]="true" [nftFilters]="nearbyFilter()">
-    </app-art-pieces-list>
+    <app-art-pieces-list [viewAsWidget]="true" [nftFilters]="nearbyFilter()"> </app-art-pieces-list>
   }
 </div>

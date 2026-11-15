@@ -200,8 +200,7 @@ export const routes: Routes = [
   {
     path: 'pieces',
     canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/pieces/pieces.component').then((m) => m.PiecesComponent),
+    loadComponent: () => import('@features/pieces/pieces.component').then((m) => m.PiecesComponent),
     data: { title: 'Pieces', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/pieces', redirectTo: '/pieces' },
@@ -219,11 +218,21 @@ export const routes: Routes = [
   {
     path: 'parts',
     canActivate: [readerLanguage, adminOnly],
-    loadComponent: () =>
-      import('@features/assets/assets.component').then((m) => m.AssetsComponent),
+    loadComponent: () => import('@features/assets/assets.component').then((m) => m.AssetsComponent),
     data: { title: 'Assets', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/parts', redirectTo: '/parts' },
+  // The other thing a shelf of cut-outs is for: several of them, from
+  // several paintings, on one ground. What it makes is kept on the same
+  // shelf and published nowhere, like everything else behind the door.
+  {
+    path: 'compose',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/compose/compose.component').then((m) => m.ComposeComponent),
+    data: { title: 'Compose', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/compose', redirectTo: '/compose' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {

@@ -6096,3 +6096,91 @@ longer paper white, and the contrast of the site's second level of writing were
 the four things he kept.
 *Checked by:* `page-cost.test.mjs`, which weighs every route on a phone against
 a ceiling and passed unchanged with the font added.
+
+### R236 — The bar is the site's, not the component library's · met
+Every word in the top bar and the phone's drawer is the site's ink, at label
+size, uppercase and tracked — the same treatment `.catalog-heading` gives every
+heading on the site. The sheets the bar's menus open are the same: ink on
+`--surface`, with no tint of their own.
+
+It was Material's: the labels in the theme's azure primary, the wash under a
+hovered or focused one in the same colour, and the panel on the theme's tinted
+surface. With the toolbar's lavender ground gone in 2.72.0, ten blue words were
+the loudest thing left saying which library drew the page — and in the drawer
+they were blue words on a sheet that therefore read as white however it was
+painted, which is what the artist reported.
+
+**Through Material's own tokens, not over the top of them.** A button's label
+is a span inside it with its colour taken from
+`--mat-button-text-label-text-color`, so `color` on the button changes nothing:
+set that way the words stayed blue, measured, after the first attempt. The
+state layer and the ripple are named for the same reason — the lavender pill on
+the item the drawer opens focused is `--mat-button-text-state-layer-color`.
+*Proven by:* `top-menu.component.scss`, which names each token and why; and the
+drawer as rendered on a 393px phone, where every word is `#1f1f1f`
+
+### R237 — The catalogue's filters sit on the breadcrumb's own line · met
+On a phone the year and availability selects share whatever the chips leave of
+the first line, about 110px each, rather than taking a line of their own.
+
+They were given `flex: 1 1 100%`, which is a line of their own by definition: a
+flex row wraps on an item's basis before it ever shrinks it, so two 187px boxes
+asked for a row and got one, costing thirty-six pixels of the first screen. At
+basis zero they never wrap and `flex-grow` hands them what is left.
+
+**Two things were wrong underneath it.** The first filter carried
+`margin-left: 0` to start the line, which inside `mat-chip-set`'s own −8px
+meant it sat eight pixels to the left of every chip above it — the artist saw
+it as the year select being out of line, and it was. And MDC caps the gap a
+floating label sits in at `100% − 60px`, which on a 110px box leaves 51px for a
+label needing 70: "Disponibilidad" was cut to "Disponib" with no ellipsis to
+say so.
+*Proven by:* the catalogue as rendered at 393px — the chips, both selects and
+both labels on one line, the label measured as unclipped (`scrollWidth` equal
+to `clientWidth`)
+
+### R238 — A painting's page prints as a condition sheet · met
+`@media print` leaves the painting whole, its label, the address the page lives
+at, its record and the artist's text about it, and takes away everything that
+goes somewhere or does something: the bar, the trail, the viewer's eight
+buttons, the strip of other paintings, the footer. The ground goes white and
+the ink black, the painting is capped at 13cm so the label keeps the sheet it
+belongs on, and the label and the record are each asked not to break across a
+page.
+
+A gallery, a jury or a framer pressing Ctrl+P got a page and a half of
+furniture around the one thing they wanted. There is a proper dossier behind
+the PDF button for whoever finds it; this is for everybody else.
+
+**The address is in the component's own stylesheet, not the global one.** With
+javascript on, `styles.scss` arrives after the first paint, so a line hidden
+there would be drawn, read and then removed — a url flashing under the caption
+of every painting.
+*Proven by:* the artwork page rendered in print media at A4, which carries the
+painting, the title, the facts line and the address and no navigation
+
+### R239 — Pieces from several paintings can be put on one ground · met
+`/compose`, behind the same door as the rest of the studio. The shelf on one
+side, a canvas on the other: press a cut to put it down, drag it to place it,
+the arrow keys to nudge whichever is selected, a slider for its size, and
+`Keep` saves the picture back onto the same shelf as another kept piece.
+
+The nights cut all 192 paintings into the separate things in them and the shelf
+holds hundreds of transparent layers. Until now the only thing that could be
+done with one was look at it, or hand it to the atelier as the start of a
+single piece of work.
+
+**It publishes nothing and it belongs to no painting.** A composition came out
+of three of them, so filing it under any one would be a lie about the other
+two — and a saved piece is still not a page until a line is added to the sketch
+registry, which is the rule that exists because this used to resolve for any
+unknown id.
+
+**The arrangement is in the domain layer and the pixels are not.** Where a
+piece lands, which one the pointer is on, and what order they are drawn in are
+answerable without a canvas, and jsdom has none — so they are tested where they
+can be.
+*Proven by:* `composition.spec.ts` "picks the piece on top where two overlap",
+"never draws a piece larger than its own pixels" and "lets a piece hang over
+the edge but not leave"; and `compose.component.spec.ts` "offers the cut pieces
+and not the clips" and "sizes the canvas in the pixels it will be saved at"

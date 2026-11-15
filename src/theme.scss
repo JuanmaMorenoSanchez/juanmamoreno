@@ -105,4 +105,23 @@ html[data-theme='dark'] {
     display: flex;
     align-items: center;
   }
+
+  // MDC caps the gap the label sits in at `100% - 60px`, reserving sixty
+  // pixels for the two bits of outline either side of it. On a box that is
+  // 111px wide — which is what these became when they moved up onto the
+  // breadcrumb's own line — that leaves 51px for a label needing 70, and
+  // "Disponibilidad" was cut to "Disponib" with no ellipsis to say so. The
+  // segments either side are twelve pixels and four; twenty-four is the
+  // honest reservation, and on a wide screen the cap is not reached at all.
+  //
+  // `!important` because the rule being overruled is
+  // `.mat-mdc-form-field-type-mat-select.mat-form-field-appearance-outline
+  // .mdc-notched-outline__notch`, which Material injects into the document at
+  // runtime — so it is both more specific than anything sensible written here
+  // and later in the document than this file. Material's own rule for a
+  // floating label already uses twenty-four; this is that number, applied to
+  // the case where the label is always floating because we asked it to be.
+  .mdc-notched-outline__notch {
+    max-width: calc(100% - 24px) !important;
+  }
 }

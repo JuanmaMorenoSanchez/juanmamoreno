@@ -503,6 +503,26 @@ a img {
 }
 
 /*
+  The sheets the bar's menus open, which are drawn in an overlay at the root of
+  the document and so cannot be reached from the top bar's own stylesheet.
+
+  The same correction as the words that open them: Material sets a menu item in
+  the theme's primary on its own tinted surface, which is a blue list on a
+  lavender card hanging off a bar that is neither. A sheet of paper, with the
+  site's ink on it. Not uppercase, unlike the bar: these are nineteen years and
+  a dozen page names, and a list is read down rather than scanned across.
+*/
+.mat-mdc-menu-panel {
+  --mat-menu-container-color: var(--surface);
+  --mat-menu-item-label-text-color: var(--catalog-ink);
+  --mat-menu-item-icon-color: var(--catalog-soft);
+}
+
+.mat-mdc-menu-item {
+  letter-spacing: 0.04em;
+}
+
+/*
   The studio's floating messages.
   
   Global because a snackbar is drawn in an overlay at the root of the document,
@@ -544,4 +564,134 @@ a img {
 */
 .mat-mdc-form-field-subscript-wrapper {
   font-size: 0.8rem;
+}
+
+/*
+  What this site is on paper.
+
+  A gallery, a jury or a framer printing a painting's page got the menu bar,
+  the trail, the row of eight icon buttons, the strip of other paintings and
+  the footer — about a page and a half of furniture around the one thing they
+  wanted. There is a proper dossier behind the PDF button for whoever finds
+  it; this is for whoever presses Ctrl+P, which is everybody else.
+
+  What survives is a condition sheet: the painting whole, its label, its
+  record and the artist's text about it. The furniture is not hidden one
+  element at a time — the rule is that anything that *goes somewhere* or
+  *does something* has no meaning on paper, since none of it can be pressed.
+
+  `!important` throughout, and that is the right tool here rather than a
+  smell: these are overriding component stylesheets whose selectors carry an
+  encapsulation attribute on top of their class, and inline widths the
+  viewer measures at runtime. Nothing cascades out of a print block.
+*/
+@media print {
+  /* Ink on paper. The ground is a shade of white chosen for a screen, and on
+     a printer it is forty sheets' worth of pale grey ink. */
+  :root {
+    --catalog-bg: #ffffff;
+    --catalog-ink: #000000;
+    --catalog-soft: #333333;
+    --catalog-frame-bg: #ffffff;
+    --catalog-paper: #ffffff;
+    --surface: #ffffff;
+    --catalog-rule: rgb(0 0 0 / 35%);
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  app-top-menu,
+  app-footer,
+  app-breadcrumb,
+  app-back-button,
+  app-sold-toggle,
+  .viewer-toolbar,
+  .walk,
+  .more-on,
+  .separator,
+  .sort-group,
+  .edited-filter,
+  #viewer-hints,
+  .cdk-overlay-container {
+    display: none !important;
+  }
+
+  /* The strip of other paintings at the foot of an artwork page, which is a
+     way of leaving this one. On the catalogue itself the same component is
+     the page, so it is hidden only where it is a trail. */
+  app-art-pieces-list[viewaswidget],
+  .as-strip {
+    display: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+
+  .container {
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  .margin-top {
+    margin-top: 0 !important;
+  }
+
+  /* The viewer's frame is a box of a measured shape with the photograph
+     stretched across it, which on paper is a fixed pixel width and an
+     aspect ratio that can run off the bottom of the sheet. On paper the
+     painting is simply an image with a ceiling: as wide as the text under
+     it, and never more than half the page tall, so the label and the
+     record keep the sheet they belong on. */
+  .art-frame {
+    width: auto !important;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+    break-inside: avoid;
+  }
+
+  .preview-layer,
+  .art-viewer.layer:not(.visible) {
+    display: none !important;
+  }
+
+  .art-viewer.layer.visible {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 13cm !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+  }
+
+  /* Both are given the frame's measured width as an inline style, which is a
+     number of screen pixels and nothing to do with a sheet of paper. */
+  app-artwork-record,
+  app-artwork-critic {
+    width: auto !important;
+    display: block;
+  }
+
+  /* The label belongs with the painting and the record belongs together. */
+  .art-piece-labels,
+  app-artwork-record {
+    break-inside: avoid;
+  }
+
+  /* Eight per cent of a screen is room to breathe; eight per cent of a sheet
+     of paper is an inch of white between the painting and its own title. */
+  .art-piece-labels {
+    padding: tokens.$spacing-lg 0 0 !important;
+  }
+
+  /* A link on paper is a phrase, and an underline on every one of them is
+     noise. The exception is the one that says where the sheet came from. */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
 }

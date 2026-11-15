@@ -1,0 +1,183 @@
+@use '../../../styles/tokens';
+@use '../../../styles/controls';
+@use '../../../styles/breakpoints' as bp;
+
+.compose {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
+}
+
+.compose-head h1 {
+  margin: 0;
+}
+
+.compose-said {
+  max-width: var(--measure);
+  margin: tokens.$spacing-xs 0 tokens.$spacing-md-lg;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--catalog-soft);
+}
+
+.compose-trouble {
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  padding: tokens.$spacing-sm-md tokens.$spacing-md;
+  font-size: 0.8rem;
+}
+
+// The shelf beside the work, and under it on a narrow window: a column of
+// hundreds of cut-outs is no use at all on a phone beside a canvas, and this
+// is a room for a desk anyway.
+.compose-room {
+  display: grid;
+  gap: tokens.$spacing-lg;
+  grid-template-columns: 1fr;
+
+  @include bp.respond-above(tokens.$breakpoint-md) {
+    grid-template-columns: 14rem 1fr;
+    align-items: start;
+  }
+}
+
+.compose-shelf {
+  // Its own scroll, so the canvas does not walk down the page as the shelf
+  // grows. 192 paintings cut into their parts is a long list and getting
+  // longer every night.
+  max-height: 34rem;
+  overflow-y: auto;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    gap: tokens.$spacing-sm;
+  }
+}
+
+.compose-add {
+  @include controls.plain-button(tokens.$spacing-xs, 0.8rem);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border-color: var(--catalog-rule);
+
+  img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    // A cut is transparent, and on this ground a dark figure on nothing reads
+    // as a hole. The frame colour is what every other thumbnail on the site
+    // waits behind.
+    background: var(--catalog-frame-bg);
+  }
+
+  &:hover {
+    border-color: currentcolor;
+  }
+}
+
+.compose-waiting {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--catalog-frame-bg);
+}
+
+.compose-kind {
+  font-size: 0.8rem;
+}
+
+.compose-from {
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+  // One line: a shelf where every tile is as tall as the longest painting's
+  // name is a shelf that cannot be scanned.
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compose-controls,
+.compose-chosen,
+.compose-keep {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  margin-bottom: tokens.$spacing-sm;
+  font-size: 0.8rem;
+}
+
+.compose-group {
+  display: inline-flex;
+
+  button {
+    @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+    border-color: var(--catalog-rule);
+    border-radius: 0;
+
+    &:first-child {
+      border-radius: 3px 0 0 3px;
+    }
+
+    &:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+
+    // The one in force, said by filling it rather than by a colour: these sit
+    // over a canvas that may be any colour at all.
+    &.is-on {
+      background: var(--catalog-ink);
+      color: var(--catalog-bg);
+      border-color: var(--catalog-ink);
+    }
+  }
+}
+
+.compose-plain {
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+  border-color: var(--catalog-rule);
+}
+
+.compose-keep input[type='text'] {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
+  border: 1px solid var(--catalog-rule);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+}
+
+// The ground the arrangement stands on. A chequer, not a flat colour: the
+// pieces are transparent cut-outs and the composition may be saved with
+// nothing behind them, so the canvas has to show the difference between a
+// white ground and no ground at all.
+.compose-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  border: 1px solid var(--catalog-rule);
+  touch-action: none;
+  // One conic gradient rather than the four overlaid linear ones the recipe
+  // for this is usually written with: the same chequer in a fifth of the
+  // bytes, and this component's stylesheet is already over its warning
+  // budget.
+  background: repeating-conic-gradient(
+      var(--catalog-frame-bg) 0% 25%,
+      var(--catalog-bg) 0% 50%
+    )
+    0 0 / 16px 16px;
+}
+
+.compose-hint {
+  margin-top: tokens.$spacing-sm;
+}

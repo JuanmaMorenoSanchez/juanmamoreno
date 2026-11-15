@@ -56,6 +56,27 @@
   margin: 1em 0;
 }
 
+/* The sheet's own address, which exists on paper and nowhere else.
+
+   Hidden here rather than in styles.scss, and that is the whole reason this
+   is three lines in a component file instead of one global `.print-only`:
+   with javascript on, the global stylesheet arrives after the first paint, so
+   a line hidden there would be drawn, read and then removed — a url flashing
+   under the caption of every painting. A component's styles are inlined into
+   the page. */
+.artwork-source {
+  display: none;
+}
+
+@media print {
+  .artwork-source {
+    display: block;
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--catalog-soft);
+  }
+}
+
 /* The two directions read as one control, not as two buttons that happened
    to land beside each other. */
 .walk {

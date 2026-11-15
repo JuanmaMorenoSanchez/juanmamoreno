@@ -2,9 +2,8 @@
 @use '../../../../styles/breakpoints' as bp;
 
 // The two filters are read as a pair, so they wrap as a pair. Inline on a wide
-// screen, exactly as they were; on a phone they take a row of their own and
-// split it in half, which is what stops the year riding up beside the chips
-// and leaving availability alone underneath on a different left edge.
+// screen, exactly as they were; on a phone they share whatever the chips leave
+// of the first line instead of taking a line of their own.
 .filters {
   display: flex;
   align-items: flex-start;
@@ -13,21 +12,22 @@
   // line, and giving the filters a row of their own there cost a tablet
   // thirty-six pixels of its first screen to solve a problem it did not have.
   @include bp.respond-below(tokens.$breakpoint-sm) {
-    flex: 1 1 100%;
+    // Basis zero, not 100%, and that one number is the whole change. A flex
+    // row wraps on an item's basis before it ever shrinks it, so two 187px
+    // boxes asked for a line of their own and got it — thirty-six pixels of
+    // the first screen spent on a pair of controls that the chips beside them
+    // leave room for. At zero they never wrap, and `flex-grow` then hands
+    // them exactly what is left of the chips' line: about half the width they
+    // were, which is what the artist asked for and also where they belong.
+    flex: 1 1 0;
     // A flex item will not shrink below its content unless told it may, and
     // the content here is two boxes that are 212px each whatever the screen.
-    // Without this the row stayed 436px wide inside a 320px phone and the
-    // whole catalogue page scrolled sideways.
     min-width: 0;
 
     .small-input {
       flex: 1 1 0;
       width: auto;
       min-width: 0;
-
-      &:first-child {
-        margin-left: 0;
-      }
     }
   }
 }
