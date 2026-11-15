@@ -1771,6 +1771,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "78",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -1792,6 +1800,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
     "tokenId": "79",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2013,

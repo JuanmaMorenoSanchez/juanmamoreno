@@ -6413,6 +6413,18 @@ afterwards, so the year is the work's own: the page hands the painting's year
 to the form, which states it instead of offering a box. A painting whose year
 cannot be read puts the box back rather than storing a guess.
 
+**The painting's year, which is not the institution's.** A residency in 2012
+can pay for a painting finished in 2019, and the line reads 2019: the cv
+entry gives the name and nothing else. The two years are free to differ and
+nothing checks them against each other.
+
+**And it comes from a prize or a scholarship, never from a show.** The cv
+keeps the awards, residencies and scholarships in one section, which is the
+only one this kind is offered. An exhibition is where a finished painting
+went, so citing one as what funded it would be a line that is untrue — and a
+gallery chosen while the kind was a sale is not written either, because the
+check is on the entry and not on the picker.
+
 **And it reads first, whatever year the rest of the record runs from.** Sorted
 by year alone it would land among whatever else happened that year, which is
 usually where the painting was first shown. Both halves sort it the same way,
@@ -6423,7 +6435,10 @@ in another takes away the wrong line.
 afterwards", "comes first even above an earlier year" and "reads as a sentence
 naming who gave it"; `record-line-dialog.component.spec.ts` "does not ask for
 a year, because the painting is what dates it", "asks for the name and nothing
-else" and "will not save without the name of whoever gave it"; and
+else", "will not save without the name of whoever gave it", "offers the prizes
+and the scholarships, and no show", "will not write a show as what paid for
+the painting", "sends the year of the painting with it" and "asks for the year
+when the painting has none to give"; and
 `artwork-record.service.spec.ts` in the backend, which asserts the same order
 on the api's side
 
@@ -6515,6 +6530,11 @@ and the reason it is right: the cv is where the institutions live.
 
 The private collector is untouched: it is a phrase rather than a proper noun,
 which is why it is a choice and not something to pick or type.
+
+**Which part of the cv is offered depends on the kind.** A sale or a
+collection can name anybody on it — the gallery that sold the painting is on
+the shows. What paid for the painting sees only the prizes and scholarships
+(R249).
 *Proven by:* `record-line-dialog.component.spec.ts` "names an institution
 from the cv, in both languages at once", "names a foundation by its own
 title, where the cv has no venue" and "does not carry a name onto a line that

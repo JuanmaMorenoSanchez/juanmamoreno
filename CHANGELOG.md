@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.82.1
+
+- **fix** "Created with the support of" is offered only the prizes,
+  residencies and scholarships on the cv, never a show: an exhibition is
+  where a finished painting went, so citing one as what funded it would be
+  untrue. A gallery chosen while the kind was still a sale is not written
+  either. The line keeps the painting's own year, which need not be the cv
+  entry's — and a painting whose year cannot be read asks for one instead of
+  refusing to save.
+
 ## 2.82.0
 
 - **feat** An institution on a record line is chosen from the cv instead of

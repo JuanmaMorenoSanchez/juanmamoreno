@@ -23,11 +23,14 @@ const SHOW: CvEntry = {
 /**
  * A foundation, as the cv writes one: its own name is the entry's title and
  * there is no venue, which is how every residency and prize on this cv reads.
+ *
+ * Its year is deliberately not the painting's. A residency in 2012 can pay
+ * for a painting finished in 2019, and the line is dated by the painting.
  */
 const GALA: CvEntry = {
   id: 'aaaa000000000003',
   kind: 'award',
-  year: 2019,
+  year: 2012,
   title: { en: 'Fundación Antonio Gala' },
   country: 'spain',
 };
@@ -46,7 +49,7 @@ describe('writing a line of the record', () => {
   let saved: Array<{ tokenId: string; entries: unknown[] }>;
   let closed: number;
 
-  function build(): void {
+  function build(artworkYear: number | null = 2019): void {
     saved = [];
     closed = 0;
     TestBed.resetTestingModule();
@@ -57,7 +60,7 @@ describe('writing a line of the record', () => {
         provideHttpClientTesting(),
         provideTranslateService(),
         provideRouter([]),
-        { provide: MAT_DIALOG_DATA, useValue: { tokenId: '165', artworkYear: 2019 } },
+        { provide: MAT_DIALOG_DATA, useValue: { tokenId: '165', artworkYear } },
         { provide: MatDialogRef, useValue: { close: () => (closed += 1) } },
         {
           provide: ArtworkRecordService,
@@ -378,6 +381,49 @@ describe('writing a line of the record', () => {
       expect(text()).not.toContain('record.privateCollector');
     });
 
+    /**
+     * Support is a prize, a residency or a scholarship. A show is where a
+     * finished painting went, so citing one as what paid for it would be a
+     * line that is untrue — and the cv keeps them in separate sections.
+     */
+    it('offers the prizes and the scholarships, and no show', () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+        whoFrom: () => Array<{ kind: string; items: Array<{ id: string }> }>;
+      };
+
+      component.set('kind', 'supported');
+
+      expect(component.whoFrom().map((section) => section.kind)).toEqual(['award']);
+      expect(component.whoFrom().flatMap((section) => section.items.map((one) => one.id))).toEqual([
+        GALA.id,
+      ]);
+
+      // A sale can still name anybody on the cv: the gallery that sold it is
+      // on the shows.
+      component.set('kind', 'sold');
+      expect(component.whoFrom().length).toBeGreaterThan(1);
+    });
+
+    /** Chosen on a sale and still in the draft when the kind changed. */
+    it('will not write a show as what paid for the painting', async () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+        ready: () => boolean;
+        add: () => Promise<void>;
+      };
+
+      component.set('buyer', 'named');
+      component.set('whoCv', SHOW.id);
+      component.set('kind', 'supported');
+
+      expect(component.ready()).toBe(false);
+      await component.add();
+      expect(saved).toEqual([]);
+    });
+
     it('sends the year of the painting with it', async () => {
       build();
       const component = fixture.componentInstance as unknown as {
@@ -389,8 +435,32 @@ describe('writing a line of the record', () => {
       component.set('whoCv', GALA.id);
       await component.add();
 
+      // 2019 is the painting; the residency is a 2012 entry on the cv. The
+      // year of the work, never the institution's.
       expect(saved[0].entries).toEqual([
         { kind: 'supported', who: { en: 'Fundación Antonio Gala' }, year: 2019 },
+      ]);
+    });
+
+    /** Nothing to date it by, so the box comes back rather than storing a guess. */
+    it('asks for the year when the painting has none to give', async () => {
+      build(null);
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+        add: () => Promise<void>;
+      };
+
+      component.set('kind', 'supported');
+      component.set('whoCv', GALA.id);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.record-year-field')).not.toBeNull();
+
+      component.set('year', 2014);
+      await component.add();
+
+      expect(saved[0].entries).toEqual([
+        { kind: 'supported', who: { en: 'Fundación Antonio Gala' }, year: 2014 },
       ]);
     });
 

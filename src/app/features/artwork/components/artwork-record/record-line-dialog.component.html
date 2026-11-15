@@ -78,6 +78,10 @@
           one gallery are two institutions on a page whose whole purpose is
           to be a record. An institution that is not on the cv yet is one to
           add to the cv, which is a window away.
+
+          The support that paid for the painting sees only the prizes and the
+          scholarships: a show is where a finished painting went, so citing
+          one as what funded it would be untrue.
         -->
       @if (ofTheMaking() || draft().buyer === 'named') {
         <mat-form-field appearance="outline" class="record-cv">
@@ -88,7 +92,7 @@
             [disabled]="saving()"
           >
             <mat-option [value]="''">—</mat-option>
-            @for (section of career(); track section.kind) {
+            @for (section of whoFrom(); track section.kind) {
               <mat-optgroup [label]="section.title | translate">
                 @for (one of section.items; track one.id) {
                   <mat-option [value]="one.id">{{ one.label }}</mat-option>

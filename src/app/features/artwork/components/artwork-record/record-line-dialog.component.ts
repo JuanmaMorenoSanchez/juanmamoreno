@@ -20,7 +20,7 @@ import {
   type RecordKind,
 } from '@domain/artwork/record.entity';
 import { cvSections } from '@domain/cv/cv';
-import type { Bilingual } from '@domain/cv/cv-entry.entity';
+import type { Bilingual, CvKind } from '@domain/cv/cv-entry.entity';
 import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { CvService } from '@shared/services/cv.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
@@ -65,6 +65,16 @@ const PRIVATE_COLLECTOR: Bilingual = {
   en: 'a private collector',
   es: 'un coleccionista privado',
 };
+
+/**
+ * Where support can come from on the cv: the prizes and the scholarships.
+ *
+ * The one section titled "Premios y becas" — every award, residency and
+ * scholarship in the career. An exhibition cannot have paid for a painting:
+ * a show is where a finished painting went, and citing one as what paid for
+ * it would be a sentence that is simply untrue.
+ */
+const SUPPORTING_CV_KIND: CvKind = 'award';
 
 /**
  * A new line, opening on the show.
@@ -164,6 +174,21 @@ export class RecordLineDialogComponent {
     }))
   );
 
+  /**
+   * Which of those sections the name may be chosen from.
+   *
+   * A sale or a collection can name anybody on the cv: the gallery that sold
+   * the painting is on the shows, the museum that holds it may be on them
+   * too. What paid for the painting cannot — support is a prize, a residency
+   * or a scholarship — so that kind is offered the one section the cv keeps
+   * them in, and an exhibition cannot be cited as having funded the work.
+   */
+  protected readonly whoFrom = computed(() =>
+    this.ofTheMaking()
+      ? this.career().filter((section) => section.kind === SUPPORTING_CV_KIND)
+      : this.career()
+  );
+
   constructor() {
     // The picker is the whole of this form for a show, and the cv is a few
     // kilobytes shared with the page that lists it.
@@ -183,7 +208,12 @@ export class RecordLineDialogComponent {
   protected readonly ready = computed(() => {
     const draft = this.draft();
     if (this.fromTheCv()) return Boolean(draft.cv);
-    if (this.ofTheMaking()) return Boolean(this.yearOfTheWork() && draft.whoCv);
+    // The institution rather than the chosen id: a gallery picked on a sale
+    // and left in the draft when the kind changed is not support, and the box
+    // comes back for a painting whose own year could not be read.
+    if (this.ofTheMaking()) {
+      return Boolean((this.yearOfTheWork() ?? draft.year) && this.institution(draft.whoCv));
+    }
     return Boolean(draft.year);
   });
 
@@ -206,11 +236,14 @@ export class RecordLineDialogComponent {
    * own name, not a place it happened at.
    *
    * Nothing chosen is nobody, which is a fact on its own: a painting sold,
-   * and when, reads as "Sold" with nothing after it.
+   * and when, reads as "Sold" with nothing after it. So is a show chosen while
+   * the kind was a sale and still in the draft when it became support: the
+   * picker no longer offers it, and this will not write it either.
    */
   private institution(id: string): Bilingual | undefined {
     const entry = this.cv.entries().find((one) => one.id === id);
     if (!entry) return undefined;
+    if (this.ofTheMaking() && entry.kind !== SUPPORTING_CV_KIND) return undefined;
     return entry.venue ?? entry.title;
   }
 
