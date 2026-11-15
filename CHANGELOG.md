@@ -5,6 +5,18 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.83.0
+
+- **feat** The assets page opens on the paintings that have parts — two of a
+  hundred and ninety-two — with a chip for the whole catalogue. How much is
+  left is the count above the list.
+- **chore** The design pass reaches the other four pages behind the door.
+  One column instead of four; the site's heading on pieces and the atelier;
+  the atelier's "engine is not answering" card becomes a rule; publish says
+  what it is, previews a reel in a reel's shape, holds its caption to the
+  measure, and fills in the one button that is seen by anybody else. The
+  catalogue's chip is now the site's, shared with the assets filter.
+
 ## 2.82.1
 
 - **fix** "Created with the support of" is offered only the prizes,

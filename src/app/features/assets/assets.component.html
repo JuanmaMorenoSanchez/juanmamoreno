@@ -14,16 +14,51 @@
     <p class="assets-trouble" data-testid="trouble">{{ why }}</p>
   }
 
+  <!--
+    The paintings that have parts, or all of them. Two of a hundred and
+    ninety-two had been cut, and the ninety-nine percent that had not took up
+    the whole page: rows that cannot be opened and say only "—". How much is
+    left is the number in the line above, not two hundred rows of it.
+  -->
+  @if (asked() && cuts().length) {
+    <div class="assets-filter" role="group" aria-label="Which paintings">
+      <button
+        type="button"
+        class="catalog-chip"
+        [class.is-on]="showing() === 'cut'"
+        [attr.aria-pressed]="showing() === 'cut'"
+        data-testid="only-cut"
+        (click)="showing.set('cut')"
+      >
+        With parts ({{ done() }})
+      </button>
+      <button
+        type="button"
+        class="catalog-chip"
+        [class.is-on]="showing() === 'all'"
+        [attr.aria-pressed]="showing() === 'all'"
+        data-testid="show-all"
+        (click)="showing.set('all')"
+      >
+        All ({{ cuts().length }})
+      </button>
+    </div>
+  }
+
   @if (!asked()) {
     <p class="assets-said">Looking…</p>
   } @else if (!cuts().length) {
     <p class="assets-said" data-testid="empty">
       Nothing in the catalogue yet, so there is nothing to have cut.
     </p>
+  } @else if (!shown().length) {
+    <p class="assets-said" data-testid="none-cut">
+      Nothing has been cut yet. The night does it; All shows the catalogue waiting for it.
+    </p>
   }
 
   <ul class="assets-list" data-testid="paintings">
-    @for (cut of cuts(); track cut.tokenId) {
+    @for (cut of shown(); track cut.tokenId) {
       <li class="assets-painting" [class.assets-none]="!cut.parts.length">
         <button
           type="button"

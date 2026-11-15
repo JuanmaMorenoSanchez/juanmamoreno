@@ -4,6 +4,21 @@
 .publish {
   min-height: 40vh;
   padding-bottom: tokens.$spacing-xl;
+
+  // Otherwise the browser's own h1 margin puts the line below it a third of
+  // the way down the page, away from the heading it belongs to.
+  h1 {
+    margin: 0;
+  }
+}
+
+/* The opening line every page behind the door has, at the size they set it. */
+.publish-lead {
+  max-width: 44rem;
+  margin: tokens.$spacing-xs 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  opacity: 0.7;
 }
 
 .publish-note,
@@ -34,6 +49,9 @@
 
 .publish-video {
   flex: 0 0 auto;
+  // Or the row stretches it to whatever height the caption beside it happens
+  // to need, and a reel is previewed in a shape no reel is.
+  align-self: flex-start;
   width: 240px;
   max-width: 100%;
   aspect-ratio: 9 / 16;
@@ -84,9 +102,15 @@
   color: var(--catalog-soft);
 }
 
+/* Held to the page's measure, like every other place this writing is read.
+   What is in these boxes is what the artwork's page shows at 55 characters a
+   line; here it was edited at ninety-five, which is the one width nobody will
+   ever read it at. The labels and the buttons are not writing and keep the
+   width they had. */
 .publish-caption {
   display: block;
   width: 100%;
+  max-width: var(--measure);
   margin: 0;
   padding: tokens.$spacing-sm;
   box-sizing: border-box;
@@ -161,6 +185,15 @@
   cursor: pointer;
   color: var(--catalog-ink);
   text-decoration: none;
+}
+
+/* The one button on this page that is seen by anybody but him, and it was
+   drawn exactly like Download. Filled, so the irreversible one is the one the
+   eye lands on — the same ink the catalogue's chosen chip is filled with. */
+.publish-go {
+  background: var(--catalog-ink);
+  border-color: var(--catalog-ink);
+  color: var(--catalog-paper, #fff);
 }
 
 .publish-go[disabled],

@@ -1,5 +1,10 @@
-import { cutsFrom } from './assets.component';
-import type { KeptPiece } from '@features/atelier/kept.service';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
+import { KeptService, type KeptPiece } from '@features/atelier/kept.service';
+import { of } from 'rxjs';
+import { AssetsComponent, cutsFrom } from './assets.component';
 
 /**
  * The grouping is the page.
@@ -85,5 +90,73 @@ describe('what the nights cut', () => {
 
   it('answers with nothing for an empty catalogue', () => {
     expect(cutsFrom([], [piece()])).toEqual([]);
+  });
+});
+
+/**
+ * Which of the two questions the page opens on.
+ *
+ * Two of a hundred and ninety-two paintings had been cut, and the page listed
+ * all hundred and ninety-two: the two that could be opened were somewhere in
+ * eight thousand pixels of rows that said "—". How much is left is the count
+ * in the line above, which is why that is the half that can be put away.
+ */
+describe('the page itself', () => {
+  async function build(): Promise<ComponentFixture<AssetsComponent>> {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AssetsComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getArtPiecesObservable: () =>
+              of([
+                { tokenId: '2', name: 'Cuando éramos felices' },
+                { tokenId: '195', name: 'Rockets win I' },
+              ]),
+          },
+        },
+        {
+          provide: KeptService,
+          useValue: {
+            pieces: signal([piece({ tokenId: '2' })]),
+            smallUrls: signal({}),
+            trouble: signal({}),
+            ensure: async () => undefined,
+            showSmall: () => undefined,
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AssetsComponent);
+    fixture.detectChanges();
+    // `ensure()` is a promise, and until it has settled the page is still
+    // "Looking…" — which is when it has no chips to press.
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  const rows = (fixture: ComponentFixture<AssetsComponent>): string[] =>
+    Array.from(fixture.nativeElement.querySelectorAll('.assets-name')).map((one) =>
+      (one as HTMLElement).textContent!.trim()
+    );
+
+  it('opens on the paintings that have parts', async () => {
+    const fixture = await build();
+
+    expect(rows(fixture)).toEqual(['Cuando éramos felices']);
+  });
+
+  it('shows the whole catalogue, which is the work left, when asked', async () => {
+    const fixture = await build();
+
+    fixture.nativeElement.querySelector('[data-testid="show-all"]').click();
+    fixture.detectChanges();
+
+    expect(rows(fixture)).toEqual(['Cuando éramos felices', 'Rockets win I']);
   });
 });

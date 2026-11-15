@@ -26,9 +26,10 @@ export interface Cut {
  *
  * In the catalogue's own order, and every painting is here whether or not
  * anything has been cut from it — which is what makes this the answer to
- * "what is left" as well as "what is there". A piece with no painting is left
- * out rather than gathered under a heading: those are the atelier's own
- * experiments, and this page is about the catalogue.
+ * "what is left" as well as "what is there". Which of the two the page shows
+ * is the reader's to choose; this grouping holds both. A piece with no
+ * painting is left out rather than gathered under a heading: those are the
+ * atelier's own experiments, and this page is about the catalogue.
  *
  * Exported for its own test: it is the whole idea of the page and the only
  * part of it that can be wrong without anybody noticing.
@@ -101,6 +102,21 @@ export class AssetsComponent {
 
   /** How far through the catalogue the nights have got. */
   protected readonly done = computed(() => this.cuts().filter((one) => one.parts.length).length);
+
+  /**
+   * Which of the two questions the list is answering.
+   *
+   * Opening on the paintings that have parts, because two of a hundred and
+   * ninety-two were buried under a hundred and ninety rows that could not be
+   * opened and said only "—". The other question — how much is left — is
+   * answered by the count in the line above, which is the whole of it: there
+   * is nothing to do to a painting that has not been cut yet.
+   */
+  protected readonly showing = signal<'cut' | 'all'>('cut');
+
+  protected readonly shown = computed(() =>
+    this.showing() === 'all' ? this.cuts() : this.cuts().filter((one) => one.parts.length)
+  );
 
   constructor() {
     this.artworks

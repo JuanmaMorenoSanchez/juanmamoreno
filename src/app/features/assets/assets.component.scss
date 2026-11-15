@@ -1,7 +1,10 @@
 @use '../../../styles/tokens';
 
+/* The same column as the catalogue and the certificates, which is the point:
+   these are four pages of one room and they were 62, 60, 48 rem and the
+   site's own container, so every move between them shifted the text. */
 .assets {
-  max-width: 62rem;
+  max-width: 60rem;
   margin: 0 auto;
   padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
 }
@@ -10,12 +13,20 @@
   margin: 0;
 }
 
+/* The size every other page behind the door sets its opening line at. It was
+   0.78rem here, under a heading the same size as theirs. */
 .assets-said {
   max-width: 44rem;
   margin: tokens.$spacing-xs 0 tokens.$spacing-md-lg;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   line-height: 1.45;
   opacity: 0.7;
+}
+
+.assets-filter {
+  display: flex;
+  gap: tokens.$spacing-xs;
+  margin-bottom: tokens.$spacing-md;
 }
 
 .assets-trouble {

@@ -1543,6 +1543,13 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "66",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2016,
         "cv": {
@@ -1573,6 +1580,13 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "67",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2017,
         "cv": {
@@ -1594,6 +1608,13 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
     "tokenId": "68",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2017,
@@ -1669,6 +1690,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "71",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2012,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -1699,6 +1728,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "72",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2012,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "collection",
         "year": 2012,
         "who": {
@@ -1708,8 +1745,29 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "73",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2012,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "74",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2012,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2013,
@@ -1740,6 +1798,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
     "tokenId": "75",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2012,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2013,
@@ -1831,6 +1897,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "80",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -1852,6 +1926,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
   {
     "tokenId": "81",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2013,
@@ -1962,6 +2044,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "87",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -2003,6 +2093,32 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "90",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "91",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "92",
     "entries": [
       {
@@ -2028,6 +2144,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "93",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -2047,8 +2171,28 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "95",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "97",
     "entries": [
+      {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
+        }
+      },
       {
         "kind": "exhibited",
         "year": 2014,
@@ -2094,6 +2238,18 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Sevilla",
           "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "99",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
         }
       }
     ]
@@ -2219,6 +2375,14 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "108",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2013,
         "cv": {
@@ -2233,6 +2397,32 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Alcalá la Real",
           "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "109",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "110",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
         }
       }
     ]
@@ -2555,6 +2745,13 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "156",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2014,
+        "who": {
+          "en": "The Pollock-Krasner Foundation award"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2017,
         "cv": {
@@ -2705,6 +2902,19 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           },
           "city": "Alcalá la Real",
           "country": "spain"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "172",
+    "entries": [
+      {
+        "kind": "supported",
+        "year": 2011,
+        "who": {
+          "en": "Antonio Gala Foundation Residence Program",
+          "es": "Fundación Antonio Gala para jóvenes creadores"
         }
       }
     ]

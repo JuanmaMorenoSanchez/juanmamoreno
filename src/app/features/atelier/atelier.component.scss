@@ -10,32 +10,47 @@
    them — and a parent's styles do not reach a child component's template
    anyway, so they had stopped applying to anything at all. */
 
+/* The column the other four pages behind the door are read in. */
 .atelier {
-  max-width: 62rem;
+  max-width: 60rem;
   margin: 0 auto;
   padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
+
+  h1 {
+    margin: 0;
+  }
 }
 
-/* Read once and then never again, so it takes as little room as it can. */
+/* Read once and then never again, so it takes as little room as it can —
+   but at the size the other pages open at, under a heading the same size as
+   theirs. */
 .atelier-lead {
-  max-width: 70ch;
+  max-width: 44rem;
   margin: tokens.$spacing-xs 0 0;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   line-height: 1.45;
-  color: var(--catalog-soft);
+  opacity: 0.7;
 }
 
-/* The engine is not answering: the only thing worth reading when it happens. */
+.atelier-alarm {
+  border-left-color: var(--jm-error);
+}
+
+/* The engine is not answering: the only thing worth reading when it happens.
+
+   A rule down its left rather than a box around it, which is how the other
+   pages behind the door say something is wrong. A bordered rounded card is a
+   dialog that has lost its window — and this one was half the page. */
 .atelier-down {
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  padding: tokens.$spacing-md tokens.$spacing-md-lg;
   margin: tokens.$spacing-lg 0;
-  opacity: 0.95;
+  padding: tokens.$spacing-sm-md 0 tokens.$spacing-sm-md tokens.$spacing-md;
+  /* The same block says "which copy?" and "no flows", which are questions
+     and not alarms — only the one that is wrong gets the red rule. */
+  border-left: 2px solid var(--catalog-rule);
 
   h2 {
-    margin-top: 0;
-    font-size: 1.1rem;
+    margin: 0 0 tokens.$spacing-sm;
+    font-size: 0.8rem;
   }
 
   p {
@@ -282,11 +297,14 @@
 .atelier-shelf {
   margin-top: tokens.$spacing-2xl;
   padding-top: tokens.$spacing-md-lg;
-  border-top: 1px solid currentColor;
+  /* The hairline the rest of the site divides a page with. `currentColor` is
+     the text's own black, which drew a line across the page heavier than the
+     heading under it. */
+  border-top: 1px solid var(--catalog-rule);
 
   h2 {
     margin: 0 0 tokens.$spacing-xs;
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 }
 

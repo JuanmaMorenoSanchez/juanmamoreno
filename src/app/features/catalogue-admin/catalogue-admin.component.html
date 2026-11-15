@@ -30,7 +30,7 @@
     <span class="cat-orders" role="group" aria-label="Order">
       <button
         type="button"
-        class="cat-order"
+        class="catalog-chip"
         [class.is-on]="order() === 'year'"
         [attr.aria-pressed]="order() === 'year'"
         (click)="arrange('year')"
@@ -40,7 +40,7 @@
       </button>
       <button
         type="button"
-        class="cat-order"
+        class="catalog-chip"
         [class.is-on]="order() === 'posted'"
         [attr.aria-pressed]="order() === 'posted'"
         (click)="arrange('posted')"
@@ -56,7 +56,7 @@
       @if (!noNumbers()) {
         <button
           type="button"
-          class="cat-order"
+          class="catalog-chip"
           [class.is-on]="order() === 'reach'"
           [attr.aria-pressed]="order() === 'reach'"
           (click)="arrange('reach')"
@@ -66,7 +66,7 @@
         </button>
         <button
           type="button"
-          class="cat-order"
+          class="catalog-chip"
           [class.is-on]="order() === 'liked'"
           [attr.aria-pressed]="order() === 'liked'"
           (click)="arrange('liked')"

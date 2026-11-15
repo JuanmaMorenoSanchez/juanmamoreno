@@ -365,6 +365,29 @@ p {
   letter-spacing: 0.02em;
 }
 
+/* One of a few ways of looking at the same list, the chosen one filled in.
+   The catalogue's order buttons, which is where this was written, and now the
+   assets page as well: two pages behind the door that ask the same question
+   of a long list should not answer it with two different controls. Filled
+   rather than outlined when it is on, because an outline that only changes
+   colour is a state nobody sees at a glance. */
+.catalog-chip {
+  padding: tokens.$spacing-xs tokens.$spacing-sm;
+  border: 1px solid var(--catalog-faint);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &.is-on {
+    background: var(--catalog-ink);
+    color: var(--catalog-paper, #fff);
+    border-color: var(--catalog-ink);
+  }
+}
+
 .front-image {
   width: 100%;
   height: 100%;

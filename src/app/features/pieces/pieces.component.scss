@@ -1,22 +1,25 @@
 @use '../../../styles/tokens';
+@use '../../../styles/controls';
 
+/* The same column as the assets, the catalogue and the certificates. It was
+   48rem, so this page alone started a hundred pixels further in than the
+   three it is read beside. */
 .pieces {
-  max-width: 48rem;
+  max-width: 60rem;
   margin: 0 auto;
   padding: tokens.$spacing-lg tokens.$spacing-md tokens.$spacing-4xl;
 
   h1 {
-    margin: 0 0 tokens.$spacing-sm;
-    font-size: 1.1rem;
+    margin: 0;
   }
 
+  /* The section heading the rest of the site wears, through
+     `.catalog-subheading`, at the size these two sit at. Set here rather than
+     typed again: it was 0.8rem at 0.04em against 0.14em everywhere else, and
+     grey, which puts the section's name below its first line. */
   h2 {
     margin: tokens.$spacing-lg 0 tokens.$spacing-sm;
     font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--catalog-soft);
   }
 
   ul {
@@ -27,11 +30,11 @@
 }
 
 .pieces-lead {
-  max-width: 70ch;
-  margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--catalog-soft);
+  max-width: 44rem;
+  margin: tokens.$spacing-xs 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  opacity: 0.7;
 }
 
 .pieces-published li,
@@ -60,16 +63,12 @@
   }
 }
 
+/* The site's own outlined button, at the size the rest of this page is set
+   in. The recipe was written out here again, three hundredths of a rem
+   smaller than everywhere else. */
 .pieces-run,
 .pieces-forget {
-  font: inherit;
-  font-size: 0.72rem;
-  padding: tokens.$spacing-xs tokens.$spacing-sm;
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.75rem);
 }
 
 .pieces-forget {

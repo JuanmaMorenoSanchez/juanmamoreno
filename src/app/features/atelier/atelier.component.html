@@ -1,5 +1,5 @@
 <article class="atelier">
-  <h1>Atelier</h1>
+  <h1 class="catalog-heading">Atelier</h1>
   <p class="atelier-lead">
     Draw what should happen to a painting, then run it. The boxes come from the engine, so whatever
     it has learned to do is in the list. Every model runs on this machine, and nothing is saved
@@ -8,8 +8,8 @@
 
   <!-- First, whether there is anything to talk to. Everything below depends on it. -->
   @if (engine.unreachable()) {
-    <section class="atelier-down" data-testid="engine-down">
-      <h2>The engine is not answering</h2>
+    <section class="atelier-down atelier-alarm" data-testid="engine-down">
+      <h2 class="catalog-subheading">The engine is not answering</h2>
       <p>
         This page is a front end for a program running on this computer, and that program is not
         reachable at <code>127.0.0.1:7860</code>. There is nothing wrong with the site.
@@ -139,7 +139,7 @@
       sentences and is the difference between a missing feature and a restart.
     -->
     <section class="atelier-down" data-testid="no-flows">
-      <h2>Start from something</h2>
+      <h2 class="catalog-subheading">Start from something</h2>
       <p>
         The ready-made flows come from the engine, and this one does not serve them: it was started
         before they existed. Restart it and they appear here, one button each.
@@ -180,7 +180,7 @@
   -->
   @if (choosing()) {
     <section class="atelier-down" data-testid="which-copy">
-      <h2>Which copy?</h2>
+      <h2 class="catalog-subheading">Which copy?</h2>
       <p>
         The same graph on a bigger painting takes longer and gives a bigger picture. The small copy
         is for finding out whether this is the right instruction; the big one is for the run you
@@ -326,7 +326,7 @@
 
   @if (result(); as run) {
     <section class="atelier-result" data-testid="result">
-      <h2>Ran in {{ elapsed(run.seconds) }}</h2>
+      <h2 class="catalog-subheading">Ran in {{ elapsed(run.seconds) }}</h2>
 
       <!-- Said once, plainly, because the numbers invite the opposite reading. -->
       <p class="atelier-caveat">
@@ -533,7 +533,7 @@
   <!-- What has been kept, which is the only thing here that outlives the run. -->
   @if (kept.pieces().length) {
     <section class="atelier-shelf" data-testid="shelf">
-      <h2>Kept</h2>
+      <h2 class="catalog-subheading">Kept</h2>
       <p class="atelier-caveat">
         These are in the bucket, not on this machine, so they are still here when the engine is not.
       </p>
@@ -720,7 +720,7 @@
     spare.
   -->
   <section class="atelier-shelf" data-testid="on-disk">
-    <h2>Still on this machine</h2>
+    <h2 class="catalog-subheading">Still on this machine</h2>
     <p class="atelier-caveat">
       Everything the engine has made and not thrown away, newest first. Nothing here has left this
       machine; <strong>Keep</strong> is the only thing that sends one to the bucket.

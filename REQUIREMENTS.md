@@ -6501,15 +6501,52 @@ What was found and changed, page by page:
 - **Prepare is not gated on the price**, because preparing spends nothing. It
   had been, from when that button carried on into signing.
 
+- **The four remaining pages read as one room.** They were four columns —
+  62rem, 60rem, 48rem and the site's own container — so every move between
+  them shifted the text under the cursor. All four are the catalogue's.
+- **Pieces and the atelier** headed themselves in sentence case at 1.1 and
+  1.6rem, the two pages behind the door that did not wear the site's heading.
+  Their section headings are `catalog-subheading` now, and their opening
+  lines are the 0.85rem the others open at rather than 0.8 and 0.78.
+- **The atelier's "engine is not answering" was a bordered rounded card**
+  half a page tall — the last card behind the door, and the same markup is
+  used for "which copy?", which is a question and not an alarm. A rule down
+  the left for all three, red only on the one that is wrong.
+- **Publish said what it was only when there was nothing to publish.** The
+  page that posts to Instagram opened with no sentence at all; it has the
+  one line the others have. Its clip was stretched by the row to whatever
+  height the caption needed, so a 9:16 reel previewed in no shape a reel is,
+  and its caption was edited at ninety-five characters a line and read at
+  fifty-five. The one button on the site that is seen by anybody else is
+  filled ink now, beside four outlined ones it used to be identical to.
+- **One chip, in one place.** The catalogue's order buttons and the assets
+  page's filter are `.catalog-chip` in the global stylesheet — filled when
+  chosen, because an outline that only changes colour is a state nobody sees.
+
 **And "Save for later" and "Prepare and sign" became one button.** They did
 the same thing once the second stopped navigating to `/pendingmint` — a page
 that redirects to the one it was on. Preparing is how a certificate gets onto
 the queue, and the queue is at the top of the same page.
 *Proven by:* the guarded pages rendered at 1280px and 393px — a dummy token
-gets the shells past the guard, which decodes rather than verifies, and the
-api is answered from the harness — showing one price per page, no tinted
-panel and the site's own heading on each; and `mint-gate.component.spec.ts`
+gets the shells past the guard, which decodes rather than verifies, the
+guarded api is answered from the harness and the public reads are answered by
+the real backend — showing one price per page, no tinted panel, no card, one
+column and the site's own heading on each; and `mint-gate.component.spec.ts`
 "can keep the button and leave the price to be said once elsewhere"
+
+### R253 — The assets page opens on what has been cut · met
+Two paintings of a hundred and ninety-two have parts, and the page listed all
+hundred and ninety-two: eight thousand pixels of rows that cannot be opened
+and say "—", with the two that can somewhere inside it. It opens on the ones
+that have parts, and a chip beside it shows the whole catalogue.
+
+**Both questions are still answered.** How much is left is the count in the
+line above the list — "2 of 192 paintings have parts" — which is the whole of
+that answer: there is nothing to do to a painting the night has not reached.
+The catalogue in its own order is one press away for when the question is
+which painting to cut next.
+*Proven by:* `assets.component.spec.ts` "opens on the paintings that have
+parts" and "shows the whole catalogue, which is the work left, when asked"
 
 ### R252 — An institution on a record is chosen from the cv, not typed · met
 Wherever a record line names an institution — sold to, in the collection of,

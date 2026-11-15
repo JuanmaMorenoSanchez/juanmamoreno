@@ -60,23 +60,6 @@
   gap: tokens.$spacing-xs;
 }
 
-.cat-order {
-  padding: tokens.$spacing-xs tokens.$spacing-sm;
-  border: 1px solid var(--catalog-faint);
-  border-radius: 3px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  &.is-on {
-    background: var(--catalog-ink);
-    color: var(--catalog-paper, #fff);
-    border-color: var(--catalog-ink);
-  }
-}
-
 .cat-dossier {
   display: flex;
   align-items: center;

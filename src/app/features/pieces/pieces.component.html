@@ -1,6 +1,6 @@
 <section class="pieces">
   <header>
-    <h1>Generative pieces</h1>
+    <h1 class="catalog-heading">Generative pieces</h1>
     <p class="pieces-lead">
       Written in the atelier and kept, so they can be looked at away from the machine that wrote
       them. Keeping is not publishing: a piece becomes a page only when a line is added to
@@ -8,7 +8,7 @@
     </p>
   </header>
 
-  <h2>Pages on the site</h2>
+  <h2 class="catalog-subheading">Pages on the site</h2>
   <ul class="pieces-published">
     @for (piece of published; track piece.id) {
       <li>
@@ -18,7 +18,7 @@
     }
   </ul>
 
-  <h2>Kept, not published</h2>
+  <h2 class="catalog-subheading">Kept, not published</h2>
   @if (!asked()) {
     <p class="pieces-note">Looking…</p>
   } @else if (!pieces().length) {
