@@ -20,7 +20,6 @@ Disallow: /certificates
 Disallow: /atelier
 Disallow: /pieces
 Disallow: /parts
-Disallow: /compose
 # The Spanish addresses redirect to these rather than 404ing, so they are as
 # many more ways in and want disallowing too.
 Disallow: /es/mint
@@ -34,7 +33,6 @@ Disallow: /es/certificates
 Disallow: /es/atelier
 Disallow: /es/pieces
 Disallow: /es/parts
-Disallow: /es/compose
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a
