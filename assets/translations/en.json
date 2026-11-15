@@ -218,7 +218,8 @@
       "awarded": "Awarded",
       "remove": "Remove the record filter"
     },
-    "datedByTheWork": "the painting is what dates it"
+    "datedByTheWork": "the painting is what dates it",
+    "whoFromCv": "Which, from the cv"
   },
   "statement": {
     "title": "Statement",
