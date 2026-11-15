@@ -6216,13 +6216,24 @@ share one jsdom. A global left stubbed is inherited by whichever file runs
 next, and which file that is depends on how many workers the machine has — so
 a stub left behind is a test that passes on one machine and fails on another.
 
-`compose.component.spec.ts` stubbed `IntersectionObserver` in a `beforeEach`
-and never restored it, the only spec in the repository that did not. It passed
-here and the deploy failed at the unit tests on a four-core runner.
+**What failed the deploy, twice,** was the other half of the same rule:
+`photo-prep.component.spec.ts` *assigned* `HTMLCanvasElement.prototype
+.getContext` a fake context with four methods on it. `vi.restoreAllMocks()`
+restores a spy and cannot restore an assignment, so every later file in that
+worker drew on it — and a fake context is worse than none, because the code
+that guards against `null` sails straight into it and dies on the first method
+nobody thought to fake. `/compose` died on `clearRect`. Reproduced here only
+once the worker count was held down to the runner's.
+
+`compose.component.spec.ts` also stubbed `IntersectionObserver` in a
+`beforeEach` and never restored it, the only spec that did not, and
 `home.component.ts` branches on that very global being absent.
+
 **Checked by reading the files rather than by discipline**, because discipline
-is what failed: `spec-hygiene.spec.ts` walks `src` and fails on any spec that
-stubs a global without restoring it. It is the one test in the suite that is
-about the tests.
-*Proven by:* `spec-hygiene.spec.ts` "leaves nothing stubbed for the file that
-runs next"
+is what failed: `spec-hygiene.spec.ts` walks `src` and fails on a spec that
+stubs a global without restoring it, or that assigns to a prototype at all
+instead of reaching for it with `vi.spyOn`. And `maxWorkers: 3` holds every
+machine to the runner's worker count, so which files share a jsdom is the same
+here as there.
+*Proven by:* `spec-hygiene.spec.ts` "leaves no global stubbed for the file that
+runs next" and "reaches for a prototype with vi.spyOn, which can be put back"

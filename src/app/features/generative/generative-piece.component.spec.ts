@@ -26,7 +26,11 @@ function setup() {
       disconnect() {}
     }
   );
-  HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
+  // A spy, not an assignment to the prototype: `vi.restoreAllMocks` puts a spy
+  // back and cannot put an assignment back. The suite runs with
+  // `isolate: false`, so an assignment left standing is the canvas every later
+  // spec file in this worker gets.
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
 
   TestBed.configureTestingModule({
     imports: [GenerativePieceComponent],
@@ -201,7 +205,7 @@ describe('GenerativePieceComponent — two sketches asked for at once', () => {
     // A context, because without one the component gives up before setup. The
     // loop is stubbed out: nothing here is about drawing.
     vi.stubGlobal('requestAnimationFrame', () => 1);
-    HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
       setTransform: vi.fn(),
     } as unknown as CanvasRenderingContext2D);
 

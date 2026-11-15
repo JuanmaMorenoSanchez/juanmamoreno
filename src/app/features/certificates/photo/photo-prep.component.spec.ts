@@ -800,12 +800,22 @@ describe('PhotoPrepComponent — a second photograph chosen while the first is l
     // jsdom has no 2d context, and the corner finder reads pixels back out of
     // one. An empty frame is enough: it finds nothing and falls back to the
     // whole frame, which is not what is under test.
-    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
-      drawImage: () => undefined,
-      getImageData: (_x: number, _y: number, w: number, h: number) => ({
-        data: new Uint8ClampedArray(w * h * 4),
-      }),
-    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+    // A spy, not an assignment to the prototype: `vi.restoreAllMocks` puts a
+    // spy back and cannot put an assignment back. The suite runs with
+    // `isolate: false`, so an assignment left standing is the canvas every
+    // later spec file in this worker gets — and a fake context with four
+    // methods on it is worse than no context at all, because the code that
+    // guards against `null` sails straight into it. That is what failed the
+    // deploy: `/compose` draws on a real canvas and died on `clearRect`.
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
+      () =>
+        ({
+          drawImage: () => undefined,
+          getImageData: (_x: number, _y: number, w: number, h: number) => ({
+            data: new Uint8ClampedArray(w * h * 4),
+          }),
+        }) as unknown as CanvasRenderingContext2D
+    );
   };
 
   const photograph = (name: string) => {
@@ -925,15 +935,18 @@ describe('PhotoPrepComponent — the rotate button pressed twice', () => {
       turns += 1;
       return Promise.resolve({ width: 800, height: 1000, close: () => undefined });
     });
-    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
-      drawImage: () => undefined,
-      translate: () => undefined,
-      rotate: () => undefined,
-      getImageData: (_x: number, _y: number, w: number, h: number) => ({
-        data: new Uint8ClampedArray(w * h * 4),
-      }),
-      putImageData: () => undefined,
-    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
+      () =>
+        ({
+          drawImage: () => undefined,
+          translate: () => undefined,
+          rotate: () => undefined,
+          getImageData: (_x: number, _y: number, w: number, h: number) => ({
+            data: new Uint8ClampedArray(w * h * 4),
+          }),
+          putImageData: () => undefined,
+        }) as unknown as CanvasRenderingContext2D
+    );
 
     const { component } = setup();
     component.photo.set({ width: 1000, height: 800, close: () => undefined });

@@ -40,5 +40,22 @@ export default defineConfig({
      * to say so.
      */
     testTimeout: 20000,
+    /**
+     * The runner's shape, on every machine.
+     *
+     * `ng test` runs with `isolate: false`, so the spec files that share a
+     * worker share one jsdom — and which files those are depends on how many
+     * workers there are, which is the core count. On this laptop's
+     * twenty-four that is two or three files each; on the runner's four it is
+     * forty, and forty files sharing a jsdom is forty chances for one to leave
+     * something behind for the next. A deploy failed twice on a fake canvas
+     * context leaked from a spec that passed here every time.
+     *
+     * Three is what GitHub's four-core runner uses, so a green run here is
+     * evidence about there. It is not slower: measured at 47s against 92s,
+     * because twenty-four jsdom environments contend for more than they win.
+     */
+    maxWorkers: 3,
+    minWorkers: 1,
   },
 });

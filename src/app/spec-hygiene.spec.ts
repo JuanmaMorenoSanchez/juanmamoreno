@@ -25,15 +25,37 @@ function specFiles(dir: string, found: string[] = []): string[] {
   return found;
 }
 
-describe('every spec puts back the globals it stubs', () => {
-  it('leaves nothing stubbed for the file that runs next', () => {
-    const leaking = specFiles('src')
-      .filter((path) => {
-        const source = readFileSync(path, 'utf8');
-        return source.includes('stubGlobal') && !source.includes('unstubAllGlobals');
-      })
-      .map((path) => path.replace(/\\/g, '/'));
+const sources = () =>
+  specFiles('src').map((path) => ({
+    path: path.replace(/\\/g, '/'),
+    source: readFileSync(path, 'utf8'),
+  }));
+
+describe('every spec puts back what it borrows', () => {
+  it('leaves no global stubbed for the file that runs next', () => {
+    const leaking = sources()
+      .filter(({ source }) => source.includes('stubGlobal') && !source.includes('unstubAllGlobals'))
+      .map(({ path }) => path);
 
     expect(leaking).toEqual([]);
+  });
+
+  /**
+   * The one that actually failed the deploy. `photo-prep.component.spec.ts`
+   * assigned `HTMLCanvasElement.prototype.getContext` a fake context with four
+   * methods on it. `vi.restoreAllMocks()` restores a spy and cannot restore an
+   * assignment, so every later file in that worker drew on it — and a fake
+   * context is worse than none, because code that guards against `null` sails
+   * straight into it and dies on the first method nobody thought to fake.
+   *
+   * Which files share a worker depends on the core count, so it passed on
+   * twenty-four cores here and failed on the runner's four.
+   */
+  it('reaches for a prototype with vi.spyOn, which can be put back', () => {
+    const assigning = sources()
+      .filter(({ source }) => /\.prototype\.[A-Za-z_$][\w$]*\s*=[^=]/.test(source))
+      .map(({ path }) => path);
+
+    expect(assigning).toEqual([]);
   });
 });

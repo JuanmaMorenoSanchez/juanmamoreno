@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.74.1
+
+- **fix** The deploy failed at the unit tests twice, and this is the fault
+  rather than the one 2.74.0 guessed at. `photo-prep.component.spec.ts`
+  assigned `HTMLCanvasElement.prototype.getContext` a fake context;
+  `vi.restoreAllMocks()` restores a spy and cannot restore an assignment, so
+  every later spec file in that worker drew on it, and a fake context is worse
+  than none — the code that guards against `null` sails into it and dies on the
+  first method nobody faked. `/compose` died on `clearRect`. The four such
+  assignments are now `vi.spyOn`, which is put back, and `spec-hygiene.spec.ts`
+  fails on any new one.
+- **fix** `maxWorkers: 3` — the runner's worker count, on every machine. With
+  `isolate: false` the files that share a worker share one jsdom, so on
+  twenty-four cores that is three files each and on the runner's four it is
+  forty: a green run here was not evidence about there. It is also faster, 47s
+  against 92s.
+
 ## 2.74.0
 
 - **fix** A spec of mine stubbed `IntersectionObserver` and never put it back,
