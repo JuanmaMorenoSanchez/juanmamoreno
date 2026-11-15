@@ -192,12 +192,14 @@
   },
   "record": {
     "title": "Historial",
+    "supported": "Creada con el apoyo de",
     "exhibited": "Expuesta en",
     "sold": "Vendida a",
     "awarded": "Premiada",
     "collection": "En la colección de",
     "soldAlone": "Vendida",
     "collectionAlone": "En una colección privada",
+    "supportedAlone": "Creada con apoyo",
     "add": "Añadir una línea",
     "kind": "Qué ocurrió",
     "onTheCv": "En el cv",
@@ -215,7 +217,8 @@
       "exhibited": "Expuestas",
       "awarded": "Premiadas",
       "remove": "Quitar el filtro de historial"
-    }
+    },
+    "datedByTheWork": "la fecha es la de la obra"
   },
   "statement": {
     "title": "Statement",

@@ -192,12 +192,14 @@
   },
   "record": {
     "title": "Record",
+    "supported": "Created with the support of",
     "exhibited": "Exhibited",
     "sold": "Sold to",
     "awarded": "Awarded",
     "collection": "In the collection of",
     "soldAlone": "Sold",
     "collectionAlone": "In a private collection",
+    "supportedAlone": "Created with support",
     "add": "Add a line",
     "kind": "What happened",
     "onTheCv": "On the cv",
@@ -215,7 +217,8 @@
       "exhibited": "Exhibited",
       "awarded": "Awarded",
       "remove": "Remove the record filter"
-    }
+    },
+    "datedByTheWork": "the painting is what dates it"
   },
   "statement": {
     "title": "Statement",
