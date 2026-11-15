@@ -6184,3 +6184,45 @@ can be.
 "never draws a piece larger than its own pixels" and "lets a piece hang over
 the edge but not leave"; and `compose.component.spec.ts` "offers the cut pieces
 and not the clips" and "sizes the canvas in the pixels it will be saved at"
+
+### R240 — The catalogue can be narrowed to what has been shown or awarded · met
+A third picker beside the year and availability: all, exhibited, awarded. It
+narrows the grid to the paintings whose record carries a line of that kind, and
+shows the choice as a chip in the row like the availability filter does, on the
+reader's own device rather than in the address.
+
+Two of the record's four kinds, not four. A sale is the picker beside it
+already, and a painting in somebody's collection is the same fact told from the
+other end.
+
+**It needs no request and no new endpoint.** Every record is already written
+into the build by `scripts/generate-record-fallback.mjs`, so a prerendered page
+can be narrowed with javascript off; `ArtworkRecordService.refresh()` brings in
+a line recorded since the last deploy, once per visit however many grids ask.
+
+**Three boxes do not fit on a phone's first line.** Three abreast in what the
+chips leave of a 393px screen is 74px each, and a 74px box has 50px for its
+label once MDC's outline is paid for — which is how "Disponibilidad" was cut to
+"Disponib" the first time (R237). So they wrap two to a line with the third
+underneath at the same width, and the line the artist asked for is unchanged.
+*Proven by:* `art-pieces-list.component.spec.ts` "shows only what has been
+exhibited", "shows only what has been awarded" and "leaves the strip on an
+artwork page alone"; `breadcrumb.component.spec.ts` "adds a chip when one is
+picked, and takes it off again"
+
+### R241 — A spec puts back every global it stubs · met
+`ng test` runs with `isolate: false`, so all hundred and twenty spec files
+share one jsdom. A global left stubbed is inherited by whichever file runs
+next, and which file that is depends on how many workers the machine has — so
+a stub left behind is a test that passes on one machine and fails on another.
+
+`compose.component.spec.ts` stubbed `IntersectionObserver` in a `beforeEach`
+and never restored it, the only spec in the repository that did not. It passed
+here and the deploy failed at the unit tests on a four-core runner.
+`home.component.ts` branches on that very global being absent.
+**Checked by reading the files rather than by discipline**, because discipline
+is what failed: `spec-hygiene.spec.ts` walks `src` and fails on any spec that
+stubs a global without restoring it. It is the one test in the suite that is
+about the tests.
+*Proven by:* `spec-hygiene.spec.ts` "leaves nothing stubbed for the file that
+runs next"

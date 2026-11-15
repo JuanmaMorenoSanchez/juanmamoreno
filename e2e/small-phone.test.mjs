@@ -251,7 +251,7 @@ describe('a long Spanish heading on a 320px phone', () => {
  * staircase rather than as a bar, on the page whose job is to show paintings.
  */
 describe('the catalogue filters on a 320px phone', () => {
-  it('puts the year and availability on one row, as equal halves', async (t) => {
+  it('puts two of them on one row and the third underneath, all equal halves', async (t) => {
     if (cannotRun) return t.skip(cannotRun);
 
     const page = await openPage(browser, '/artworks', 'en-US', SMALL_PHONE);
@@ -264,14 +264,21 @@ describe('the catalogue filters on a 320px phone', () => {
       })
     );
 
-    assert.equal(boxes.length, 2, 'the catalogue should offer two filters');
+    assert.equal(boxes.length, 3, 'the catalogue should offer three filters');
     assert.equal(
       boxes[0].top,
       boxes[1].top,
-      `they sit on different rows: ${JSON.stringify(boxes)}`
+      `the first two sit on different rows: ${JSON.stringify(boxes)}`
     );
+    // The third goes underneath rather than squeezing all three abreast, which
+    // would leave 50px for a label needing 70.
     assert.ok(
-      Math.abs(boxes[0].width - boxes[1].width) <= 1,
+      boxes[2].top > boxes[1].top,
+      `the third did not wrap under them: ${JSON.stringify(boxes)}`
+    );
+    const widths = boxes.map((box) => box.width);
+    assert.ok(
+      Math.max(...widths) - Math.min(...widths) <= 1,
       `they are not equal halves: ${JSON.stringify(boxes)}`
     );
     await page.close();

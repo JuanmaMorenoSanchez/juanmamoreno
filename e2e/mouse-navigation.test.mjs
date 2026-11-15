@@ -158,14 +158,23 @@ describe('opening an artwork with a mouse', () => {
     const page = await openPage(browser, '/');
     await page.waitForSelector('a.home-featured', READY);
 
-    const parts = await page.evaluate(() => {
-      const link = document.querySelector('a.home-featured');
-      return [link, ...link.querySelectorAll('img')].map((el) => ({
-        tag: el.tagName,
-        draggable: el.draggable,
-        userDrag: getComputedStyle(el).getPropertyValue('-webkit-user-drag'),
-      }));
-    });
+    // Read in a wait rather than after one. The painting on the landing page
+    // is swapped once the catalogue arrives, so the link that satisfied
+    // waitForSelector can be gone by the next call — which is how this threw
+    // "cannot read properties of null" against a page that was perfectly
+    // correct. A wait that returns the answer cannot land in that gap.
+    const parts = await page
+      .waitForFunction(() => {
+        const link = document.querySelector('a.home-featured');
+        const images = link ? [...link.querySelectorAll('img')] : [];
+        if (!images.length) return null;
+        return [link, ...images].map((el) => ({
+          tag: el.tagName,
+          draggable: el.draggable,
+          userDrag: getComputedStyle(el).getPropertyValue('-webkit-user-drag'),
+        }));
+      }, READY)
+      .then((handle) => handle.jsonValue());
 
     assert.ok(parts.length >= 2, 'the featured painting has no image to check');
     for (const part of parts) {

@@ -9,7 +9,11 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, EMPTY, of } from 'rxjs';
 import { afterAll, beforeAll, vi } from 'vitest';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
+import { RecordFilterService } from '@shared/services/record-filter.service';
+import { signal } from '@angular/core';
+import type { RecordEntry } from '@domain/artwork/record.entity';
 import { ArtPiecesListComponent } from './art-pieces-list.component';
 
 // jsdom has no IntersectionObserver. This stub reports every observed tile as
@@ -73,7 +77,16 @@ class MockArtworkService extends Artwork {
   }
 }
 
-function setup(options: { signedIn?: boolean; edited?: Map<string, boolean> } = {}) {
+// Stubbed rather than real: the real one starts from the records the last
+// build wrote down, which are rewritten before every build, so a test that
+// asserted on them would break the day he records another show.
+function setup(
+  options: {
+    signedIn?: boolean;
+    edited?: Map<string, boolean>;
+    records?: Map<string, RecordEntry[]>;
+  } = {}
+) {
   const artworkService = new MockArtworkService();
   if (options.edited) artworkService.edited = options.edited;
 
@@ -91,6 +104,13 @@ function setup(options: { signedIn?: boolean; edited?: Map<string, boolean> } = 
       { provide: ARTWORK_PORT, useValue: artworkService },
       { provide: AdminAuthService, useValue: auth },
       { provide: ActivatedRoute, useValue: { queryParamMap: of(new Map()) } },
+      {
+        provide: ArtworkRecordService,
+        useValue: {
+          records: signal(options.records ?? new Map<string, RecordEntry[]>()),
+          refresh: () => Promise.resolve(),
+        },
+      },
     ],
   });
 
@@ -566,5 +586,80 @@ describe('while the tile is still showing the smallest picture', () => {
     // The default stub emits a larger copy immediately.
     expect(img.getAttribute('src')).toBe('https://example.test/1-preview.jpg');
     expect(img.classList.contains('awaiting-sharper')).toBe(false);
+  });
+});
+
+/**
+ * The grid narrowed by what has happened to the paintings.
+ *
+ * The same shape as the availability filter beside it, and for the same
+ * reason: the picker is in the breadcrumb and the grid is here. The records
+ * themselves are bundled into the build, which is why a prerendered page can
+ * be narrowed at all.
+ */
+describe('ArtPiecesListComponent — narrowing by what is on the record', () => {
+  beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+  afterAll(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    TestBed.resetTestingModule();
+    localStorage.clear();
+  });
+
+  const shown = (fixture: { nativeElement: HTMLElement }) =>
+    Array.from(fixture.nativeElement.querySelectorAll('a.tile-link'), (link) =>
+      link.getAttribute('href')
+    );
+
+  const three = () => [
+    makeNft('1', 'Shown somewhere'),
+    makeNft('2', 'Given a prize'),
+    makeNft('3', 'Neither'),
+  ];
+
+  const records = () =>
+    new Map<string, RecordEntry[]>([
+      ['1', [{ kind: 'exhibited', year: 2021 }]],
+      ['2', [{ kind: 'awarded', year: 2019 }]],
+    ]);
+
+  it('shows everything until the reader narrows it', () => {
+    const { fixture, artworkService } = setup({ records: records() });
+    artworkService.artPieces$.next(three());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(3);
+  });
+
+  it('shows only what has been exhibited', () => {
+    const { fixture, artworkService } = setup({ records: records() });
+    TestBed.inject(RecordFilterService).set('exhibited');
+    artworkService.artPieces$.next(three());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/1']);
+  });
+
+  // A painting with a prize on it and no show is still awarded: the kinds are
+  // separate lines, not a ladder.
+  it('shows only what has been awarded', () => {
+    const { fixture, artworkService } = setup({ records: records() });
+    TestBed.inject(RecordFilterService).set('awarded');
+    artworkService.artPieces$.next(three());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toEqual(['/artwork/2']);
+  });
+
+  // The strip of nearby paintings on an artwork page is a suggestion rather
+  // than the catalogue, and the page counts paintings to decide how many years
+  // to reach for without regard to this.
+  it('leaves the strip on an artwork page alone', () => {
+    const { fixture, artworkService } = setup({ records: records() });
+    TestBed.inject(RecordFilterService).set('exhibited');
+    fixture.componentRef.setInput('viewAsWidget', true);
+    artworkService.artPieces$.next(three());
+    fixture.detectChanges();
+
+    expect(shown(fixture)).toHaveLength(3);
   });
 });

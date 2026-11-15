@@ -209,7 +209,13 @@
     "note": "Note",
     "save": "Save",
     "remove": "Take this line back",
-    "failed": "That line could not be saved."
+    "failed": "That line could not be saved.",
+    "filter": {
+      "any": "All",
+      "exhibited": "Exhibited",
+      "awarded": "Awarded",
+      "remove": "Remove the record filter"
+    }
   },
   "statement": {
     "title": "Statement",

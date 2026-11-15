@@ -21,14 +21,32 @@
     // were, which is what the artist asked for and also where they belong.
     flex: 1 1 0;
     // A flex item will not shrink below its content unless told it may, and
-    // the content here is two boxes that are 212px each whatever the screen.
+    // the content here is three boxes that are 212px each whatever the screen.
     min-width: 0;
+    // Two to a line, the third underneath. Three of them abreast in what the
+    // chips leave of a 393px screen is 74px each, and a 74px box has 50px for
+    // its label once MDC's outline is paid for — "Disponibilidad" needs 70 and
+    // was cut to "Disponib" the last time this was asked of it.
+    flex-wrap: wrap;
+    row-gap: tokens.$spacing-xs;
 
     .small-input {
-      flex: 1 1 0;
+      // Half the box less the margin each one carries, and no growing: the
+      // odd one out then sits under the first at the same width instead of
+      // stretching across the line on its own.
+      flex: 0 1 calc(50% - #{tokens.$spacing-sm-md});
       width: auto;
       min-width: 0;
     }
+  }
+
+  // Narrower than 360px there is nothing left to share: the chips leave 152px,
+  // which is 76px a box, which is 52px of label once the outline is paid for —
+  // and "Disponibilidad" needs 80, so it was cut again, the same fault as R237
+  // one filter later. On the smallest phones the three take a line of their
+  // own, where they get 136px each and can be read. Measured, both ways.
+  @include bp.respond-below(22.5em) {
+    flex: 1 1 100%;
   }
 }
 

@@ -22,7 +22,9 @@ import { AvailabilityService } from '@shared/services/availability.service';
 import { Nft, NftFilters } from '@domain/artwork/artwork.entity';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
+import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { AvailabilityFilterService } from '@shared/services/availability-filter.service';
+import { RecordFilterService } from '@shared/services/record-filter.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SORT } from '@shared/constants/order.constants';
 import {
@@ -134,6 +136,18 @@ export class ArtPiecesListComponent {
   private readonly availability = inject(AvailabilityFilterService).availability;
   private readonly whatIsSold = inject(AvailabilityService);
 
+  /**
+   * Shown somewhere, or awarded something — chosen from the picker beside the
+   * other two.
+   *
+   * The records are bundled into the build, so this narrows the catalogue in a
+   * prerendered page with no javascript at all, and `refresh` brings in a line
+   * written since the last deploy. Left off the strip on an artwork page, for
+   * the reason the availability filter is.
+   */
+  private readonly records = inject(ArtworkRecordService);
+  private readonly recordFilter = inject(RecordFilterService).record;
+
   private filteredArtPieces = computed(() => {
     const artPieces = this.artPieces();
     const yearsQueryParams = this.yearParamSignal();
@@ -144,6 +158,8 @@ export class ArtPiecesListComponent {
     const wanted = this.criticFilter();
     const edited = this.editedByToken();
     const availability = this.viewAsWidget() ? 'both' : this.availability();
+    const record = this.viewAsWidget() ? 'any' : this.recordFilter();
+    const known = this.records.records();
 
     // A caller that has named the artworks it wants has already done the
     // choosing; the year and the ids to leave out are the other way of asking.
@@ -160,7 +176,8 @@ export class ArtPiecesListComponent {
         (frontalViewByToken.get(nft.tokenId) ?? false) &&
         // An artwork with no essay yet counts as untouched, because it is.
         (wanted === 'all' || (edited.get(nft.tokenId) === true) === (wanted === 'edited')) &&
-        (availability === 'both' || this.isSold(nft) === (availability === 'sold'))
+        (availability === 'both' || this.isSold(nft) === (availability === 'sold')) &&
+        (record === 'any' || !!known.get(nft.tokenId)?.some((entry) => entry.kind === record))
     );
   });
 
@@ -208,6 +225,13 @@ export class ArtPiecesListComponent {
         return this.artworkService.sortByYear(artPieces!, sortOrder);
     }
   });
+
+  constructor() {
+    // So the filter knows about a line written since the last deploy. Asked
+    // once per visit however many grids ask for it, and never during the
+    // prerender, where the bundled copy is the answer.
+    void this.records.refresh();
+  }
 
   public onImageVisible(tokenId: string): void {
     const nft = this.artPieces()?.find((p) => p.tokenId === tokenId);

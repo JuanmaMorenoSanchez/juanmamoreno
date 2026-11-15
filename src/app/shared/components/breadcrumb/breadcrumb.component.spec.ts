@@ -55,20 +55,20 @@ const chipText = (fixture: { nativeElement: HTMLElement }) =>
  * Both carry their name above the box; the value underneath sits on the same
  * line as the words in the chips beside them.
  */
-describe('BreadcrumbComponent — the year and availability pickers together', () => {
+describe('BreadcrumbComponent — the pickers together', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => TestBed.resetTestingModule());
 
   const fields = (fixture: { nativeElement: HTMLElement }) =>
     Array.from(fixture.nativeElement.querySelectorAll('mat-form-field'));
 
-  it('names both of them above the box', async () => {
+  it('names each of them above the box', async () => {
     const { fixture } = await setup();
 
     const labels = fields(fixture).map((field) =>
       (field.querySelector('mat-label')?.textContent ?? '').trim()
     );
-    expect(labels).toEqual(['year.label', 'availability.label']);
+    expect(labels).toEqual(['year.label', 'availability.label', 'record.title']);
   });
 
   /**
@@ -178,5 +178,49 @@ describe('BreadcrumbComponent — narrowing by availability', () => {
     fixture.detectChanges();
 
     expect(window.location.search).not.toContain('availability');
+  });
+});
+
+/**
+ * The third picker: only what has been shown, or only what has won something.
+ *
+ * Two of the record's four kinds. A sale is the picker beside this one, and a
+ * painting in somebody's collection is that same fact from the other end.
+ */
+describe('BreadcrumbComponent — narrowing by what is on the record', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('offers all, exhibited and awarded, and starts on all', async () => {
+    const { fixture } = await setup();
+
+    expect(fixture.componentInstance.recordChoices).toEqual(['any', 'exhibited', 'awarded']);
+    expect(fixture.componentInstance.record()).toBe('any');
+  });
+
+  it('shows no chip while the catalogue is showing everything', async () => {
+    const { fixture } = await setup();
+
+    expect(chipText(fixture).some((text) => text.startsWith('record.'))).toBe(false);
+  });
+
+  it('adds a chip when one is picked, and takes it off again', async () => {
+    const { fixture } = await setup();
+
+    fixture.componentInstance.setRecord('exhibited');
+    fixture.detectChanges();
+    expect(chipText(fixture)).toContain('record.filter.exhibited');
+
+    fixture.componentInstance.clearRecord();
+    fixture.detectChanges();
+    expect(chipText(fixture).some((text) => text.startsWith('record.'))).toBe(false);
+  });
+
+  it('writes the choice down so the next visit starts where this one left off', async () => {
+    const { fixture } = await setup();
+
+    fixture.componentInstance.setRecord('awarded');
+
+    expect(localStorage.getItem('juanmamoreno.catalogue.record')).toBe('awarded');
   });
 });

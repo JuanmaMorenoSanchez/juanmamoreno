@@ -27,7 +27,19 @@ class MockIntersectionObserver {
   disconnect(): void {}
 }
 
-beforeEach(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+// Put back afterwards, which matters more here than it looks: `ng test` runs
+// with `isolate: false`, so all hundred and twenty spec files share one jsdom
+// and a global left stubbed is inherited by whichever file runs next. Which
+// file that is depends on how many workers the machine has, so a stub left
+// behind passes on one machine and fails on another — this one passed here and
+// failed the deploy on a four-core runner.
+// Put back afterwards. `ng test` runs with `isolate: false`, so all hundred
+// and twenty spec files share one jsdom and a global left stubbed is inherited
+// by whichever file runs next — and home.component.ts branches on this very
+// global being absent. Which file runs next depends on the machine's core
+// count, so a stub left behind is a test that passes here and fails there.
+beforeAll(() => vi.stubGlobal('IntersectionObserver', MockIntersectionObserver));
+afterAll(() => vi.unstubAllGlobals());
 
 const piece = (said: Partial<KeptPiece> = {}): KeptPiece => ({
   id: 'p1',

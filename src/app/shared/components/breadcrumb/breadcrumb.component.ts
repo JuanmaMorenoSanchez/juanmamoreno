@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, OnInit, signal, untracked, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { MatChip, MatChipRemove, MatChipSet } from '@angular/material/chips';
 import { MatOption } from '@angular/material/core';
@@ -19,6 +28,11 @@ import {
   AVAILABILITY_CHOICES,
   AvailabilityFilterService,
 } from '@shared/services/availability-filter.service';
+import {
+  RECORD_FILTER_CHOICES,
+  RecordFilter,
+  RecordFilterService,
+} from '@shared/services/record-filter.service';
 import { SessionQuery } from '@shared/store/session.query';
 import { distinctUntilChanged, filter } from 'rxjs';
 import { BreadCrumb } from './breadcrumbs.entity';
@@ -88,6 +102,22 @@ export class BreadcrumbComponent implements OnInit {
 
   public clearAvailability(): void {
     this.availabilityFilter.clear();
+  }
+
+  /**
+   * Shown somewhere, or awarded something. Beside the other two and read the
+   * same way: pick one and it becomes a chip in the row.
+   */
+  private readonly recordFilter = inject(RecordFilterService);
+  public readonly recordChoices = RECORD_FILTER_CHOICES;
+  public readonly record = this.recordFilter.record;
+
+  public setRecord(value: RecordFilter): void {
+    this.recordFilter.set(value);
+  }
+
+  public clearRecord(): void {
+    this.recordFilter.clear();
   }
 
   constructor() {

@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.74.0
+
+- **fix** A spec of mine stubbed `IntersectionObserver` and never put it back,
+  the only one in the repository that did not. `ng test` runs with
+  `isolate: false`, so all hundred and twenty spec files share one jsdom and the
+  stub was inherited by whichever file ran next — which depends on how many
+  workers the machine has. It passed here and failed the deploy at the unit
+  tests. `spec-hygiene.spec.ts` now reads the suite and fails on any spec that
+  leaves a global stubbed, because discipline is what failed.
+- **feat** A third filter beside the year and availability: all, exhibited,
+  awarded. It narrows the catalogue to the paintings whose record carries a line
+  of that kind — no request and no new endpoint, because every record is already
+  written into the build, so it narrows a prerendered page with javascript off.
+  On a phone the three wrap two to a line, since three abreast leaves 50px for a
+  label needing 70 and that is how "Disponibilidad" was cut to "Disponib" the
+  first time.
+
 ## 2.73.0
 
 - **feat** Every word in the top bar and the phone's drawer is the site's ink,

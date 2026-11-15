@@ -37,7 +37,7 @@
         inline exactly as before.
       -->
       <div class="filters">
-      <!--
+        <!--
         The label stays up whatever happens, like the one beside it. This
         select empties itself after every pick — the year it took has become a
         chip — so left to itself the label would sit in the middle as a
@@ -45,45 +45,64 @@
         thing. What shows underneath is "All" until a year has been chosen, and
         nothing after that, because from then on the chips say which years.
       -->
-      <mat-form-field
-        class="small-input"
-        appearance="outline"
-        subscriptSizing="dynamic"
-        floatLabel="always"
-      >
-        <mat-label>{{ 'year.label' | translate }}</mat-label>
-        <mat-select
-          [formField]="yearPickerForm.newYear"
-          [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
-          aria-label="Select year"
+        <mat-form-field
+          class="small-input"
+          appearance="outline"
+          subscriptSizing="dynamic"
+          floatLabel="always"
         >
-          @for (year of validYears; track year) {
-            <mat-option [value]="year">
-              {{ year }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <!--
+          <mat-label>{{ 'year.label' | translate }}</mat-label>
+          <mat-select
+            [formField]="yearPickerForm.newYear"
+            [placeholder]="yearBreadcrumbs().length ? '' : ('year.all' | translate)"
+            aria-label="Select year"
+          >
+            @for (year of validYears; track year) {
+              <mat-option [value]="year">
+                {{ year }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <!--
         Beside the year, and read the same way: pick one and it becomes a chip
         in the row. A select rather than a pair of buttons because the three
         answers are exclusive — everything, only what has sold, only what has
         not — and a select can only ever hold one of them.
       -->
-      <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'availability.label' | translate }}</mat-label>
-        <mat-select
-          [value]="availability()"
-          (selectionChange)="setAvailability($event.value)"
-          aria-label="Select availability"
-        >
-          @for (choice of availabilityChoices; track choice) {
-            <mat-option [value]="choice">
-              {{ 'availability.' + choice | translate }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>{{ 'availability.label' | translate }}</mat-label>
+          <mat-select
+            [value]="availability()"
+            (selectionChange)="setAvailability($event.value)"
+            aria-label="Select availability"
+          >
+            @for (choice of availabilityChoices; track choice) {
+              <mat-option [value]="choice">
+                {{ 'availability.' + choice | translate }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <!--
+        What has happened to the painting, as a way of narrowing the catalogue:
+        only what has been shown, or only what has won something. The records
+        are written into the build, so this narrows a prerendered page too.
+      -->
+        <mat-form-field class="small-input" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>{{ 'record.title' | translate }}</mat-label>
+          <mat-select
+            [value]="record()"
+            (selectionChange)="setRecord($event.value)"
+            aria-label="Select record"
+          >
+            @for (choice of recordChoices; track choice) {
+              <mat-option [value]="choice">
+                {{ 'record.filter.' + choice | translate }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </div>
       @for (breadcrumb of yearBreadcrumbs(); track breadcrumb.label) {
         <mat-chip
@@ -122,6 +141,21 @@
         >
           <span class="link-as-text">{{ 'availability.' + availability() | translate }}</span>
           <button matChipRemove [attr.aria-label]="'availability.remove' | translate">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+      <!-- Same rule: "All" is the absence of a filter and gets no chip. -->
+      @if (record() !== 'any') {
+        <mat-chip
+          color="primary"
+          [removable]="true"
+          (removed)="clearRecord()"
+          animate.enter="year-chip-enter"
+          animate.leave="year-chip-leave"
+        >
+          <span class="link-as-text">{{ 'record.filter.' + record() | translate }}</span>
+          <button matChipRemove [attr.aria-label]="'record.filter.remove' | translate">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>
