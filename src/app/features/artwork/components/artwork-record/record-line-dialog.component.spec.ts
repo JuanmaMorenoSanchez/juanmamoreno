@@ -21,6 +21,18 @@ const SHOW: CvEntry = {
 };
 
 /**
+ * A foundation, as the cv writes one: its own name is the entry's title and
+ * there is no venue, which is how every residency and prize on this cv reads.
+ */
+const GALA: CvEntry = {
+  id: 'aaaa000000000003',
+  kind: 'award',
+  year: 2019,
+  title: { en: 'Fundación Antonio Gala' },
+  country: 'spain',
+};
+
+/**
  * Writing a line of a painting's record.
  *
  * The form itself, which was six fields opening inline under the record on
@@ -58,7 +70,10 @@ describe('writing a line of the record', () => {
             },
           },
         },
-        { provide: CvService, useValue: { entries: () => [SHOW], refresh: async () => undefined } },
+        {
+          provide: CvService,
+          useValue: { entries: () => [SHOW, GALA], refresh: async () => undefined },
+        },
       ],
     });
 
@@ -208,12 +223,12 @@ describe('writing a line of the record', () => {
   });
 
   /**
-   * An institution is a proper noun: one box, stored as English alone, which
-   * is what the api keeps when there is no different Spanish — so the name
-   * reads the same on both pages. It was two boxes, one per language, and the
-   * Spanish one wanted a translation of a name.
+   * Chosen from the cv rather than typed, so it arrives in both languages
+   * and with one spelling. Typed it was English alone, and "Galería Zunino"
+   * and "Galeria Zunino" were two institutions on a page meant to be a
+   * record.
    */
-  it('names an institution from one box, in both languages at once', async () => {
+  it('names an institution from the cv, in both languages at once', async () => {
     build();
 
     const component = fixture.componentInstance as unknown as {
@@ -222,13 +237,13 @@ describe('writing a line of the record', () => {
     };
     component.set('kind', 'sold');
     component.set('buyer', 'named');
-    component.set('whoName', '  Museo Nacional Centro de Arte Reina Sofía  ');
+    component.set('whoCv', SHOW.id);
     await component.add();
 
     expect(saved[0].entries).toEqual([
       {
         kind: 'sold',
-        who: { en: 'Museo Nacional Centro de Arte Reina Sofía' },
+        who: { en: 'Zunino gallery', es: 'Galería Zunino' },
         year: new Date().getFullYear(),
       },
     ]);
@@ -270,8 +285,12 @@ describe('writing a line of the record', () => {
     }
   });
 
-  /** The same one box, on the kind that reads "In the collection of". */
-  it('names an institution on an acquisition too', async () => {
+  /**
+   * The same picker on the kind that reads "In the collection of" — and a
+   * foundation, whose name the cv keeps as the entry's title because there
+   * is no venue for it to have happened at.
+   */
+  it('names a foundation by its own title, where the cv has no venue', async () => {
     build();
 
     const component = fixture.componentInstance as unknown as {
@@ -280,13 +299,13 @@ describe('writing a line of the record', () => {
     };
     component.set('kind', 'collection');
     component.set('buyer', 'named');
-    component.set('whoName', 'Fundación Juan March');
+    component.set('whoCv', GALA.id);
     await component.add();
 
     expect(saved[0].entries).toEqual([
       {
         kind: 'collection',
-        who: { en: 'Fundación Juan March' },
+        who: { en: 'Fundación Antonio Gala' },
         year: new Date().getFullYear(),
       },
     ]);
@@ -301,7 +320,7 @@ describe('writing a line of the record', () => {
       add: () => Promise<void>;
     };
     component.set('buyer', 'named');
-    component.set('whoName', 'The Hepworth Wakefield');
+    component.set('whoCv', GALA.id);
     component.set('kind', 'exhibited');
     component.set('cv', SHOW.id);
     await component.add();
@@ -355,7 +374,7 @@ describe('writing a line of the record', () => {
       component.set('kind', 'supported');
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelector('.record-who-field')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('.record-cv')).not.toBeNull();
       expect(text()).not.toContain('record.privateCollector');
     });
 
@@ -367,7 +386,7 @@ describe('writing a line of the record', () => {
       };
 
       component.set('kind', 'supported');
-      component.set('whoName', 'Fundación Antonio Gala');
+      component.set('whoCv', GALA.id);
       await component.add();
 
       expect(saved[0].entries).toEqual([

@@ -6405,7 +6405,7 @@ painting"
 A fifth kind of record line: **created with the support of** an institution —
 a grant, a residency, a foundation. It names whoever gave the support and
 nothing else, because nobody gives a grant anonymously and "created with
-support" on its own says nothing.
+support" on its own says nothing. The name is chosen from the cv (R252).
 
 **It is dated by the painting, so the form does not ask.** Support is true of
 a painting before it is finished rather than something that happened to it
@@ -6495,3 +6495,27 @@ gets the shells past the guard, which decodes rather than verifies, and the
 api is answered from the harness — showing one price per page, no tinted
 panel and the site's own heading on each; and `mint-gate.component.spec.ts`
 "can keep the button and leave the price to be said once elsewhere"
+
+### R252 — An institution on a record is chosen from the cv, not typed · met
+Wherever a record line names an institution — sold to, in the collection of,
+created with the support of — it is picked from the cv rather than written
+into a box. Its venue where the entry has one, because a show is *at* a
+gallery; its title where it has not, which is how every foundation and
+residency on this cv is written.
+
+**A typed name arrived in one language.** The box stored English alone, so a
+Spanish reader got the English spelling of a Spanish gallery — and nothing
+stopped the same gallery being entered twice, differently. A cv entry carries
+both languages, spelled once, and is already the list of every institution
+this painter deals with.
+
+**An institution that is not on the cv yet is one to add to the cv**, which
+is a window away on the cv page. That is the one thing this cannot express
+and the reason it is right: the cv is where the institutions live.
+
+The private collector is untouched: it is a phrase rather than a proper noun,
+which is why it is a choice and not something to pick or type.
+*Proven by:* `record-line-dialog.component.spec.ts` "names an institution
+from the cv, in both languages at once", "names a foundation by its own
+title, where the cv has no venue" and "does not carry a name onto a line that
+cannot have one"

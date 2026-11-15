@@ -70,19 +70,32 @@
       }
 
       <!--
-          One box, not one per language: an institution's name is a proper
-          noun and the same sentence in both. The collector who is not
-          named is the phrase that needs two, and that is the option above.
+          Chosen from the cv, not typed.
+
+          Every gallery, museum and foundation he deals with is on the cv
+          already, spelled once and in both languages. Typed again here it
+          arrived in one language with its own spelling, and two spellings of
+          one gallery are two institutions on a page whose whole purpose is
+          to be a record. An institution that is not on the cv yet is one to
+          add to the cv, which is a window away.
         -->
       @if (ofTheMaking() || draft().buyer === 'named') {
-        <mat-form-field appearance="outline" class="record-who-field">
-          <mat-label>{{ 'record.whoName' | translate }}</mat-label>
-          <input
-            matInput
-            [value]="draft().whoName"
-            (input)="set('whoName', $any($event.target).value)"
+        <mat-form-field appearance="outline" class="record-cv">
+          <mat-label>{{ 'record.whoFromCv' | translate }}</mat-label>
+          <mat-select
+            [value]="draft().whoCv"
+            (valueChange)="set('whoCv', $event)"
             [disabled]="saving()"
-          />
+          >
+            <mat-option [value]="''">—</mat-option>
+            @for (section of career(); track section.kind) {
+              <mat-optgroup [label]="section.title | translate">
+                @for (one of section.items; track one.id) {
+                  <mat-option [value]="one.id">{{ one.label }}</mat-option>
+                }
+              </mat-optgroup>
+            }
+          </mat-select>
         </mat-form-field>
       }
     }

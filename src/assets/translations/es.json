@@ -218,7 +218,8 @@
       "awarded": "Premiadas",
       "remove": "Quitar el filtro de historial"
     },
-    "datedByTheWork": "la fecha es la de la obra"
+    "datedByTheWork": "la fecha es la de la obra",
+    "whoFromCv": "Cuál, del cv"
   },
   "statement": {
     "title": "Statement",

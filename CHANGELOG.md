@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.82.0
+
+- **feat** An institution on a record line is chosen from the cv instead of
+  typed: sold to, in the collection of, created with the support of. A typed
+  name was stored in English alone, so a Spanish reader got the English
+  spelling of a Spanish gallery — and nothing stopped one gallery being
+  entered twice, differently. A cv entry carries both languages, spelled
+  once. One that is not on the cv yet is one to add to the cv.
+
 ## 2.81.0
 
 - **feat** The pages behind the door are the same site as the ones in front.

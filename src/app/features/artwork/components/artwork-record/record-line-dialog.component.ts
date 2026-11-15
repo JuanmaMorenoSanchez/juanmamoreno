@@ -39,8 +39,16 @@ interface Draft {
   cv: string;
   /** Which of the two answers to "who": the collector nobody names, or a name. */
   buyer: 'private' | 'named';
-  /** The institution, typed, when that is the answer. */
-  whoName: string;
+  /**
+   * Which institution, by its cv entry, when that is the answer.
+   *
+   * An id rather than a typed name. Every gallery, museum and foundation
+   * this painter deals with is already on the cv, spelled once and in both
+   * languages — typed again here it arrives in one language, with its own
+   * spelling, and "Galería Zunino" and "Galeria Zunino" become two
+   * institutions on a page that is supposed to be a record.
+   */
+  whoCv: string;
   year: number | null;
   noteEn: string;
 }
@@ -70,7 +78,7 @@ function empty(): Draft {
     kind: 'exhibited',
     cv: '',
     buyer: 'private',
-    whoName: '',
+    whoCv: '',
     year: new Date().getFullYear(),
     noteEn: '',
   };
@@ -175,7 +183,7 @@ export class RecordLineDialogComponent {
   protected readonly ready = computed(() => {
     const draft = this.draft();
     if (this.fromTheCv()) return Boolean(draft.cv);
-    if (this.ofTheMaking()) return Boolean(this.yearOfTheWork() && draft.whoName.trim());
+    if (this.ofTheMaking()) return Boolean(this.yearOfTheWork() && draft.whoCv);
     return Boolean(draft.year);
   });
 
@@ -188,6 +196,23 @@ export class RecordLineDialogComponent {
    * "created with support" is a line that says nothing.
    */
   protected readonly ofTheMaking = computed(() => this.draft().kind === RECORD_KIND_OF_THE_MAKING);
+
+  /**
+   * The institution a cv entry names, in both languages.
+   *
+   * Its venue where it has one — a show is *at* a gallery — and its title
+   * where it has not, which is how the foundations and the residencies are
+   * written: "Fundación Antonio Gala para jóvenes creadores" is an entry's
+   * own name, not a place it happened at.
+   *
+   * Nothing chosen is nobody, which is a fact on its own: a painting sold,
+   * and when, reads as "Sold" with nothing after it.
+   */
+  private institution(id: string): Bilingual | undefined {
+    const entry = this.cv.entries().find((one) => one.id === id);
+    if (!entry) return undefined;
+    return entry.venue ?? entry.title;
+  }
 
   /** The painting's year, where it could be read. */
   protected readonly yearOfTheWork = computed(() => this.asked.artworkYear);
@@ -239,10 +264,13 @@ export class RecordLineDialogComponent {
       return { kind: draft.kind, cv: draft.cv };
     }
 
-    // Nobody gives a grant anonymously, so the support line takes the typed
-    // name whatever the buyer field happens to be holding: that control is
-    // not drawn for it, and its default is "a private collector".
-    const who = this.ofTheMaking() ? named(draft.whoName) : whoOf(draft);
+    // Nobody gives a grant anonymously, so the support line takes the chosen
+    // institution whatever the buyer field happens to be holding: that
+    // control is not drawn for it, and its default is "a private collector".
+    const who =
+      this.ofTheMaking() || draft.buyer === 'named'
+        ? this.institution(draft.whoCv)
+        : PRIVATE_COLLECTOR;
     const noteEn = draft.noteEn.trim();
     // The support that paid for the painting is dated by the painting.
     //
@@ -259,28 +287,4 @@ export class RecordLineDialogComponent {
       ...(noteEn ? { note: { en: noteEn } } : {}),
     };
   }
-}
-
-/**
- * Who the painting went to, or nobody.
- *
- * An institution is taken as a proper noun: one box, stored as English alone,
- * which is what the api keeps when there is no different Spanish — so the name
- * reads the same on both pages, as a name should. Left empty it is nobody,
- * because naming anybody is optional: that a painting sold, and when, is a
- * fact on its own, and the line then reads "Sold" with nothing after it.
- */
-function whoOf(draft: Draft): Bilingual | undefined {
-  if (draft.buyer === 'private') return PRIVATE_COLLECTOR;
-  return named(draft.whoName);
-}
-
-/**
- * A typed name as the api keeps one: English alone, which is what it stores
- * when there is no different Spanish — so a proper noun reads the same on
- * both pages, as a name should.
- */
-function named(typed: string): Bilingual | undefined {
-  const name = typed.trim();
-  return name ? { en: name } : undefined;
 }
