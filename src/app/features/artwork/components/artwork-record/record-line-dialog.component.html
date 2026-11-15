@@ -49,25 +49,32 @@
         their name from the cv entry the line cites, so asking again here
         would be a second name that could disagree with it.
       -->
+    <!--
+        Nobody gives a grant anonymously, so the support line skips the
+        choice and goes straight to the name: "created with the support of a
+        private collector" is not a sentence anybody wants on a catalogue.
+      -->
     @if (naming()) {
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'record.who' | translate }}</mat-label>
-        <mat-select
-          [value]="draft().buyer"
-          (valueChange)="set('buyer', $event)"
-          [disabled]="saving()"
-        >
-          <mat-option value="private">{{ 'record.privateCollector' | translate }}</mat-option>
-          <mat-option value="named">{{ 'record.institution' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      @if (!ofTheMaking()) {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'record.who' | translate }}</mat-label>
+          <mat-select
+            [value]="draft().buyer"
+            (valueChange)="set('buyer', $event)"
+            [disabled]="saving()"
+          >
+            <mat-option value="private">{{ 'record.privateCollector' | translate }}</mat-option>
+            <mat-option value="named">{{ 'record.institution' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
 
       <!--
           One box, not one per language: an institution's name is a proper
           noun and the same sentence in both. The collector who is not
           named is the phrase that needs two, and that is the option above.
         -->
-      @if (draft().buyer === 'named') {
+      @if (ofTheMaking() || draft().buyer === 'named') {
         <mat-form-field appearance="outline" class="record-who-field">
           <mat-label>{{ 'record.whoName' | translate }}</mat-label>
           <input
@@ -83,9 +90,17 @@
     <!--
         A show and a prize have no year of their own: they take the year of
         the cv entry they point at, because two years that can disagree
-        eventually do.
+        eventually do. The support that paid for the painting takes the
+        painting's year for the same reason — so the box is not asked for
+        either, unless the painting's own year could not be read.
       -->
-    @if (!fromTheCv()) {
+    @if (ofTheMaking() && yearOfTheWork(); as madeIn) {
+      <p class="record-dated">
+        {{ 'record.year' | translate }}: <strong>{{ madeIn }}</strong>
+        <span>{{ 'record.datedByTheWork' | translate }}</span>
+      </p>
+    }
+    @if (!fromTheCv() && !(ofTheMaking() && yearOfTheWork())) {
       <mat-form-field appearance="outline" class="record-year-field">
         <mat-label>{{ 'record.year' | translate }}</mat-label>
         <input

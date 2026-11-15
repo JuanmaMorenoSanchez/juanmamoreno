@@ -1,6 +1,6 @@
 import { CvEntry } from '@domain/cv/cv-entry.entity';
 import { RecordEntry } from './record.entity';
-import { recordLines } from './record';
+import { inOrder, recordLines } from './record';
 
 const SHOW: CvEntry = {
   id: 'aaaa000000000001',
@@ -167,5 +167,45 @@ describe('a painting’s record as the page draws it', () => {
 
     expect(withNote.note).toBe('through the gallery');
     expect(without.note).toBeUndefined();
+  });
+});
+
+/**
+ * What paid for the painting.
+ *
+ * A grant or a residency is true of the painting before it was finished, so
+ * it reads first whatever the rest of the record says — and it carries the
+ * painting's own year, which is usually the year it was first shown too.
+ */
+describe('the support that paid for the painting', () => {
+  it('comes first, above everything that happened afterwards', () => {
+    const lines = inOrder([
+      { kind: 'sold' as const, year: 2026 },
+      { kind: 'exhibited' as const, year: 2019 },
+      { kind: 'supported' as const, year: 2019 },
+    ]);
+
+    expect(lines.map((line) => line.kind)).toEqual(['supported', 'exhibited', 'sold']);
+  });
+
+  // The year it shares is the painting's, so it is never the tie-break.
+  it('comes first even above an earlier year', () => {
+    const lines = inOrder([
+      { kind: 'exhibited' as const, year: 2001 },
+      { kind: 'supported' as const, year: 2019 },
+    ]);
+
+    expect(lines.map((line) => line.kind)).toEqual(['supported', 'exhibited']);
+  });
+
+  it('reads as a sentence naming who gave it', () => {
+    const [line] = recordLines(
+      [{ kind: 'supported', year: 2019, who: { en: 'Fundación Antonio Gala' } }],
+      'en'
+    );
+
+    expect(line.verb).toBe('record.supported');
+    expect(line.what).toBe('Fundación Antonio Gala');
+    expect(line.year).toBe(2019);
   });
 });

@@ -16,9 +16,20 @@
         {{ count() }} {{ count() === 1 ? 'certificate' : 'certificates' }} written and not signed
       </h2>
       <p class="pending-note">
-        Signing happens in OpenSea, by hand: this contract has no mint function, so nothing here can
-        write one to the chain. What is listed is prepared and stored, waiting for that.
+        Written and stored, waiting to be signed.
+        <strong>Signing happens in OpenSea, by hand</strong> — this contract has <code>amend</code>,
+        <code>freeze</code> and <code>burn</code> and no mint function at all, so nothing on this
+        page can put one on the chain. The price below is what signing one will cost when you do.
       </p>
+
+      <!--
+        The gas price, where the decision about it is actually made.
+        Minting is a transaction wherever it is signed from, so the price is
+        the whole of what a certificate costs — the same one is a few cents
+        on a quiet morning and several pounds on a busy afternoon. It sat on
+        the studio's Prepare button, which spends nothing.
+      -->
+      <app-mint-gate [withButton]="false" />
 
       <ul class="pending-list">
         @for (one of all; track one.tokenId) {
@@ -41,9 +52,6 @@
             </div>
 
             <div class="pending-doing">
-              <a class="pending-plain" [href]="one.external_url" target="_blank" rel="noopener">
-                Its page
-              </a>
               @if (confirming() === one.tokenId) {
                 <!-- Asked first: throwing one away is the photograph and the
                      measurements to do again. -->

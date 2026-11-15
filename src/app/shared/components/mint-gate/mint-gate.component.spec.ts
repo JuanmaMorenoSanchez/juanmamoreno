@@ -174,4 +174,68 @@ describe('MintGateComponent', () => {
 
     expect(watching()).toBe(0);
   });
+
+  /**
+   * The way past the ceiling, for when the answer is "I know, do it anyway".
+   *
+   * A second press rather than a wider limit: raising the ceiling to get past
+   * one expensive morning leaves it raised for every quiet one afterwards,
+   * which is how a guard stops being one.
+   */
+  describe('insisting', () => {
+    const insist = (host: HTMLElement): HTMLButtonElement | null =>
+      host.querySelector('.gate-insist');
+
+    it('offers no way past while the price is within the ceiling', () => {
+      const { host } = build(0.05);
+
+      expect(insist(host)).toBeNull();
+    });
+
+    it('offers one when the price is what is stopping it', () => {
+      const { host } = build(2);
+
+      expect(insist(host)).not.toBeNull();
+      expect(button(host).disabled).toBe(true);
+    });
+
+    it('lets it through once, and says the limit is being paid over', () => {
+      const { fixture, host } = build(2);
+
+      insist(host)!.click();
+      fixture.detectChanges();
+
+      expect(button(host).disabled).toBe(false);
+      expect(host.textContent).toContain('paying over the limit');
+    });
+
+    // A press that costs money is not unlocked by something else being wrong.
+    it('does not unlock a button stopped for another reason', () => {
+      const { fixture, host } = build(2);
+      fixture.componentRef.setInput('disabled', true);
+      fixture.detectChanges();
+
+      insist(host)!.click();
+      fixture.detectChanges();
+
+      expect(button(host).disabled).toBe(true);
+    });
+  });
+
+  /**
+   * The price is worth showing where the decision about it is made — the list
+   * of certificates waiting to be signed — and there is nothing to press
+   * there, because the contract has no mint function and signing is done in
+   * OpenSea by hand.
+   */
+  it('shows the price with no button where there is nothing to press', () => {
+    const { fixture, host } = build(0.05);
+    fixture.componentRef.setInput('withButton', false);
+    fixture.detectChanges();
+
+    expect(host.querySelector('.gate-go')).toBeNull();
+    expect(host.querySelector('.gate-insist')).toBeNull();
+    expect(host.textContent).toContain('gwei');
+    expect(host.querySelector('.gate-limit')).not.toBeNull();
+  });
 });

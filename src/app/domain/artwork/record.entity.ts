@@ -8,7 +8,7 @@ import { Bilingual, CvEntry } from '@domain/cv/cv-entry.entity';
  * alternatives: "awarded and acquired by the foundation" is one event that
  * cites the prize on the cv *and* names the institution that took the painting.
  */
-export type RecordKind = 'exhibited' | 'sold' | 'awarded' | 'collection';
+export type RecordKind = 'supported' | 'exhibited' | 'sold' | 'awarded' | 'collection';
 
 /**
  * Offered in the order he reaches for them, the show first because almost
@@ -19,7 +19,23 @@ export type RecordKind = 'exhibited' | 'sold' | 'awarded' | 'collection';
  * a decision about which of two identical lines to write. Nothing had ever
  * been stored under it.
  */
-export const RECORD_KINDS: readonly RecordKind[] = ['exhibited', 'sold', 'awarded', 'collection'];
+export const RECORD_KINDS: readonly RecordKind[] = [
+  'supported',
+  'exhibited',
+  'sold',
+  'awarded',
+  'collection',
+];
+
+/**
+ * The kind that belongs to the making rather than to what happened after.
+ *
+ * A grant or a residency that paid for the painting is true of it before it
+ * was finished, so it reads first whatever year the rest of the record runs
+ * from — and it takes the painting's own year, which is why the form does not
+ * ask for one.
+ */
+export const RECORD_KIND_OF_THE_MAKING: RecordKind = 'supported';
 
 /**
  * The kinds that take their words from the cv, and the kinds that take them
@@ -36,6 +52,7 @@ export const RECORD_KINDS_FROM_THE_CV: readonly RecordKind[] = ['exhibited', 'aw
 
 /** The verb each kind is written as. A closed set, so these stay keys. */
 export const RECORD_VERBS: Readonly<Record<RecordKind, string>> = {
+  supported: 'record.supported',
   exhibited: 'record.exhibited',
   sold: 'record.sold',
   awarded: 'record.awarded',
@@ -52,6 +69,7 @@ export const RECORD_VERBS: Readonly<Record<RecordKind, string>> = {
  * and have no second key to go stale.
  */
 export const RECORD_VERBS_ALONE: Readonly<Record<RecordKind, string>> = {
+  supported: 'record.supportedAlone',
   exhibited: 'record.exhibited',
   sold: 'record.soldAlone',
   awarded: 'record.awarded',
@@ -66,7 +84,7 @@ export const RECORD_VERBS_ALONE: Readonly<Record<RecordKind, string>> = {
  * take theirs from the cv entry the line cites. Asking a second time there
  * would be a name that could disagree with the first.
  */
-export const RECORD_NAMING_KINDS: readonly RecordKind[] = ['sold', 'collection'];
+export const RECORD_NAMING_KINDS: readonly RecordKind[] = ['supported', 'sold', 'collection'];
 
 /** One line of a painting's record, as the api serves it. */
 export interface RecordEntry {

@@ -270,7 +270,6 @@ export class ArtworkCriticComponent {
     this.draft.set((event.target as HTMLTextAreaElement).value);
   }
 
-
   protected save(): void {
     const current = this.translated();
     const token = this.auth.bearerToken();

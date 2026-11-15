@@ -8,6 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 
 /**
@@ -20,14 +21,24 @@ import { MintApiService, type PendingMint } from '@shared/services/mint-api.serv
  * became one, the list was dropped and the link to it was not.
  *
  * At the top because it is the state of the work: what is half-done comes
- * before the form for starting something new. Signing happens in OpenSea, by
- * hand — this contract has no mint function at all — so what this offers is
- * the two things the page can honestly do: look at what is waiting, and throw
- * one away.
+ * before the form for starting something new.
+ *
+ * **Nothing here mints, and nothing here pretends to.** The contract has
+ * `amend`, `freeze` and `burn` and no mint function: a certificate goes on
+ * the chain through OpenSea, by hand. A button offering otherwise is read as
+ * a step in the work and is not one — which is why the old "Write them now"
+ * was removed along with the page it was on.
+ *
+ * **The price belongs here even so.** Signing is a transaction wherever it is
+ * signed from, and the price of gas is the whole of what a certificate costs
+ * — so the figure, the warning and the ceiling sit where the decision is
+ * made, rather than beside the studio's Prepare button, which spends
+ * nothing.
  */
 @Component({
   selector: 'app-pending-certificates',
   standalone: true,
+  imports: [MintGateComponent],
   templateUrl: './pending-certificates.component.html',
   styleUrl: './pending-certificates.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

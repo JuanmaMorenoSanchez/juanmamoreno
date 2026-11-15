@@ -45,7 +45,7 @@ describe('writing a line of the record', () => {
         provideHttpClientTesting(),
         provideTranslateService(),
         provideRouter([]),
-        { provide: MAT_DIALOG_DATA, useValue: '165' },
+        { provide: MAT_DIALOG_DATA, useValue: { tokenId: '165', artworkYear: 2019 } },
         { provide: MatDialogRef, useValue: { close: () => (closed += 1) } },
         {
           provide: ArtworkRecordService,
@@ -324,5 +324,68 @@ describe('writing a line of the record', () => {
     expect(text().toLowerCase()).not.toContain('price');
     expect(text().toLowerCase()).not.toContain('precio');
     expect(fixture.nativeElement.querySelector('input[type="number"][name="price"]')).toBeNull();
+  });
+
+  /**
+   * What paid for the painting: a grant or a residency, which is true of the
+   * painting before it was finished.
+   */
+  describe('the support that paid for it', () => {
+    it('does not ask for a year, because the painting is what dates it', () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+      };
+
+      component.set('kind', 'supported');
+      fixture.detectChanges();
+
+      expect(text()).toContain('2019');
+      expect(fixture.nativeElement.querySelector('.record-year-field')).toBeNull();
+    });
+
+    // Nobody gives a grant anonymously, so there is no "a private collector"
+    // to choose: the name is the whole of the line.
+    it('asks for the name and nothing else', () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+      };
+
+      component.set('kind', 'supported');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.record-who-field')).not.toBeNull();
+      expect(text()).not.toContain('record.privateCollector');
+    });
+
+    it('sends the year of the painting with it', async () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+        add: () => Promise<void>;
+      };
+
+      component.set('kind', 'supported');
+      component.set('whoName', 'Fundación Antonio Gala');
+      await component.add();
+
+      expect(saved[0].entries).toEqual([
+        { kind: 'supported', who: { en: 'Fundación Antonio Gala' }, year: 2019 },
+      ]);
+    });
+
+    // A line reading only "created with support" says nothing worth storing.
+    it('will not save without the name of whoever gave it', () => {
+      build();
+      const component = fixture.componentInstance as unknown as {
+        set: (field: string, value: unknown) => void;
+        ready: () => boolean;
+      };
+
+      component.set('kind', 'supported');
+
+      expect(component.ready()).toBe(false);
+    });
   });
 });

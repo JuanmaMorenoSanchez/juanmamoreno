@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { inOrder } from '@domain/artwork/record';
 import {
+  RECORD_KIND_OF_THE_MAKING,
   RECORD_KINDS,
   RECORD_KINDS_FROM_THE_CV,
   RECORD_NAMING_KINDS,
@@ -24,6 +25,13 @@ import { ArtworkRecordService } from '@shared/services/artwork-record.service';
 import { CvService } from '@shared/services/cv.service';
 import { LanguageUrlService } from '@shared/services/language-url.service';
 import { TranslatePipe } from '@ngx-translate/core';
+
+/** Which painting the line is for, and what year the painting carries. */
+export interface RecordLineDialogData {
+  tokenId: string;
+  /** Null when the painting's year could not be read; the form then asks. */
+  artworkYear: number | null;
+}
 
 /** What a line is being written as, before it is sent. */
 interface Draft {
@@ -105,7 +113,8 @@ export class RecordLineDialogComponent {
   private readonly cv = inject(CvService);
   private readonly language = inject(LanguageUrlService);
 
-  protected readonly tokenId = inject<string>(MAT_DIALOG_DATA);
+  private readonly asked = inject<RecordLineDialogData>(MAT_DIALOG_DATA);
+  protected readonly tokenId = this.asked.tokenId;
   protected readonly ref = inject(MatDialogRef<RecordLineDialogComponent>);
 
   protected readonly kinds = RECORD_KINDS;
@@ -165,8 +174,23 @@ export class RecordLineDialogComponent {
    */
   protected readonly ready = computed(() => {
     const draft = this.draft();
-    return this.fromTheCv() ? Boolean(draft.cv) : Boolean(draft.year);
+    if (this.fromTheCv()) return Boolean(draft.cv);
+    if (this.ofTheMaking()) return Boolean(this.yearOfTheWork() && draft.whoName.trim());
+    return Boolean(draft.year);
   });
+
+  /**
+   * Whether this line belongs to the making of the painting.
+   *
+   * A grant or a residency that paid for it is true of the painting before it
+   * was finished: it is dated by the painting, so the form does not ask for a
+   * year, and it always names whoever gave the support — a line saying only
+   * "created with support" is a line that says nothing.
+   */
+  protected readonly ofTheMaking = computed(() => this.draft().kind === RECORD_KIND_OF_THE_MAKING);
+
+  /** The painting's year, where it could be read. */
+  protected readonly yearOfTheWork = computed(() => this.asked.artworkYear);
 
   protected async add(): Promise<void> {
     if (!this.ready() || this.saving()) return;
@@ -215,12 +239,23 @@ export class RecordLineDialogComponent {
       return { kind: draft.kind, cv: draft.cv };
     }
 
-    const who = whoOf(draft);
+    // Nobody gives a grant anonymously, so the support line takes the typed
+    // name whatever the buyer field happens to be holding: that control is
+    // not drawn for it, and its default is "a private collector".
+    const who = this.ofTheMaking() ? named(draft.whoName) : whoOf(draft);
     const noteEn = draft.noteEn.trim();
+    // The support that paid for the painting is dated by the painting.
+    //
+    // shortcut: the year is copied in when the line is written rather than
+    // resolved from the catalogue on every read. Upgrade it the day a
+    // painting's own year is ever corrected, which would leave this behind.
+    const year = this.ofTheMaking()
+      ? (this.yearOfTheWork() ?? Number(draft.year))
+      : Number(draft.year);
     return {
       kind: draft.kind,
       ...(who ? { who } : {}),
-      year: Number(draft.year),
+      year,
       ...(noteEn ? { note: { en: noteEn } } : {}),
     };
   }
@@ -237,6 +272,15 @@ export class RecordLineDialogComponent {
  */
 function whoOf(draft: Draft): Bilingual | undefined {
   if (draft.buyer === 'private') return PRIVATE_COLLECTOR;
-  const named = draft.whoName.trim();
-  return named ? { en: named } : undefined;
+  return named(draft.whoName);
+}
+
+/**
+ * A typed name as the api keeps one: English alone, which is what it stores
+ * when there is no different Spanish — so a proper noun reads the same on
+ * both pages, as a name should.
+ */
+function named(typed: string): Bilingual | undefined {
+  const name = typed.trim();
+  return name ? { en: name } : undefined;
 }

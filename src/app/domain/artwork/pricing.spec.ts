@@ -76,8 +76,9 @@ describe('what a painting is asked for', () => {
     });
 
     it('takes a decimal multiplier', () => {
-      expect(priceOf({ height: '100', width: '80' }, 'Oil on canvas', { painting: 12.5, paper: 5 }))
-        .toBe(2250);
+      expect(
+        priceOf({ height: '100', width: '80' }, 'Oil on canvas', { painting: 12.5, paper: 5 })
+      ).toBe(2250);
     });
 
     /**
@@ -85,13 +86,16 @@ describe('what a painting is asked for', () => {
      * and "0 €" beside a painting would be worse than a blank.
      */
     it('answers nothing for a measurement it cannot read', () => {
-      expect(priceOf({ height: 'about 100', width: '80' }, 'Oil on canvas', multipliers)).toBeNull();
+      expect(
+        priceOf({ height: 'about 100', width: '80' }, 'Oil on canvas', multipliers)
+      ).toBeNull();
       expect(priceOf({ height: '', width: '' }, 'Oil on canvas', multipliers)).toBeNull();
     });
 
     it('answers nothing when the multiplier is not a number to multiply by', () => {
-      expect(priceOf({ height: '100', width: '80' }, 'Oil on canvas', { painting: 0, paper: 11 }))
-        .toBeNull();
+      expect(
+        priceOf({ height: '100', width: '80' }, 'Oil on canvas', { painting: 0, paper: 11 })
+      ).toBeNull();
     });
   });
 

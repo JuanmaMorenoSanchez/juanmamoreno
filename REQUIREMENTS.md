@@ -6400,3 +6400,53 @@ it sends a new line on top of the ones already there, that it asks only what
 the kind needs, and that it has nowhere to type what a painting sold for); and
 `artwork-record.component.spec.ts` "opens the form in a window, on this
 painting"
+
+### R249 — A painting can say what paid for it · met
+A fifth kind of record line: **created with the support of** an institution —
+a grant, a residency, a foundation. It names whoever gave the support and
+nothing else, because nobody gives a grant anonymously and "created with
+support" on its own says nothing.
+
+**It is dated by the painting, so the form does not ask.** Support is true of
+a painting before it is finished rather than something that happened to it
+afterwards, so the year is the work's own: the page hands the painting's year
+to the form, which states it instead of offering a box. A painting whose year
+cannot be read puts the box back rather than storing a guess.
+
+**And it reads first, whatever year the rest of the record runs from.** Sorted
+by year alone it would land among whatever else happened that year, which is
+usually where the painting was first shown. Both halves sort it the same way,
+because the api answers in order and the page sorts again before writing back
+— a line is removed by its position, so a list drawn in one order and stored
+in another takes away the wrong line.
+*Proven by:* `record.spec.ts` "comes first, above everything that happened
+afterwards", "comes first even above an earlier year" and "reads as a sentence
+naming who gave it"; `record-line-dialog.component.spec.ts` "does not ask for
+a year, because the painting is what dates it", "asks for the name and nothing
+else" and "will not save without the name of whoever gave it"; and
+`artwork-record.service.spec.ts` in the backend, which asserts the same order
+on the api's side
+
+### R250 — The price of gas is shown where the decision is made · met
+The gas price, the warning and the ceiling sit on the list of certificates
+waiting to be signed. Signing one is a transaction wherever it is signed from,
+and the price of gas is the whole of what a certificate costs — the same one
+is a few cents on a quiet morning and several pounds on a busy afternoon.
+
+They had been on the studio's **Prepare** button, which spends nothing, since
+the page that held the queue was removed.
+
+**There is no button on the list, because there is nothing to press.** The
+contract has `amend`, `freeze` and `burn` and no mint function: a certificate
+goes on the chain through OpenSea, by hand. The gate draws its price without a
+button when it is told there is nothing to press, rather than offering one
+that can never be enabled.
+
+**And the ceiling can be overruled.** When the price is what is stopping a
+press, a second press — "Mint anyway" — lets it through and says the limit is
+being paid over. A second press rather than a raised ceiling, because a
+ceiling raised to get past one expensive morning stays raised for every quiet
+one after it.
+*Proven by:* `mint-gate.component.spec.ts` "insisting" (4 tests, including
+that it does not unlock a button stopped for another reason) and "shows the
+price with no button where there is nothing to press"

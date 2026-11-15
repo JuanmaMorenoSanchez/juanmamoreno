@@ -9,7 +9,10 @@ describe('SoldToggleComponent', () => {
   let availability: { isSold: ReturnType<typeof vi.fn>; set: ReturnType<typeof vi.fn> };
 
   const setup = async (signedIn: boolean, sold = false) => {
-    availability = { isSold: vi.fn().mockReturnValue(sold), set: vi.fn().mockResolvedValue(void 0) };
+    availability = {
+      isSold: vi.fn().mockReturnValue(sold),
+      set: vi.fn().mockResolvedValue(void 0),
+    };
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({

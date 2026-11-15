@@ -35,7 +35,7 @@ describe('the order images are allowed to replace one another', () => {
     const highest = Math.max(
       PreviewQuality.NFT_THUMBNAIL,
       PreviewQuality.BACKEND_THUMBNAIL,
-      PreviewQuality.NFT_CACHED,
+      PreviewQuality.NFT_CACHED
     );
 
     expect(highest).toBe(PreviewQuality.NFT_CACHED);

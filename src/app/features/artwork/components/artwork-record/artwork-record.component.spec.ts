@@ -163,7 +163,7 @@ describe('the record on an artwork page', () => {
 
     expect(opened).toHaveLength(1);
     expect(opened[0].component).toBe(RecordLineDialogComponent);
-    expect(opened[0].data).toBe('165');
+    expect(opened[0].data).toEqual({ tokenId: '165', artworkYear: null });
     expect(fixture.nativeElement.querySelector('.record-form')).toBeNull();
   });
 });

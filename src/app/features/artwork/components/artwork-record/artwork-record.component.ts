@@ -44,6 +44,11 @@ export class ArtworkRecordComponent {
   private readonly language = inject(LanguageUrlService);
 
   readonly tokenId = input.required<string>();
+  /**
+   * The painting's year, for the one kind that is dated by the painting
+   * rather than by what happened: the support that paid for it.
+   */
+  readonly artworkYear = input<number | null>(null);
 
   constructor() {
     // The build wrote down every record, so the page is already right; this
@@ -91,7 +96,7 @@ export class ArtworkRecordComponent {
   protected open(): void {
     this.failed.set('');
     this.dialog.open(RecordLineDialogComponent, {
-      data: this.tokenId(),
+      data: { tokenId: this.tokenId(), artworkYear: this.artworkYear() },
       width: '34rem',
       maxWidth: '92vw',
     });

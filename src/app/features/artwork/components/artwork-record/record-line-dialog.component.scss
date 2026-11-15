@@ -49,3 +49,15 @@
   color: var(--mat-sys-error, #b3261e);
   font-size: 0.85rem;
 }
+
+/* The year a support line is dated by, stated rather than asked for. */
+.record-dated {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--catalog-soft);
+
+  span {
+    margin-left: tokens.$spacing-xs;
+  }
+}

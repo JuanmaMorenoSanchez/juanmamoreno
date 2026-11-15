@@ -115,6 +115,19 @@ export class ArtPieceComponent {
   private language = inject(LanguageUrlService);
 
   readonly validTraits = VALIDTRAITS;
+
+  /**
+   * The painting's year, as a number, for the record's support line.
+   *
+   * A grant that paid for the painting is dated by the painting, so the form
+   * does not ask — it is told. Null when the trait is missing or unreadable,
+   * which puts the year back on the form rather than storing a guess.
+   */
+  readonly paintingYear = computed(() => {
+    const nft = this.paintingNft();
+    const said = nft ? Number(this.getTraitValue(nft, VALIDTRAITS.YEAR)) : Number.NaN;
+    return Number.isFinite(said) ? said : null;
+  });
   readonly nfts: Signal<Nft[]> = toSignal(
     this.route.paramMap.pipe(
       map((paramMap) => paramMap.get('id')!),

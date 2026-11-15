@@ -2598,6 +2598,23 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Halle Saale",
           "country": "germany"
         }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2009,
+        "cv": {
+          "id": "74fb42dad98e9fd9",
+          "kind": "collective",
+          "year": 2009,
+          "title": {
+            "en": "La más elegante del invernadero III"
+          },
+          "venue": {
+            "en": "Galería Jesús Puerto"
+          },
+          "city": "Granada",
+          "country": "spain"
+        }
       }
     ]
   },

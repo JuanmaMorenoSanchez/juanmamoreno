@@ -40,7 +40,9 @@ describe('the thumbnails kept while the page is open', () => {
     const asked = new Promise<void>((done) => {
       (
         service as unknown as {
-          fetchRemoteThumbnail: (id: string) => { subscribe: (o: { complete: () => void }) => void };
+          fetchRemoteThumbnail: (id: string) => {
+            subscribe: (o: { complete: () => void }) => void;
+          };
         }
       )
         .fetchRemoteThumbnail(tokenId)
@@ -94,7 +96,7 @@ describe('the thumbnails kept while the page is open', () => {
       query
         .getValue()
         .imageCache.map((one) => one.tokenId)
-        .sort(),
+        .sort()
     ).toEqual(['2', '3']);
   });
 });

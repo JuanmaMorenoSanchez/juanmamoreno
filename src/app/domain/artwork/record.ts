@@ -18,6 +18,16 @@ import {
 const LAST_IN_A_YEAR: readonly RecordKind[] = ['sold', 'collection'];
 
 /**
+ * The support that paid for the painting comes first, always.
+ *
+ * It is true of the painting before it was finished rather than something
+ * that happened to it afterwards, and it carries the painting's own year — so
+ * sorted by year alone it would land among whatever else happened that year,
+ * which is where it was shown and sometimes where it went.
+ */
+const FIRST_OF_ALL: RecordKind = 'supported';
+
+/**
  * Oldest first, because a record reads as a life rather than as a log.
  *
  * Sorted here rather than trusted from the api. The api does answer in order,
@@ -30,8 +40,9 @@ const LAST_IN_A_YEAR: readonly RecordKind[] = ['sold', 'collection'];
  * takes away the wrong line.
  */
 export function inOrder<T extends { kind: RecordKind; year: number }>(entries: readonly T[]): T[] {
+  const first = (entry: T) => (entry.kind === FIRST_OF_ALL ? 0 : 1);
   const last = (entry: T) => (LAST_IN_A_YEAR.includes(entry.kind) ? 1 : 0);
-  return [...entries].sort((a, b) => a.year - b.year || last(a) - last(b));
+  return [...entries].sort((a, b) => first(a) - first(b) || a.year - b.year || last(a) - last(b));
 }
 
 /**

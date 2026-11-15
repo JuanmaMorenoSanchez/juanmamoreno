@@ -151,15 +151,15 @@ describe('ImageViewerComponent — the shape of the frame', () => {
   });
 
   /**
-  * The frame settles once and then holds, which is the whole of what the
-  * artist asked for: the picture and the row of buttons above it are the same
-  * width throughout, because the width is derived from this ratio.
-  *
-  * The hi-res file is the same photograph the preview was a thumbnail of, so
-  * it has nothing new to say — and it used to say it anyway, moving the frame
-  * at the exact moment the sharp image was fading in over the blur. The resize
-  * is what the eye followed, so the fade read as a jump.
-  */
+   * The frame settles once and then holds, which is the whole of what the
+   * artist asked for: the picture and the row of buttons above it are the same
+   * width throughout, because the width is derived from this ratio.
+   *
+   * The hi-res file is the same photograph the preview was a thumbnail of, so
+   * it has nothing new to say — and it used to say it anyway, moving the frame
+   * at the exact moment the sharp image was fading in over the blur. The resize
+   * is what the eye followed, so the fade read as a jump.
+   */
   it('does not move the frame again when the sharp file arrives', async () => {
     vi.spyOn(component, 'ratioOf').mockResolvedValue(0.75);
     ref.setInput('nfts', [painting('1')]);

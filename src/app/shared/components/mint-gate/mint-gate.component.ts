@@ -6,6 +6,7 @@ import {
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { GasPriceService } from '@shared/services/gas-price.service';
@@ -28,9 +29,11 @@ import { GasPriceService } from '@shared/services/gas-price.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="gate">
-      <button type="button" class="gate-go" [disabled]="stopped()" (click)="mint.emit()">
-        {{ label() }}
-      </button>
+      @if (withButton()) {
+        <button type="button" class="gate-go" [disabled]="stopped()" (click)="mint.emit()">
+          {{ label() }}
+        </button>
+      }
 
       @if (gas.price(); as price) {
         <span class="gate-price" [class.gate-dear]="tooDear()">
@@ -45,6 +48,19 @@ import { GasPriceService } from '@shared/services/gas-price.service';
         </span>
       } @else {
         <span class="gate-price">reading the gas price…</span>
+      }
+
+      <!--
+        The way past the ceiling, for when the answer is "I know, do it
+        anyway". It appears only when the price is what is stopping it, and
+        it is a second press rather than a wider limit: raising the ceiling
+        to get past one expensive morning leaves it raised for every quiet
+        one after.
+      -->
+      @if (withButton() && tooDear() && !insisting()) {
+        <button type="button" class="gate-insist" (click)="insisting.set(true)">Mint anyway</button>
+      } @else if (withButton() && insisting()) {
+        <span class="gate-price gate-dear">paying over the limit</span>
       }
 
       <label class="gate-limit">
@@ -67,6 +83,24 @@ export class MintGateComponent {
   protected readonly gas = inject(GasPriceService);
 
   readonly label = input('Mint');
+  /**
+   * Whether there is anything to press.
+   *
+   * The price, the warning and the ceiling are worth showing where the
+   * decision about them is made — which is the list of certificates waiting
+   * to be signed — and there is nothing to press there: the contract has no
+   * mint function, and signing is done in OpenSea by hand. A button that can
+   * never be enabled is the thing this component exists to avoid.
+   */
+  readonly withButton = input(true);
+  /**
+   * Whether the ceiling has been overruled for this press.
+   *
+   * Reset by nothing: the window is closed or the page left when the work is
+   * done, and an insistence that outlived the thing it was for would be a
+   * ceiling quietly switched off.
+   */
+  protected readonly insisting = signal(false);
   /** Anything else that should stop it — nothing to mint, a request in flight. */
   readonly disabled = input(false);
   readonly mint = output<void>();
@@ -81,7 +115,7 @@ export class MintGateComponent {
    * be pressed in that second.
    */
   protected readonly stopped = computed(
-    () => this.disabled() || this.gas.price() === null || this.tooDear()
+    () => this.disabled() || this.gas.price() === null || (this.tooDear() && !this.insisting())
   );
 
   constructor() {

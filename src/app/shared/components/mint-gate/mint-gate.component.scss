@@ -48,3 +48,10 @@
   background: transparent;
   color: inherit;
 }
+
+/* The way past the ceiling. Drawn as the quiet choice it should be: a press
+   that costs money ought not to look like the easy one. */
+.gate-insist {
+  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+  border-color: var(--catalog-rule);
+}

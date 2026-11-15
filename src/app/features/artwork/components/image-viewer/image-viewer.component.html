@@ -105,11 +105,7 @@
         is the same url, already decoded by then.
       -->
       @if (!hasImage() && stillImage()) {
-        <img
-          class="art-viewer layer visible"
-          [src]="stillImage()"
-          [attr.alt]="description()"
-        />
+        <img class="art-viewer layer visible" [src]="stillImage()" [attr.alt]="description()" />
       }
 
       @if (layerA() !== 'none') {

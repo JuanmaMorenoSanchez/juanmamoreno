@@ -150,8 +150,14 @@
       Asked by the painting's token, not by the photograph on screen: the
       record belongs to the painting, and a detail has none of its own.
     -->
+    <!--
+      The painting's year goes down with it: a "created with the support of"
+      line takes the year of the painting rather than asking for one, so the
+      form needs to be told what it is.
+    -->
     <app-artwork-record
       [tokenId]="paintingNft().tokenId"
+      [artworkYear]="paintingYear()"
       [style.width]="frameWidth()"
     ></app-artwork-record>
     <app-artwork-critic [tokenId]="tokenId()" [style.width]="frameWidth()"></app-artwork-critic>
