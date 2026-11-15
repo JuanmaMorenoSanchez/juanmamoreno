@@ -209,7 +209,13 @@
     "note": "Nota",
     "save": "Guardar",
     "remove": "Retirar esta línea",
-    "failed": "No se ha podido guardar la línea."
+    "failed": "No se ha podido guardar la línea.",
+    "filter": {
+      "any": "Todas",
+      "exhibited": "Expuestas",
+      "awarded": "Premiadas",
+      "remove": "Quitar el filtro de historial"
+    }
   },
   "statement": {
     "title": "Statement",
