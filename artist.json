@@ -113,6 +113,20 @@
         "section": "Collective exhibitions (selection)",
         "items": [
           {
+            "year": 2026,
+            "title": "Outsiders Vol. 3",
+            "venue": "Zunino Gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
+            "year": 2025,
+            "title": "Outsiders Vol. 2",
+            "venue": "Zunino Gallery",
+            "city": "Sevilla",
+            "country": "Spain"
+          },
+          {
             "year": 2024,
             "title": "Outsiders. Vol. 1",
             "venue": "Zunino gallery",
@@ -474,6 +488,20 @@
       {
         "section": "Exposiciones colectivas (selección)",
         "items": [
+          {
+            "year": 2026,
+            "title": "Outsiders Vol. 3",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
+          {
+            "year": 2025,
+            "title": "Outsiders Vol. 2",
+            "venue": "Galería Zunino",
+            "city": "Sevilla",
+            "country": "España"
+          },
           {
             "year": 2024,
             "title": "Outsiders. Vol. 1",
