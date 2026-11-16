@@ -514,11 +514,14 @@ def edit(
     pipeline = _pipeline()
     _reusing(pipeline.transformer, reuse)
 
-    # Once the steps start there is something countable, so the note goes.
-    if saying is not None:
-        saying(None)
-
     def each_step(pipe, index: int, timestep, kwargs):  # noqa: ANN001 - diffusers' shape
+        # The note goes when there is something countable, which is here and
+        # not where it used to be, the line after the pipeline was built.
+        # Between those two there is the instruction to encode and the first
+        # pass to make: timed on a cold card, eighty seconds in which the
+        # page said neither what it was doing nor how far through it was.
+        if index == 0 and saying is not None:
+            saying(None)
         if watching is not None:
             watching(index + 1, steps)
         if stopped is not None and stopped():

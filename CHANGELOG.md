@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.84.2
+
+- **fix** The note that explains the long wait before an edit starts lasts as
+  long as the wait does. It was cleared when the pipeline had been built, with
+  the instruction still to encode and the first pass still to make — eighty
+  seconds, timed on a cold card, in which the page said neither what it was
+  doing nor how far through it was.
+
 ## 2.84.1
 
 - **fix** The clock on a run keeps counting. The engine's own only moves when

@@ -3458,6 +3458,14 @@ nothing countable it says what is happening instead. The first edit of a session
 spends about four minutes building its pipeline before step one, and "step 0 of
 0" is indistinguishable from a hang.
 
+**The note lasts as long as the wait it explains.** It was cleared on the line
+after the pipeline was built, which is not where the waiting ends: the
+instruction still has to be encoded and the first pass still has to be made.
+Timed on a cold card on 16 November 2026 — Change one part on Carne, three
+minutes and twenty seconds before step one — that left eighty seconds saying
+neither what it was doing nor how far through it was. It now goes at the first
+step, which is the moment there is something countable to replace it.
+
 **Stopping is honest about its granularity.** A run is abandoned between nodes,
 and between the denoising steps of an edit — so within about a step at worst and
 at once for everything cheaper. A single forward pass of a 20B model cannot be
@@ -3500,7 +3508,9 @@ the engine has stopped answering altogether" and "stops asking about a run once
 the page has gone";
 and `engine.service.spec.ts` "reports a run already in progress, so a reloaded
 page can pick it up".
-*Also proven by:* the engine's own `test_jobs.py`, which `npm test` does not run.
+*Also proven by:* the engine's own `test_jobs.py` and `test_saying.py`
+("test_the_note_stays_until_there_is_a_step_to_count" and
+"test_and_goes_the_moment_there_is_one"), which `npm test` does not run.
 
 ### R142 — The atelier writes a generative piece from a sentence · met
 **Sketch** takes a sentence and writes a small Canvas 2D artwork as code, which
