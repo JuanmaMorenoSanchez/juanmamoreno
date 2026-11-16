@@ -446,6 +446,9 @@ def _video(inputs, params, context) -> dict[str, Any]:
         avoid=str(params.get("avoid") or ""),
         watching=context.get("watching_steps"),
         stopped=context.get("stopped"),
+        # So the note above can be taken down by whoever knows the wait is
+        # over, which is the first step and not this line.
+        saying=saying,
     )
 
     if saying is not None:

@@ -141,6 +141,24 @@ def _read_layer(upload: UploadFile) -> Image.Image:
         raise HTTPException(status_code=400, detail="that file is not an image") from exc
 
 
+def _holding() -> str | None:
+    """Everything on the card, which is not only what the registry built.
+
+    The editor and the film maker are each kept by an `lru_cache` of their own
+    — the same arrangement `evict` has to know about — so the registry has
+    nothing resident after an edit while the card has nothing free. The page
+    read "0 MiB free of 8187" and named nothing at the one moment the card was
+    entirely held.
+    """
+    held = [registry.resident] if registry.resident else []
+    held += [
+        name
+        for name, ready in (("qwen-image-edit", edit.ready), ("wan2.2-ti2v-5b", video.ready))
+        if ready()
+    ]
+    return ", ".join(held) or None
+
+
 @app.get("/health")
 def health() -> JSONResponse:
     """Whether the engine is up, and whether there is room to run anything.
@@ -153,7 +171,7 @@ def health() -> JSONResponse:
         {
             "ok": True,
             "device": registry.device,
-            "resident": registry.resident,
+            "resident": _holding(),
             "working": runs.working or not _idle(),
             "job": runs.current,
             "vram_free_mib": vram[0] if vram else None,

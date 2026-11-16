@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.84.3
+
+- **fix** The note explaining the wait before a clip starts is taken down when
+  the wait ends. Nothing took it down at all: a 24m 40s clip read "preparing
+  the model" beside "step 30 of 30" for its last seventeen minutes.
+- **fix** The engine bar names everything holding the card, not only what the
+  registry built. After an edit it read "0 MiB free of 8187" with no "holding"
+  line: the editor and the film maker each keep themselves in a cache outside
+  the registry, which `/evict` knew about and `/health` did not.
+
 ## 2.84.2
 
 - **fix** The note that explains the long wait before an edit starts lasts as

@@ -9,6 +9,7 @@ it will talk to, and the fact that a layer name is not a path.
 
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import numpy as np
 from fastapi.testclient import TestClient
@@ -63,6 +64,33 @@ class ServiceTest(unittest.TestCase):
         self.assertTrue(body["ok"])
         self.assertIn("vram_free_mib", body)
         self.assertIn("resident", body)
+
+    def test_health_names_the_pipelines_the_registry_did_not_build(self) -> None:
+        # After an edit the card is entirely held and the registry has nothing
+        # resident, because the editor keeps itself. The page said "0 MiB free
+        # of 8187" and named nothing at all.
+        with mock.patch.object(service.edit, "ready", return_value=True):
+            body = self.client.get("/health").json()
+
+        self.assertEqual(body["resident"], "qwen-image-edit")
+
+    def test_health_names_all_of_what_is_held_at_once(self) -> None:
+        with (
+            mock.patch.object(service.registry, "_resident", "sam2.1-small"),
+            mock.patch.object(service.video, "ready", return_value=True),
+        ):
+            body = self.client.get("/health").json()
+
+        self.assertEqual(body["resident"], "sam2.1-small, wan2.2-ti2v-5b")
+
+    def test_health_holds_nothing_when_nothing_is_held(self) -> None:
+        with (
+            mock.patch.object(service.edit, "ready", return_value=False),
+            mock.patch.object(service.video, "ready", return_value=False),
+        ):
+            body = self.client.get("/health").json()
+
+        self.assertIsNone(body["resident"])
 
     def test_models_say_what_they_are_licensed_under(self) -> None:
         # On the page beside each model, because which licence a model carries

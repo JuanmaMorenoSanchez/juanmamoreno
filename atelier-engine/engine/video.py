@@ -705,6 +705,7 @@ def animate(
     avoid: str = "",
     watching: Callable[[int, int], None] | None = None,
     stopped: Callable[[], bool] | None = None,
+    saying: Callable[[str | None], None] | None = None,
 ) -> list[np.ndarray]:
     """The painting, moving, as a list of RGB frames.
 
@@ -751,6 +752,13 @@ def animate(
     )
 
     def stepped(_pipe, step: int, _timestep, kwargs):
+        # The note explaining the wait goes when the wait is over, which is
+        # here and nowhere earlier: the pipeline is built, the prompt encoded
+        # and the first pass made. Nothing cleared it at all before — a
+        # measured 24-minute clip carried "preparing the model" beside
+        # "step 30 of 30" for its last seventeen.
+        if step == 0 and saying is not None:
+            saying(None)
         if watching is not None:
             watching(step + 1, steps)
         if stopped is not None and stopped():

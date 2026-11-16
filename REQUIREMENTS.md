@@ -3466,6 +3466,19 @@ minutes and twenty seconds before step one — that left eighty seconds saying
 neither what it was doing nor how far through it was. It now goes at the first
 step, which is the moment there is something countable to replace it.
 
+**And a clip's note goes the same way, which it never did at all.** The editor
+cleared its note too early; the clip never cleared it. Timed on 16 November
+2026 — Film it on Carne, 24m 40s, seven minutes before step one and thirty
+steps after — the note sat beside "step 30 of 30" for the last seventeen
+minutes, saying the model was being prepared while it was plainly working.
+`animate` was never given the note to take down; it has it now and drops it on
+the first step, like the editor. The scene-by-scene path is deliberately not
+given it: its note is "scene 2 of 4", which must survive each scene's first
+step rather than be cleared by it.
+*Also proven by:* the engine's own `test_saying.py`
+("test_the_note_is_taken_down_at_all" and
+"test_and_not_before_there_is_a_step_to_count"), which `npm test` does not run.
+
 **Stopping is honest about its granularity.** A run is abandoned between nodes,
 and between the denoising steps of an edit — so within about a step at worst and
 at once for everything cheaper. A single forward pass of a 20B model cannot be
@@ -5186,8 +5199,18 @@ among those: each is held by a cache of its own, outside the registry, and
 nothing ever told them. Both have a `forget()` now, `/evict` calls both, and
 then asks the driver for the memory back — which has to happen after the drop,
 not before, or there is nothing yet to hand over.
+
+**And the bar says what is holding it.** `/evict` was told about the two
+caches; `/health` was not. So after an edit the page read **"0 MiB free of
+8187" with no "holding" line at all** — the card entirely held, and nothing
+named, at the one moment naming it mattered. Measured: restarting the engine
+after that run handed back 7,096 MiB. `resident` is now everything on the
+card, the registry's own and the two pipelines that keep themselves, so the
+free figure and the name beside it cannot disagree.
 *Proven by:* the engine's `test_service.py`
-"test_evicting_forgets_the_heavy_pipelines_too", and `catalogue.py`
+"test_evicting_forgets_the_heavy_pipelines_too",
+"test_health_names_the_pipelines_the_registry_did_not_build" and
+"test_health_names_all_of_what_is_held_at_once", and `catalogue.py`
 `_make_room`, which every box that wants the card calls with the one pipeline
 it is about to use
 
