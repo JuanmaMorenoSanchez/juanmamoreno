@@ -643,4 +643,71 @@ describe('NodeCanvasComponent', () => {
       expect(sent).not.toBeNull();
     });
   });
+
+  /**
+   * Fitting what was just dropped.
+   *
+   * The ready-made flows are up to six boxes across — about seventeen hundred
+   * pixels — and the canvas is never that wide, so a flow arrived with two
+   * thirds of itself past the right edge. Nothing on the page said the
+   * background could be dragged, which made "arriving correct" look like
+   * arriving broken.
+   */
+  describe('showing all of what was just dropped', () => {
+    const across = (many: number) =>
+      Array.from({ length: many }, (_, at) => ({
+        id: `n${at}`,
+        type: 'edit',
+        x: 30 + at * 280,
+        y: 30,
+        params: {},
+      }));
+
+    /** jsdom lays nothing out, so the frame is told how big it is. */
+    const sized = (host: HTMLElement, width: number, height: number) => {
+      const svg = host.querySelector('svg') as SVGSVGElement;
+      svg.getBoundingClientRect = () => ({ width, height }) as DOMRect;
+    };
+
+    const looking = (host: HTMLElement) => {
+      const seen = /translate\((-?[\d.]+),(-?[\d.]+)\) scale\(([\d.]+)\)/.exec(
+        host.querySelector('svg > g')?.getAttribute('transform') ?? ''
+      );
+      if (!seen) throw new Error('no transform on the canvas');
+      return { panX: Number(seen[1]), zoom: Number(seen[3]) };
+    };
+
+    it('zooms out until the last box is inside the frame', () => {
+      const { fixture, host } = build([EDIT], across(6));
+      sized(host, 800, 500);
+
+      fixture.componentRef.setInput('fitting', 1);
+      fixture.detectChanges();
+
+      const { panX, zoom } = looking(host);
+      expect(zoom).toBeLessThan(1);
+      // 30 + five columns of 280, plus the box's own 260.
+      expect(panX + (30 + 5 * 280 + 260) * zoom).toBeLessThanOrEqual(800);
+    });
+
+    it('does not magnify a single box to fill the canvas', () => {
+      const { fixture, host } = build([EDIT], across(1));
+      sized(host, 800, 500);
+
+      fixture.componentRef.setInput('fitting', 1);
+      fixture.detectChanges();
+
+      expect(looking(host).zoom).toBe(1);
+    });
+
+    it('leaves an empty canvas where it is', () => {
+      const { fixture, host } = build([EDIT], []);
+      sized(host, 800, 500);
+
+      fixture.componentRef.setInput('fitting', 1);
+      fixture.detectChanges();
+
+      expect(looking(host)).toEqual({ panX: 0, zoom: 1 });
+    });
+  });
 });

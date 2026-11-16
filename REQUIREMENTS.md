@@ -6522,6 +6522,15 @@ What was found and changed, page by page:
 - **One chip, in one place.** The catalogue's order buttons and the assets
   page's filter are `.catalog-chip` in the global stylesheet — filled when
   chosen, because an outline that only changes colour is a state nobody sees.
+- **The atelier was then looked at with the engine running**, which is the
+  half of that page the first pass could not see. Two things were the
+  browser's rather than this site's: the painting was chosen with a native
+  file control, which Chrome draws in its own language — "Seleccionar
+  archivo · Ningún archivo seleccionado" was the only Spanish on an English
+  page — and is now a drawn button over the same input, which stays in the
+  page for the keyboard. And every tile on both shelves stretched its one
+  button across the full width of the picture above it, which with a single
+  word in the middle of it reads as a field.
 
 **And "Save for later" and "Prepare and sign" became one button.** They did
 the same thing once the second stopped navigating to `/pendingmint` — a page
@@ -6576,3 +6585,20 @@ the shows. What paid for the painting sees only the prizes and scholarships
 from the cv, in both languages at once", "names a foundation by its own
 title, where the cv has no venue" and "does not carry a name onto a line that
 cannot have one"
+
+### R254 — A ready-made flow arrives with all of it on the canvas · met
+Pressing one of the engine's flows lays its boxes out in columns, and the
+widest of them is six columns across: about seventeen hundred pixels, against
+a canvas that is eight hundred on a wide screen and two hundred on a phone.
+So the one thing a flow is for — arriving correct — arrived with two thirds
+of itself past the right edge, and nothing on the page said the background
+could be dragged.
+
+The canvas now zooms and pans to hold every box the moment a flow is dropped,
+centred in whichever direction has room to spare. **It never magnifies**: one
+small box blown up to fill the frame is not what fitting means. And the hint
+under the canvas says the background drags and the wheel comes closer, which
+is what anybody wants first once a flow has arrived zoomed out.
+*Proven by:* `node-canvas.component.spec.ts` "zooms out until the last box is
+inside the frame", "does not magnify a single box to fill the canvas" and
+"leaves an empty canvas where it is"

@@ -222,6 +222,7 @@
     [paintingName]="chosen()"
     [tokenId]="tokenId()"
     [fetching]="fetching()"
+    [fitting]="fitting()"
     (changed)="redraw($event)"
     (drawing)="draw($event)"
     (arranging)="arrange($event)"
@@ -314,8 +315,11 @@
   }
 
   <p class="atelier-hint">
-    Drag from a port on the right of a box to one on the left of another. Ports only join when they
-    carry the same kind of thing. A dashed port can be left alone — joining a mask to
+    <!-- Said because a dropped flow arrives zoomed out to fit, and the first
+         thing anybody wants then is to get closer to one box. -->
+    Drag the background to move about, and the wheel to come closer. Drag from a port on the right
+    of a box to one on the left of another. Ports only join when they carry the same kind of thing.
+    A dashed port can be left alone — joining a mask to
     <strong>Edit</strong> changes only that part of the painting; leaving it empty repaints the
     whole canvas and the brushwork drifts.
   </p>

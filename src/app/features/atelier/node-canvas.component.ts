@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  output,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { readMarks } from './brush-overlay.component';
 import { countArranged } from './compose-overlay.component';
 import type { NodeTypeDef, ParamDef } from './engine.service';
@@ -117,6 +128,57 @@ export class NodeCanvasComponent {
 
   private dragging: { id: string; dx: number; dy: number } | null = null;
   private panning: { x: number; y: number } | null = null;
+
+  /**
+   * Bumped by the page when it drops a ready-made flow, to look at all of it.
+   *
+   * A flow is up to six boxes wide, which is about seventeen hundred pixels —
+   * wider than this canvas on any screen. So the one thing a flow is for,
+   * arriving correct, arrived with two thirds of itself past the right edge,
+   * and nothing on the page says the background can be dragged.
+   */
+  readonly fitting = input(0);
+  private readonly frame = viewChild<ElementRef<SVGSVGElement>>('canvas');
+
+  constructor() {
+    effect(() => {
+      this.fitting();
+      untracked(() => this.fit());
+    });
+  }
+
+  /** Zooms and pans so every box is inside the frame, with a little air. */
+  private fit(): void {
+    const svg = this.frame()?.nativeElement;
+    const nodes = this.nodes();
+    if (!svg || !nodes.length) return;
+
+    const box = svg.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+
+    const left = Math.min(...nodes.map((node) => node.x));
+    const top = Math.min(...nodes.map((node) => node.y));
+    const right = Math.max(...nodes.map((node) => node.x + this.wide(node)));
+    const bottom = Math.max(...nodes.map((node) => node.y + this.height(node)));
+
+    const air = 16;
+    // Never magnified: one small box filling the canvas at three times its
+    // size is not what fitting means.
+    const scale = Math.min(
+      1,
+      (box.width - air * 2) / (right - left),
+      (box.height - air * 2) / (bottom - top)
+    );
+    const zoom = Math.max(0.35, Math.round(scale * 100) / 100);
+
+    this.zoom.set(zoom);
+    // Centred in whichever direction has room to spare, which on a flow is
+    // the vertical: six boxes across and two down leaves a third of the
+    // canvas empty under it.
+    const spare = (room: number, span: number) => Math.max(air, (room - span * zoom) / 2);
+    this.panX.set(spare(box.width, right - left) - left * zoom);
+    this.panY.set(spare(box.height, bottom - top) - top * zoom);
+  }
 
   protected readonly byKey = computed(() => {
     const map = new Map<string, NodeTypeDef>();

@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.84.0
+
+- **feat** A ready-made flow arrives with all of it on the canvas. The widest
+  is six boxes across and the canvas is never that wide, so two thirds of it
+  used to be past the right edge; it now zooms and pans to hold every box, and
+  the hint says the background drags and the wheel comes closer.
+- **chore** The atelier, looked at with the engine running. The painting is
+  chosen with a drawn button instead of Chrome's own, which was the only
+  Spanish on an English page, and a tile's one button no longer stretches the
+  width of the picture above it, where it read as a field.
+
 ## 2.83.0
 
 - **feat** The assets page opens on the paintings that have parts — two of a

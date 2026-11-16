@@ -176,6 +176,8 @@ export class AtelierComponent implements OnDestroy {
   protected readonly flows = signal<FlowDef[]>([]);
   protected readonly nodes = signal<GraphNode[]>([]);
   protected readonly edges = signal<GraphEdge[]>([]);
+  /** Counted up to ask the canvas to show all of what was just dropped on it. */
+  protected readonly fitting = signal(0);
 
   protected readonly busy = signal(false);
   /** The run in flight, as the engine last described it. */
@@ -504,6 +506,9 @@ export class AtelierComponent implements OnDestroy {
       })),
     });
 
+    // Look at the whole of it: the widest flow is six boxes across, which is
+    // wider than the canvas on any screen.
+    this.fitting.update((times) => times + 1);
     this.result.set(null);
     this.failure.set(null);
   }

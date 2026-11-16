@@ -14,6 +14,7 @@
   </aside>
 
   <svg
+    #canvas
     class="canvas"
     (pointerdown)="startPan($event)"
     (pointermove)="move($event)"
@@ -289,13 +290,22 @@
                 [attr.height]="chooserHeight(node)"
               >
                 <div class="painting-in" (pointerdown)="$event.stopPropagation()">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    (change)="choseFile.emit($event)"
-                    aria-label="The painting"
-                    data-testid="painting"
-                  />
+                  <!-- The native button is the browser's, in the browser's
+                       language: "Seleccionar archivo · Ningún archivo
+                       seleccionado" was the only Spanish on an English page,
+                       and the only control here nobody had drawn. The input
+                       itself stays, so it is still a file field to the
+                       keyboard and to a test. -->
+                  <label class="painting-file">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      (change)="choseFile.emit($event)"
+                      aria-label="The painting"
+                      data-testid="painting"
+                    />
+                    <span>Choose a painting…</span>
+                  </label>
                   <span class="painting-or">
                     <input
                       type="text"

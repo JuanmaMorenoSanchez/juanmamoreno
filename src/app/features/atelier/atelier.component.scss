@@ -216,6 +216,12 @@
     font-size: 0.95rem;
   }
 
+  /* An outlined box the width of the picture with one word in the middle of
+     it reads as a field, not as the button it is. */
+  button {
+    align-self: flex-start;
+  }
+
   dl {
     display: grid;
     grid-template-columns: auto 1fr;

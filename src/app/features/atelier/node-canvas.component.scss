@@ -350,11 +350,31 @@
   flex-direction: column;
   gap: tokens.$spacing-xs;
   font-size: 0.68rem;
+}
 
-  input[type='file'] {
-    font: inherit;
-    font-size: 0.65rem;
-    max-width: 100%;
+/* Drawn here rather than left to the browser, which draws it in its own
+   language. The input is kept in the page for the keyboard, not hidden with
+   `display: none`, which takes it out of the tab order. */
+.painting-file {
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  span {
+    display: inline-block;
+    padding: 1px tokens.$spacing-xs;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+
+  input:focus-visible + span {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
   }
 }
 
