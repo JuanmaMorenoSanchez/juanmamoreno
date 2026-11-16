@@ -3468,6 +3468,15 @@ a second tab picks it up rather than showing an idle page beside a busy card.
 A second run is refused rather than queued, there being one graphics card and a
 queue being only a list of things that cannot start.
 
+**And the clock keeps counting between answers.** The engine's own figure
+only moves when a node does. Watching a real run on 16 November 2026, Fill
+behind spent forty seconds loading its model and the page said "1m 11s" for
+all forty of them — a number that stands still at precisely the moment
+somebody is watching it, which is how a page that is working comes to look
+like a page that has hung. The page keeps its own clock from the first answer
+it got and shows whichever is further on, so the engine's still wins where
+this page attached to a run already under way.
+
 **Progress is asked for, not pushed.** `EventSource` cannot carry
 `targetAddressSpace` any more than a WebSocket can, and at about a hundred
 seconds a step there is nothing a stream would show that a poll does not.
@@ -3480,7 +3489,9 @@ job nobody was looking at. And a single unanswered request ended the watching
 and reported "the engine did not answer" over a run that was still going
 perfectly well, which over eighteen minutes is a thing that happens. Three in a
 row is the engine having gone and is still worth saying.
-*Proven by:* `atelier.component.spec.ts` "says which box it is on and how far
+*Proven by:* `atelier.component.spec.ts` "keeps counting while the engine says
+the same thing", "takes the engine’s figure where that one is further on",
+"says which box it is on and how far
 through, while it works", "says what it is doing when there is nothing to
 count", "offers a way to stop, and asks the engine when pressed", "tells stopped
 apart from broken", "shows how long the run took, which only the run knows",
@@ -6425,6 +6436,12 @@ went, so citing one as what funded it would be a line that is untrue — and a
 gallery chosen while the kind was a sale is not written either, because the
 check is on the entry and not on the picker.
 
+**The education section is not offered, and that is his decision rather than
+an oversight.** Beca LLP Erasmus is a scholarship and sits under Education, so
+it was the one entry the rule left outside; asked in November 2026, he said it
+does not count as having paid for a painting. Nothing to change — it is
+recorded here so nobody reopens it as a bug.
+
 **And it reads first, whatever year the rest of the record runs from.** Sorted
 by year alone it would land among whatever else happened that year, which is
 usually where the painting was first shown. Both halves sort it the same way,
@@ -6522,6 +6539,18 @@ What was found and changed, page by page:
 - **One chip, in one place.** The catalogue's order buttons and the assets
   page's filter are `.catalog-chip` in the global stylesheet — filled when
   chosen, because an outline that only changes colour is a state nobody sees.
+- **And then with a run going through it**, which is the rest of it again.
+  *Make it move* was run on Carne (73) on 16 November 2026, two minutes on
+  the card. The result section had no rule of its own, so "Ran in 1m 59s"
+  arrived on the line below "…the brushwork drifts"; the heading uppercases,
+  so the duration read "1M 59S", and a duration is not a word; the strip
+  that says what the run is doing was the last bordered box on a page whose
+  every other block is a rule down the side; Run was drawn exactly like
+  Clear the canvas beside it, which is the button that throws the graph
+  away; the same layer was listed twice, with two names and two Save
+  buttons, because a flow can keep one output from two places; and the
+  painting moving sat against the left edge of a panel as wide as the
+  sentence above it.
 - **The atelier was then looked at with the engine running**, which is the
   half of that page the first pass could not see. Two things were the
   browser's rather than this site's: the painting was chosen with a native

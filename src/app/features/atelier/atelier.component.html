@@ -330,7 +330,9 @@
 
   @if (result(); as run) {
     <section class="atelier-result" data-testid="result">
-      <h2 class="catalog-subheading">Ran in {{ elapsed(run.seconds) }}</h2>
+      <h2 class="catalog-subheading">
+        Ran in <span class="atelier-took">{{ elapsed(run.seconds) }}</span>
+      </h2>
 
       <!-- Said once, plainly, because the numbers invite the opposite reading. -->
       <p class="atelier-caveat">

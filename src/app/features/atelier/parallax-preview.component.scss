@@ -16,6 +16,11 @@
 
 .moving-stage {
   position: relative;
+  /* Centred: the panel is as wide as the sentence above it, and a portrait
+     painting sat against its left edge with a hand's width of white beside
+     it. */
+  display: flex;
+  justify-content: center;
   min-height: 0;
   line-height: 0;
   cursor: crosshair;

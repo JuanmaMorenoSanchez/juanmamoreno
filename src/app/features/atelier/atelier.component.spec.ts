@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { AtelierComponent, SETTLES } from './atelier.component';
+import { AtelierComponent, SETTLES, ticking } from './atelier.component';
 import { CataloguePaintingService } from './catalogue-painting.service';
 import { KeptService } from './kept.service';
 import {
@@ -2250,5 +2250,26 @@ describe('AtelierComponent', () => {
 
       expect(at(host, 'which-copy')).toBeNull();
     });
+  });
+});
+
+/**
+ * The clock on the line that says what the run is doing.
+ *
+ * The engine's own only moves when a node does, so the forty seconds Fill
+ * behind spends loading its model all read "1m 11s" — a page that is working
+ * looking exactly like a page that has hung.
+ */
+describe('how long the run has been going', () => {
+  const first = { at: 10_000, seconds: 71 };
+
+  it('keeps counting while the engine says the same thing', () => {
+    expect(ticking(71, first, 10_000 + 40_000)).toBe(111);
+  });
+
+  it('takes the engine’s figure where that one is further on', () => {
+    // A page opened onto a run already under way: two seconds of watching
+    // against a run the engine has been at for ten minutes.
+    expect(ticking(600, { at: 10_000, seconds: 0 }, 10_000 + 2_000)).toBe(600);
   });
 });

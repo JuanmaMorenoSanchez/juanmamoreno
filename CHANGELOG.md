@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.84.1
+
+- **fix** The clock on a run keeps counting. The engine's own only moves when
+  a node does, so the forty seconds Fill behind spends loading its model all
+  read the same number — which is how a page that is working looks like a
+  page that has hung.
+- **fix** A layer kept from two places in one flow is listed once, not twice
+  under the same name with two Save buttons.
+- **chore** The atelier judged with a run going through it: room above the
+  result, a duration that is not uppercased with its heading, the progress
+  strip as a rule rather than the page's last bordered box, Run drawn as the
+  thing the page is for rather than as Clear the canvas, and the painting
+  centred in the panel where it moves.
+
 ## 2.84.0
 
 - **feat** A ready-made flow arrives with all of it on the canvas. The widest

@@ -48,6 +48,23 @@ const SAVED = 'juanmamoreno.atelier.graph';
 const NODE_WIDTH = 210;
 
 /**
+ * How long the run has been going, for the line that says so.
+ *
+ * The engine's clock only moves when a node does. Fill behind spent forty
+ * seconds loading its model and the page said "1m 11s" for all forty of
+ * them — which is exactly the moment somebody is watching it, and a frozen
+ * number is how a page that is working looks like a page that has hung. So
+ * the page keeps its own clock from the first answer it got, and shows
+ * whichever is further on: the engine's still wins where this page attached
+ * to a run already under way.
+ */
+export const ticking = (
+  said: number,
+  first: { at: number; seconds: number },
+  now: number
+): number => Math.max(said, first.seconds + (now - first.at) / 1000);
+
+/**
  * How long typing has to stop before a token id is fetched, in milliseconds.
  *
  * Long enough that nobody fetches painting 1 and then 19 on the way to 195,
@@ -1071,6 +1088,8 @@ export class AtelierComponent implements OnDestroy {
    */
   private async watch(id: string): Promise<void> {
     let unanswered = 0;
+    /** The first answer, which is where this page's own clock starts. */
+    let first: { at: number; seconds: number } | null = null;
 
     for (;;) {
       await new Promise((again) => setTimeout(again, 1000));
@@ -1091,12 +1110,19 @@ export class AtelierComponent implements OnDestroy {
         continue;
       }
 
-      this.job.set(state);
+      first ??= { at: Date.now(), seconds: state.seconds };
+      this.job.set({ ...state, seconds: ticking(state.seconds, first, Date.now()) });
 
       if (state.state === 'done') {
         // How long it took is the run's to know, not the graph's: the engine
         // answers the moment it starts and the clock belongs to the job.
-        this.result.set(state.result ? { ...state.result, seconds: state.seconds } : null);
+        this.result.set(
+          // The same file twice is two tiles with the same name and two Save
+          // buttons: a flow can keep one output from two places.
+          state.result
+            ? { ...state.result, saved: [...new Set(state.result.saved)], seconds: state.seconds }
+            : null
+        );
         return;
       }
       if (state.state === 'failed') {

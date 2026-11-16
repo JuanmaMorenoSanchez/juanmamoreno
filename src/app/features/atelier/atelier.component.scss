@@ -124,6 +124,18 @@
   color: var(--catalog-soft);
 }
 
+/* What the run produced, which is what the page is for. It had no rule of
+   its own, so "Ran in 1m 59s" arrived on the line under "the brushwork
+   drifts" with nothing between them. */
+.atelier-result {
+  margin-top: tokens.$spacing-lg;
+}
+
+/* A duration is not a word: uppercased with the heading it read "1M 59S". */
+.atelier-took {
+  text-transform: none;
+}
+
 /* Every button on the page is the same outlined button, written once. It was
    four separate includes of the same mixin, which compiles to four copies of
    the same eight declarations. What differs between them is a size and a
@@ -138,6 +150,14 @@
 .atelier-minor {
   font-size: 0.78rem;
   padding: tokens.$spacing-xs tokens.$spacing-sm;
+}
+
+/* The one thing the page is for. Run was drawn exactly like Clear the canvas
+   beside it, which is the button that throws the graph away. */
+.atelier-go {
+  background: var(--catalog-ink);
+  border-color: var(--catalog-ink);
+  color: var(--catalog-paper, #fff);
 }
 
 /* A row of choices: same size, same baseline, whatever each one does. The
@@ -258,9 +278,10 @@
   gap: tokens.$spacing-sm;
   flex-wrap: wrap;
   margin: tokens.$spacing-sm-md 0 0;
-  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
-  border: 1px solid currentColor;
-  border-radius: 4px;
+  /* A rule down the side, like everything else on this page that has
+     something to say. It was the last bordered box left on it. */
+  padding: tokens.$spacing-sm 0 tokens.$spacing-sm tokens.$spacing-md;
+  border-left: 2px solid var(--catalog-rule);
   font-size: 0.85rem;
 }
 
