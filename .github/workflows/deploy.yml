@@ -35,7 +35,13 @@ jobs:
       contents: write # pushes the built site to the gh-pages branch
 
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to the commit, not to `@v4`. A tag is mutable: whoever can move
+      # it runs code in a job that holds a token with `contents: write` on this
+      # repository. The thirty-day wait in `pnpm-workspace.yaml` says the same
+      # thing about packages, and taking `@v4` on faith was the hole left in
+      # that argument. Resolved from the v4 tag on 17 November 2026; to move
+      # it, read the tag again rather than editing the digits.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Corepack ships with Node and reads the `packageManager` field, so the
       # pnpm used here is the one pinned in package.json. No third-party action
@@ -46,7 +52,7 @@ jobs:
           # nobody to answer on a runner, and the question would hang the job.
           COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: pnpm

@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.85.1
+
+- **chore** The deploy workflow names each action by commit rather than by
+  `@v4`. A tag can be moved by whoever owns it, and these run in the job that
+  can write to this repository — the thirty-day rule covered every package and
+  nothing covered these.
+
 ## 2.85.0
 
 - **feat** The engine keeps a month of what it wrote and drops the rest as it

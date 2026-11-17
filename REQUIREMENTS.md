@@ -2353,9 +2353,18 @@ are listed alongside it with their reasons.
 The versions already installed when the rule came in are carried over at their
 exact versions rather than by name, so each exemption ends the moment that
 package is updated.
+
+**And the same rule now covers the actions, which it did not.** Every package
+waited thirty days while `actions/checkout@v4` was taken on faith — a tag,
+which is a name its owner can move at any time, naming code that runs in the
+job holding a token with `contents: write` here and the Google deploy
+credential in the backend. Both workflows name a 40-character commit instead,
+with the tag it came from in a comment beside it. Six `uses:` lines across the
+two repositories, nothing left on a tag.
 *Proven by:* `pnpm-workspace.yaml`, and the deploy workflow, which installs with
 `--frozen-lockfile` — the policy is checked there too, so a lockfile that
-bypassed it locally fails in CI.
+bypassed it locally fails in CI — and by `.github/workflows/deploy.yml` in
+both repositories, where every `uses:` is a commit
 
 ### R86 — The artist signs his own certificates, from his own phone · met
 The contract's minter is his own wallet, so he is the one who can add a
