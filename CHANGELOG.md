@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.86.0
+
+- **chore** Angular 22.1.4 to 22.2.3, all fourteen packages together, with
+  eslint 10.13, angular-eslint 22.6, typescript-eslint 8.71 and
+  angular-cli-ghpages 3.1.2. The eighteen exemptions that held the old Angular
+  out of the thirty-day rule are gone with it; nothing needed re-exempting.
+- **fix** `@jridgewell/sourcemap-codec` moves to 1.6. Angular's compiler calls
+  `encodeRangeMappings`, which 1.6.0 added, while declaring a range that still
+  admits 1.5 — so the copy already in the lockfile satisfied the range and
+  failed every build with it.
+
 ## 2.85.1
 
 - **chore** The deploy workflow names each action by commit rather than by
