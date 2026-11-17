@@ -3257,9 +3257,21 @@ there — so no threshold separates a real label from an invented one. Every lay
 carries its score, its edge confidence and its coverage, and the page says in
 words that a layer is not evidence the thing is in the painting.
 
-**Nothing is saved.** The layers stay in the engine's own folder and are shown
-from there. Neither Firestore nor the bucket is touched: a generative tool that
-saves what it makes fills a bucket with rejects.
+**And it says it only where something was asked for by name.** The warning is
+about naming and scoring, which is **Find** and what is fed from it. It was
+shown under every result, so a Film it clip — which names nothing, scores
+nothing and detects nothing — carried a warning about a thing that had not
+happened, and a caveat in the wrong place teaches him to skip the one in the
+right place.
+
+**Nothing is saved, and a month of it is kept.** The layers stay in the
+engine's own folder and are shown from there. Neither Firestore nor the bucket
+is touched: a generative tool that saves what it makes fills a bucket with
+rejects. But nothing deleted them either, and "on this machine until you keep
+it" reads like the unkept ones eventually go: measured on 17 November 2026,
+`out/` was **13 GB in 1,253 files** going back to the first spike, on the disk
+he paints on. The engine now drops what it wrote more than thirty days ago as
+it starts — files only, because a run in flight keeps a folder in there.
 
 **It is client-rendered, like every other guarded page**, so the build never
 writes it out and there is no prerendered copy of a page that cannot work
@@ -3367,8 +3379,13 @@ could be unreachable, including the one Chrome causes", "builds its palette from
 what the engine says it can do" and "will not run while the engine is
 unreachable") and `engine.service.spec.ts` (8 tests, including "declares the loopback
 address space, which is not the same as local" and "treats not being able to
-reach it as a state, not an error"). The engine itself is proved by its own thirty tests in
-`atelier-engine/tests/`, which are not run by `npm test`.
+reach it as a state, not an error"), and the caveat is held to the box that
+earns it by "does not warn about naming, because a clip names nothing". The
+engine itself is proved by its own tests in `atelier-engine/tests/` —
+including `test_pruning.py`, which holds the month: what is older goes, what
+is inside stays, a folder is never taken, a missing folder is not an error,
+and the cutoff is the month and not a day either side. `npm test` does not run
+any of them; `npm run test:engine` does, and until today nothing did.
 
 ### R141 — Nothing the atelier makes is kept until he presses save · met
 Everything the atelier makes lives in the engine's own folder on his machine
@@ -3475,9 +3492,15 @@ minutes, saying the model was being prepared while it was plainly working.
 the first step, like the editor. The scene-by-scene path is deliberately not
 given it: its note is "scene 2 of 4", which must survive each scene's first
 step rather than be cleared by it.
+**The last step is not the end, and the strip no longer pretends it is.**
+Turning the latents into frames took two minutes of that same 24m 40s, after
+the count had stopped moving at "step 30 of 30". It says "decoding the frames"
+through it, which is the third and last silent stretch in a clip's run.
 *Also proven by:* the engine's own `test_saying.py`
-("test_the_note_is_taken_down_at_all" and
-"test_and_not_before_there_is_a_step_to_count"), which `npm test` does not run.
+("test_the_note_is_taken_down_at_all",
+"test_and_not_before_there_is_a_step_to_count" and
+"test_the_decode_after_the_last_step_says_so"), which `npm test` does not run
+— `npm run test:engine` does, and nothing else ever did.
 
 **Stopping is honest about its granularity.** A run is abandoned between nodes,
 and between the denoising steps of an edit — so within about a step at worst and

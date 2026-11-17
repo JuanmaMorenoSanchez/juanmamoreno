@@ -334,12 +334,17 @@
         Ran in <span class="atelier-took">{{ elapsed(run.seconds) }}</span>
       </h2>
 
-      <!-- Said once, plainly, because the numbers invite the opposite reading. -->
-      <p class="atelier-caveat">
-        A result coming back is not evidence the thing was in the painting. Asked for a unicorn on a
-        canvas with none, the model returns whatever is most creature-shaped and scores it about the
-        same. Judge these by eye.
-      </p>
+      <!-- Said once, plainly, because the numbers invite the opposite reading.
+           Only where something was asked for by name: under a clip, which
+           names nothing and scores nothing, it warned about a thing that had
+           not happened. -->
+      @if (named()) {
+        <p class="atelier-caveat">
+          A result coming back is not evidence the thing was in the painting. Asked for a unicorn on
+          a canvas with none, the model returns whatever is most creature-shaped and scores it about
+          the same. Judge these by eye.
+        </p>
+      }
 
       @if (depthMap(); as map) {
         <p class="atelier-caveat">

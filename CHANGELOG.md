@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.85.0
+
+- **feat** The engine keeps a month of what it wrote and drops the rest as it
+  starts. Nothing had ever deleted one: `out/` had reached 13 GB in 1,253
+  files, going back to the first spike, on the machine he paints on.
+- **fix** The two minutes a clip spends turning latents into frames say
+  "decoding the frames", rather than leaving the count frozen at the last step.
+- **fix** The warning that a result is not evidence the thing was in the
+  painting is shown where something was asked for by name, not under a clip,
+  which names nothing and scores nothing.
+- **fix** A ready-made flow's boxes are stepped apart by the width the canvas
+  actually draws them at. The spacing was a copy of a width the canvas had
+  grown out of, leaving a 20px gutter where a generous one was intended.
+- **chore** `npm run test:engine` runs the engine's 394 tests, which nothing
+  but a typed command ever ran.
+- **chore** `/health` takes each model's name from the module that owns it.
+
 ## 2.84.3
 
 - **fix** The note explaining the wait before a clip starts is taken down when

@@ -41,6 +41,9 @@ MODELS = Path(__file__).resolve().parent.parent / "models"
 SPILL = MODELS / "offload"
 REPO = "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
 QUANTS = "QuantStack/Wan2.2-TI2V-5B-GGUF"
+
+#: What `/health` calls this when it is holding the card. See `edit.NAME`.
+NAME = "wan2.2-ti2v-5b"
 QUANT = "Wan2.2-TI2V-5B-Q8_0.gguf"
 
 
@@ -809,6 +812,12 @@ def animate(
     latents = result.frames
     if drop:
         latents = latents[:, :, drop:]
+
+    # The last step is not the end: the latents are still latents, and turning
+    # them into frames took two minutes of the measured 24m 40s — during which
+    # the count sits at "step 30 of 30" and stops moving.
+    if saying is not None:
+        saying("decoding the frames")
 
     video = decoded(pipeline, latents)
 

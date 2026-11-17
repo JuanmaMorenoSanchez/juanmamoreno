@@ -11,6 +11,7 @@ import {
   type JobState,
   type NodeTypeDef,
 } from './engine.service';
+import { NODE_WIDTH } from './node-canvas.component';
 
 // jsdom has no IntersectionObserver, and the shelf now waits for one before it
 // fetches a piece. Reporting every tile as visible is what the old eager fetch
@@ -1019,6 +1020,35 @@ describe('AtelierComponent', () => {
       expect(player?.hasAttribute('controls')).toBe(true);
       expect(player?.hasAttribute('autoplay')).toBe(false);
       expect(player?.hasAttribute('loop')).toBe(false);
+    });
+
+    it('does not warn about naming, because a clip names nothing', async () => {
+      // Measured under a real Film it run: the warning about the model
+      // returning its best-shaped guess sat under a clip, where nothing had
+      // been asked for by name and nothing had been scored.
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      await ran(fixture);
+
+      expect(host.textContent).not.toContain('not evidence the thing was in the painting');
+    });
+
+    it('still warns when something was asked for by name', async () => {
+      const { fixture, host } = build(filmed({ film: { file: 'a-clip.mp4', frames: 25 } }));
+      const parts = guts(fixture);
+      parts.painting.set(aPainting());
+      parts.redraw({
+        nodes: [
+          { id: 'src', type: 'painting', x: 0, y: 0, params: {} },
+          { id: 'look', type: 'find', x: 0, y: 0, params: { phrase: 'a girl' } },
+        ],
+        edges: [{ from: ['src', 'image'], to: ['look', 'image'] }],
+      });
+      const running = parts.run();
+      await new Promise((settle) => setTimeout(settle, 1100));
+      await running;
+      fixture.detectChanges();
+
+      expect(host.textContent).toContain('not evidence the thing was in the painting');
     });
 
     it('says the clip is only on this machine until it is kept', async () => {
@@ -2053,6 +2083,24 @@ describe('AtelierComponent', () => {
       const drawn = guts(fixture);
       expect(drawn.nodes()).toHaveLength(2);
       expect(drawn.edges()).toHaveLength(1);
+    });
+
+    it('leaves a gap between the columns, rather than drawing one box on the next', async () => {
+      // The spacing here was a copy of a box width the canvas had grown out
+      // of — stepped 280 apart and drawn 260 wide, so the generous gutter the
+      // comment promised was 20px. Asserted against the canvas's own width
+      // so the two cannot drift apart again.
+      const { fixture, host } = build({ flows: [A_FLOW] });
+      await drained();
+      fixture.detectChanges();
+
+      at(host, 'flow-change-a-part')?.click();
+      fixture.detectChanges();
+
+      // The gutter, not just "they do not touch": at 280 apart they did not
+      // touch either, by 20px.
+      const [first, second] = guts(fixture).nodes() as { x: number }[];
+      expect(second.x - first.x - NODE_WIDTH).toBe(70);
     });
 
     it('fills in every setting the flow did not mention', async () => {

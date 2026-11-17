@@ -41,6 +41,10 @@ GGUF = MODELS / "qwen-image-edit" / "Qwen-Image-Edit-2509-Q4_K_M.gguf"
 SPILL = MODELS / "offload"
 REPO = "Qwen/Qwen-Image-Edit-2509"
 
+#: What `/health` calls this when it is holding the card. Here rather than in
+#: the service, beside the repo it names, so the two cannot drift apart.
+NAME = "qwen-image-edit"
+
 SEAM = 2.5
 """How far to soften the edge of the composite.
 

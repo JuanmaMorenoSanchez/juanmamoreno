@@ -45,7 +45,13 @@ export interface Drawn {
 // Wide enough for the longest label a box carries. At 210 "How much of the
 // frame" and "Which references" were cut off mid-word, and a label that
 // cannot be read is a setting nobody can be sure of.
-const NODE_WIDTH = 260;
+//
+// Exported because whoever places a box has to know how wide the thing they
+// are placing is drawn. This was widened here and left at 210 where the
+// ready-made flows are laid out, so six columns were stepped 280 apart and
+// drawn 260 wide: a 20px gutter where the comment there promises a generous
+// one.
+export const NODE_WIDTH = 260;
 /** How far a box may be dragged either way, so none is dragged to nothing. */
 const LEAST_WIDE = 180;
 const MOST_WIDE = 560;

@@ -30,6 +30,12 @@ import {
 } from './engine.service';
 import {
   NodeCanvasComponent,
+  // How far apart a flow's boxes are placed, in the canvas's own pixels: the
+  // same spacing the palette uses when a box is added by hand, wider than a
+  // box, because the first attempt stepped them 60px apart and each one
+  // buried the last. Taken from the canvas rather than typed here, where it
+  // was a stale copy of a width the canvas had already grown out of.
+  NODE_WIDTH,
   type Drawn,
   type GraphEdge,
   type GraphNode,
@@ -37,15 +43,6 @@ import {
 
 /** Where a graph is kept between visits. The browser's, not the engine's. */
 const SAVED = 'juanmamoreno.atelier.graph';
-
-/**
- * How far apart a flow's boxes are placed, in the canvas's own pixels.
- *
- * The same spacing the palette uses when a box is added by hand: wider than a
- * box, because the first attempt stepped them 60px apart and each one buried
- * the last.
- */
-const NODE_WIDTH = 210;
 
 /**
  * How long the run has been going, for the line that says so.
@@ -1187,6 +1184,17 @@ export class AtelierComponent implements OnDestroy {
     }
     return null;
   });
+
+  /**
+   * Whether anything in the run was asked for by name.
+   *
+   * The caveat under a result is about naming and scoring — a model that
+   * answers with its best-shaped guess whether or not the thing is there,
+   * which is **Find** and the boxes fed from it. A clip names nothing and
+   * scores nothing, so under a film the warning was about something that had
+   * not happened.
+   */
+  protected readonly named = computed(() => this.nodes().some((node) => node.type === 'find'));
 
   /**
    * The filled background this run made, if it made one.

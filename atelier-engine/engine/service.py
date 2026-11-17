@@ -121,6 +121,55 @@ def choose_device() -> None:
     registry.device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
+#: How long the engine keeps what nobody kept.
+#:
+#: `out/` is every file a run wrote: the layers, the fills, the clips. **Keep**
+#: is what sends a piece to the bucket, and this is the rest — the page's own
+#: words for it are "on this machine until you keep it", which reads like the
+#: unkept ones eventually go. Nothing ever deleted one. Measured on 17 November
+#: 2026: 13 GB in 1,253 files going back to the first spike, on the disk he
+#: paints on.
+KEPT_FOR = 30 * 24 * 60 * 60
+
+
+def prune(folder: Path, older_than: float, now: float | None = None) -> list[Path]:
+    """Delete the files in `folder` last touched more than `older_than` ago.
+
+    Files only: a run in flight has a `TemporaryDirectory` in here, and the
+    half-second where it is empty is not a reason to take it away.
+
+    Says what it removed rather than how many, so the caller can say it.
+    """
+    if not folder.is_dir():
+        return []
+
+    cutoff = (time.time() if now is None else now) - older_than
+    gone = []
+    for path in folder.iterdir():
+        if not path.is_file() or path.stat().st_mtime >= cutoff:
+            continue
+        try:
+            path.unlink()
+        except OSError:
+            # Being read by the page as it goes, most likely. It will be
+            # just as old the next time the engine starts.
+            continue
+        gone.append(path)
+    return gone
+
+
+@app.on_event("startup")
+def prune_out() -> None:
+    """A month of scratch is kept, and the rest goes when the engine starts.
+
+    On starting rather than on a timer: this runs on one machine, for one
+    person, and is off more often than it is on.
+    """
+    gone = prune(OUT, KEPT_FOR)
+    if gone:
+        print(f"out/: removed {len(gone)} files older than 30 days")
+
+
 def _read(upload: UploadFile) -> Image.Image:
     try:
         return Image.open(io.BytesIO(upload.file.read())).convert("RGB")
@@ -151,11 +200,7 @@ def _holding() -> str | None:
     entirely held.
     """
     held = [registry.resident] if registry.resident else []
-    held += [
-        name
-        for name, ready in (("qwen-image-edit", edit.ready), ("wan2.2-ti2v-5b", video.ready))
-        if ready()
-    ]
+    held += [one.NAME for one in (edit, video) if one.ready()]
     return ", ".join(held) or None
 
 

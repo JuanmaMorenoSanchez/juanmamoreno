@@ -125,3 +125,9 @@ class ClipSayingTest(unittest.TestCase):
         self.assertEqual(
             [one for one in seen if one[0] == "step"], [("step", 1), ("step", 2), ("step", 3)]
         )
+
+    def test_the_decode_after_the_last_step_says_so(self) -> None:
+        # Two minutes of the measured run, after the count has stopped moving.
+        seen = self.run_one()
+
+        self.assertEqual(seen[-1], ("note", "decoding the frames"))
