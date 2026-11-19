@@ -1,5 +1,7 @@
-import { CvEntry } from './cv-entry.entity';
+import { CV_COUNTRIES, CvEntry } from './cv-entry.entity';
 import { cvAnchor, cvSections, say } from './cv';
+import en from '../../../assets/translations/en.json';
+import es from '../../../assets/translations/es.json';
 
 const entry = (over: Partial<CvEntry>): CvEntry => ({
   id: 'x',
@@ -146,5 +148,41 @@ describe('the cv as the page draws it', () => {
 
     expect(section.items[0].title).toBe('Licenciatura');
     expect(section.items[0].venue).toBe('UGR');
+  });
+});
+
+/**
+ * The list and the words are in different files, and nothing noticed when
+ * they disagreed.
+ *
+ * A country with no words prints its own key — `cv.countries.netherlands` —
+ * on the page. The build's render check does catch that, but only once an
+ * entry actually uses the country, which can be months after the list grew.
+ * The api is the other half and refuses a key it does not know; that drift
+ * shows up as a save that fails, which is loud. This one was silent.
+ */
+describe('every country the form offers has words for it', () => {
+  const countries = (dictionary: { cv: { countries: Record<string, string> } }) =>
+    dictionary.cv.countries;
+
+  it('in English', () => {
+    const words = countries(en as never);
+
+    expect(CV_COUNTRIES.filter((one) => !words[one])).toEqual([]);
+  });
+
+  it('and in Spanish', () => {
+    const words = countries(es as never);
+
+    expect(CV_COUNTRIES.filter((one) => !words[one])).toEqual([]);
+  });
+
+  it('and neither dictionary carries a country the form cannot offer', () => {
+    // The other direction: a word left behind by a country that was removed.
+    const extra = Object.keys(countries(en as never)).filter(
+      (one) => !CV_COUNTRIES.includes(one)
+    );
+
+    expect(extra).toEqual([]);
   });
 });

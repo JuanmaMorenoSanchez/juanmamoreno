@@ -20,7 +20,7 @@ import { CvEntryDialogComponent, type CvEntryDialogData } from './cv-entry-dialo
  * commit and a deploy; it comes from the api now, and the build bundles the
  * answer so this page is whole in the html before any request is sent.
  *
- * The entries carry their own two languages. The five headings and the six
+ * The entries carry their own two languages. The five headings and the seven
  * countries are still translation keys, which is the line: a closed set the
  * page names is a key, and content he can add to is data.
  */

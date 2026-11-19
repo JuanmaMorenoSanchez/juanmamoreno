@@ -2575,6 +2575,30 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     "tokenId": "133",
     "entries": [
       {
+        "kind": "supported",
+        "year": 2010,
+        "who": {
+          "en": "GlogauAIR Residence Program"
+        }
+      },
+      {
+        "kind": "exhibited",
+        "year": 2010,
+        "cv": {
+          "id": "9e88fbd95cf01e1c",
+          "kind": "collective",
+          "year": 2010,
+          "title": {
+            "en": "The Mac Gyver Problem"
+          },
+          "venue": {
+            "en": "Galerie im Regierungsviertel/The Forgotten Bar"
+          },
+          "city": "Berlin",
+          "country": "germany"
+        }
+      },
+      {
         "kind": "exhibited",
         "year": 2011,
         "cv": {
@@ -2590,24 +2614,6 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
           "city": "Berlin",
           "country": "germany",
           "venueUrl": "https://www.129gallery.com/"
-        }
-      },
-      {
-        "kind": "exhibited",
-        "year": 2011,
-        "cv": {
-          "id": "c711555116950f0e",
-          "kind": "collective",
-          "year": 2011,
-          "title": {
-            "en": "Mehr Licht, tributo a Chema Alvargonzalez"
-          },
-          "venue": {
-            "en": "GlogauAIR Project Space"
-          },
-          "city": "Berlin",
-          "country": "germany",
-          "venueUrl": "https://glogauair.net/"
         }
       },
       {

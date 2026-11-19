@@ -30,7 +30,7 @@ export interface CvEntry {
   venue?: Bilingual;
   /** A place name, which is not translated. */
   city?: string;
-  /** The key under `cv.countries`, which is a closed set of six. */
+  /** The key under `cv.countries`, which is a closed set of seven. */
   country: string;
   /** Where to read about the thing itself — a fair, a prize, a course. */
   titleUrl?: string;
@@ -50,10 +50,12 @@ export type CvWrite = Omit<CvEntry, 'id'>;
  * The countries a career has happened in, as keys under `cv.countries`.
  *
  * The same closed set the api holds, because the form needs a list to offer
- * and a page needs words for them. A seventh country is a change in two
+ * and a page needs words for them. An eighth country is a change in two
  * repositories and three files, which is the price of the words being the
  * site's rather than the data's — and the api refuses a key it does not know,
  * so a drift here is a refused save and never a page with a raw key on it.
+ * The backend goes first: it refuses what it does not know, so a form
+ * offering a country the api has not learned yet is a save that fails.
  */
 export const CV_COUNTRIES: readonly string[] = [
   'online',
@@ -62,6 +64,7 @@ export const CV_COUNTRIES: readonly string[] = [
   'germany',
   'mexico',
   'italy',
+  'netherlands',
 ];
 
 /** One line with its language already chosen, which is what a page draws. */

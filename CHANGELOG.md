@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.87.0
+
+- **feat** The Netherlands is a country a CV entry can carry, offered by the
+  form and named in both languages.
+- **chore** A test holds the country list and the two dictionaries together.
+  Nothing did: a country with no words prints its own key, and the build only
+  catches that once an entry uses the country.
+
 ## 2.86.0
 
 - **chore** Angular 22.1.4 to 22.2.3, all fourteen packages together, with
