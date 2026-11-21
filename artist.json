@@ -120,6 +120,13 @@
             "country": "Spain"
           },
           {
+            "year": 2026,
+            "title": "Intercambios/Exchanges",
+            "venue": "Instituto Cervantes",
+            "city": "Utrecht",
+            "country": "Netherlands"
+          },
+          {
             "year": 2025,
             "title": "Outsiders Vol. 2",
             "venue": "Zunino Gallery",
@@ -495,6 +502,13 @@
             "country": "España"
           },
           {
+            "year": 2026,
+            "title": "Intercambios/Exchanges",
+            "venue": "Instituto Cervantes",
+            "city": "Utrecht",
+            "country": "Países Bajos"
+          },
+          {
             "year": 2025,
             "title": "Outsiders Vol. 2",
             "venue": "Galería Zunino",
@@ -794,6 +808,6 @@
     "catalogue": "https://juanmamoreno.com/catalogue.json",
     "contact": "https://juanmamoreno.com/contact/"
   },
-  "generated": "2026-11-19",
+  "generated": "2026-11-21",
   "pricing": "Not published. Every price is quoted by the artist for the particular work: https://juanmamoreno.com/contact"
 }
