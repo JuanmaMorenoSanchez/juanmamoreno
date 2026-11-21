@@ -28,9 +28,21 @@ import { GasPriceService } from '@shared/services/gas-price.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="gate">
+      <!--
+        One button, which changes its mind rather than handing the press to a
+        second one beside it: over the ceiling it turns the colour of the
+        thing it is about to do, says so in its name, and asks before it
+        spends.
+      -->
       @if (withButton()) {
-        <button type="button" class="gate-go" [disabled]="stopped()" (click)="mint.emit()">
-          {{ label() }}
+        <button
+          type="button"
+          class="gate-go"
+          [class.gate-over]="tooDear()"
+          [disabled]="stopped()"
+          (click)="press()"
+        >
+          {{ tooDear() ? label() + ' anyway' : label() }}
         </button>
       }
 
@@ -47,18 +59,6 @@ import { GasPriceService } from '@shared/services/gas-price.service';
         </span>
       } @else if (withPrice()) {
         <span class="gate-price">reading the gas price…</span>
-      }
-
-      <!--
-        The way past the ceiling, for when the answer is "I know, do it
-        anyway". It appears only when the price is what is stopping it, and it
-        asks once rather than widening the limit: raising the ceiling to get
-        past one expensive morning leaves it raised for every quiet one after.
-      -->
-      @if (withButton() && tooDear()) {
-        <button type="button" class="gate-insist" [disabled]="disabled()" (click)="insist()">
-          {{ label() }} anyway
-        </button>
       }
 
       @if (withPrice()) {
@@ -109,30 +109,34 @@ export class MintGateComponent {
   protected readonly tooDear = computed(() => this.gas.price() !== null && !this.gas.affordable());
 
   /**
-   * Also stopped before the first price arrives.
+   * Stopped before the first price arrives, and for reasons of its own.
    *
    * Not knowing the price is not the same as the price being low, and a button
    * that works for a second before the first answer lands is a button that can
-   * be pressed in that second.
+   * be pressed in that second. A dear price no longer stops it: that one is
+   * asked about instead, below.
    */
-  protected readonly stopped = computed(
-    () => this.disabled() || this.gas.price() === null || this.tooDear()
-  );
+  protected readonly stopped = computed(() => this.disabled() || this.gas.price() === null);
 
   /**
-   * Past the ceiling, asked for once and then done.
+   * The press, and the question when the price deserves one.
    *
-   * The press itself, not a press that enables another press: the price and
-   * the ceiling are already on the page, so a banner repeating them and a
-   * second button to find was the gate arguing with somebody who had already
-   * read its argument. What it owes him instead is the chance to stop.
+   * Over the ceiling the gate used to refuse and offer a second button
+   * beside the first, which is two controls for one decision. One button
+   * that changes colour, changes its name and asks before it spends says the
+   * same thing and leaves nothing to find. The question is the chance to
+   * stop; the ceiling itself is never touched here, because raising it to
+   * get past one expensive morning leaves it raised for every quiet one
+   * after.
    */
-  protected insist(): void {
+  protected press(): void {
+    if (this.stopped()) return;
+
     const price = this.gas.price();
-    if (price === null || this.disabled()) return;
     if (
+      this.tooDear() &&
       !confirm(
-        `Gas is ${price.toFixed(3)} gwei, over your limit of ${this.gas.limit()} gwei.\n\n` +
+        `Gas is ${(price as number).toFixed(3)} gwei, over your limit of ${this.gas.limit()} gwei.\n\n` +
           'Writing to the chain at that price costs real money — a certificate is about ' +
           'three quarters of a million gas. Your limit is left where it is.'
       )

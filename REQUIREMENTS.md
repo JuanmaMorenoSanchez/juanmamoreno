@@ -2297,20 +2297,27 @@ something other than a certificate.
 travels in the notation the collection writes, comma and all, so the form
 receives what it expects rather than something it has to correct.
 
-### R83 — A certificate is never written while gas is expensive · met
+### R83 — A certificate is never written unknowingly while gas is expensive · met
 The price of gas is read every fifteen seconds and shown beside the button that
 would spend it. Above the ceiling — 0.06 gwei, lowered from 0.7 on the artist's
-word — the button says **Too expensive!** and refuses, and so does the night's
-work, which checks again before each certificate rather than once at the start —
-gas rose ninefold in the middle of the original migration, which is exactly the
-case a single check at the start cannot catch.
+word — the page says **Too expensive!**, and the button turns the colour of the
+thing it is about to do, adds **anyway** to its name and asks in words before it
+spends. The night's work has no such conversation and simply refuses, and checks
+again before each certificate rather than once at the start — gas rose ninefold
+in the middle of the original migration, which is exactly the case a single
+check at the start cannot catch.
 
-The button also refuses before the first price has arrived: not knowing the
-price is not the same as the price being low.
+**It refused outright until 2.90.0**, and offered a second button beside the
+first to get past itself. Two controls for one decision is the page asking
+twice; the refusal is now the question, which is the part that was doing the
+work. What remains hard-stopped is the only case where a question would be
+unanswerable: the button refuses before the first price has arrived, because
+not knowing the price is not the same as the price being low.
 *Proven by:* `mint-gate.component.spec.ts` (13 tests, including "says so plainly
-and refuses when gas is dear", "refuses at anything above the limit, not merely
-far above it", "allows exactly the limit" and "refuses before the first price has
-arrived"), and `gas-price.service.spec.ts` ("allows exactly the ceiling",
+and asks before it spends when gas is dear", "warns at anything above the limit,
+not merely far above it", "allows exactly the limit, with nothing to confirm"
+and "refuses before the first price has arrived"), and
+`gas-price.service.spec.ts` ("allows exactly the ceiling",
 "refuses a hair above it"). The night's work enforces its own number in the
 backend, as B34 there — moving the ceiling here does not move that one. The
 ceiling can be moved by hand: R135.
@@ -6565,23 +6572,23 @@ stays on the list and says so.
 this is where the decision is made: the same certificate is a few cents on a
 quiet morning and several pounds on a busy afternoon. They had been on the
 studio's Prepare button, which spends nothing. And the ceiling can be
-overruled — when the price is what is stopping a press, a second button in
-the error colour, named for the action it insists on, asks the question in
-words and then does it. One press, not a press that enables a press: it had
-answered the first click with a banner repeating the price and the ceiling
-the page was already showing, which was the gate arguing with somebody who
-had read its argument, and then a second button to find. What it owes him is
-the chance to stop, which the confirmation is. A press rather than a raised
-ceiling, which would stay raised for every quiet morning after, and nothing
-on this path touches the ceiling.
+overruled by the same button: over it, the one press wears the error colour,
+is named for the action it insists on, asks the question in words and then
+does it. One control for one decision — it had been a refusal, then a banner
+repeating the price the page was already showing, then a second button to
+find, which is the gate arguing with somebody who has read its argument.
+What it owes him is the chance to stop, which the confirmation is. A press
+rather than a raised ceiling, which would stay raised for every quiet
+morning after, and nothing on this path touches the ceiling.
 *Proven by:* `pending-certificates.component.spec.ts` "asks the api for the
 call with the wallet that will hold it", "asks the chain whether it landed,
 and then takes it off the list", "keeps one that was sent but not yet mined"
 and "says what went wrong when the wallet refused, and keeps it";
-`mint-gate.component.spec.ts` "insisting" (7 tests, including "mints on the
-one press, once the confirmation is accepted", "does nothing at all when the
-confirmation is dismissed", "is itself stopped when the gate is stopped for
-another reason" and "leaves the limit where it was")
+`mint-gate.component.spec.ts` "insisting" (7 tests, including "is the same
+button, wearing the warning", "mints on the one press, once the confirmation
+is accepted", "does nothing at all when the confirmation is dismissed", "is
+itself stopped when the gate is stopped for another reason" and "leaves the
+limit where it was")
 
 ### R251 — The pages behind the door are the same site as the ones in front · met
 The guarded pages wear the reader's vocabulary: the site's uppercase tracked

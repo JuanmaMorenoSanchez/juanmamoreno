@@ -49,11 +49,10 @@
   color: inherit;
 }
 
-/* The way past the ceiling, drawn as what it is: the one press on the page
-   that knowingly spends more than he said he would. Same red as the discard
-   on the list of waiting certificates, which is the other press of its kind. */
-.gate-insist {
-  @include controls.plain-button(tokens.$spacing-xs tokens.$spacing-sm, 0.8rem);
+/* The same button over the ceiling, drawn as what it is about to do: spend
+   knowingly more than he said he would. Same red as the discard on the list
+   of waiting certificates, which is the other press of its kind. */
+.gate-over {
   /* The outline takes `currentColor`, so the colour is the whole of it. */
   color: var(--jm-error);
 }

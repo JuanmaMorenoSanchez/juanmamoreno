@@ -5,6 +5,17 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.90.0
+
+- **feat** One Mint button, which carries the warning itself. Over the gas
+  ceiling it turns the error colour, calls itself **Mint anyway** and asks
+  before it spends; under it, it is the plain button it always was. The
+  second button beside it is gone — two controls for one decision was the
+  page asking twice.
+- **fix** The page says how to sign on a phone. "No wallet on this page" now
+  names the way there — a wallet app's own browser — instead of leaving it to
+  be guessed at.
+
 ## 2.89.0
 
 - **feat** Minting over the gas ceiling is one press and a question. The way

@@ -66,21 +66,24 @@ describe('MintGateComponent', () => {
     expect(host.textContent).toContain('0.06');
   });
 
-  it('says so plainly and refuses when gas is dear', () => {
+  it('says so plainly and asks before it spends when gas is dear', () => {
     const { host } = build(1.4);
 
-    expect(button(host).disabled).toBe(true);
     expect(host.textContent).toContain('Too expensive!');
+    expect(button(host).classList).toContain('gate-over');
+    expect(button(host).textContent).toContain('Mint anyway');
   });
 
-  it('refuses at anything above the limit, not merely far above it', () => {
+  it('warns at anything above the limit, not merely far above it', () => {
     const { host } = build(GasPriceService.LIMIT + 0.01);
-    expect(button(host).disabled).toBe(true);
+    expect(button(host).classList).toContain('gate-over');
   });
 
-  it('allows exactly the limit', () => {
+  it('allows exactly the limit, with nothing to confirm', () => {
     const { host } = build(GasPriceService.LIMIT);
     expect(button(host).disabled).toBe(false);
+    expect(button(host).classList).not.toContain('gate-over');
+    expect(button(host).textContent).not.toContain('anyway');
   });
 
   it('refuses before the first price has arrived', () => {
@@ -111,12 +114,12 @@ describe('MintGateComponent', () => {
 
   it('reacts to the price changing under it', () => {
     const { fixture, host, price } = build(0.05);
-    expect(button(host).disabled).toBe(false);
+    expect(button(host).classList).not.toContain('gate-over');
 
     price.set(2);
     fixture.detectChanges();
 
-    expect(button(host).disabled).toBe(true);
+    expect(button(host).classList).toContain('gate-over');
     expect(host.textContent).toContain('Too expensive!');
   });
 
@@ -154,15 +157,15 @@ describe('MintGateComponent', () => {
     expect(Number.isNaN(asked[0])).toBe(true);
   });
 
-  it('lets a dear price through once the ceiling is above it', () => {
+  it('stops warning about a dear price once the ceiling is above it', () => {
     const { fixture, host, limit } = build(1.4);
-    expect(button(host).disabled).toBe(true);
+    expect(button(host).classList).toContain('gate-over');
     expect(host.textContent).toContain('Too expensive!');
 
     limit.set(2);
     fixture.detectChanges();
 
-    expect(button(host).disabled).toBe(false);
+    expect(button(host).classList).not.toContain('gate-over');
     expect(host.textContent).not.toContain('Too expensive!');
   });
 
@@ -178,13 +181,15 @@ describe('MintGateComponent', () => {
   /**
    * The way past the ceiling, for when the answer is "I know, do it anyway".
    *
-   * Asked for once rather than a wider limit: raising the ceiling to get past
-   * one expensive morning leaves it raised for every quiet one afterwards,
-   * which is how a guard stops being one.
+   * The same button, not a second one beside it: two controls for one
+   * decision is the page asking twice. Asked for rather than a wider limit —
+   * raising the ceiling to get past one expensive morning leaves it raised
+   * for every quiet one afterwards, which is how a guard stops being one.
    */
   describe('insisting', () => {
+    /** The one button, which is the way past the ceiling as well. */
     const insist = (host: HTMLElement): HTMLButtonElement | null =>
-      host.querySelector('.gate-insist');
+      host.querySelector('.gate-over');
 
     /** Every press that reached the parent. */
     const watchMint = (fixture: ReturnType<typeof build>['fixture']) => {
@@ -195,17 +200,25 @@ describe('MintGateComponent', () => {
       return () => presses;
     };
 
-    it('offers no way past while the price is within the ceiling', () => {
-      const { host } = build(0.05);
+    it('asks nothing while the price is within the ceiling', () => {
+      const { fixture, host } = build(0.05);
+      const presses = watchMint(fixture);
+      const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
       expect(insist(host)).toBeNull();
+      button(host).click();
+
+      expect(presses()).toBe(1);
+      expect(asked).not.toHaveBeenCalled();
     });
 
-    it('offers one when the price is what is stopping it', () => {
+    /** One decision, one control. The second button was the page asking twice. */
+    it('is the same button, wearing the warning', () => {
       const { host } = build(2);
 
-      expect(insist(host)).not.toBeNull();
-      expect(button(host).disabled).toBe(true);
+      expect(host.querySelectorAll('button')).toHaveLength(1);
+      expect(insist(host)).toBe(button(host));
+      expect(button(host).disabled).toBe(false);
     });
 
     it('names the action it is insisting on', () => {
@@ -245,7 +258,9 @@ describe('MintGateComponent', () => {
       fixture.detectChanges();
 
       expect(presses()).toBe(0);
-      expect(button(host).disabled).toBe(true);
+      // Still there, still red: dismissing a question changes nothing.
+      expect(insist(host)).not.toBeNull();
+      expect(host.textContent).toContain('Too expensive!');
     });
 
     // A press that costs money is not reached because something else is wrong.
@@ -286,7 +301,6 @@ describe('MintGateComponent', () => {
     fixture.detectChanges();
 
     expect(host.querySelector('.gate-go')).toBeNull();
-    expect(host.querySelector('.gate-insist')).toBeNull();
     expect(host.textContent).toContain('gwei');
     expect(host.querySelector('.gate-limit')).not.toBeNull();
   });
@@ -304,7 +318,8 @@ describe('MintGateComponent', () => {
     expect(host.querySelector('.gate-go')).not.toBeNull();
     expect(host.querySelector('.gate-limit')).toBeNull();
     expect(host.textContent).not.toContain('gwei');
-    // The way past the ceiling stays with the button it unlocks.
-    expect(host.querySelector('.gate-insist')).not.toBeNull();
+    // The warning travels with the button, since the row shows no price of
+    // its own: without it a dear morning would look like a quiet one here.
+    expect(host.querySelector('.gate-over')).not.toBeNull();
   });
 });

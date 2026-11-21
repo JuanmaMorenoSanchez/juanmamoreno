@@ -77,7 +77,9 @@ export class WalletService {
     const wallet = this.provider;
     if (!wallet) {
       throw new Error(
-        'No wallet on this page. Open the studio inside your wallet app’s browser and try again.'
+        'No wallet on this page. Safari and Chrome on a phone put none here — open ' +
+          'juanmamoreno.com from inside your wallet app’s own browser (MetaMask, Rainbow and ' +
+          'Coinbase Wallet each have one) and sign from there. A laptop needs the extension.'
       );
     }
 
