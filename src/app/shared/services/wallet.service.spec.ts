@@ -30,10 +30,6 @@ describe('WalletService', () => {
 
   afterEach(() => delete (globalThis as { ethereum?: unknown }).ethereum);
 
-  it('says there is no wallet when the page has none', () => {
-    expect(wallet.available()).toBe(false);
-  });
-
   it('asks who is signing and remembers them', async () => {
     inject({ eth_requestAccounts: [ACCOUNT], eth_chainId: '0x1' });
 

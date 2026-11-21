@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.90.1
+
+- **fix** The requirements name the test that exists. R135 still quoted a
+  test renamed in 2.90.0, which failed the build's own check and so failed
+  the deploy — 2.90.0 never reached the site.
+- **chore** `WalletService.available()` is gone. Nothing called it but its
+  own test, and its comment had the truth backwards: a laptop with the
+  extension is where there is usually a wallet, and a phone browser is where
+  there is not.
+
 ## 2.90.0
 
 - **feat** One Mint button, which carries the warning itself. Over the gas

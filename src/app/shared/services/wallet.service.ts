@@ -61,11 +61,6 @@ export class WalletService {
     return injected ?? null;
   }
 
-  /** Whether there is a wallet here at all, which on a desktop there usually is not. */
-  public available(): boolean {
-    return this.provider !== null;
-  }
-
   /**
    * Asks the wallet who is signing, and that it be on the right chain.
    *

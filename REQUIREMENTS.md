@@ -2376,9 +2376,15 @@ both repositories, where every `uses:` is a commit
 ### R86 — The artist signs his own certificates, from his own phone · met
 The contract's minter is his own wallet, so he is the one who can add a
 certificate — and a wallet app's browser puts that wallet on the page. Opened
-there, the waiting list offers **Sign** on each certificate: the api assembles
+there, the waiting list offers **Mint** on each certificate: the api assembles
 what it will say and encodes the call, the wallet signs it as him, and no
 minting key exists anywhere for anyone to steal.
+
+**A phone browser is not that browser**, and the page says so by name. Safari
+and Chrome put no wallet on the page, and "open the studio inside your wallet
+app's browser" assumed he knew such a thing existed — it was read as "go and
+find a laptop", which is the opposite of what this requirement is for. The
+message now names the apps that have one.
 
 Nothing is built in the browser. The bytes arrive already encoded, because what
 a certificate says is decided in one place, and the page's only jobs are to ask
@@ -2388,10 +2394,10 @@ The chain is checked before a signature is asked for. A wallet pointed at
 another network would sign something meaningless and report success, and the
 certificate would look written when nothing had happened. The list is shortened
 only once the chain has been asked whether the token is really there.
-*Proven by:* `wallet.service.spec.ts` (7 tests, including "refuses to go on when
-the wallet will not leave the wrong chain", "sends exactly what it was given, and
-builds nothing itself" and "says where to find a wallet rather than failing
-silently"). The transaction itself is the backend's B39.
+*Proven by:* `wallet.service.spec.ts` (10 tests, including "refuses to go on
+when the wallet will not leave the wrong chain", "sends exactly what it was
+given, and builds nothing itself" and "says where to find a wallet rather than
+failing silently"). The transaction itself is the backend's B39.
 
 ### R87 — A photograph is written back the way it arrived · met
 Straightening moves every pixel, so the picture has to be encoded again and one
@@ -3221,7 +3227,8 @@ way of saying stop", "ignores an emptied input instead of taking NaN as the
 ceiling", "ignores a negative ceiling" and "ignores an infinite one") and
 `mint-gate.component.spec.ts` ("shows the ceiling the price is judged against",
 "hands a typed ceiling to the service", "hands on an emptied input as NaN rather
-than as zero" and "lets a dear price through once the ceiling is above it")
+than as zero" and "stops warning about a dear price once the ceiling is above
+it")
 
 ### R136 — The product page says whose machine the AI runs on · met
 The page that explains how this is built now covers the part that runs AI models
