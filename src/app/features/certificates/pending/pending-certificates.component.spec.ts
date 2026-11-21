@@ -238,3 +238,82 @@ describe('minting one from the list', () => {
     expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
   });
 });
+
+/**
+ * The sheet under each row.
+ *
+ * Signing is irreversible, so the last look before it should show what is
+ * about to be written rather than the name and the number alone.
+ */
+describe('the full technical sheet', () => {
+  const sheeted = (tokenId: number): PendingMint => ({
+    ...waiting(tokenId, 'Carne'),
+    description: 'A girl eating a burger, with the dogs behind her.',
+    attributes: [
+      { trait_type: 'Medium', value: 'Oil on linen' },
+      { trait_type: 'Height', value: '120' },
+      { trait_type: 'Width', value: '90' },
+      { trait_type: 'Unit', value: 'cm' },
+      { trait_type: 'Year', value: '2021' },
+      { trait_type: 'Image Type', value: 'Frontal view' },
+      { trait_type: 'Artist', value: 'Juanma Moreno Sánchez' },
+    ],
+  });
+
+  it('shows every trait the certificate will carry, with its name', async () => {
+    const { fixture, host } = setup({ list: [sheeted(73)] });
+    await settled(fixture);
+    const sheet = host.querySelector('[data-testid="sheet-73"]');
+
+    expect(sheet?.querySelectorAll('.pending-pair')).toHaveLength(7);
+    expect(sheet?.textContent).toContain('Medium');
+    expect(sheet?.textContent).toContain('Oil on linen');
+    expect(sheet?.textContent).toContain('Image Type');
+    expect(sheet?.textContent).toContain('Juanma Moreno Sánchez');
+  });
+
+  it('keeps the order the collection already uses', async () => {
+    // So a sheet here reads like the certificates already on the chain.
+    const { fixture, host } = setup({ list: [sheeted(73)] });
+    await settled(fixture);
+    const names = [...host.querySelectorAll('[data-testid="sheet-73"] dt')].map((one) =>
+      one.textContent?.trim()
+    );
+
+    expect(names).toEqual([
+      'Medium',
+      'Height',
+      'Width',
+      'Unit',
+      'Year',
+      'Image Type',
+      'Artist',
+    ]);
+  });
+
+  it('says so when a fact was never filled in, rather than leaving a gap', async () => {
+    // The one worth catching before signing. A trait that vanished when empty
+    // would read as a certificate that never had that fact at all.
+    const one = sheeted(73);
+    const { fixture, host } = setup({
+      list: [{ ...one, attributes: [...one.attributes.slice(0, 3), { trait_type: 'Unit', value: '' }] }],
+    });
+    await settled(fixture);
+
+    expect(host.querySelector('.pending-missing')?.textContent).toContain('not set');
+  });
+
+  it('shows the words the certificate will carry as well as the numbers', async () => {
+    const { fixture, host } = setup({ list: [sheeted(73)] });
+    await settled(fixture);
+
+    expect(host.querySelector('.pending-essay')?.textContent).toContain('A girl eating a burger');
+  });
+
+  it('leaves the paragraph out of a certificate that has no description', async () => {
+    const { fixture, host } = setup({ list: [{ ...sheeted(73), description: '' }] });
+    await settled(fixture);
+
+    expect(host.querySelector('.pending-essay')).toBeNull();
+  });
+});

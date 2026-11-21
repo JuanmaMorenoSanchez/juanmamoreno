@@ -2926,6 +2926,50 @@ export const RECORDS_AT_LAST_BUILD: readonly ArtworkRecord[] = [
     ]
   },
   {
+    "tokenId": "195",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2026,
+        "cv": {
+          "id": "d65a223cc30814d5",
+          "kind": "collective",
+          "year": 2026,
+          "title": {
+            "en": "Intercambios/Exchanges"
+          },
+          "venue": {
+            "en": "Instituto Cervantes"
+          },
+          "city": "Utrecht",
+          "country": "netherlands"
+        }
+      }
+    ]
+  },
+  {
+    "tokenId": "196",
+    "entries": [
+      {
+        "kind": "exhibited",
+        "year": 2026,
+        "cv": {
+          "id": "d65a223cc30814d5",
+          "kind": "collective",
+          "year": 2026,
+          "title": {
+            "en": "Intercambios/Exchanges"
+          },
+          "venue": {
+            "en": "Instituto Cervantes"
+          },
+          "city": "Utrecht",
+          "country": "netherlands"
+        }
+      }
+    ]
+  },
+  {
     "tokenId": "198",
     "entries": [
       {

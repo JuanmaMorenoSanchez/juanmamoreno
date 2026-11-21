@@ -6406,9 +6406,19 @@ the viewport at both; `cv.component.spec.ts` "shows the career to anybody"
 
 ### R245 — The certificates waiting to be signed are on the page · met
 The queue is at the top of `/certificates`: each one with the picture the
-token will carry, its number, how long it has been waiting, a link to its page
-and a way to throw it away. What is half-done comes before the form for
-starting something new.
+token will carry, its number, how long it has been waiting, the full sheet of
+what it will say, and a way to throw it away. What is half-done comes before
+the form for starting something new.
+
+**Each row carries the whole technical sheet**, because signing is the last
+moment anything can be corrected. It had the name, the number and the
+photograph — enough to tell two certificates apart and not enough to check
+either. Every trait the token will carry is listed, in the order the
+collection already uses, so a sheet here reads like the certificates already
+on the chain; the description is under it, in his own words; and a trait
+nobody filled in says **not set** in the error colour rather than leaving a
+gap, because an empty measurement that quietly vanished would read as a
+certificate that never had one.
 
 **There was a count and no list.** The form said "3 waiting to be written" and
 linked to `/pendingmint` — which redirects to `/certificates`, the page it was
@@ -6417,17 +6427,24 @@ pressed. The list had been a page of its own; when the two became one, it was
 dropped and the link to it was not. `discard` survived on the form as a method
 no template could reach.
 
-**Nothing on it offers to mint.** The contract has no mint function — a
-certificate is signed in OpenSea, by hand — and a control that cannot do what
-it offers is read as a step in the work. The two things the page can honestly
-do with a waiting certificate are look at it and throw it away.
+**Each one can be signed from here, by his own wallet.** This paragraph used
+to say the opposite — that nothing on the list offered to mint, because the
+contract had no mint function — and it stayed that way after the certificates
+contract arrived and the row grew a Mint button. The api encodes the call,
+the wallet signs it, and the chain is asked whether it landed before anything
+comes off the list; no key is held here or in the service.
+
+There is no link to the painting's page on a row. This entry claimed one for
+several releases; nothing rendered it. The row identifies a certificate by
+its photograph and its number, and the sheet below says the rest.
 
 An empty queue draws nothing at all, rather than a heading saying zero on the
 page he works on most; an api that did not answer says so, because that is a
 different thing from nothing waiting.
-*Proven by:* `pending-certificates.component.spec.ts` (7 tests, including that
-an empty queue draws nothing, that an api that did not answer says so, and
-that a discard asks first)
+*Proven by:* `pending-certificates.component.spec.ts` (16 tests, including
+that an empty queue draws nothing, that an api that did not answer says so,
+that a discard asks first, that every trait is listed in the collection's own
+order, and that a fact nobody filled in says so)
 
 ### R246 — The record's show picker reads in words · met
 The headings in the exhibition selector go through the translate pipe. The cv

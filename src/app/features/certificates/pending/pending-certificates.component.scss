@@ -104,3 +104,63 @@
   border-color: var(--jm-error);
   color: var(--jm-error);
 }
+
+/*
+  The sheet, on its own line under the row that identifies the certificate.
+  `100%` basis rather than a new element outside the row, so it sits with the
+  thing it describes and the row above keeps its shape.
+
+  Columns that fit rather than a fixed number: eight traits on a desk read as
+  a sheet, and the same eight stacked on a phone read as a list.
+*/
+.pending-sheet {
+  flex: 1 0 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: tokens.$spacing-xs tokens.$spacing-md;
+  margin: tokens.$spacing-xs 0 0;
+  /* Clear of the thumbnail's column, so the sheet lines up with the name. */
+  padding-left: calc(3rem + #{tokens.$spacing-sm-md});
+}
+
+.pending-pair {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  dt {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--catalog-soft);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* A fact nobody filled in, said in words rather than left as a gap. */
+.pending-missing {
+  color: var(--jm-error);
+}
+
+.pending-essay {
+  flex: 1 0 100%;
+  margin: tokens.$spacing-sm 0 0;
+  padding-left: calc(3rem + #{tokens.$spacing-sm-md});
+  max-width: var(--measure);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--catalog-soft);
+}
+
+@media (max-width: 30rem) {
+  /* The picture's column is worth less than the width on a phone. */
+  .pending-sheet,
+  .pending-essay {
+    padding-left: 0;
+  }
+}

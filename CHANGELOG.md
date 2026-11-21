@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.88.0
+
+- **feat** Each certificate waiting to be signed shows the full technical
+  sheet: every trait the token will carry, in the order the collection uses,
+  with the description under it. A fact nobody filled in says so in the error
+  colour instead of leaving a gap — signing is the last chance to catch it.
+
 ## 2.87.0
 
 - **feat** The Netherlands is a country a CV entry can carry, offered by the

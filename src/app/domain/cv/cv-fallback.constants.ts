@@ -155,6 +155,19 @@ export const CV_AT_LAST_BUILD: readonly CvEntry[] = [
     "country": "spain"
   },
   {
+    "id": "d65a223cc30814d5",
+    "kind": "collective",
+    "year": 2026,
+    "title": {
+      "en": "Intercambios/Exchanges"
+    },
+    "venue": {
+      "en": "Instituto Cervantes"
+    },
+    "city": "Utrecht",
+    "country": "netherlands"
+  },
+  {
     "id": "e522aa4bc418dd99",
     "kind": "collective",
     "year": 2025,

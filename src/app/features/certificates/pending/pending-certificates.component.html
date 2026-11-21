@@ -89,6 +89,35 @@
                 </button>
               }
             </div>
+
+            <!--
+              Everything the certificate will say, before it is signed into
+              something that cannot be corrected. The row above identifies it;
+              this is for reading it.
+
+              In the order the api sends them, which is the order the
+              collection already uses — so a sheet here reads like the ones
+              already on the chain.
+            -->
+            <dl class="pending-sheet" [attr.data-testid]="'sheet-' + one.tokenId">
+              @for (trait of one.attributes; track trait.trait_type) {
+                <div class="pending-pair">
+                  <dt>{{ trait.trait_type }}</dt>
+                  <!--
+                    An empty value is shown rather than hidden. This is the
+                    last look before an irreversible write, and a missing
+                    measurement is the thing worth catching — a trait that
+                    quietly disappeared would read as a certificate that never
+                    had one.
+                  -->
+                  <dd [class.pending-missing]="!trait.value">{{ trait.value || 'not set' }}</dd>
+                </div>
+              }
+            </dl>
+
+            @if (one.description) {
+              <p class="pending-essay">{{ one.description }}</p>
+            }
           </li>
         }
       </ul>
