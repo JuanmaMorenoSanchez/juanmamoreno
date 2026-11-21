@@ -6,7 +6,6 @@ import {
   inject,
   input,
   output,
-  signal,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { GasPriceService } from '@shared/services/gas-price.service';
@@ -52,15 +51,14 @@ import { GasPriceService } from '@shared/services/gas-price.service';
 
       <!--
         The way past the ceiling, for when the answer is "I know, do it
-        anyway". It appears only when the price is what is stopping it, and
-        it is a second press rather than a wider limit: raising the ceiling
-        to get past one expensive morning leaves it raised for every quiet
-        one after.
+        anyway". It appears only when the price is what is stopping it, and it
+        asks once rather than widening the limit: raising the ceiling to get
+        past one expensive morning leaves it raised for every quiet one after.
       -->
-      @if (withButton() && tooDear() && !insisting()) {
-        <button type="button" class="gate-insist" (click)="insisting.set(true)">Mint anyway</button>
-      } @else if (withButton() && insisting()) {
-        <span class="gate-price gate-dear">paying over the limit</span>
+      @if (withButton() && tooDear()) {
+        <button type="button" class="gate-insist" [disabled]="disabled()" (click)="insist()">
+          {{ label() }} anyway
+        </button>
       }
 
       @if (withPrice()) {
@@ -104,14 +102,6 @@ export class MintGateComponent {
    * shouting one fact four times.
    */
   readonly withPrice = input(true);
-  /**
-   * Whether the ceiling has been overruled for this press.
-   *
-   * Reset by nothing: the window is closed or the page left when the work is
-   * done, and an insistence that outlived the thing it was for would be a
-   * ceiling quietly switched off.
-   */
-  protected readonly insisting = signal(false);
   /** Anything else that should stop it — nothing to mint, a request in flight. */
   readonly disabled = input(false);
   readonly mint = output<void>();
@@ -126,8 +116,32 @@ export class MintGateComponent {
    * be pressed in that second.
    */
   protected readonly stopped = computed(
-    () => this.disabled() || this.gas.price() === null || (this.tooDear() && !this.insisting())
+    () => this.disabled() || this.gas.price() === null || this.tooDear()
   );
+
+  /**
+   * Past the ceiling, asked for once and then done.
+   *
+   * The press itself, not a press that enables another press: the price and
+   * the ceiling are already on the page, so a banner repeating them and a
+   * second button to find was the gate arguing with somebody who had already
+   * read its argument. What it owes him instead is the chance to stop.
+   */
+  protected insist(): void {
+    const price = this.gas.price();
+    if (price === null || this.disabled()) return;
+    if (
+      !confirm(
+        `Gas is ${price.toFixed(3)} gwei, over your limit of ${this.gas.limit()} gwei.\n\n` +
+          'Writing to the chain at that price costs real money — a certificate is about ' +
+          'three quarters of a million gas. Your limit is left where it is.'
+      )
+    ) {
+      return;
+    }
+
+    this.mint.emit();
+  }
 
   constructor() {
     const stop = this.gas.watch();

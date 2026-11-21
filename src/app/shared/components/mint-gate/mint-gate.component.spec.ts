@@ -178,13 +178,22 @@ describe('MintGateComponent', () => {
   /**
    * The way past the ceiling, for when the answer is "I know, do it anyway".
    *
-   * A second press rather than a wider limit: raising the ceiling to get past
+   * Asked for once rather than a wider limit: raising the ceiling to get past
    * one expensive morning leaves it raised for every quiet one afterwards,
    * which is how a guard stops being one.
    */
   describe('insisting', () => {
     const insist = (host: HTMLElement): HTMLButtonElement | null =>
       host.querySelector('.gate-insist');
+
+    /** Every press that reached the parent. */
+    const watchMint = (fixture: ReturnType<typeof build>['fixture']) => {
+      let presses = 0;
+      fixture.componentInstance.mint.subscribe(() => {
+        presses += 1;
+      });
+      return () => presses;
+    };
 
     it('offers no way past while the price is within the ceiling', () => {
       const { host } = build(0.05);
@@ -199,26 +208,69 @@ describe('MintGateComponent', () => {
       expect(button(host).disabled).toBe(true);
     });
 
-    it('lets it through once, and says the limit is being paid over', () => {
+    it('names the action it is insisting on', () => {
       const { fixture, host } = build(2);
+      fixture.componentRef.setInput('label', 'Correct on chain');
+      fixture.detectChanges();
+
+      expect(insist(host)!.textContent).toContain('Correct on chain anyway');
+    });
+
+    /**
+     * One press, not a press that unlocks a press. The price and the ceiling
+     * are already on the page, so a banner repeating them and a second button
+     * to hunt for was the gate arguing with somebody who had read its
+     * argument.
+     */
+    it('mints on the one press, once the confirmation is accepted', () => {
+      const { fixture, host } = build(2);
+      const presses = watchMint(fixture);
+      const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+      insist(host)!.click();
+
+      expect(presses()).toBe(1);
+      // The figure it is being judged against is in the question, because the
+      // row it is pressed from does not show the price.
+      expect(asked.mock.calls[0][0]).toContain('2.000 gwei');
+      expect(asked.mock.calls[0][0]).toContain(`limit of ${GasPriceService.LIMIT} gwei`);
+    });
+
+    it('does nothing at all when the confirmation is dismissed', () => {
+      const { fixture, host } = build(2);
+      const presses = watchMint(fixture);
+      vi.spyOn(window, 'confirm').mockReturnValue(false);
 
       insist(host)!.click();
       fixture.detectChanges();
 
-      expect(button(host).disabled).toBe(false);
-      expect(host.textContent).toContain('paying over the limit');
+      expect(presses()).toBe(0);
+      expect(button(host).disabled).toBe(true);
     });
 
-    // A press that costs money is not unlocked by something else being wrong.
-    it('does not unlock a button stopped for another reason', () => {
+    // A press that costs money is not reached because something else is wrong.
+    it('is itself stopped when the gate is stopped for another reason', () => {
       const { fixture, host } = build(2);
+      const presses = watchMint(fixture);
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
       fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
+      expect(insist(host)!.disabled).toBe(true);
       insist(host)!.click();
-      fixture.detectChanges();
 
-      expect(button(host).disabled).toBe(true);
+      expect(presses()).toBe(0);
+    });
+
+    // The ceiling is a standing limit, not a thing one expensive morning
+    // widens: nothing here touches it.
+    it('leaves the limit where it was', () => {
+      const { host, asked } = build(2);
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+      insist(host)!.click();
+
+      expect(asked).toEqual([]);
     });
   });
 

@@ -6565,14 +6565,23 @@ stays on the list and says so.
 this is where the decision is made: the same certificate is a few cents on a
 quiet morning and several pounds on a busy afternoon. They had been on the
 studio's Prepare button, which spends nothing. And the ceiling can be
-overruled — when the price is what is stopping a press, a second press lets
-it through and says the limit is being paid over. A press rather than a
-raised ceiling, which would stay raised for every quiet morning after.
+overruled — when the price is what is stopping a press, a second button in
+the error colour, named for the action it insists on, asks the question in
+words and then does it. One press, not a press that enables a press: it had
+answered the first click with a banner repeating the price and the ceiling
+the page was already showing, which was the gate arguing with somebody who
+had read its argument, and then a second button to find. What it owes him is
+the chance to stop, which the confirmation is. A press rather than a raised
+ceiling, which would stay raised for every quiet morning after, and nothing
+on this path touches the ceiling.
 *Proven by:* `pending-certificates.component.spec.ts` "asks the api for the
 call with the wallet that will hold it", "asks the chain whether it landed,
 and then takes it off the list", "keeps one that was sent but not yet mined"
 and "says what went wrong when the wallet refused, and keeps it";
-`mint-gate.component.spec.ts` "insisting" (4 tests)
+`mint-gate.component.spec.ts` "insisting" (7 tests, including "mints on the
+one press, once the confirmation is accepted", "does nothing at all when the
+confirmation is dismissed", "is itself stopped when the gate is stopped for
+another reason" and "leaves the limit where it was")
 
 ### R251 — The pages behind the door are the same site as the ones in front · met
 The guarded pages wear the reader's vocabulary: the site's uppercase tracked

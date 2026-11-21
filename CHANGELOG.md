@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.89.0
+
+- **feat** Minting over the gas ceiling is one press and a question. The way
+  past it is a button in the error colour, named for the action it insists on,
+  which asks in words — the price, the ceiling, and that the ceiling stays
+  where it is — and then mints. It used to answer the press with a banner
+  repeating the price the page was already showing, and leave a second button
+  to find.
+
 ## 2.88.0
 
 - **feat** Each certificate waiting to be signed shows the full technical
