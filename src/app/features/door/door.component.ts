@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -13,6 +14,8 @@ import { environment } from '@environments/environment';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { asBearer, sessionMessage } from '@shared/services/wallet-session';
 import { WalletService } from '@shared/services/wallet.service';
+import { ApiResponse } from '@shared/types/api-response.type';
+import { firstValueFrom } from 'rxjs';
 
 const GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 
@@ -52,6 +55,7 @@ interface GoogleIdentityApi {
 export class DoorComponent implements AfterViewInit {
   private auth = inject(AdminAuthService);
   private wallet = inject(WalletService);
+  private http = inject(HttpClient);
   private router = inject(Router);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -134,6 +138,30 @@ export class DoorComponent implements AfterViewInit {
       const message = sessionMessage(address, new Date().toISOString());
       const signature = await this.wallet.sign(message);
 
+      /**
+       * Checked with the api before anything is claimed or stored.
+       *
+       * This door used to check only the sentence it had just written itself,
+       * say he was signed in, and replace a working session with one the api
+       * then refused on every request. The half that reports success was not
+       * the half that checks. Now the half that checks answers first.
+       */
+      const signer = await this.whoSigned(message, signature);
+      if (!signer) {
+        this.problem.set(
+          'Your wallet signed, but the api could not be reached to check it, so nothing ' +
+            'was changed about how you are signed in. Try again in a moment.'
+        );
+        return;
+      }
+      if (signer.toLowerCase() !== address.toLowerCase()) {
+        this.problem.set(
+          `Your wallet says it is ${address}, but what it signed belongs to ${signer}. ` +
+            'Nothing was changed about how you are signed in.'
+        );
+        return;
+      }
+
       if (this.auth.signInWithWallet(asBearer(message, signature))) {
         await this.router.navigateByUrl(AFTER_SIGN_IN);
         return;
@@ -148,6 +176,33 @@ export class DoorComponent implements AfterViewInit {
       );
     } finally {
       this.signing.set(false);
+    }
+  }
+
+  /**
+   * The address the api recovers from the signature, or null if it could not
+   * be asked.
+   *
+   * Two readings come back because wallets disagree about what `personal_sign`
+   * was given — most decode a hex payload, at least one signs the hex as text
+   * — and whichever of them is his is the one that counts. The browser asks
+   * rather than working it out, which would mean carrying an Ethereum library
+   * for one sum.
+   */
+  private async whoSigned(message: string, signature: string): Promise<string | null> {
+    try {
+      const answer = await firstValueFrom(
+        this.http.post<ApiResponse<{ fromText: string | null; fromHex: string | null }>>(
+          `${environment.backendUrl}auth/recovered`,
+          { message, signature }
+        )
+      );
+      const mine = this.wallet.account()?.toLowerCase();
+      const readings = [answer.data?.fromText ?? null, answer.data?.fromHex ?? null];
+
+      return readings.find((one) => one && one.toLowerCase() === mine) ?? readings[0] ?? null;
+    } catch {
+      return null;
     }
   }
 

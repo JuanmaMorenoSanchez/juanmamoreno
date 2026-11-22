@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.93.0
+
+- **feat** The door checks the signature with the api before it says he is in.
+  It used to check only the sentence it had written itself, declare success,
+  and store the session over a Google one that worked — so a signature the api
+  would refuse looked exactly like signing in. Now a signature that recovers to
+  anyone else, or an api that cannot be reached to say, leaves the session
+  exactly as it was and says which address actually signed.
+
 ## 2.92.1
 
 - **fix** Signing in with the wallet inside the Coinbase app now works. It sent

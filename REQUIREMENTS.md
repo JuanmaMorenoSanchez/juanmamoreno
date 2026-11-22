@@ -6773,6 +6773,16 @@ Cloud SDK, and losing a wallet must not lose the studio, so both ways in are
 offered — except inside a wallet app's browser, where Google is not offered at
 all. A door that cannot open does not belong on the page.
 
+**The door asks the api who signed, before it claims anything.** It used to
+check only the sentence it had just written itself, declare him signed in, and
+store the session over whatever was there — so a signature the api would refuse
+looked exactly like success, and cost him a Google session that worked. He was
+signed in to nothing and signed out of something. The half that reports success
+was not the half that checks. It now sends the signature to `/auth/recovered`
+and compares the address that comes back; if it is not his, or if the api
+cannot be reached to say, nothing is stored, nothing is navigated to, and the
+message says which address actually signed and that his session is untouched.
+
 **The sentence is handed over as itself, not as hex.** `personal_sign` specifies
 hex and this sent hex, which is where it first broke: most wallets decode a hex
 payload and sign the bytes — Coinbase's own SDK does — but the Coinbase app's
@@ -6783,7 +6793,10 @@ that reports success is not the half that checks. Plain text has no such fork in
 it. The api accepts either form besides (its B15), so a session already signed
 kept working. `sign` had no test at all when it shipped, which is how the shape
 of the payload went unexamined; it has one now, and it pins the sentence.
-*Proven by:* `wallet.service.spec.ts` (under "signing in", "hands the wallet the
+*Proven by:* `door.component.spec.ts` (under "when the signature is not what it
+looks like", "does not sign him in on a signature the api reads as somebody
+else", "changes nothing when the api cannot be reached to check" and "accepts
+the reading that is his"), `wallet.service.spec.ts` (under "signing in", "hands the wallet the
 sentence itself, never hex"), `wallet-session.spec.ts` (7 tests, including "writes the message the
 api expects", which pins the text the api rebuilds), `door.component.spec.ts`
 ("offers only the wallet inside a wallet app’s browser", "offers both ways in

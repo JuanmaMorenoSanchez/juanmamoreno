@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
+import { of, throwError } from 'rxjs';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { sessionMessage } from '@shared/services/wallet-session';
 import { WalletService } from '@shared/services/wallet.service';
@@ -20,6 +22,12 @@ describe('DoorComponent', () => {
       address?: string;
       accepts?: boolean;
       refuses?: Error;
+      /** What the api says the signature recovers to. Defaults to his. */
+      recovers?: string | null;
+      /** The same, for a wallet that signed the hex as text. */
+      recoversHex?: string | null;
+      /** The api cannot be reached to check at all. */
+      apiDown?: boolean;
     } = {}
   ): void {
     wentTo = [];
@@ -51,11 +59,29 @@ describe('DoorComponent', () => {
           provide: WalletService,
           useValue: {
             insideWalletBrowser: () => options.inWalletBrowser ?? false,
+            account: () => options.address ?? ADDRESS,
             connect: () => {
               if (options.refuses) return Promise.reject(options.refuses);
               return Promise.resolve(options.address ?? ADDRESS);
             },
             sign: () => Promise.resolve('0xsignature'),
+          },
+        },
+        {
+          provide: HttpClient,
+          useValue: {
+            post: () =>
+              options.apiDown
+                ? throwError(() => new Error('offline'))
+                : of({
+                    data: {
+                      fromText:
+                        options.recovers === undefined
+                          ? (options.address ?? ADDRESS)
+                          : options.recovers,
+                      fromHex: options.recoversHex ?? null,
+                    },
+                  }),
           },
         },
       ],
@@ -114,6 +140,53 @@ describe('DoorComponent', () => {
 
     expect(door().problem()).toContain(stranger);
     expect(wentTo).toEqual([]);
+  });
+
+  /**
+   * The failure that cost him a working session. The door checked only the
+   * sentence it had written itself, said he was in, and replaced a Google
+   * session that worked with a wallet session the api refused on every
+   * request — so he was signed in to nothing and signed out of something.
+   */
+  describe('when the signature is not what it looks like', () => {
+    it('does not sign him in on a signature the api reads as somebody else', async () => {
+      const someoneElse = '0x2222222222222222222222222222222222222222';
+      build({ recovers: someoneElse });
+
+      await door().withWallet();
+
+      expect(signed).toEqual([]);
+      expect(wentTo).toEqual([]);
+      expect(door().problem()).toContain(someoneElse);
+    });
+
+    it('says plainly that nothing about the session changed', async () => {
+      build({ recovers: '0x2222222222222222222222222222222222222222' });
+
+      await door().withWallet();
+
+      expect(door().problem()).toContain('Nothing was changed');
+    });
+
+    it('changes nothing when the api cannot be reached to check', async () => {
+      build({ apiDown: true });
+
+      await door().withWallet();
+
+      expect(signed).toEqual([]);
+      expect(wentTo).toEqual([]);
+      expect(door().problem()).toContain('could not be reached');
+    });
+
+    // Whichever of the two readings is his is the one that counts, so a wallet
+    // that signs the hex as text still gets in.
+    it('accepts the reading that is his', async () => {
+      build({ recovers: null, recoversHex: ADDRESS });
+
+      await door().withWallet();
+
+      expect(wentTo).toEqual(['/activity']);
+    });
   });
 
   it('repeats what the wallet said when it refuses', async () => {
