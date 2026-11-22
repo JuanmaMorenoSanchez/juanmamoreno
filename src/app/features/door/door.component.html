@@ -13,5 +13,22 @@
     }
   }
 
-  <div #googleButton class="door-button"></div>
+  <button type="button" class="door-wallet" [disabled]="signing()" (click)="withWallet()">
+    {{ signing() ? 'Ask your wallet…' : 'Sign in with your wallet' }}
+  </button>
+
+  @if (problem()) {
+    <p class="door-problem" role="alert">{{ problem() }}</p>
+  }
+
+  <!-- Always in the page because Google renders its own button into it, and
+  hidden rather than removed so there is something to render into. -->
+  <div #googleButton class="door-button" [hidden]="walletOnly()"></div>
+
+  @if (walletOnly()) {
+    <p class="door-message door-aside">
+      Google will not sign anyone in from inside a wallet app’s browser, so it is not offered here.
+      In Safari or Chrome both ways in are.
+    </p>
+  }
 </div>

@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.92.0
+
+- **feat** The door opens for his own wallet. One button, one sentence signed
+  in the wallet, and he is in for a week — the signed sentence is the bearer
+  and the api checks it against the address the certificates contract obeys, so
+  no other wallet opens it. Google stays a door, since the nightly run has no
+  wallet and losing one must not lose the studio; but inside a wallet app's
+  browser, where Google renders a white screen, only the wallet is offered.
+
 ## 2.91.0
 
 - **feat** A phone with no wallet in the browser can mint. Signing in needs

@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import { GoogleIdentityService } from './google-identity.service';
+import { WALLET_SCHEME, walletSessionLives } from './wallet-session';
 
 const TOKEN_KEY = 'juanmamoreno.adminToken';
 /**
@@ -59,12 +60,24 @@ export class AdminAuthService {
   private renewing: Promise<boolean> | null = null;
   private renewalTimer: ReturnType<typeof setTimeout> | null = null;
 
+  /**
+   * The claims of a current Google token, or null.
+   *
+   * Null for a wallet session too, which carries no claims to read — there is
+   * no name and no picture in a signature, only an address. Ask `isAdmin`.
+   */
   readonly identity = computed(() => {
     const token = this.token();
-    return token ? this.verify(token) : null;
+    return token && !token.startsWith(WALLET_SCHEME) ? this.verify(token) : null;
   });
 
-  readonly isAdmin = computed(() => this.identity() !== null);
+  /** Whether a session his wallet opened is stored and still inside its week. */
+  private readonly walletLives = computed(() => {
+    const token = this.token();
+    return token !== null && token.startsWith(WALLET_SCHEME) && walletSessionLives(token);
+  });
+
+  readonly isAdmin = computed(() => this.identity() !== null || this.walletLives());
 
   /**
    * The raw credential, for putting in an Authorization header.
@@ -73,7 +86,9 @@ export class AdminAuthService {
    * included — before doing anything with it. Null unless it currently passes
    * the checks here too, so an expired token is never sent anywhere.
    */
-  readonly bearerToken = computed(() => (this.identity() ? this.token() : null));
+  readonly bearerToken = computed(() =>
+    this.identity() || this.walletLives() ? this.token() : null
+  );
 
   /**
    * Accepts a credential from Google, or refuses it.
@@ -88,6 +103,22 @@ export class AdminAuthService {
     this.store(credential);
     this.rememberKnown();
     this.scheduleRenewal();
+    return true;
+  }
+
+  /**
+   * Accepts a session his wallet signed, or refuses it.
+   *
+   * Nothing is scheduled afterwards, unlike a Google token: a wallet cannot
+   * renew silently because a signature needs a person, so the week it lasts
+   * ends with him pressing the button again.
+   */
+  signInWithWallet(bearer: string): boolean {
+    if (!walletSessionLives(bearer)) return false;
+
+    this.token.set(bearer);
+    this.store(bearer);
+    this.rememberKnown();
     return true;
   }
 
@@ -117,6 +148,12 @@ export class AdminAuthService {
   keepAlive(): void {
     if (!this.isBrowser || !this.knownHere()) return;
 
+    // A wallet session has nothing to come back for: it cannot be renewed
+    // without him, so there is no timer to set and no reason to load Google's
+    // script at all. Without this, signing in with the wallet would summon
+    // Google's prompt on every start — the very thing he signed in to avoid.
+    if (this.walletLives()) return;
+
     if (this.identity()) {
       this.scheduleRenewal();
       return;
@@ -138,14 +175,14 @@ export class AdminAuthService {
   }
 
   /**
-  * Asks Google for a fresh token without asking him for anything.
-  *
-  * `auto_select` is what makes it silent: with one Google account signed in
-  * and this site already allowed, the credential arrives with no prompt shown
-  * at all. With several accounts, or none, Google shows its own chooser, and
-  * that is the point at which he has to do something — which is why the way
-  * back in also lives in the menu.
-  */
+   * Asks Google for a fresh token without asking him for anything.
+   *
+   * `auto_select` is what makes it silent: with one Google account signed in
+   * and this site already allowed, the credential arrives with no prompt shown
+   * at all. With several accounts, or none, Google shows its own chooser, and
+   * that is the point at which he has to do something — which is why the way
+   * back in also lives in the menu.
+   */
   private renew(): Promise<boolean> {
     if (this.renewing) return this.renewing;
     if (!environment.googleClientId) return Promise.resolve(false);

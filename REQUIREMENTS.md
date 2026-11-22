@@ -6741,3 +6741,41 @@ is what anybody wants first once a flow has arrived zoomed out.
 *Proven by:* `node-canvas.component.spec.ts` "zooms out until the last box is
 inside the frame", "does not magnify a single box to fill the canvas" and
 "leaves an empty canvas where it is"
+
+### R255 — The door opens for his wallet, and hides the one that cannot open · met
+Signing in needed Google, and Google refuses to sign anyone in from inside a
+wallet app's own browser. Its popup opens there as a white screen that says
+nothing and cannot be dismissed — so the studio was unreachable from the one
+browser that can also sign a transaction, which is the browser the certificates
+work wants. The door now also opens for a signature by his own wallet, which is
+already the single address the certificates contract obeys.
+
+He presses one button, the wallet asks him to sign one sentence, and he is in.
+The sentence names this site, his address and the moment, and says of itself
+that it authorises nothing on the chain and spends nothing — which is true: it
+is `personal_sign`, not a transaction. The signed sentence is the bearer, sent
+on every request exactly as a Google token was, and the api recovers the address
+from it and compares it to the contract's own `owner()`. **Anyone else's wallet
+signing the identical words recovers to their own address and is refused**,
+including when the text names his. That is the backend's B15, and it is the
+boundary; this layer only decides what the interface shows.
+
+It lasts a week, because a wallet cannot renew silently the way Google's token
+did — a signature needs a person, so the window is the session. The trap that
+came with that: `keepAlive` asked Google for a token whenever it found no Google
+identity, and a wallet session has none, so signing in with the wallet would
+have summoned Google's prompt at every start — the very thing it was signed in
+to avoid.
+
+**Google is still a door, and still the only one the night has.** The nightly
+run holds no browser and no wallet and takes its credential from the Google
+Cloud SDK, and losing a wallet must not lose the studio, so both ways in are
+offered — except inside a wallet app's browser, where Google is not offered at
+all. A door that cannot open does not belong on the page.
+*Proven by:* `wallet-session.spec.ts` (7 tests, including "writes the message the
+api expects", which pins the text the api rebuilds), `door.component.spec.ts`
+("offers only the wallet inside a wallet app’s browser", "offers both ways in
+anywhere else", "names the wallet it will not open for", "sends the api the
+sentence it will rebuild") and `admin-auth.service.spec.ts` (under "a session
+his wallet signed", including "never summons Google" and "refuses any other
+wallet"). The signature check itself is the backend's B15.

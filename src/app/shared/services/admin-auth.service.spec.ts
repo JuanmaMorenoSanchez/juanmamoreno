@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '@environments/environment';
 import { AdminAuthService } from './admin-auth.service';
 import { GoogleIdentityService } from './google-identity.service';
+import { asBearer, sessionMessage } from './wallet-session';
 
 // One address gets in. These are the cases that must never open the door.
 describe('AdminAuthService', () => {
@@ -208,6 +209,90 @@ describe('AdminAuthService keeping the session alive', () => {
 
     expect(google.prompted).toBe(1);
     expect(service.isAdmin()).toBe(true);
+  });
+
+  /**
+   * The other credential: a session his own wallet signed. Google stays a door
+   * for him — losing the wallet must not lose the studio — so the two live side
+   * by side, and the trap is that one must not summon the other.
+   */
+  describe('a session his wallet signed', () => {
+    const walletSession = (options: { address?: string; issued?: string } = {}) =>
+      asBearer(
+        sessionMessage(
+          options.address ?? environment.adminAddress,
+          options.issued ?? new Date().toISOString()
+        ),
+        '0xsignature'
+      );
+
+    it('lets him in and is what gets sent', () => {
+      const { service } = setup();
+      const bearer = walletSession();
+
+      expect(service.signInWithWallet(bearer)).toBe(true);
+      expect(service.isAdmin()).toBe(true);
+      expect(service.bearerToken()).toBe(bearer);
+    });
+
+    it('refuses any other wallet', () => {
+      const { service } = setup();
+
+      expect(
+        service.signInWithWallet(
+          walletSession({ address: '0x1111111111111111111111111111111111111111' })
+        )
+      ).toBe(false);
+      expect(service.isAdmin()).toBe(false);
+    });
+
+    it('has no claims to read, and says so rather than pretending', () => {
+      const { service } = setup();
+      service.signInWithWallet(walletSession());
+
+      // A signature carries an address and nothing else — no name, no picture,
+      // no email — so anything reading `identity()` must see null and not a
+      // half-filled object.
+      expect(service.identity()).toBeNull();
+      expect(service.isAdmin()).toBe(true);
+    });
+
+    it('stops sending it once the week is out', () => {
+      const { service } = setup();
+      const old = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString();
+
+      expect(service.signInWithWallet(walletSession({ issued: old }))).toBe(false);
+      expect(service.bearerToken()).toBeNull();
+    });
+
+    /**
+     * The trap. `keepAlive` runs at every start and used to ask Google for a
+     * token whenever there was no Google identity — which a wallet session has
+     * none of. Signed in with the wallet, it would have summoned Google's
+     * prompt on every single start: the very thing he signed in to avoid.
+     */
+    it('never summons Google', async () => {
+      window.localStorage.setItem('juanmamoreno.adminKnown', 'yes');
+      window.localStorage.setItem('juanmamoreno.adminToken', walletSession());
+      const { google, service } = setup();
+      expect(service.isAdmin()).toBe(true);
+
+      service.keepAlive();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(google.loads).toBe(0);
+      expect(google.prompted).toBe(0);
+      expect(service.isAdmin()).toBe(true);
+    });
+
+    it('survives the week and comes back signed in', () => {
+      window.localStorage.setItem('juanmamoreno.adminToken', walletSession());
+
+      const { service } = setup();
+
+      expect(service.isAdmin()).toBe(true);
+    });
   });
 
   it('leaves him signed out when Google will not answer silently', async () => {

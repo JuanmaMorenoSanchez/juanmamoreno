@@ -3,7 +3,10 @@ export const environment = {
   // The painting on the landing page. Empty falls back to the newest frontal
   // view, which is what this was before anything read it.
   homeTokenId: '202',
-  adminAdress: '0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9',
+  // The one wallet the studio opens for: the certificates contract's own
+  // owner(), which is public on the chain. The backend checks the signature
+  // against its own copy; this only decides what the interface shows.
+  adminAddress: '0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9',
   backendUrl: 'https://backend.juanmamoreno.com/',
   // The one account the studio opens for. Anything else is refused.
   adminEmail: 'morenosanchezjuanma@gmail.com',

@@ -1,3 +1,4 @@
+@use '../../../styles/controls';
 @use '../../../styles/tokens';
 
 .door {
@@ -6,6 +7,36 @@
 
 .door-message {
   color: var(--catalog-soft);
+}
+
+/**
+ * Both ways in are the same width, because they are the same offer made twice.
+ * Google renders its own button and will fill whatever it is given, so it is
+ * told the same number in the template rather than left to stretch across a
+ * wide screen beside a small one.
+ */
+$door-way-in: 320px;
+
+.door-wallet {
+  @include controls.plain-button(tokens.$spacing-sm tokens.$spacing-md);
+
+  margin-top: tokens.$spacing-lg;
+  width: $door-way-in;
+  max-width: 100%;
+}
+
+.door-button {
+  max-width: 100%;
+  width: $door-way-in;
+}
+
+.door-problem {
+  margin-top: tokens.$spacing-sm;
+  color: var(--jm-error);
+}
+
+.door-aside {
+  margin-top: tokens.$spacing-md;
 }
 
 .door-button {

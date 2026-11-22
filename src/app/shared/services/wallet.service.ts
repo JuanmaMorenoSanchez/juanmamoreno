@@ -127,6 +127,52 @@ export class WalletService {
   }
 
   /**
+   * Asks the wallet to sign a sentence, and gives back the signature.
+   *
+   * This is how he signs in, and it is not a transaction: `personal_sign`
+   * authorises nothing on the chain and spends nothing, which is why the
+   * sentence he is shown says so. The bytes are sent as hex rather than as a
+   * string, which is what the method actually specifies — some wallets accept
+   * either and some only the hex.
+   */
+  public async sign(message: string): Promise<string> {
+    const wallet = await this.provider();
+    const from = this.account();
+    if (!from) throw new Error('No wallet is connected.');
+
+    const hex =
+      '0x' +
+      Array.from(new TextEncoder().encode(message))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+
+    return (await within(
+      wallet.request({ method: 'personal_sign', params: [hex, from] }) as Promise<string>,
+      SIGNATURE_WITHIN,
+      'Your wallet never came back with a signature, so you are not signed in. Press it again.'
+    )) as string;
+  }
+
+  /**
+   * Whether this page is inside a wallet app's own browser.
+   *
+   * Asked because Google will not sign anyone in from one — its popup renders
+   * as a white screen there — so the door hides that way in rather than
+   * offering a door that cannot open. Coinbase's browser says so itself; for
+   * the others the test is a wallet on the page *and* a phone, because an
+   * ordinary phone browser injects no wallet and a laptop extension is not an
+   * in-app browser.
+   */
+  public insideWalletBrowser(): boolean {
+    const injected = (globalThis as { ethereum?: { isCoinbaseBrowser?: boolean } }).ethereum;
+    if (!injected) return false;
+    if (injected.isCoinbaseBrowser === true) return true;
+
+    const agent = (globalThis as { navigator?: { userAgent?: string } }).navigator?.userAgent ?? '';
+    return /Android|iPhone|iPad|iPod/i.test(agent);
+  }
+
+  /**
    * Hands a prepared transaction to the wallet and gives back its hash.
    *
    * Nothing here builds or interprets the call: the bytes arrive from the
