@@ -55,11 +55,39 @@ const PHONE = { width: 393, height: 852 };
  * what that thing actually weighs — not to a round number with room in it —
  * is what keeps it a gate.
  */
+/**
+ * **Every figure here changed when the api stopped being thrown away**, and the
+ * numbers before were a fiction rather than a lenient gate.
+ *
+ * The api allows one origin, so a page served from `127.0.0.1` had each of its
+ * answers discarded by the browser for want of a CORS header. The requests
+ * travelled and were billed; the page never saw them; and because a discarded
+ * answer raises no `response` event, none of those bytes were in these sums. So
+ * the weights measured a page missing its catalogue, and a reader on
+ * juanmamoreno.com — where the api does allow the origin — was downloading more
+ * than this gate had ever counted. The answers are served from
+ * `fixtures/api` now, so what is weighed is what a reader gets.
+ *
+ * Raised to the measurement plus about five per cent, which is the headroom
+ * these had before, rather than to round numbers: `/` 3576, `/about` 2908,
+ * `/artworks` 4742, `/artwork/66` 6850. Identical to the byte across runs,
+ * which they were not while a cold container could change what arrived.
+ *
+ * **The shift figures are unchanged, and the catalogue's 0.23 is earned.** Run
+ * on its own with the answers warm it measures zero, which looked like the
+ * known fault having been an artifact of the missing catalogue all along — and
+ * in the whole suite it measures 0.221, the footer dropping 365px as the
+ * catalogue lands. So the fault is real and merely intermittent: whether it
+ * appears depends on whether the data arrives before the first paint, which is
+ * the one thing a reader's connection decides and this machine does not. Two
+ * runs of one file is not a measurement. These stay a ratchet, and they come
+ * down when the cause is fixed rather than when it hides.
+ */
 const CEILING = {
-  '/': { cls: 0.1, kb: 2_600 },
-  '/about': { cls: 0.1, kb: 2_400 },
-  '/artworks': { cls: 0.23, kb: 3_700 },
-  '/artwork/66': { cls: 0.33, kb: 5_000 },
+  '/': { cls: 0.1, kb: 3_750 },
+  '/about': { cls: 0.1, kb: 3_050 },
+  '/artworks': { cls: 0.23, kb: 4_980 },
+  '/artwork/66': { cls: 0.33, kb: 7_200 },
 };
 
 const PAGES = Object.keys(CEILING);

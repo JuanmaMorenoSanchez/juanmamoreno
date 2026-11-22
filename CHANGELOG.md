@@ -5,6 +5,20 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.95.0
+
+- **feat** The end-to-end suite answers the api from recordings instead of
+  calling it. It was calling the live backend on every run and getting nothing
+  back — the api allows one origin, so every answer was discarded by the
+  browser after being fetched and billed — and `load` waiting on those doomed
+  requests is what failed a deploy at random. Only free reads are recorded, by
+  an explicit list, so nothing crawls into the endpoints that cost money.
+- **chore** The page-weight ceilings now measure what a reader actually
+  downloads. A discarded answer raises no `response` event, so the catalogue's
+  bytes were never counted: `/artwork/66` weighs 6850kB and was gated at 5000.
+  Raised to the measurement plus the headroom they already had, and identical
+  to the byte between runs for the first time.
+
 ## 2.94.1
 
 - **fix** A newly minted photograph becomes the painting's frontal view. One

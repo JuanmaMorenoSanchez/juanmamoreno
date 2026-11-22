@@ -6938,3 +6938,57 @@ nothing at all when the api cannot answer", which asserted the opposite until
 this release), and `pending-certificates.component.spec.ts` ("keeps asking the
 chain for a minute before giving up", "survives an api that refuses one of the
 asks", "keeps one that was sent but not yet mined").
+
+### R258 — The end-to-end suite does not touch the live api · met
+It did, on every run, and got nothing back. The api allows one origin —
+`https://juanmamoreno.com` — so a page served from `127.0.0.1` had each of its
+answers discarded by the browser for want of a CORS header. The requests
+travelled: they reached Cloud Run, were answered, were billed, and were thrown
+away unread, dozens per page, on every push. One run put 68 requests a second
+through a paid api for nothing.
+
+**It is also what failed a deploy.** `page.goto` waits for `load`, and `load`
+waits for requests that were always going to be discarded, so a cold container
+on a slow afternoon became a thirty-second timeout on a page that renders
+perfectly — and the same test passed three seconds later on the next run. A
+gate that fails for reasons the change did not cause is a gate everyone learns
+to ignore.
+
+The answers are now served from `e2e/fixtures/api`, recorded by
+`node e2e/record-api.mjs` **from outside a browser**, where that origin rule
+does not apply at all — recording through a browser was the first attempt and
+found nothing, for the same reason the suites found nothing. Both hosts the app
+will try are intercepted, the name and the Cloud Run url behind it, so a failure
+cannot quietly fall through to production. Interception is installed by wrapping
+the browser rather than inside `openPage`, because four of the suites make their
+own pages and would have stayed live.
+
+**Only free reads are recorded.** The list is written out by hand rather than
+discovered by crawling, because `/vision/search/:id` re-runs a reverse image
+search when read: a crawl would have found it and billed it, and so would anyone
+later keeping the suite green by recording whatever it asked for. Anything
+unrecorded is answered with an empty envelope, which is what the page already
+had.
+
+**Three things came out of it that were not the point.** The suites render the
+real catalogue for the first time — cutting the api off without the recording
+left the app on the smaller dataset bundled into the bundle, and one navigation
+test could no longer reach every painting, which is how the missing half was
+found. The page-weight ceilings were measuring a page with its catalogue
+missing, because a discarded answer raises no `response` event and so never
+entered the sums: `/artwork/66` weighs 6850kB and was gated at 5000, meaning a
+reader on the real site downloaded more than this ever counted. And the figures
+are now identical to the byte between runs, where before a cold container
+changed them.
+
+The shift ceilings are unchanged. On its own with the answers warm `/artworks`
+measures zero, which looked like its known fault having been an artifact all
+along; in the whole suite it measures 0.221, the footer dropping 365px as the
+catalogue lands. The fault is real and intermittent, two runs of one file is not
+a measurement, and it stays a ratchet.
+*Proven by:* `api-from-disk.test.mjs` (3 tests: "answers the calls the catalogue
+makes, rather than sending them", "answers them on a page the harness did not
+open" — which counts interceptions, since an answer served from disk is a real
+response and counting responses would prove nothing about where it came from —
+and "serves the whole recorded catalogue, not the bundled subset"), and
+`page-cost.test.mjs`, whose figures are deterministic only because of this.
