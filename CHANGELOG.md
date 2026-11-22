@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.93.1
+
+- **fix** The door tells apart a wallet that signed as somebody else, a wallet
+  that returned something unreadable as a signature at all, and an api that
+  could not be reached — it called the middle one a network problem, which is
+  the wrong place to look.
+
 ## 2.93.0
 
 - **feat** The door checks the signature with the api before it says he is in.

@@ -146,17 +146,29 @@ export class DoorComponent implements AfterViewInit {
        * then refused on every request. The half that reports success was not
        * the half that checks. Now the half that checks answers first.
        */
-      const signer = await this.whoSigned(message, signature);
-      if (!signer) {
+      const checked = await this.whoSigned(message, signature);
+      if (!checked.reached) {
         this.problem.set(
           'Your wallet signed, but the api could not be reached to check it, so nothing ' +
             'was changed about how you are signed in. Try again in a moment.'
         );
         return;
       }
-      if (signer.toLowerCase() !== address.toLowerCase()) {
+      if (!checked.signer) {
+        // Not the same as a wrong address: this is a wallet handing back
+        // something no amount of arithmetic turns into a signer, which is what
+        // a contract-account signature looks like from here. The length is
+        // said because 132 characters is an ordinary signature and anything
+        // much longer is not one.
         this.problem.set(
-          `Your wallet says it is ${address}, but what it signed belongs to ${signer}. ` +
+          `Your wallet returned ${signature.length} characters that cannot be read as a ` +
+            'signature at all. Nothing was changed about how you are signed in.'
+        );
+        return;
+      }
+      if (checked.signer.toLowerCase() !== address.toLowerCase()) {
+        this.problem.set(
+          `Your wallet says it is ${address}, but what it signed belongs to ${checked.signer}. ` +
             'Nothing was changed about how you are signed in.'
         );
         return;
@@ -189,7 +201,10 @@ export class DoorComponent implements AfterViewInit {
    * rather than working it out, which would mean carrying an Ethereum library
    * for one sum.
    */
-  private async whoSigned(message: string, signature: string): Promise<string | null> {
+  private async whoSigned(
+    message: string,
+    signature: string
+  ): Promise<{ reached: boolean; signer: string | null }> {
     try {
       const answer = await firstValueFrom(
         this.http.post<ApiResponse<{ fromText: string | null; fromHex: string | null }>>(
@@ -200,9 +215,18 @@ export class DoorComponent implements AfterViewInit {
       const mine = this.wallet.account()?.toLowerCase();
       const readings = [answer.data?.fromText ?? null, answer.data?.fromHex ?? null];
 
-      return readings.find((one) => one && one.toLowerCase() === mine) ?? readings[0] ?? null;
+      // His, if either reading is his; otherwise whichever one there is, so
+      // the refusal can name it. Both empty is its own answer, and a different
+      // one from not having asked.
+      return {
+        reached: true,
+        signer:
+          readings.find((one) => one && one.toLowerCase() === mine) ??
+          readings.find((one) => one !== null) ??
+          null,
+      };
     } catch {
-      return null;
+      return { reached: false, signer: null };
     }
   }
 

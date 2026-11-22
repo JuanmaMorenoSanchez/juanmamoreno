@@ -168,6 +168,22 @@ describe('DoorComponent', () => {
       expect(door().problem()).toContain('Nothing was changed');
     });
 
+    /**
+     * Different from a wrong address, and it must not be reported as a
+     * network problem: a wallet handing back something that is not a
+     * signature at all is what a contract-account signature looks like from
+     * here, and saying so is the difference between a clue and a wild goose.
+     */
+    it('says so when the wallet returns something unreadable', async () => {
+      build({ recovers: null });
+
+      await door().withWallet();
+
+      expect(signed).toEqual([]);
+      expect(door().problem()).toContain('cannot be read as a signature');
+      expect(door().problem()).not.toContain('could not be reached');
+    });
+
     it('changes nothing when the api cannot be reached to check', async () => {
       build({ apiDown: true });
 
