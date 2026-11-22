@@ -941,6 +941,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/artwork/204/</loc>
+    <lastmod>2026-10-28</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/SXJ1S43VJN-jcKr_HqJKJFYChzGjzGEgnEFxU5oR8dM</image:loc>
+      <image:title>Jardín triturado</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/artwork/21/</loc>
     <lastmod>2026-11-22</lastmod>
     <priority>0.7</priority>
@@ -1598,16 +1608,6 @@
     <image:image>
       <image:loc>https://arweave.net/5f52Lg0jVUXjV0PzF6Yb_4Ly0QPQqJWbnbWXJisiHls</image:loc>
       <image:title>Fin de curso</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://juanmamoreno.com/artwork/84/</loc>
-    <lastmod>2026-10-28</lastmod>
-    <priority>0.7</priority>
-    <changefreq>yearly</changefreq>
-    <image:image>
-      <image:loc>https://arweave.net/sxe9lhp4LnIqh61r81o1BZh3y-IHDBo_1K-tWmzYYrE</image:loc>
-      <image:title>Jardín triturado</image:title>
     </image:image>
   </url>
   <url>
@@ -2641,6 +2641,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://juanmamoreno.com/es/artwork/204/</loc>
+    <lastmod>2026-10-28</lastmod>
+    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <image:image>
+      <image:loc>https://arweave.net/SXJ1S43VJN-jcKr_HqJKJFYChzGjzGEgnEFxU5oR8dM</image:loc>
+      <image:title>Jardín triturado</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://juanmamoreno.com/es/artwork/21/</loc>
     <lastmod>2026-11-22</lastmod>
     <priority>0.7</priority>
@@ -3298,16 +3308,6 @@
     <image:image>
       <image:loc>https://arweave.net/5f52Lg0jVUXjV0PzF6Yb_4Ly0QPQqJWbnbWXJisiHls</image:loc>
       <image:title>Fin de curso</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://juanmamoreno.com/es/artwork/84/</loc>
-    <lastmod>2026-10-28</lastmod>
-    <priority>0.7</priority>
-    <changefreq>yearly</changefreq>
-    <image:image>
-      <image:loc>https://arweave.net/sxe9lhp4LnIqh61r81o1BZh3y-IHDBo_1K-tWmzYYrE</image:loc>
-      <image:title>Jardín triturado</image:title>
     </image:image>
   </url>
   <url>

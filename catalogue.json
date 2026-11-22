@@ -190,6 +190,35 @@
       }
     },
     {
+      "id": "204",
+      "name": "Jardín triturado",
+      "year": "2026",
+      "medium": "Oil on canvas",
+      "width": {
+        "value": 190,
+        "unit": "cm"
+      },
+      "height": {
+        "value": 190,
+        "unit": "cm"
+      },
+      "availability": "available",
+      "description": {
+        "en": "This vibrant, dreamlike composition blends digital-age aesthetics with a surreal, pastoral setting. A woman in the foreground appears to be controlling or observing a chaotic landscape where a horse gallops past strange, oversized industrial remnants. The style is deliberately disjointed, juxtaposing hyper-realistic figures against loose, gestural backgrounds and toy-like colors. Through this clash of the modern and the organic, the work reflects on our fragmented attention spans and the blurring lines between our natural environment and the artificial worlds we curate on screens.",
+        "es": "Esta pintura presenta un escenario surrealista que fusiona la cotidianidad con elementos de ensueño. Con una paleta de colores vibrantes y pinceladas sueltas, la obra retrata a un grupo de figuras —entre ellas una mujer que observa la escena como si fuera una espectadora— inmersas en un entorno donde la naturaleza se mezcla con restos de una civilización fragmentada.\n\nEl elemento central es una estructura metálica e indefinida que actúa como ancla visual, contrastando con la figura dinámica del caballo que galopa al fondo. El estilo oscila entre el realismo figurativo y una narrativa onírica, creando una sensación de extrañeza. La obra invita a reflexionar sobre la relación entre el ser humano, la tecnología y el medio ambiente, sugiriendo un mundo donde las escalas temporales y espaciales han perdido su lógica habitual, dejando al espectador ante una atmósfera de calma inquietante."
+      },
+      "image": "https://arweave.net/SXJ1S43VJN-jcKr_HqJKJFYChzGjzGEgnEFxU5oR8dM",
+      "page": {
+        "en": "https://juanmamoreno.com/artwork/204/",
+        "es": "https://juanmamoreno.com/es/artwork/204/"
+      },
+      "certificate": {
+        "contract": "0x6E8b1D55B3fb934149b1125964a9c01a87995548",
+        "tokenId": "204",
+        "url": "https://etherscan.io/nft/0x6E8b1D55B3fb934149b1125964a9c01a87995548/204"
+      }
+    },
+    {
       "id": "160",
       "name": "Festival de influencers",
       "year": "2025",
@@ -622,35 +651,6 @@
         "contract": "0x6E8b1D55B3fb934149b1125964a9c01a87995548",
         "tokenId": "6",
         "url": "https://etherscan.io/nft/0x6E8b1D55B3fb934149b1125964a9c01a87995548/6"
-      }
-    },
-    {
-      "id": "84",
-      "name": "Jardín triturado",
-      "year": "2022",
-      "medium": "Oil on canvas",
-      "width": {
-        "value": 190,
-        "unit": "cm"
-      },
-      "height": {
-        "value": 190,
-        "unit": "cm"
-      },
-      "availability": "available",
-      "description": {
-        "en": "A tangle of childhood, smeared in sunshine. Gleaming blue metal twists into a silent scream, the landscape both familiar and a little off-kilter, like a half-remembered dream. Figures, caught in the golden hour, reach and pause, their faces softened by a hazy light. The dog is a warm, earthly weight in the woman's lap. A carousel of movement across a boundless field; laughter and longing echo across the space. A fleeting moment, held close, the weight of memory pressing into a single frame, a space filled with a joy that trembles at the edge of something else.",
-        "es": "Un sol amarillo, como una promesa incierta, baña un paisaje fragmentado. El recuerdo de la infancia, el juego y la espera, entrelazados en un mismo prado. Un perro naranja, la fidelidad del instante, mira al futuro con la mirada de una mujer. La sombra azul de un gigante metálico, un eco de la ciudad que se divisa a lo lejos. Los niños, pequeños dioses de un presente incierto, juegan a ser los amos del universo. Un caballo, símbolo de la fuerza y la libertad, corre hacia un horizonte difuso, un sueño en movimiento. Todo es fragmento, todo es fuga. Un instante capturado, un susurro de vida."
-      },
-      "image": "https://arweave.net/sxe9lhp4LnIqh61r81o1BZh3y-IHDBo_1K-tWmzYYrE",
-      "page": {
-        "en": "https://juanmamoreno.com/artwork/84/",
-        "es": "https://juanmamoreno.com/es/artwork/84/"
-      },
-      "certificate": {
-        "contract": "0x6E8b1D55B3fb934149b1125964a9c01a87995548",
-        "tokenId": "84",
-        "url": "https://etherscan.io/nft/0x6E8b1D55B3fb934149b1125964a9c01a87995548/84"
       }
     },
     {
