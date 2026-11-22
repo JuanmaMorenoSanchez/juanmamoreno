@@ -35,14 +35,20 @@ function within<T>(work: Promise<T>, ms: number, complaint: string): Promise<T> 
 }
 
 /**
- * The wallet the browser has, if it has one.
+ * The wallet the page can reach, of which there are two kinds.
  *
- * EIP-1193, which every wallet's in-app browser provides: opening the studio
- * inside the wallet app puts `window.ethereum` on the page and a transaction can
- * be handed to it. No library, no connector service, no project id — the site
- * already talks to a node over plain fetch and this is the same idea.
+ * An injected EIP-1193 provider is used whenever the page has one: an extension
+ * on the laptop, or the studio opened inside a wallet app's own browser, where
+ * `window.ethereum` is simply there and nothing has to be loaded.
  *
- * This is what makes signing on a phone possible without a key on the server.
+ * When there is none — an ordinary Safari or Chrome on a phone — Coinbase
+ * Wallet is reached over its own relay instead, which deep-links into the app to
+ * sign and comes back. That case is not an edge: signing in needs Google, and
+ * Google refuses to sign anyone in from inside an embedded wallet browser, where
+ * its popup is a white screen rather than a refusal. So the browser that can
+ * sign in is precisely the one with no wallet in it, and this is what bridges
+ * the two.
+ *
  * The artist's own wallet is the contract's minter, so he signs as himself; the
  * server assembles the certificate and never holds anything that could write it.
  */
@@ -56,9 +62,32 @@ export class WalletService {
   /** The connected address, or null while nobody has connected. */
   readonly account = signal<string | null>(null);
 
-  private get provider(): Eip1193 | null {
+  /** Coinbase Wallet over its own relay, built on first use and then kept. */
+  private relay: Eip1193 | null = null;
+
+  /**
+   * The injected wallet if there is one, and Coinbase Wallet if there is not.
+   *
+   * The relay is imported where it is used rather than at the top of the file,
+   * so the catalogue — every page of which is prerendered and read without
+   * signing in to anything — never downloads an Ethereum library to show a
+   * painting.
+   */
+  private async provider(): Promise<Eip1193> {
     const injected = (globalThis as { ethereum?: Eip1193 }).ethereum;
-    return injected ?? null;
+    if (injected) return injected;
+
+    if (!this.relay) {
+      const { createCoinbaseWalletSDK } = await import('@coinbase/wallet-sdk');
+      this.relay = createCoinbaseWalletSDK({
+        appName: 'Juanma Moreno Sánchez',
+        appChainIds: [1],
+        // eoaOnly, because a Smart Wallet would be a newly created address and
+        // the contract obeys exactly one — the wallet he already holds.
+        preference: { options: 'eoaOnly' },
+      }).getProvider() as Eip1193;
+    }
+    return this.relay;
   }
 
   /**
@@ -69,19 +98,12 @@ export class WalletService {
    * success, and the certificate would look written when nothing had happened.
    */
   public async connect(): Promise<string> {
-    const wallet = this.provider;
-    if (!wallet) {
-      throw new Error(
-        'No wallet on this page. Safari and Chrome on a phone put none here — open ' +
-          'juanmamoreno.com from inside your wallet app’s own browser (MetaMask, Rainbow and ' +
-          'Coinbase Wallet each have one) and sign from there. A laptop needs the extension.'
-      );
-    }
+    const wallet = await this.provider();
 
     const accounts = (await within(
       wallet.request({ method: 'eth_requestAccounts' }) as Promise<string[]>,
       ANSWER_WITHIN,
-      'Your wallet did not answer. Open it, unlock it, and press Sign again.'
+      'Your wallet did not answer. Open it, unlock it, and press Mint again.'
     )) as string[];
     const account = accounts?.[0];
     if (!account) throw new Error('The wallet did not say which account to use.');
@@ -116,9 +138,12 @@ export class WalletService {
     maxFeePerGas?: string;
     maxPriorityFeePerGas?: string;
   }): Promise<string> {
-    const wallet = this.provider;
+    // Who is signing is checked before a wallet is reached for, so nothing is
+    // loaded or woken up on behalf of a caller that has not connected.
     const from = this.account();
-    if (!wallet || !from) throw new Error('No wallet is connected.');
+    if (!from) throw new Error('No wallet is connected.');
+
+    const wallet = await this.provider();
 
     // The fees are passed on exactly as they arrive, and left out when they did
     // not: a wallet choosing for itself added a tip twice the size of what the

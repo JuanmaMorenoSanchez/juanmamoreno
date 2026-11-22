@@ -2375,16 +2375,20 @@ both repositories, where every `uses:` is a commit
 
 ### R86 — The artist signs his own certificates, from his own phone · met
 The contract's minter is his own wallet, so he is the one who can add a
-certificate — and a wallet app's browser puts that wallet on the page. Opened
-there, the waiting list offers **Mint** on each certificate: the api assembles
-what it will say and encodes the call, the wallet signs it as him, and no
+certificate. The waiting list offers **Mint** on each one: the api assembles
+what it will say and encodes the call, his wallet signs it as him, and no
 minting key exists anywhere for anyone to steal.
 
-**A phone browser is not that browser**, and the page says so by name. Safari
-and Chrome put no wallet on the page, and "open the studio inside your wallet
-app's browser" assumed he knew such a thing existed — it was read as "go and
-find a laptop", which is the opposite of what this requirement is for. The
-message now names the apps that have one.
+**The browser that can sign in is the one with no wallet in it.** Sending him
+into a wallet app's own browser was advice that could not work, and it stood
+here as met until 2.91.0: signing in to the studio needs Google, and Google
+refuses to sign anyone in from inside an embedded wallet browser — its popup
+renders as a white screen, with nothing said and nothing to dismiss. So the
+phone route runs the other way round. He signs in to Google in ordinary Safari
+or Chrome, where that works, and a page with no wallet injected into it reaches
+Coinbase Wallet over its own relay, which deep-links into the app to sign and
+comes back. An injected wallet still wins wherever there is one, so a laptop
+extension and a wallet's own browser both behave exactly as before.
 
 Nothing is built in the browser. The bytes arrive already encoded, because what
 a certificate says is decided in one place, and the page's only jobs are to ask
@@ -2394,10 +2398,11 @@ The chain is checked before a signature is asked for. A wallet pointed at
 another network would sign something meaningless and report success, and the
 certificate would look written when nothing had happened. The list is shortened
 only once the chain has been asked whether the token is really there.
-*Proven by:* `wallet.service.spec.ts` (10 tests, including "refuses to go on
-when the wallet will not leave the wrong chain", "sends exactly what it was
-given, and builds nothing itself" and "says where to find a wallet rather than
-failing silently"). The transaction itself is the backend's B39.
+*Proven by:* `wallet.service.spec.ts` (12 tests, including "goes to Coinbase
+Wallet when the page has no wallet of its own", "prefers the wallet already on
+the page to opening an app", "refuses to go on when the wallet will not leave
+the wrong chain" and "sends exactly what it was given, and builds nothing
+itself"). The transaction itself is the backend's B39.
 
 ### R87 — A photograph is written back the way it arrived · met
 Straightening moves every pixel, so the picture has to be encoded again and one

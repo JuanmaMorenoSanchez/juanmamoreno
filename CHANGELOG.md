@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.91.0
+
+- **feat** A phone with no wallet in the browser can mint. Signing in needs
+  Google and Google refuses an embedded wallet browser with a white screen, so
+  the page no longer asks him to go there: in ordinary Safari or Chrome it
+  reaches Coinbase Wallet over its own relay, which deep-links into the app to
+  sign. An injected wallet is still preferred wherever one exists, and the
+  relay is imported only when it is needed, so no catalogue page downloads it.
+
 ## 2.90.1
 
 - **fix** The requirements name the test that exists. R135 still quoted a

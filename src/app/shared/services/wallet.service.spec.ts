@@ -3,6 +3,25 @@ import { vi } from 'vitest';
 import { WalletService } from './wallet.service';
 
 /**
+ * Coinbase Wallet, stood in for.
+ *
+ * The real one opens the app, so what is checked here is that a page with no
+ * wallet of its own reaches for it at all rather than giving up — which is the
+ * whole phone case.
+ */
+const relay = vi.hoisted(() => ({
+  request: vi.fn(async ({ method }: { method: string }) => {
+    if (method === 'eth_requestAccounts') return ['0xD7D089B7eBecCaf4FF8f183F22376913ce6193B9'];
+    if (method === 'eth_chainId') return '0x1';
+    return '0xhash';
+  }),
+}));
+
+vi.mock('@coinbase/wallet-sdk', () => ({
+  createCoinbaseWalletSDK: () => ({ getProvider: () => relay }),
+}));
+
+/**
  * The wallet in the browser, which is what makes signing on a phone possible
  * without a key on the server.
  */
@@ -24,6 +43,7 @@ describe('WalletService', () => {
 
   beforeEach(() => {
     delete (globalThis as { ethereum?: unknown }).ethereum;
+    relay.request.mockClear();
     TestBed.configureTestingModule({});
     wallet = TestBed.inject(WalletService);
   });
@@ -131,8 +151,26 @@ describe('WalletService', () => {
     await expect(wallet.send({ to: '0xa', data: '0xb' })).rejects.toThrow(/connected/);
   });
 
-  it('says where to find a wallet rather than failing silently', async () => {
-    await expect(wallet.connect()).rejects.toThrow(/wallet app/);
+  it('goes to Coinbase Wallet when the page has no wallet of its own', async () => {
+    // Not an edge case but the phone case: the browser Google will sign him in
+    // from is exactly the one with no wallet injected into it, so having none
+    // has to lead somewhere rather than stop.
+    await expect(wallet.connect()).resolves.toBe(ACCOUNT);
+
+    expect(relay.request).toHaveBeenCalledWith({ method: 'eth_requestAccounts' });
+    await expect(wallet.send({ to: '0xa', data: '0xb' })).resolves.toBe('0xhash');
+  });
+
+  it('prefers the wallet already on the page to opening an app', async () => {
+    // An extension on the laptop, or the studio opened inside a wallet's own
+    // browser. Reaching past it would send him to his phone to sign something
+    // the machine in front of him can already sign.
+    const request = inject({ eth_requestAccounts: [ACCOUNT], eth_chainId: '0x1' });
+
+    await expect(wallet.connect()).resolves.toBe(ACCOUNT);
+
+    expect(request).toHaveBeenCalled();
+    expect(relay.request).not.toHaveBeenCalled();
   });
 
   describe('a wallet that never answers', () => {
