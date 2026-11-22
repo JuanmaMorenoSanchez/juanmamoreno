@@ -264,6 +264,44 @@ describe('Artwork', () => {
     it('does not classify a malformed nft as a frontal view', () => {
       expect(art.filterFrontalArtworks([brokenNft()])).toEqual([]);
     });
+
+    /**
+     * The real shape of the data, and what it cost.
+     *
+     * A version is written only when a photograph knowingly replaces another,
+     * so one certificate of a hundred and ninety-three has one. Two frontal
+     * views with no version made every comparison `0 > 0` — false — so
+     * `reduce` kept whichever the api listed first, which was the lower token
+     * number, which was the older photograph. The catalogue showed the old one
+     * and called the newly minted one a work in progress.
+     */
+    describe('two frontal views and no version on either', () => {
+      it('takes the one written later, which is the higher token number', () => {
+        const older = nft('84', [frontal()]);
+        const newer = nft('204', [frontal()]);
+
+        expect(art.isFrontalView(newer, [older, newer])).toBe(true);
+        expect(art.isFrontalView(older, [older, newer])).toBe(false);
+      });
+
+      // The order the api happens to list them in decides nothing.
+      it('gives the same answer whichever order they arrive in', () => {
+        const older = nft('84', [frontal()]);
+        const newer = nft('204', [frontal()]);
+
+        expect(art.getLatestVersion([older, newer])?.tokenId).toBe('204');
+        expect(art.getLatestVersion([newer, older])?.tokenId).toBe('204');
+      });
+
+      // A version, where there is one, still outranks the token number: it is
+      // the artist saying which photograph replaced which.
+      it('still lets a version win over a higher token number', () => {
+        const saidSecond = nft('84', [frontal(), version('2')]);
+        const saidFirst = nft('204', [frontal(), version('1')]);
+
+        expect(art.getLatestVersion([saidFirst, saidSecond])?.tokenId).toBe('84');
+      });
+    });
   });
 
   // ── isExcludedByYear ─────────────────────────────────────────────────────

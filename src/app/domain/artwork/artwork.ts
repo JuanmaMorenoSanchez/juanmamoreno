@@ -207,12 +207,30 @@ export class Artwork {
     }
   }
 
+  /**
+   * The newest of these, which decides which photograph is the frontal view.
+   *
+   * The version decides it when there is one — and there almost never is. One
+   * certificate of a hundred and ninety-three carries a version trait, because
+   * it is written only when a photograph is knowingly replacing another, so
+   * `parseInt(undefined) || 0` made nearly every comparison `0 > 0`, which is
+   * false, which left `reduce` holding whichever piece the api happened to list
+   * first. The frontal view of a painting with two was therefore decided by
+   * snapshot ordering: the catalogue showed the older photograph and labelled
+   * the newer one a work in progress.
+   *
+   * So a tie is broken by the token number, because a certificate written later
+   * has a higher one. That is the same answer every time, it needs nothing
+   * written to the chain, and it is right for the two paintings that already
+   * have two frontal views and no version on either.
+   */
   getLatestVersion(nfts: Nft[]): Nft | null {
     if (!nfts.length) return null;
     return nfts.reduce((latest, current) => {
       const vA = parseInt(this.getTraitValue(latest, VALIDTRAITS.VERSION)) || 0;
       const vB = parseInt(this.getTraitValue(current, VALIDTRAITS.VERSION)) || 0;
-      return vB > vA ? current : latest;
+      if (vA !== vB) return vB > vA ? current : latest;
+      return Number(current.tokenId) > Number(latest.tokenId) ? current : latest;
     });
   }
 

@@ -5,6 +5,24 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.94.1
+
+- **fix** A newly minted photograph becomes the painting's frontal view. One
+  certificate of 193 carries a version trait, so with two rivals the
+  comparison was `0 > 0` and the winner was whichever the api listed first —
+  the lower token number, the older photograph. The catalogue showed the old
+  picture and called the new one a work in progress. A tie now goes to the
+  higher token number, and a real version still outranks it.
+- **fix** The studio prepares nothing when it cannot ask whether a painting
+  already has a frontal view. Treating an unaskable question as "no" is how two
+  paintings came to hold two rival frontal views on chain with no version on
+  either.
+- **fix** A certificate that reached the chain comes off the queue. It was
+  asked once, in the instant after signing, before a block holding it could
+  exist — so a mint that worked said "not yet" and stayed on the list. It is
+  asked for a little over a minute now, and the sentence saying it landed no
+  longer disappears when the list empties.
+
 ## 2.94.0
 
 - **feat** Questions are asked in the page, not with `window.confirm`. A wallet

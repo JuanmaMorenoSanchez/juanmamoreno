@@ -121,10 +121,6 @@
           </li>
         }
       </ul>
-
-      @if (said(); as note) {
-        <p class="pending-note" role="status">{{ note }}</p>
-      }
     </section>
   } @else {
     <!--
@@ -136,5 +132,15 @@
     <p class="pending-note" role="status">
       Nothing is waiting to be signed. Prepare one below and it appears here.
     </p>
+  }
+
+  <!--
+    Outside the branch above, because it used to live inside it: minting the
+    last certificate on the list emptied the list, which hid the very sentence
+    saying it had reached the chain. The one press that most deserves an answer
+    got none.
+  -->
+  @if (said(); as note) {
+    <p class="pending-note" role="status">{{ note }}</p>
   }
 }

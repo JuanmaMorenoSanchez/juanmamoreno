@@ -13,6 +13,16 @@ import { MintApiService, type PendingMint } from '@shared/services/mint-api.serv
 import { WalletService } from '@shared/services/wallet.service';
 
 /**
+ * How long to wait on the chain before saying it has not been seen.
+ *
+ * A block is about twelve seconds, so one ask in the instant after signing can
+ * only ever answer no. Eight asks eight seconds apart is a little over a
+ * minute, which is several blocks even on a slow afternoon.
+ */
+const ASKS_THE_CHAIN = 8;
+const BETWEEN_ASKS_MS = 8_000;
+
+/**
  * The certificates written and not yet signed, at the top of the page.
  *
  * **There was a count and no list.** The form said "3 waiting to be written"
@@ -137,7 +147,7 @@ export class PendingCertificatesComponent {
       await this.wallet.send(transaction);
       this.said.set(`Certificate ${tokenId} is signed. Asking the chain whether it landed…`);
 
-      const { written } = await this.api.written(tokenId);
+      const written = await this.landed(tokenId);
       if (written) {
         this.waiting.update((all) => (all ?? []).filter((one) => one.tokenId !== tokenId));
         this.said.set(`Certificate ${tokenId} is on the chain.`);
@@ -156,6 +166,31 @@ export class PendingCertificatesComponent {
     } finally {
       this.minting.set(null);
     }
+  }
+
+  /**
+   * Whether it reached the chain, asked for as long as a block takes.
+   *
+   * It was asked exactly once, in the instant after the wallet handed back a
+   * hash — before any block containing it could exist. So a mint that worked
+   * perfectly answered "not yet", the certificate stayed on the list, and the
+   * only way to see it had landed was to come back later and reload. A block is
+   * about twelve seconds; this waits a little over a minute before giving up,
+   * and giving up still leaves it on the list, which is the honest place for
+   * something sent and not seen.
+   */
+  private async landed(tokenId: number): Promise<boolean> {
+    for (let asked = 0; asked < ASKS_THE_CHAIN; asked += 1) {
+      if (asked > 0) {
+        this.said.set(`Certificate ${tokenId} is signed. Waiting for the chain to confirm it…`);
+        await new Promise((wake) => setTimeout(wake, BETWEEN_ASKS_MS));
+      }
+      // A refusal is not a no: the next ask is a few seconds away, and the
+      // certificate stays on the list either way.
+      const answer = await this.api.written(tokenId).catch(() => ({ written: false }));
+      if (answer.written) return true;
+    }
+    return false;
   }
 
   /** The on-chain thumbnail, which is stored as bytes rather than an address. */

@@ -8508,6 +8508,50 @@ export const FALLBACK_ARTWORKS_API_CALL: ApiResponse<Nft[]> = {
         },
       },
     },
+    {
+      tokenId: '204',
+      name: 'Jardín triturado',
+      image: {
+        originalUrl: 'https://storage.googleapis.com/juanmamoreno-originals/204.jpg',
+        cachedUrl: 'https://arweave.net/SXJ1S43VJN-jcKr_HqJKJFYChzGjzGEgnEFxU5oR8dM',
+        thumbnailUrl:
+          'data:image/jpeg;base64,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',
+      },
+      raw: {
+        metadata: {
+          attributes: [
+            {
+              trait_type: 'Medium',
+              value: 'Oil on canvas',
+            },
+            {
+              trait_type: 'Height',
+              value: '190',
+            },
+            {
+              trait_type: 'Width',
+              value: '190',
+            },
+            {
+              trait_type: 'Unit',
+              value: 'cm',
+            },
+            {
+              trait_type: 'Year',
+              value: '2026',
+            },
+            {
+              trait_type: 'Image Type',
+              value: 'Frontal view',
+            },
+            {
+              trait_type: 'Artist',
+              value: 'Juanma Moreno Sánchez',
+            },
+          ],
+        },
+      },
+    },
   ],
 };
 

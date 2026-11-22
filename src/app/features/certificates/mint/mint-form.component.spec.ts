@@ -157,19 +157,28 @@ describe('MintFormComponent, replacing a frontal view', () => {
   });
 
   /**
-   * A question that could not be asked is not an answer of "yes, replace" —
-   * but neither is it a reason to stop the artist working. The catalogue still
-   * shows him which certificate holds the slot.
+   * This test used to assert the opposite, and the reasoning was that a
+   * question which could not be asked is no reason to stop the artist working,
+   * since the catalogue still shows which certificate holds the slot.
+   *
+   * Both halves were wrong. Going ahead writes a second unversioned frontal
+   * view — two rivals for one slot, on chain, for good — which is precisely
+   * what every other test in this block exists to prevent; the one path that
+   * skipped the question was the one path that did it. And the catalogue cannot
+   * show which holds the slot, because with no version on either it has nothing
+   * to choose by. Two paintings are in that state now.
+   *
+   * Stopping costs him a minute. The alternative costs a certificate that
+   * cannot be unwritten.
    */
-  it('goes ahead without a version when the api cannot answer', async () => {
+  it('prepares nothing at all when the api cannot answer', async () => {
     await setup({ taken: false });
     api.frontalView.mockRejectedValue(new Error('offline'));
 
     await component.prepare();
 
     expect(dialog.open).not.toHaveBeenCalled();
-    expect(api.prepare).toHaveBeenCalled();
-    expect((api.prepare.mock.calls[0][0] as FormData).get('version')).toBeNull();
+    expect(api.prepare).not.toHaveBeenCalled();
   });
 
   /**

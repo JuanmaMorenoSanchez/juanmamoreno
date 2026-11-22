@@ -275,8 +275,27 @@ export class MintFormComponent {
         unit: this.unit(),
         imageType: this.imageType(),
       })
-      // A question that could not be asked is not an answer of "yes, replace".
-      .catch(() => ({ taken: false }) as const);
+      .catch(() => null);
+
+    /**
+     * A question that could not be asked is not an answer of "there is no
+     * frontal view yet".
+     *
+     * It was treated as one, and that is how two paintings came to hold two
+     * rival frontal views with no version on either — exactly the outcome the
+     * note above says this refuses, reached by the one path that skipped the
+     * question. With nothing to tell them apart the catalogue picked by the
+     * order the api listed them in, showed the older photograph, and called the
+     * new one a work in progress.
+     */
+    if (standing === null) {
+      this.say(
+        'Could not ask whether this painting already has a frontal view, so nothing was ' +
+          'prepared. Try again in a moment.',
+        'bad'
+      );
+      return null;
+    }
 
     if (!standing.taken) return undefined;
 
@@ -296,7 +315,15 @@ export class MintFormComponent {
     );
 
     // Closed with the escape key is not a yes.
-    return replace ? String(standing.nextVersion) : null;
+    if (!replace) {
+      this.say(
+        `“${this.name().trim()}” already has a frontal view, and nothing was prepared. ` +
+          'Change the image type, or the title, to store this photograph as something else.',
+        'bad'
+      );
+      return null;
+    }
+    return String(standing.nextVersion);
   }
 
   /**
@@ -371,10 +398,11 @@ export class MintFormComponent {
     // button said nothing and looked exactly like a button that does nothing.
     this.busy.set(true);
 
+    // Null is a stop, and it has already said why — the two reasons are
+    // different ones and used to share a message that fitted neither.
     const version = await this.versionToWrite();
     if (version === null) {
       this.busy.set(false);
-      this.say('Nothing was prepared. Change the image type, or the title, and try again.', 'bad');
       return;
     }
 

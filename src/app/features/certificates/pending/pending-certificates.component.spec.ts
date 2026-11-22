@@ -29,6 +29,10 @@ function setup(options: {
   onDiscard?: () => Promise<void>;
   onSend?: () => Promise<string>;
   written?: boolean;
+  /** Says no until this many asks have gone by, then yes. A block takes time. */
+  writtenAfter?: number;
+  /** Lets one ask fail, to prove a refusal is not the chain saying no. */
+  onWritten?: () => Promise<{ written: boolean }> | undefined;
 }) {
   const discarded: number[] = [];
   const asked: Array<{ tokenId: number; to: string }> = [];
@@ -54,6 +58,11 @@ function setup(options: {
           },
           written: (tokenId: number) => {
             confirmed.push(tokenId);
+            const instead = options.onWritten?.();
+            if (instead) return instead;
+            if (options.writtenAfter !== undefined) {
+              return Promise.resolve({ written: confirmed.length >= options.writtenAfter });
+            }
             return Promise.resolve({ written: options.written ?? true });
           },
         },
@@ -224,14 +233,76 @@ describe('minting one from the list', () => {
    * again.
    */
   it('keeps one that was sent but not yet mined', async () => {
-    const { fixture, host } = setup({ list: [waiting(5)], written: false });
-    await settled(fixture);
+    vi.useFakeTimers();
+    try {
+      const { fixture, host } = setup({ list: [waiting(5)], written: false });
+      await settled(fixture);
 
-    await mint(fixture);
-    fixture.detectChanges();
+      const minting = mint(fixture);
+      // The whole window, which it spends being told no.
+      await vi.advanceTimersByTimeAsync(8 * 8_000);
+      await minting;
+      fixture.detectChanges();
 
-    expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
-    expect(host.textContent).toContain('not been mined yet');
+      expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
+      expect(host.textContent).toContain('not been mined yet');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  /**
+   * The mint that worked and looked as though it had not.
+   *
+   * The chain was asked exactly once, in the instant after the wallet handed
+   * back a hash — before any block holding it could exist — so a perfectly
+   * good mint answered "not yet", the certificate stayed on the list, and the
+   * only way to find out it had landed was to come back later and reload.
+   */
+  it('keeps asking the chain for a minute before giving up', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fixture, host, confirmed } = setup({ list: [waiting(5)], writtenAfter: 3 });
+      await settled(fixture);
+
+      const minting = mint(fixture);
+      await vi.advanceTimersByTimeAsync(3 * 8_000);
+      await minting;
+      fixture.detectChanges();
+
+      expect(confirmed.length).toBe(3);
+      expect(host.querySelectorAll('.pending-one')).toHaveLength(0);
+      expect(host.textContent).toContain('on the chain');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  // A refusal from the api is not the chain saying no; the next ask is seconds
+  // away, and the certificate stays on the list either way.
+  it('survives an api that refuses one of the asks', async () => {
+    vi.useFakeTimers();
+    try {
+      let asks = 0;
+      const { fixture, host } = setup({
+        list: [waiting(5)],
+        writtenAfter: 2,
+        onWritten: () => {
+          asks += 1;
+          return asks === 1 ? Promise.reject(new Error('gateway')) : undefined;
+        },
+      });
+      await settled(fixture);
+
+      const minting = mint(fixture);
+      await vi.advanceTimersByTimeAsync(8 * 8_000);
+      await minting;
+      fixture.detectChanges();
+
+      expect(host.textContent).toContain('on the chain');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('says what went wrong when the wallet refused, and keeps it', async () => {

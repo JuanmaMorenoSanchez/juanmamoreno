@@ -6891,3 +6891,50 @@ destroy confirmation is dismissed"), `catalogue-admin.component.spec.ts`
 ("forgets the network it was asked about", "does nothing when the confirmation
 is dismissed"), and `eslint.config.js`, which fails the build on a native
 dialog anywhere in the app.
+
+### R257 — A minted certificate becomes the frontal view, and leaves the queue · met
+Two things were wrong the first time a certificate was written from the studio
+by wallet, both of them about a mint that had entirely succeeded.
+
+**The newly minted photograph became the frontal view, not the old one.** The
+frontal view of a painting is the newest of its frontal-view pieces, decided by
+a version trait — and a version is written only when a photograph knowingly
+replaces another, so **one certificate of a hundred and ninety-three carries
+one**. With no version on either rival, `parseInt(undefined) || 0` made the
+comparison `0 > 0`, which is false, so `reduce` kept whichever piece the api
+happened to list first: the lower token number, which is the older photograph.
+The catalogue showed the old picture and labelled the new one a work in
+progress — the exact reverse of what a replacement means. A tie is now broken by
+the token number, because a certificate written later has a higher one. It needs
+nothing written to the chain, gives the same answer whatever order the api sends,
+and a real version still outranks it, because that is the artist saying which
+photograph replaced which.
+
+**Nothing should have had two rival frontal views in the first place.** Before
+preparing a frontal view the studio asks the api whether the painting already
+has one, and a yes becomes a question and a version. A question that *could not
+be asked* was treated as a no, so the mint went ahead and wrote a second
+unversioned rival — on chain, for good — which is the one thing every other
+rule here exists to prevent, reached by the one path that skipped the question.
+Two paintings are in that state: "Jardín triturado" (84 and 204) and "Secuestro
+en la rave" (147 and 152). It now prepares nothing and says why. Stopping costs
+him a minute; the alternative costs a certificate that cannot be unwritten.
+
+**A certificate that reached the chain comes off the list.** The chain was asked
+exactly once, in the instant after the wallet handed back a hash — before any
+block containing it could exist — so a mint that worked perfectly answered "not
+yet", the certificate stayed on the queue, and the only way to learn it had
+landed was to come back later and reload. It is now asked for a little over a
+minute, which is several blocks, and a refused ask is not read as the chain
+saying no. Giving up still leaves it on the list, which is the honest place for
+something sent and not seen. The sentence saying it landed also moved out of the
+list's own branch: minting the last certificate emptied the list, which hid the
+one message that press most deserved.
+*Proven by:* `artwork.spec.ts` (under "two frontal views and no version on
+either": "takes the one written later, which is the higher token number",
+"gives the same answer whichever order they arrive in", "still lets a version
+win over a higher token number"), `mint-form.component.spec.ts` ("prepares
+nothing at all when the api cannot answer", which asserted the opposite until
+this release), and `pending-certificates.component.spec.ts` ("keeps asking the
+chain for a minute before giving up", "survives an api that refuses one of the
+asks", "keeps one that was sent but not yet mined").
