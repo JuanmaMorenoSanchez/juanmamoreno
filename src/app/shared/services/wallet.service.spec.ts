@@ -145,6 +145,40 @@ describe('WalletService', () => {
     });
   });
 
+  /**
+   * How he signs in. This went out untested, and the shape of the payload was
+   * exactly what broke: it sent hex, and while most wallets decode hex before
+   * signing, the Coinbase app's own in-app browser signs the hex as literal
+   * text — so the signature recovered to the wrong address and every request
+   * came back 403 while the door said he was in. A sentence that is not hex has
+   * no such fork in it.
+   */
+  describe('signing in', () => {
+    const SENTENCE = 'juanmamoreno.com wants you to sign in to the studio.';
+
+    it('hands the wallet the sentence itself, never hex', async () => {
+      const request = inject({
+        eth_requestAccounts: [ACCOUNT],
+        eth_chainId: '0x1',
+        personal_sign: '0xsignature',
+      });
+      await wallet.connect();
+
+      await expect(wallet.sign(SENTENCE)).resolves.toBe('0xsignature');
+
+      expect(request).toHaveBeenCalledWith({
+        method: 'personal_sign',
+        params: [SENTENCE, ACCOUNT],
+      });
+    });
+
+    it('will not sign before anybody has connected', async () => {
+      inject({ eth_chainId: '0x1' });
+
+      await expect(wallet.sign(SENTENCE)).rejects.toThrow(/connected/);
+    });
+  });
+
   it('will not send before anybody has connected', async () => {
     inject({ eth_chainId: '0x1' });
 

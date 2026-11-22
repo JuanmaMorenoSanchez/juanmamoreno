@@ -6772,7 +6772,19 @@ run holds no browser and no wallet and takes its credential from the Google
 Cloud SDK, and losing a wallet must not lose the studio, so both ways in are
 offered — except inside a wallet app's browser, where Google is not offered at
 all. A door that cannot open does not belong on the page.
-*Proven by:* `wallet-session.spec.ts` (7 tests, including "writes the message the
+
+**The sentence is handed over as itself, not as hex.** `personal_sign` specifies
+hex and this sent hex, which is where it first broke: most wallets decode a hex
+payload and sign the bytes — Coinbase's own SDK does — but the Coinbase app's
+in-app browser signs the hex as literal text, so the signature recovered to an
+address that was not his. He signed in, the door said he was in, and every
+request came back 403: a failure in the worst possible shape, because the half
+that reports success is not the half that checks. Plain text has no such fork in
+it. The api accepts either form besides (its B15), so a session already signed
+kept working. `sign` had no test at all when it shipped, which is how the shape
+of the payload went unexamined; it has one now, and it pins the sentence.
+*Proven by:* `wallet.service.spec.ts` (under "signing in", "hands the wallet the
+sentence itself, never hex"), `wallet-session.spec.ts` (7 tests, including "writes the message the
 api expects", which pins the text the api rebuilds), `door.component.spec.ts`
 ("offers only the wallet inside a wallet app’s browser", "offers both ways in
 anywhere else", "names the wallet it will not open for", "sends the api the

@@ -131,23 +131,23 @@ export class WalletService {
    *
    * This is how he signs in, and it is not a transaction: `personal_sign`
    * authorises nothing on the chain and spends nothing, which is why the
-   * sentence he is shown says so. The bytes are sent as hex rather than as a
-   * string, which is what the method actually specifies — some wallets accept
-   * either and some only the hex.
+   * sentence he is shown says so.
+   *
+   * The sentence is sent as itself, not hex-encoded. The method specifies hex,
+   * and this did send hex — but wallets disagree about what to do with it.
+   * Coinbase's SDK decodes it and signs the bytes; the Coinbase app's own
+   * in-app browser signed the hex as literal text, so the signature recovered
+   * to the wrong address and every request came back 403 while the door said
+   * he was in. Plain text has no such fork in it: a string that is not hex is
+   * signed as the string, by all of them.
    */
   public async sign(message: string): Promise<string> {
     const wallet = await this.provider();
     const from = this.account();
     if (!from) throw new Error('No wallet is connected.');
 
-    const hex =
-      '0x' +
-      Array.from(new TextEncoder().encode(message))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
-
     return (await within(
-      wallet.request({ method: 'personal_sign', params: [hex, from] }) as Promise<string>,
+      wallet.request({ method: 'personal_sign', params: [message, from] }) as Promise<string>,
       SIGNATURE_WITHIN,
       'Your wallet never came back with a signature, so you are not signed in. Press it again.'
     )) as string;

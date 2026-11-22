@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.92.1
+
+- **fix** Signing in with the wallet inside the Coinbase app now works. It sent
+  the sentence hex-encoded, as the method specifies, but that browser signs the
+  hex as text rather than decoding it — so the signature recovered to the wrong
+  address and every request came back 403 while the door said he was in. The
+  sentence is sent as itself, which no wallet can read two ways.
+
 ## 2.92.0
 
 - **feat** The door opens for his own wallet. One button, one sentence signed
