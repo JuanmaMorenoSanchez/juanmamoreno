@@ -22,6 +22,7 @@ import { EssayPanelComponent } from './essay-panel.component';
 import { CertificatePanelComponent } from './certificate-panel.component';
 import { NetworkIconComponent } from './network-icon.component';
 import { NETWORKS } from './networks';
+import { AskService } from '@shared/services/ask.service';
 
 /**
  * How the list is arranged.
@@ -86,6 +87,7 @@ export class CatalogueAdminComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly artworkService = inject(ARTWORK_PORT);
   private readonly availability = inject(AvailabilityService);
+  private readonly ask = inject(AskService);
 
   protected readonly validTraits = VALIDTRAITS;
 
@@ -149,17 +151,16 @@ export class CatalogueAdminComponent {
    */
   protected async forget(nft: Nft, network: string): Promise<void> {
     const name = NETWORKS.find((one) => one.id === network)?.label ?? network;
-    if (
-      !confirm(
-        `Forget that "${nft.name}" went to ${name}?
-
-` +
-          'Nothing is deleted on the network itself — this removes the record that it went ' +
-          'out, which puts the painting back in that queue and it will be posted again.'
-      )
-    ) {
-      return;
-    }
+    const forget = await this.ask.confirm({
+      title: `Forget that "${nft.name}" went to ${name}?`,
+      body: [
+        'Nothing is deleted on the network itself — this removes the record that it went ' +
+          'out, which puts the painting back in that queue and it will be posted again.',
+      ],
+      yes: 'Yes, forget it',
+      grave: true,
+    });
+    if (!forget) return;
 
     this.forgetting.set(`${nft.tokenId}:${network}`);
     try {
@@ -245,11 +246,11 @@ export class CatalogueAdminComponent {
   }
 
   /**
-  * One row per **token**, not per painting.
-  *
-  * A painting photographed three times has three certificates, and the one
-  * with the wrong measurements need not be the one the catalogue shows.
-  */
+   * One row per **token**, not per painting.
+   *
+   * A painting photographed three times has three certificates, and the one
+   * with the wrong measurements need not be the one the catalogue shows.
+   */
   protected readonly rows = computed<Nft[]>(() => {
     const term = this.term().trim().toLowerCase();
 

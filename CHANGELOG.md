@@ -5,6 +5,23 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.94.0
+
+- **feat** Questions are asked in the page, not with `window.confirm`. A wallet
+  app's own browser — which is where the studio is used, because that is where
+  the wallet door is — has no such dialog, so it returned false at once and all
+  five admin confirmations were answered no before they could be read. The
+  press did nothing and said nothing. That is the Mint button that looked
+  broken and was not. A lint rule now refuses native dialogs anywhere in the
+  app.
+- **fix** A Mint button in a queue row says why it cannot be pressed: with no
+  gas price yet it is disabled, and the row shows no price, so it said nothing
+  at all.
+- **fix** The form's Prepare button names what it is still waiting for, and
+  shows `Preparing…` from the first request rather than after it.
+- **fix** An empty queue says the queue is empty instead of drawing nothing,
+  which was indistinguishable from one that failed to load.
+
 ## 2.93.4
 
 - **fix** Asking the wallet which network it is on, and asking it to move to

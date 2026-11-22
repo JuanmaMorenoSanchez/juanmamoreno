@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { Question } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { AskService } from '@shared/services/ask.service';
 import { GasPriceService } from '@shared/services/gas-price.service';
 import { MintGateComponent } from './mint-gate.component';
 
@@ -9,6 +11,21 @@ import { MintGateComponent } from './mint-gate.component';
  * belongs beside the button rather than on a website somewhere else.
  */
 describe('MintGateComponent', () => {
+  /**
+   * The question, asked in the page.
+   *
+   * It was `window.confirm`, which every one of these tests stubbed — and a
+   * wallet app's own browser has no such dialog, so the real one returned false
+   * at once and the press did nothing and said nothing. A stub of a thing that
+   * does not exist on the device is a test that cannot fail.
+   */
+  const dialog = { answer: true, asked: [] as Question[] };
+
+  beforeEach(() => {
+    dialog.answer = true;
+    dialog.asked = [];
+  });
+
   const build = (gwei: number | null, unreachable = false) => {
     const price = signal(gwei);
     const stale = signal(unreachable);
@@ -22,6 +39,15 @@ describe('MintGateComponent', () => {
       imports: [MintGateComponent],
       providers: [
         provideZonelessChangeDetection(),
+        {
+          provide: AskService,
+          useValue: {
+            confirm: (question: Question) => {
+              dialog.asked.push(question);
+              return Promise.resolve(dialog.answer);
+            },
+          },
+        },
         {
           provide: GasPriceService,
           useValue: {
@@ -203,13 +229,12 @@ describe('MintGateComponent', () => {
     it('asks nothing while the price is within the ceiling', () => {
       const { fixture, host } = build(0.05);
       const presses = watchMint(fixture);
-      const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
       expect(insist(host)).toBeNull();
       button(host).click();
 
       expect(presses()).toBe(1);
-      expect(asked).not.toHaveBeenCalled();
+      expect(dialog.asked).toEqual([]);
     });
 
     /** One decision, one control. The second button was the page asking twice. */
@@ -235,26 +260,28 @@ describe('MintGateComponent', () => {
      * to hunt for was the gate arguing with somebody who had read its
      * argument.
      */
-    it('mints on the one press, once the confirmation is accepted', () => {
+    it('mints on the one press, once the confirmation is accepted', async () => {
       const { fixture, host } = build(2);
       const presses = watchMint(fixture);
-      const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
       insist(host)!.click();
+      await fixture.whenStable();
 
       expect(presses()).toBe(1);
       // The figure it is being judged against is in the question, because the
       // row it is pressed from does not show the price.
-      expect(asked.mock.calls[0][0]).toContain('2.000 gwei');
-      expect(asked.mock.calls[0][0]).toContain(`limit of ${GasPriceService.LIMIT} gwei`);
+      const said = dialog.asked[0].body.join(' ');
+      expect(said).toContain('2.000 gwei');
+      expect(said).toContain(`limit of ${GasPriceService.LIMIT} gwei`);
     });
 
-    it('does nothing at all when the confirmation is dismissed', () => {
+    it('does nothing at all when the confirmation is dismissed', async () => {
       const { fixture, host } = build(2);
       const presses = watchMint(fixture);
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      dialog.answer = false;
 
       insist(host)!.click();
+      await fixture.whenStable();
       fixture.detectChanges();
 
       expect(presses()).toBe(0);
@@ -267,7 +294,6 @@ describe('MintGateComponent', () => {
     it('is itself stopped when the gate is stopped for another reason', () => {
       const { fixture, host } = build(2);
       const presses = watchMint(fixture);
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
       fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
@@ -279,11 +305,11 @@ describe('MintGateComponent', () => {
 
     // The ceiling is a standing limit, not a thing one expensive morning
     // widens: nothing here touches it.
-    it('leaves the limit where it was', () => {
-      const { host, asked } = build(2);
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
+    it('leaves the limit where it was', async () => {
+      const { fixture, host, asked } = build(2);
 
       insist(host)!.click();
+      await fixture.whenStable();
 
       expect(asked).toEqual([]);
     });
@@ -321,5 +347,50 @@ describe('MintGateComponent', () => {
     // The warning travels with the button, since the row shows no price of
     // its own: without it a dear morning would look like a quiet one here.
     expect(host.querySelector('.gate-over')).not.toBeNull();
+  });
+
+  /**
+   * The arrangement that said nothing at all.
+   *
+   * A row of a queue states no price, and with no price yet the button is hard
+   * disabled — so the row was a Mint button that could not be pressed, with
+   * nothing anywhere explaining why. On a phone a disabled outline button is
+   * barely distinguishable from a live one, and `cursor: not-allowed` means
+   * nothing to a finger. That is what "the UI does not do anything" looks like
+   * from the inside, and it is not a broken button.
+   */
+  describe('a button with no price beside it', () => {
+    const quiet = () => {
+      const { fixture, host } = build(null);
+      fixture.componentRef.setInput('withPrice', false);
+      fixture.detectChanges();
+      return host;
+    };
+
+    it('says it is still waiting for the price', () => {
+      const host = quiet();
+
+      expect(button(host).disabled).toBe(true);
+      expect(host.textContent).toContain('reading the gas price');
+    });
+
+    it('says so when the price could not be read at all', () => {
+      const { fixture, host } = build(null, true);
+      fixture.componentRef.setInput('withPrice', false);
+      fixture.detectChanges();
+
+      expect(button(host).disabled).toBe(true);
+      expect(host.textContent).toContain('could not be read');
+    });
+
+    // Once there is a price the button speaks for itself.
+    it('says nothing extra once the price is known', () => {
+      const { fixture, host } = build(0.05);
+      fixture.componentRef.setInput('withPrice', false);
+      fixture.detectChanges();
+
+      expect(button(host).disabled).toBe(false);
+      expect(host.textContent).not.toContain('gas price');
+    });
   });
 });

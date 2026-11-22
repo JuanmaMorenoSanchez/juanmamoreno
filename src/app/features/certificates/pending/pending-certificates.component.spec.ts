@@ -99,13 +99,23 @@ describe('the certificates waiting to be signed', () => {
     expect(host.querySelector('img')?.getAttribute('src')).toBe('data:image/jpeg;base64,AAAA');
   });
 
-  // Nothing waiting is not a section at all: an empty heading on the page he
-  // works on most is a line to read and skip every time.
-  it('draws nothing at all when the queue is empty', async () => {
+  /**
+   * Nothing waiting is still not a section — an empty heading and its
+   * explanatory paragraph on the page he works on most is a block to read and
+   * skip every time — but it is no longer nothing.
+   *
+   * It was nothing, deliberately, and that turned out to be indistinguishable
+   * from a queue that failed to load. It is also how somebody looking for Mint
+   * ends up pressing the only other button on the page: there was no Mint
+   * button, and nothing said there was nothing to mint. One quiet line is not
+   * the heading that was rightly refused.
+   */
+  it('says the queue is empty rather than drawing nothing', async () => {
     const { fixture, host } = setup({ list: [] });
     await settled(fixture);
 
     expect(host.querySelector('.pending')).toBeNull();
+    expect(host.textContent).toContain('Nothing is waiting to be signed');
   });
 
   // An empty queue and an api that did not answer are different answers.
@@ -280,15 +290,7 @@ describe('the full technical sheet', () => {
       one.textContent?.trim()
     );
 
-    expect(names).toEqual([
-      'Medium',
-      'Height',
-      'Width',
-      'Unit',
-      'Year',
-      'Image Type',
-      'Artist',
-    ]);
+    expect(names).toEqual(['Medium', 'Height', 'Width', 'Unit', 'Year', 'Image Type', 'Artist']);
   });
 
   it('says so when a fact was never filled in, rather than leaving a gap', async () => {
@@ -296,7 +298,9 @@ describe('the full technical sheet', () => {
     // would read as a certificate that never had that fact at all.
     const one = sheeted(73);
     const { fixture, host } = setup({
-      list: [{ ...one, attributes: [...one.attributes.slice(0, 3), { trait_type: 'Unit', value: '' }] }],
+      list: [
+        { ...one, attributes: [...one.attributes.slice(0, 3), { trait_type: 'Unit', value: '' }] },
+      ],
     });
     await settled(fixture);
 

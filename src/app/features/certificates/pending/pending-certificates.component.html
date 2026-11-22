@@ -126,5 +126,15 @@
         <p class="pending-note" role="status">{{ note }}</p>
       }
     </section>
+  } @else {
+    <!--
+      An empty queue used to draw nothing at all — no heading, no line, no
+      sign that a queue exists. That silence is indistinguishable from a
+      queue that failed to load, and it is how somebody looking for Mint
+      ends up pressing the only other button on the page and calling it Mint.
+    -->
+    <p class="pending-note" role="status">
+      Nothing is waiting to be signed. Prepare one below and it appears here.
+    </p>
   }
 }

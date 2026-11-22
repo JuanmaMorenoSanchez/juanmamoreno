@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { KeptService, type KeptPiece } from '@features/atelier/kept.service';
 import { LazyLoadDirective } from '@shared/directives/lazy-load.directive';
+import { AskService } from '@shared/services/ask.service';
 
 /** A painting and the parts cut out of it. */
 export interface Cut {
@@ -85,6 +86,7 @@ export function cutsFrom(
 export class AssetsComponent {
   private readonly artworks = inject(ARTWORK_PORT);
   protected readonly kept = inject(KeptService);
+  private readonly ask = inject(AskService);
 
   private readonly catalogue = signal<{ tokenId: string; name?: string | null }[]>([]);
 
@@ -133,7 +135,13 @@ export class AssetsComponent {
 
   /** Forgets one, after asking. Nothing here is undoable. */
   protected async forget(piece: KeptPiece): Promise<void> {
-    if (!confirm(`Forget this ${piece.kind}, cut from "${piece.name}"?`)) return;
+    const forget = await this.ask.confirm({
+      title: `Forget this ${piece.kind}?`,
+      body: [`It was cut from "${piece.name}". Nothing here is undoable.`],
+      yes: 'Yes, forget it',
+      grave: true,
+    });
+    if (!forget) return;
     this.trouble.set(null);
     try {
       await this.kept.forget(piece.id);

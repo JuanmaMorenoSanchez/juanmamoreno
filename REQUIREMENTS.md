@@ -6843,3 +6843,51 @@ anywhere else", "names the wallet it will not open for", "sends the api the
 sentence it will rebuild") and `admin-auth.service.spec.ts` (under "a session
 his wallet signed", including "never summons Google" and "refuses any other
 wallet"). The signature check itself is the backend's B15.
+
+### R256 — A control that cannot act says so, in the page · met
+The studio is used from inside a wallet app's own browser, because that is
+where the wallet door is. A WebView has only the JS dialogs its host app chose
+to implement, and where they are missing `window.confirm` returns false
+immediately. The studio asked with it in five places — minting over the gas
+ceiling, forgetting a cut piece, forgetting that a painting went to a network,
+freezing a certificate and destroying one — so **every one of those questions
+was answered no before he could read it**. The press did nothing, said nothing,
+and left no trace. It cost a day of looking for a broken Mint button that was
+not broken.
+
+Questions are now asked in the page, by the same `MatDialog` every other
+question on the site already used, and `no-restricted-globals` refuses
+`confirm`, `alert` and `prompt` in `src/` so none can come back. A dismissed
+dialog, a closed one and an Escape all mean no, which is the right way round
+for a question about spending money.
+
+**The same silence had three other shapes on that page, and they are gone
+too.** A Mint button in a queue row shows no price — it is the same figure on
+every row and is stated once above them — and with no price yet the button is
+hard disabled, so that row was a button that could not be pressed with nothing
+anywhere explaining why; it now says it is waiting for the price, or that the
+price could not be read. The form's **Prepare** button read `ready()` in one
+place only, to grey itself out, with its reasons up the page inside the
+corrector; it now names what it still needs. An empty queue drew nothing at
+all, which is indistinguishable from a queue that failed to load and is how
+somebody looking for Mint presses the only other button on the page; it now
+says nothing is waiting. `prepare()` also sets `busy` before its first request
+rather than after, so an honest press stops looking like a dead one.
+
+What all four had in common is that the tests could not see them: every mint
+test calls the handler directly, and every confirmation test stubbed
+`window.confirm` — a stub of a thing that does not exist on the device is a
+test that cannot fail.
+*Proven by:* `mint-gate.component.spec.ts` (under "a button with no price
+beside it": "says it is still waiting for the price", "says so when the price
+could not be read at all", "says nothing extra once the price is known"; and
+under "insisting", "mints on the one press, once the confirmation is accepted"
+and "does nothing at all when the confirmation is dismissed", both now against
+the in-page dialog), `pending-certificates.component.spec.ts` ("says the queue
+is empty rather than drawing nothing"), `mint-form.component.spec.ts` ("says
+what it is still waiting for"), `certificate-panel.component.spec.ts` ("does
+nothing when the freeze confirmation is dismissed", "does nothing when the
+destroy confirmation is dismissed"), `catalogue-admin.component.spec.ts`
+("forgets the network it was asked about", "does nothing when the confirmation
+is dismissed"), and `eslint.config.js`, which fails the build on a native
+dialog anywhere in the app.

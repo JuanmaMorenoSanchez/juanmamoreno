@@ -13,6 +13,11 @@ import { vi } from 'vitest';
 import { ActivityApiService, PostInsight } from '@features/activity/activity.service';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { CatalogueAdminComponent } from './catalogue-admin.component';
+import { AskService } from '@shared/services/ask.service';
+
+/** What the in-page confirmation answers. It replaced `window.confirm`, which
+ *  a wallet app's own browser does not have at all. */
+let dialogAnswer = true;
 
 const painting = (tokenId: string, name: string, year = '2026'): Nft => ({
   tokenId,
@@ -84,6 +89,10 @@ function setup(
   TestBed.configureTestingModule({
     imports: [CatalogueAdminComponent],
     providers: [
+      {
+        provide: AskService,
+        useValue: { confirm: () => Promise.resolve(dialogAnswer) },
+      },
       provideTranslateService(),
       provideRouter([]),
       {
@@ -370,7 +379,7 @@ describe('CatalogueAdminComponent', () => {
 
     it('forgets the network it was asked about', async () => {
       const page = setup([], [], on);
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      dialogAnswer = true;
 
       await page.forget(catalogue[2], 'instagram reel video');
 
@@ -379,7 +388,7 @@ describe('CatalogueAdminComponent', () => {
 
     it('does nothing when the confirmation is dismissed', async () => {
       const page = setup([], [], on);
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      dialogAnswer = false;
 
       await page.forget(catalogue[2], 'instagram reel video');
 

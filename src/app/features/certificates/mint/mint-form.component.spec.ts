@@ -310,6 +310,26 @@ describe('MintFormComponent, downloading without minting', () => {
     expect(form.ready()).toBe(false);
   });
 
+  /**
+   * `ready()` was read in exactly one place — to grey the button out — so a
+   * press on it did nothing and the page said nothing about why. The reasons
+   * live up inside the corrector, which is no use to somebody standing at the
+   * button on a phone, and a control that will not work and will not say what
+   * it wants is indistinguishable from a broken one.
+   */
+  it('says what it is still waiting for', async () => {
+    const form = (await setup()) as unknown as {
+      name: ReturnType<typeof signal<string>>;
+      stillNeeded: () => string;
+    };
+
+    expect(form.stillNeeded()).toContain('a title');
+
+    form.name.set('A painting');
+
+    expect(form.stillNeeded()).toBe('');
+  });
+
   it('hands over the file the corrector rendered', async () => {
     const form = await setup();
     await form.download();

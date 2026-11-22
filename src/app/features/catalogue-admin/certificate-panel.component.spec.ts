@@ -6,6 +6,11 @@ import { CertificateStanding, MintApiService } from '@shared/services/mint-api.s
 import { WalletService } from '@shared/services/wallet.service';
 import { vi } from 'vitest';
 import { CertificatePanelComponent } from './certificate-panel.component';
+import { AskService } from '@shared/services/ask.service';
+
+/** What the in-page confirmation answers. Freezing and destroying are asked
+ *  about in the page now, not with a dialog the browser may not have. */
+let dialogAnswer = true;
 
 const OWNER = '0x1111111111111111111111111111111111111111';
 const COLLECTOR = '0x2222222222222222222222222222222222222222';
@@ -77,6 +82,10 @@ async function setup({
   TestBed.configureTestingModule({
     imports: [CertificatePanelComponent],
     providers: [
+      {
+        provide: AskService,
+        useValue: { confirm: () => Promise.resolve(dialogAnswer) },
+      },
       {
         provide: ARTWORK_PORT,
         useValue: {
@@ -168,7 +177,6 @@ describe('CertificatePanelComponent', () => {
   describe('signing', () => {
     it('sends the correction and tells the api it settled', async () => {
       const { panel, api, wallet } = await setup();
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
 
       await panel.correct();
 
@@ -197,7 +205,7 @@ describe('CertificatePanelComponent', () => {
 
     it('does nothing when the freeze confirmation is dismissed', async () => {
       const { panel, api } = await setup();
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      dialogAnswer = false;
 
       await panel.seal();
 
@@ -207,7 +215,7 @@ describe('CertificatePanelComponent', () => {
     it('does nothing when the destroy confirmation is dismissed', async () => {
       const { panel, api } = await setup();
       panel.burnConfirmation.set('42');
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      dialogAnswer = false;
 
       await panel.destroy();
 
@@ -217,7 +225,6 @@ describe('CertificatePanelComponent', () => {
     it('says so and settles nothing when the wallet refuses', async () => {
       const { panel, api, wallet } = await setup();
       wallet.send.mockRejectedValue(new Error('User rejected the request'));
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
 
       await panel.correct();
 
@@ -249,6 +256,10 @@ describe('CertificatePanelComponent', () => {
       TestBed.configureTestingModule({
         imports: [CertificatePanelComponent],
         providers: [
+          {
+            provide: AskService,
+            useValue: { confirm: () => Promise.resolve(dialogAnswer) },
+          },
           {
             provide: ARTWORK_PORT,
             useValue: {

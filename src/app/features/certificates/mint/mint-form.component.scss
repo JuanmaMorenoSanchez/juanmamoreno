@@ -133,3 +133,11 @@
 .mint-go {
   @include controls.plain-button;
 }
+
+// What the button is waiting for, beside the button. Quiet: it is a note about
+// a control, not a failure.
+.mint-needs {
+  margin: tokens.$spacing-sm 0 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}

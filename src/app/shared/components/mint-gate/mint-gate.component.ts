@@ -8,6 +8,7 @@ import {
   output,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { AskService } from '@shared/services/ask.service';
 import { GasPriceService } from '@shared/services/gas-price.service';
 
 /**
@@ -46,6 +47,24 @@ import { GasPriceService } from '@shared/services/gas-price.service';
         </button>
       }
 
+      <!--
+        Why it cannot be pressed, where the price is not being shown.
+        A row of a queue states no price — it is the same figure on every row
+        and is stated once above them — and that left the one arrangement with
+        a button and no explanation: no price yet means hard disabled, and the
+        row said nothing at all. A button that cannot be pressed and will not
+        say why is indistinguishable from a broken one.
+      -->
+      @if (withButton() && !withPrice() && gas.price() === null) {
+        <span class="gate-price">
+          @if (gas.unreachable()) {
+            The gas price could not be read, so nothing can be written yet.
+          } @else {
+            reading the gas price…
+          }
+        </span>
+      }
+
       @if (withPrice() && gas.price(); as price) {
         <span class="gate-price" [class.gate-dear]="tooDear()">
           @if (tooDear()) {
@@ -81,6 +100,7 @@ import { GasPriceService } from '@shared/services/gas-price.service';
 })
 export class MintGateComponent {
   protected readonly gas = inject(GasPriceService);
+  private readonly ask = inject(AskService);
 
   readonly label = input('Mint');
   /**
@@ -129,19 +149,28 @@ export class MintGateComponent {
    * get past one expensive morning leaves it raised for every quiet one
    * after.
    */
-  protected press(): void {
+  protected async press(): Promise<void> {
     if (this.stopped()) return;
 
     const price = this.gas.price();
-    if (
-      this.tooDear() &&
-      !confirm(
-        `Gas is ${(price as number).toFixed(3)} gwei, over your limit of ${this.gas.limit()} gwei.\n\n` +
+    if (this.tooDear()) {
+      // Asked in the page, never with `window.confirm`. A wallet app's own
+      // browser has no JS dialogs unless its host implemented them, and where
+      // they are missing the call returns false at once — so this question was
+      // answered no before he could read it, and the press did nothing and said
+      // nothing. That browser is where the studio is used now.
+      const spend = await this.ask.confirm({
+        title: 'Gas is over your limit',
+        body: [
+          `Gas is ${(price as number).toFixed(3)} gwei, over your limit of ${this.gas.limit()} gwei.`,
           'Writing to the chain at that price costs real money — a certificate is about ' +
-          'three quarters of a million gas. Your limit is left where it is.'
-      )
-    ) {
-      return;
+            'three quarters of a million gas.',
+          'Your limit is left where it is.',
+        ],
+        yes: `${this.label()} at ${(price as number).toFixed(3)} gwei`,
+        grave: true,
+      });
+      if (!spend) return;
     }
 
     this.mint.emit();

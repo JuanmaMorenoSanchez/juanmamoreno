@@ -26,6 +26,7 @@ import {
   type SignableTransaction,
 } from '@shared/services/mint-api.service';
 import { WalletService } from '@shared/services/wallet.service';
+import { AskService } from '@shared/services/ask.service';
 
 /** What is being asked of the chain, so the panel can say so and refuse two at once. */
 type Doing = null | 'correcting' | 'sealing' | 'destroying';
@@ -53,6 +54,7 @@ export class CertificatePanelComponent implements OnInit {
   private readonly artworkService = inject(ARTWORK_PORT);
   private readonly api = inject(MintApiService);
   protected readonly wallet = inject(WalletService);
+  private readonly ask = inject(AskService);
 
   readonly painting = input.required<Nft>();
 
@@ -180,31 +182,33 @@ export class CertificatePanelComponent implements OnInit {
 
   protected async seal(): Promise<void> {
     if (!this.canSeal()) return;
-    if (
-      !confirm(
-        `Freeze certificate ${this.tokenId()}?\n\n` +
-          'This is permanent. Nobody can undo it — not you, not with the owner key, not ' +
-          'ever. The certificate can never be corrected or destroyed again.'
-      )
-    ) {
-      return;
-    }
+    const freeze = await this.ask.confirm({
+      title: `Freeze certificate ${this.tokenId()}?`,
+      body: [
+        'This is permanent. Nobody can undo it — not you, not with the owner key, not ever.',
+        'The certificate can never be corrected or destroyed again.',
+      ],
+      yes: 'Yes, freeze it for ever',
+      grave: true,
+    });
+    if (!freeze) return;
 
     await this.sign('sealing', () => this.api.freezeTransaction(this.tokenId()));
   }
 
   protected async destroy(): Promise<void> {
     if (!this.canDestroy()) return;
-    if (
-      !confirm(
-        `Destroy certificate ${this.tokenId()}?\n\n` +
-          'The token is burned and the painting leaves the catalogue. Its number is never ' +
-          'reissued, and any certificate already printed points at a page that will no ' +
-          'longer exist.'
-      )
-    ) {
-      return;
-    }
+    const destroy = await this.ask.confirm({
+      title: `Destroy certificate ${this.tokenId()}?`,
+      body: [
+        'The token is burned and the painting leaves the catalogue.',
+        'Its number is never reissued, and any certificate already printed points at a page ' +
+          'that will no longer exist.',
+      ],
+      yes: 'Yes, destroy it',
+      grave: true,
+    });
+    if (!destroy) return;
 
     await this.sign('destroying', () => this.api.burnTransaction(this.tokenId()));
   }

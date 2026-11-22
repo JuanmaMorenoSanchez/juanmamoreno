@@ -152,6 +152,24 @@ export class MintFormComponent {
   );
 
   /**
+   * What is still missing, in his words, or nothing.
+   *
+   * `ready()` was read in one place only — to grey the button out — so a press
+   * on it did nothing and the page said nothing about why. The reasons are up
+   * the page inside the corrector, which is no use to somebody standing at the
+   * button on a phone. A control that will not work has to say what it wants.
+   */
+  protected readonly stillNeeded = computed(() => {
+    if (this.busy()) return '';
+
+    const missing: string[] = [];
+    if (!this.name().trim()) missing.push('a title');
+    if (!this.handoff.canProduce())
+      missing.push('a straightened photograph, with its measurements');
+    return missing.length ? `Needs ${missing.join(' and ')}.` : '';
+  });
+
+  /**
    * Enough to hand him a file, which is less.
    *
    * No title: a title is what a certificate is filed under, and this files
@@ -348,13 +366,17 @@ export class MintFormComponent {
   protected async prepare(): Promise<void> {
     if (!this.ready()) return;
 
+    // Set before the first await, not after it. Asking which version this would
+    // be is a request to the api and sometimes a dialog, and during it the
+    // button said nothing and looked exactly like a button that does nothing.
+    this.busy.set(true);
+
     const version = await this.versionToWrite();
     if (version === null) {
+      this.busy.set(false);
       this.say('Nothing was prepared. Change the image type, or the title, and try again.', 'bad');
       return;
     }
-
-    this.busy.set(true);
 
     // Asked for here, and rendered now, because this is the moment it is going
     // to be used. The corrector answers with null when it cannot.

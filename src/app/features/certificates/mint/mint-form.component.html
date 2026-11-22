@@ -184,5 +184,10 @@
         Prepare, and put it on the queue
       }
     </button>
+
+    <!-- What it is waiting for, beside the button rather than up the page. -->
+    @if (stillNeeded(); as needed) {
+      <p class="mint-needs">{{ needed }}</p>
+    }
   </div>
 </section>
