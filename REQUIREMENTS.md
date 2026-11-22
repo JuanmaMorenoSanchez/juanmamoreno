@@ -2398,11 +2398,26 @@ The chain is checked before a signature is asked for. A wallet pointed at
 another network would sign something meaningless and report success, and the
 certificate would look written when nothing had happened. The list is shortened
 only once the chain has been asked whether the token is really there.
-*Proven by:* `wallet.service.spec.ts` (12 tests, including "goes to Coinbase
+
+**Every call to the wallet is bounded, and the network question was the last
+one that was not.** A wallet that is never going to answer answers by never
+answering: the promise it hands back simply does not settle, so there is nothing
+to catch and nothing to show, and the button spins for as long as anyone is
+willing to watch it. Asking who is signing, asking for a signature and sending
+a transaction were each given an end; asking which network the wallet is on, and
+asking it to move to mainnet, were not — and they sit in the first step every
+mint takes. That is the path a wallet app's own browser goes down, because it
+opens on its own network rather than mainnet and the sheet asking it to move can
+fail to arrive at all. A refusal and a silence are also told apart, because
+"switch it yourself" is only useful advice to somebody whose wallet is
+answering.
+*Proven by:* `wallet.service.spec.ts` (17 tests, including "goes to Coinbase
 Wallet when the page has no wallet of its own", "prefers the wallet already on
 the page to opening an app", "refuses to go on when the wallet will not leave
-the wrong chain" and "sends exactly what it was given, and builds nothing
-itself"). The transaction itself is the backend's B39.
+the wrong chain", "sends exactly what it was given, and builds nothing
+itself", and under "a wallet that never answers", "gives up on a wallet that
+will not say which network it is on" and "tells a silent switch apart from a
+refused one"). The transaction itself is the backend's B39.
 
 ### R87 — A photograph is written back the way it arrived · met
 Straightening moves every pixel, so the picture has to be encoded again and one

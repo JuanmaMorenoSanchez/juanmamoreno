@@ -255,6 +255,43 @@ describe('WalletService', () => {
       await expect(caught).resolves.toMatch(/nothing was sent/);
     });
 
+    /**
+     * The two calls that were still unbounded, in the first step every mint
+     * takes. A wallet app's own browser opens on its own network rather than
+     * mainnet, so this is the path it takes — and the sheet asking it to move
+     * can fail to arrive at all, which left the button spinning for as long as
+     * anyone watched it with nothing said.
+     */
+    it('gives up on a wallet that will not say which network it is on', async () => {
+      const request = vi.fn(async ({ method }: { method: string }) => {
+        if (method === 'eth_requestAccounts') return [ACCOUNT];
+        return new Promise(() => {});
+      });
+      (globalThis as { ethereum?: unknown }).ethereum = { request };
+
+      const caught = wallet.connect().catch((failure: Error) => failure.message);
+      await vi.advanceTimersByTimeAsync(61_000);
+
+      await expect(caught).resolves.toMatch(/which network it is on/);
+    });
+
+    // A refusal and a silence need different words: "switch it yourself" is
+    // only useful advice to somebody whose wallet is answering.
+    it('tells a silent switch apart from a refused one', async () => {
+      const request = vi.fn(async ({ method }: { method: string }) => {
+        if (method === 'eth_requestAccounts') return [ACCOUNT];
+        if (method === 'eth_chainId') return '0x2105';
+        return new Promise(() => {});
+      });
+      (globalThis as { ethereum?: unknown }).ethereum = { request };
+
+      const caught = wallet.connect().catch((failure: Error) => failure.message);
+      await vi.advanceTimersByTimeAsync(61_000);
+
+      await expect(caught).resolves.toMatch(/did not answer when asked to move/);
+      expect(wallet.account()).toBeNull();
+    });
+
     it('does not give up on one that answers', async () => {
       const request = vi.fn(async ({ method }: { method: string }) => {
         if (method === 'eth_requestAccounts') return [ACCOUNT];

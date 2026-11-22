@@ -5,6 +5,15 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.93.4
+
+- **fix** Asking the wallet which network it is on, and asking it to move to
+  mainnet, now give up rather than waiting for ever. They were the last two
+  unbounded calls in the file, and they sit in the first step every mint takes
+  — so a wallet that never answered the network question was a Mint button that
+  spun with nothing said. A silent switch and a refused one now say different
+  things.
+
 ## 2.93.3
 
 - **fix** The sentence goes to the wallet as hex again. Plain text was sent on

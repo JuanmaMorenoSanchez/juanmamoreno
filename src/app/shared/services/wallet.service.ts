@@ -108,14 +108,44 @@ export class WalletService {
     const account = accounts?.[0];
     if (!account) throw new Error('The wallet did not say which account to use.');
 
-    const chain = (await wallet.request({ method: 'eth_chainId' })) as string;
+    const chain = (await within(
+      wallet.request({ method: 'eth_chainId' }) as Promise<string>,
+      ANSWER_WITHIN,
+      'Your wallet did not say which network it is on. Open it, unlock it, and press Mint again.'
+    )) as string;
+
     if (chain !== MAINNET) {
-      try {
-        await wallet.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: MAINNET }],
-        });
-      } catch {
+      /**
+       * Bounded, and told apart from a refusal.
+       *
+       * These two were the last unbounded calls in this file, in the first step
+       * every mint takes — so a wallet that never answered the network question
+       * was a button that spun for as long as anyone watched it with nothing
+       * said, which is the exact silence the note at the top of this file
+       * describes. A wallet app's own browser is where it happens: it opens on
+       * its own network rather than mainnet, and the sheet asking to move can
+       * fail to arrive at all.
+       *
+       * A refusal and a silence need different words — "switch it yourself" is
+       * only useful advice to someone whose wallet is answering — so the
+       * rejection is turned into `false` here and the timeout is left to throw
+       * its own message rather than be caught as a refusal.
+       */
+      const switched = await within(
+        (
+          wallet.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: MAINNET }],
+          }) as Promise<unknown>
+        ).then(
+          () => true,
+          () => false
+        ),
+        ANSWER_WITHIN,
+        'Your wallet did not answer when asked to move to Ethereum mainnet. Switch it to ' +
+          'Ethereum yourself, then press Mint again.'
+      );
+      if (!switched) {
         throw new Error(
           'This wallet is not on Ethereum mainnet, which is where the certificates are.'
         );
