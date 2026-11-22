@@ -146,17 +146,26 @@ describe('WalletService', () => {
   });
 
   /**
-   * How he signs in. This went out untested, and the shape of the payload was
-   * exactly what broke: it sent hex, and while most wallets decode hex before
-   * signing, the Coinbase app's own in-app browser signs the hex as literal
-   * text — so the signature recovered to the wrong address and every request
-   * came back 403 while the door said he was in. A sentence that is not hex has
-   * no such fork in it.
+   * How he signs in. This went out untested, and the shape of the payload is
+   * what the method is particular about: `personal_sign` specifies hex, and the
+   * wallet app's own in-app browser enforces it — handed the sentence as plain
+   * text it answers "Invalid message" and signs nothing at all. It sent plain
+   * text for two versions, on a guess that that browser had been signing the
+   * hex as literal text. Whether it does is beside the point: the api recovers
+   * the address under both readings of the hex and accepts whichever is his, so
+   * the hex is safe to send and the guess is not load-bearing.
    */
   describe('signing in', () => {
     const SENTENCE = 'juanmamoreno.com wants you to sign in to the studio.';
+    /**
+     * The same sentence as the method wants it, written out rather than
+     * computed: a test that encodes it the way the code does would agree with
+     * any encoding at all, including a broken one.
+     */
+    const AS_HEX =
+      '0x6a75616e6d616d6f72656e6f2e636f6d2077616e747320796f7520746f207369676e20696e20746f207468652073747564696f2e';
 
-    it('hands the wallet the sentence itself, never hex', async () => {
+    it('hands the wallet hex, which is the only form it accepts', async () => {
       const request = inject({
         eth_requestAccounts: [ACCOUNT],
         eth_chainId: '0x1',
@@ -168,8 +177,14 @@ describe('WalletService', () => {
 
       expect(request).toHaveBeenCalledWith({
         method: 'personal_sign',
-        params: [SENTENCE, ACCOUNT],
+        params: [AS_HEX, ACCOUNT],
       });
+    });
+
+    // Keeps the written-out hex above honest: it is the sentence and nothing
+    // else, so the test cannot quietly start pinning the wrong bytes.
+    it('is the sentence, written as hex', () => {
+      expect(Buffer.from(AS_HEX.slice(2), 'hex').toString('utf8')).toBe(SENTENCE);
     });
 
     it('will not sign before anybody has connected', async () => {

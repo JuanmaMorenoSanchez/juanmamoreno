@@ -6783,16 +6783,22 @@ and compares the address that comes back; if it is not his, or if the api
 cannot be reached to say, nothing is stored, nothing is navigated to, and the
 message says which address actually signed and that his session is untouched.
 
-**The sentence is handed over as itself, not as hex.** `personal_sign` specifies
-hex and this sent hex, which is where it first broke: most wallets decode a hex
-payload and sign the bytes — Coinbase's own SDK does — but the Coinbase app's
-in-app browser signs the hex as literal text, so the signature recovered to an
-address that was not his. He signed in, the door said he was in, and every
-request came back 403: a failure in the worst possible shape, because the half
-that reports success is not the half that checks. Plain text has no such fork in
-it. The api accepts either form besides (its B15), so a session already signed
-kept working. `sign` had no test at all when it shipped, which is how the shape
-of the payload went unexamined; it has one now, and it pins the sentence.
+**The sentence is handed over as hex, which is the only form the wallet app
+accepts.** `personal_sign` specifies hex. It went as plain text for two
+versions, on a diagnosis of mine that the wallet app's in-app browser had been
+signing the hex as literal text — and that was wrong in the way that matters:
+handed the sentence as text, that browser refuses the request outright with
+"Invalid message" and signs nothing at all. Some wallets take either form and
+some take only the hex, so only the hex is sent.
+
+What makes that safe is that **no guess about any particular wallet is
+load-bearing**: the api recovers an address from the sentence and from the
+hex-as-text and accepts whichever one is his (its B15), so a wallet that decodes
+the hex and a wallet that signs it literally both get in. That tolerance is why
+the plain-text detour cost nothing but time. `sign` had no test at all when it
+first shipped, which is how the shape of the payload went unexamined twice; it
+has one now, and it pins the hex as a written-out literal rather than by
+encoding the sentence the same way the code does.
 **A wallet session the api refuses is thrown away, and he is shown the door.**
 The browser checks a wallet session by its address and its age and cannot check
 its signature — only the api recovers an address — so a bearer with a wrong
@@ -6814,8 +6820,8 @@ api refuses it", "leaves a Google session alone"),
 `door.component.spec.ts` (under "when the signature is not what it
 looks like", "does not sign him in on a signature the api reads as somebody
 else", "changes nothing when the api cannot be reached to check" and "accepts
-the reading that is his"), `wallet.service.spec.ts` (under "signing in", "hands the wallet the
-sentence itself, never hex"), `wallet-session.spec.ts` (7 tests, including "writes the message the
+the reading that is his"), `wallet.service.spec.ts` (under "signing in", "hands the wallet hex,
+which is the only form it accepts" and "is the sentence, written as hex"), `wallet-session.spec.ts` (7 tests, including "writes the message the
 api expects", which pins the text the api rebuilds), `door.component.spec.ts`
 ("offers only the wallet inside a wallet app’s browser", "offers both ways in
 anywhere else", "names the wallet it will not open for", "sends the api the

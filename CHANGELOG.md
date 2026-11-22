@@ -5,6 +5,14 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.93.3
+
+- **fix** The sentence goes to the wallet as hex again. Plain text was sent on
+  a wrong diagnosis of mine: the wallet app's in-app browser does not sign the
+  hex as text, it refuses plain text outright with "Invalid message" and signs
+  nothing. The api recovers the address under both readings of the hex, so
+  neither wallet's behaviour has to be guessed at.
+
 ## 2.93.2
 
 - **fix** A wallet session the api refuses is thrown away, and the door asks
