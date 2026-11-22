@@ -5,6 +5,13 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.95.1
+
+- **chore** `vitest` 4.1.9 → 4.1.12, which clears the path-traversal advisory
+  against `@vitest/mocker`. Dev-only, and the only direct dependency the audit
+  flagged here — every other advisory on this side is transitive build
+  tooling with no production reach.
+
 ## 2.95.0
 
 - **feat** The end-to-end suite answers the api from recordings instead of
