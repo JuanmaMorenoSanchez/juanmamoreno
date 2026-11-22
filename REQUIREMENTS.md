@@ -6793,7 +6793,25 @@ that reports success is not the half that checks. Plain text has no such fork in
 it. The api accepts either form besides (its B15), so a session already signed
 kept working. `sign` had no test at all when it shipped, which is how the shape
 of the payload went unexamined; it has one now, and it pins the sentence.
-*Proven by:* `door.component.spec.ts` (under "when the signature is not what it
+**A wallet session the api refuses is thrown away, and he is shown the door.**
+The browser checks a wallet session by its address and its age and cannot check
+its signature — only the api recovers an address — so a bearer with a wrong
+signature looks perfectly alive in here. One did, for two days: he was told he
+was signed in, the door forwarded him past itself on every visit because it
+believed that, and every guarded request came back refused. The studio showed
+him empty pages and offered him nothing to press, and the only way out was to
+find Sign out in a menu. So the api's refusal is treated as the signature check
+arriving late: a 403 from this api drops the wallet session and takes him to the
+door to sign again. Only this api's refusals count, and only a wallet session is
+dropped — a Google token renews itself silently, and discarding one would throw
+away a session that was about to repair itself.
+
+*Proven by:* `refused-wallet.interceptor.spec.ts` (4 tests: "drops a refused
+wallet session and shows him the door", "leaves anyone without a wallet session
+where they are", "ignores a refusal from somewhere else", "ignores a failure
+that is not a refusal"), `admin-auth.service.spec.ts` ("is thrown away when the
+api refuses it", "leaves a Google session alone"),
+`door.component.spec.ts` (under "when the signature is not what it
 looks like", "does not sign him in on a signature the api reads as somebody
 else", "changes nothing when the api cannot be reached to check" and "accepts
 the reading that is his"), `wallet.service.spec.ts` (under "signing in", "hands the wallet the

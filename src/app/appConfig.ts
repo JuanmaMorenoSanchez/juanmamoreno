@@ -4,20 +4,21 @@ import {
   provideAppInitializer,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {
-  provideRouter,
-  TitleStrategy,
-  withPreloading,
-  withViewTransitions,
-} from '@angular/router';
+import { provideRouter, TitleStrategy, withPreloading, withViewTransitions } from '@angular/router';
 
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { ArtworkInfraService } from '@features/artwork/artwork.service';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { ALLOWED_LANGUAGES } from '@shared/constants/languages.constants';
+import { forgetRefusedWallet } from '@shared/interceptors/refused-wallet.interceptor';
 import { PublicPreloading } from '@shared/services/public-preloading.strategy';
 import { SeoTitleStrategy } from '@shared/services/seo-title.strategy';
 import translationsEN from '@translations/en.json';
@@ -74,7 +75,11 @@ export const appConfig: ApplicationConfig = {
           ) && !url.endsWith('/version'),
       })
     ),
-    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptorsFromDi(),
+      withInterceptors([forgetRefusedWallet])
+    ),
     provideAnimationsAsync(),
     { provide: TitleStrategy, useExisting: SeoTitleStrategy },
   ],

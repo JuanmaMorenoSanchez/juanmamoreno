@@ -5,6 +5,16 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.93.2
+
+- **fix** A wallet session the api refuses is thrown away, and the door asks
+  again. The browser cannot check a signature, so a bearer the api refuses
+  looked alive in here for two days: he was told he was in, the door forwarded
+  him past itself every visit, and every guarded request came back 403, with
+  nothing on the page to press. A 403 from this api now drops the wallet
+  session and takes him to the door. A Google token is left alone — it renews
+  itself.
+
 ## 2.93.1
 
 - **fix** The door tells apart a wallet that signed as somebody else, a wallet

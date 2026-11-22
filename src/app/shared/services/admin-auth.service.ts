@@ -130,6 +130,29 @@ export class AdminAuthService {
   }
 
   /**
+   * Throws away a wallet session the api refuses.
+   *
+   * This exists because of the week he spent signed in to nothing. A wallet
+   * session is checked here by its address and its age, and cannot be checked
+   * by its signature — only the api can recover that — so a bearer whose
+   * signature is wrong looks perfectly alive from in here. It sat in his
+   * browser for a week, `isAdmin` said yes, the door forwarded him past itself
+   * on every visit, and every request came back refused. He had no way in and
+   * no way to ask again.
+   *
+   * So the api's refusal is the signature check, arriving late. A Google token
+   * is left alone: it renews itself silently, and dropping one would throw away
+   * a session that was about to fix itself.
+   *
+   * Returns whether anything was dropped, so the caller can show him the door.
+   */
+  forgetRefusedWallet(): boolean {
+    if (!this.walletLives()) return false;
+    this.signOut();
+    return true;
+  }
+
+  /**
    * Keeps the session alive across the hour Google gives it.
    *
    * A Google identity token expires after an hour, and nothing was renewing it:

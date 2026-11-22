@@ -293,6 +293,32 @@ describe('AdminAuthService keeping the session alive', () => {
 
       expect(service.isAdmin()).toBe(true);
     });
+
+    /**
+     * The week he spent signed in to nothing. The signature cannot be checked
+     * here — only the api recovers an address — so a bearer with a wrong one
+     * looks perfectly alive, `isAdmin` says yes, and the door forwards him past
+     * itself on every visit while every request comes back refused. The api's
+     * refusal is that missing check arriving late, so it is allowed to undo it.
+     */
+    it('is thrown away when the api refuses it', () => {
+      const { service } = setup();
+      service.signInWithWallet(walletSession());
+
+      expect(service.forgetRefusedWallet()).toBe(true);
+      expect(service.isAdmin()).toBe(false);
+      expect(window.localStorage.getItem('juanmamoreno.adminToken')).toBeNull();
+    });
+
+    // A Google token renews itself silently, so a refusal is not the end of it.
+    it('leaves a Google session alone', () => {
+      const { service } = setup();
+      service.signIn(tokenFor({}));
+      expect(service.isAdmin()).toBe(true);
+
+      expect(service.forgetRefusedWallet()).toBe(false);
+      expect(service.isAdmin()).toBe(true);
+    });
   });
 
   it('leaves him signed out when Google will not answer silently', async () => {
