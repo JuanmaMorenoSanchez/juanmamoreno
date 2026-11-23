@@ -43,6 +43,7 @@ describe('ImageViewerComponent — the shape of the frame', () => {
             // The hi-res cascade, which this test is not about: offered nothing,
             // so the frame is left showing the preview.
             getNftQualityUrls: () => [],
+            getNftWebUrls: () => [],
             getNftWebUrl: () => '',
           },
         },
@@ -225,6 +226,7 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
             getAspectRatio: () => 2,
             getProgressiveImageUrls: () => of('https://example.test/preview.jpg'),
             getNftQualityUrls: () => [],
+            getNftWebUrls: () => [],
             getNftWebUrl: () => '',
           },
         },
@@ -312,5 +314,144 @@ describe('ImageViewerComponent — the blurred preview underneath', () => {
     fixture.detectChanges();
 
     expect(preview()?.classList.contains('visible')).toBe(false);
+  });
+});
+
+/**
+ * Which file the viewer actually sends for, which is the whole of why it was slow.
+ *
+ * Measured on `/artwork/66`: the full-resolution photograph is 2280px and
+ * 2.17MB, and it was the first thing every reader was sent. It is displayed in
+ * a frame 643px wide on a desktop and 374px wide on a phone, and the web copy
+ * that already exists beside it is 900px and 88KB — more than either frame can
+ * show. So the original now waits for somebody to ask for it by going
+ * fullscreen, and these pin that, because it is invisible from the outside: a
+ * viewer that quietly went back to fetching megabytes would look identical and
+ * nothing would fail.
+ */
+describe('ImageViewerComponent — which copy of the painting it fetches', () => {
+  let fixture: ComponentFixture<ImageViewerComponent>;
+  let component: ImageViewerComponent;
+  let ref: ComponentRef<ImageViewerComponent>;
+  /** Every url the loader tried to decode, with the patience it allowed it. */
+  let attempts: { url: string; timeout?: number }[];
+
+  const painting = (tokenId: string): Nft =>
+    ({ tokenId, name: 'A painting', image: {}, raw: { metadata: {} } }) as unknown as Nft;
+
+  beforeEach(async () => {
+    attempts = [];
+    TestBed.configureTestingModule({
+      imports: [ImageViewerComponent],
+      providers: [
+        provideTranslateService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimations(),
+        provideRouter([]),
+        {
+          provide: ARTWORK_PORT,
+          useValue: {
+            getAspectRatio: () => 2,
+            getProgressiveImageUrls: () => of('https://example.test/preview.jpg'),
+            // The two orders the viewer chooses between. Named so an assertion
+            // reads as the decision rather than as a url.
+            getNftQualityUrls: () => ['original', 'web', 'thumbnail'],
+            getNftWebUrls: () => ['web', 'original', 'thumbnail'],
+            getNftWebUrl: () => 'web',
+          },
+        },
+      ],
+    });
+
+    fixture = TestBed.createComponent(ImageViewerComponent);
+    component = fixture.componentInstance;
+    ref = fixture.componentRef;
+
+    // Stands in for the network: records what was asked for and succeeds, so
+    // the loader stops at the first candidate exactly as it would in a browser.
+    vi.spyOn(
+      component as unknown as { decode: (url: string, timeout?: number) => Promise<unknown> },
+      'decode'
+    ).mockImplementation((url: string, timeout?: number) => {
+      attempts.push({ url, timeout });
+      return Promise.resolve({ width: 900, height: 1258 });
+    });
+  });
+
+  const settle = async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await Promise.resolve();
+    fixture.detectChanges();
+  };
+
+  /** Fullscreen is a browser gesture jsdom does not perform; the flag is ours. */
+  const goFullscreen = async () => {
+    (component.imageElement.nativeElement as HTMLElement).requestFullscreen = () =>
+      Promise.resolve();
+    component.toggleFullScreen();
+    await settle();
+  };
+
+  it('sends for the web copy, not the two-megabyte original', async () => {
+    ref.setInput('nfts', [painting('1')]);
+
+    await settle();
+
+    expect(attempts.map((a) => a.url)).toEqual(['web']);
+  });
+
+  it('sends for the original once fullscreen asks for it', async () => {
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+
+    await goFullscreen();
+
+    expect(attempts.map((a) => a.url)).toEqual(['web', 'original']);
+  });
+
+  /**
+   * Leaving fullscreen must not undo it. The candidates would change back, the
+   * loader would re-run, and the web copy would be promoted over the sharp
+   * image already on screen — a visible softening on the way out, and a
+   * download to perform it with.
+   */
+  it('keeps the original once it has it, on the way back out of fullscreen', async () => {
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+    await goFullscreen();
+
+    component.toggleFullScreen();
+    await settle();
+
+    expect(attempts.map((a) => a.url)).toEqual(['web', 'original']);
+  });
+
+  it('starts the next painting at the web copy again', async () => {
+    const two = [painting('1'), painting('2')];
+    ref.setInput('nfts', two);
+    await settle();
+    await goFullscreen();
+
+    component.nextNft(1);
+    await settle();
+
+    expect(attempts.map((a) => a.url)).toEqual(['web', 'original', 'web']);
+  });
+
+  /**
+   * The original is megabytes, and the five seconds the web copy gets abandoned
+   * it half-downloaded on exactly the connections that could least afford the
+   * waste — measured at 10.6s on a 4Mbps phone. Somebody who asked to see it is
+   * waiting, so it is given room.
+   */
+  it('gives the original longer to arrive than the web copy', async () => {
+    ref.setInput('nfts', [painting('1')]);
+    await settle();
+    await goFullscreen();
+
+    const [web, original] = attempts;
+    expect(original.timeout).toBeGreaterThan(web.timeout ?? 0);
   });
 });

@@ -2210,8 +2210,34 @@ rather than from build time.
 ### R79 — The paintings arrive smallest first, and the original always arrives · met
 Each artwork now has four sizes: about 112px carried inside the certificate as a
 data uri, ~360px from the api, ~1000px on Arweave, and the full-resolution
-original in cloud storage. The artwork page shows the original, as it always has
-— the others exist so that something is on screen while it arrives.
+original in cloud storage. The smaller ones exist so that something is on screen
+while a larger one arrives.
+
+**The artwork page no longer shows the original, and fullscreen is what fetches
+it.** It did, from the beginning, and that was the viewer being slow: measured on
+`/artwork/66`, the original is 2280x3186 and 2.17MB, and it is displayed in a
+frame 643px wide on a 1440px desktop and 374px wide on a 390px phone — six times
+the width it is shown at, for two megabytes, on first view. The Arweave copy
+beside it is 900x1258 and 88KB, which already exceeds what either frame can
+display. So the ordinary view loads that one and stops: first view falls from
+2262KB to 90KB, and the painting lands in well under a second on a connection
+where it took 4.9s before.
+
+Nothing is lost, only deferred. The original is still in both candidate orders,
+so an unreachable Arweave gateway still falls through to it rather than leaving a
+blurred painting; and double-clicking or pressing fullscreen loads it and
+cross-fades it in over the copy already showing, through the same double buffer
+that was already there. It is also given thirty seconds rather than five to
+arrive: the five-second decode timeout abandoned the 2.17MB download at the
+halfway mark on a 4Mbps connection, having already spent the bandwidth, which
+was waste on exactly the connections least able to afford it.
+
+The honest cost: on a retina desktop the non-fullscreen view is now a 900px file
+in a 643px frame rather than a 2280px one, so at device pixel ratio 2 it is
+upscaled about 1.4x. Side by side on fine brushwork that is visible; alone it is
+not, and it is one double-click from the photograph. A ~1286px WebP rung would
+remove even that at 212KB — 90% below the original, measured with the `sharp`
+already in the api — and is the next thing to do if it ever bothers him.
 
 The order they are raced in had to change with them. `thumbnailUrl` used to be
 Alchemy's cached copy, a middling size, and was ranked above the api's
@@ -2222,7 +2248,15 @@ and the vision search both take "the source image", which was the cached copy,
 and would have been handed 95KB instead of several megabytes.
 *Proven by:* `preview-quality.spec.ts` (3 tests) and `artwork.spec.ts` "goes smallest to largest" for the ordering,
 and in the api `nft-image.util` puts the original first for anything that
-processes a painting rather than displays it.
+processes a painting rather than displays it. Which copy the viewer actually
+sends for is `image-viewer.component.spec.ts` "which copy of the painting it
+fetches" (5 tests: that an ordinary view sends for the web copy and not the
+two-megabyte original, that fullscreen sends for the original, that leaving
+fullscreen keeps it rather than softening back, that the next painting starts at
+the web copy again, and that the original is given longer to arrive), with
+`artwork.spec.ts` "getNftWebUrls offers the web copy first and still falls
+through to the original" and "differ only in where the original sits" on the two
+orders themselves.
 
 ### R80 — A new painting is described from a fixed vocabulary · met
 The studio offers the medium, the unit, the year and the kind of photograph as

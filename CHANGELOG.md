@@ -5,6 +5,27 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.98.0
+
+- **feat** The artwork viewer sends for the web copy, and fullscreen sends for
+  the photograph. The original of `/artwork/66` is 2280x3186 and 2.17MB, and it
+  was the first thing every reader was sent — into a frame 643px wide on a
+  desktop and 374px wide on a phone, six times the width it is displayed at. The
+  Arweave copy beside it is 900x1258 and 88KB, already more than either frame can
+  show. First view falls from 2262KB to 90KB; the painting arrived in 4.9s on a
+  9Mbps phone and 10.6s on a 4Mbps one, and now arrives in well under a second.
+  The original is still the fallback when the web copy cannot be reached, and
+  double-click or the fullscreen button loads it and fades it in over what is
+  already on screen, through the double buffer that was already there. It is
+  given thirty seconds rather than five to do it: the old timeout abandoned the
+  download at the halfway mark on a slow connection, having already spent the
+  bandwidth. Cost, stated plainly: on a retina desktop the windowed view is now
+  upscaled about 1.4x, which is visible side by side on brushwork and not
+  otherwise.
+- **chore** `getNftWebUrls` joins `getNftWebUrl` in the domain, the plural of a
+  preference that already existed — the viewer needs somewhere to fall through
+  to, which a single url cannot give it.
+
 ## 2.97.0
 
 - **feat** Signing in with Google is gone, and the wallet is the only door. It

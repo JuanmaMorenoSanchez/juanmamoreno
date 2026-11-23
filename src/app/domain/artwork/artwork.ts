@@ -265,7 +265,20 @@ export class Artwork {
    * html, which is what a reader with javascript off is given and keeps.
    */
   getNftWebUrl(image: NftImage): string {
-    return this.collectUrls(image, ['cachedUrl', 'originalUrl', 'thumbnailUrl'])[0] || '';
+    return this.getNftWebUrls(image)[0] || '';
+  }
+
+  /**
+   * The same preference as a list, so a loader can fall through it.
+   *
+   * The viewer wants the web copy *and* somewhere to go when it fails, which
+   * is the one thing `getNftWebUrl` cannot give it — a single url is either
+   * reachable or the painting does not appear. Same order, so the original is
+   * still there as the fallback it should be, just no longer the first thing
+   * every reader is sent two megabytes of.
+   */
+  getNftWebUrls(image: NftImage): string[] {
+    return this.collectUrls(image, ['cachedUrl', 'originalUrl', 'thumbnailUrl']);
   }
 
   getNftOptimalUrl(image: NftImage): string {

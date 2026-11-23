@@ -394,6 +394,32 @@ describe('Artwork', () => {
       expect(art.getNftWebUrl({ originalUrl: 'ipfs://original' })).toBe('ipfs://original');
     });
 
+    /**
+     * The same preference as a list, which is what the viewer loads from.
+     *
+     * It keeps the original rather than dropping it: the web copy is what a
+     * reader is sent, and the original is where to go when that cannot be
+     * reached. A list that ended at the thumbnail would turn one unreachable
+     * host into a blurred painting.
+     */
+    it('getNftWebUrls offers the web copy first and still falls through to the original', () => {
+      expect(art.getNftWebUrls(image)).toEqual([
+        'https://cached',
+        'ipfs://original',
+        'https://thumb',
+      ]);
+    });
+
+    it('getNftWebUrls and getNftQualityUrls differ only in where the original sits', () => {
+      // The one decision the viewer makes about bytes, stated as the one
+      // difference between the two orders it chooses from.
+      expect(art.getNftWebUrls(image).slice().sort()).toEqual(
+        art.getNftQualityUrls(image).slice().sort()
+      );
+      expect(art.getNftQualityUrls(image)[0]).toBe('ipfs://original');
+      expect(art.getNftWebUrls(image)[0]).toBe('https://cached');
+    });
+
     it('getNftOptimalUrl prefers the thumbnail', () => {
       expect(art.getNftOptimalUrl(image)).toBe('https://thumb');
     });

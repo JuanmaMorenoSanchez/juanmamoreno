@@ -26,6 +26,18 @@ import { map, of, startWith, switchMap } from 'rxjs';
 // unresponsive IPFS gateway doesn't leave the viewer stuck on the preview.
 const DECODE_TIMEOUT_MS = 5000;
 
+/**
+ * The same, for the full-resolution photograph once somebody has asked for it.
+ *
+ * Measured on a throttled connection: the original of `/artwork/66` is 2.17MB
+ * and takes 4.9s on a 9Mbps phone and 10.6s on a 4Mbps one — so the five-second
+ * default spent half that bandwidth and then threw the download away, every
+ * time, on exactly the connections that could least afford it. It is only
+ * fetched now because fullscreen asked for it, and somebody who asked is
+ * waiting, so it is given room to arrive instead.
+ */
+const FULL_DECODE_TIMEOUT_MS = 30000;
+
 @Component({
   selector: 'app-image-viewer',
   templateUrl: './image-viewer.component.html',
@@ -51,12 +63,44 @@ export class ImageViewerComponent {
   previewImage = signal<string>('none');
   readonly hasPreview = computed(() => this.previewImage() !== 'none');
 
-  // Hi-res fallback chain: every displayable url, best quality first. When one
-  // fails to decode (e.g. a firewall blocking IPFS) the loader walks down to
-  // the next best source.
+  /**
+   * Whether he has asked to see this painting properly.
+   *
+   * The full-resolution photograph is the whole reason the viewer was slow: on
+   * `/artwork/66` it is 2280px and 2.17MB, shown in a frame 643px wide on a
+   * desktop and 374px wide on a phone — six times the width it is displayed at,
+   * for two megabytes. The web copy beside it is 900px and 88KB, which already
+   * exceeds what either frame can show. So the original is no longer what every
+   * reader is sent first; it is what fullscreen fetches, which is the one moment
+   * somebody has said they want to look closely.
+   *
+   * Held as *which painting* was asked for rather than as a flag that something
+   * has to remember to clear. A flag meant clearing it, and the only place to do
+   * that was inside the loader's own effect — which made the clearing a change
+   * the effect depended on, so every navigation ran twice and the first run
+   * fetched the two megabytes anyway. Keyed to the painting, the answer simply
+   * stops being true when the painting changes, with nothing written and nothing
+   * re-run. Leaving fullscreen changes neither, so the sharp image already on
+   * screen stays: going back out must not re-fetch the web copy and promote it
+   * over the original, which would be a visible softening on the way out.
+   */
+  private readonly wantsOriginalFor = signal<Nft | undefined>(undefined);
+  private readonly wantsOriginal = computed(() => {
+    const asked = this.wantsOriginalFor();
+    return !!asked && asked === this.currentNft();
+  });
+
+  // Hi-res fallback chain: every displayable url, best first. When one fails to
+  // decode (e.g. a firewall blocking IPFS) the loader walks down to the next
+  // best source. Both orders keep the original in them, so it is still the
+  // fallback when the web copy cannot be reached — what fullscreen changes is
+  // only whether it is reached for first.
   private readonly qualityCandidates = computed(() => {
     const nft = this.currentNft();
-    return nft ? this.artworkService.getNftQualityUrls(nft.image) : [];
+    if (!nft) return [];
+    return this.wantsOriginal()
+      ? this.artworkService.getNftQualityUrls(nft.image)
+      : this.artworkService.getNftWebUrls(nft.image);
   });
 
   /**
@@ -96,6 +140,8 @@ export class ImageViewerComponent {
   // Guards async decodes: bumped on every artwork change so results that land
   // after the user has already navigated away are discarded.
   private loadToken = 0;
+  /** Which painting the layers currently hold, to tell a new one from a resize. */
+  private showing: Nft | undefined;
 
   /**
    * How far the shape may be out before the sharp file corrects it.
@@ -164,8 +210,10 @@ export class ImageViewerComponent {
       });
 
     // Hi-res loader: decode the best available candidate off-DOM, then hand it
-    // to the double buffer to cross-fade in. Reacts to the artwork changing.
+    // to the double buffer to cross-fade in. Reacts to the artwork changing,
+    // and to fullscreen asking for the full-resolution photograph.
     effect(() => {
+      const nft = this.currentNft();
       const candidates = this.qualityCandidates();
       const token = ++this.loadToken;
       untracked(() => {
@@ -173,7 +221,15 @@ export class ImageViewerComponent {
         // Without this the buffer keeps the old sharp image up for the whole
         // new download; navigation should instead fall back to the new view's
         // low-res preview immediately and upgrade from there.
-        this.resetLayers();
+        //
+        // Only for a *different* painting. Going fullscreen re-runs this for the
+        // same one at a better resolution, and resetting there would drop the
+        // picture back to its blur for the length of the download — the one
+        // thing the double buffer exists to avoid.
+        if (nft !== this.showing) {
+          this.showing = nft;
+          this.resetLayers();
+        }
         this.loadBestCandidate(candidates, token);
       });
     });
@@ -274,10 +330,11 @@ export class ImageViewerComponent {
   private async loadBestCandidate(candidates: string[], token: number) {
     if (candidates.length === 0) return;
     this.loading.set(true);
+    const timeout = this.wantsOriginal() ? FULL_DECODE_TIMEOUT_MS : DECODE_TIMEOUT_MS;
     for (const url of candidates) {
       let size: { width: number; height: number };
       try {
-        size = await this.decode(url);
+        size = await this.decode(url, timeout);
       } catch {
         continue; // this source failed or stalled: try the next best
       }
@@ -362,6 +419,9 @@ export class ImageViewerComponent {
   }
 
   private enterFullScreen() {
+    // Asking for fullscreen is asking for the photograph, of *this* painting.
+    // Set before the frame changes so the download starts with the gesture.
+    this.wantsOriginalFor.set(this.currentNft());
     const elem = this.imageElement.nativeElement as HTMLElement & {
       webkitRequestFullscreen?: () => void;
       msRequestFullscreen?: () => void;
