@@ -29,10 +29,9 @@ describe('KeptService', () => {
 
   const build = (
     answers: { get?: unknown; post?: unknown } = {},
-    options: { refusals?: number; renews?: boolean; breaks?: number } = {}
+    options: { refusals?: number; breaks?: number } = {}
   ) => {
     const calls: { method: string; url: string }[] = [];
-    const renewals: boolean[] = [];
     let refusalsLeft = options.refusals ?? 0;
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -64,15 +63,11 @@ describe('KeptService', () => {
           provide: AdminAuthService,
           useValue: {
             bearerToken: () => 'a-token',
-            renewNow: () => {
-              renewals.push(true);
-              return Promise.resolve(options.renews ?? true);
-            },
           },
         },
       ],
     });
-    return { kept: TestBed.inject(KeptService), calls, renewals };
+    return { kept: TestBed.inject(KeptService), calls };
   };
 
   it('holds what the backend sent', async () => {
@@ -139,37 +134,30 @@ describe('KeptService', () => {
    * The save that answered 403 after half an hour of rendering.
    *
    * The instinct on seeing that is to reload, and reloading is the one thing
-   * that actually loses the piece: the run's results are on the page. The
-   * usual cause is an hour-old token rather than anything about the piece.
+   * that actually loses the piece: the run's results are on the page.
+   *
+   * It used to send the piece a second time with a fresh credential, which
+   * only ever meant asking Google silently for another token. A wallet session
+   * cannot be renewed without him, so there is nothing to come back with — the
+   * refusal is handled once, by the interceptor that drops the dead session and
+   * shows him the door, and the five megabytes are not sent twice.
    */
   describe('a save that is refused', () => {
     const saving = (kept: KeptService) =>
       kept.keep(new Blob(['x']), { name: 'A layer', kind: 'layer', width: 10, height: 10 });
 
-    it('sends it again with a fresh credential when it is refused', async () => {
-      const { kept, calls, renewals } = build({}, { refusals: 1 });
-
-      const saved = await saving(kept);
-
-      expect(renewals).toHaveLength(1);
-      expect(calls.filter((call) => call.method === 'post')).toHaveLength(2);
-      expect(saved.id).toBe('new');
-    });
-
-    it('gives up after one retry rather than hammering it', async () => {
-      // If a fresh token is refused as well then the problem is not the
-      // token, and sending the same five megabytes a third time helps nobody.
-      const { kept, calls } = build({}, { refusals: 5 });
+    it('sends it once and fails, rather than retrying with nothing to retry with', async () => {
+      const { kept, calls } = build({}, { refusals: 1 });
 
       await expect(saving(kept)).rejects.toBeTruthy();
-      expect(calls.filter((call) => call.method === 'post')).toHaveLength(2);
+      expect(calls.filter((call) => call.method === 'post')).toHaveLength(1);
     });
 
-    it('does not renew for a failure that is not about the credential', async () => {
-      const { kept, renewals } = build({}, { breaks: 500 });
+    it('sends it once for a failure that is not about the credential either', async () => {
+      const { kept, calls } = build({}, { breaks: 500 });
 
       await expect(saving(kept)).rejects.toBeTruthy();
-      expect(renewals).toHaveLength(0);
+      expect(calls.filter((call) => call.method === 'post')).toHaveLength(1);
     });
   });
 

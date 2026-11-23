@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { environment } from '@environments/environment';
 import { of, throwError } from 'rxjs';
 import { AdminAuthService } from '@shared/services/admin-auth.service';
 import { sessionMessage } from '@shared/services/wallet-session';
@@ -18,7 +17,6 @@ describe('DoorComponent', () => {
   function build(
     options: {
       signedIn?: boolean;
-      inWalletBrowser?: boolean;
       address?: string;
       accepts?: boolean;
       refuses?: Error;
@@ -58,7 +56,6 @@ describe('DoorComponent', () => {
         {
           provide: WalletService,
           useValue: {
-            insideWalletBrowser: () => options.inWalletBrowser ?? false,
             account: () => options.address ?? ADDRESS,
             connect: () => {
               if (options.refuses) return Promise.reject(options.refuses);
@@ -93,7 +90,6 @@ describe('DoorComponent', () => {
   const door = () =>
     fixture.componentInstance as unknown as {
       withWallet(): Promise<void>;
-      walletOnly(): boolean;
       problem(): string;
       signing(): boolean;
     };
@@ -106,7 +102,7 @@ describe('DoorComponent', () => {
   it('opens onto the latest activity', async () => {
     build({ signedIn: true });
 
-    await fixture.componentInstance.ngAfterViewInit();
+    await fixture.componentInstance.ngOnInit();
 
     expect(wentTo).toEqual(['/activity']);
   });
@@ -215,41 +211,24 @@ describe('DoorComponent', () => {
   });
 
   /**
-   * Google's popup renders as a white screen inside a wallet app's browser,
-   * saying nothing and dismissing nothing — so it is not offered there. This is
-   * the whole reason the wallet door exists, and the reason it is the only one
-   * on that page.
+   * One way in, and Google is not the other.
+   *
+   * Google's popup rendered as a white screen inside a wallet app's browser,
+   * saying nothing and dismissing nothing, which is why the wallet door was
+   * built beside it — and then why it replaced it. What is checked here is that
+   * nothing of it is left on the page: no element for Google to render a button
+   * into, and no script of Google's fetched, which is also what lets the site's
+   * content security policy name no outside host at all.
    */
-  it('offers only the wallet inside a wallet app’s browser', async () => {
-    build({ inWalletBrowser: true });
-
-    await fixture.componentInstance.ngAfterViewInit();
-    fixture.detectChanges();
-
-    expect(door().walletOnly()).toBe(true);
-    const google = fixture.nativeElement.querySelector('.door-button') as HTMLElement;
-    expect(google.hidden).toBe(true);
-    expect(fixture.nativeElement.querySelector('.door-wallet')).not.toBeNull();
-  });
-
-  it('offers both ways in anywhere else', async () => {
-    // With no client id the door stops before fetching Google's script, which
-    // jsdom cannot load anyway. What is being checked is that the Google way in
-    // is left on the page, not what Google then does with it.
-    const configured = environment.googleClientId;
-    environment.googleClientId = '';
+  it('offers the wallet and nothing else', async () => {
     build();
 
-    try {
-      await fixture.componentInstance.ngAfterViewInit();
-    } finally {
-      environment.googleClientId = configured;
-    }
+    await fixture.componentInstance.ngOnInit();
     fixture.detectChanges();
 
-    expect(door().walletOnly()).toBe(false);
-    const google = fixture.nativeElement.querySelector('.door-button') as HTMLElement;
-    expect(google.hidden).toBe(false);
     expect(fixture.nativeElement.querySelector('.door-wallet')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.door-button')).toBeNull();
+    expect(document.querySelector('script[src*="accounts.google.com"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Google');
   });
 });

@@ -190,23 +190,16 @@ export class KeptService {
   }
 
   /**
-   * Posts the piece, and once more with a fresh credential if it was refused.
+   * Posts the piece.
    *
-   * Once, not in a loop: if a new token is refused as well then the problem
-   * is not the token, and sending the same five megabytes a third time helps
-   * nobody.
+   * It used to retry once with a fresh credential, which only ever meant
+   * asking Google silently for another token. A wallet session cannot be
+   * renewed without him, so there is nothing to come back with and nothing to
+   * retry: a refusal is handled once, by the interceptor that drops the dead
+   * session and shows him the door.
    */
-  private async sending(form: FormData): Promise<unknown> {
-    try {
-      return await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()));
-    } catch (error) {
-      const status = (error as { status?: number })?.status;
-      if (status !== 401 && status !== 403) throw error;
-
-      const back = await this.admin.renewNow();
-      if (!back) throw error;
-      return await firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()));
-    }
+  private sending(form: FormData): Promise<unknown> {
+    return firstValueFrom(this.http.post<unknown>(this.where, form, this.authorised()));
   }
 
   async forget(id: string): Promise<void> {

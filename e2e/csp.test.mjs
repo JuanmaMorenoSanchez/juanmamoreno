@@ -15,9 +15,7 @@
  * What it cannot reach: the wallet. Connecting one opens a popup at Coinbase
  * and needs a wallet to answer, so `keys.coinbase.com` and the walletlink
  * relay are in the policy on the strength of Coinbase's documentation and are
- * checked by him signing in once, not here. Google's client *is* reached —
- * answered from this process rather than fetched, which still proves the
- * policy allowed the request to be made at all.
+ * checked by him signing in once, not here.
  */
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -30,7 +28,7 @@ import { BASE_URL, launchBrowser } from './browser.mjs';
  * One of each kind rather than all four hundred: the policy is identical on
  * every page, so what varies is which parts of the application run. An artwork
  * page draws the catalogue and the viewer, the atelier runs the sandboxed
- * frame, the door loads Google's script, and `/pieces` is one of the four
+ * frame, the door offers the wallet, and `/pieces` is one of the four
  * routes with no file of its own — it arrives through `404.html`, which is the
  * copy of the home page, and proves the policy travelled into that too.
  */
@@ -47,9 +45,6 @@ const PAGES = [
   '/pieces',
   '/atelier',
 ];
-
-/** Google's sign-in client, answered here rather than fetched from Google. */
-const GOOGLE = '**accounts.google.com/**';
 
 /**
  * Opens a page with every refusal recorded.
@@ -76,13 +71,6 @@ async function watched(browser, path) {
     const text = message.text();
     if (/Content Security Policy|Refused to/i.test(text)) refusals.push(text.split('\n')[0]);
   });
-
-  // Letting this reach Google would make the gate depend on Google being up,
-  // and the policy decision happens before the request leaves the browser, so
-  // answering it here tests exactly the same thing.
-  await page.route(GOOGLE, (route) =>
-    route.fulfill({ status: 200, contentType: 'text/javascript', body: '/* not Google */' })
-  );
 
   await page.goto(BASE_URL + path, { waitUntil: 'domcontentloaded' });
   await page.waitForLoadState('load').catch(() => {});
@@ -125,6 +113,31 @@ describe('the content security policy', () => {
     assert.ok(script, 'no script-src in the policy');
     assert.ok(!script.includes('unsafe-inline'), `script-src has unsafe-inline: ${script}`);
     assert.ok(!script.includes('unsafe-eval'), `script-src has unsafe-eval: ${script}`);
+  });
+
+  it('names no host but this one as a source of script', async () => {
+    // What removing the Google door bought. `accounts.google.com/gsi/client`
+    // was the one outside host allowed to hand this site a script, and a
+    // script runs with every privilege the page has — so this is a stronger
+    // statement than any directive below it. Asserted rather than assumed
+    // because adding a host here is one line and reads as harmless.
+    const html = await readFile('dist/juanmamoreno/browser/index.html', 'utf8');
+    const script = html.match(/script-src ([^;"]*)/)?.[1] ?? '';
+    const hosts = script.split(' ').filter((source) => source.startsWith('http'));
+
+    assert.deepEqual(hosts, [], `script-src names outside hosts: ${hosts.join(', ')}`);
+  });
+
+  it('allows no Google host anywhere in the policy', async () => {
+    // The sign-in is gone from the door, the service, the environment and the
+    // menu; four directives named Google for it, and a policy is the one place
+    // a removal like that leaves no visible trace if it is forgotten.
+    const html = await readFile('dist/juanmamoreno/browser/index.html', 'utf8');
+    const policy = html.match(/Content-Security-Policy" content="([^"]*)"/)?.[1] ?? '';
+
+    assert.ok(policy, 'no policy to check');
+    assert.ok(!policy.includes('accounts.google.com'), 'the policy still allows Google sign-in');
+    assert.ok(!policy.includes('googleusercontent'), 'the policy still allows the Google avatar');
   });
 
   it('is in the file that answers the routes with no file of their own', async () => {

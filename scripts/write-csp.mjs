@@ -47,11 +47,12 @@ const SOURCES = {
   // Material injects styles at runtime and the build inlines the critical css
   // into the head, so neither can be hashed ahead of time. Inline *style* is
   // not the hole inline *script* is: it cannot call anything.
-  'style-src': ["'self'", "'unsafe-inline'", 'https://accounts.google.com/gsi/style'],
+  'style-src': ["'self'", "'unsafe-inline'"],
 
   // Thumbnails come from the api, paintings from the originals bucket and from
-  // Arweave, a Google avatar from googleusercontent. `data:` and `blob:` are
-  // the atelier's own: a canvas exported, a file chosen before it is uploaded.
+  // Arweave. `data:` and `blob:` are the atelier's own: a canvas exported, a
+  // file chosen before it is uploaded. `*.googleusercontent.com` was here for
+  // the avatar beside a Google sign-in, and went with it.
   'img-src': [
     "'self'",
     'data:',
@@ -61,7 +62,6 @@ const SOURCES = {
     'https://storage.googleapis.com',
     'https://arweave.net',
     'https://*.arweave.net',
-    'https://*.googleusercontent.com',
   ],
 
   // Archivo and the material icons ship with the site.
@@ -82,15 +82,14 @@ const SOURCES = {
     'https://arweave.net',
     'https://*.arweave.net',
     'https://ethereum-rpc.publicnode.com',
-    'https://accounts.google.com/gsi/',
     'https://keys.coinbase.com',
     'https://cca-lite.coinbase.com',
     'wss://www.walletlink.org',
   ],
 
   // `'self'` is the atelier's sandboxed harness, which is a file on this site.
-  // The other two are Google's sign-in button and Coinbase's signer.
-  'frame-src': ["'self'", 'https://accounts.google.com/gsi/', 'https://keys.coinbase.com'],
+  // The other is Coinbase's signer.
+  'frame-src': ["'self'", 'https://keys.coinbase.com'],
 
   // A painting's video, and a file chosen in the atelier before it is sent.
   'media-src': ["'self'", 'blob:', 'https://storage.googleapis.com'],
@@ -106,12 +105,13 @@ const SOURCES = {
 /**
  * Where script may come from, given the hashes found in the build.
  *
- * `'self'` is the application bundle and its lazy chunks. The one external
- * script is Google's sign-in client, which the door loads when he signs in
- * that way; Google documents that url, the `/gsi/` prefix for its frame and
- * its endpoint, and advises the prefix over naming each url.
+ * `'self'` is the application bundle and its lazy chunks, and that is now the
+ * whole of it: no host but this one may hand this site a script. Google's
+ * sign-in client was the one exception, and removing that door removed it —
+ * which is the real prize here, because a script from anywhere else runs with
+ * every privilege the page has.
  */
-const scriptSource = (hashes) => ["'self'", ...hashes, 'https://accounts.google.com/gsi/client'];
+const scriptSource = (hashes) => ["'self'", ...hashes];
 
 /**
  * The application's own pages, and nothing else that happens to be html.

@@ -9,37 +9,18 @@
   color: var(--catalog-soft);
 }
 
-/**
- * Both ways in are the same width, because they are the same offer made twice.
- * Google renders its own button and will fill whatever it is given, so it is
- * told the same number in the template rather than left to stretch across a
- * wide screen beside a small one.
- */
-$door-way-in: 320px;
-
 .door-wallet {
   @include controls.plain-button(tokens.$spacing-sm tokens.$spacing-md);
 
   margin-top: tokens.$spacing-lg;
-  width: $door-way-in;
+  // The width Google's own button used to be matched to, kept now that it is
+  // the only way in: a button that stretches across a wide screen reads as a
+  // banner rather than as something to press.
+  width: 320px;
   max-width: 100%;
-}
-
-.door-button {
-  max-width: 100%;
-  width: $door-way-in;
 }
 
 .door-problem {
   margin-top: tokens.$spacing-sm;
   color: var(--jm-error);
-}
-
-.door-aside {
-  margin-top: tokens.$spacing-md;
-}
-
-.door-button {
-  margin-top: tokens.$spacing-lg;
-  min-height: 44px;
 }

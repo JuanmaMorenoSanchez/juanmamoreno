@@ -1,17 +1,7 @@
 <div class="container margin-top door">
   <h1 class="catalog-heading">Door</h1>
 
-  @switch (status()) {
-    @case ('rejected') {
-      <p class="door-message">That account cannot come in.</p>
-    }
-    @case ('unconfigured') {
-      <p class="door-message">Sign-in is not configured yet.</p>
-    }
-    @default {
-      <p class="door-message">This door opens for one person.</p>
-    }
-  }
+  <p class="door-message">This door opens for one wallet.</p>
 
   <button type="button" class="door-wallet" [disabled]="signing()" (click)="withWallet()">
     {{ signing() ? 'Ask your wallet…' : 'Sign in with your wallet' }}
@@ -19,16 +9,5 @@
 
   @if (problem()) {
     <p class="door-problem" role="alert">{{ problem() }}</p>
-  }
-
-  <!-- Always in the page because Google renders its own button into it, and
-  hidden rather than removed so there is something to render into. -->
-  <div #googleButton class="door-button" [hidden]="walletOnly()"></div>
-
-  @if (walletOnly()) {
-    <p class="door-message door-aside">
-      Google will not sign anyone in from inside a wallet app’s browser, so it is not offered here.
-      In Safari or Chrome both ways in are.
-    </p>
   }
 </div>

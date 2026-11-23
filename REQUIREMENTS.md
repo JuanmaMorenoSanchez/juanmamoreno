@@ -1045,11 +1045,30 @@ reproduced: the texts belong to the outlets that ran them.
 
 ## Studio
 
-### R16 — One account, and only one · met
-`/mint` opens only for **morenosanchezjuanma@gmail.com**. Any other Google
-account is refused, including a signed-in valid one. The token is checked for
-issuer, audience, verified address, address, and expiry.
-*Proven by:* `admin-auth.service.spec.ts` (13 tests), `admin.guard.spec.ts`
+### R16 — One wallet, and only one · met
+The studio opens only for **one Ethereum address**: the certificates
+contract's own `owner()`. Any other wallet is refused, including one that
+signed this site's exact words correctly a moment ago. The browser decides
+nothing — it checks the address and the age so the interface can say something
+useful, and the api recovers the signature on every request, which is the half
+that counts.
+
+**A Google account is no longer a way in.** It was, for a year, beside the
+wallet; see R38 for why it went and what it was costing. A Google token minted
+for the site is now refused by the api outright, whatever account it belongs
+to, because the only audience the guard still admits is the Google Cloud SDK's
+— which is the night's credential and not one a browser can be issued.
+
+Measured against the deployed api rather than argued: a throwaway key signing
+this site's exact words, under both of the conventions wallets use, and a
+stranger naming his address in the text while signing with their own key, are
+all refused 403, while his own credential answers 200 on the same endpoint in
+the same minute.
+*Proven by:* `admin-auth.service.spec.ts` ("refuses any other wallet", "treats
+a Google token as no credential at all", "ignores a Google token left in
+storage by the door that used to exist"), and the backend's own
+`admin.guard.spec.ts`, which is where the signature and the audience are
+actually checked (its B15)
 
 ### R17 — Signing in is remembered · met
 The token is kept in localStorage and a returning visit is signed in without a
@@ -1506,17 +1525,23 @@ can only ever name an image the page really shows.
 *Proven by:* the built sitemap, 388 urls each carrying an image, 163 of them
 distinct, with the image namespace declared and nothing left unescaped
 
-### R38 — The studio session outlives Google's hour · met
-A Google identity token expires after an hour. It is renewed a few minutes
-before that, silently, so the studio does not stop recognising the artist in the
-middle of what he is doing. When Google will not answer without asking him
-something — several accounts signed in, or none — he is left signed out and the
-menu carries the way back in.
+### R38 — The studio session outlives Google's hour · withdrawn
+A Google identity token expired after an hour, and was renewed a few minutes
+before that, silently, so the studio did not stop recognising the artist in the
+middle of what he was doing. Google's script was never fetched at all on a
+browser that had not signed in here, which is every reader of the catalogue.
 
-Nothing is renewed, and Google's script is not so much as fetched, on a browser
-that has never signed in here. That is every reader of the catalogue.
-*Proven by:* `admin-auth.service.spec.ts` ("keeping the session alive", 5 tests,
-including that a reader loads nothing), and the browser probe
+Withdrawn with the Google door itself. A wallet session lasts a week and cannot
+renew silently — a signature needs a person — so there is nothing to keep
+alive: the week ends with him pressing the button again. What the renewal was
+holding up came down with it, and all of it was weight: Google's script in the
+page, three of Google's hosts in the site's content security policy, a second
+set of credentials guarding the same room, and a door that never worked inside
+a wallet app's own browser, which is where he most often is. `script-src` now
+names no outside host at all, which is a stronger thing to be able to say than
+anything this requirement ever claimed.
+*Proven by:* nothing — the renewal this described has been removed
+*Withdrawn because:* the credential it renewed is no longer a way in (R16)
 
 ### R39 — The way in and out is his alone · met
 Signed in, the last icon in the bar opens the workshop menu, and every address
@@ -1535,7 +1560,7 @@ Signed out, the same icon is the door (R109). It used to appear only on a
 browser that had signed in here before — so that signing out could not take
 away the way back — and it is now shown to everybody, which leaves no state in
 which the way back is hidden. An unmarked door costs nothing: what is behind it
-is a Google sign-in, and knowing the address gets nobody through it.
+is a wallet signature, and knowing the address gets nobody through it.
 
 Not translated, alone among the menus: these pages exist at one address rather
 than two and are written in one language, so a Spanish label would promise a
@@ -2379,16 +2404,17 @@ certificate. The waiting list offers **Mint** on each one: the api assembles
 what it will say and encodes the call, his wallet signs it as him, and no
 minting key exists anywhere for anyone to steal.
 
-**The browser that can sign in is the one with no wallet in it.** Sending him
-into a wallet app's own browser was advice that could not work, and it stood
-here as met until 2.91.0: signing in to the studio needs Google, and Google
-refuses to sign anyone in from inside an embedded wallet browser — its popup
-renders as a white screen, with nothing said and nothing to dismiss. So the
-phone route runs the other way round. He signs in to Google in ordinary Safari
-or Chrome, where that works, and a page with no wallet injected into it reaches
-Coinbase Wallet over its own relay, which deep-links into the app to sign and
-comes back. An injected wallet still wins wherever there is one, so a laptop
-extension and a wallet's own browser both behave exactly as before.
+**The phone route works in either browser now.** It did not: signing in needed
+Google, and Google refuses to sign anyone in from inside an embedded wallet
+browser — its popup renders as a white screen, with nothing said and nothing to
+dismiss — so for a while the advice was to sign in with Google in ordinary
+Safari or Chrome and let the page reach Coinbase Wallet over its own relay,
+which deep-links into the app to sign and comes back. Since signing in *is* a
+wallet signature (R255) and Google is gone (R16), the wallet app's own browser
+is now the easiest place to do all of it: the injected wallet signs the session
+and then signs the transaction. The relay route still works wherever there is
+no injected wallet, and an injected one still wins wherever there is one, so a
+laptop extension behaves exactly as before.
 
 Nothing is built in the browser. The bytes arrive already encoded, because what
 a certificate says is decided in one place, and the page's only jobs are to ask
@@ -4669,23 +4695,27 @@ stopping nothing); `atelier.component.spec.ts` "marks the ones the model has
 read about, and the ones it has not" and "says nothing about a name nobody
 has asked about yet"
 
-### R184 — A save refused once is not refused · met
+### R184 — A save refused does not lose the piece · met
 Saving a finished piece sometimes answered 403, and the instinct on seeing an
 error after half an hour of rendering is to reload — which is the one thing
 that actually loses it, because the run's results are on the page and the
 page is what a reload throws away.
 
-The usual cause is an hour-old Google token rather than anything about the
-piece, so the credential is renewed and the same bytes are sent again. Once,
-not in a loop: if a fresh token is refused as well then the problem is not
-the token, and sending the same five megabytes a third time helps nobody.
+**The message says where the piece is.** The engine wrote it to its own folder
+when the run finished and it is still there: a failed save loses the press, not
+the picture. Press Save again.
 
-**And if it still fails, the message says where the piece is.** The engine
-wrote it to its own folder when the run finished and it is still there: a
-failed save loses the press, not the picture. Press Save again.
-*Proven by:* `kept.service.spec.ts` "sends it again with a fresh credential
-when it is refused", "gives up after one retry rather than hammering it" and
-"does not renew for a failure that is not about the credential"
+**It no longer retries.** The usual cause was an hour-old Google token, so the
+credential was renewed silently and the same bytes sent again, once. There is
+nothing left to renew: Google is no longer a way in (R16) and a wallet session
+needs a person to sign, so a second attempt would send five megabytes with the
+identical credential that was just refused. The refusal is handled once, in the
+one place that can do anything about it — the interceptor that drops the dead
+session and shows him the door (R255) — and the piece is still on disk either
+way.
+*Proven by:* `kept.service.spec.ts` "sends it once and fails, rather than
+retrying with nothing to retry with" and "sends it once for a failure that is
+not about the credential either"
 
 ### R181 — A colour asked for is a colour defined · met
 `var(--surface, #fff)` was written in six stylesheets and `--surface` was
@@ -5579,12 +5609,13 @@ built to drive Chrome and press the page's save button — which cannot be made
 to work, for a reason outside this repository: Google refuses its sign-in
 screens to a browser something is driving, so the one step that needed a real
 browser was the only step a driven one could not do. So the guard accepts a
-second application as well as the site — the Google Cloud SDK, which stays
-signed in on his own machine — and the night asks `gcloud` for an identity and
-posts to the same endpoint the page posts to. Whose address it is decides
-access, and that check is untouched; what the second audience admits is a token
-minted on a machine already holding the keys to the bucket this guard stands in
-front of. The token is held in memory, never printed, never written down, and
+token issued to the Google Cloud SDK, which stays signed in on his own machine,
+and the night asks `gcloud` for an identity and posts to the same endpoint the
+page posts to. Whose address it is decides access, and that check is untouched;
+what that audience admits is a token minted on a machine already holding the
+keys to the bucket this guard stands in front of. It is now the *only* token
+audience accepted — the site's own was dropped with the Google door (R16) — and
+it cannot be issued to a browser. The token is held in memory, never printed, never written down, and
 never put in an error message.
 
 **And a kept layer carries what it is.** The subject was in the engine's file
@@ -6757,7 +6788,7 @@ is what anybody wants first once a flow has arrived zoomed out.
 inside the frame", "does not magnify a single box to fill the canvas" and
 "leaves an empty canvas where it is"
 
-### R255 — The door opens for his wallet, and hides the one that cannot open · met
+### R255 — The door opens for his wallet, and for nothing else · met
 Signing in needed Google, and Google refuses to sign anyone in from inside a
 wallet app's own browser. Its popup opens there as a white screen that says
 nothing and cannot be dismissed — so the studio was unreachable from the one
@@ -6776,17 +6807,27 @@ including when the text names his. That is the backend's B15, and it is the
 boundary; this layer only decides what the interface shows.
 
 It lasts a week, because a wallet cannot renew silently the way Google's token
-did — a signature needs a person, so the window is the session. The trap that
-came with that: `keepAlive` asked Google for a token whenever it found no Google
-identity, and a wallet session has none, so signing in with the wallet would
-have summoned Google's prompt at every start — the very thing it was signed in
-to avoid.
+did — a signature needs a person, so the window is the session.
 
-**Google is still a door, and still the only one the night has.** The nightly
-run holds no browser and no wallet and takes its credential from the Google
-Cloud SDK, and losing a wallet must not lose the studio, so both ways in are
-offered — except inside a wallet app's browser, where Google is not offered at
-all. A door that cannot open does not belong on the page.
+**Google is no longer a door, and the wallet is the only one.** It stood beside
+the wallet for a year on the grounds that losing a wallet must not lose the
+studio. What that cost, against a risk that never came: a second set of
+credentials guarding one room, Google's script in the page, three of Google's
+hosts in the site's content security policy, his email address committed in
+`environment.ts`, a silent-renewal path with its own trap — `keepAlive` asked
+Google for a token whenever it found no Google identity, and a wallet session
+has none, so signing in with the wallet nearly summoned Google's prompt at
+every start — and a door that could not open at all inside a wallet app's own
+browser, which is where the certificates work happens. Removing it took 400
+lines, a service, a config pair and four CSP entries with it, and `script-src`
+now names no outside host at all.
+
+**The night keeps its own credential, which was never a login.** The nightly
+run holds no browser and no wallet and asks `gcloud` for an identity token. The
+api still accepts that, and now *only* that: the site's own Google client id was
+dropped from the accepted audiences, so a Google token minted in any browser by
+any account is worth nothing here. That audience cannot be issued to a browser,
+which is what makes the removal a boundary rather than a tidy-up.
 
 **The door asks the api who signed, before it claims anything.** It used to
 check only the sentence it had just written itself, declare him signed in, and
@@ -6824,25 +6865,28 @@ him empty pages and offered him nothing to press, and the only way out was to
 find Sign out in a menu. So the api's refusal is treated as the signature check
 arriving late: a 403 from this api drops the wallet session and takes him to the
 door to sign again. Only this api's refusals count, and only a wallet session is
-dropped — a Google token renews itself silently, and discarding one would throw
-away a session that was about to repair itself.
+dropped. That last clause used to matter because a Google token renewed itself
+silently and discarding one would have thrown away a session about to repair
+itself; there is now only one kind of session to drop.
 
 *Proven by:* `refused-wallet.interceptor.spec.ts` (4 tests: "drops a refused
 wallet session and shows him the door", "leaves anyone without a wallet session
 where they are", "ignores a refusal from somewhere else", "ignores a failure
 that is not a refusal"), `admin-auth.service.spec.ts` ("is thrown away when the
-api refuses it", "leaves a Google session alone"),
+api refuses it", "has nothing to throw away when nobody is signed in"),
 `door.component.spec.ts` (under "when the signature is not what it
 looks like", "does not sign him in on a signature the api reads as somebody
 else", "changes nothing when the api cannot be reached to check" and "accepts
 the reading that is his"), `wallet.service.spec.ts` (under "signing in", "hands the wallet hex,
 which is the only form it accepts" and "is the sentence, written as hex"), `wallet-session.spec.ts` (7 tests, including "writes the message the
 api expects", which pins the text the api rebuilds), `door.component.spec.ts`
-("offers only the wallet inside a wallet app’s browser", "offers both ways in
-anywhere else", "names the wallet it will not open for", "sends the api the
-sentence it will rebuild") and `admin-auth.service.spec.ts` (under "a session
-his wallet signed", including "never summons Google" and "refuses any other
-wallet"). The signature check itself is the backend's B15.
+("offers the wallet and nothing else", "names the wallet it will not open for",
+"sends the api the sentence it will rebuild") and `admin-auth.service.spec.ts`
+("lets his wallet in, and that session is what gets sent", "refuses any other
+wallet"). That no Google host survives in the policy is pinned by
+`csp.test.mjs` ("allows no Google host anywhere in the policy", "names no host
+but this one as a source of script"). The signature check itself is the
+backend's B15.
 
 ### R256 — A control that cannot act says so, in the page · met
 The studio is used from inside a wallet app's own browser, because that is
@@ -7034,12 +7078,21 @@ could have called the backend. It also hashed the harness's own script into the
 site's policy. The hash count going from ten to eleven is the only thing that
 said so, and the writer now takes `index.html` and `404.html` and nothing else.
 
+**`script-src` now names no outside host at all.** Google's sign-in client was
+the one exception — and a script from another host runs with every privilege
+the page has, which makes this the strongest single sentence in the policy.
+Removing the Google door (R16) removed it, along with Google's `/gsi/` entries
+in `style-src`, `connect-src` and `frame-src` and `*.googleusercontent.com` in
+`img-src`: five hosts gone from the allowlist, four directives narrowed.
+
 *Proven by:* `scripts/write-csp.mjs`, run by `postbuild` before `write-404.mjs`
 so the file answering the four client-rendered routes inherits the policy; and
-`csp.test.mjs` (15 tests), which drives the real Chrome over eleven pages —
-including `/door`, where Google's client is loaded, `/pieces`, which arrives as
-the generated 404 page, and `/atelier` — and fails on any refusal, naming the directive and
-the missing hash. Its "leaves the sandbox harness its own, stricter policy" and
+`csp.test.mjs` (17 tests), which drives the real Chrome over eleven pages —
+including `/door`, `/pieces`, which arrives as the generated 404 page, and
+`/atelier` — and fails on any refusal, naming the directive and
+the missing hash. "names no host but this one as a source of script" and
+"allows no Google host anywhere in the policy" pin the narrowing above, a
+removal that a policy would otherwise record nowhere. Its "leaves the sandbox harness its own, stricter policy" and
 "still runs a piece in the sandbox, loaded as a file under the policy" are the
 two that would have caught the mistake above. The suite was mutation-tested by
 removing one hash from the built policy, which failed it.

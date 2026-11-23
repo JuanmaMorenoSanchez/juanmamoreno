@@ -5,6 +5,32 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.97.0
+
+- **feat** Signing in with Google is gone, and the wallet is the only door. It
+  was a second set of credentials guarding one room, it never worked inside a
+  wallet app's own browser — Google refuses its sign-in there and its popup
+  opens as a white screen — and it cost Google's script in every page, three of
+  Google's hosts in the content security policy, and his email address committed
+  in `environment.ts`. Verified first against the deployed api, not argued: a
+  throwaway key signing this site's exact words, under both conventions wallets
+  use, and a stranger naming his address in the text, are all refused 403.
+- **feat** `script-src` now names no host but this one. Google's sign-in client
+  was the single outside script the policy allowed, and a script from elsewhere
+  runs with every privilege the page has; `*.googleusercontent.com`, and
+  Google's `/gsi/` entries in `style-src`, `connect-src` and `frame-src`, went
+  with it. Two new tests in `csp.test.mjs` refuse the build if any comes back.
+- **feat** The api accepts one token audience now, the Google Cloud SDK's, which
+  is the night's credential and not one a browser can be issued. The site's own
+  client id was dropped, so a Google token minted in any browser by any account
+  is worth nothing there — which is what makes the removal a boundary rather
+  than a change of front end.
+- **chore** The atelier no longer retries a refused save. It renewed the Google
+  token silently and sent the five megabytes again; there is nothing left to
+  renew, so a second attempt would send the same credential that was just
+  refused. The interceptor that drops the dead session still handles it, and the
+  piece is still on disk either way.
+
 ## 2.96.0
 
 - **feat** Every page now carries a content security policy, written into the
