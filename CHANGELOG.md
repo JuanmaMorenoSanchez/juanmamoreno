@@ -5,6 +5,28 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.96.0
+
+- **feat** Every page now carries a content security policy, written into the
+  html by `scripts/write-csp.mjs` because GitHub Pages serves files and sets no
+  headers. The ten inline-script hashes Angular emits across four hundred and
+  four pages are counted out of the build rather than listed, and `script-src`
+  names them instead of allowing `'unsafe-inline'`, which would have passed a
+  scanner and stopped nothing. `frame-ancestors` is the one loss: browsers
+  ignore it in a meta tag.
+- **feat** The atelier's sandbox harness is `src/assets/piece-harness.html`
+  rather than a string inside the component. A `srcdoc` document inherits the
+  policy of the page holding it, and the site's intersected with the frame's
+  allows no inline script at all — the piece would have drawn nothing and said
+  nothing, because the refusal belongs to the frame. Fetched over https it
+  carries its own `default-src 'none'` alone, and is still sandboxed to an
+  opaque origin and still fed its code by `postMessage`. Two tests that lifted
+  the harness out of the source by regex now read the file.
+- **feat** `e2e/csp.test.mjs` drives the real Chrome over eleven pages and
+  fails on any refusal, naming the directive and the hash that is missing.
+  Nothing below a browser has a policy engine, so this is the only thing
+  between a tightened directive and a blank page.
+
 ## 2.95.1
 
 - **chore** `vitest` 4.1.9 → 4.1.12, which clears the path-traversal advisory

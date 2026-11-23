@@ -23,18 +23,24 @@ import { join } from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import { launchBrowser } from './browser.mjs';
 
-const COMPONENT = 'src/app/features/atelier/sketch-preview.component.ts';
+const HARNESS_FILE = 'src/assets/piece-harness.html';
 
 let browser;
 let cannotRun = null;
 let harness;
 
-/** The harness as the component really defines it. */
+/**
+ * The harness as it really ships.
+ *
+ * It used to be a template literal in the component, lifted out of the source
+ * by a regex. It is a file now — a `srcdoc` document inherits the policy of
+ * the page holding it, and the site's own policy intersected with this one
+ * allows no inline script at all — so there is nothing left to lift.
+ */
 function liftHarness() {
-  const source = readFileSync(COMPONENT, 'utf8');
-  const found = source.match(/const HARNESS = `([\s\S]*?)`;\n/);
-  assert.ok(found, `could not find HARNESS in ${COMPONENT}`);
-  return found[1];
+  const source = readFileSync(HARNESS_FILE, 'utf8');
+  assert.match(source, /default-src 'none'/, `${HARNESS_FILE} is not the harness`);
+  return source;
 }
 
 /**

@@ -1,6 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { readFileSync } from 'node:fs';
 import { SketchPreviewComponent } from './sketch-preview.component';
+
+/**
+ * The harness as it really ships, read off disk rather than copied here.
+ *
+ * It used to be a template literal inside the component, which this file could
+ * read out of the `srcdoc` attribute. It is a file now because the site's own
+ * policy is inherited by a `srcdoc` document and the two intersect to nothing.
+ */
+const HARNESS_FILE = 'src/assets/piece-harness.html';
+const harnessOnDisk = readFileSync(HARNESS_FILE, 'utf8');
 
 /**
  * Code nobody read, running where being wrong costs nothing.
@@ -37,10 +48,22 @@ describe('SketchPreviewComponent', () => {
     fixture.detectChanges();
     const host = fixture.nativeElement as HTMLElement;
     const frame = host.querySelector('[data-testid="piece-frame"]') as HTMLIFrameElement;
-    return { fixture, host, frame, harness: frame.getAttribute('srcdoc') ?? '' };
+    return { fixture, host, frame, harness: harnessOnDisk };
   };
 
   describe('the sandbox', () => {
+    it('loads the harness as a file, never as srcdoc', () => {
+      // Not a preference. A `srcdoc` document has no url, so it inherits the
+      // policy of the page holding it, and the site's policy intersected with
+      // this frame's allows no inline script at all — the piece drew nothing
+      // and the error stayed inside the frame. Fetched over https it carries
+      // its own policy alone, and the sandbox still makes the origin nobody's.
+      const { frame } = build();
+
+      expect(frame.getAttribute('src')).toBe('assets/piece-harness.html');
+      expect(frame.getAttribute('srcdoc')).toBeNull();
+    });
+
     it('allows scripts and nothing else', () => {
       // Exactly this string. `allow-same-origin` beside it would give the
       // written code this page's origin — its storage, its admin token, its
@@ -100,12 +123,15 @@ describe('SketchPreviewComponent', () => {
 
   describe('handing the code over', () => {
     it('never writes the code into the frame markup', () => {
-      // It arrives by postMessage. Written into the srcdoc, a piece
+      // It arrives by postMessage. Written into the document instead, a piece
       // containing the characters that close a script tag would end the
       // harness early and leave the rest of itself as markup — and a model
-      // writing about scripts is not far-fetched.
-      const { harness } = build('class Piece { /* </script><img> */ }');
+      // writing about scripts is not far-fetched. Asserted against the frame
+      // and not the page: the page shows the code on purpose, in a `<pre>`
+      // beside the preview, which is the point of the atelier.
+      const { frame, harness } = build('class Piece { /* </script><img> */ }');
 
+      expect(frame.outerHTML).not.toContain('class Piece');
       expect(harness).not.toContain('class Piece');
       expect(harness).not.toContain('<img>');
     });

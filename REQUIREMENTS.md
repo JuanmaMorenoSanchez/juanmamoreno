@@ -6992,3 +6992,59 @@ open" — which counts interceptions, since an answer served from disk is a real
 response and counting responses would prove nothing about where it came from —
 and "serves the whole recorded catalogue, not the bundled subset"), and
 `page-cost.test.mjs`, whose figures are deterministic only because of this.
+
+### R259 — Every page carries a content security policy · met
+A policy is the list a page hands the browser of where code and content may
+come from; everything else is refused rather than warned about. The site had
+none, so a browser would have run any script that ended up in the page.
+
+The honest statement of what this is worth: the site's only api-fed
+`[innerHTML]` is `artwork-critic.component.html`, and Angular's sanitiser
+already strips scripts from it. This is a second lock on a door that has one.
+What is behind the door is the admin bearer in `localStorage` — read it and you
+have a wallet-verified session — which is worth two locks.
+
+**It is a meta tag, because GitHub Pages serves files and sets no headers.**
+There is no server in front of `gh-pages` to add one. The one real cost is
+`frame-ancestors`, which browsers ignore in a meta tag, so the site cannot
+refuse to be framed from here; the api can and does. `Content-Security-Policy-
+Report-Only` is also header-only, which is why this went straight to enforcing
+and the measurement happens in the gate below instead.
+
+**The hashes are counted out of the build, not written down.** Angular emits
+five inline scripts per page and one of them names the events that page
+replays, so it differs between pages: ten distinct scripts across four hundred
+and four pages. The first estimate was that four hundred pages meant four
+hundred hashes, which is why this is counted and not reasoned about. Hashes and
+not `'unsafe-inline'` — a `script-src` with `'unsafe-inline'` passes a scanner
+and stops nothing, which is worse than having no policy.
+
+**The atelier's harness had to stop being `srcdoc`.** A `srcdoc` document has
+no url of its own, so it inherits the policy of the page holding it, and the
+two intersect: the site allows named inline scripts, the frame allows any, and
+together they allow none. The piece would have drawn nothing and said nothing,
+because the refusal belongs to the frame. It is `assets/piece-harness.html`
+now, fetched over https, carrying its own policy alone — still sandboxed to an
+opaque origin, still fed its code by `postMessage`.
+
+**Writing the policy over that harness was the first thing this did wrong.**
+The writer walked every `.html` in the build, so it replaced the harness's
+`default-src 'none'` with the site's, which allows the api: a generated piece
+could have called the backend. It also hashed the harness's own script into the
+site's policy. The hash count going from ten to eleven is the only thing that
+said so, and the writer now takes `index.html` and `404.html` and nothing else.
+
+*Proven by:* `scripts/write-csp.mjs`, run by `postbuild` before `write-404.mjs`
+so the file answering the four client-rendered routes inherits the policy; and
+`csp.test.mjs` (15 tests), which drives the real Chrome over eleven pages —
+including `/door`, where Google's client is loaded, `/pieces`, which arrives as
+the generated 404 page, and `/atelier` — and fails on any refusal, naming the directive and
+the missing hash. Its "leaves the sandbox harness its own, stricter policy" and
+"still runs a piece in the sandbox, loaded as a file under the policy" are the
+two that would have caught the mistake above. The suite was mutation-tested by
+removing one hash from the built policy, which failed it.
+
+**Not covered: the wallet.** Connecting one opens a popup at Coinbase and needs
+a wallet to answer it, so `keys.coinbase.com`, `cca-lite.coinbase.com` and the
+walletlink relay are in the policy on the strength of Coinbase's documentation
+and are proved by him signing in once.

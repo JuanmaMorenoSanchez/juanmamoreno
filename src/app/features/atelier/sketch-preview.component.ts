@@ -44,193 +44,38 @@ const SUSPECT: { looks: RegExp; note: string }[] = [
 ];
 
 /**
- * The harness the written code runs inside.
+ * The harness the written code runs inside, as a file rather than a string.
  *
  * Four things make this safe, and only the last two are the boundary:
  *
- * - `sandbox="allow-scripts"` **without** `allow-same-origin`, which is set on
- *   the element rather than here. The pair is the whole point: scripts run,
- *   and they run at an **opaque origin** — a origin that is nobody's, so the
- *   code cannot read this page, its cookies, its storage or its token.
- * - A policy of `default-src 'none'` with **no `connect-src`**. Everything
- *   inherits the none: fetch, XHR, WebSocket, EventSource, a tracking pixel,
- *   `sendBeacon`. A piece cannot phone anywhere, including home.
+ * - `sandbox="allow-scripts"` **without** `allow-same-origin`, set on the
+ *   element. The pair is the whole point: scripts run, and they run at an
+ *   **opaque origin** — an origin that is nobody's, so the code cannot read
+ *   this page, its cookies, its storage or its token.
+ * - The harness's own `default-src 'none'` with **no `connect-src`**.
+ *   Everything inherits the none: fetch, XHR, WebSocket, EventSource, a
+ *   tracking pixel, `sendBeacon`. A piece cannot phone anywhere, including
+ *   home.
  * - `script-src 'unsafe-inline'` and *not* `'unsafe-eval'`, which is why the
  *   code is injected as a `<script>` element and never `eval`'d or passed to
  *   `new Function`. Those two are different permissions, and only the first is
  *   given.
  *
- * The code arrives by `postMessage` rather than being written into this string
- * so there is no escaping to get wrong: a `</script>` inside a generated piece
- * would otherwise end the harness early and leave the rest as markup.
+ * The code arrives by `postMessage` rather than being written into the
+ * document, so there is no escaping to get wrong: a `</script>` inside a
+ * generated piece would otherwise end the harness early and leave the rest as
+ * markup.
+ *
+ * **It is a fetched file and not `srcdoc` because of the site's own policy.**
+ * A `srcdoc` document has no url of its own, so it *inherits* the policy of
+ * the page that holds it, and the two intersect: the site allows named inline
+ * scripts and this frame allows any, which together allow none. The piece
+ * drew nothing and said nothing, because the refusal is the frame's and the
+ * frame is where the error went. Fetched over https the document carries its
+ * own policy alone — the one above, which is the stricter of the two — and the
+ * sandbox still puts it at an opaque origin.
  */
-const HARNESS = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
-<title>sketch</title>
-<style>
-  html, body { margin: 0; height: 100%; background: #0b0b0c; overflow: hidden; }
-  canvas { display: block; width: 100%; height: 100%; }
-</style>
-</head>
-<body>
-<canvas id="stage"></canvas>
-<script>
-(function () {
-  var stage = document.getElementById('stage');
-  var ctx = stage.getContext('2d');
-  var piece = null;
-  var started = 0;
-  var last = 0;
-  var frame = 0;
-  var pointer = { x: 0, y: 0, vx: 0, vy: 0, down: false, active: false };
-
-  function tell(message) { parent.postMessage(message, '*'); }
-
-  function blame(what, where) {
-    cancelAnimationFrame(frame);
-    piece = null;
-    tell({ kind: 'broken', message: String(what), where: where || '' });
-  }
-
-  window.onerror = function (message, _file, line) {
-    blame(message, line ? 'line ' + line : '');
-    return true;
-  };
-
-  // A refused request is silent otherwise, which is the one failure here that
-  // looks like nothing happening: fetch rejects a promise nobody awaited and
-  // an image simply never loads, so the piece runs on drawing nothing and
-  // there is no error to report. Measured in Chrome: an image beacon in draw()
-  // made 74 attempts in half a second, every one refused, and said nothing.
-  //
-  // Reported once. At sixty frames a second the alternative is a thousand
-  // messages a minute, and the first says everything the rest would.
-  //
-  // (No backticks in here, ever: this whole harness is a template literal and
-  // one would end it. Nor a dollar-brace, which would interpolate.)
-  var mentioned = false;
-  document.addEventListener('securitypolicyviolation', function (event) {
-    if (mentioned) return;
-    mentioned = true;
-    tell({ kind: 'refused', directive: String(event.violatedDirective || 'a request') });
-  });
-
-  function size() {
-    var box = stage.getBoundingClientRect();
-    var ratio = Math.min(window.devicePixelRatio || 1, 2);
-    stage.width = Math.max(1, Math.round(box.width * ratio));
-    stage.height = Math.max(1, Math.round(box.height * ratio));
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    return { width: box.width, height: box.height };
-  }
-
-  stage.addEventListener('pointermove', function (event) {
-    var box = stage.getBoundingClientRect();
-    var x = event.clientX - box.left;
-    var y = event.clientY - box.top;
-    pointer.vx = x - pointer.x;
-    pointer.vy = y - pointer.y;
-    pointer.x = x;
-    pointer.y = y;
-    pointer.active = true;
-  });
-  stage.addEventListener('pointerdown', function () {
-    pointer.down = true;
-    if (piece && piece.pointerDown) {
-      try { piece.pointerDown(pointer.x, pointer.y); } catch (e) { blame(e && e.message); }
-    }
-  });
-  stage.addEventListener('pointerup', function () { pointer.down = false; });
-
-  window.addEventListener('resize', function () {
-    if (!piece) return;
-    var at = size();
-    if (piece.resize) {
-      try { piece.resize(ctx, at.width, at.height); } catch (e) { blame(e && e.message); }
-    }
-  });
-
-  function run() {
-    var at = size();
-    started = performance.now();
-    last = started;
-
-    var tick = function (now) {
-      var frameInfo = {
-        t: (now - started) / 1000,
-        dt: Math.min((now - last) / 1000, 0.1),
-        width: at.width,
-        height: at.height,
-        pointer: pointer
-      };
-      last = now;
-      // A throw here would otherwise repeat sixty times a second, so the loop
-      // stops at the first one and says what it was.
-      try {
-        piece.draw(ctx, frameInfo);
-      } catch (e) {
-        blame((e && e.message) || e, 'in draw()');
-        return;
-      }
-      pointer.vx *= 0.9;
-      pointer.vy *= 0.9;
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-  }
-
-  window.addEventListener('message', function (event) {
-    if (!event.data || event.data.kind !== 'code') return;
-
-    cancelAnimationFrame(frame);
-    piece = null;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, stage.width, stage.height);
-
-    // Two elements rather than one string. A class declared at the top level
-    // of a classic script lands in the global lexical environment, which the
-    // next script can read — so the code needs no line appended to it and
-    // there is no newline to escape.
-    var written = document.createElement('script');
-    written.textContent = event.data.code;
-    document.body.appendChild(written);
-
-    var reach = document.createElement('script');
-    reach.textContent = 'self.__piece = typeof Piece === "function" ? Piece : null;';
-    document.body.appendChild(reach);
-
-    if (!self.__piece) {
-      blame('the code defines no class called Piece');
-      return;
-    }
-
-    try {
-      piece = new self.__piece();
-      var at = size();
-      var setup = piece.setup && piece.setup(ctx, at.width, at.height);
-      if (setup && typeof setup.then === 'function') {
-        setup.then(function () { tell({ kind: 'running' }); run(); },
-                   function (e) { blame((e && e.message) || e, 'in setup()'); });
-        return;
-      }
-    } catch (e) {
-      blame((e && e.message) || e, 'in setup()');
-      return;
-    }
-
-    tell({ kind: 'running' });
-    run();
-  });
-
-  tell({ kind: 'ready' });
-}());
-</script>
-</body>
-</html>`;
+const HARNESS = 'assets/piece-harness.html';
 
 /**
  * A written piece, running, nowhere near this page.
@@ -326,11 +171,10 @@ export class SketchPreviewComponent {
       const element = this.frame()?.nativeElement;
       if (!element) return;
 
-      // Set here rather than bound in the template. `srcdoc` is an HTML
-      // context, so a binding is sanitised and the harness would arrive with
-      // its script stripped — which looks exactly like a piece that draws
-      // nothing.
-      if (element.getAttribute('srcdoc') !== HARNESS) element.setAttribute('srcdoc', HARNESS);
+      // Set here rather than bound in the template, so the frame is loaded
+      // once and reused: reassigning `src` reloads the document and throws
+      // away the piece that is running in it.
+      if (element.getAttribute('src') !== HARNESS) element.setAttribute('src', HARNESS);
 
       // Reads the code, so new code resends it rather than needing a reload:
       // the harness takes a second piece quite happily and swaps it in.
