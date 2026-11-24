@@ -215,6 +215,7 @@ describe('TopMenuComponent workshop menu', () => {
       'Assets',
       'Atelier',
       'Enquiries',
+      'Backups',
       'Sign out',
     ]);
   });
@@ -236,6 +237,7 @@ describe('TopMenuComponent workshop menu', () => {
       '/parts',
       '/atelier',
       '/enquiries',
+      '/backups',
     ]);
   });
 

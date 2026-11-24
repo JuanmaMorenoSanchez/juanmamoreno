@@ -1,0 +1,239 @@
+<div class="container margin-top backups">
+  <h1 class="catalog-heading">Backups</h1>
+  <p class="backups-lead">
+    What is on your own disk, and whether it is still good. The certificates are on Ethereum and the
+    web copies on Arweave — those outlive any bill. Everything else lives in one Google project, and
+    this is the copy that does not.
+  </p>
+
+  <!--
+    The folder, every visit. No handle is kept: the whole arrangement is that
+    the archive stays on the disk and the page is only ever lent a look at it.
+  -->
+  @if (!manifest()) {
+    <section class="backups-step">
+      <h2>The archive</h2>
+      @if (canPick()) {
+        <p class="backups-note">
+          Choose the folder the copy was written to — by default
+          <code>juanmamoreno-archive/current</code>, beside the repositories.
+        </p>
+        <button type="button" class="backups-pick" (click)="pick()">Choose the folder</button>
+      } @else {
+        <p class="backups-note">
+          This browser cannot read a local folder. Chrome or Edge can; Safari and Firefox have not
+          shipped it.
+        </p>
+      }
+
+      @if (reading()) {
+        <p class="backups-note" role="status"><span class="backups-spin"></span>Reading…</p>
+      }
+      @if (problem()) {
+        <p class="backups-problem" role="alert">{{ problem() }}</p>
+      }
+    </section>
+
+    <section class="backups-step">
+      <h2>Making one</h2>
+      <p class="backups-note">
+        Run it from the site's repository. It signs in as you, through gcloud, and needs no key.
+      </p>
+      <pre class="backups-command">{{ refreshCommand('everything') }}</pre>
+      <p class="backups-note">
+        The collections alone take seconds and are the part that changes:
+        <code>{{ refreshCommand('firestore') }}</code>
+      </p>
+    </section>
+  }
+
+  @if (manifest()) {
+    <p class="backups-where">
+      <mat-icon aria-hidden="true">folder</mat-icon>
+      {{ folder() }} — {{ parts().length }} parts, {{ size(totalBytes()) }}
+      <button type="button" class="backups-again" (click)="pick()">choose another</button>
+    </p>
+
+    <!-- What is wrong, first, so the page answers before it is read. -->
+    @if (wrong().length) {
+      <section class="backups-wrong" role="alert">
+        <h2>Worth looking at</h2>
+        <ul>
+          @for (part of wrong(); track part.what) {
+            <li>
+              <strong>{{ part.name }}</strong>
+              <span>
+                @if (part.verified === false) {
+                  the bytes no longer match what was written down
+                } @else {
+                  {{ ago(part.takenAt) }}
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+    } @else {
+      <p class="backups-fine">Everything here is current, and every file still hashes true.</p>
+    }
+
+    <!-- The collections: the part that exists nowhere else at all. -->
+    <section class="backups-step">
+      <h2>Firestore</h2>
+      @if (!firestoreParts().length) {
+        <p class="backups-note">
+          Not copied. <code>{{ refreshCommand('firestore') }}</code>
+        </p>
+      }
+      <ul class="backups-rows">
+        @for (part of firestoreParts(); track part.what) {
+          <li class="backups-row" [class.is-late]="part.state === 'late'">
+            <!-- A word beside the mark: a green tick read aloud is nothing. -->
+            @if (part.verified === false) {
+              <span class="backups-mark is-bad" title="changed">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span class="sr-only">bytes changed</span>
+              </span>
+            } @else if (part.state === 'late') {
+              <span class="backups-mark is-bad" title="late">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+                <span class="sr-only">late</span>
+              </span>
+            } @else {
+              <span class="backups-mark is-good" title="ok">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span class="sr-only">ok</span>
+              </span>
+            }
+            <span class="backups-what">
+              {{ part.name }}
+              <em>{{ count(part) }}</em>
+            </span>
+            <span class="backups-size">{{ size(part.bytes) }}</span>
+            <span class="backups-when" [attr.title]="part.takenAt | date: 'medium'">
+              {{ ago(part.takenAt) }}
+            </span>
+            <code class="backups-restore">{{ restoreCommand(part) }}</code>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- The chain. Read from it, never written back to it. -->
+    <section class="backups-step">
+      <h2>On chain</h2>
+      @if (!chainParts().length) {
+        <p class="backups-note">
+          Not copied. <code>{{ refreshCommand('chain') }}</code>
+        </p>
+      }
+      <ul class="backups-rows">
+        @for (part of chainParts(); track part.what) {
+          <li class="backups-row" [class.is-late]="part.state === 'late'">
+            @if (part.verified === false || part.complete === false) {
+              <span class="backups-mark is-bad" title="incomplete">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span class="sr-only">incomplete</span>
+              </span>
+            } @else if (part.state === 'late') {
+              <span class="backups-mark is-bad" title="late">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+                <span class="sr-only">late</span>
+              </span>
+            } @else {
+              <span class="backups-mark is-good" title="ok">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span class="sr-only">ok</span>
+              </span>
+            }
+            <span class="backups-what">
+              {{ part.name }}
+              <em>{{ count(part) }}</em>
+            </span>
+            <span class="backups-size">{{ size(part.bytes) }}</span>
+            <span class="backups-when" [attr.title]="part.takenAt | date: 'medium'">
+              {{ ago(part.takenAt) }}
+            </span>
+          </li>
+        }
+      </ul>
+      <p class="backups-note">
+        Each certificate's own metadata, as the contract serves it, with the small image inside it
+        and the Arweave address beside it. There is no restore for this one: the chain is the
+        record, and this copy exists so the catalogue can be read and moved without a node and
+        without Google — not so it can be written back.
+      </p>
+    </section>
+
+    <!-- The buckets: the heavy half, and the slow one. -->
+    <section class="backups-step">
+      <h2>Buckets</h2>
+      @if (!bucketParts().length) {
+        <p class="backups-note">
+          Never copied. This is the heavy half — about ten gigabytes, an hour, and real egress on
+          the first run.
+        </p>
+        <pre class="backups-command">{{ refreshCommand('bucket') }}</pre>
+      }
+      <ul class="backups-rows">
+        @for (part of bucketParts(); track part.what) {
+          <li class="backups-row" [class.is-late]="part.state === 'late'">
+            @if (part.state === 'late') {
+              <span class="backups-mark is-bad" title="late">
+                <mat-icon aria-hidden="true">schedule</mat-icon>
+                <span class="sr-only">late</span>
+              </span>
+            } @else {
+              <span class="backups-mark is-good" title="ok">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span class="sr-only">ok</span>
+              </span>
+            }
+            <span class="backups-what">{{ part.name }}</span>
+            <span class="backups-size">{{ size(part.bytes) }}</span>
+            <span class="backups-when" [attr.title]="part.takenAt | date: 'medium'">
+              {{ ago(part.takenAt) }}
+            </span>
+            <code class="backups-restore">{{ restoreCommand(part) }}</code>
+          </li>
+        }
+      </ul>
+      @if (bucketParts().length) {
+        <p class="backups-note">
+          A size, not a hash: these are directories, so the row says what the bucket held when it
+          was copied and claims nothing about the files since.
+        </p>
+      }
+    </section>
+
+    <!--
+      What was left out on purpose. A gap with no reason beside it reads as an
+      oversight, and the next person to look — him, in two years — would have
+      to go and find out which it was.
+    -->
+    @if (skipped().length) {
+      <section class="backups-step">
+        <h2>Left out on purpose</h2>
+        <ul class="backups-skipped">
+          @for (item of skipped(); track item.what) {
+            <li>
+              <code>{{ item.what }}</code> <span>{{ item.why }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="backups-step">
+      <h2>Restoring</h2>
+      <p class="backups-note">
+        The commands above print what they would write and stop. Adding <code>--yes</code> does it,
+        and is a second deliberate act. Nothing is ever deleted by a restore: a document in the
+        archive is written over whatever is there now, and anything the archive does not have is
+        left exactly as it is.
+      </p>
+      <pre class="backups-command">
+node scripts/backup/restore.mjs firestore &lt;collection&gt; --yes</pre>
+    </section>
+  }
+</div>

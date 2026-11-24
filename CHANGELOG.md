@@ -5,6 +5,34 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.99.0
+
+- **feat** Everything the site is made of now has a copy on his own disk, and a
+  guarded page that says whether it is still a copy of anything.
+  `scripts/backup/backup.mjs` writes three halves to a folder beside the
+  repositories: seventeen Firestore collections as one readable json file each
+  (11.9MB), every certificate's own metadata as the contract serves it — 193 of
+  193, read free off a public Ethereum endpoint, the on-chain image inside each
+  one — and every bucket mirrored down. It signs in as nobody: the credential is
+  his gcloud sign-in, read when it is needed, so there is no key to leak.
+  `instagram-token` is never written, because a backup of a credential is a
+  credential on a disk, and the two build buckets are leftovers the next push
+  replaces; each omission is recorded in the manifest with its reason. Nothing
+  ever deletes, in either direction — a mirror would faithfully empty the copy
+  the day a bucket was emptied by mistake. `/backups` re-hashes every file
+  against what was written down, calls a collection late past eight days, the
+  chain past thirty and a bucket past ninety, and hands over the restore command
+  with the folder already in it rather than offering a button: putting nine
+  gigabytes back is `gcloud storage rsync`, and a browser button that overwrote
+  a Firestore collection would be the most dangerous thing on the site. The
+  format matches the dump already in `juanmamoreno-archive` from September, so
+  both are read by the same eye and the same program. One bug found and fixed
+  before it could be used: the restore stripped `id` recursively, so every
+  nested map with an `id` key lost it — 198 documents, each `posts` record's
+  `response.id` from Instagram. Every synthetic test passed; running the
+  conversion over all 2201 archived documents and comparing each whole is what
+  found it, and is now what makes the restore believable.
+
 ## 2.98.0
 
 - **feat** The artwork viewer sends for the web copy, and fullscreen sends for

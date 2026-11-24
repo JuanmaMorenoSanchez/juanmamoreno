@@ -54,6 +54,14 @@ Thumbs.db
 # not source: the brief and DESIGN.md are what outlive it.
 .impeccable/review/
 
+# The local copy of everything the site is made of, if it is ever pointed here.
+# `scripts/backup/backup.mjs` writes to `../juanmamoreno-archive/current` by
+# default and belongs there — ten gigabytes inside this repository would fight
+# the build's file watcher, and the archive's own README says why it sits
+# outside both repositories. This line is the guard for `--to backup`, so
+# pointing it inside is safe rather than a mistake nobody notices until a push.
+/backup
+
 # Impeccable's engine ships as a 2.3 MB provider skill folder, and the hook can
 # only be wired when it sits here: the install is this machine's, not the
 # repository's. `.claude/settings.local.json` that `hooks on` writes is already

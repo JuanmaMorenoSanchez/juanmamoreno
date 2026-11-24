@@ -1,0 +1,285 @@
+@use '../../../styles/tokens';
+
+/*
+  The same board as Activity, because it answers the same kind of question and
+  a second visual idea for it would only make two pages that have to be learned
+  separately: a row per thing, its date on the right, colour spent only on what
+  is wrong, and no tinted panels anywhere. Ink on paper and hairline rules.
+*/
+.backups {
+  max-width: 52rem;
+}
+
+.backups-lead {
+  margin: 0 0 tokens.$spacing-lg;
+  max-width: 40rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.backups-step {
+  margin: tokens.$spacing-lg 0;
+
+  h2 {
+    margin: 0 0 tokens.$spacing-sm;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* Which folder is being read, stated plainly and never the whole path: the
+   page is shown on a laptop screen and the path is nobody's business. */
+.backups-where {
+  display: flex;
+  gap: tokens.$spacing-sm;
+  align-items: center;
+  margin: 0 0 tokens.$spacing-lg;
+  font-size: 0.85rem;
+  color: var(--catalog-soft);
+
+  mat-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    font-size: 1.1rem;
+    line-height: 1.1rem;
+  }
+}
+
+.backups-wrong {
+  margin: 0 0 tokens.$spacing-lg;
+  padding: tokens.$spacing-sm-md 0 tokens.$spacing-sm-md tokens.$spacing-md;
+  border-left: 2px solid var(--jm-error);
+
+  h2 {
+    margin: 0 0 tokens.$spacing-sm;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--catalog-ink);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    gap: tokens.$spacing-sm;
+    justify-content: space-between;
+    font-size: 0.88rem;
+  }
+
+  span {
+    opacity: 0.7;
+  }
+}
+
+/* The other answer, in the same shape. */
+.backups-fine {
+  margin: 0 0 tokens.$spacing-lg;
+  padding: tokens.$spacing-sm 0 tokens.$spacing-sm tokens.$spacing-md;
+  border-left: 2px solid var(--catalog-rule);
+  font-size: 0.85rem;
+  color: var(--catalog-soft);
+}
+
+.backups-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.backups-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$spacing-sm;
+  align-items: baseline;
+  padding: tokens.$spacing-sm 0;
+  border-bottom: 1px solid rgb(0 0 0 / 9%);
+  font-size: 0.88rem;
+}
+
+.backups-what {
+  flex: 1 1 12rem;
+
+  em {
+    margin-left: tokens.$spacing-sm;
+    padding: tokens.$spacing-xs tokens.$spacing-xs;
+    border-radius: 0.6rem;
+    background: rgb(0 0 0 / 8%);
+    font-style: normal;
+    font-size: 0.78em;
+  }
+}
+
+.backups-size,
+.backups-when {
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+.backups-size {
+  min-width: 4.5rem;
+  text-align: right;
+}
+
+.backups-when {
+  min-width: 6rem;
+  text-align: right;
+}
+
+/*
+  The restore command, on the row it restores.
+
+  Quiet to the point of nearly not being there, and that is deliberate: it is
+  the most dangerous string on the site, it is needed about twice in a lifetime,
+  and a row that looks like a button invites a click. It is text to be copied,
+  so it looks like text. On a narrow screen it takes its own line rather than
+  wrapping mid-command, because half a command pasted is worse than none.
+*/
+.backups-restore {
+  flex: 1 1 100%;
+  font-size: 0.76rem;
+  color: var(--catalog-soft);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.backups-command {
+  margin: tokens.$spacing-sm 0;
+  padding: tokens.$spacing-sm tokens.$spacing-sm-md;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  background: rgb(0 0 0 / 4%);
+  border-radius: 0.4rem;
+}
+
+.backups-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$spacing-sm;
+  align-items: center;
+  max-width: 40rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--catalog-soft);
+}
+
+.backups-skipped {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: tokens.$spacing-sm;
+    align-items: baseline;
+    padding: tokens.$spacing-sm 0;
+    border-bottom: 1px solid rgb(0 0 0 / 9%);
+    font-size: 0.85rem;
+  }
+
+  span {
+    opacity: 0.7;
+  }
+}
+
+.backups-problem {
+  padding: tokens.$spacing-sm 0 tokens.$spacing-sm tokens.$spacing-md;
+  border-left: 2px solid var(--jm-error);
+  color: var(--catalog-ink);
+  font-size: 0.85rem;
+}
+
+/* The one thing on the page that is an action, so the one thing shaped like
+   one. Choosing a folder changes nothing and spends nothing. */
+.backups-pick {
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  font: inherit;
+  font-size: 0.85rem;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(0 0 0 / 5%);
+  }
+}
+
+.backups-again {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.backups-spin {
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid rgb(0 0 0 / 25%);
+  border-top-color: rgb(0 0 0 / 70%);
+  border-radius: 50%;
+  animation: backups-turn 0.8s linear infinite;
+}
+
+@keyframes backups-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.backups-mark {
+  display: inline-flex;
+  align-items: center;
+
+  mat-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    font-size: 1.15rem;
+    line-height: 1.15rem;
+  }
+
+  /* Ink for the tick, so the page's one loud colour is spent on what is
+     wrong rather than on its least interesting fact. */
+  &.is-good mat-icon {
+    color: var(--catalog-soft);
+  }
+
+  &.is-bad mat-icon {
+    color: #b4442f;
+  }
+}
+
+.is-late {
+  .backups-what,
+  .backups-when,
+  .backups-size {
+    color: var(--jm-error);
+  }
+}
+
+/** Read out, never drawn. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

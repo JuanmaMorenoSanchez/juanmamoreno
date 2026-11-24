@@ -7135,3 +7135,92 @@ removing one hash from the built policy, which failed it.
 a wallet to answer it, so `keys.coinbase.com`, `cca-lite.coinbase.com` and the
 walletlink relay are in the policy on the strength of Coinbase's documentation
 and are proved by him signing in once.
+
+### R260 — Everything the site is made of has a copy on his own disk · met
+The paintings' permanence never depended on Google. The certificates are on
+Ethereum carrying their own metadata, and the web-sized copies are on Arweave:
+both outlive any bill and any company. Everything else did depend on it. The
+essays, the career, what is sold, what has been posted, the record of each
+painting and the eight gigabytes the nights have cut existed in exactly one
+Google project behind exactly one account.
+
+`scripts/backup/backup.mjs` copies all three halves to a folder beside the
+repositories — seventeen Firestore collections as one readable json file each,
+every certificate's own metadata as the contract serves it, and every bucket
+mirrored down. It signs in as nobody: the credential is his own gcloud
+sign-in, read at the moment it is needed, so there is no key here to leak and
+this runs on his laptop and nowhere else.
+
+**The format is not invented.** `juanmamoreno-archive/firestore-2026-09-10/`
+already held one dump per collection, documents as an array with timestamps as
+`{ _seconds, _nanoseconds }`, and matching it is worth more than improving on
+it: both dumps are then read by the same eye and the same program, and the
+older one does not quietly become a different kind of thing.
+
+**Three things are left out, each recorded with its reason.** `instagram-token`
+is a live credential, and a backup of it is a credential on a disk with no
+password on it — it is also the one thing here that a copy could not restore,
+since a token expires. The two build buckets are leftovers the next push
+replaces. A gap with no reason beside it reads as an oversight, and the next
+person to look is him, in two years.
+
+**Nothing in it ever deletes.** The bucket copy is an additive rsync with no
+`--delete-unmatched-destination-objects`, which is what would make it a mirror.
+A mirror is the wrong thing: if a bucket were ever emptied — a mistake, a
+billing lapse, somebody who should not have the keys — the next run would
+faithfully empty the copy too, and the backup would destroy itself at the exact
+moment it was needed. A restore is additive for the same reason, in the other
+direction.
+**The restore was wrong, and only the real archive said so.** The first draft
+stripped `id` inside `typedFields`, which runs recursively — so every nested map
+with an `id` key lost it. 198 of the 2201 documents have one, because each
+`posts` record holds the id Instagram answered with at `response.id`, and a
+restore would have put the collection back with the network's own reference to
+every post missing. Every synthetic test passed. What found it was running the
+conversion over all 2201 archived documents and comparing each whole, which is
+now how the restore is believed at all: `id` is dropped by `typedDocument`, at
+the top level and nowhere deeper.
+*Proven by:* `backup.test.mjs` (12 tests) over `scripts/backup/shape.mjs`,
+which holds everything with a decision in it — neither program can be run in a
+test, since both need a network and a signed-in gcloud. "an empty array arrives
+with no values at all and must stay an array" is the one that would otherwise
+have emptied every empty list in the archive silently; "a timestamp matches the
+dump already on disk, to the nanosecond" pins the format above; "a document
+survives the round trip back to the api" and "a nested id is a field and is
+kept, unlike the document's own" are what make the restore believable, the
+second being the bug above; and "a refresh of one part leaves the others at the
+date they were taken" is the manifest's whole honesty.
+
+### R261 — A guarded page says whether that copy is still a copy of anything · met
+A backup nobody checks is a belief, not a backup. `/backups` reads the
+archive's manifest, lists every collection, the chain and every bucket with
+when it was taken and how much of it there is, and re-hashes every file against
+what was written down. Three thresholds rather than one, because these do not
+change at one speed: eight days for the collections — the same figure the
+backend's activity page uses, so the two never disagree about late — thirty for
+the chain, ninety for the buckets, whose paintings do not change once they are
+in. Nagging weekly about nine gigabytes is how a board teaches somebody to stop
+reading it.
+
+**It reads the folder; it is never given it.** The archive is ten gigabytes on
+a laptop, so he points the browser at it through the file system access api and
+nothing is uploaded, nothing cached, and no handle kept. Like the atelier, this
+makes it a front end for something on his machine: it works there and is simply
+empty anywhere else, and says which it is rather than looking broken.
+
+**Nothing on it restores anything, and that is the design.** A restore is a
+command, and the page's job is to hand it over with the folder already in it —
+printed without `--yes`, so pasted as it stands it says what it would write and
+stops. Two reasons, neither squeamishness: putting nine gigabytes back is
+`gcloud storage rsync` and never a browser, and a button that overwrote a
+Firestore collection would be the most dangerous thing on the site, reachable
+with the same seven-day signature the kill switch (B15) exists to revoke. The
+thing used twice in a lifetime should be the thing that is typed.
+*Proven by:* `backups.component.spec.ts` (8 tests). "does not let a fresh part
+backdate one it never touched" is the lie the page could most easily tell, and
+the one `--only firestore` would produce every time it was run; "tells a file it
+could not check from a file that failed" keeps the hash column worth having;
+"restores nothing: the commands are text, and the chain has none at all"
+asserts there is no restore button and that no printed command arrives carrying
+`--yes`; and "says so, rather than offering a button, in a browser that cannot
+look" is the Safari and Firefox answer.

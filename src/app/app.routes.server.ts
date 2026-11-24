@@ -49,6 +49,11 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'es/catalogue', renderMode: RenderMode.Client },
   { path: 'activity', renderMode: RenderMode.Client },
   { path: 'es/activity', renderMode: RenderMode.Client },
+  // The backups page reads a folder on his disk, so there is nothing at all to
+  // write out at build time — and the Spanish address is a redirect, which
+  // prerenders as a file with no canonical, no hreflang and no text.
+  { path: 'backups', renderMode: RenderMode.Client },
+  { path: 'es/backups', renderMode: RenderMode.Client },
   // The atelier needs a browser and a program running on this machine; there is
   // nothing about it that can be written out at build time. The Spanish address
   // is a redirect, and a redirect prerenders as a file with no canonical, no

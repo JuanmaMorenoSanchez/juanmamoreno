@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "2.98.0",
+  "version": "2.99.0",
   "packageManager": "pnpm@12.4.1",
   "scripts": {
     "ng": "ng",
@@ -11,6 +11,8 @@
     "test:watch": "ng test --watch",
     "test:e2e": "node --test e2e/*.test.mjs",
     "test:night": "node --test scripts/night/*.test.mjs",
+    "test:backup": "node --test scripts/backup/*.test.mjs",
+    "backup": "node scripts/backup/backup.mjs",
     "test:engine": "cd atelier-engine && .venv\\Scripts\\python -m unittest discover -s tests -t .",
     "pretty": "prettier --write .",
     "predeploy": "pnpm run lint && pnpm test",

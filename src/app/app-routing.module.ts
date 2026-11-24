@@ -234,6 +234,19 @@ export const routes: Routes = [
     data: { title: 'Enquiries', hideBreadcrumb: true, noindex: true },
   },
   { path: 'es/enquiries', redirectTo: '/enquiries' },
+  // Whether the copy on his own disk is still a copy of anything. Guarded like
+  // the rest, and like the atelier it is a front end for something on his
+  // machine: it reads the archive folder he points it at and is simply empty
+  // anywhere else. Nothing on it restores anything — a restore is a command,
+  // and the page's job is to hand it over with the folder already in it.
+  {
+    path: 'backups',
+    canActivate: [readerLanguage, adminOnly],
+    loadComponent: () =>
+      import('@features/backups/backups.component').then((m) => m.BackupsComponent),
+    data: { title: 'Backups', hideBreadcrumb: true, noindex: true },
+  },
+  { path: 'es/backups', redirectTo: '/backups' },
   { path: 'es', canActivate: [spanishRoute], children: contentRoutes },
   { path: '', canActivate: [englishRoute], children: contentRoutes },
   {
