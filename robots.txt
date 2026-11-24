@@ -21,6 +21,7 @@ Disallow: /atelier
 Disallow: /pieces
 Disallow: /parts
 Disallow: /enquiries
+Disallow: /backups
 # The Spanish addresses redirect to these rather than 404ing, so they are as
 # many more ways in and want disallowing too.
 Disallow: /es/mint
@@ -35,6 +36,7 @@ Disallow: /es/atelier
 Disallow: /es/pieces
 Disallow: /es/parts
 Disallow: /es/enquiries
+Disallow: /es/backups
 
 # The artwork pages carry original writing about each painting, and they are
 # prerendered so the text is in the HTML. These are named explicitly because a
