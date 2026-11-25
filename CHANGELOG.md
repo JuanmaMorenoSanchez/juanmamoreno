@@ -5,6 +5,11 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.99.1
+
+- chore: bump CI actions off the deprecated Node 20 runtime — checkout v5.1.0
+  and setup-node v5.0.0, each pinned by SHA.
+
 ## 2.99.0
 
 - **feat** Everything the site is made of now has a copy on his own disk, and a

@@ -41,7 +41,7 @@ jobs:
       # thing about packages, and taking `@v4` on faith was the hole left in
       # that argument. Resolved from the v4 tag on 17 November 2026; to move
       # it, read the tag again rather than editing the digits.
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       # Corepack ships with Node and reads the `packageManager` field, so the
       # pnpm used here is the one pinned in package.json. No third-party action
@@ -52,7 +52,7 @@ jobs:
           # nobody to answer on a runner, and the question would hang the job.
           COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
           cache: pnpm
