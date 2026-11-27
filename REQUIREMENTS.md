@@ -7224,3 +7224,17 @@ could not check from a file that failed" keeps the hash column worth having;
 asserts there is no restore button and that no printed command arrives carrying
 `--yes`; and "says so, rather than offering a button, in a browser that cannot
 look" is the Safari and Firefox answer.
+
+### R262 — A painting minted or corrected shows in the lists at once · met
+The browser keeps the catalogue for a week before it would fetch it again, so a
+painting written or corrected a minute ago was invisible in every list until
+then — the one moment the artist is looking for it. The backend already rereads
+the chain when a mint lands (`confirmWritten`) and when a correction settles
+(`settleAfterChange`); this brings the browser's copy level the instant those
+return, by refetching the snapshot into the store the lists read. It is
+best-effort and browser-only: a refetch that fails leaves the list as it was,
+which is the behaviour it replaces, and the night's work would right it anyway.
+*Proven by:* `catalogue-refresh.spec.ts` (2 tests: it writes the fresh snapshot
+into the store and marks it fresh; an empty refetch leaves the stored catalogue
+alone). `certificate-panel.component.spec.ts` asserts a correction asks for the
+refresh, and `pending-certificates.component.spec.ts` asserts a landed mint does.

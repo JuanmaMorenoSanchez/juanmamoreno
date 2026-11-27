@@ -8,6 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { MintGateComponent } from '@shared/components/mint-gate/mint-gate.component';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { WalletService } from '@shared/services/wallet.service';
@@ -64,6 +65,7 @@ const BETWEEN_ASKS_MS = 8_000;
 export class PendingCertificatesComponent {
   private api = inject(MintApiService);
   private wallet = inject(WalletService);
+  private artworks = inject(ARTWORK_PORT);
 
   /**
    * Bumped by the page when the form has prepared one, so the list is right
@@ -150,6 +152,9 @@ export class PendingCertificatesComponent {
       const written = await this.landed(tokenId);
       if (written) {
         this.waiting.update((all) => (all ?? []).filter((one) => one.tokenId !== tokenId));
+        // The backend reread the catalogue when it confirmed the mint; bring the
+        // browser's copy level so the new painting shows in the lists at once.
+        this.artworks.refreshCatalogue();
         this.said.set(`Certificate ${tokenId} is on the chain.`);
       } else {
         // Sent and not yet mined. It stays on the list, which is the honest

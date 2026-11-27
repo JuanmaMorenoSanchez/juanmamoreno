@@ -250,6 +250,9 @@ export class CertificatePanelComponent implements OnInit {
 
       this.stage.set('Sent. Waiting for the chain…');
       await this.api.settled(this.tokenId());
+      // The backend has reread the catalogue; bring the browser's copy level so
+      // the correction (or the gap a burn leaves) shows in the lists at once.
+      this.artworkService.refreshCatalogue();
       this.stage.set('');
       this.outcome.set(this.said(what));
 

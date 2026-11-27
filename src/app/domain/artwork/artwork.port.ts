@@ -13,6 +13,12 @@ export interface ArtworkPort extends Artwork {
   getAvailableYears(): Set<number>;
   getLinks(tokenId: string): Observable<string[]>;
   saveNftsLocally(nfts: Array<Nft>): void;
+  /**
+   * Re-reads the catalogue into the store now, so a painting just minted or
+   * corrected shows in the lists without waiting out the freshness window.
+   * Best-effort.
+   */
+  refreshCatalogue(): void;
   getArtPieceDescriptions(tokenId: string): Observable<Descriptions | null>;
   getArtPieceCritic(tokenId: string): Observable<ArtCritic | null>;
   /** Which artworks have had a hand over their essay. For the artist alone. */

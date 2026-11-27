@@ -77,6 +77,12 @@ async function setup({
     connect: vi.fn().mockResolvedValue(connected),
     send: vi.fn().mockResolvedValue('0xhash'),
   };
+  const artwork = {
+    getTraitValue: (nft: Nft, key: string) =>
+      nft.raw?.metadata?.attributes?.find((a: { trait_type: string }) => a.trait_type === key)
+        ?.value ?? '',
+    refreshCatalogue: vi.fn(),
+  };
 
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
@@ -86,14 +92,7 @@ async function setup({
         provide: AskService,
         useValue: { confirm: () => Promise.resolve(dialogAnswer) },
       },
-      {
-        provide: ARTWORK_PORT,
-        useValue: {
-          getTraitValue: (nft: Nft, key: string) =>
-            nft.raw?.metadata?.attributes?.find((a: { trait_type: string }) => a.trait_type === key)
-              ?.value ?? '',
-        },
-      },
+      { provide: ARTWORK_PORT, useValue: artwork },
       { provide: MintApiService, useValue: api },
       { provide: WalletService, useValue: wallet },
     ],
@@ -105,7 +104,7 @@ async function setup({
   fixture.detectChanges();
   await settle();
 
-  return { panel: fixture.componentInstance as unknown as Panel, api, wallet };
+  return { panel: fixture.componentInstance as unknown as Panel, api, wallet, artwork };
 }
 
 /**
@@ -176,7 +175,7 @@ describe('CertificatePanelComponent', () => {
 
   describe('signing', () => {
     it('sends the correction and tells the api it settled', async () => {
-      const { panel, api, wallet } = await setup();
+      const { panel, api, wallet, artwork } = await setup();
 
       await panel.correct();
 
@@ -186,6 +185,8 @@ describe('CertificatePanelComponent', () => {
       );
       expect(wallet.send).toHaveBeenCalled();
       expect(api.settled).toHaveBeenCalledWith(42);
+      // The lists must not wait out the freshness window to show the correction.
+      expect(artwork.refreshCatalogue).toHaveBeenCalled();
       expect(panel.outcome()).toContain('corrected');
     });
 

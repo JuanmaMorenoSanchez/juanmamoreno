@@ -422,6 +422,28 @@ export class ArtworkInfraService extends Artwork implements ArtworkPort {
     });
   }
 
+  /**
+   * Re-reads the catalogue into the store now, past the freshness window, so a
+   * painting just minted or corrected shows in the lists without a reload.
+   *
+   * Best-effort and browser-only: the backend has already rebuilt its snapshot
+   * by the time this is called (the mint and correct flows wait on it), so this
+   * only brings the browser's copy level. A refetch that fails leaves the list
+   * as it was — which is the behaviour this replaces.
+   */
+  refreshCatalogue(): void {
+    if (!this.isBrowser) return;
+    this.http
+      .get<ApiResponse<Nft[]>>(`${environment.backendUrl}nfts-snapshot`)
+      .pipe(
+        this.extractData<Nft[]>([]),
+        catchError(() => of<Nft[]>([]))
+      )
+      .subscribe((nfts) => {
+        if (nfts.length) this.saveNftsLocally(nfts);
+      });
+  }
+
   private getLocalCachedThumbnail(tokenId: string): Observable<string | null> {
     const cachedThumbnail = this.sessionQuery.getThumbnailByTokenId(tokenId);
     return of(cachedThumbnail ? CommonUtils.composeImgSrc(cachedThumbnail.thumbnail) : null);

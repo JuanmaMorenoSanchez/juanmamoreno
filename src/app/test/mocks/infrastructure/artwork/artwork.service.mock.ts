@@ -38,6 +38,10 @@ class MockArtworkInfraService extends Artwork implements ArtworkPort {
     // no-op in tests
   }
 
+  refreshCatalogue(): void {
+    // no-op in tests
+  }
+
   getArtPieceDescriptions(): Observable<Descriptions | null> {
     return of(null);
   }

@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ARTWORK_PORT } from '@domain/artwork/artwork.token';
 import { MintApiService, type PendingMint } from '@shared/services/mint-api.service';
 import { WalletService } from '@shared/services/wallet.service';
 import { PendingCertificatesComponent } from './pending-certificates.component';
@@ -38,6 +39,7 @@ function setup(options: {
   const asked: Array<{ tokenId: number; to: string }> = [];
   const sent: unknown[] = [];
   const confirmed: number[] = [];
+  const refreshed = { count: 0 };
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [PendingCertificatesComponent],
@@ -77,6 +79,14 @@ function setup(options: {
           },
         },
       },
+      {
+        provide: ARTWORK_PORT,
+        useValue: {
+          refreshCatalogue: () => {
+            refreshed.count += 1;
+          },
+        },
+      },
     ],
   });
   const fixture = TestBed.createComponent(PendingCertificatesComponent);
@@ -87,6 +97,7 @@ function setup(options: {
     asked,
     sent,
     confirmed,
+    refreshed,
     host: fixture.nativeElement as HTMLElement,
   };
 }
@@ -215,7 +226,7 @@ describe('minting one from the list', () => {
   });
 
   it('asks the chain whether it landed, and then takes it off the list', async () => {
-    const { fixture, host, confirmed } = setup({ list: [waiting(5), waiting(6)] });
+    const { fixture, host, confirmed, refreshed } = setup({ list: [waiting(5), waiting(6)] });
     await settled(fixture);
 
     await mint(fixture);
@@ -224,6 +235,8 @@ describe('minting one from the list', () => {
     expect(confirmed).toEqual([5]);
     expect(host.querySelectorAll('.pending-one')).toHaveLength(1);
     expect(host.textContent).toContain('on the chain');
+    // The new painting must show in the lists without waiting for a reload.
+    expect(refreshed.count).toBe(1);
   });
 
   /**

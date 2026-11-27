@@ -1,6 +1,6 @@
 {
   "name": "juanmamoreno",
-  "version": "2.99.1",
+  "version": "2.100.0",
   "packageManager": "pnpm@12.4.1",
   "scripts": {
     "ng": "ng",

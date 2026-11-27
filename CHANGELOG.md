@@ -5,6 +5,12 @@ broken one, **chore** for anything that changes no behaviour.
 
 Versions follow the same reading: minor for a feat, patch for a fix or a chore.
 
+## 2.100.0
+
+- feat: a painting minted or corrected shows in the lists at once — the browser
+  refetches the catalogue into the store the moment the backend has reread the
+  chain, instead of waiting out the week-long freshness window.
+
 ## 2.99.1
 
 - chore: bump CI actions off the deprecated Node 20 runtime — checkout v5.1.0
